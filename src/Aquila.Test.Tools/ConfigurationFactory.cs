@@ -198,6 +198,12 @@ public string CreateNewStore(int selector)
          return ""below zero"" + e.Id;
 }
 
+[Operation]
+[NotAutorized]
+public string CreateNewUser()
+{
+    
+}
 
 [Operation]
 public int GetStoreMaxValue()

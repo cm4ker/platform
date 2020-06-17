@@ -92,7 +92,7 @@ namespace Aquila.Language.Ast.Symbols
             _overloads[f] = method;
         }
 
-        public (Function method, RoslynMethod clrMethod) SelectOverload(RoslynType[] args)
+        public (Function method, RoslynMethod clrMethod) SelectOverload(IType[] args)
         {
             if (_overloads.Count == 0)
                 throw new Exception(
@@ -167,11 +167,11 @@ namespace Aquila.Language.Ast.Symbols
             Type = type;
         }
 
-        public RoslynType ClrType { get; private set; }
+        public IType ClrType { get; private set; }
 
         public TypeEntity Type { get; }
 
-        public void Connect(RoslynType type)
+        public void Connect(IType type)
         {
             ClrType = type;
         }

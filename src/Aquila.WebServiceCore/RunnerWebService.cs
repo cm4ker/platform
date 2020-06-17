@@ -58,7 +58,6 @@ namespace Aquila.WebServiceCore
                 .Configure(app =>
                 {
                     app.UseRouting();
-
                     app.Use(async (context, next) =>
                     {
                         var env = _mrg.GetEnvironment("Library");

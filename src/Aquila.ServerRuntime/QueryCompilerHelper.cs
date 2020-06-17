@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Antlr4.Runtime;
+using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Contracts.Extensions;
 using Aquila.Compiler.Roslyn;
 using Aquila.Compiler.Roslyn.RoslynBackend;
@@ -23,10 +24,10 @@ namespace Aquila.ServerRuntime
 
         public static Class DataReader;
 
-        public static void Init(Root root, RoslynTypeSystem ts)
+        public static void Init(Root root, ITypeSystem ts)
         {
-            var pqType = ts.Resolve<PlatformQuery>();
-            var drType = ts.Resolve<PlatformReader>();
+            var pqType = ts.FindType<PlatformQuery>();
+            var drType = ts.FindType<PlatformReader>();
 
             Query = new Class(null, TypeBody.Empty, "Query");
             DataReader = new Class(null, TypeBody.Empty, "DataReader");

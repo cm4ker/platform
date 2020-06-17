@@ -60,7 +60,7 @@ namespace Aquila.Language.Ast.Symbols
             return typeSymbol;
         }
 
-        public TypeSymbol AddType(TypeEntity te, RoslynType type)
+        public TypeSymbol AddType(TypeEntity te, IType type)
         {
             var typeSymbol = AddType(te);
             typeSymbol.Connect(type);
