@@ -12,9 +12,12 @@ using Aquila.Compiler.Roslyn;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Compiler.Visitor;
 using Aquila.Core.Contracts;
+using Aquila.Language.Ast;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Definitions.Functions;
 using Aquila.QueryBuilder;
+using CompilationUnit = Aquila.Language.Ast.Definitions.CompilationUnit;
+using Member = Aquila.Language.Ast.Member;
 using Module = Aquila.Language.Ast.Definitions.Module;
 
 namespace Aquila.Compiler.Tests
@@ -96,7 +99,7 @@ namespace Aquila.Compiler.Tests
         {
             var asm = Ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
 
-            Function node = (Function) funcScript.Parse(x => _zlv.VisitMethodDeclaration(x.methodDeclaration()));
+            Method node = (Method) funcScript.Parse(x => _zlv.VisitMethodDeclaration(x.methodDeclaration()));
 
             CompilationUnit cu = new CompilationUnit(null, null, new EntityList
             {

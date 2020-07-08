@@ -7,6 +7,7 @@ using Aquila.Compiler.Visitor;
 using Aquila.Language.Ast;
 using Aquila.Language.Ast.AST;
 using Aquila.Language.Ast.Definitions;
+using CompilationUnit = Aquila.Language.Ast.Definitions.CompilationUnit;
 
 namespace Aquila.Compiler.Tests
 {

@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <LangVersion>8</LangVersion>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
+        <RootNamespace>Aquila.Compiler</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+
+        <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+
+        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.4" />
+
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.1.0" />
+
+        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.1.0" />
+        <PackageReference Include="NETStandard.Library" Version="2.0.3" />
+        <PackageReference Include="System.ServiceModel.Primitives" Version="4.7.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include=".\ZSharpParser.g4" />
+        <Content Include=".\ZSharpLexer.g4" />
+        <Content Include=".\ZSharpPreprocessorParser.g4" />
+        <Content Include="Parser\ZSharpLexer.g4" />
+        <Content Include="Parser\ZSharpParser.g4" />
+        <Content Include="Parser\ZSharpPreprocessorParser.g4" />
+        <Content Include="PooledObjects\Microsoft.CodeAnalysis.PooledObjects.Package.csproj" />
+        <Content Include="PooledObjects\Microsoft.CodeAnalysis.PooledObjects.shproj" />
+    </ItemGroup>
+
+    <!--    <ItemGroup>-->
+    <!--        <Compile Include="obj\Debug\*.cs" />-->
+    <!--     </ItemGroup>-->
+
+    <ItemGroup>
+        <ProjectReference Include="..\Aquila.ClientRuntime\Aquila.ClientRuntime.csproj" />
+        <ProjectReference Include="..\Aquila.Compiler.Roslyn\Aquila.Compiler.Roslyn.csproj" />
+<!--        <ProjectReference Include="..\Aquila.Compiler.Cecil\Aquila.Compiler.Cecil.csproj" />-->
+<!--        <ProjectReference Include="..\Aquila.Compiler.Contracts\Aquila.Compiler.Contracts.csproj" />-->
+        <ProjectReference Include="..\Aquila.Core\Aquila.Core.csproj" />
+        <ProjectReference Include="..\Aquila.Language.Ast\Aquila.Language.Ast.csproj" />
+        <ProjectReference Include="..\Aquila.ServerClientShared\Aquila.ServerClientShared.csproj" />
+        <ProjectReference Include="..\Aquila.ServerRuntime\Aquila.ServerRuntime.csproj" />
+        <ProjectReference Include="..\Aquila.Shared\Aquila.Shared.csproj" />
+        <ProjectReference Include="..\Aquila.UI.Ast\Aquila.UI.Ast.csproj" />
+    </ItemGroup>
+
+
+</Project>

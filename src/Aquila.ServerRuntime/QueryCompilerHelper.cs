@@ -10,9 +10,14 @@ using Aquila.Language.Ast;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Definitions.Functions;
 using Aquila.Language.Ast.Infrastructure;
+using Aquila.Language.Ast.Misc;
 using Aquila.Language.Ast.Symbols;
 using Aquila.QueryBuilder.Model;
 using Aquila.QueryBuilder.Visitor;
+using Block = Aquila.Language.Ast.Definitions.Block;
+using PrimitiveTypeSyntax = Aquila.Language.Ast.PrimitiveTypeSyntax;
+using Property = Aquila.Language.Ast.Property;
+using SingleTypeSyntax = Aquila.Language.Ast.SingleTypeSyntax;
 
 namespace Aquila.ServerRuntime
 {
@@ -46,12 +51,12 @@ namespace Aquila.ServerRuntime
             propSym.Connect(pqType.FindProperty(nameof(PlatformQuery.Text)));
 
             Query.TypeBody.SymbolTable.AddMethod(
-                new Function(null, Block.Empty, ParameterList.Empty, GenericParameterList.Empty, AttributeList.Empty,
+                new Method(null, Block.Empty, ParameterList.Empty, GenericParameterList.Empty, AttributeList.Empty,
                     "ExecuteReader", new SingleTypeSyntax(null, "DataReader", TypeNodeKind.Type)),
                 pqType.FindMethod(nameof(PlatformQuery.ExecuteReader)));
 
             DataReader.TypeBody.SymbolTable.AddMethod(
-                new Function(null, Block.Empty, ParameterList.Empty, GenericParameterList.Empty, AttributeList.Empty,
+                new Method(null, Block.Empty, ParameterList.Empty, GenericParameterList.Empty, AttributeList.Empty,
                     "Read", new PrimitiveTypeSyntax(null, TypeNodeKind.Boolean)),
                 drType.FindMethod(nameof(PlatformReader.Read)));
         }

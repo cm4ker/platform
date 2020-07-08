@@ -182,21 +182,16 @@ namespace Aquila.SyntaxGenerator.Compiler
                         SyntaxFactory.ParseTypeName($"SyntaxCollectionNode<{syntax.Base}>"))));
         }
 
+
         private static MemberDeclarationSyntax GenerateClass(CompilerSyntax syntax)
         {
             List<MemberDeclarationSyntax> members = new List<MemberDeclarationSyntax>();
 
 
-            var constructor = SyntaxFactory.ConstructorDeclaration(syntax.Name)
-                .WithParameterList(SyntaxFactory.ParameterList()
-                    .AddParameters(SyntaxFactory.Parameter(
-                        SyntaxFactory.Identifier("lineInfo")).WithType(SyntaxFactory.ParseName("ILineInfo"))))
-                .WithBody(SyntaxFactory.Block())
-                .WithModifiers(SyntaxTokenList.Create(publicToken));
+            var constructor = (ConstructorDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                $"public {syntax.Name}(ILineInfo lineInfo, SyntaxKind syntaxKind) : base(lineInfo, syntaxKind){{}}");
 
-            var initializer = SyntaxFactory.ConstructorInitializer(SyntaxKind.BaseConstructorInitializer,
-                SyntaxFactory.ArgumentList()
-                    .AddArguments(SyntaxFactory.Argument(SyntaxFactory.ParseName("lineInfo"))));
+            var initializer = constructor.Initializer;
 
 
             var slot = 0;

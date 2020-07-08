@@ -15,6 +15,7 @@ using Aquila.Language.Ast;
 using Aquila.Language.Ast.Definitions;
 using Aquila.QueryBuilder;
 using Aquila.ServerRuntime;
+using Name = Aquila.Language.Ast.Name;
 using SystemTypeBindings = Aquila.Compiler.Roslyn.SystemTypeBindings;
 
 namespace Aquila.EntityComponent.Compilation.UX

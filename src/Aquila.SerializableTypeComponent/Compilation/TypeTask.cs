@@ -9,6 +9,7 @@ using Aquila.Core.Contracts.TypeSystem;
 using Aquila.Language.Ast;
 using Aquila.Language.Ast.Definitions;
 using Aquila.QueryBuilder;
+using Name = Aquila.Language.Ast.Name;
 
 namespace Aquila.SerializableTypeComponent.Compilation
 {

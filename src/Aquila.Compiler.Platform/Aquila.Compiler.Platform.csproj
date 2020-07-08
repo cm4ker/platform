@@ -8,8 +8,8 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Aquila.Compiler.Cecil\Aquila.Compiler.Cecil.csproj" />
+        <ProjectReference Include="..\Aquila.Compiler.CodeAnalyses\Aquila.Compiler.CodeAnalyses.csproj" />
         <ProjectReference Include="..\Aquila.Compiler.Dnlib\Aquila.Compiler.Dnlib.csproj" />
-        <ProjectReference Include="..\Aquila.Compiler\Aquila.Compiler.csproj" />
         <ProjectReference Include="..\Aquila.Configuration\Aquila.Configuration.csproj" />
         <ProjectReference Include="..\Aquila.Language.Ast\Aquila.Language.Ast.csproj" />
     </ItemGroup>

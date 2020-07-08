@@ -8,7 +8,6 @@ using System.Security.Cryptography;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Aquila.Compiler.Contracts;
-using Aquila.Compiler.Contracts.Symbols;
 using MethodBody = Mono.Cecil.Cil.MethodBody;
 using SreOpCode = System.Reflection.Emit.OpCode;
 using SreOpCodes = System.Reflection.Emit.OpCodes;

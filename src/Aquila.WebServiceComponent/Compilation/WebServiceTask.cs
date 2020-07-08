@@ -13,11 +13,15 @@ using Aquila.Core.Contracts.Network;
 using Aquila.Core.Contracts.TypeSystem;
 using Aquila.Language.Ast;
 using Aquila.Language.Ast.Definitions;
+using Aquila.Language.Ast.Misc;
 using Aquila.Language.Ast.Symbols;
 using Aquila.QueryBuilder;
 using Aquila.ServerRuntime;
 using Aquila.WebServiceComponent.Configuration;
 using Microsoft.AspNetCore.Builder;
+using AttributeSyntax = Aquila.Language.Ast.Definitions.AttributeSyntax;
+using Name = Aquila.Language.Ast.Name;
+using SingleTypeSyntax = Aquila.Language.Ast.SingleTypeSyntax;
 
 namespace Aquila.WebServiceComponent.Compilation
 {

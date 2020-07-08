@@ -16,6 +16,7 @@ using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Data;
 using Aquila.Core.Contracts.Environment;
 using Aquila.Core.Test;
+using Aquila.Language.Ast;
 using Aquila.Language.Ast.Definitions;
 using Aquila.QueryBuilder;
 using Aquila.Test.Tools;
