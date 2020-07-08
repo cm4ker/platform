@@ -13,12 +13,12 @@ namespace SharpFileSystem.Tests.FileSystems
 {
     public abstract class DbFileSystemTestBase : IDisposable
     {
-        private readonly DataContext _context;
+        private readonly DataConnectionContext _context;
         protected DatabaseFileSystem FileSystem { get; set; }
 
         public DbFileSystemTestBase()
         {
-            _context = new DataContext(SqlDatabaseType.SqlServer,
+            _context = new DataConnectionContext(SqlDatabaseType.SqlServer,
                 "Data Source = (localdb)\\MSSQLLocalDB; Initial Catalog = testdb; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False"
                 , IsolationLevel.ReadCommitted);
 

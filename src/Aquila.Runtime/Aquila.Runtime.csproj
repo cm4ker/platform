@@ -1,13 +1,34 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
-        <Configurations>Debug;Release;DebugServer</Configurations>
-        <Platforms>AnyCPU</Platforms>
+        <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Aquila.Avalonia.Wrapper\Aquila.Avalonia.Wrapper.csproj" />
+        <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; analyzers</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="morelinq" Version="3.0.0" />
+        <PackageReference Include="Npgsql" Version="5.0.7" />
+        <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="Querying\ZSqlGrammar.g4" />
+        <Antlr4 Update="Querying\ZSqlGrammar.g4">
+            <Generator>MSBuild:Compile</Generator>
+            <CustomToolNamespace>Aquila.Core.Querying</CustomToolNamespace>
+        </Antlr4>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Aquila.Metadata\Aquila.Metadata.csproj" />
+        <ProjectReference Include="..\DB\BufferedDataReader\BufferedDataReader.csproj" />
     </ItemGroup>
 
 </Project>

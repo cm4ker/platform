@@ -131,7 +131,7 @@ namespace Aquila.Compiler.Dnlib
 
         public static ITypeDefOrRef ToTypeRef(this ITypeDefOrRef type)
         {
-            return new TypeRefUser(type.Module, type.Namespace, type.Name);
+            return new TypeRefUser(type.Module, type.Namespace, type.Name, type.Module);
         }
     }
 }

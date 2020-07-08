@@ -1,0 +1,36 @@
+﻿using NamedTypeSymbol = Aquila.CodeAnalysis.Symbols.NamedTypeSymbol;
+
+namespace Aquila.CodeAnalysis.Emit
+{
+    /// <summary>
+    /// Represents a reference to a generic type instantiation that is not nested.
+    /// e.g. MyNamespace.A{int}
+    /// </summary>
+    internal sealed class GenericNamespaceTypeInstanceReference : GenericTypeInstanceReference
+    {
+        public GenericNamespaceTypeInstanceReference(NamedTypeSymbol underlyingNamedType)
+            : base(underlyingNamedType)
+        {
+        }
+
+        public override Microsoft.Cci.IGenericTypeInstanceReference AsGenericTypeInstanceReference
+        {
+            get { return this; }
+        }
+
+        public override Microsoft.Cci.INamespaceTypeReference AsNamespaceTypeReference
+        {
+            get { return null; }
+        }
+
+        public override Microsoft.Cci.INestedTypeReference AsNestedTypeReference
+        {
+            get { return null; }
+        }
+
+        public override Microsoft.Cci.ISpecializedNestedTypeReference AsSpecializedNestedTypeReference
+        {
+            get { return null; }
+        }
+    }
+}

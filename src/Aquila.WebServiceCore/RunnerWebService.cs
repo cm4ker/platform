@@ -20,6 +20,17 @@ using SoapCore;
 
 namespace Aquila.WebServiceCore
 {
+    public interface IStartupService
+    {
+        void Register(Action<IApplicationBuilder> a);
+
+        void RegisterWebServiceClass<T>() where T : class;
+
+        void Configure(IApplicationBuilder buildedr);
+
+        void ConfigureServices(IServiceCollection sc);
+    }
+
     public class RunnerWebService : IWebHost, IDisposable
     {
         private readonly ILogger<RunnerWebService> _logger;

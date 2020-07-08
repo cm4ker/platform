@@ -9,7 +9,6 @@ using Aquila.Compiler.Visitor;
 using Aquila.Configuration.Structure;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Data;
-using Aquila.Language.Ast.Definitions;
 using Aquila.QueryBuilder;
 
 namespace Aquila.Compiler.Platform

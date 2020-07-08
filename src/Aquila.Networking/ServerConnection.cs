@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using Aquila.Core.Environment;
 using Aquila.Core.Network.States;
-using Aquila.Core.Logging;
-using Aquila.Core.Tools;
-using Aquila.Core.Sessions;
-using Aquila.Core.Authentication;
 using Aquila.Core.Contracts.Environment;
-using Aquila.Core.Contracts.Network;
+using Aquila.Logging;
 
 namespace Aquila.Core.Network
 {
-    public class ServerConnection : Connection, IRemovable
+    public class ServerConnection : Connection
     {
         private readonly ILogger<ServerConnection> _logger;
         private IDisposable _remover;

@@ -1,9 +1,5 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Aquila.Core.Contracts.Environment;
-using Aquila.Core.Environment;
 
 namespace Aquila.Cli.Commands.Db
 {

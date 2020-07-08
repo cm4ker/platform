@@ -1,0 +1,92 @@
+public class Invoice
+{
+    //Invisible stuff by user
+    system this()
+    {
+    
+    }
+        
+    public DateTime Date {/*to/from dto*/}
+    
+    public DateTime Description {/*to/from dto*/}
+    
+    public void Save()
+    {
+        //Save stuff
+    }
+    
+    system event SomeEvent { add; remove; }
+            
+    //Visible by user
+    public void A(object doc)
+    {
+        // Global space and components access
+        var a = $Document.Invoice.Create(); //Type ob Invoice
+        
+        //Mutable properties
+        a.SomeData = "test";
+        
+        a.Save();
+                    
+        // Pattern patching
+        match(doc)
+        {
+            InvoiceLink i   => {} 
+            RejectionLink r => {}
+            ChequeLink c => {}   
+        }
+        
+        //variable declaration
+        var i = 10 + 10.0; 
+        //  declaration with initializer       
+        var list = new List() {1, 2, 3, 4, 5};
+        
+        //built in functions
+        var q = $query();
+        var r = $rnd();
+        var d = $curr_date();
+        
+        //concatenation and literal method invoking     
+        var s = "test" + "test2".ToString();
+        
+        //query
+        q.Text = Q"FROM Register.Sales Select Document";
+        var r = q.Execute();
+        
+        while(r.Read())
+        {
+            var a = r.Document.GetObject(); //a is an object? or a is Link1, Link2, Link3 ... etc
+    
+            //Sum type - it required Q"" - query format                                
+            a.Date = d; 
+            /*
+                if(a is Invoice)
+                {
+                    a.Date = d;
+                }
+            */
+            
+            match(a)
+            {
+                Invoice => {},
+                Rejection => {},
+                Cheque => {}
+            }                
+        }
+        
+        $tran();
+        //Some stuff in transaction
+        $commit();
+        
+        defer
+        {
+            //this code invoked at the end of method
+            $commit();            
+        }  
+        
+        using(resource) //IDisposable
+        {
+            
+        }
+    }
+}

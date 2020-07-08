@@ -13,13 +13,16 @@ using Aquila.Core.Contracts.TypeSystem;
 using Aquila.EntityComponent.Compilation.UX;
 using Aquila.EntityComponent.Configuration;
 using Aquila.EntityComponent.Entity;
-using Aquila.Language.Ast.Definitions;
+using Aquila.Language.Ast;
 using Aquila.QueryBuilder;
 using Aquila.Shared.Tree;
+using Call = Aquila.Language.Ast.Call;
+using CompilationUnit = Aquila.Language.Ast.Definitions.CompilationUnit;
 using Root = Aquila.Language.Ast.Definitions.Root;
 using TypeExtensions = Aquila.Compiler.Roslyn.TypeExtensions;
 using TypeSystemExtensions = Aquila.Compiler.Roslyn.TypeSystemExtensions2;
 using ConventionsHelper = Aquila.Compiler.Roslyn.ConventionsHelper;
+using SingleTypeSyntax = Aquila.Language.Ast.SingleTypeSyntax;
 using TypeAttributes = System.Reflection.TypeAttributes;
 
 namespace Aquila.EntityComponent.Compilation

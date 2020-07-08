@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net50</TargetFramework>
         <LangVersion>preview</LangVersion>
         <StartupObject>Aquila.SyntaxGenerator.Program</StartupObject>
         <Configurations>Debug;Release;DebugServer</Configurations>
@@ -13,13 +13,16 @@
         <Content Include="AstZLang.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Include="BoundTree.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
         <Content Include="Qlang.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.1.0" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.10.0-3.final" />
     </ItemGroup>
 
     <ItemGroup>

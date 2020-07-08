@@ -1,5 +1,8 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Aquila.Data;
+using Aquila.Metadata;
+using Aquila.Runtime;
 using JetBrains.Annotations;
 
 namespace Aquila.UIBuilder
@@ -10,6 +13,18 @@ namespace Aquila.UIBuilder
         private string _input2;
         private string _output1;
         private string _output2;
+
+        private string _connectionString;
+        private DatabaseRuntimeContext _drContext;
+        private DataConnectionContext _dcContext;
+
+        public VM()
+        {
+            _connectionString = TestMetadata.DefaultConnetionString;
+            _dcContext = new DataConnectionContext(SqlDatabaseType.SqlServer, _connectionString);
+            _drContext = new DatabaseRuntimeContext();
+            _drContext.Load(_dcContext);
+        }
 
         public string Input
         {
@@ -38,7 +53,7 @@ namespace Aquila.UIBuilder
 
         private void InputChanged()
         {
-            Interpreter i = new Interpreter();
+            Interpreter i = new Interpreter(_drContext);
             var o = i.Run(_input);
             Output1 = o.Output1;
             Output2 = o.Output2;
@@ -46,7 +61,7 @@ namespace Aquila.UIBuilder
 
         private void InputChanged2()
         {
-            Interpreter i = new Interpreter();
+            Interpreter i = new Interpreter(_drContext);
             var o = i.RunQuery(_input2);
             Output1 = o.Output1;
             Output2 = o.Output2;

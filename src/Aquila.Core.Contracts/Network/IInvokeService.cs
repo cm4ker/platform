@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Aquila.Core.Contracts.Network
@@ -67,12 +66,12 @@ namespace Aquila.Core.Contracts.Network
 
     public interface IStartupService
     {
-        void Register(Action<IApplicationBuilder> a);
-
-        void RegisterWebServiceClass<T>() where T : class;
-
-        void Configure(IApplicationBuilder buildedr);
-
-        void ConfigureServices(IServiceCollection sc);
+        // void Register(Action<IApplicationBuilder> a);
+        //
+        // void RegisterWebServiceClass<T>() where T : class;
+        //
+        // void Configure(IApplicationBuilder buildedr);
+        //
+        // void ConfigureServices(IServiceCollection sc);
     }
 }

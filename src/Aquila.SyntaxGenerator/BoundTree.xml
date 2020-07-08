@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Config>
+    <!-- region Statement -->
+    <Syntax Name="Statement" IsAbstract="true"/>
+
+    <Syntax Name="EmptyStmt" OperationKind="Empty" Base="Statement">
+        <Arguments>
+            <Single Name="Span" Type="Microsoft.CodeAnalysis.Text.TextSpan" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="Block" OperationKind="Block" Base="Statement" NS="Graph">
+        <Arguments>
+            <Single Name="Statements" Type="List&lt;BoundStatement&gt;" IsUpdatable="true"/>
+            <Single Name="NextEdge" Type="Edge" IsUpdatable="true" Default="null"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="DeclareStmt" Base="Statement" OperationKind="None"/>
+
+    <Syntax Name="ExpressionStmt" Base="Statement" OperationKind="ExpressionStatement">
+        <Arguments>
+            <Single Name="Expression" Type="BoundExpression" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="MethodDeclStmt" Base="Statement" OperationKind="LocalFunction">
+        <Arguments>
+            <Single Name="Method" Type="SourceMethodSymbol" IsUpdatable="true" IsInternal="true"/>
+        </Arguments>
+    </Syntax>
+
+
+    <Syntax Name="GlobalConstDeclStmt" Base="Statement" OperationKind="VariableDeclaration">
+        <Arguments>
+            <Single Name="Name" Type="QualifiedName" IsUpdatable="true"/>
+            <Single Name="Value" Type="BoundExpression" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="ReturnStmt" Base="Statement" OperationKind="Return">
+        <Arguments>
+            <Single Name="Returned" Type="BoundExpression" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="StaticVarStmt" Base="Statement"/>
+
+    <Syntax Name="YieldStmt" Base="Statement" OperationKind="YieldReturn"/>
+    <!-- endregion -->
+
+    <!-- region Expression -->
+    <Syntax Name="Expression" IsAbstract="true"/>
+
+    <Syntax Name="ArrayEx" OperationKind="ArrayCreation" Base="Expression">
+        <Arguments>
+            <Single Name="Items" Type="ImmutableArray&lt;KeyValuePair&lt;BoundExpression, BoundExpression&gt;&gt;"
+                    IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+    <!--    <Syntax Name="ArrayInit" Base="Expression"/>-->
+    <Syntax Name="AssignEx" Base="Expression">
+        <Arguments>
+            <Single Name="Target" Type="BoundReferenceEx" IsUpdatable="true"/>
+            <Single Name="Value" Type="BoundExpression" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+
+
+    <Syntax Name="CompoundAssignEx" Base="AssignEx" OperationKind="CompoundAssignment">
+        <Arguments>
+            <Single Name="Target" Type="BoundReferenceEx" IsUpdatable="true" OnlyArgument="true"
+                    PassBase="true"/>
+            <Single Name="Value" Type="BoundExpression" IsUpdatable="true" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Operation" Type="Operations" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="IncDecEx" Base="CompoundAssignEx">
+        <Arguments>
+            <Single Name="Target" Type="BoundReferenceEx" IsUpdatable="true" OnlyArgument="true"
+                    PassBase="true"/>
+            <Single Name="IsIncrement" Type="bool" IsUpdatable="true"/>
+            <Single Name="IsPostfix" Type="bool" IsUpdatable="true"/>
+            <Single PassBase="true" PassBaseConst="new BoundLiteral(1L).WithAccess(BoundAccess.Read)"/>
+            <Single PassBase="true" PassBaseConst="Operations.IncDec"/>
+        </Arguments>
+    </Syntax>
+
+
+    <Syntax Name="UnaryEx" Base="Expression" OperationKind="UnaryOperator">
+        <Arguments>
+            <Single Name="Operand" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="Operation" Type="Operations" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="BinaryEx" Base="Expression" OperationKind="BinaryOperator">
+        <Arguments>
+            <Single Name="Left" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="Right" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="Operation" Type="Operations" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="ConditionalEx" Base="Expression">
+        <Arguments>
+            <Single Name="Condition" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="IfTrue" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="IfFalse" Type="BoundExpression" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+
+
+    <Syntax Name="ConversionEx" Base="Expression">
+        <Arguments>
+            <Single Name="Operand" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="TargetType" Type="BoundTypeRef" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="Literal" Base="Expression">
+        <Arguments>
+            <Single Name="Value" Type="object" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+    
+    <!-- region Call -->
+    <Syntax IsAbstract="true" Name="CallEx" Base="Expression" OperationKind="Invocation">
+        <Arguments>
+            <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true"/>
+            <Single Name="Name" Type="BoundMethodName" IsInternal="true"/>
+            <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;"/>
+            <Single Name="TypeArguments" Type="ImmutableArray&lt;IBoundTypeRef&gt;"/>
+            <Single Name="Instance" Type="BoundExpression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="InstanceCallEx" Base="CallEx">
+        <Arguments>
+            <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Name" Type="BoundMethodName" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;" OnlyArgument="true" PassBase="true"/>
+            <Single Name="TypeArguments" Type="ImmutableArray&lt;IBoundTypeRef&gt;" OnlyArgument="true"
+                    PassBase="true"/>
+            <Single Name="Instance" Type="BoundExpression" OnlyArgument="true" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="StaticCallEx" Base="CallEx">
+        <Arguments>
+            <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Name" Type="BoundMethodName" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;" OnlyArgument="true" PassBase="true"/>
+            <Single Name="TypeArguments" Type="ImmutableArray&lt;IBoundTypeRef&gt;" OnlyArgument="true"
+                    PassBase="true"/>
+            <Single PassBase="true" PassBaseConst="null"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="NewEx" Base="CallEx">
+        <Arguments>
+            <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Name" Type="BoundMethodName" OnlyArgument="true" PassBase="true"/>
+            <Single Name="TypeRef" Type="IBoundTypeRef" />
+            <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;" OnlyArgument="true" PassBase="true"/>
+            <Single Name="TypeArguments" Type="ImmutableArray&lt;IBoundTypeRef&gt;" OnlyArgument="true" PassBase="true"/>
+            <Single PassBase="true" PassBaseConst="null"/>
+        </Arguments>
+    </Syntax>
+
+    <!-- endregion -->
+
+    <Syntax Name="ThrowEx" Base="Expression" OperationKind="Throw">
+        <Arguments>
+            <Single Name="Thrown" Type="BoundExpression" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+
+    <!-- region ReferenceEx -->
+    <Syntax Name="ReferenceEx" Base="Expression" IsAbstract="true">
+        <Arguments>
+
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="ArrayItemEx" Base="ReferenceEx">
+        <Arguments>
+            <Single Name="DeclaringCompilation" Type="AquilaCompilation" IsUpdatable="false"/>
+            <Single Name="Array" Type="BoundExpression" IsUpdatable="false"/>
+            <Single Name="Index" Type="BoundExpression" IsUpdatable="false"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="ArrayItemOrdEx" Base="ArrayItemEx">
+        <Arguments>
+            <Single Name="DeclaringCompilation" Type="AquilaCompilation" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Array" Type="BoundExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Index" Type="BoundExpression" OnlyArgument="true" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+
+
+    <Syntax Name="FieldRef" Base="ReferenceEx" OperationKind="FieldReference">
+        <Arguments>
+            <Single Name="Instance" Type="BoundExpression" IsUpdatable="false" OnlyPrivate="true"/>
+            <Single Name="ContainingType" Type="IBoundTypeRef" IsUpdatable="false"/>
+            <Single Name="FieldName" Type="BoundVariableName" IsUpdatable="false"/>
+            <Single Name="fieldType" Type="FieldType" IsUpdatable="false"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="ListEx" Base="ReferenceEx" OperationKind="None">
+        <Arguments>
+            <Single Name="Items" Type="ImmutableArray&lt;KeyValuePair&lt;BoundExpression, BoundReferenceEx&gt;&gt;"
+                    IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="VariableRef" Base="ReferenceEx" OperationKind="LocalReference">
+        <Arguments>
+            <Single Name="Name" Type="BoundVariableName" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="TemporalVariableRef" Base="VariableRef">
+        <Arguments>
+            <Single Name="Name" Type="string" PassBase="true" OnlyArgument="true"/>
+        </Arguments>
+    </Syntax>
+
+    <!-- endregion -->
+
+    <!-- endregion -->
+
+    <!-- region Argument -->
+    <Syntax Name="Argument">
+        <Arguments>
+            <Single Name="Value" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="ArgumentKind" Type="ArgumentKind" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+    <!-- endregion -->
+
+    <!-- region MethodName -->
+    <Syntax Name="MethodName">
+        <Arguments>
+            <Single Name="name" Type="QualifiedName" IsUpdatable="true"/>
+            <Single Name="nameExpr" Type="BoundExpression" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+    <!-- endregion -->
+
+    <!-- region TypeRef -->
+    <Syntax Name="TypeRef" IsAbstract="true"/>
+
+    <Syntax Name="ArrayTypeRef" Base="TypeRef" NS="TypeRef">
+        <Arguments>
+<!--            <Single Name="ElementType" Type="TypeRefMask"/>-->
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="ClassTypeRef" Base="TypeRef" NS="TypeRef">
+        <Arguments>
+            <Single Name="QName" Type="QualifiedName"/>
+            <Single Name="Method" Type="SourceMethodSymbol" IsInternal="true"/>
+            <Single Name="Arity" Type="int" Default="-1"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="GenericClassTypeRef" Base="TypeRef" NS="TypeRef"/>
+
+    <Syntax Name="PrimitiveTypeRef" Base="TypeRef" NS="TypeRef">
+        <Arguments>
+            <Single Name="Type" Type="AquilaTypeCode"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="TypeRefFromSymbol" Base="TypeRef" NS="TypeRef">
+        <Arguments>
+            <Single Name="Symbol" Type="ITypeSymbol"/>
+        </Arguments>
+    </Syntax>
+    <!-- endregion -->
+
+    <!-- region Variable -->
+    <Syntax Name="Variable" IsAbstract="true">
+        <Arguments>
+            <Single Name="VariableKind" Type="VariableKind"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="IndirectLocal" Base="Variable">
+        <Arguments>
+            <Single Name="NameExpr" Type="BoundExpression"/>
+            <Single PassBaseConst="VariableKind.LocalVariable" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="Local" Base="Variable" OperationKind="VariableDeclaration">
+        <Arguments>
+            <Single Name="LocalSymbol" Type="SourceLocalSymbol" IsInternal="true"/>
+            <Single Name="VariableKind" Type="VariableKind" PassBase="true" OnlyArgument="true"
+                    Default="Symbols.VariableKind.LocalVariable"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="Parameter" Base="Variable" OperationKind="ParameterInitializer">
+        <Arguments>
+            <Single Name="ParameterSymbol" Type="ParameterSymbol" IsInternal="true"/>
+            <Single Name="Initializer" Type="BoundExpression"/>
+
+            <Single PassBaseConst="VariableKind.Parameter" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="ThisParameter" Base="Variable" OperationKind="None">
+        <Arguments>
+            <Single Name="Method" Type="SourceMethodSymbol" IsInternal="true"/>
+            <Single PassBaseConst="VariableKind.ThisParameter" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+    <!-- endregion -->
+
+    <!-- region VariableName -->
+    <Syntax Name="VariableName" OperationKind="None">
+        <Arguments>
+            <Single Name="NameValue" Type="VariableName"/>
+            <Single Name="NameExpression" Type="BoundExpression"/>
+        </Arguments>
+    </Syntax>
+    <!-- endregion -->
+
+</Config>

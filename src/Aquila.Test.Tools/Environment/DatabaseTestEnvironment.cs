@@ -14,7 +14,7 @@ using Aquila.Data;
 using Aquila.Configuration.Structure;
 using Aquila.Initializer;
 using Aquila.Core.Assemblies;
-using Aquila.Migration;
+using Aquila.Migrations;
 using Aquila.Compiler;
 using Aquila.Configuration;
 using Aquila.Configuration.Common.TypeSystem;

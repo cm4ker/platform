@@ -9,7 +9,6 @@
     <ItemGroup>
       <ProjectReference Include="..\DB\BufferedDataReader\BufferedDataReader.csproj" />
       <ProjectReference Include="..\Aquila.Core\Aquila.Core.csproj" />
-      <ProjectReference Include="..\Aquila.Language.Ast\Aquila.Language.Ast.csproj" />
       <ProjectReference Include="..\Aquila.SharedRuntime\Aquila.SharedRuntime.csproj" />
     </ItemGroup>
 

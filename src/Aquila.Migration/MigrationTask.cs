@@ -4,7 +4,7 @@ using System.Text;
 using Aquila.Core.Contracts.Configuration.Migration;
 using Aquila.QueryBuilder.Builders;
 
-namespace Aquila.Migration
+namespace Aquila.Migrations
 {
     public class MigrationTaskAction : IMigrationTask
     {

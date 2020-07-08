@@ -1,13 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Configurations>Debug;Release;DebugServer</Configurations>
-    <Platforms>AnyCPU</Platforms>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Aquila.Avalonia.Wrapper\Aquila.Avalonia.Wrapper.csproj" />
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
 
 </Project>

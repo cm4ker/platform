@@ -9,9 +9,15 @@ namespace Aquila.SyntaxGenerator.QLang
         public QLangSyntax()
         {
             Arguments = new List<SyntaxArgument>();
-            Base = "QItem";
         }
 
+        
+        /// <summary>
+        /// Is syntax is list?
+        /// </summary>
+        [XmlAttribute]
+        public bool IsList { get; set; }
+        
         /// <summary>
         /// The name of syntax node
         /// </summary>

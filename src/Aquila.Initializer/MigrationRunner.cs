@@ -1,4 +1,5 @@
 ﻿using System;
+using Aquila.Data;
 using FluentMigrator.Runner;
 using Microsoft.Extensions.DependencyInjection;
 using Aquila.QueryBuilder;

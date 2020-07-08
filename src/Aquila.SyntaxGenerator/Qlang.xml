@@ -8,10 +8,10 @@
     <Syntax IsList="true" Base="QOrderExpression" Name="QOrderList"/>
     <Syntax IsList="true" Base="QWhen" Name="QWhenList"/>
     <Syntax IsList="true" Base="QQuery" Name="QQueryList"/>
-    
-    <Syntax Name="QExpression" Base="QItem"/>
 
-    <Syntax Name="QQuery" Base="QItem">
+    <Syntax Name="QExpression"/>
+
+    <Syntax Name="QQuery">
         <Arguments>
             <Single Name="OrderBy" Type="QOrderBy"/>
             <Single Name="Select" Type="QSelect"/>
@@ -22,39 +22,44 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="QSelect" Base="QItem">
+    <Syntax Name="QSelect">
         <Arguments>
             <List Name="Fields" Type="QFieldList"/>
         </Arguments>
     </Syntax>
 
-    <Syntax Name="QFrom" Base="QItem">
+    <Syntax Name="QFrom">
         <Arguments>
             <List Name="Joins" Type="QJoinList"/>
             <Single Name="Source" Type="QDataSource"/>
         </Arguments>
     </Syntax>
 
-    <Syntax Name="QGroupBy" Base="QItem">
+    <Syntax Name="QGroupBy">
         <Arguments>
             <List Name="Expressions" Type="QExpressionList"/>
         </Arguments>
     </Syntax>
 
-    <Syntax Name="QOrderBy" Base="QItem">
+    <Syntax Name="QOrderBy">
         <Arguments>
             <List Name="Expressions" Type="QOrderList"/>
         </Arguments>
     </Syntax>
-    <Syntax Name="QWhere" Base="QItem">
+    <Syntax Name="QWhere">
         <Arguments>
             <Single Name="Expression" Type="QExpression"/>
         </Arguments>
     </Syntax>
-    <Syntax Name="QHaving" Base="QItem"/>
+
+    <Syntax Name="QHaving">
+        <Arguments>
+            <Single Name="Expression" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
 
     <!-- DataSource -->
-    <Syntax Name="QDataSource" Base="QItem"/>
+    <Syntax Name="QDataSource"/>
     <Syntax Name="QAliasedDataSource" Base="QDataSource">
         <Arguments>
             <Single Type="QDataSource" Name="ParentSource"/>
@@ -81,7 +86,6 @@
     <Syntax Name="QTable" Base="QPlatformDataSource">
         <Arguments>
             <Single Name="ObjectTable" Type="QObjectTable"/>
-            <Single Name="Table" Type="ITable" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
     <!-- End DataSource -->
@@ -89,7 +93,7 @@
     <!-- Fields -->
     <Syntax Name="QField" Base="QExpression" IsAbstract="true">
         <Arguments>
-            <Single Name="Element" Type="QItem"/>
+            <Single Name="Element" Type="QLangElement"/>
         </Arguments>
     </Syntax>
 
@@ -116,7 +120,7 @@
     <Syntax Name="QSourceFieldExpression" Base="QField">
         <Arguments>
             <Single Name="PlatformSource" Type="QPlatformDataSource" PassBase="true" DenyChildrenFill="true"/>
-            <Single Name="Property" Type="IPProperty" DenyChildrenFill="true"/>
+            <Single Name="Property" Type="SMProperty" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
 
@@ -140,7 +144,7 @@
     </Syntax>
     <!-- End Fields -->
 
-    <Syntax Name="QFromItem" Base="QItem">
+    <Syntax Name="QFromItem">
         <Arguments>
             <Single Name="Condition" Type="QExpression"/>
             <Single Name="Joined" Type="QDataSource"/>
@@ -161,7 +165,7 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="QWhen" Base="QItem">
+    <Syntax Name="QWhen">
         <Arguments>
 
             <Single Name="Then" Type="QExpression"/>
@@ -172,8 +176,8 @@
 
     <Syntax Name="QOperationExpression" Base="QExpression">
         <Arguments>
-            <Single Name="Left" Type="QExpression"/>
-            <Single Name="Right" Type="QExpression"/>
+            <Single Name="Left" IsProtected="true" Type="QExpression"/>
+            <Single Name="Right" IsProtected="true" Type="QExpression"/>
         </Arguments>
     </Syntax>
 
@@ -193,58 +197,58 @@
 
     <Syntax Name="QOr" Base="QOperationExpression">
         <Arguments>
-            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>
-            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="QEquals" Base="QOperationExpression">
         <Arguments>
-            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>
-            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
     <Syntax Name="QNotEquals" Base="QOperationExpression">
         <Arguments>
-            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>
-            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
     <Syntax Name="QGreatThen" Base="QOperationExpression">
         <Arguments>
-            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>
-            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
     <Syntax Name="QLessThen" Base="QOperationExpression">
         <Arguments>
-            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>
-            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
     <Syntax Name="QLessThenOrEquals" Base="QOperationExpression">
         <Arguments>
-            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>
-            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="QGreatThenOrEquals" Base="QOperationExpression">
         <Arguments>
-            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>
-            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
     <!-- End Operation expression -->
 
     <Syntax Name="QCast" Base="QExpression">
         <Arguments>
-            <Single Name="Type" Type="IPType" DenyChildrenFill="true"/>
+            <Single Name="Type" Type="SMType" DenyChildrenFill="true"/>
             <Single Name="BaseExpression" Type="QExpression"/>
         </Arguments>
     </Syntax>
 
-    <Syntax Name="QDataRequest" Base="QItem">
+    <Syntax Name="QDataRequest">
         <Arguments>
             <Single Name="Source" Type="QFieldList"/>
         </Arguments>

@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Aquila.Core.Contracts.Environment;
-using Aquila.Core.Environment;
 using Aquila.Core.Tools;
 
 namespace Aquila.Core.Network.States
@@ -58,7 +55,7 @@ namespace Aquila.Core.Network.States
                 case RequestInvokeMethodProxy methodProxy:
                     if (methodProxy.RequestId.Equals(_id))
                     {
-                        var task = _environment.InvokeService.InvokeProxy(((ServerConnectionContext) context).Session,
+                        var task = _environment.InvokeService.InvokeProxy(((ServerConnectionContext)context).Session,
                             _instanceService, methodProxy.MethodName, methodProxy.Args);
 
                         context.Connection.Channel.Send(new ResponceInvokeMethodProxy(methodProxy.Id, await task));
@@ -68,11 +65,11 @@ namespace Aquila.Core.Network.States
                 case RequestInvokeStreamProxy streamProxy:
                     if (streamProxy.RequestId.Equals(_id))
                     {
-                        var task = _environment.InvokeService.InvokeProxy(((ServerConnectionContext) context).Session,
+                        var task = _environment.InvokeService.InvokeProxy(((ServerConnectionContext)context).Session,
                             _instanceService, streamProxy.MethodName, streamProxy.Args);
 
                         var dstStream = new DataStream(streamProxy.Id, context.Connection);
-                        var srcStream = ((Stream) await task);
+                        var srcStream = ((Stream)await task);
                         //srcStream.Seek(0, SeekOrigin.Begin);
                         await srcStream.CopyToAsync(dstStream);
 

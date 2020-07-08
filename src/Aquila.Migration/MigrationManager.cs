@@ -9,7 +9,7 @@ using Aquila.Core.Logging;
 using Aquila.Core.Contracts.Data;
 using Aquila.Core.Contracts.TypeSystem;
 
-namespace Aquila.Migration
+namespace Aquila.Migrations
 {
     public class MigrationManager : IMigrationManager
     {
@@ -219,7 +219,6 @@ namespace Aquila.Migration
                 }
             }
         }
-
 
         private void ExecPlan(EntityMigrationPlan plan, Guid id, DataContext context)
         {

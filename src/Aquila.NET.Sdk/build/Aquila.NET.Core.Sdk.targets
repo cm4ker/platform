@@ -1,0 +1,305 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <DefaultLanguageSourceExtension>.aq</DefaultLanguageSourceExtension>
+    <Language>Aquila</Language>
+    <TargetRuntime>Managed</TargetRuntime>
+    <AlwaysUseNumericalSuffixInItemNames>true</AlwaysUseNumericalSuffixInItemNames>
+    <DefineCommonItemSchemas Condition=" '$(DefineCommonItemSchemas)' == '' ">true</DefineCommonItemSchemas>
+    <DefineCommonReferenceSchemas Condition=" '$(DefineCommonReferenceSchemas)' == '' ">true</DefineCommonReferenceSchemas>
+    <DefineCommonCapabilities Condition=" '$(DefineCommonCapabilities)' == '' ">true</DefineCommonCapabilities>
+  </PropertyGroup>
+
+  <UsingTask AssemblyFile="$(AquilaToolFullPath)" TaskName="Aquila.NET.Sdk.Tools.BuildTask" />
+  <UsingTask AssemblyFile="$(AquilaToolFullPath)" TaskName="Aquila.NET.Sdk.Tools.ComposerTask" />
+
+<!--  &lt;!&ndash; well-known non-compile items &ndash;&gt;-->
+<!--  <ItemGroup>-->
+<!--    <Compile Include="**/*.phar;**/*.php" Exclude="obj/**;bin/**;.*/**" Condition=" '$(EnableDefaultPeachpieCompileItems)'=='true' " />-->
+<!--    <Compile Remove="**/.phpstorm.meta.php/**;**/.phpstorm.meta.php" />-->
+<!--  </ItemGroup>-->
+
+  <ItemGroup>
+    <DocFileItem Include="$(DocumentationFile)" Condition="'$(DocumentationFile)'!=''"/>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(_DebugSymbolsProduced)' == 'true' and '$(PdbFile)' != ''">
+    <_DebugSymbolsIntermediatePathTemporary Include="$(PdbFile)"/>
+    <!-- Add any missing .pdb extension, as the compiler does -->
+    <_DebugSymbolsIntermediatePath Include="@(_DebugSymbolsIntermediatePathTemporary->'%(RootDir)%(Directory)%(Filename).pdb')"/>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <CoreCompileDependsOn>_ComputeNonExistentFileProperty</CoreCompileDependsOn>
+  </PropertyGroup>
+
+  <!-- Locate and add mscorlib, unless NoStdLib is set -->
+  <ItemGroup Condition=" '$(NoStdLib)' != 'true' ">
+    <_ExplicitReference Include="$(FrameworkPathOverride)\mscorlib.dll" />
+  </ItemGroup>
+
+  <!--
+      The CreateManifestResourceNames target create the manifest resource names from the .RESX
+      files.
+      
+          [IN]
+          @(EmbeddedResource) - The list of EmbeddedResource items that have been pre-processed to add metadata about resource type
+                                Expected Metadata "Type" can either be "Resx" or "Non-Resx"
+          [OUT]
+          @(EmbeddedResource) - EmbeddedResource items with metadata         
+          
+      Peachpie reuses the mechanism from C#, hence:
+      
+        Resources1.resx => RootNamespace.Resources1 => Build into main assembly
+        SubFolder\Resources1.resx => RootNamespace.SubFolder.Resources1 => Build into main assembly
+        Resources1.fr.resx => RootNamespace.Resources1.fr => Build into satellite assembly
+        Resources1.notaculture.resx => RootNamespace.Resources1.notaculture => Build into main assembly
+      -->
+  <!-- target CreateManifestResourceNames is required by .Common.target-->
+  <PropertyGroup>
+  </PropertyGroup>
+  <Target
+      Name="CreateManifestResourceNames"
+      Condition=" '@(EmbeddedResource)' != '' "
+      DependsOnTargets="$(CreateManifestResourceNamesDependsOn)"
+        >
+
+    <ItemGroup>
+      <_Temporary Remove="@(_Temporary)" />
+    </ItemGroup>
+
+    <!-- Create manifest names for culture and non-culture Resx files, and for non-culture Non-Resx resources -->
+    <CreateCSharpManifestResourceName
+          ResourceFiles="@(EmbeddedResource)"
+          RootNamespace="$(RootNamespace)"
+          Condition="'%(EmbeddedResource.ManifestResourceName)' == '' and ('%(EmbeddedResource.WithCulture)' == 'false' or '%(EmbeddedResource.Type)' == 'Resx')">
+
+      <Output TaskParameter="ResourceFilesWithManifestResourceNames" ItemName="_Temporary" />
+
+    </CreateCSharpManifestResourceName>
+
+    <!-- Create manifest names for all culture non-resx resources -->
+    <CreateCSharpManifestResourceName
+          ResourceFiles="@(EmbeddedResource)"
+          RootNamespace="$(RootNamespace)"
+          PrependCultureAsDirectory="false"
+          Condition="'%(EmbeddedResource.ManifestResourceName)' == '' and '%(EmbeddedResource.WithCulture)' == 'true' and '%(EmbeddedResource.Type)' == 'Non-Resx'">
+
+      <Output TaskParameter="ResourceFilesWithManifestResourceNames" ItemName="_Temporary" />
+
+    </CreateCSharpManifestResourceName>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="@(EmbeddedResource)" Condition="'%(EmbeddedResource.ManifestResourceName)' == ''"/>
+      <EmbeddedResource Include="@(_Temporary)" />
+      <_Temporary Remove="@(_Temporary)" />
+    </ItemGroup>
+
+  </Target>
+
+  <!-- processes composer.json file if available -->
+  <Target Name="ComposerCore">
+    <PropertyGroup>
+      <ComposerJsonPath Condition=" '$(ComposerJsonPath)'=='' ">$(MSBuildProjectDirectory)/composer.json</ComposerJsonPath>
+    </PropertyGroup>
+    <ComposerTask Condition=" Exists('$(ComposerJsonPath)') "
+                  ComposerJsonPath="$(ComposerJsonPath)"
+                  VersionSuffix="$(VersionSuffix)"
+                  ComposerIncludeDevPackages="$(ComposerIncludeDevPackages)"
+                  ComposerIncludeSuggestPackages="$(ComposerIncludeSuggestPackages)"
+                  >
+      <Output TaskParameter="Name" PropertyName="_cName" />
+      <Output TaskParameter="Description" PropertyName="_cDescription" />
+      <Output TaskParameter="Version" PropertyName="_cVersion" />
+      <Output TaskParameter="License" PropertyName="_cLicense" />
+      <Output TaskParameter="Homepage" PropertyName="_cHomepage" />
+      <Output TaskParameter="Authors" ItemName="_cAuthors" />
+      <Output TaskParameter="Dependencies" ItemName="ComposerPackageReference" />
+      <Output TaskParameter="Autoload_PSR4" ItemName="_cAutoload_PSR4" />
+      <Output TaskParameter="Autoload_ClassMap" ItemName="_cAutoload_ClassMap" />
+      <Output TaskParameter="Autoload_ClassMap_Exclude" ItemName="_cAutoload_ClassMap_Exclude" />
+      <Output TaskParameter="Autoload_Files" ItemName="_cAutoload_Files" />
+    </ComposerTask>
+
+    <ItemGroup Condition=" '$(ComposerAutoload)'!='false' ">
+      <Autoload_ClassMap Include="%(_cAutoload_ClassMap.Identity)" />
+      <Autoload_ClassMap Remove="%(_cAutoload_ClassMap_Exclude.Identity)" />
+      <Autoload_Files Include="%(_cAutoload_Files.Identity)" />
+      <Autoload_PSR4 Include="@(_cAutoload_PSR4)" />
+    </ItemGroup>
+
+  </Target>
+
+  <Target Name="ComposerResolve"
+          DependsOnTargets="ComposerCore"
+          BeforeTargets="GenerateNuspec;CollectPackageReferences"
+          >
+    <PropertyGroup Condition=" '$(_cName)'!='' ">
+      <!--AssemblyName>$(_cName)</AssemblyName-->
+      <PackageId>$(_cName)</PackageId>
+    </PropertyGroup>
+
+    <PropertyGroup>
+      <PackageDescription Condition=" '$(_cDescription)'!='' ">$(_cDescription)</PackageDescription>
+      <PackageProjectUrl Condition=" '$(PackageProjectUrl)'=='' AND '$(_cHomepage)'!='' ">$(_cHomepage)</PackageProjectUrl>
+      <PackageLicenseExpression Condition=" '$(PackageLicenseExpression)'=='' AND '$(_cLicense)'!='' ">$(_cLicense)</PackageLicenseExpression>
+      <Authors Condition=" '@(_cAuthors->Count())'!='0' ">@(_cAuthors -> '%(Name);', ';')</Authors>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(_cVersion)'!='' ">
+      <Version>$(_cVersion)</Version>
+      <PackageVersion>$(_cVersion)</PackageVersion>
+    </PropertyGroup>
+
+    <ItemGroup Condition=" '$(ComposerDependencies)'=='true' ">
+      <!-- this will be enabled by default -->
+      <PackageReference Include="@(ComposerPackageReference->'%(Name)')">
+        <PrivateAssets>None</PrivateAssets>
+      </PackageReference>
+    </ItemGroup>
+
+  </Target>
+
+  <!-- performs compilation -->
+  <Target
+          Name="CoreCompile"
+          Inputs="$(MSBuildAllProjects);
+                @(Compile);
+                $(ComposerJsonPath);
+                @(_CoreCompileResourceInputs);
+                $(ApplicationIcon);
+                $(AssemblyOriginatorKeyFile);
+                @(ReferencePath);
+                @(CompiledLicenseFile);
+                @(LinkResource);
+                @(EmbeddedDocumentation);
+                $(Win32Resource);
+                $(Win32Manifest);
+                @(CustomAdditionalCompileInputs);
+                $(ResolvedCodeAnalysisRuleSet);
+                @(AdditionalFiles);
+                @(EmbeddedFiles)"
+          Outputs="@(DocFileItem);
+                @(IntermediateAssembly);
+                @(_DebugSymbolsIntermediatePath);
+                $(NonExistentFile);
+                @(CustomAdditionalCompileOutputs)"
+          Returns="@(AquilaCommandLineArgs)"
+          DependsOnTargets="ComposerResolve;$(CoreCompileDependsOn)"
+    >
+
+    <PropertyGroup>
+      <TargetProfile Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' " >mscorlib</TargetProfile>
+      <TargetProfile Condition=" '$(TargetFrameworkIdentifier)' != '.NETFramework' " >netcore</TargetProfile>
+
+      <!-- ref https://github.com/Microsoft/msbuild/issues/1669
+                 the dotnet in PATH can be different from the dotnet who run msbuild,
+                 so i need to specify the full path. -->
+      <_DotNetHostExecutableName>dotnet</_DotNetHostExecutableName>
+      <_DotNetHostExecutableName Condition=" '$(OS)' == 'Windows_NT' ">$(_DotNetHostExecutableName).exe</_DotNetHostExecutableName>
+      <_DotNetHostExecutableDirectory>$(MSBuildSDKsPath)/../../..</_DotNetHostExecutableDirectory>
+      <_DotNetHostExecutablePath>$(_DotNetHostExecutableDirectory)/$(_DotNetHostExecutableName)</_DotNetHostExecutablePath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(DontRunPeachpieCompileWithDotnet)' == '' ">
+      <!-- default: -->
+      <_FscTask_FscToolExe>$(_DotNetHostExecutableName)</_FscTask_FscToolExe>
+      <_FscTask_FscToolPath>$(_DotNetHostExecutableDirectory)</_FscTask_FscToolPath>
+      <_FscTask_DotnetFscCompilerPath> "$(FscToolPath)/$(FscToolExe)"</_FscTask_DotnetFscCompilerPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(DontRunPeachpieCompileWithDotnet)' != '' ">
+      <_FscTask_FscToolExe>$(FscToolExe)</_FscTask_FscToolExe>
+      <_FscTask_FscToolPath>$(FscToolPath)</_FscTask_FscToolPath>
+    </PropertyGroup>
+
+    <PropertyGroup>
+
+      <TempOutputDir>%(IntermediateAssembly.RelativeDir)</TempOutputDir>
+      <OutputType Condition=" '$(OutputType)' == '' ">library</OutputType>
+<!--      <GenerateDocumentationFile Condition=" '$(GenerateDocumentationFile)' == '' and '$(DocumentationFile)' != '' ">true</GenerateDocumentationFile>-->
+      <DocumentationFile Condition=" '$(DocumentationFile)' == '' and '$(GenerateDocumentationFile)' == 'true' ">$(IntermediateOutputPath)$(AssemblyName).xml</DocumentationFile>
+
+    </PropertyGroup>
+
+    <!-- If compiling for full .NET, MSBuild is expected to run on it (e.g. in Visual Studio) so that it can obtain the runtime directory -->
+    <GetFrameworkPath>
+      <Output TaskParameter="Path" PropertyName="NetFrameworkPath" />
+    </GetFrameworkPath>
+
+    <ItemGroup>
+      <!-- convert DefineConstants to item list -->
+      <DefineConstants Include="$(DefineConstants)" />
+      <DefineConstants Include="DEBUG" Condition=" '$(Configuration)' == 'Debug' " />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_PublicSign Condition=" '$(SignAssembly)' == 'true' ">$(PublicSign)</_PublicSign>
+      <_KeyFile Condition=" '$(SignAssembly)' == 'true' ">$(AssemblyOriginatorKeyFile)</_KeyFile>
+      <_DocumentationFile Condition=" '$(GenerateDocumentationFile)' == 'true' ">$(DocumentationFile)</_DocumentationFile>
+    </PropertyGroup>
+
+    <Error Condition=" '$(AquilaToolFullPath)'=='' " Text="Path to Aquila.NET.Sdk.dll was not set." />
+
+    <BuildTask Condition=" Exists('$(AquilaToolFullPath)') "
+               OutputPath="$(TempOutputDir)%(IntermediateAssembly.Filename)%(IntermediateAssembly.Extension)"
+               OutputName="%(IntermediateAssembly.Filename)"
+               TempOutputPath="$(TempOutputDir)"
+               TargetFramework="$(TargetFrameworkMoniker)"
+               NetFrameworkPath="$(NetFrameworkPath)"
+               BasePath="$(PhpBasePath)"
+               Optimization="$(Optimize)"
+               DebugType="$(DebugType)"
+               PdbFile="$(PdbFile)"
+               DocumentationFile="$(DocumentationFile)"
+               Version="$(Version)"
+               OutputType="$(OutputType)"
+               EntryPoint="$(StartupObject)"
+               LangVersion="$(LangVersion)"
+               PhpDocTypes="$(PhpDocTypes)"
+               ShortOpenTags="$(ShortOpenTag)"
+               NoWarn="$(NoWarn.Replace('\n', ';'))"
+               KeyFile="$(_KeyFile)"
+               PublicSign="$(_PublicSign)"
+               SourceLink="$(SourceLink)"
+               CodePage="$(CodePage)"
+               PhpRelativePath="$(PhpRelativePath)"
+               DefineConstants="@(DefineConstants)"
+               ReferencePath="@(ReferencePath)"
+               Compile="@(Compile)"
+               Resources="@(EmbeddedResource)"
+               Autoload_PSR4="@(Autoload_PSR4)"
+               Autoload_ClassMap="@(Autoload_ClassMap)"
+               Autoload_Files="@(Autoload_Files)"
+               DebuggerAttach="$(DebuggerAttach)"
+               GenerateFullPaths="$(GenerateFullPaths)"
+               ExtensionReference="@(ExtensionReference)"
+               Metadata="@(Metadata)"
+               />
+
+    <Copy SourceFiles="$(TempOutputDir)$(DocumentationFile)" DestinationFolder="$(OutputPath)" Condition=" '$(GenerateDocumentation)'=='true' " />
+  </Target>
+
+  <!--End Required Task by .Common.target-->
+
+  <!-- Helper target for outputing references to the outer build in multitargeting projects -->
+  <!-- TODO: use CollectResolvedCompilationReferencesDesignTime -->
+  <Target
+    Name="ReturnReferences"
+    DependsOnTargets="ResolveReferences"
+    Returns="@(ReferencePath)"
+  >
+    <!-- The output of all the frameworks is merged; therefore, we add metadata to distinguish them -->
+    <ItemGroup>
+      <ReferencePath>
+        <TargetFramework>$(TargetFramework)</TargetFramework>
+      </ReferencePath>
+    </ItemGroup>
+  </Target>
+
+  <PropertyGroup Condition="'$(PackProjectInputFile)' == ''">
+    <PackProjectInputFile>$(MSBuildProjectFullPath)</PackProjectInputFile>
+  </PropertyGroup>
+
+</Project>

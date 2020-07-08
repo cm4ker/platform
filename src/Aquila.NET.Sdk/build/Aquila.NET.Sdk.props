@@ -1,0 +1,31 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <WarningLevel>4</WarningLevel>
+
+    <!-- disable wilcard include of Compile items, file ordering is a feature -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+
+    <!-- PeachpieToolFullPath pointing to the task dll -->
+    <AquilaToolFullPath Condition=" '$(AquilaToolFullPath)'=='' ">$(MSBuildThisFileDirectory)../tools/Aquila.NET.Sdk.dll</AquilaToolFullPath>
+    
+    <!-- project guid used by dotnet sln add -->
+    <!--TODO DefaultProjectTypeGuid Condition=" '$(DefaultProjectTypeGuid)' == '' ">{F2A71F9B-5D33-465A-A702-920D77279786}</DefaultProjectTypeGuid -->
+
+    <!-- imported by common targets -->
+    <LanguageTargets>$(MSBuildThisFileDirectory)Aquila.NET.Current.Sdk.targets</LanguageTargets>
+
+
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>    
+  </PropertyGroup>
+
+  <!-- default Compile and None items -->
+  <ItemGroup>
+    <None Include="**/*" Exclude="obj/**;bin/**;.*/**;*.msbuildproj;*.msbuildproj.user;*.sln;" />
+    <!--Content Include="" /-->
+  </ItemGroup>
+
+  <!-- current Peachpie SDK version -->
+  <Import Project="$(MSBuildThisFileDirectory)Aquila.Version.props" Condition=" '$(AquilaVersion)'=='' "/>
+
+</Project>

@@ -1,6 +1,4 @@
-using System;
 using Xunit;
-using Aquila.Compiler.Contracts;
 
 namespace Aquila.Compiler.Tests
 {
@@ -9,7 +7,7 @@ namespace Aquila.Compiler.Tests
         [Fact]
         public void SimpleExpression()
         {
-            var script = "int Main() { return 2 + 2 * 2; }";
+            var script = "int CustomProc() { return 1 + 2 * 3; }";
 
             var result = (int) this.CompileAndRun(script);
 
@@ -19,13 +17,23 @@ namespace Aquila.Compiler.Tests
         [Fact]
         public void SimpleStringConcatinationTestExpression()
         {
-            var script = "string Main() { return \"Hello \" + \"world!\"; }";
+            var script = "string CustomProc() { return \"Hello \" + \"world!\"; }";
 
             var result = (string) this.CompileAndRun(script);
 
             Assert.Equal("Hello world!", result);
         }
 
+
+        [Fact]
+        public void SimpleCallTestExpression()
+        {
+            var script = "void CustomProc() { Callable(); } int Callable() { return  1 + 1; }";
+
+            var result = (string) this.CompileAndRun(script);
+
+            Assert.Equal("Hello world!", result);
+        }
 
         [Fact]
         public void ExceptionTest()

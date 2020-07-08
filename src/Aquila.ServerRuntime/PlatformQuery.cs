@@ -16,15 +16,6 @@ using Aquila.Core.Querying.Model;
 
 namespace Aquila.ServerRuntime
 {
-    /*
-     Query plan:
-     
-     1) Get data and store it in tmp table(+unique key) on RDBMS 
-     2) 
-     
-     */
-
-
     public class PlatformQuery
     {
         private ITypeManager _tm;
@@ -62,33 +53,33 @@ namespace Aquila.ServerRuntime
         {
             if (_needRecompile)
             {
-                var result = QueryCompilerHelper.Compile(_tm, _text);
-
-                /*
-                 
-                 SELECT 
-                    A1, A2, A3, A4, A5 ....
-                    ^   ^   ^   ^   ^
-                   MappedTo O1  MappedTo O2
-                 FROM
-                    T1 ....
-                 
-                 1) Link (StoreLink, InvoiceLink ... etc)
-                 2) Literal (Guid, String, int, Double ... etc)
-                 
-                 => {
-                 
-                    Reader.Invoice => Manager.Invoice.Get((Guid)Reader["Fld_255"]);
-                    
-                    Reader.Link => 
-                    
-                 
-                 }
-                                
-                 */
-
-                _compiled = result.sql;
-                _logicalTree = result.logicalTree;
+                // var result = QueryCompilerHelper.Compile(_tm, _text);
+                //
+                // /*
+                //  
+                //  SELECT 
+                //     A1, A2, A3, A4, A5 ....
+                //     ^   ^   ^   ^   ^
+                //    MappedTo O1  MappedTo O2
+                //  FROM
+                //     T1 ....
+                //  
+                //  1) Link (StoreLink, InvoiceLink ... etc)
+                //  2) Literal (Guid, String, int, Double ... etc)
+                //  
+                //  => {
+                //  
+                //     Reader.Invoice => Manager.Invoice.Get((Guid)Reader["Fld_255"]);
+                //     
+                //     Reader.Link => 
+                //     
+                //  
+                //  }
+                //                 
+                //  */
+                //
+                // _compiled = result.sql;
+                // _logicalTree = result.logicalTree;
             }
 
 
@@ -109,7 +100,7 @@ namespace Aquila.ServerRuntime
                     on p.Key equals l.Name
                     into t
                 from d in t.DefaultIfEmpty()
-                select new {Name = p.Key, Logic = d, Real = p.Value});
+                select new { Name = p.Key, Logic = d, Real = p.Value });
 
 
             foreach (var pr in result)
@@ -135,7 +126,7 @@ namespace Aquila.ServerRuntime
                             {
                                 p.Value = GetValue(pr.Real, sd.PlatformIpType);
                             }
-                            
+
                             _command.Parameters.Add(p);
                         }
                     }
@@ -160,12 +151,12 @@ namespace Aquila.ServerRuntime
         {
             return value switch
             {
-                int a => (int) _tm.Int.GetSettings().SystemId,
-                DateTime a => (int) _tm.DateTime.GetSettings().SystemId,
-                string a => (int) _tm.String.GetSettings().SystemId,
-                bool a => (int) _tm.Boolean.GetSettings().SystemId,
-                Guid a => (int) _tm.Guid.GetSettings().SystemId,
-                byte[] a => (int) _tm.Binary.GetSettings().SystemId,
+                int a => (int)_tm.Int.GetSettings().SystemId,
+                DateTime a => (int)_tm.DateTime.GetSettings().SystemId,
+                string a => (int)_tm.String.GetSettings().SystemId,
+                bool a => (int)_tm.Boolean.GetSettings().SystemId,
+                Guid a => (int)_tm.Guid.GetSettings().SystemId,
+                byte[] a => (int)_tm.Binary.GetSettings().SystemId,
                 ILink a => a.TypeId,
             };
         }

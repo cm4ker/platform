@@ -5,7 +5,7 @@ using Aquila.Core.Contracts.Configuration;
 using Aquila.Core.Contracts.Configuration.Migration;
 using Aquila.Core.Contracts.TypeSystem;
 
-namespace Aquila.Migration
+namespace Aquila.Migrations
 {
     public class EntityMigrationScope : List<IEntityMigrationItem>, IEntityMigrationScope
     {

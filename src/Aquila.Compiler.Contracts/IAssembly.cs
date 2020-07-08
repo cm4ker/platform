@@ -4,6 +4,11 @@ using System.IO;
 
 namespace Aquila.Compiler.Contracts
 {
+    public interface IModule : IEquatable<IModule>
+    {
+        public IEnumerable<IType> GetTypes();
+    }
+
     /// <summary>
     /// Сборка
     /// </summary>
@@ -13,6 +18,10 @@ namespace Aquila.Compiler.Contracts
         /// Имя сборки
         /// </summary>
         string Name { get; }
+
+
+        IReadOnlyList<IModule> Modules { get; }
+
 
         /// <summary>
         /// Аттрибуты

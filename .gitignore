@@ -286,3 +286,6 @@ netcoreapp[23].[01]/
 /src/wasm-work/AsemblyTester/Aquila.EntityComponent.dll
 /src/External/*
 /src/Portable.Xaml/*
+
+.antlr/
+/.nugs/*

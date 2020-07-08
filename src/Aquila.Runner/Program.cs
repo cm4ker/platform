@@ -2,31 +2,22 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
-using Aquila.Compiler.Contracts;
-using Aquila.Compiler.Dnlib;
+using Aquila.Core;
 using Aquila.Core.Environment;
 using Aquila.Core.Network;
 using Aquila.Core.Serialisers;
-using Aquila.Core.Logging;
 using Aquila.Core.Authentication;
 using Aquila.Data;
 using Aquila.Core.CacheService;
 using Aquila.Core.Settings;
-using Aquila.Core.Tools;
 using Aquila.Core.ClientServices;
-using Aquila.Core.Assemblies;
-using Aquila.Core.Configuration;
-using Aquila.Compiler.Platform;
-using Aquila.Configuration;
-using Aquila.Core;
 using Aquila.Core.Assemlies;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Data;
 using Aquila.Core.Contracts.Environment;
 using Aquila.Core.Contracts.Network;
-using Aquila.Core.DI;
-using Aquila.Migration;
+using Aquila.Logging;
+using Aquila.Migrations;
 using Aquila.Networking;
 using Aquila.WebServiceCore;
 using Microsoft.AspNetCore.Hosting;
@@ -78,20 +69,20 @@ namespace Aquila.Runner
                     services.AddTransient<UserConnectionFactory>();
                     services.AddTransient<ServerConnectionFactory>();
                     services.AddTransient<IChannelFactory, ChannelFactory>();
-                    services.AddScoped<IAdminToolsClientService, AdminToolsClientService>();
-                    services.AddScoped<IAssemblyManagerClientService, AssemblyManagerClientService>();
-                    services.AddScoped<IAssemblyManager, AssemblyManager>();
-                    services.AddScoped<IConfigurationManager, ConfigurationManager>();
-                    services.AddScoped<IXCCompiller, XCCompiler>();
+                    // services.AddScoped<IAdminToolsClientService, AdminToolsClientService>();
+                    // services.AddScoped<IAssemblyManagerClientService, AssemblyManagerClientService>();
+                    // services.AddScoped<IAssemblyManager, AssemblyManager>();
+                    // services.AddScoped<IConfigurationManager, ConfigurationManager>();
+                    //services.AddScoped<IXCCompiller, XCCompiler>();
                     services.AddScoped<ILinkFactory, LinkFactory>();
-                    services.AddScoped<IAssemblyPlatform, DnlibAssemblyPlatform>();
-                    services.AddScoped<IAssemblyStorage, DatabaseAssemblyStorage>();
-                    services.AddSingleton<IConfigurationManipulator, XCConfManipulator>();
+                    //services.AddScoped<IAssemblyPlatform, DnlibAssemblyPlatform>();
+                    // services.AddScoped<IAssemblyStorage, DatabaseAssemblyStorage>();
+                    //services.AddSingleton<IConfigurationManipulator, XCConfManipulator>();
                     services.AddSingleton<IStartupService, StartupServiceImpl>();
-                    services.AddScoped<IMigrationManager, MigrationManager>();
+                    services.AddScoped<MigrationManager>();
 
 
-                    services.AddSingleton<ITestProxyService, TestProxyService>();
+                    // services.AddSingleton<ITestProxyService, TestProxyService>();
                     services.AddSingleton<IPlatformEnvironmentManager, EnvironmentManager>();
 
                     //services.AddScoped<ITestEnvironment, TestEnvironment>();
@@ -103,7 +94,7 @@ namespace Aquila.Runner
 
                     //services.AddTransient<IUserMessageHandler, UserMessageHandler>();
                     services.AddScoped<IAuthenticationManager, AuthenticationManager>();
-                    services.AddScoped<IDataContextManager, DataContextManager>();
+                    services.AddScoped<DataContextManager>();
                     services.AddScoped<IUserManager, UserManager>();
 
                     services.AddSingleton<IHostedService, RunnerService>();

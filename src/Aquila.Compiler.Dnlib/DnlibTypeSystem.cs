@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection.Metadata;
@@ -17,8 +18,8 @@ namespace Aquila.Compiler.Dnlib
     {
         private List<DnlibAssembly> _asms;
 
-        //private AssemblyResolver _resolver;
-        private DnlibAssemblyResolver _resolver;
+        private AssemblyResolver _resolver;
+        //private DnlibAssemblyResolver _resolver;
 
         private Dictionary<ITypeDefOrRef, IType> _typeReferenceCache =
             new Dictionary<ITypeDefOrRef, IType>();
@@ -36,19 +37,14 @@ namespace Aquila.Compiler.Dnlib
         {
             _asms = new List<DnlibAssembly>();
 
-            // _resolver = new AssemblyResolver();
-            // _resolver.UseGAC = false;
-            // _resolver.FindExactMatch = false;
-            //
-            // _resolver.PreSearchPaths.Add(
-            //     //@"C:\Program Files\dotnet\shared\Microsoft.NETCore.App\3.1.1"
-            //     "C:\\Program Files\\dotnet\\packs\\Microsoft.NETCore.App.Ref\\3.1.0\\ref\\netcoreapp3.1"
-            // );
-            // _resolver.PreSearchPaths.Add(AppContext.BaseDirectory);
-            //
-            // _resolver.DefaultModuleContext = new ModuleContext(_resolver, new Resolver(_resolver));
-
-            _resolver = new DnlibAssemblyResolver();
+            _resolver = new AssemblyResolver();
+            _resolver.PreSearchPaths.Add(
+                "C:\\Program Files\\dotnet\\packs\\Microsoft.NETCore.App.Ref\\3.1.0\\ref\\netcoreapp3.1\\");
+            _resolver.PreSearchPaths.Add(Directory.GetCurrentDirectory());
+            _resolver.EnableTypeDefCache = true;
+            _resolver.EnableFrameworkRedirect = false;
+            _resolver.UseGAC = true;
+            _resolver.DefaultModuleContext = new ModuleContext(Resolver);
             _typeCache = new DnlibTypeCache(this);
 
             if (targetPath != null)
@@ -57,8 +53,27 @@ namespace Aquila.Compiler.Dnlib
 
             foreach (var path in paths.Distinct())
             {
-                var asm = AssemblyDef.Load(path, new ModuleCreationOptions());
+                var asm = AssemblyDef.Load(path, new ModuleCreationOptions(new ModuleContext(Resolver)));
                 RegisterAssembly(asm);
+            }
+
+            foreach (var dir in _resolver.PreSearchPaths)
+            {
+                var files = Directory.GetFiles(dir, "*.dll");
+
+                foreach (var path in files)
+                {
+                    try
+                    {
+                        var asm = AssemblyDef.Load(path, new ModuleCreationOptions());
+                        RegisterAssembly(asm);
+                        Paths.Add(path);
+                    }
+                    catch (Exception ex)
+                    {
+                        //we are failed but we still can try compile
+                    }
+                }
             }
 
             Factory = factory;
@@ -66,6 +81,8 @@ namespace Aquila.Compiler.Dnlib
 
         public IAssemblyResolver Resolver => _resolver;
 
+        public List<string> Paths { get; } = new List<string>();
+        
         public IPlatformFactory Factory { get; }
 
         public IReadOnlyList<IAssembly> Assemblies => _asms;
@@ -85,8 +102,6 @@ namespace Aquila.Compiler.Dnlib
 
             _asms.Add(assembly);
             _assemblyDic[assembly.Assembly] = assembly;
-            _resolver.RegisterAsm(assembly.Assembly);
-
             return assembly;
         }
 

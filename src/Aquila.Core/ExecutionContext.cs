@@ -1,6 +1,5 @@
 using System;
 using System.Threading;
-using Mono.Cecil;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Environment;
 using Aquila.Core.Contracts.TypeSystem;

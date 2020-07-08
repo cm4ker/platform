@@ -1,10 +1,8 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using Aquila.Core.Logging;
-using Aquila.Core.Environment;
-using System.Net.Sockets;
 using Aquila.Core.Contracts.Environment;
 using Aquila.Core.Network.Contracts;
+using Aquila.Logging;
 
 namespace Aquila.Core.Network
 {

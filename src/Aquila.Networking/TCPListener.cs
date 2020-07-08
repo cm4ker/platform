@@ -2,11 +2,9 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using Aquila.Core.Contracts.Environment;
-using Aquila.Core.Environment;
-using Aquila.Core.Logging;
+using Aquila.Logging;
 
 namespace Aquila.Core.Network
 {
@@ -19,7 +17,8 @@ namespace Aquila.Core.Network
         private Thread _thread;
         IServiceProvider _serviceProvider;
 
-        public TCPListener(ILogger<TCPListener> logger, IServiceProvider serviceProvider, IConnectionManager connectionManager)
+        public TCPListener(ILogger<TCPListener> logger, IServiceProvider serviceProvider,
+            IConnectionManager connectionManager)
         {
             _logger = logger;
             _connectionManager = connectionManager;
@@ -30,7 +29,6 @@ namespace Aquila.Core.Network
         {
             try
             {
-
                 _logger.Info("Started listening: {0}:{1}", endPoint.Address, endPoint.Port);
 
 

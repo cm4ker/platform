@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Aquila.Core.Contracts.Environment;
-using Aquila.Core.Environment;
 using Aquila.Core.Tools;
 
 namespace Aquila.Core.Network.States
@@ -11,13 +8,16 @@ namespace Aquila.Core.Network.States
     {
         private IPlatformEnvironmentManager _environmentManager;
         private IDisposable _unsbscriber;
+
         public EnvironmentManagerObserver(IPlatformEnvironmentManager environmentManager)
         {
             _environmentManager = environmentManager;
         }
+
         public bool CanObserve(Type type)
         {
-            return type.Equals(typeof(RequestEnvironmentUseNetworkMessage)) || type.Equals(typeof(RequestEnvironmentListNetworkMessage));
+            return type.Equals(typeof(RequestEnvironmentUseNetworkMessage)) ||
+                   type.Equals(typeof(RequestEnvironmentListNetworkMessage));
         }
 
         public void OnCompleted(IConnectionContext sender)
@@ -47,7 +47,6 @@ namespace Aquila.Core.Network.States
 
                         var state = new AuthenticationObserver(env);
                         state.Subscribe(context.Connection);
-
                     }).PipeTo(msg.Id, context.Connection.Channel);
                     break;
 

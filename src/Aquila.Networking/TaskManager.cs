@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Network;
-using Aquila.Core.Logging;
-using Aquila.Core.Sessions;
+using Aquila.Logging;
 
 namespace Aquila.Core.Network
 {
@@ -43,7 +41,7 @@ namespace Aquila.Core.Network
             var canceller = new CancellationTokenSource();
             Task<object> task = null;
             InvokeContext context = null;
-            
+
             task = new Task<object>(
                 (o) =>
                 {
@@ -62,9 +60,9 @@ namespace Aquila.Core.Network
                         }
                     }
                 }, null, canceller.Token, TaskCreationOptions.LongRunning);
-            
+
             task.Start(TaskScheduler.Current);
-         
+
             return task;
         }
     }
