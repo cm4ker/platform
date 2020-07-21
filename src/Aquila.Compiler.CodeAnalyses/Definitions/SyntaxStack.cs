@@ -99,29 +99,29 @@ namespace Aquila.Language.Ast.Definitions
             return (string) internalStack.Pop();
         }
 
-        public Ast.TypeSyntax PopType()
+        public TypeSyntax PopType()
         {
-            return (Ast.TypeSyntax) internalStack.Pop();
+            return (TypeSyntax) internalStack.Pop();
         }
 
-        public Ast.SingleTypeSyntax PopSingleType()
+        public SingleTypeSyntax PopSingleType()
         {
-            return (Ast.SingleTypeSyntax) internalStack.Pop();
+            return (SingleTypeSyntax) internalStack.Pop();
         }
 
-        public Block PopInstructionsBody()
+        public BlockSyntax PopInstructionsBody()
         {
-            return (Block) internalStack.Pop();
-        }
-        
-        public Ast.Expression PopExpression()
-        {
-            return (Ast.Expression) internalStack.Pop();
+            return (BlockSyntax) internalStack.Pop();
         }
 
-        public Ast.Name PopName()
+        public ExpressionSyntax PopExpression()
         {
-            return (Ast.Name) internalStack.Pop();
+            return (ExpressionSyntax) internalStack.Pop();
+        }
+
+        public NameSyntax PopName()
+        {
+            return (NameSyntax) internalStack.Pop();
         }
 
         public T PeekType<T>()
@@ -134,14 +134,19 @@ namespace Aquila.Language.Ast.Definitions
             return (IList) internalStack.Peek();
         }
 
-        public Statement PopStatement()
+        public StatementSyntax PopStatement()
         {
-            return (Statement) internalStack.Pop();
+            return (StatementSyntax) internalStack.Pop();
         }
 
-        public Assignment PopAssignment()
+        public AssignmentSyntax PopAssignment()
         {
-            return (Assignment) internalStack.Pop();
+            return (AssignmentSyntax) internalStack.Pop();
+        }
+
+        public IdentifierToken PopIdentifier()
+        {
+            return (IdentifierToken) internalStack.Pop();
         }
     }
 }

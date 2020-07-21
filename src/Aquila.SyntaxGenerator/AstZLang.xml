@@ -22,9 +22,15 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="IdentifierSyntax">
+    <Syntax Name="IdentifierToken" Base="SyntaxToken">
         <Arguments>
-            <Single Name="Value" DenyChildrenFill="true" Type="String"/>
+            <Single Name="Text" DenyChildrenFill="true" OnlyArgument="true" PassBase="true" Type="String"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="IdentifierName" Base="ExpressionSyntax">
+        <Arguments>
+            <Single Name="Identifier" Type="IdentifierToken"/>
         </Arguments>
     </Syntax>
 
@@ -124,7 +130,7 @@
     <Syntax Name="ParameterSyntax" NS="Functions">
         <Arguments>
             <Single Name="Type" Type="TypeSyntax"/>
-            <Single Name="Identifier" Type="IdentifierSyntax"/>
+            <Single Name="Identifier" Type="IdentifierToken"/>
             <Single Name="PassMethod" Type="PassMethod" DenyChildrenFill="true" Default="PassMethod.ByValue"/>
         </Arguments>
     </Syntax>
@@ -135,7 +141,12 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="AttributeSyntax"/>
+    <Syntax Name="AttributeSyntax">
+        <Arguments>
+            <List Name="Arguments" Type="ArgumentList"/>
+            <Single Name="Identifier" Type="IdentifierToken"/>
+        </Arguments>
+    </Syntax>
 
     <Syntax Name="MemberSyntax" IsAbstract="true"/>
 
@@ -145,14 +156,15 @@
             <List Name="Parameters" Type="ParameterList"/>
             <List Name="GenericParameters" Type="GenericParameterList"/>
             <List Name="Attributes" Type="AttributeList"/>
-            <Single Name="Identifier" Type="IdentifierSyntax"/>
+            <Single Name="Identifier" Type="IdentifierToken"/>
             <Single Name="Type" Type="TypeSyntax"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="FieldDeclarationSyntax" Base="MemberSyntax">
         <Arguments>
-            <Single Name="Identifier" Type="IdentifierSyntax"/>
+            <Single Name="Identifier" Type="IdentifierToken"/>
+            <Single Name="Type" Type="TypeSyntax"/>
         </Arguments>
     </Syntax>
 
@@ -190,7 +202,7 @@
     <Syntax Name="VariableDeclarationSyntax" Base="StatementSyntax">
         <Arguments>
             <Single Name="Initializer" Type="ExpressionSyntax"/>
-            <Single Name="Identifier" Type="IdentifierSyntax"/>
+            <Single Name="Identifier" Type="IdentifierToken"/>
             <Single Name="VariableType" Type="TypeSyntax"/>
         </Arguments>
     </Syntax>
@@ -208,13 +220,6 @@
             <Single Name="Value" Type="String" DenyChildrenFill="true"/>
             <Single Name="IsSqlLiteral" Type="bool" DenyChildrenFill="true"/>
         </Arguments>
-    </Syntax>
-
-    <Syntax Name="NameSyntax" Base="ExpressionSyntax">
-        <Arguments>
-            <Single Name="Identifier" Type="IdentifierSyntax" DenyChildrenFill="true"/>
-        </Arguments>
-
     </Syntax>
 
     <Syntax Name="GetFieldExpression" Base="ExpressionSyntax">

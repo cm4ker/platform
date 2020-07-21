@@ -7,5 +7,6 @@ namespace Aquila.Language.Ast.Definitions
     /// </summary>
     public partial class Literal
     {
+        public object ObjectiveValue { get; set; }
     }
 }

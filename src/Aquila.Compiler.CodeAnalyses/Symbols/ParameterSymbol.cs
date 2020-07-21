@@ -1,3 +1,4 @@
+using Aquila.Compiler.Contracts;
 using Aquila.Language.Ast.Symbols.PE;
 
 namespace Aquila.Language.Ast.Symbols
@@ -22,7 +23,7 @@ namespace Aquila.Language.Ast.Symbols
         private readonly ModuleSymbol _moduleSymbol;
         private readonly MethodSymbol _methodSymbol;
         private readonly TypeSymbol _parameterType;
-        private readonly ParameterDefinition _parameterDefinition;
+        private readonly IParameter _parameterDefinition;
 
         internal SourceParameterSymbol()
         {
@@ -47,10 +48,10 @@ namespace Aquila.Language.Ast.Symbols
         private readonly PEModuleSymbol _moduleSymbol;
         private readonly MethodSymbol _methodSymbol;
         private readonly TypeSymbol _parameterType;
-        private readonly ParameterDefinition _parameterDefinition;
+        private readonly IParameter _parameterDefinition;
 
         internal PEParameterSymbol(PEModuleSymbol moduleSymbol, MethodSymbol methodSymbol, TypeSymbol parameterType,
-            ParameterDefinition parameterDefinition)
+            IParameter parameterDefinition)
         {
             _moduleSymbol = moduleSymbol;
             _methodSymbol = methodSymbol;
@@ -60,6 +61,6 @@ namespace Aquila.Language.Ast.Symbols
         }
 
         public override TypeSymbol Type => _parameterType;
-        public override int Ordinal => _parameterDefinition.Index;
+        public override int Ordinal => _parameterDefinition.ArgIndex;
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Aquila.Compiler.Syntax;
 
 namespace Aquila.Language.Ast
 {
@@ -28,7 +29,7 @@ namespace Aquila.Language.Ast
             return default;
         }
 
-        public virtual T VisitTypeEntity(TypeEntity obj)
+        public virtual T VisitSyntaxToken(SyntaxToken obj)
         {
             return DefaultVisit(obj);
         }
@@ -56,7 +57,7 @@ namespace Aquila.Language.Ast
         {
         }
 
-        public virtual void VisitTypeEntity(TypeEntity obj)
+        public virtual void VisitSyntaxToken(SyntaxToken obj)
         {
             DefaultVisit(obj);
         }

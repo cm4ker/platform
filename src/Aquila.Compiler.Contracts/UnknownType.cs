@@ -47,6 +47,7 @@ namespace Aquila.Compiler.Contracts
         public bool IsSystem { get; }
 
         public bool IsPrimitive { get; }
+        public bool HasGenericParameters { get; }
 
         public IType GetEnumUnderlyingType() => throw new InvalidOperationException();
 

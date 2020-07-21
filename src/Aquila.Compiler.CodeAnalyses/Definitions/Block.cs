@@ -5,15 +5,8 @@ namespace Aquila.Language.Ast.Definitions
     /// <summary>
     /// Блок инструкций
     /// </summary>
-    public partial class Block 
+    public partial class BlockSyntax
     {
-        public static Block Empty => new Block(null, new StatementList());
-
-        /// <summary>
-        /// Создать блок из коллекции инструкций
-        /// </summary>
-        public Block(StatementList statements) : this((ILineInfo) null, statements)
-        {
-        }
+        public static BlockSyntax Empty => new BlockSyntax(null, SyntaxKind.BlockStatement, new StatementList());
     }
 }

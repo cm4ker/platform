@@ -62,33 +62,33 @@ namespace Aquila.ServerRuntime
         {
             if (_needRecompile)
             {
-                var result = QueryCompilerHelper.Compile(_tm, _text);
-
-                /*
-                 
-                 SELECT 
-                    A1, A2, A3, A4, A5 ....
-                    ^   ^   ^   ^   ^
-                   MappedTo O1  MappedTo O2
-                 FROM
-                    T1 ....
-                 
-                 1) Link (StoreLink, InvoiceLink ... etc)
-                 2) Literal (Guid, String, int, Double ... etc)
-                 
-                 => {
-                 
-                    Reader.Invoice => Manager.Invoice.Get((Guid)Reader["Fld_255"]);
-                    
-                    Reader.Link => 
-                    
-                 
-                 }
-                                
-                 */
-
-                _compiled = result.sql;
-                _logicalTree = result.logicalTree;
+                // var result = QueryCompilerHelper.Compile(_tm, _text);
+                //
+                // /*
+                //  
+                //  SELECT 
+                //     A1, A2, A3, A4, A5 ....
+                //     ^   ^   ^   ^   ^
+                //    MappedTo O1  MappedTo O2
+                //  FROM
+                //     T1 ....
+                //  
+                //  1) Link (StoreLink, InvoiceLink ... etc)
+                //  2) Literal (Guid, String, int, Double ... etc)
+                //  
+                //  => {
+                //  
+                //     Reader.Invoice => Manager.Invoice.Get((Guid)Reader["Fld_255"]);
+                //     
+                //     Reader.Link => 
+                //     
+                //  
+                //  }
+                //                 
+                //  */
+                //
+                // _compiled = result.sql;
+                // _logicalTree = result.logicalTree;
             }
 
 

@@ -26,14 +26,9 @@
         <PackageReference Include="System.ServiceModel.Primitives" Version="4.7.0" />
     </ItemGroup>
     <ItemGroup>
-        <Content Include=".\ZSharpParser.g4" />
-        <Content Include=".\ZSharpLexer.g4" />
-        <Content Include=".\ZSharpPreprocessorParser.g4" />
         <Content Include="Parser\ZSharpLexer.g4" />
         <Content Include="Parser\ZSharpParser.g4" />
         <Content Include="Parser\ZSharpPreprocessorParser.g4" />
-        <Content Include="PooledObjects\Microsoft.CodeAnalysis.PooledObjects.Package.csproj" />
-        <Content Include="PooledObjects\Microsoft.CodeAnalysis.PooledObjects.shproj" />
     </ItemGroup>
 
     <!--    <ItemGroup>-->
@@ -43,14 +38,23 @@
     <ItemGroup>
         <ProjectReference Include="..\Aquila.ClientRuntime\Aquila.ClientRuntime.csproj" />
         <ProjectReference Include="..\Aquila.Compiler.Roslyn\Aquila.Compiler.Roslyn.csproj" />
-<!--        <ProjectReference Include="..\Aquila.Compiler.Cecil\Aquila.Compiler.Cecil.csproj" />-->
-<!--        <ProjectReference Include="..\Aquila.Compiler.Contracts\Aquila.Compiler.Contracts.csproj" />-->
         <ProjectReference Include="..\Aquila.Core\Aquila.Core.csproj" />
-        <ProjectReference Include="..\Aquila.Language.Ast\Aquila.Language.Ast.csproj" />
         <ProjectReference Include="..\Aquila.ServerClientShared\Aquila.ServerClientShared.csproj" />
         <ProjectReference Include="..\Aquila.ServerRuntime\Aquila.ServerRuntime.csproj" />
         <ProjectReference Include="..\Aquila.Shared\Aquila.Shared.csproj" />
         <ProjectReference Include="..\Aquila.UI.Ast\Aquila.UI.Ast.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="gen\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="gen\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="gen\**" />
     </ItemGroup>
 
 

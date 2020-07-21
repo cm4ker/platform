@@ -67,10 +67,15 @@ namespace Aquila.Language.Ast
         // Nodes
         CompilationUnit,
         MethodDeclaration,
+        FieldDeclaration,
         GlobalStatement,
         Parameter,
         Type,
+        ArrayType,
         ElseClause,
+        Attribute,
+        Argument,
+        UsingDerictive,
 
         // Statements
         BlockStatement,
@@ -93,5 +98,8 @@ namespace Aquila.Language.Ast
         ParenthesizedExpression,
         AssignmentExpression,
         CallExpression,
+        IndexerExpression,
+        CastExpression,
+        MemberAccessExpression,
     }
 }

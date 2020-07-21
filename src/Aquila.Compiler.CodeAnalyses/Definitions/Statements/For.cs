@@ -1,6 +1,6 @@
 namespace Aquila.Language.Ast.Definitions.Statements
 {
-    public partial class For : Ast.Statement
+    public partial class For 
     {
     }
 }
