@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Threading;
+using Aquila.Language.Ast.Extension;
 
 namespace Aquila.Language.Ast.Symbols
 {

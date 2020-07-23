@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Aquila.Language.Ast.Definitions.Expressions;
-using Aquila.Language.Ast.Definitions.Statements;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using StatementSyntax = Aquila.Language.Ast.Definitions.Statements.StatementSyntax;
 
 namespace Aquila.Language.Ast.Definitions
 {
@@ -52,9 +53,21 @@ namespace Aquila.Language.Ast.Definitions
             return result;
         }
 
+        public T ToCollection<T>() where T : SyntaxNode, new()
+        {
+            var collection = new T();
+            collection.AddRange(internalStack.ToArray().Reverse().Cast<SyntaxNode>());
+            return collection;
+        }
+
         public object Peek()
         {
             return internalStack.Peek();
+        }
+
+        public SyntaxNode PeekNode()
+        {
+            return internalStack.Peek() as SyntaxNode;
         }
 
         public SyntaxNode PeekAst()
@@ -109,9 +122,9 @@ namespace Aquila.Language.Ast.Definitions
             return (SingleTypeSyntax) internalStack.Pop();
         }
 
-        public BlockSyntax PopInstructionsBody()
+        public BlockStatementSyntax PopInstructionsBody()
         {
-            return (BlockSyntax) internalStack.Pop();
+            return (BlockStatementSyntax) internalStack.Pop();
         }
 
         public ExpressionSyntax PopExpression()

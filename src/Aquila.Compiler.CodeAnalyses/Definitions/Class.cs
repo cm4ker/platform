@@ -14,7 +14,7 @@ namespace Aquila.Language.Ast.Definitions
 
         public void AddFunction(Method method)
         {
-            TypeBody.Functions.Add(method);
+            //TypeBody.Functions.Add(method);
         }
     }
 }

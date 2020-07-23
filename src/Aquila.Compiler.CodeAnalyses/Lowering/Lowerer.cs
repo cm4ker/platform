@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Aquila.Core.Authentication;
 using Aquila.Language.Ast.Binding;
 using Aquila.Language.Ast.Extension;
 using Aquila.Language.Ast.Symbols;
@@ -95,15 +97,17 @@ namespace Aquila.Language.Ast.Lowering
                 // <then>
                 // end:
 
-                var endLabel = GenerateLabel();
-                var result = Block(
-                    node.Syntax,
-                    GotoFalse(node.Syntax, endLabel, node.Condition),
-                    node.ThenStatement,
-                    Label(node.Syntax, endLabel)
-                );
-
-                return RewriteStatement(result);
+                throw new NotImplementedException();
+                
+                // var endLabel = GenerateLabel();
+                // var result = Block(
+                //     node.Syntax,
+                //     GotoFalse(node.Syntax, endLabel, node.Condition),
+                //     node.ThenStatement,
+                //     Label(node.Syntax, endLabel)
+                // );
+                //
+                // return RewriteStatement(result);
             }
             else
             {
@@ -121,19 +125,21 @@ namespace Aquila.Language.Ast.Lowering
                 // <else>
                 // end:
 
-                var elseLabel = GenerateLabel();
-                var endLabel = GenerateLabel();
-                var result = Block(
-                    node.Syntax,
-                    GotoFalse(node.Syntax, elseLabel, node.Condition),
-                    node.ThenStatement,
-                    Goto(node.Syntax, endLabel),
-                    Label(node.Syntax, elseLabel),
-                    node.ElseStatement,
-                    Label(node.Syntax, endLabel)
-                );
-
-                return RewriteStatement(result);
+                throw new NotImplementedException();
+                
+                // var elseLabel = GenerateLabel();
+                // var endLabel = GenerateLabel();
+                // var result = Block(
+                //     node.Syntax,
+                //     GotoFalse(node.Syntax, elseLabel, node.Condition),
+                //     node.ThenStatement,
+                //     Goto(node.Syntax, endLabel),
+                //     Label(node.Syntax, elseLabel),
+                //     node.ElseStatement,
+                //     Label(node.Syntax, endLabel)
+                // );
+                //
+                // return RewriteStatement(result);
             }
         }
 
@@ -151,18 +157,20 @@ namespace Aquila.Language.Ast.Lowering
             // gotoTrue <condition> body
             // break:
 
-            var bodyLabel = GenerateLabel();
-            var result = Block(
-                node.Syntax,
-                Goto(node.Syntax, node.ContinueLabel),
-                Label(node.Syntax, bodyLabel),
-                node.Body,
-                Label(node.Syntax, node.ContinueLabel),
-                GotoTrue(node.Syntax, bodyLabel, node.Condition),
-                Label(node.Syntax, node.BreakLabel)
-            );
-
-            return RewriteStatement(result);
+            throw new NotImplementedException();
+            
+            // var bodyLabel = GenerateLabel();
+            // var result = Block(
+            //     node.Syntax,
+            //     Goto(node.Syntax, node.ContinueLabel),
+            //     Label(node.Syntax, bodyLabel),
+            //     node.Body,
+            //     Label(node.Syntax, node.ContinueLabel),
+            //     GotoTrue(node.Syntax, bodyLabel, node.Condition),
+            //     Label(node.Syntax, node.BreakLabel)
+            // );
+            //
+            // return RewriteStatement(result);
         }
 
         protected override BoundStatement RewriteDoWhileStatement(BoundDoWhileStatement node)
@@ -179,17 +187,19 @@ namespace Aquila.Language.Ast.Lowering
             // gotoTrue <condition> body
             // break:
 
-            var bodyLabel = GenerateLabel();
-            var result = Block(
-                node.Syntax,
-                Label(node.Syntax, bodyLabel),
-                node.Body,
-                Label(node.Syntax, node.ContinueLabel),
-                GotoTrue(node.Syntax, bodyLabel, node.Condition),
-                Label(node.Syntax, node.BreakLabel)
-            );
-
-            return RewriteStatement(result);
+            throw new NotImplementedException();
+            
+            // var bodyLabel = GenerateLabel();
+            // var result = Block(
+            //     node.Syntax,
+            //     Label(node.Syntax, bodyLabel),
+            //     node.Body,
+            //     Label(node.Syntax, node.ContinueLabel),
+            //     GotoTrue(node.Syntax, bodyLabel, node.Condition),
+            //     Label(node.Syntax, node.BreakLabel)
+            // );
+            //
+            // return RewriteStatement(result);
         }
 
         protected override BoundStatement RewriteForStatement(BoundForStatement node)
@@ -209,73 +219,77 @@ namespace Aquila.Language.Ast.Lowering
             //          <var> = <var> + 1
             //      }
             // }
-
-            var lowerBound = VariableDeclaration(node.Syntax, node.Local, node.LowerBound);
-            var upperBound = ConstantDeclaration(node.Syntax, "upperBound", node.UpperBound);
-            var result = Block(
-                node.Syntax,
-                lowerBound,
-                upperBound,
-                While(node.Syntax,
-                    LessOrEqual(
-                        node.Syntax,
-                        Variable(node.Syntax, lowerBound),
-                        Variable(node.Syntax, upperBound)
-                    ),
-                    Block(
-                        node.Syntax,
-                        node.Body,
-                        Label(node.Syntax, node.ContinueLabel),
-                        Increment(
-                            node.Syntax,
-                            Variable(node.Syntax, lowerBound)
-                        )
-                    ),
-                    node.BreakLabel,
-                    continueLabel: GenerateLabel())
-            );
-
-
-            return RewriteStatement(result);
+            throw new NotImplementedException();
+            
+            // var lowerBound = VariableDeclaration(node.Syntax, node.Local, node.LowerBound);
+            // var upperBound = ConstantDeclaration(node.Syntax, "upperBound", node.UpperBound);
+            // var result = Block(
+            //     node.Syntax,
+            //     lowerBound,
+            //     upperBound,
+            //     While(node.Syntax,
+            //         LessOrEqual(
+            //             node.Syntax,
+            //             Variable(node.Syntax, lowerBound),
+            //             Variable(node.Syntax, upperBound)
+            //         ),
+            //         Block(
+            //             node.Syntax,
+            //             node.Body,
+            //             Label(node.Syntax, node.ContinueLabel),
+            //             Increment(
+            //                 node.Syntax,
+            //                 Variable(node.Syntax, lowerBound)
+            //             )
+            //         ),
+            //         node.BreakLabel,
+            //         continueLabel: GenerateLabel())
+            // );
+            //
+            //
+            // return RewriteStatement(result);
         }
 
         protected override BoundStatement RewriteConditionalGotoStatement(BoundConditionalGotoStatement node)
         {
-            if (node.Condition.ConstantValue != null)
-            {
-                var condition = (bool) node.Condition.ConstantValue.Value;
-                condition = node.JumpIfTrue ? condition : !condition;
-                if (condition)
-                    return RewriteStatement(Goto(node.Syntax, node.Label));
-                else
-                    return RewriteStatement(Nop(node.Syntax));
-            }
-
-            return base.RewriteConditionalGotoStatement(node);
+            throw new NotImplementedException();
+            // if (node.Condition.ConstantValue != null)
+            // {
+            //     var condition = (bool) node.Condition.ConstantValue.Value;
+            //     condition = node.JumpIfTrue ? condition : !condition;
+            //     if (condition)
+            //         return RewriteStatement(Goto(node.Syntax, node.Label));
+            //     else
+            //         return RewriteStatement(Nop(node.Syntax));
+            // }
+            //
+            // return base.RewriteConditionalGotoStatement(node);
         }
 
         protected override BoundExpression RewriteCompoundAssignmentExpression(BoundCompoundAssignmentExpression node)
         {
-            var newNode = (BoundCompoundAssignmentExpression) base.RewriteCompoundAssignmentExpression(node);
-
-            // a <op>= b
+            throw new NotImplementedException();
+            
+            // var newNode = (BoundCompoundAssignmentExpression) base.RewriteCompoundAssignmentExpression(node);
             //
-            // ---->
+            // // a <op>= b
+            // //
+            // // ---->
+            // //
+            // // a = (a <op> b)
             //
-            // a = (a <op> b)
-
-            var result = Assignment(
-                newNode.Syntax,
-                newNode.Local,
-                Binary(
-                    newNode.Syntax,
-                    Variable(newNode.Syntax, newNode.Local),
-                    newNode.Op,
-                    newNode.Expression
-                )
-            );
-
-            return result;
+            // var result = Assignment(
+            //     newNode.Syntax,
+            //     newNode.Local,
+            //     Binary(
+            //         newNode.Syntax,
+            //         Variable(newNode.Syntax, newNode.Local),
+            //         newNode.Op,
+            //         newNode.Expression
+            //     )
+            // );
+            //
+            // return result;
         }
     }
 }

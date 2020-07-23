@@ -18,8 +18,6 @@ namespace Aquila.Compiler
             public string Name { get; set; }
 
             public IType Type { get; set; }
-
-            public TypeEntity Class { get; set; }
         }
 
         private List<TableClassRow> _rows;
@@ -29,26 +27,6 @@ namespace Aquila.Compiler
             _rows = new List<TableClassRow>();
         }
 
-        /// <summary>
-        /// Добавляет связку
-        /// </summary>
-        /// <param name="fullName">Платформенное пространство имён</param>
-        /// <param name="type"></param>
-        /// <param name="class"></param>
-        public void AddClass(TypeEntity @class, IType type)
-        {
-            AddClass("", @class, type);
-        }
-
-
-        public void AddClass(string ns, TypeEntity @class, IType type)
-        {
-            _rows.Add(new TableClassRow
-            {
-                FullName = $"{ns}.{@class.Name}", Type = type,
-                Class = @class, Name = @class.Name
-            });
-        }
 
         private TableClassRow FindRow(string ns, string typeName)
         {

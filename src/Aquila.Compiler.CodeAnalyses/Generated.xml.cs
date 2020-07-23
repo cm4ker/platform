@@ -198,6 +198,27 @@ namespace Aquila.Language.Ast.Definitions
 
 namespace Aquila.Language.Ast.Definitions
 {
+    public class DeclaratorList : SyntaxCollectionNode<VariableDeclaratorSyntax>
+    {
+        public static DeclaratorList Empty => new DeclaratorList();
+        public DeclaratorList(): base(null)
+        {
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitDeclaratorList(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitDeclaratorList(this);
+        }
+    }
+}
+
+namespace Aquila.Language.Ast.Definitions
+{
     public class UsingList : SyntaxCollectionNode<UsingBase>
     {
         public static UsingList Empty => new UsingList();
@@ -664,11 +685,10 @@ namespace Aquila.Language.Ast.Definitions.Expressions
 {
     public partial class AssignmentSyntax : ExpressionSyntax
     {
-        public AssignmentSyntax(ILineInfo lineInfo, SyntaxKind syntaxKind, ExpressionSyntax value, ExpressionSyntax index, ExpressionSyntax assignable): base(lineInfo, syntaxKind)
+        public AssignmentSyntax(ILineInfo lineInfo, SyntaxKind syntaxKind, ExpressionSyntax value, ExpressionSyntax assignable): base(lineInfo, syntaxKind)
         {
             this.Attach(0, (SyntaxNode)value);
-            this.Attach(1, (SyntaxNode)index);
-            this.Attach(2, (SyntaxNode)assignable);
+            this.Attach(1, (SyntaxNode)assignable);
         }
 
         public ExpressionSyntax Value
@@ -679,19 +699,11 @@ namespace Aquila.Language.Ast.Definitions.Expressions
             }
         }
 
-        public ExpressionSyntax Index
-        {
-            get
-            {
-                return (ExpressionSyntax)this.Children[1];
-            }
-        }
-
         public ExpressionSyntax Assignable
         {
             get
             {
-                return (ExpressionSyntax)this.Children[2];
+                return (ExpressionSyntax)this.Children[1];
             }
         }
 
@@ -793,9 +805,9 @@ namespace Aquila.Language.Ast.Definitions
 
 namespace Aquila.Language.Ast.Definitions
 {
-    public partial class BlockSyntax : StatementSyntax
+    public partial class BlockStatementSyntax : StatementSyntax
     {
-        public BlockSyntax(ILineInfo lineInfo, SyntaxKind syntaxKind, StatementList statements): base(lineInfo, syntaxKind)
+        public BlockStatementSyntax(ILineInfo lineInfo, SyntaxKind syntaxKind, StatementList statements): base(lineInfo, syntaxKind)
         {
             this.Attach(0, (SyntaxNode)statements);
         }
@@ -810,12 +822,12 @@ namespace Aquila.Language.Ast.Definitions
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            return visitor.VisitBlockSyntax(this);
+            return visitor.VisitBlockStatementSyntax(this);
         }
 
         public override void Accept(AstVisitorBase visitor)
         {
-            visitor.VisitBlockSyntax(this);
+            visitor.VisitBlockStatementSyntax(this);
         }
     }
 }
@@ -952,7 +964,7 @@ namespace Aquila.Language.Ast.Definitions.Functions
 {
     public partial class MethodDeclarationSyntax : MemberSyntax
     {
-        public MethodDeclarationSyntax(ILineInfo lineInfo, SyntaxKind syntaxKind, BlockSyntax block, ParameterList parameters, GenericParameterList genericParameters, AttributeList attributes, IdentifierToken identifier, TypeSyntax type): base(lineInfo, syntaxKind)
+        public MethodDeclarationSyntax(ILineInfo lineInfo, SyntaxKind syntaxKind, BlockStatementSyntax block, ParameterList parameters, GenericParameterList genericParameters, AttributeList attributes, IdentifierToken identifier, TypeSyntax type): base(lineInfo, syntaxKind)
         {
             this.Attach(0, (SyntaxNode)block);
             this.Attach(1, (SyntaxNode)parameters);
@@ -962,11 +974,11 @@ namespace Aquila.Language.Ast.Definitions.Functions
             this.Attach(5, (SyntaxNode)type);
         }
 
-        public BlockSyntax Block
+        public BlockStatementSyntax Block
         {
             get
             {
-                return (BlockSyntax)this.Children[0];
+                return (BlockStatementSyntax)this.Children[0];
             }
         }
 
@@ -1241,11 +1253,48 @@ namespace Aquila.Language.Ast.Definitions
 {
     public partial class VariableDeclarationSyntax : StatementSyntax
     {
-        public VariableDeclarationSyntax(ILineInfo lineInfo, SyntaxKind syntaxKind, ExpressionSyntax initializer, IdentifierToken identifier, TypeSyntax variableType): base(lineInfo, syntaxKind)
+        public VariableDeclarationSyntax(ILineInfo lineInfo, SyntaxKind syntaxKind, TypeSyntax variableType, DeclaratorList declarators): base(lineInfo, syntaxKind)
+        {
+            this.Attach(0, (SyntaxNode)variableType);
+            this.Attach(1, (SyntaxNode)declarators);
+        }
+
+        public TypeSyntax VariableType
+        {
+            get
+            {
+                return (TypeSyntax)this.Children[0];
+            }
+        }
+
+        public DeclaratorList Declarators
+        {
+            get
+            {
+                return (DeclaratorList)this.Children[1];
+            }
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitVariableDeclarationSyntax(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitVariableDeclarationSyntax(this);
+        }
+    }
+}
+
+namespace Aquila.Language.Ast.Definitions
+{
+    public partial class VariableDeclaratorSyntax : StatementSyntax
+    {
+        public VariableDeclaratorSyntax(ILineInfo lineInfo, SyntaxKind syntaxKind, ExpressionSyntax initializer, IdentifierToken identifier): base(lineInfo, syntaxKind)
         {
             this.Attach(0, (SyntaxNode)initializer);
             this.Attach(1, (SyntaxNode)identifier);
-            this.Attach(2, (SyntaxNode)variableType);
         }
 
         public ExpressionSyntax Initializer
@@ -1264,22 +1313,14 @@ namespace Aquila.Language.Ast.Definitions
             }
         }
 
-        public TypeSyntax VariableType
-        {
-            get
-            {
-                return (TypeSyntax)this.Children[2];
-            }
-        }
-
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            return visitor.VisitVariableDeclarationSyntax(this);
+            return visitor.VisitVariableDeclaratorSyntax(this);
         }
 
         public override void Accept(AstVisitorBase visitor)
         {
-            visitor.VisitVariableDeclarationSyntax(this);
+            visitor.VisitVariableDeclaratorSyntax(this);
         }
     }
 }
@@ -1503,7 +1544,7 @@ namespace Aquila.Language.Ast.Definitions.Statements
 {
     public partial class DoWhile : StatementSyntax
     {
-        public DoWhile(ILineInfo lineInfo, SyntaxKind syntaxKind, ExpressionSyntax condition, BlockSyntax block): base(lineInfo, syntaxKind)
+        public DoWhile(ILineInfo lineInfo, SyntaxKind syntaxKind, ExpressionSyntax condition, BlockStatementSyntax block): base(lineInfo, syntaxKind)
         {
             this.Attach(0, (SyntaxNode)condition);
             this.Attach(1, (SyntaxNode)block);
@@ -1517,11 +1558,11 @@ namespace Aquila.Language.Ast.Definitions.Statements
             }
         }
 
-        public BlockSyntax Block
+        public BlockStatementSyntax Block
         {
             get
             {
-                return (BlockSyntax)this.Children[1];
+                return (BlockStatementSyntax)this.Children[1];
             }
         }
 
@@ -1541,34 +1582,34 @@ namespace Aquila.Language.Ast.Definitions.Statements
 {
     public partial class Try : StatementSyntax
     {
-        public Try(ILineInfo lineInfo, SyntaxKind syntaxKind, BlockSyntax tryBlock, BlockSyntax catchBlock, BlockSyntax finallyBlock): base(lineInfo, syntaxKind)
+        public Try(ILineInfo lineInfo, SyntaxKind syntaxKind, BlockStatementSyntax tryBlock, BlockStatementSyntax catchBlock, BlockStatementSyntax finallyBlock): base(lineInfo, syntaxKind)
         {
             this.Attach(0, (SyntaxNode)tryBlock);
             this.Attach(1, (SyntaxNode)catchBlock);
             this.Attach(2, (SyntaxNode)finallyBlock);
         }
 
-        public BlockSyntax TryBlock
+        public BlockStatementSyntax TryBlock
         {
             get
             {
-                return (BlockSyntax)this.Children[0];
+                return (BlockStatementSyntax)this.Children[0];
             }
         }
 
-        public BlockSyntax CatchBlock
+        public BlockStatementSyntax CatchBlock
         {
             get
             {
-                return (BlockSyntax)this.Children[1];
+                return (BlockStatementSyntax)this.Children[1];
             }
         }
 
-        public BlockSyntax FinallyBlock
+        public BlockStatementSyntax FinallyBlock
         {
             get
             {
-                return (BlockSyntax)this.Children[2];
+                return (BlockStatementSyntax)this.Children[2];
             }
         }
 
@@ -1617,7 +1658,7 @@ namespace Aquila.Language.Ast.Definitions.Statements
 {
     public partial class For : StatementSyntax
     {
-        public For(ILineInfo lineInfo, SyntaxKind syntaxKind, BlockSyntax block, ExpressionSyntax counter, ExpressionSyntax condition, ExpressionSyntax initializer): base(lineInfo, syntaxKind)
+        public For(ILineInfo lineInfo, SyntaxKind syntaxKind, BlockStatementSyntax block, ExpressionSyntax counter, ExpressionSyntax condition, ExpressionSyntax initializer): base(lineInfo, syntaxKind)
         {
             this.Attach(0, (SyntaxNode)block);
             this.Attach(1, (SyntaxNode)counter);
@@ -1625,11 +1666,11 @@ namespace Aquila.Language.Ast.Definitions.Statements
             this.Attach(3, (SyntaxNode)initializer);
         }
 
-        public BlockSyntax Block
+        public BlockStatementSyntax Block
         {
             get
             {
-                return (BlockSyntax)this.Children[0];
+                return (BlockStatementSyntax)this.Children[0];
             }
         }
 
@@ -1673,17 +1714,17 @@ namespace Aquila.Language.Ast.Definitions.Statements
 {
     public partial class While : StatementSyntax
     {
-        public While(ILineInfo lineInfo, SyntaxKind syntaxKind, BlockSyntax block, ExpressionSyntax condition): base(lineInfo, syntaxKind)
+        public While(ILineInfo lineInfo, SyntaxKind syntaxKind, BlockStatementSyntax block, ExpressionSyntax condition): base(lineInfo, syntaxKind)
         {
             this.Attach(0, (SyntaxNode)block);
             this.Attach(1, (SyntaxNode)condition);
         }
 
-        public BlockSyntax Block
+        public BlockStatementSyntax Block
         {
             get
             {
-                return (BlockSyntax)this.Children[0];
+                return (BlockStatementSyntax)this.Children[0];
             }
         }
 
@@ -1711,26 +1752,26 @@ namespace Aquila.Language.Ast.Definitions.Statements
 {
     public partial class If : StatementSyntax
     {
-        public If(ILineInfo lineInfo, SyntaxKind syntaxKind, BlockSyntax elseBlock, BlockSyntax thenBlock, ExpressionSyntax condition): base(lineInfo, syntaxKind)
+        public If(ILineInfo lineInfo, SyntaxKind syntaxKind, StatementSyntax elseBlock, StatementSyntax thenBlock, ExpressionSyntax condition): base(lineInfo, syntaxKind)
         {
             this.Attach(0, (SyntaxNode)elseBlock);
             this.Attach(1, (SyntaxNode)thenBlock);
             this.Attach(2, (SyntaxNode)condition);
         }
 
-        public BlockSyntax ElseBlock
+        public StatementSyntax ElseBlock
         {
             get
             {
-                return (BlockSyntax)this.Children[0];
+                return (StatementSyntax)this.Children[0];
             }
         }
 
-        public BlockSyntax ThenBlock
+        public StatementSyntax ThenBlock
         {
             get
             {
-                return (BlockSyntax)this.Children[1];
+                return (StatementSyntax)this.Children[1];
             }
         }
 
@@ -1856,18 +1897,18 @@ namespace Aquila.Language.Ast.Definitions.Statements
 {
     public partial class MatchAtomSyntax : SyntaxNode
     {
-        public MatchAtomSyntax(ILineInfo lineInfo, SyntaxKind syntaxKind, BlockSyntax block, ExpressionSyntax expression, TypeSyntax type): base(lineInfo, syntaxKind)
+        public MatchAtomSyntax(ILineInfo lineInfo, SyntaxKind syntaxKind, BlockStatementSyntax block, ExpressionSyntax expression, TypeSyntax type): base(lineInfo, syntaxKind)
         {
             this.Attach(0, (SyntaxNode)block);
             this.Attach(1, (SyntaxNode)expression);
             this.Attach(2, (SyntaxNode)type);
         }
 
-        public BlockSyntax Block
+        public BlockStatementSyntax Block
         {
             get
             {
-                return (BlockSyntax)this.Children[0];
+                return (BlockStatementSyntax)this.Children[0];
             }
         }
 
@@ -2015,6 +2056,11 @@ namespace Aquila.Language.Ast
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitDeclaratorList(DeclaratorList arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitUsingList(UsingList arg)
         {
             return DefaultVisit(arg);
@@ -2090,7 +2136,7 @@ namespace Aquila.Language.Ast
             return DefaultVisit(arg);
         }
 
-        public virtual T VisitBlockSyntax(BlockSyntax arg)
+        public virtual T VisitBlockStatementSyntax(BlockStatementSyntax arg)
         {
             return DefaultVisit(arg);
         }
@@ -2151,6 +2197,11 @@ namespace Aquila.Language.Ast
         }
 
         public virtual T VisitVariableDeclarationSyntax(VariableDeclarationSyntax arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitVariableDeclaratorSyntax(VariableDeclaratorSyntax arg)
         {
             return DefaultVisit(arg);
         }
@@ -2293,6 +2344,11 @@ namespace Aquila.Language.Ast
             DefaultVisit(arg);
         }
 
+        public virtual void VisitDeclaratorList(DeclaratorList arg)
+        {
+            DefaultVisit(arg);
+        }
+
         public virtual void VisitUsingList(UsingList arg)
         {
             DefaultVisit(arg);
@@ -2368,7 +2424,7 @@ namespace Aquila.Language.Ast
             DefaultVisit(arg);
         }
 
-        public virtual void VisitBlockSyntax(BlockSyntax arg)
+        public virtual void VisitBlockStatementSyntax(BlockStatementSyntax arg)
         {
             DefaultVisit(arg);
         }
@@ -2429,6 +2485,11 @@ namespace Aquila.Language.Ast
         }
 
         public virtual void VisitVariableDeclarationSyntax(VariableDeclarationSyntax arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitVariableDeclaratorSyntax(VariableDeclaratorSyntax arg)
         {
             DefaultVisit(arg);
         }

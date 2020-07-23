@@ -16,7 +16,7 @@ namespace Aquila.Language.Ast.Binding
         {
             using (var writer = new StringWriter())
             {
-                this.WriteTo(writer);
+             //   this.WriteTo(writer);
                 return writer.ToString();
             }
         }

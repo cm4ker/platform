@@ -8,6 +8,7 @@ using Aquila.Compiler.Cecil;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Dnlib;
 using Aquila.Compiler.Generation;
+using Aquila.Compiler.Parser;
 using Aquila.Compiler.Roslyn;
 using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Compiler.Visitor;

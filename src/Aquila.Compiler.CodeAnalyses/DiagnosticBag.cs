@@ -3,9 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
+using Aquila.Compiler.Contracts;
+using Aquila.Language.Ast.Definitions;
+using Aquila.Language.Ast.Extension;
 using Aquila.Language.Ast.Symbols;
 using Aquila.Language.Ast.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using VariableDeclarationSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.VariableDeclarationSyntax;
 
 namespace Aquila.Language.Ast
 {
@@ -223,9 +227,9 @@ namespace Aquila.Language.Ast
             ReportError(default, message);
         }
 
-        public void ReportRequiredTypeAmbiguous(string? minskName, string metadataName, TypeDefinition[] foundTypes)
+        public void ReportRequiredTypeAmbiguous(string? minskName, string metadataName, IType[] foundTypes)
         {
-            var assemblyNames = foundTypes.Select(t => t.Module.Assembly.Name.Name);
+            var assemblyNames = foundTypes.Select(t => t.Assembly.Name);
             var assemblyNameList = string.Join(", ", assemblyNames);
             var message = minskName == null
                 ? $"The required type '{metadataName}' was found in multiple references: {assemblyNameList}."
@@ -257,37 +261,37 @@ namespace Aquila.Language.Ast
                     if (firstStatement != null)
                         ReportUnreachableCode(firstStatement);
                     return;
-                case SyntaxKind.VariableDeclaration:
-                    ReportUnreachableCode(((VariableDeclarationSyntax) node).Keyword.Location);
-                    return;
-                case SyntaxKind.IfStatement:
-                    ReportUnreachableCode(((IfStatementSyntax) node).IfKeyword.Location);
-                    return;
-                case SyntaxKind.WhileStatement:
-                    ReportUnreachableCode(((WhileStatementSyntax) node).WhileKeyword.Location);
-                    return;
-                case SyntaxKind.DoWhileStatement:
-                    ReportUnreachableCode(((DoWhileStatementSyntax) node).DoKeyword.Location);
-                    return;
-                case SyntaxKind.ForStatement:
-                    ReportUnreachableCode(((ForStatementSyntax) node).Keyword.Location);
-                    return;
-                case SyntaxKind.BreakStatement:
-                    ReportUnreachableCode(((BreakStatementSyntax) node).Keyword.Location);
-                    return;
-                case SyntaxKind.ContinueStatement:
-                    ReportUnreachableCode(((ContinueStatementSyntax) node).Keyword.Location);
-                    return;
-                case SyntaxKind.ReturnStatement:
-                    ReportUnreachableCode(((ReturnStatementSyntax) node).ReturnKeyword.Location);
-                    return;
-                case SyntaxKind.ExpressionStatement:
-                    var expression = ((ExpressionStatementSyntax) node).Expression;
-                    ReportUnreachableCode(expression);
-                    return;
-                case SyntaxKind.CallExpression:
-                    ReportUnreachableCode(((CallExpressionSyntax) node).Identifier.Location);
-                    return;
+                // case SyntaxKind.VariableDeclaration:
+                //     ReportUnreachableCode(((VariableDeclarationSyntax) node).Keyword.Location);
+                //     return;
+                // case SyntaxKind.IfStatement:
+                //     ReportUnreachableCode(((IfStatementSyntax) node).IfKeyword.Location);
+                //     return;
+                // case SyntaxKind.WhileStatement:
+                //     ReportUnreachableCode(((WhileStatementSyntax) node).WhileKeyword.Location);
+                //     return;
+                // case SyntaxKind.DoWhileStatement:
+                //     ReportUnreachableCode(((DoWhileStatementSyntax) node).DoKeyword.Location);
+                //     return;
+                // case SyntaxKind.ForStatement:
+                //     ReportUnreachableCode(((ForStatementSyntax) node).Keyword.Location);
+                //     return;
+                // case SyntaxKind.BreakStatement:
+                //     ReportUnreachableCode(((BreakStatementSyntax) node).Keyword.Location);
+                //     return;
+                // case SyntaxKind.ContinueStatement:
+                //     ReportUnreachableCode(((ContinueStatementSyntax) node).Keyword.Location);
+                //     return;
+                // case SyntaxKind.ReturnStatement:
+                //     ReportUnreachableCode(((ReturnStatementSyntax) node).ReturnKeyword.Location);
+                //     return;
+                // case SyntaxKind.ExpressionStatement:
+                //     var expression = ((ExpressionStatementSyntax) node).Expression;
+                //     ReportUnreachableCode(expression);
+                //     return;
+                // case SyntaxKind.CallExpression:
+                //     ReportUnreachableCode(((CallExpressionSyntax) node).Identifier.Location);
+                //     return;
                 default:
                     throw new Exception($"Unexpected syntax {node.Kind}");
             }

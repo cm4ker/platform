@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Aquila.Language.Ast.Definitions;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using BlockSyntax = Aquila.Language.Ast.Definitions.BlockSyntax;
 
 namespace Aquila.Language.Ast
 {
@@ -29,10 +31,10 @@ namespace Aquila.Language.Ast
                 (childs[i] as SyntaxNode).PrintPretty(indent, i == childs.Length - 1);
         }
 
-        public static Definitions.Block ToBlock(this Statement statement)
-        {
-            return new Definitions.Block(new StatementList {statement});
-        }
+        // public static BlockSyntax ToBlock(this StatementSyntax statement)
+        // {
+        //     return new BlockSyntax(new StatementList {statement});
+        // }
 
         public static T ToAstList<T, TC>(this IEnumerable<TC> items)
             where TC : SyntaxNode
@@ -48,9 +50,9 @@ namespace Aquila.Language.Ast
             return result;
         }
 
-        public static Statement ToStatement(this Expression exp)
-        {
-            return new ExpressionStatement(exp);
-        }
+        // public static Statement ToStatement(this Expression exp)
+        // {
+        //     return new ExpressionStatement(exp);
+        // }
     }
 }

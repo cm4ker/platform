@@ -50,8 +50,8 @@ namespace Aquila.Language.Ast.Binding
                 using (var writer = new StringWriter())
                 using (var indentedWriter = new IndentedTextWriter(writer))
                 {
-                    foreach (var statement in Statements)
-                        statement.WriteTo(indentedWriter);
+                    // foreach (var statement in Statements)
+                    //     statement.WriteTo(indentedWriter);
 
                     return writer.ToString();
                 }
@@ -251,11 +251,12 @@ namespace Aquila.Language.Ast.Binding
 
             private BoundExpression Negate(BoundExpression condition)
             {
-                var negated = BoundNodeFactory.Not(condition.Syntax, condition);
-                if (negated.ConstantValue != null)
-                    return new BoundLiteralExpression(condition.Syntax, negated.ConstantValue.Value);
-
-                return negated;
+                throw new Exception();
+                // var negated = BoundNodeFactory.Not(condition.Syntax, condition);
+                // if (negated.ConstantValue != null)
+                //     return new BoundLiteralExpression(condition.Syntax, negated.ConstantValue.Value);
+                //
+                // return negated;
             }
         }
 

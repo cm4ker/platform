@@ -174,8 +174,8 @@ namespace Aquila.Language.Ast.Binding
                     return RewriteAssignmentExpression((BoundAssignmentExpression)node);
                 case BoundNodeKind.CompoundAssignmentExpression:
                     return RewriteCompoundAssignmentExpression((BoundCompoundAssignmentExpression)node);
-                case BoundNodeKind.UnaryExpression:
-                    return RewriteUnaryExpression((BoundUnaryExpression)node);
+                // case BoundNodeKind.UnaryExpression:
+                //     return RewriteUnaryExpression((BoundUnaryExpression)node);
                 case BoundNodeKind.BinaryExpression:
                     return RewriteBinaryExpression((BoundBinaryExpression)node);
                 case BoundNodeKind.CallExpression:
@@ -220,14 +220,14 @@ namespace Aquila.Language.Ast.Binding
             return new BoundCompoundAssignmentExpression(node.Syntax, node.Local, node.Op, expression);
         }
 
-        protected virtual BoundExpression RewriteUnaryExpression(BoundUnaryExpression node)
-        {
-            var operand = RewriteExpression(node.Operand);
-            if (operand == node.Operand)
-                return node;
-
-            return new BoundUnaryExpression(node.Syntax, node.Op, operand);
-        }
+        // protected virtual BoundExpression RewriteUnaryExpression(BoundUnaryExpression node)
+        // {
+        //     var operand = RewriteExpression(node.Operand);
+        //     if (operand == node.Operand)
+        //         return node;
+        //
+        //     return new BoundUnaryExpression(node.Syntax, node.Op, operand);
+        // }
 
         protected virtual BoundExpression RewriteBinaryExpression(BoundBinaryExpression node)
         {
@@ -264,8 +264,8 @@ namespace Aquila.Language.Ast.Binding
 
             if (builder == null)
                 return node;
-
-            return new BoundCallExpression(node.Syntax, node.Method, builder.MoveToImmutable());
+throw new Exception();
+            //return new BoundCallExpression(node.Syntax, node.Method, builder.MoveToImmutable());
         }
 
         protected virtual BoundExpression RewriteConversionExpression(BoundConversionExpression node)

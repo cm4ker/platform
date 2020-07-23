@@ -5,15 +5,16 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Aquila.Language.Ast;
 using Aquila.Language.Ast.Binding;
 using Aquila.Language.Ast.Extension;
 using Aquila.Language.Ast.Symbols;
 
-namespace Aquila.Language.Ast
+namespace Aquila.Compiler
 {
     public class Compilation
     {
-         private BoundGlobalScope? _globalScope;
+        private BoundGlobalScope? _globalScope;
 
         private Compilation(bool isScript, Compilation? previous, params SyntaxTree[] syntaxTrees)
         {
@@ -119,7 +120,7 @@ namespace Aquila.Language.Ast
             writer.WriteLine();
             if (!program.Functions.TryGetValue(symbol, out var body))
                 return;
-            body.WriteTo(writer);
+            //  body.WriteTo(writer);
         }
 
         // TODO: References should be part of the compilation, not arguments for Emit
@@ -138,7 +139,7 @@ namespace Aquila.Language.Ast
             //return Emitter.Emit(program, moduleName, references, outputPath);
         }
     }
-    
+
     public static class DiagnosticExtensions
     {
         public static bool HasErrors(this ImmutableArray<Diagnostic> diagnostics)

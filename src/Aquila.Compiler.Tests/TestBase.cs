@@ -3,6 +3,7 @@ using System.IO;
 using Antlr4.Runtime;
 using Aquila.Compiler.Cecil;
 using Aquila.Compiler.Contracts;
+using Aquila.Compiler.Parser;
 using Aquila.Compiler.Preprocessor;
 using Aquila.Language.Ast;
 using Aquila.Language.Ast.Definitions;

@@ -11,6 +11,8 @@
     <Syntax IsList="true" Base="ArgumentSyntax" Name="ArgumentList"/>
     <Syntax IsList="true" Base="MatchAtomSyntax" Name="MatchAtomList"/>
 
+    <Syntax IsList="true" Base="VariableDeclaratorSyntax" Name="DeclaratorList"/>
+
     <Syntax IsList="true" Base="UsingBase" Name="UsingList"/>
     <Syntax IsList="true" Base="CompilationUnitSyntax" Name="CompilationUnitList"/>
 
@@ -97,7 +99,6 @@
     <Syntax Name="AssignmentSyntax" Base="ExpressionSyntax" NS="Expressions">
         <Arguments>
             <Single Name="Value" Type="ExpressionSyntax"/>
-            <Single Name="Index" Type="ExpressionSyntax"/>
             <Single Name="Assignable" Type="ExpressionSyntax"/>
         </Arguments>
     </Syntax>
@@ -121,7 +122,7 @@
     </Syntax>
 
 
-    <Syntax Name="BlockSyntax" Base="StatementSyntax">
+    <Syntax Name="BlockStatementSyntax" Base="StatementSyntax">
         <Arguments>
             <List Name="Statements" Type="StatementList"/>
         </Arguments>
@@ -152,7 +153,7 @@
 
     <Syntax Name="MethodDeclarationSyntax" Base="MemberSyntax" NS="Functions">
         <Arguments>
-            <Single Name="Block" Type="BlockSyntax"/>
+            <Single Name="Block" Type="BlockStatementSyntax"/>
             <List Name="Parameters" Type="ParameterList"/>
             <List Name="GenericParameters" Type="GenericParameterList"/>
             <List Name="Attributes" Type="AttributeList"/>
@@ -201,12 +202,17 @@
 
     <Syntax Name="VariableDeclarationSyntax" Base="StatementSyntax">
         <Arguments>
-            <Single Name="Initializer" Type="ExpressionSyntax"/>
-            <Single Name="Identifier" Type="IdentifierToken"/>
             <Single Name="VariableType" Type="TypeSyntax"/>
+            <List Name="Declarators" Type="DeclaratorList"/>
         </Arguments>
     </Syntax>
 
+    <Syntax Name="VariableDeclaratorSyntax" Base="StatementSyntax">
+        <Arguments>
+            <Single Name="Initializer" Type="ExpressionSyntax"/>
+            <Single Name="Identifier" Type="IdentifierToken"/>
+        </Arguments>
+    </Syntax>
 
     <Syntax Name="ContextVariable" Base="ExpressionSyntax">
         <Arguments>
@@ -261,15 +267,15 @@
     <Syntax Name="DoWhile" Base="StatementSyntax" NS="Statements">
         <Arguments>
             <Single Name="Condition" Type="ExpressionSyntax"/>
-            <Single Name="Block" Type="BlockSyntax"/>
+            <Single Name="Block" Type="BlockStatementSyntax"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="Try" Base="StatementSyntax" NS="Statements">
         <Arguments>
-            <Single Name="TryBlock" Type="BlockSyntax"/>
-            <Single Name="CatchBlock" Type="BlockSyntax"/>
-            <Single Name="FinallyBlock" Type="BlockSyntax"/>
+            <Single Name="TryBlock" Type="BlockStatementSyntax"/>
+            <Single Name="CatchBlock" Type="BlockStatementSyntax"/>
+            <Single Name="FinallyBlock" Type="BlockStatementSyntax"/>
         </Arguments>
     </Syntax>
 
@@ -281,7 +287,7 @@
 
     <Syntax Name="For" Base="StatementSyntax" NS="Statements">
         <Arguments>
-            <Single Name="Block" Type="BlockSyntax"/>
+            <Single Name="Block" Type="BlockStatementSyntax"/>
             <Single Name="Counter" Type="ExpressionSyntax"/>
             <Single Name="Condition" Type="ExpressionSyntax"/>
             <Single Name="Initializer" Type="ExpressionSyntax"/>
@@ -290,15 +296,15 @@
 
     <Syntax Name="While" Base="StatementSyntax" NS="Statements">
         <Arguments>
-            <Single Name="Block" Type="BlockSyntax"/>
+            <Single Name="Block" Type="BlockStatementSyntax"/>
             <Single Name="Condition" Type="ExpressionSyntax"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="If" Base="StatementSyntax" NS="Statements">
         <Arguments>
-            <Single Name="ElseBlock" Type="BlockSyntax"/>
-            <Single Name="ThenBlock" Type="BlockSyntax"/>
+            <Single Name="ElseBlock" Type="StatementSyntax"/>
+            <Single Name="ThenBlock" Type="StatementSyntax"/>
             <Single Name="Condition" Type="ExpressionSyntax"/>
         </Arguments>
     </Syntax>
@@ -331,7 +337,7 @@
 
     <Syntax Name="MatchAtomSyntax" NS="Statements">
         <Arguments>
-            <Single Name="Block" Type="BlockSyntax"/>
+            <Single Name="Block" Type="BlockStatementSyntax"/>
             <Single Name="Expression" Type="ExpressionSyntax"/>
             <Single Name="Type" Type="TypeSyntax"/>
         </Arguments>

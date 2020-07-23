@@ -8,7 +8,7 @@ namespace Aquila.Language.Ast.Definitions
 {
     public class SyntaxCollectionNode<T> : SyntaxNode, IEnumerable<T> where T : SyntaxNode
     {
-        public SyntaxCollectionNode(ILineInfo lineInfo) : base(lineInfo)
+        public SyntaxCollectionNode(ILineInfo lineInfo) : base(lineInfo, SyntaxKind.Argument)
         {
         }
 

@@ -80,6 +80,7 @@ namespace Aquila.Language.Ast
         // Statements
         BlockStatement,
         VariableDeclaration,
+        VariableDeclarator,
         IfStatement,
         WhileStatement,
         DoWhileStatement,

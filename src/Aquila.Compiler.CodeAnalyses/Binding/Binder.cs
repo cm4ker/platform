@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Aquila.Compiler;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Definitions.Expressions;
 using Aquila.Language.Ast.Definitions.Functions;
@@ -12,7 +13,6 @@ using Aquila.Language.Ast.Extension;
 using Aquila.Language.Ast.Lowering;
 using Aquila.Language.Ast.Symbols;
 using Aquila.Language.Ast.Text;
-using Avalonia;
 
 namespace Aquila.Language.Ast.Binding
 {
@@ -142,7 +142,7 @@ namespace Aquila.Language.Ast.Binding
 
             foreach (var parameterSyntax in syntax.Parameters)
             {
-                var parameterName = parameterSyntax.Identifier.Value;
+                var parameterName = ""; //parameterSyntax.Identifier.Value;
                 var parameterType = BindTypeClause(parameterSyntax.Type);
                 if (!seenParameterNames.Add(parameterName))
                 {
@@ -157,13 +157,13 @@ namespace Aquila.Language.Ast.Binding
 
             var type = BindTypeClause(syntax.Type) ?? GetSpecialType(SpecialType.System_Void, syntax);
 
-            var function =
-                new SourceOrdinaryMethodSymbol(syntax.Identifier.Value, parameters.ToImmutable(), type, syntax);
-            if (syntax.Identifier.Value != null &&
-                !_scope.TryDeclareFunction(function))
-            {
-                _diagnostics.ReportSymbolAlreadyDeclared(syntax.Identifier.Location, function.Name);
-            }
+            // var function =
+            //     new SourceOrdinaryMethodSymbol(syntax.Identifier.Value, parameters.ToImmutable(), type, syntax);
+            // if (syntax.Identifier.Value != null &&
+            //     !_scope.TryDeclareFunction(function))
+            // {
+            //     _diagnostics.ReportSymbolAlreadyDeclared(syntax.Identifier.Location, function.Name);
+            // }
         }
 
         private static BoundScope CreateParentScope(BoundGlobalScope? previous)
@@ -241,7 +241,7 @@ namespace Aquila.Language.Ast.Binding
             switch (syntax.Kind)
             {
                 case SyntaxKind.BlockStatement:
-                    return BindBlockStatement((BlockSyntax) syntax);
+                    return BindBlockStatement((BlockStatementSyntax) syntax);
                 case SyntaxKind.VariableDeclaration:
                     return BindVariableDeclaration((VariableDeclarationSyntax) syntax);
                 case SyntaxKind.IfStatement:
@@ -265,7 +265,7 @@ namespace Aquila.Language.Ast.Binding
             }
         }
 
-        private BoundStatement BindBlockStatement(BlockSyntax syntax)
+        private BoundStatement BindBlockStatement(BlockStatementSyntax syntax)
         {
             var statements = ImmutableArray.CreateBuilder<BoundStatement>();
             _scope = new BoundScope(_scope);
@@ -283,15 +283,16 @@ namespace Aquila.Language.Ast.Binding
 
         private BoundStatement BindVariableDeclaration(VariableDeclarationSyntax syntax)
         {
-            var type = BindTypeClause(syntax.VariableType);
-            //TODO: add initializer support
-            var initializer = BindExpression(syntax.Initializer);
-            var variableType = type ?? initializer.NamedType;
-            var variable =
-                BindVariableDeclaration(syntax.Identifier, false, variableType, initializer.ConstantValue);
-            var convertedInitializer = BindConversion(syntax.Initializer.Location, initializer, variableType);
-
-            return new BoundVariableDeclaration(syntax, variable, convertedInitializer);
+            throw new NotImplementedException();
+            // var type = BindTypeClause(syntax.VariableType);
+            // //TODO: add initializer support
+            // var initializer = BindExpression(syntax.Initializer);
+            // var variableType = type ?? initializer.NamedType;
+            // var variable =
+            //     BindVariableDeclaration(syntax.Identifier, false, variableType, initializer.ConstantValue);
+            // var convertedInitializer = BindConversion(syntax.Initializer.Location, initializer, variableType);
+            //
+            // return new BoundVariableDeclaration(syntax, variable, convertedInitializer);
         }
 
         [return: NotNullIfNotNull("syntax")]
@@ -475,7 +476,7 @@ namespace Aquila.Language.Ast.Binding
                 case SyntaxKind.LiteralExpression:
                     return BindLiteralExpression((Literal) syntax);
                 case SyntaxKind.NameExpression:
-                    return BindNameExpression((NameSyntax) syntax);
+                    return BindNameExpression(new object());
                 case SyntaxKind.AssignmentExpression:
                     return BindAssignmentExpression((AssignmentSyntax) syntax);
                 case SyntaxKind.UnaryExpression:
@@ -500,9 +501,11 @@ namespace Aquila.Language.Ast.Binding
             return new BoundLiteralExpression(syntax, value);
         }
 
-        private BoundExpression BindNameExpression(NameSyntax syntax)
+        private BoundExpression BindNameExpression(object syntax)
         {
-            var name = syntax.Identifier;
+            throw new NotImplementedException();
+
+            //var name = syntax.Identifier;
             // if (syntax.IdentifierToken.IsMissing)
             // {
             //     // This means the token was inserted by the parser. We already
@@ -510,11 +513,11 @@ namespace Aquila.Language.Ast.Binding
             //     return new BoundErrorExpression(syntax);
             // }
 
-            var variable = BindVariableReference(syntax.Identifier);
-            if (variable == null)
-                return new BoundErrorExpression(syntax);
-
-            return new BoundVariableExpression(syntax, variable);
+            // var variable = BindVariableReference(syntax.Identifier);
+            // if (variable == null)
+            //     return new BoundErrorExpression(syntax);
+            //
+            // return new BoundVariableExpression(syntax, variable);
         }
 
         private BoundExpression BindAssignmentExpression(AssignmentSyntax syntax)
@@ -558,21 +561,22 @@ namespace Aquila.Language.Ast.Binding
 
         private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
         {
-            var boundOperand = BindExpression(syntax.Expression);
-
-            // if (boundOperand.NamedType == NamedTypeSymbol.Error)
+            throw new NotImplementedException();
+            // var boundOperand = BindExpression(syntax.Expression);
+            //
+            // // if (boundOperand.NamedType == NamedTypeSymbol.Error)
+            // //     return new BoundErrorExpression(syntax);
+            //
+            // var boundOperator = BoundUnaryOperator.Bind(syntax.OperaotrType, boundOperand.NamedType);
+            //
+            // if (boundOperator == null)
+            // {
+            //     _diagnostics.ReportUndefinedUnaryOperator(syntax.Location, "TODO: unknown symbol!",
+            //         boundOperand.NamedType);
             //     return new BoundErrorExpression(syntax);
-
-            var boundOperator = BoundUnaryOperator.Bind(syntax.OperaotrType, boundOperand.NamedType);
-
-            if (boundOperator == null)
-            {
-                _diagnostics.ReportUndefinedUnaryOperator(syntax.Location, "TODO: unknown symbol!",
-                    boundOperand.NamedType);
-                return new BoundErrorExpression(syntax);
-            }
-
-            return new BoundUnaryExpression(syntax, boundOperator, boundOperand);
+            // }
+            //
+            // return new BoundUnaryExpression(syntax, boundOperator, boundOperand);
         }
 
         private BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax)
@@ -690,38 +694,40 @@ namespace Aquila.Language.Ast.Binding
             return new BoundConversionExpression(expression.Syntax, namedType, expression);
         }
 
-        private LocalSymbol BindVariableDeclaration(IdentifierSyntax identifier, bool isReadOnly,
+        private LocalSymbol BindVariableDeclaration(object identifier, bool isReadOnly,
             NamedTypeSymbol namedType,
             BoundConstant? constant = null)
         {
-            var name = identifier.Value ?? "?";
+            var name = "?" ?? "?";
             //var declare = !identifier.IsMissing;
             var variable = _function == null
                 ? (LocalSymbol) new GlobalLocalSymbol(name, isReadOnly, namedType, constant)
                 : new LocalLocalSymbol(name, isReadOnly, namedType, constant);
 
-            if (!_scope.TryDeclareVariable(variable))
-                _diagnostics.ReportSymbolAlreadyDeclared(identifier.Location, name);
+            // if (!_scope.TryDeclareVariable(variable))
+            //     _diagnostics.ReportSymbolAlreadyDeclared(identifier.Location, name);
 
             return variable;
         }
 
-        private LocalSymbol? BindVariableReference(IdentifierSyntax identifierToken)
+        private LocalSymbol? BindVariableReference(object identifierToken)
         {
-            var name = identifierToken.Value;
-            switch (_scope.TryLookupSymbol(name))
-            {
-                case LocalSymbol variable:
-                    return variable;
-
-                case null:
-                    _diagnostics.ReportUndefinedVariable(identifierToken.Location, name);
-                    return null;
-
-                default:
-                    _diagnostics.ReportNotAVariable(identifierToken.Location, name);
-                    return null;
-            }
+            throw  new NotImplementedException();
+            
+            // var name = identifierToken.Value;
+            // switch (_scope.TryLookupSymbol(name))
+            // {
+            //     case LocalSymbol variable:
+            //         return variable;
+            //
+            //     case null:
+            //         _diagnostics.ReportUndefinedVariable(identifierToken.Location, name);
+            //         return null;
+            //
+            //     default:
+            //         _diagnostics.ReportNotAVariable(identifierToken.Location, name);
+            //         return null;
+            // }
         }
 
 

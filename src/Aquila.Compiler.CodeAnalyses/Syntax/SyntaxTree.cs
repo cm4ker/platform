@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -36,13 +37,15 @@ namespace Aquila.Language.Ast
             return Parse(sourceText);
         }
 
-        private static void Parse(SyntaxTree syntaxTree, out Definitions.CompilationUnit root,
+        private static void Parse(SyntaxTree syntaxTree, out CompilationUnitSyntax root,
             out ImmutableArray<Diagnostic> diagnostics)
         {
             // var parser = new Parser(syntaxTree);
             // root = parser.ParseCompilationUnit();
             // diagnostics = parser.Diagnostics.ToImmutableArray();
             diagnostics = ImmutableArray<Diagnostic>.Empty;
+            
+            throw new Exception();
         }
 
         public static SyntaxTree Parse(string text)
@@ -115,7 +118,7 @@ namespace Aquila.Language.Ast
             return _parents[syntaxNode];
         }
 
-        private Dictionary<SyntaxNode, SyntaxNode?> CreateParentsDictionary(Definitions.CompilationUnit root)
+        private Dictionary<SyntaxNode, SyntaxNode?> CreateParentsDictionary(CompilationUnitSyntax root)
         {
             var result = new Dictionary<SyntaxNode, SyntaxNode?>();
             result.Add(root, null);

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Aquila.Language.Ast.Symbols.PE
 {

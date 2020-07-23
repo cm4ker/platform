@@ -272,9 +272,9 @@ public static class Helper
     }
 
 
-    public static IEnumerable<Method> FilterFunc(this IEnumerable<Method> list, CompilationMode mode)
-    {
-        return list.Where(x => ((int) x.Flags & (int) mode) != 0);
-    }
+    // public static IEnumerable<Method> FilterFunc(this IEnumerable<Method> list, CompilationMode mode)
+    // {
+    //     return list.Where(x => ((int) x.Flags & (int) mode) != 0);
+    // }
 }
 // }

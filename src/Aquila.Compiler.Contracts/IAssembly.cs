@@ -6,6 +6,7 @@ namespace Aquila.Compiler.Contracts
 {
     public interface IModule : IEquatable<IModule>
     {
+        public IEnumerable<IType> GetTypes();
     }
 
     /// <summary>

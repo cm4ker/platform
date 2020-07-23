@@ -5,7 +5,7 @@ options { tokenVocab = ZSharpLexer; }
 
 
 entryPoint: 
-    ( usingSection | methodDeclaration)*;
+    ( usingSection | method_declaration)*;
 
 usingSection: (usingDefinition | aliasingTypeDefinition)+;
 
@@ -22,76 +22,132 @@ namespace :
 typeName:
     (namespace '.')? IDENTIFIER;
 
-instructionsBody : '{' statements '}';
+block
+	: OPEN_BRACE statement_list? CLOSE_BRACE
+	;
 
-instructionsOrSingleStatement : 
-    instructionsBody | statement;
+identifier :
+    IDENTIFIER;
 
-methodDeclaration:
-    attributes? accessModifier? type IDENTIFIER ('<' genericParameters '>')? '(' parameters? ')' instructionsBody;
+statement_list
+	: statement+
+	;
 
-genericParameters:
-    genericParameter (',' genericParameter)*
-    ;    
+labeled_Statement
+	: identifier ':' statement  
+	;
 
-genericParameter:
-    IDENTIFIER
-;
-    
+statement
+	: labeled_Statement
+	| declarationStatement
+	| embedded_statement
+	;
+
+local_variable_type 
+	: VAR
+	| type
+	;
+
+local_variable_declaration
+	: local_variable_type local_variable_declarator ( ','  local_variable_declarator)*
+	;
+	
+local_variable_declarator
+    : identifier ('=' REF? local_variable_initializer)?
+    ;
+
+local_variable_initializer
+	: expression
+	//| array_initializer
+	//| stackalloc_initializer
+	;
+
+declarationStatement
+	: local_variable_declaration ';'
+	;
+
+method_declaration:
+    attributes? accessModifier? type IDENTIFIER '(' parameters? ')' method_body;
+
+method_body
+	: block
+	| ';'
+	;
+
+   
 fieldDeclaration : 
     type name ';';
     
-propertyDeclaration:
-    accessModifier? type name 
-            ('{' (GET ';' | GET getInst= instructionsBody)? (SET ';' | SET setInst = instructionsBody)? '}') 
-;
-
-statement: 
-        ((variableDeclaration 
-        | expression
-        | assigment
-        | (RETURN returnExpression = expression)
-        | throwStatement)
-        ';'+ )
-         | (ifStatement | forStatement | whileStatement | tryStatement ) ';'*
-        ; 
-
-statements: 
-    (statement)*;
-
-variableDeclaration:
-    variableType IDENTIFIER 
-    | variableType IDENTIFIER '=' expression
-    | variableType IDENTIFIER '=' NEW '[' expression ']'
-   ;
+embedded_statement
+	: block
+	| simple_embedded_statement
+	;
+	
+for_initializer
+    : local_variable_declaration
+    | expression (','  expression)*
+    ;
     
-assigment: 
-   name '=' expression
-   | name '[' indexExpression=expression ']' '=' assigmentExpression=expression
-   | lookupExpression '=' expression
-   | name OP_INC
-   | name OP_DEC
-;   
+for_iterator
+	: expression (','  expression)*
+	;    
 
+if_body
+	: block
+	| simple_embedded_statement
+	;
 
+simple_embedded_statement
+	: ';'                                                         #theEmptyStatement
+	| expression ';'                                              #expressionStatement
 
-functionCall: 
-    functionName=name '('  ')'
-    | functionName=name '('arguments')'
+	// selection statements
+	| IF OPEN_PARENS expression CLOSE_PARENS if_body (ELSE if_body)?               #ifStatement
+//    | SWITCH OPEN_PARENS expression CLOSE_PARENS OPEN_BRACE switch_section* CLOSE_BRACE           #switchStatement
+
+    // iteration statements
+	| WHILE OPEN_PARENS expression CLOSE_PARENS embedded_statement                                        #whileStatement
+	| DO embedded_statement WHILE OPEN_PARENS expression CLOSE_PARENS ';'                                 #doStatement
+	| FOR OPEN_PARENS for_initializer? ';' expression? ';' for_iterator? CLOSE_PARENS embedded_statement  #forStatement
+	| AWAIT? FOREACH OPEN_PARENS local_variable_type identifier IN expression CLOSE_PARENS embedded_statement    #foreachStatement
+
+    // jump statements
+	| BREAK ';'                                                   #breakStatement
+	| CONTINUE ';'                                                #continueStatement
+	| GOTO (identifier | CASE expression | DEFAULT) ';'           #gotoStatement
+	| RETURN expression? ';'                                      #returnStatement
+	| THROW expression? ';'                                       #throwStatement
+
+//	| TRY block (catch_clauses finally_clause? | finally_clause)  #tryStatement
+	| CHECKED block                                               #checkedStatement
+	| UNCHECKED block                                                               #uncheckedStatement
+	| LOCK OPEN_PARENS expression CLOSE_PARENS embedded_statement                  #lockStatement
+//	| USING OPEN_PARENS resource_acquisition CLOSE_PARENS embedded_statement       #usingStatement
+	| YIELD (RETURN expression | BREAK) ';'                                         #yieldStatement
+	;
+
+assignment
+	: expression_unary assignment_operator expression
+	;
+
+assignment_operator
+	: '=' | '+=' | '-=' | '*=' | '/=' | '%=' | '&=' | '|=' | '^=' 
+	; 
+
+parameters: parameter (',' parameter)*
 ;
-
-parameters: parameter (',' parameter)*;
 
 parameter:
-    (REF)? type IDENTIFIER;
+    (REF)? type IDENTIFIER
+;
 
-arguments:
-    argument (',' argument)*;
+argument_list:
+    argument (',' argument)*
+;
 
 argument:
     (REF)? expression 
 ;
-
 
 literal
 	: boolean_literal
@@ -118,15 +174,19 @@ sql_literal:
 
 expression:
     expressionStructural
+    | assignment
     ;
 
+invocation: 
+    '(' argument_list? ')'
+;
+
 expressionStructural:
-   functionCall
-   | expressionPrimitive 
+ expressionPrimitive 
    ;
 
 expressionPrimitive:
-    expressionBinary
+    expression_binary
 ;
 
 castExpression: 
@@ -134,63 +194,67 @@ castExpression:
 ;
 
 newExpression: 
-    NEW (namespace '.')? functionCall;
+    NEW typeName '(' ')';
 
-expressionBinary:
-    expressionEquality
-    | expressionBinary OP_AND expressionEquality
-    | expressionBinary OP_OR expressionEquality
+expression_binary:
+    expression_equality
+    | expression_binary OP_AND expression_equality
+    | expression_binary OP_OR expression_equality
 ;
 
-expressionEquality: 
-    expressionRelational
-    | expressionEquality OP_EQ expressionRelational
-    | expressionEquality OP_NE expressionRelational
+expression_equality: 
+    expression_relational
+    | expression_equality OP_EQ expression_relational
+    | expression_equality OP_NE expression_relational
 ;
 
-expressionRelational:
-       expressionAdditive 
-       | expressionRelational GT expressionAdditive
-       | expressionRelational LT expressionAdditive
-       | expressionRelational OP_GE expressionAdditive
-       | expressionRelational OP_LE expressionAdditive 
+expression_relational:
+       expression_additive 
+       | expression_relational GT expression_additive
+       | expression_relational LT expression_additive
+       | expression_relational OP_GE expression_additive
+       | expression_relational OP_LE expression_additive 
 ;
 
-expressionAdditive:
-   expressionMultiplicative
-        | expressionAdditive PLUS expressionMultiplicative
-        | expressionAdditive MINUS expressionMultiplicative
+expression_additive:
+   expression_multiplicative
+        | expression_additive PLUS expression_multiplicative
+        | expression_additive MINUS expression_multiplicative
 ;
 
-expressionMultiplicative:
-    expressionUnary
-    | expressionMultiplicative STAR expressionUnary
-    | expressionMultiplicative DIV expressionUnary
-    | expressionMultiplicative  PERCENT expressionUnary
+expression_multiplicative:
+    expression_unary
+    | expression_multiplicative STAR expression_unary
+    | expression_multiplicative DIV expression_unary
+    | expression_multiplicative  PERCENT expression_unary
 ;
 
-expressionUnary:
-    expressionPostfix
+expression_unary:
+    expressionPrimary
     | PLUS expressionAtom
     | MINUS expressionAtom
     | BANG expressionAtom
+    | 
+;
+
+
+expressionPrimary:
+    expressionPostfix
+    ( invocation | memberAccess)*
 ;
 
 expressionPostfix: 
-    | globalVar
-    | lookupExpression 
     | expressionAtom
+    | globalVar 
     | castExpression 
     | newExpression
     | '(' expression ')'
     | expressionAtom '[' indexerExpression=expression ']'
-    | anonimousDeclaration
-    | 
+ 
 ;
 
-lookupExpression:
-    lookupExpression '.' (name | functionCall) 
-    | expressionAtom '.' (name | functionCall) 
+memberAccess:
+    '.' name 
 ;
 
 expressionAtom:
@@ -208,11 +272,11 @@ variableType:
 type:
     structureType | arrayType;
 
-anonimousDeclaration:
-   '{' 
-    (name '=' expression) (',' name '=' expression)*
-    '}'
-;
+//anonimousDeclaration:
+//   '{' 
+//    (name '=' expression) (',' name '=' expression)*
+//    '}'
+//;
 
 structureType:
    typeName
@@ -242,26 +306,10 @@ name:
 globalVar:
     '$' expression;  
         
-ifStatement:
-    IF '(' expression ')' instructionsOrSingleStatement (ELSE instructionsOrSingleStatement)?;
-    
-forStatement:
-    FOR '('variableDeclaration ';' conditionExpression=expression ';' assigment ')' instructionsOrSingleStatement;
 
-whileStatement:
-    WHILE '(' expression ')' instructionsOrSingleStatement;
-    
 attribute:
-    '[' type ('(' arguments? ')')? ']';
+    '[' type ('(' argument_list? ')')? ']';
     
 attributes:
     attribute+;   
     
-tryStatement:
-    TRY instructionsOrSingleStatement 
-    (CATCH catchExp=instructionsOrSingleStatement)? 
-    (FINALLY finallyExp=instructionsOrSingleStatement)?;
-    
-throwStatement:
- THROW expression?
-;
