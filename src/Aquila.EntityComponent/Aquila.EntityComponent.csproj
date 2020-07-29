@@ -18,7 +18,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Aquila.Avalonia.Wrapper\Aquila.Avalonia.Wrapper.csproj" />
-        <ProjectReference Include="..\Aquila.Compiler.CodeAnalyses\Aquila.Compiler.CodeAnalyses.csproj" />
+        <ProjectReference Include="..\Aquila.Compiler.CodeAnalysis\Aquila.Compiler.CodeAnalysis.csproj" />
         <ProjectReference Include="..\Aquila.Component.Shared\Aquila.Component.Shared.csproj" />
         <ProjectReference Include="..\Aquila.ConfigurationDataComponent\Aquila.DataComponent.csproj" />
         <ProjectReference Include="..\Aquila.Ide.Common\Aquila.Ide.Common.csproj" />

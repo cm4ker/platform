@@ -15,7 +15,7 @@
     <Import Project="..\Props\avalonia.avaloniaedit.props" />
     
     <ItemGroup>
-      <ProjectReference Include="..\Aquila.Compiler.CodeAnalyses\Aquila.Compiler.CodeAnalyses.csproj" />
+      <ProjectReference Include="..\Aquila.Compiler.CodeAnalysis\Aquila.Compiler.CodeAnalysis.csproj" />
       <ProjectReference Include="..\Aquila.Compiler.Roslyn\Aquila.Compiler.Roslyn.csproj" />
       <ProjectReference Include="..\Aquila.Component.Shared\Aquila.Component.Shared.csproj" />
       <ProjectReference Include="..\Aquila.Configuration.Common\Aquila.Configuration.Common.csproj" />
