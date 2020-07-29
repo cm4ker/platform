@@ -13,10 +13,13 @@ namespace Aquila.Language.Ast.Symbols
             get { return _corLibrary; }
         }
 
+        public virtual bool IsCorLib => ReferenceEquals(this, _corLibrary);
+
+
         public void SetCorLibrary(AssemblySymbol symbol)
         {
+            _corLibrary = symbol;
         }
-
 
         internal abstract NamedTypeSymbol GetDeclaredSpecialType(SpecialType type);
 
@@ -25,6 +28,10 @@ namespace Aquila.Language.Ast.Symbols
             return CorLibrary.GetDeclaredSpecialType(type);
         }
 
+        internal virtual Symbol GetMember(string name)
+        {
+            throw new NotImplementedException();
+        }
 
         internal virtual void RegisterDeclaredSpecialType(NamedTypeSymbol corType)
         {

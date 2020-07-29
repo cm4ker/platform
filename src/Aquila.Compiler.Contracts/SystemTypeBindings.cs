@@ -34,6 +34,8 @@ namespace Aquila.Compiler.Contracts
 
         public ITypeSystem TypeSystem => _ts;
 
+        public IAssembly CorAssembly => _ts.FindAssembly(MSCORLIB);
+
         public IType Int => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(Int32)}", MSCORLIB);
 
         public IType IntPrt => _ts.FindType($"{SYSTEM_NAMESPACE}.{nameof(IntPtr)}", MSCORLIB);

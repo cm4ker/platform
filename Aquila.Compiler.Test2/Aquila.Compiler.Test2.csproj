@@ -21,6 +21,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\src\Aquila.Compiler.CodeAnalyses\Aquila.Compiler.CodeAnalyses.csproj" />
+      <ProjectReference Include="..\src\Aquila.Compiler.Dnlib\Aquila.Compiler.Dnlib.csproj" />
     </ItemGroup>
 
 </Project>

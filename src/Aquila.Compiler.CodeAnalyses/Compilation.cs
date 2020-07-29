@@ -4,33 +4,52 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
+using Aquila.Compiler.Contracts;
 using Aquila.Language.Ast;
 using Aquila.Language.Ast.Binding;
 using Aquila.Language.Ast.Extension;
 using Aquila.Language.Ast.Symbols;
+using Aquila.Language.Ast.Symbols.PE;
+using Aquila.Language.Ast.Symbols.Source;
+using Binder = Aquila.Language.Ast.Binding.Binder;
 
 namespace Aquila.Compiler
 {
     public class Compilation
     {
         private BoundGlobalScope? _globalScope;
+        private SourceAssemblySymbol _assembly;
 
-        private Compilation(bool isScript, Compilation? previous, params SyntaxTree[] syntaxTrees)
+        private Compilation(bool isScript, Compilation? previous, IAssemblyPlatform platform,
+            params SyntaxTree[] syntaxTrees)
         {
             IsScript = isScript;
             Previous = previous;
             SyntaxTrees = syntaxTrees.ToImmutableArray();
+
+            _assembly = new SourceAssemblySymbol();
+            _assembly.Builder = platform.CreateAssembly("Debug");
+            _assembly.Builder.DefineType("", "Program",
+                TypeAttributes.Public | TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit,
+                platform.TypeSystem.GetSystemBindings().Object);
+
+            var corLib = new PEAssemblySymbol(platform.TypeSystem.GetSystemBindings().CorAssembly);
+
+            corLib.SetCorLibrary(corLib);
+            _assembly.SetCorLibrary(corLib);
         }
 
-        public static Compilation Create(params SyntaxTree[] syntaxTrees)
+        public static Compilation Create(IAssemblyPlatform platform, params SyntaxTree[] syntaxTrees)
         {
-            return new Compilation(isScript: false, previous: null, syntaxTrees);
+            return new Compilation(isScript: false, previous: null, platform, syntaxTrees);
         }
 
-        public static Compilation CreateScript(Compilation? previous, params SyntaxTree[] syntaxTrees)
+        public static Compilation CreateScript(Compilation? previous, IAssemblyPlatform platform,
+            params SyntaxTree[] syntaxTrees)
         {
-            return new Compilation(isScript: true, previous, syntaxTrees);
+            return new Compilation(isScript: true, previous, platform, syntaxTrees);
         }
 
         public bool IsScript { get; }
@@ -95,11 +114,11 @@ namespace Aquila.Compiler
 
         internal AssemblySymbol Assembly
         {
-            get { return null; }
+            get { return _assembly; }
         }
 
 
-        private BoundProgram GetProgram()
+        internal BoundProgram GetProgram()
         {
             var previous = Previous == null ? null : Previous.GetProgram();
             return Binder.BindProgram(this, IsScript, previous, GlobalScope);

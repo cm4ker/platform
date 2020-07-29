@@ -6,6 +6,10 @@ namespace Aquila.Language.Ast.Symbols
     {
         public override SymbolKind Kind => SymbolKind.NetModule;
 
+        public abstract NamespaceSymbol GlobalNamespace { get; }
+
+        public abstract AssemblySymbol ContainingAssembly { get; }
+
         internal abstract NamedTypeSymbol LookupTopLevelMetadataType(ref MetadataTypeName emittedName);
     }
 }

@@ -64,6 +64,24 @@ namespace Aquila.Language.Ast
         WhileKeyword,
         DoKeyword,
 
+        //predefined types
+        BoolKeyword = 8304,
+        ByteKeyword = 8305,
+        SByteKeyword = 8306,
+        ShortKeyword = 8307,
+        UShortKeyword = 8308,
+        IntKeyword = 8309,
+        UIntKeyword = 8310,
+        LongKeyword = 8311,
+        ULongKeyword = 8312,
+        DoubleKeyword = 8313,
+        FloatKeyword = 8314,
+        DecimalKeyword = 8315,
+        StringKeyword = 8316,
+        CharKeyword = 8317,
+        VoidKeyword = 8318,
+        ObjectKeyword = 8319,
+
         // Nodes
         CompilationUnit,
         MethodDeclaration,

@@ -69,6 +69,7 @@ namespace Aquila.Compiler.Dnlib
         public bool IsInterface { get; }
         public bool IsSystem { get; }
         public bool IsPrimitive { get; }
+        public bool HasGenericParameters { get; }
 
         public IType GetEnumUnderlyingType()
         {

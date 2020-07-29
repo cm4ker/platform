@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Threading;
+using Aquila.Compiler.Parser;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Text;
 
@@ -24,11 +25,15 @@ namespace Aquila.Language.Ast
 
             Diagnostics = diagnostics;
             Root = root;
+
+            RelatedTypeName = "Program";
         }
 
         public SourceText Text { get; }
         public ImmutableArray<Diagnostic> Diagnostics { get; }
         public CompilationUnitSyntax Root { get; }
+
+        public string RelatedTypeName { get; }
 
         public static SyntaxTree Load(string fileName)
         {
@@ -40,12 +45,9 @@ namespace Aquila.Language.Ast
         private static void Parse(SyntaxTree syntaxTree, out CompilationUnitSyntax root,
             out ImmutableArray<Diagnostic> diagnostics)
         {
-            // var parser = new Parser(syntaxTree);
-            // root = parser.ParseCompilationUnit();
-            // diagnostics = parser.Diagnostics.ToImmutableArray();
+            var a = syntaxTree.Text.ToString();
+            root = (CompilationUnitSyntax) ParseHelper.ParseSyntax(a);
             diagnostics = ImmutableArray<Diagnostic>.Empty;
-            
-            throw new Exception();
         }
 
         public static SyntaxTree Parse(string text)

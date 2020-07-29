@@ -67,9 +67,9 @@ namespace Aquila.Compiler.Test2
         {
             var parser = Parse("{int a = 10; a = 20; {int c = 300;}}");
             var result = _v.VisitBlock(parser.block());
-            var expr = Assert.IsAssignableFrom<BlockSyntax>(result);
+            var expr = Assert.IsAssignableFrom<BlockStatementSyntax>(result);
             Assert.Equal(3, expr.Statements.Count);
-            Assert.IsAssignableFrom<BlockSyntax>(expr.Statements[2]);
+            Assert.IsAssignableFrom<BlockStatementSyntax>(expr.Statements[2]);
         }
 
         [Fact]

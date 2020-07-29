@@ -280,9 +280,9 @@ type:
 
 structureType:
    typeName
-    | aliacedTypes;
+    | predefinedTypes;
     
-aliacedTypes:
+predefinedTypes:
     BOOL 
     | INT
     | UID

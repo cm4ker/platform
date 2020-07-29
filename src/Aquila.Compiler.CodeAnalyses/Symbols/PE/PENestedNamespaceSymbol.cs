@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,19 +15,22 @@ namespace Aquila.Language.Ast.Symbols.PE
             _containingNamespace = containingNamespace;
         }
 
+        public override string Name => _name;
+
         public override IEnumerable<Symbol> GetMembers()
         {
-            foreach (var type in _types)
-            {
-                yield return type;
-            }
-
-            var nestedMembers = _nested.SelectMany(x => x.GetMembers());
-
-            foreach (var nestedType in nestedMembers)
-            {
-                yield return nestedType;
-            }
+            throw new NotImplementedException();
+            // foreach (var type in Types.Select(x => x.Value))
+            // {
+            //     yield return type;
+            // }
+            //
+            // var nestedMembers = Nested.Select(x => x.Value).SelectMany(x => x.GetMembers());
+            //
+            // foreach (var nestedType in nestedMembers)
+            // {
+            //     yield return nestedType;
+            // }
         }
 
         internal override PEModuleSymbol ContainingPEModule => _containingNamespace.ContainingPEModule;

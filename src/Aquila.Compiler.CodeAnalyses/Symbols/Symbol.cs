@@ -6,7 +6,7 @@ namespace Aquila.Language.Ast.Symbols
     {
         public abstract SymbolKind Kind { get; }
         public virtual string Name => string.Empty;
-        public virtual Symbol ContainingSymbol => null;
+        public virtual Symbol ContainingSymbol { get; }
 
         internal virtual ModuleSymbol? ContainingModule
         {
@@ -19,7 +19,7 @@ namespace Aquila.Language.Ast.Symbols
 
         public void WriteTo(TextWriter writer)
         {
-            SymbolPrinter.WriteTo(this, writer);
+            //   SymbolPrinter.WriteTo(this, writer);
         }
 
         public override string ToString()

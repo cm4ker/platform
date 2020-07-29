@@ -153,6 +153,7 @@ namespace Aquila.Compiler.Dnlib
         public bool IsSystem => false;
 
         public bool IsPrimitive => TypeDef.IsPrimitive;
+        public bool HasGenericParameters { get; }
 
         public IType GetEnumUnderlyingType()
         {

@@ -9,11 +9,14 @@ namespace Aquila.Language.Ast.Symbols.PE
         private readonly IType _typeDef;
 
         public PENamedTypeSymbolNonGeneric(PEModuleSymbol moduleSymbol,
-            PENamespaceSymbol containingNamespace, IType typeDef)
+            PENamespaceSymbol containingNamespace, IType typeDef) : base(moduleSymbol, containingNamespace,
+            typeDef.Namespace, typeDef.Name)
         {
             _moduleSymbol = moduleSymbol;
             _containingNamespace = containingNamespace;
             _typeDef = typeDef;
         }
+
+        public override string Name => _typeDef.Name;
     }
 }

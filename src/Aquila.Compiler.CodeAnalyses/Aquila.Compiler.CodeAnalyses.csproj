@@ -17,6 +17,8 @@
 
         <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
 
+        <PackageReference Include="Aquila.Microsoft.CodeAnalysis" Version="0.0.3" />
+
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.4" />
         <PackageReference Include="NETStandard.Library" Version="2.0.3" />
         <PackageReference Include="System.ServiceModel.Primitives" Version="4.7.0" />
@@ -42,16 +44,18 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Remove="gen\**" />
+        <Compile Remove="gen\**" />
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Remove="gen\**" />
+        <EmbeddedResource Remove="gen\**" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="gen\**" />
+        <None Remove="gen\**" />
     </ItemGroup>
-
+    <ItemGroup>
+        <InternalsVisibleTo Include="Aquila.Compiler.Test2" />
+    </ItemGroup>
 
 </Project>

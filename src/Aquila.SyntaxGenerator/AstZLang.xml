@@ -103,11 +103,19 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="TypeSyntax">
+    <Syntax Name="TypeSyntax" Base="ExpressionSyntax" IsAbstract="true">
+    </Syntax>
+
+    <!-- Types-->
+    <Syntax Name="PredefinedTypeSyntax" Base="TypeSyntax"/>
+
+    <Syntax Name="NamedTypeSyntax" Base="TypeSyntax">
         <Arguments>
             <Single Name="Value" Type="string" DenyChildrenFill="true" Default='"?"' Virtual="true"/>
         </Arguments>
     </Syntax>
+    <!-- Types end -->
+
 
     <Syntax Name="ArrayTypeSyntax" Base="TypeSyntax">
         <Arguments>

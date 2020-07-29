@@ -20,15 +20,11 @@ namespace Aquila.Language.Ast.Symbols
     {
     }
 
-    public class SourceOrdinaryMethodSymbol : SourceMethodSymbolWithAttributes
+    public class SourceOrdinaryMethodSymbol : SourceMemberMethodSymbol
     {
-        internal SourceOrdinaryMethodSymbol(string name, ImmutableArray<ParameterSymbol> parameters,
-            NamedTypeSymbol namedType,
-            MethodDeclarationSyntax? declaration = null)
+        internal SourceOrdinaryMethodSymbol(NamedTypeSymbol containingType, MethodDeclarationSyntax syntax) : base(
+            containingType)
         {
-            // Parameters = parameters;
-            // NamedType = namedType;
-            // Declaration = declaration;
         }
     }
 

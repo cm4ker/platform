@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Aquila.Language.Ast.Definitions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using BlockSyntax = Aquila.Language.Ast.Definitions.BlockSyntax;
 
 namespace Aquila.Language.Ast
 {

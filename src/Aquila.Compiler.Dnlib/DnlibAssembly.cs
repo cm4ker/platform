@@ -9,6 +9,7 @@ using dnlib.PE;
 using Aquila.Compiler.Contracts;
 using IAssembly = Aquila.Compiler.Contracts.IAssembly;
 using ICustomAttribute = Aquila.Compiler.Contracts.ICustomAttribute;
+using IModule = Aquila.Compiler.Contracts.IModule;
 using IType = Aquila.Compiler.Contracts.IType;
 
 namespace Aquila.Compiler.Dnlib
@@ -17,12 +18,15 @@ namespace Aquila.Compiler.Dnlib
     {
         private DnlibTypeSystem _ts;
 
+        private List<DnlibModule> _modules;
         protected Dictionary<string, DnlibType> TypeCache = new Dictionary<string, DnlibType>();
 
         public DnlibAssembly(DnlibTypeSystem ts, AssemblyDef assembly)
         {
             Assembly = assembly;
             _ts = ts;
+
+            _modules = assembly.Modules.Select(x => new DnlibModule(ts, x)).ToList();
         }
 
         public AssemblyDef Assembly { get; }
@@ -31,6 +35,8 @@ namespace Aquila.Compiler.Dnlib
         public bool Equals(IAssembly other) => other == this;
 
         public string Name => Assembly.Name;
+
+        public IReadOnlyList<IModule> Modules => _modules;
 
         private IReadOnlyList<ICustomAttribute> _attributes;
 
@@ -56,7 +62,7 @@ namespace Aquila.Compiler.Dnlib
                 ? new TypeRefUser(Assembly.ManifestModule, null, fullName, asmRef)
                 : new TypeRefUser(Assembly.ManifestModule, fullName.Substring(0, lastDot),
                     fullName.Substring(lastDot + 1), asmRef);
-            
+
             var resolved = tref.Resolve(Assembly.ManifestModule);
             if (resolved != null)
                 return TypeCache[fullName] = _ts.GetTypeFromReference(tref);

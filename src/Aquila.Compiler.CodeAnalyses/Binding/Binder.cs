@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Aquila.Compiler;
+using Aquila.Compiler.Symbols;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Definitions.Expressions;
 using Aquila.Language.Ast.Definitions.Functions;
@@ -13,6 +14,7 @@ using Aquila.Language.Ast.Extension;
 using Aquila.Language.Ast.Lowering;
 using Aquila.Language.Ast.Symbols;
 using Aquila.Language.Ast.Text;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Aquila.Language.Ast.Binding
 {
@@ -43,6 +45,7 @@ namespace Aquila.Language.Ast.Binding
             }
         }
 
+
         public static BoundGlobalScope BindGlobalScope(Compilation compilation, bool isScript,
             BoundGlobalScope? previous,
             ImmutableArray<SyntaxTree> syntaxTrees)
@@ -51,6 +54,7 @@ namespace Aquila.Language.Ast.Binding
             var binder = new Binder(compilation, isScript, parentScope, function: null);
 
             binder.Diagnostics.AddRange(syntaxTrees.SelectMany(st => st.Diagnostics));
+
             if (binder.Diagnostics.Any())
                 return new BoundGlobalScope(previous, binder.Diagnostics.ToImmutableArray(), null, null,
                     ImmutableArray<MethodSymbol>.Empty, ImmutableArray<LocalSymbol>.Empty);
@@ -142,7 +146,7 @@ namespace Aquila.Language.Ast.Binding
 
             foreach (var parameterSyntax in syntax.Parameters)
             {
-                var parameterName = ""; //parameterSyntax.Identifier.Value;
+                var parameterName = parameterSyntax.Identifier.Text;
                 var parameterType = BindTypeClause(parameterSyntax.Type);
                 if (!seenParameterNames.Add(parameterName))
                 {
@@ -155,15 +159,14 @@ namespace Aquila.Language.Ast.Binding
                 }
             }
 
-            var type = BindTypeClause(syntax.Type) ?? GetSpecialType(SpecialType.System_Void, syntax);
+            NamedTypeSymbol containingType = null;
 
-            // var function =
-            //     new SourceOrdinaryMethodSymbol(syntax.Identifier.Value, parameters.ToImmutable(), type, syntax);
-            // if (syntax.Identifier.Value != null &&
-            //     !_scope.TryDeclareFunction(function))
-            // {
-            //     _diagnostics.ReportSymbolAlreadyDeclared(syntax.Identifier.Location, function.Name);
-            // }
+            var functionSymbol = new SourceOrdinaryMethodSymbol(containingType, syntax);
+
+            if (functionSymbol.Name != null && !_scope.TryDeclareFunction(functionSymbol))
+            {
+                _diagnostics.ReportSymbolAlreadyDeclared(syntax.Identifier.Location, functionSymbol.Name);
+            }
         }
 
         private static BoundScope CreateParentScope(BoundGlobalScope? previous)
@@ -301,9 +304,9 @@ namespace Aquila.Language.Ast.Binding
             if (syntax == null)
                 return null;
 
-            var type = LookupType(syntax.Value);
+            var type = LookupType(syntax);
             if (type == null)
-                _diagnostics.ReportUndefinedType(syntax.Location, syntax.Value);
+                _diagnostics.ReportUndefinedType(syntax.Location, syntax.ToString());
 
             return type;
         }
@@ -712,8 +715,8 @@ namespace Aquila.Language.Ast.Binding
 
         private LocalSymbol? BindVariableReference(object identifierToken)
         {
-            throw  new NotImplementedException();
-            
+            throw new NotImplementedException();
+
             // var name = identifierToken.Value;
             // switch (_scope.TryLookupSymbol(name))
             // {
@@ -750,23 +753,13 @@ namespace Aquila.Language.Ast.Binding
             return typeSymbol;
         }
 
-        private NamedTypeSymbol? LookupType(string name)
-        {
-            switch (name)
-            {
-                // case "any":
-                //     return NamedTypeSymbol.Any;
-                // case "bool":
-                //     return NamedTypeSymbol.Bool;
-                // case "int":
-                //     return NamedTypeSymbol.Int;
-                // case "string":
-                //     return NamedTypeSymbol.String;
-                // default:
-                //     return null;
-            }
 
-            return null;
+        private NamedTypeSymbol? LookupType(SyntaxNode syntax)
+        {
+            if (syntax is PredefinedTypeSyntax)
+                return GetSpecialType(syntax.Kind.GetSpecialType(), syntax);
+
+            throw new NotImplementedException();
         }
     }
 }

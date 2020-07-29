@@ -721,9 +721,49 @@ namespace Aquila.Language.Ast.Definitions.Expressions
 
 namespace Aquila.Language.Ast.Definitions
 {
-    public partial class TypeSyntax : SyntaxNode
+    public abstract partial class TypeSyntax : ExpressionSyntax
     {
-        public TypeSyntax(ILineInfo lineInfo, SyntaxKind syntaxKind,  string  value = "?"): base(lineInfo, syntaxKind)
+        public TypeSyntax(ILineInfo lineInfo, SyntaxKind syntaxKind): base(lineInfo, syntaxKind)
+        {
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
+
+namespace Aquila.Language.Ast.Definitions
+{
+    public partial class PredefinedTypeSyntax : TypeSyntax
+    {
+        public PredefinedTypeSyntax(ILineInfo lineInfo, SyntaxKind syntaxKind): base(lineInfo, syntaxKind)
+        {
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitPredefinedTypeSyntax(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitPredefinedTypeSyntax(this);
+        }
+    }
+}
+
+namespace Aquila.Language.Ast.Definitions
+{
+    public partial class NamedTypeSyntax : TypeSyntax
+    {
+        public NamedTypeSyntax(ILineInfo lineInfo, SyntaxKind syntaxKind,  string  value = "?"): base(lineInfo, syntaxKind)
         {
             Value = value;
         }
@@ -735,12 +775,12 @@ namespace Aquila.Language.Ast.Definitions
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            return visitor.VisitTypeSyntax(this);
+            return visitor.VisitNamedTypeSyntax(this);
         }
 
         public override void Accept(AstVisitorBase visitor)
         {
-            visitor.VisitTypeSyntax(this);
+            visitor.VisitNamedTypeSyntax(this);
         }
     }
 }
@@ -2121,7 +2161,12 @@ namespace Aquila.Language.Ast
             return DefaultVisit(arg);
         }
 
-        public virtual T VisitTypeSyntax(TypeSyntax arg)
+        public virtual T VisitPredefinedTypeSyntax(PredefinedTypeSyntax arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitNamedTypeSyntax(NamedTypeSyntax arg)
         {
             return DefaultVisit(arg);
         }
@@ -2409,7 +2454,12 @@ namespace Aquila.Language.Ast
             DefaultVisit(arg);
         }
 
-        public virtual void VisitTypeSyntax(TypeSyntax arg)
+        public virtual void VisitPredefinedTypeSyntax(PredefinedTypeSyntax arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitNamedTypeSyntax(NamedTypeSyntax arg)
         {
             DefaultVisit(arg);
         }
