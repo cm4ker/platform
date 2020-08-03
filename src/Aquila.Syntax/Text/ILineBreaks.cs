@@ -15,11 +15,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using Aquila.Syntax.Syntax;
 
-using Devsense.PHP.Syntax;
-
-namespace Devsense.PHP.Text
+namespace Aquila.Syntax.Text
 {
     #region ILineBreaks
 

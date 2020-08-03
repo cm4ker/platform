@@ -14,14 +14,12 @@
 // permissions and limitations under the License.
 
 using System;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-
 using Hashtable = System.Collections.Generic.Dictionary<object, object>;
 
-namespace Devsense.PHP.Syntax
+namespace Aquila.Syntax.Syntax
 {
     /// <summary>
     /// Provides set of keyed properties.

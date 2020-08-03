@@ -1,4 +1,4 @@
-﻿// Copyright(c) DEVSENSE s.r.o.
+﻿﻿// Copyright(c) DEVSENSE s.r.o.
 // All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the License); you may not use
@@ -13,25 +13,20 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
-using System;
-
-namespace Devsense.PHP.Syntax.Ast
+  namespace Aquila.Syntax.Errors
 {
     /// <summary>
-    /// <c>__halt_compiler</c> element.
+    /// Provides error sink to report errors into.
     /// </summary>
-    public sealed class HaltCompiler : Statement
+    /// <typeparam name="TSpan">Type of position.</typeparam>
+    public interface IErrorSink<TSpan>
     {
         /// <summary>
-        /// Initializes the element.
+        /// Reports an error to the sink.
         /// </summary>
-        public HaltCompiler(Text.Span span) : base(span)
-        {
-        }
-
-        public override void VisitMe(TreeVisitor visitor)
-        {
-            visitor.VisitHaltCompiler(this);
-        }
+        /// <param name="span">Error position.</param>
+        /// <param name="info">Error descriptor.</param>
+        /// <param name="argsOpt">Error message arguments.</param>
+        void Error(TSpan span, ErrorInfo info, params string[] argsOpt);
     }
 }

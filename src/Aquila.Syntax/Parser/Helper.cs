@@ -1,9 +1,7 @@
 using System.IO;
 using Antlr4.Runtime;
-using Aquila.Core.Network;
-using Aquila.Language.Ast;
 
-namespace Aquila.Compiler.Parser
+namespace Aquila.Syntax.Parser
 {
     public static class ParseHelper
     {

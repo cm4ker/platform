@@ -14,13 +14,13 @@
 // permissions and limitations under the License.
 
 using System;
-using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Devsense.PHP.Text;
+using System.Text;
+using Aquila.Syntax.Text;
 
-namespace Devsense.PHP.Syntax
+namespace Aquila.Syntax.Syntax
 {
     // 
     //  Identifier            Representation
@@ -186,7 +186,7 @@ namespace Devsense.PHP.Syntax
 
         /// <summary>
         /// <c>true</c> if the name was generated for the 
-        /// <see cref="Devsense.PHP.Syntax.Ast.AnonymousTypeDecl"/>, 
+        /// <see cref="AnonymousTypeDecl"/>, 
         /// <c>false</c> otherwise.
         /// </summary>
         public bool IsGenerated

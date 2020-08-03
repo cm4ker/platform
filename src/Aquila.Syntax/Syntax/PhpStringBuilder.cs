@@ -16,11 +16,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using Aquila.Syntax.Text;
 
-using Devsense.PHP.Syntax.Ast;
-using Devsense.PHP.Text;
-
-namespace Devsense.PHP.Syntax
+namespace Aquila.Syntax.Syntax
 {
     /// <summary>
     /// The PHP-semantic string builder. Binary or Unicode string builder.

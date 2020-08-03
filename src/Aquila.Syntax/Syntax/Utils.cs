@@ -14,15 +14,15 @@
 // permissions and limitations under the License.
 
 using System;
-using System.IO;
-using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text;
 
-namespace Devsense.PHP.Syntax
+namespace Aquila.Syntax.Syntax
 {
     #region Spans
 
@@ -75,31 +75,31 @@ namespace Devsense.PHP.Syntax
         public static Text.Span SpanIntermission(Text.Span previous, int next) =>
             previous.IsValid && next >= 0 && previous.End <= next ? Text.Span.FromBounds(previous.End, next) : Text.Span.Invalid;
 
-        public static Text.Span ItemSpan(this Ast.Item item) => SafeCombineSpan(
-            item.Index != null ? item.Index.Span : Text.Span.Invalid,
-            item.Value.Span);
+        // public static Text.Span ItemSpan(this Ast.Item item) => SafeCombineSpan(
+        //     item.Index != null ? item.Index.Span : Text.Span.Invalid,
+        //     item.Value.Span);
 
-        public static Text.Span ItemsSpan(this IList<Ast.Item> items)
-        {
-            Ast.Item first = null;
-            Ast.Item last = null;
-
-            for (int i = 0; i < items.Count; i++)
-            {
-                if ((first = items[i]) != null)
-                {
-                    for (int j = items.Count - 1; j >= i; j--)
-                    {
-                        if ((last = items[j]) != null)
-                        {
-                            return SafeCombineSpan(first.ItemSpan(), last.ItemSpan());
-                        }
-                    }
-                }
-            }
-
-            return Text.Span.Invalid;
-        }
+        // public static Text.Span ItemsSpan(this IList<Ast.Item> items)
+        // {
+        //     Ast.Item first = null;
+        //     Ast.Item last = null;
+        //
+        //     for (int i = 0; i < items.Count; i++)
+        //     {
+        //         if ((first = items[i]) != null)
+        //         {
+        //             for (int j = items.Count - 1; j >= i; j--)
+        //             {
+        //                 if ((last = items[j]) != null)
+        //                 {
+        //                     return SafeCombineSpan(first.ItemSpan(), last.ItemSpan());
+        //                 }
+        //             }
+        //         }
+        //     }
+        //
+        //     return Text.Span.Invalid;
+        // }
     }
 
     #endregion
@@ -1247,7 +1247,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="list">List to search in.</param>
         /// <param name="item">Item to search for.</param>
         /// <param name="comparer">Comparer to be used.</param>
-        /// <returns>The zero-based index of the first occurrence of <paramref name="item" /> within the entire <paramref name="list"/>, if found; otherwise, –1.</returns>
+        /// <returns>The zero-based index of the first occurrence of <paramref name="item" /> within the entire <paramref name="list"/>, if found; otherwise, â€“1.</returns>
         public static int IndexOf<T>(this IList<T>/*!*/list, T item, IEqualityComparer<T>/*!*/comparer)
         {
             Debug.Assert(list != null);

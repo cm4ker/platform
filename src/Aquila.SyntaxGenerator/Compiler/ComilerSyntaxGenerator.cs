@@ -27,7 +27,7 @@ namespace Aquila.SyntaxGenerator.Compiler
             .AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword))
             .AddModifiers(partialToken);
 
-        private static string ns_root = "Aquila.Language.Ast";
+        private static string ns_root = "Aquila.Parser";
         private static string VisitorClassName = "AstVisitorBase";
         private static string NameBase = "SyntaxNode";
 
@@ -160,7 +160,7 @@ namespace Aquila.SyntaxGenerator.Compiler
 
             var initializer = SyntaxFactory.ConstructorInitializer(SyntaxKind.BaseConstructorInitializer,
                 SyntaxFactory.ArgumentList()
-                    .AddArguments(SyntaxFactory.Argument(SyntaxFactory.ParseExpression("null"))));
+                    .AddArguments(SyntaxFactory.Argument(SyntaxFactory.ParseExpression("Span.Empty"))));
 
             var constructor = SyntaxFactory.ConstructorDeclaration(syntax.Name)
                 .WithBody(SyntaxFactory.Block())
@@ -189,7 +189,7 @@ namespace Aquila.SyntaxGenerator.Compiler
 
 
             var constructor = (ConstructorDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
-                $"public {syntax.Name}(ILineInfo lineInfo, SyntaxKind syntaxKind) : base(lineInfo, syntaxKind){{}}");
+                $"public {syntax.Name}(Span span, SyntaxKind syntaxKind) : base(span, syntaxKind){{}}");
 
             var initializer = constructor.Initializer;
 

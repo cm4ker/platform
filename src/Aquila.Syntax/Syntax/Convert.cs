@@ -15,7 +15,7 @@
 
 using System;
 
-namespace Devsense.PHP.Syntax
+namespace Aquila.Syntax.Syntax
 {
     public static class Convert
     {

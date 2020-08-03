@@ -13,16 +13,12 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
-using Devsense.PHP.Syntax.Ast;
-using Devsense.PHP.Text;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Aquila.Language.Ast.Definitions;
+using Aquila.Syntax.Text;
 
-namespace Devsense.PHP.Syntax
+namespace Aquila.Syntax.Syntax
 {
     #region VariableNameRef
 
@@ -143,14 +139,14 @@ namespace Devsense.PHP.Syntax
 
         internal static QualifiedNameRef FromTypeRef(TypeRef tref)
         {
-            if (tref == null)
-            {
-                return QualifiedNameRef.Invalid;
-            }
-            var qname = tref.QualifiedName;
-            if (qname.HasValue)
-                return new QualifiedNameRef(tref.Span, qname.Value);
-            else
+            // if (tref == null)
+            // {
+            //     return QualifiedNameRef.Invalid;
+            // }
+            // var qname = tref.QualifiedName;
+            // if (qname.HasValue)
+            //     return new QualifiedNameRef(tref.Span, qname.Value);
+            // else
                 throw new ArgumentException();
         }
 

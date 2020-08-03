@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Aquila.Language.Ast;
+using Aquila.Compiler;
 using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Definitions.Expressions;
 using Aquila.Language.Ast.Definitions.Functions;
 using Aquila.Language.Ast.Definitions.Statements;
-using Aquila.Language.Ast.Infrastructure;
-using Aquila.Language.Ast.Misc;
-using MoreLinq;
+using Aquila.Syntax.Text;
+using MoreLinq.Extensions;
 
-namespace Aquila.Compiler.Parser
+namespace Aquila.Syntax.Parser
 {
     public class ZLanguageVisitor : ZSharpParserBaseVisitor<SyntaxNode>
     {
@@ -50,7 +49,7 @@ namespace Aquila.Compiler.Parser
             context.method_declaration().ForEach(x => VisitMethod_declaration(x));
             var methods = PopStack();
 
-            var cu = new CompilationUnitSyntax(context.ToLineInfo(), SyntaxKind.CompilationUnit, usings,
+            var cu = new CompilationUnit(context.ToLineInfo(), SyntaxKind.CompilationUnit, usings,
                 methods.ToCollection<MethodList>(), FieldList.Empty);
 
             PopStack();
@@ -60,7 +59,7 @@ namespace Aquila.Compiler.Parser
 
         public override SyntaxNode VisitAliasingTypeDefinition(ZSharpParser.AliasingTypeDefinitionContext context)
         {
-            return new UsingAliasDeclarationSyntax(context.ToLineInfo(), SyntaxKind.BadToken,
+            return new UsingAliasDeclaration(context.ToLineInfo(), SyntaxKind.BadToken,
                 context.typeName().GetText(),
                 context.alias.GetText());
         }
@@ -68,14 +67,14 @@ namespace Aquila.Compiler.Parser
         public override SyntaxNode VisitUsingDefinition(ZSharpParser.UsingDefinitionContext context)
         {
             base.VisitUsingDefinition(context);
-            return new UsingDeclarationSyntax(context.ToLineInfo(), SyntaxKind.UsingDerictive,
+            return new UsingDeclaration(context.ToLineInfo(), SyntaxKind.UsingDerictive,
                 context.@namespace().GetText());
         }
 
         public override SyntaxNode VisitFieldDeclaration(ZSharpParser.FieldDeclarationContext context)
         {
             base.VisitFieldDeclaration(context);
-            FieldDeclarationSyntax f = new FieldDeclarationSyntax(context.ToLineInfo(), SyntaxKind.FieldDeclaration,
+            FieldDecl f = new FieldDecl(context.ToLineInfo(), SyntaxKind.FieldDeclaration,
                 Stack.PopIdentifier(),
                 Stack.PopType());
             Stack.PeekCollection().Add(f);
@@ -84,7 +83,7 @@ namespace Aquila.Compiler.Parser
 
         public override SyntaxNode VisitAttributes(ZSharpParser.AttributesContext context)
         {
-            Stack.Push(new AttributeList());
+            Stack.Push(new AnnotationList());
             base.VisitAttributes(context);
 
             return null;
@@ -100,8 +99,8 @@ namespace Aquila.Compiler.Parser
                 ac = (ArgumentList) Stack.Pop();
 
             var result =
-                new AttributeSyntax(context.ToLineInfo(), SyntaxKind.Attribute, ac, null);
-            Stack.PeekType<AttributeList>().Add(result);
+                new Annotation(context.ToLineInfo(), SyntaxKind.Attribute, ac, null);
+            Stack.PeekType<AnnotationList>().Add(result);
 
             return result;
         }
@@ -146,7 +145,7 @@ namespace Aquila.Compiler.Parser
         {
             base.VisitArrayType(context);
 
-            var result = new ArrayTypeSyntax(context.ToLineInfo(), SyntaxKind.ArrayType, Stack.PopType());
+            var result = new ArrayType(context.ToLineInfo(), SyntaxKind.ArrayType, Stack.PopType());
 
             Stack.Push(result);
             return result;
@@ -155,7 +154,7 @@ namespace Aquila.Compiler.Parser
         public override SyntaxNode VisitLiteral(ZSharpParser.LiteralContext context)
         {
             Literal result = null;
-            ILineInfo li = context.ToLineInfo();
+            Span li = context.ToLineInfo();
             if (context.string_literal() != null)
             {
                 //Строки парсятся сюда вместе с кавычками и чтобы их убрать приходится
@@ -217,10 +216,10 @@ namespace Aquila.Compiler.Parser
             SyntaxNode decl;
 
             if (context.local_variable_initializer() != null)
-                decl = new VariableDeclaratorSyntax(context.ToLineInfo(), SyntaxKind.VariableDeclarator,
+                decl = new VarDeclarator(context.ToLineInfo(), SyntaxKind.VariableDeclarator,
                     Stack.PopExpression(), Stack.PopIdentifier());
             else
-                decl = new VariableDeclaratorSyntax(context.ToLineInfo(), SyntaxKind.VariableDeclarator,
+                decl = new VarDeclarator(context.ToLineInfo(), SyntaxKind.VariableDeclarator,
                     null, Stack.PopIdentifier());
 
             Stack.Push(decl);
@@ -246,7 +245,7 @@ namespace Aquila.Compiler.Parser
                 list = declarators.ToCollection<DeclaratorList>();
             }
 
-            Stack.Push(new VariableDeclarationSyntax(context.ToLineInfo(), SyntaxKind.VariableDeclaration,
+            Stack.Push(new VarDeclaration(context.ToLineInfo(), SyntaxKind.VariableDeclaration,
                 Stack.PopType(), list));
 
             return Stack.PeekNode();
@@ -256,7 +255,7 @@ namespace Aquila.Compiler.Parser
         {
             base.VisitCastExpression(context);
 
-            var result = new CastExpressionSyntax(context.ToLineInfo(), SyntaxKind.CastExpression,
+            var result = new CastEx(context.ToLineInfo(), SyntaxKind.CastExpression,
                 Stack.PopExpression(),
                 Stack.PopType(), UnaryOperatorType.Cast);
 
@@ -269,10 +268,10 @@ namespace Aquila.Compiler.Parser
         {
             base.VisitMethod_declaration(context);
 
-            MethodDeclarationSyntax result = null;
+            MethodDecl result = null;
             ParameterList pc = new ParameterList();
-            AttributeList ac = new AttributeList();
-            GenericParameterList gpc = new GenericParameterList();
+            AnnotationList ac = new AnnotationList();
+            //GenericParameterList gpc = new GenericParameterList();
 
             var body = Stack.PopInstructionsBody();
 
@@ -292,10 +291,10 @@ namespace Aquila.Compiler.Parser
 
             if (context.attributes() != null)
             {
-                ac = (AttributeList) Stack.Pop();
+                ac = (AnnotationList) Stack.Pop();
             }
 
-            Stack.Push(new MethodDeclarationSyntax(context.ToLineInfo(), SyntaxKind.MethodDeclaration, body, pc, gpc,
+            Stack.Push(new MethodDecl(context.ToLineInfo(), SyntaxKind.MethodDeclaration, body, pc, //gpc,
                 ac,
                 funcName, type));
 
@@ -316,7 +315,7 @@ namespace Aquila.Compiler.Parser
 
             var passMethod = context.REF() != null ? PassMethod.ByReference : PassMethod.ByValue;
 
-            var parameter = new ParameterSyntax(context.ToLineInfo(), SyntaxKind.Parameter,
+            var parameter = new Parameter(context.ToLineInfo(), SyntaxKind.Parameter,
                 Stack.PopType(), context.IDENTIFIER().Identifier(), passMethod);
 
             paramList.Add(parameter);
@@ -329,7 +328,7 @@ namespace Aquila.Compiler.Parser
             PushStack();
             base.VisitBlock(context);
             var sttmts = PopStack();
-            Stack.Push(new BlockStatementSyntax(context.ToLineInfo(), SyntaxKind.BlockStatement,
+            Stack.Push(new BlockStmt(context.ToLineInfo(), SyntaxKind.BlockStatement,
                 sttmts.ToCollection<StatementList>()));
             return Stack.PeekNode();
         }
@@ -347,7 +346,7 @@ namespace Aquila.Compiler.Parser
         {
             base.VisitArgument(context);
             var passMethod = context.REF() != null ? PassMethod.ByReference : PassMethod.ByValue;
-            var result = new ArgumentSyntax(context.ToLineInfo(), SyntaxKind.Argument, Stack.PopExpression(),
+            var result = new Argument(context.ToLineInfo(), SyntaxKind.Argument, Stack.PopExpression(),
                 passMethod);
 
             Stack.PeekType<ArgumentList>().Add(result);
@@ -366,7 +365,7 @@ namespace Aquila.Compiler.Parser
             base.VisitExpressionPostfix(context);
 
             if (context.indexerExpression != null)
-                Stack.Push(new IndexerExpressionSyntax(context.ToLineInfo(), SyntaxKind.IndexerExpression,
+                Stack.Push(new IndexerEx(context.ToLineInfo(), SyntaxKind.IndexerExpression,
                     Stack.PopExpression(),
                     Stack.PopExpression(), UnaryOperatorType.Indexer));
 
@@ -380,15 +379,14 @@ namespace Aquila.Compiler.Parser
             var li = context.ToLineInfo();
 
             if (context.PLUS() != null)
-                Stack.Push(new LogicalOrArithmeticExpressionSyntax(li, SyntaxKind.PlusToken,
-                    Stack.PopExpression(), UnaryOperatorType.Positive));
+                Stack.Push(new LogicalOrArithmeticEx(li, SyntaxKind.PlusToken, Stack.PopExpression(),
+                    UnaryOperatorType.Positive));
             if (context.MINUS() != null)
-                Stack.Push(new LogicalOrArithmeticExpressionSyntax(li, SyntaxKind.MinusToken,
-                    Stack.PopExpression(), UnaryOperatorType.Negative));
+                Stack.Push(new LogicalOrArithmeticEx(li, SyntaxKind.MinusToken, Stack.PopExpression(),
+                    UnaryOperatorType.Negative));
             if (context.BANG() != null)
-                Stack.Push(
-                    new LogicalOrArithmeticExpressionSyntax(li, SyntaxKind.BangToken, Stack.PopExpression(),
-                        UnaryOperatorType.Not));
+                Stack.Push(new LogicalOrArithmeticEx(li, SyntaxKind.BangToken, Stack.PopExpression(),
+                    UnaryOperatorType.Not));
 
 
             return Stack.PeekNode();
@@ -407,7 +405,7 @@ namespace Aquila.Compiler.Parser
                 if (context.DIV() != null) opType = BinaryOperatorType.Divide;
                 if (context.STAR() != null) opType = BinaryOperatorType.Multiply;
 
-                Stack.Push(new BinaryExpressionSyntax(context.ToLineInfo(), SyntaxKind.BinaryExpression,
+                Stack.Push(new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression,
                     Stack.PopExpression(),
                     Stack.PopExpression(), opType));
             }
@@ -427,7 +425,7 @@ namespace Aquila.Compiler.Parser
                 if (context.OP_EQ() != null) opType = BinaryOperatorType.Equal;
                 if (context.OP_NE() != null) opType = BinaryOperatorType.NotEqual;
 
-                Stack.Push(new BinaryExpressionSyntax(context.ToLineInfo(), SyntaxKind.BinaryExpression,
+                Stack.Push(new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression,
                     Stack.PopExpression(),
                     Stack.PopExpression(), opType));
             }
@@ -463,7 +461,7 @@ namespace Aquila.Compiler.Parser
                 if (context.OP_GE() != null) opType = BinaryOperatorType.GraterOrEqualTo;
                 if (context.OP_LE() != null) opType = BinaryOperatorType.LessOrEqualTo;
 
-                Stack.Push(new BinaryExpressionSyntax(context.ToLineInfo(), SyntaxKind.BinaryExpression,
+                Stack.Push(new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression,
                     Stack.PopExpression(),
                     Stack.PopExpression(), opType));
             }
@@ -483,7 +481,7 @@ namespace Aquila.Compiler.Parser
                 if (context.PLUS() != null) opType = BinaryOperatorType.Add;
                 if (context.MINUS() != null) opType = BinaryOperatorType.Subtract;
 
-                var result = new BinaryExpressionSyntax(context.ToLineInfo(), SyntaxKind.BinaryExpression,
+                var result = new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression,
                     Stack.PopExpression(),
                     Stack.PopExpression(), opType);
 
@@ -510,7 +508,7 @@ namespace Aquila.Compiler.Parser
                 if (opType == BinaryOperatorType.None)
                     throw new Exception("this should never happen");
 
-                Stack.Push(new BinaryExpressionSyntax(context.ToLineInfo(), SyntaxKind.BinaryExpression,
+                Stack.Push(new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression,
                     Stack.PopExpression(),
                     Stack.PopExpression(), opType));
             }
@@ -522,7 +520,7 @@ namespace Aquila.Compiler.Parser
         {
             base.VisitAssignment(context);
 
-            Stack.Push(new AssignmentSyntax(context.ToLineInfo(), SyntaxKind.EqualsToken,
+            Stack.Push(new Assignment(context.ToLineInfo(), SyntaxKind.EqualsToken,
                 Stack.PopExpression(), Stack.PopExpression()));
 
             return Stack.PeekNode();
@@ -559,7 +557,7 @@ namespace Aquila.Compiler.Parser
         {
             base.VisitIfStatement(context);
 
-            StatementSyntax @else = null;
+            Statement @else = null;
 
             if (context.ELSE() != null)
             {
@@ -602,7 +600,7 @@ namespace Aquila.Compiler.Parser
         {
             base.VisitExpressionStatement(context);
 
-            Stack.Push(new ExpressionStatement(context.ToLineInfo(), SyntaxKind.ExpressionStatement,
+            Stack.Push(new ExpressionStmt(context.ToLineInfo(), SyntaxKind.ExpressionStatement,
                 Stack.PopExpression()));
 
             return Stack.PeekNode();

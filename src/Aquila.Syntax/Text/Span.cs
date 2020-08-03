@@ -15,13 +15,15 @@
 
 using System;
 
-namespace Devsense.PHP.Text
+namespace Aquila.Syntax.Text
 {
     /// <summary>
     /// Represents text span.
     /// </summary>
     public struct Span : IEquatable<Span>
     {
+        public static Span Empty => new Span();
+    
         #region Fields
 
         private int _start;

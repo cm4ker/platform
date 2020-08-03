@@ -15,7 +15,7 @@
 
 using System;
 
-namespace Devsense.PHP.Text
+namespace Aquila.Syntax.Text
 {
     #region TextUtils
 

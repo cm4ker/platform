@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
-using Devsense.PHP.Syntax;
+using Aquila.Syntax.Syntax;
 
-namespace Devsense.PHP.Text
+namespace Aquila.Syntax.Text
 {
     /// <summary>
     /// Helper class that represents a span of characters within given buffer.

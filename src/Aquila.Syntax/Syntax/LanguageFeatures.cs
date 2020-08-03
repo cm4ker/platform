@@ -15,7 +15,7 @@
 
 using System;
 
-namespace Devsense.PHP.Syntax
+namespace Aquila.Syntax.Syntax
 {
     #region Language Features Enum
 
