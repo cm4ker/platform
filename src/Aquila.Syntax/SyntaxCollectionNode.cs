@@ -6,7 +6,7 @@ using Aquila.Syntax.Text;
 
 namespace Aquila.Syntax
 {
-    public class SyntaxCollectionNode<T> : SyntaxNode, IEnumerable<T> where T : SyntaxNode
+    public class SyntaxCollectionNode<T> : LangElement, IEnumerable<T> where T : LangElement
     {
         public SyntaxCollectionNode(Span span) : base(span, SyntaxKind.Argument)
         {

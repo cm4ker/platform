@@ -1,8 +1,7 @@
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
-using Aquila.Language.Ast;
-using Aquila.Language.Ast.Definitions;
 using Aquila.Syntax;
+using Aquila.Syntax.Ast;
 using Aquila.Syntax.Text;
 
 public static class Helper

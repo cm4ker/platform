@@ -12,7 +12,6 @@ using Aquila.Compiler.Cecil;
 using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Contracts.Extensions;
 using Aquila.Compiler.Dnlib;
-using Aquila.Language.Ast.Definitions;
 using Attribute = System.Attribute;
 using MethodAttributes = dnlib.DotNet.MethodAttributes;
 using TypeAttributes = System.Reflection.TypeAttributes;

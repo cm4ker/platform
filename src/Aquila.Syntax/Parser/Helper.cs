@@ -5,7 +5,7 @@ namespace Aquila.Syntax.Parser
 {
     public static class ParseHelper
     {
-        public static SyntaxNode ParseSyntax(string text)
+        public static LangElement ParseSyntax(string text)
         {
             var parser = Parse(text);
             ZLanguageVisitor zl = new ZLanguageVisitor();

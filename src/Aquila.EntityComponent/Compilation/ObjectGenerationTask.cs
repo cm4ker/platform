@@ -12,7 +12,6 @@ using Aquila.Core.Contracts.TypeSystem;
 using Aquila.EntityComponent.Configuration;
 using Aquila.EntityComponent.Entity;
 using Aquila.Language.Ast;
-using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Definitions.Functions;
 using Aquila.Language.Ast.Misc;
 using Aquila.Language.Ast.Symbols;

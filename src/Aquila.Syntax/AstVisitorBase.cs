@@ -6,24 +6,24 @@ namespace Aquila.Syntax
 {
     public abstract partial class AstVisitorBase<T>
     {
-        private Stack<SyntaxNode> _visitStack;
+        private Stack<LangElement> _visitStack;
         private bool _break;
 
-        protected Stack<SyntaxNode> VisitStack => _visitStack;
+        protected Stack<LangElement> VisitStack => _visitStack;
 
         public AstVisitorBase()
         {
-            _visitStack = new Stack<SyntaxNode>();
+            _visitStack = new Stack<LangElement>();
         }
 
-        public virtual T Visit(SyntaxNode visitable)
+        public virtual T Visit(LangElement visitable)
         {
             if (visitable is null) return default;
 
             return visitable.Accept(this);
         }
 
-        public virtual T DefaultVisit(SyntaxNode node)
+        public virtual T DefaultVisit(LangElement node)
         {
             return default;
         }
@@ -37,22 +37,22 @@ namespace Aquila.Syntax
 
     public abstract partial class AstVisitorBase
     {
-        private Stack<SyntaxNode> _visitStack;
+        private Stack<LangElement> _visitStack;
         private bool _break;
 
-        protected Stack<SyntaxNode> VisitStack => _visitStack;
+        protected Stack<LangElement> VisitStack => _visitStack;
 
         public AstVisitorBase()
         {
-            _visitStack = new Stack<SyntaxNode>();
+            _visitStack = new Stack<LangElement>();
         }
 
-        public virtual void Visit(SyntaxNode visitable)
+        public virtual void Visit(LangElement visitable)
         {
             visitable?.Accept(this);
         }
 
-        public virtual void DefaultVisit(SyntaxNode node)
+        public virtual void DefaultVisit(LangElement node)
         {
         }
 
@@ -65,7 +65,7 @@ namespace Aquila.Syntax
 
     public class AstWalker<T> : AstVisitorBase<T>
     {
-        public override T DefaultVisit(SyntaxNode node)
+        public override T DefaultVisit(LangElement node)
         {
             Console.WriteLine($"We are visit: {node}");
 
@@ -73,7 +73,7 @@ namespace Aquila.Syntax
 
             foreach (var child in childs)
             {
-                Visit(child as SyntaxNode);
+                Visit(child as LangElement);
             }
 
             return base.DefaultVisit(node);
@@ -82,7 +82,7 @@ namespace Aquila.Syntax
 
     public class AstWalker : AstVisitorBase
     {
-        public override void DefaultVisit(SyntaxNode node)
+        public override void DefaultVisit(LangElement node)
         {
             Console.WriteLine($"We are visit: {node}");
 
@@ -90,7 +90,7 @@ namespace Aquila.Syntax
 
             foreach (var child in childs)
             {
-                Visit(child as SyntaxNode);
+                Visit(child as LangElement);
             }
 
             base.DefaultVisit(node);

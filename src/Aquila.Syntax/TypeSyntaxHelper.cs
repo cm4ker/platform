@@ -1,6 +1,5 @@
 using System;
-using Aquila.Language.Ast.Definitions;
-using Aquila.Syntax;
+using Aquila.Syntax.Ast;
 using Aquila.Syntax.Text;
 
 namespace Aquila.Compiler

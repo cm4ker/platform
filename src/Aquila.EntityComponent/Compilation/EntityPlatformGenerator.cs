@@ -14,7 +14,6 @@ using Aquila.EntityComponent.Compilation.UX;
 using Aquila.EntityComponent.Configuration;
 using Aquila.EntityComponent.Entity;
 using Aquila.Language.Ast;
-using Aquila.Language.Ast.Definitions;
 using Aquila.QueryBuilder;
 using Aquila.Shared.Tree;
 using Call = Aquila.Language.Ast.Call;

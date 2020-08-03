@@ -15,7 +15,7 @@
 
 using System;
 using System.Diagnostics;
-using Aquila.Language.Ast.Definitions;
+using Aquila.Syntax.Ast;
 using Aquila.Syntax.Text;
 
 namespace Aquila.Syntax.Syntax

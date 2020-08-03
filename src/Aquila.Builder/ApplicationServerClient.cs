@@ -1,5 +1,4 @@
 using dnlib.DotNet;
-using Aquila.Language.Ast.Definitions;
 
 namespace Aquila.Cli
 {

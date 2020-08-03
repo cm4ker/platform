@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Aquila.Compiler.CodeAnalysis\Aquila.Compiler.CodeAnalysis.csproj" />
+        <ProjectReference Include="..\Aquila.CodeAnalysis\Aquila.CodeAnalysis.csproj" />
         <ProjectReference Include="..\Aquila.Compiler.Dnlib\Aquila.Compiler.Dnlib.csproj" />
         <ProjectReference Include="..\Aquila.Compiler.Platform\Aquila.Compiler.Platform.csproj" />
         <ProjectReference Include="..\Aquila.Language.Infrastructure\Aquila.Language.Infrastructure.csproj" />

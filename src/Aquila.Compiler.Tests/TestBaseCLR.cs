@@ -14,7 +14,6 @@ using Aquila.Compiler.Roslyn.RoslynBackend;
 using Aquila.Compiler.Visitor;
 using Aquila.Core.Contracts;
 using Aquila.Language.Ast;
-using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Definitions.Functions;
 using Aquila.QueryBuilder;
 using CompilationUnit = Aquila.Language.Ast.Definitions.CompilationUnit;

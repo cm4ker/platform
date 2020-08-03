@@ -65,7 +65,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquila.Controls.Avalonia", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquila.Pidl", "src\Aquila.Pidl\Aquila.Pidl.csproj", "{AF3A6DB7-9581-4A3A-B0B0-E3E7DF70FAFB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquila.Compiler.CodeAnalysis", "src\Aquila.Compiler.CodeAnalysis\Aquila.Compiler.CodeAnalysis.csproj", "{E90E3BA8-D1B1-4D68-8C4A-A8B3CD3AA02F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquila.CodeAnalysis", "src\Aquila.CodeAnalysis\Aquila.CodeAnalysis.csproj", "{E90E3BA8-D1B1-4D68-8C4A-A8B3CD3AA02F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Compiler", "Compiler", "{D720452A-AC33-4FB7-B641-159F44FC5D06}"
 EndProject

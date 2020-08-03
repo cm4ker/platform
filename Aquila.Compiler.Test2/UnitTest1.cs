@@ -3,7 +3,6 @@ using System.IO;
 using System.Xml.XPath;
 using Antlr4.Runtime;
 using Aquila.Compiler.Parser;
-using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Definitions.Expressions;
 using Aquila.Language.Ast.Definitions.Functions;
 using Aquila.Language.Ast.Definitions.Statements;

@@ -5,7 +5,6 @@ using Aquila.Core.Contracts.Configuration;
 using Aquila.Core.Contracts.Data;
 using Aquila.Core.Contracts.TypeSystem;
 using Aquila.Language.Ast;
-using Aquila.Language.Ast.Definitions;
 using Aquila.QueryBuilder;
 using Aquila.Shared.Tree;
 using Aquila.WebServiceComponent.Compilation;

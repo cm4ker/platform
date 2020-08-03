@@ -1,6 +1,6 @@
-namespace Aquila.Language.Ast.Definitions
+namespace Aquila.Syntax.Ast.Expressions
 {
-    public partial class Literal
+    public partial class LiteralEx
     {
         public object ObjectiveValue { get; set; }
     }

@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Aquila.Language.Ast.Definitions.Expressions;
-using Aquila.Language.Ast.Definitions.Statements;
-using Aquila.Syntax;
+using Aquila.Syntax.Ast;
+using Aquila.Syntax.Ast.Expressions;
+using Aquila.Syntax.Ast.Statements;
 
-namespace Aquila.Language.Ast.Definitions
+namespace Aquila.Syntax
 {
     /// <summary>
     /// Стэк дерева синтаксиса
@@ -53,10 +53,10 @@ namespace Aquila.Language.Ast.Definitions
             return result;
         }
 
-        public T ToCollection<T>() where T : SyntaxNode, new()
+        public T ToCollection<T>() where T : LangElement, new()
         {
             var collection = new T();
-            collection.AddRange(internalStack.ToArray().Reverse().Cast<SyntaxNode>());
+            collection.AddRange(internalStack.ToArray().Reverse().Cast<LangElement>());
             return collection;
         }
 
@@ -65,14 +65,14 @@ namespace Aquila.Language.Ast.Definitions
             return internalStack.Peek();
         }
 
-        public SyntaxNode PeekNode()
+        public LangElement PeekNode()
         {
-            return internalStack.Peek() as SyntaxNode;
+            return internalStack.Peek() as LangElement;
         }
 
-        public SyntaxNode PeekAst()
+        public LangElement PeekAst()
         {
-            return internalStack.Peek() as SyntaxNode;
+            return internalStack.Peek() as LangElement;
         }
 
         public void Push(object value)
@@ -143,9 +143,9 @@ namespace Aquila.Language.Ast.Definitions
             return (Statement) internalStack.Pop();
         }
 
-        public Assignment PopAssignment()
+        public AssignEx PopAssignment()
         {
-            return (Assignment) internalStack.Pop();
+            return (AssignEx) internalStack.Pop();
         }
 
         public IdentifierToken PopIdentifier()

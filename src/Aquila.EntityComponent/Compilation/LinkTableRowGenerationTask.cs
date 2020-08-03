@@ -9,7 +9,6 @@ using Aquila.Core.Contracts.Configuration;
 using Aquila.Core.Contracts.TypeSystem;
 using Aquila.EntityComponent.Entity;
 using Aquila.Language.Ast;
-using Aquila.Language.Ast.Definitions;
 using Aquila.QueryBuilder;
 using Property = Aquila.Language.Ast.Property;
 

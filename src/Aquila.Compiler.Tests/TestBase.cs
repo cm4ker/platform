@@ -6,7 +6,6 @@ using Aquila.Compiler.Contracts;
 using Aquila.Compiler.Parser;
 using Aquila.Compiler.Preprocessor;
 using Aquila.Language.Ast;
-using Aquila.Language.Ast.Definitions;
 using CompilationUnit = Aquila.Language.Ast.Definitions.CompilationUnit;
 
 namespace Aquila.Compiler.Tests

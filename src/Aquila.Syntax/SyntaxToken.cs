@@ -2,7 +2,7 @@ using Aquila.Syntax.Text;
 
 namespace Aquila.Syntax
 {
-    public class SyntaxToken : SyntaxNode
+    public class SyntaxToken : LangElement
     {
         internal SyntaxToken(Span span, SyntaxKind kind, string text)
             : base(span, kind)
