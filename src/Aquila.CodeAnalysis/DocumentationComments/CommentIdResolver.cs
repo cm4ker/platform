@@ -6,8 +6,9 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+ using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
 
-namespace Pchp.CodeAnalysis.DocumentationComments
+ namespace Pchp.CodeAnalysis.DocumentationComments
 {
     internal static class CommentIdResolver
     {

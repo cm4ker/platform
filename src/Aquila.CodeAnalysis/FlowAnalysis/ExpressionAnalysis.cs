@@ -12,6 +12,7 @@ using System.Linq;
 using Aquila.Compiler.Utilities;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Syntax;
+using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
 
 
 namespace Pchp.CodeAnalysis.FlowAnalysis

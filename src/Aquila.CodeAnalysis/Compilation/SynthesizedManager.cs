@@ -9,8 +9,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Cci = Microsoft.Cci;
+ using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
 
-namespace Pchp.CodeAnalysis.Emit
+ namespace Pchp.CodeAnalysis.Emit
 {
     /// <summary>
     /// Manages synthesized symbols in the module builder.

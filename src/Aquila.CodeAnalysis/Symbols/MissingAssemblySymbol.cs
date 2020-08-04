@@ -1,28 +1,32 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
- using Pchp.CodeAnalysis;
+﻿﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+ using System;
+ using System.Collections.Generic;
+ using System.Collections.Immutable;
+ using System.Diagnostics;
+ using Microsoft.CodeAnalysis;
  using Roslyn.Utilities;
 
-namespace Aquila.CodeAnalysis.Symbols
+ namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// A <see cref="MissingAssemblySymbol"/> is a special kind of <see cref="AssemblySymbol"/> that represents
     /// an assembly that couldn't be found.
     /// </summary>
-    internal sealed class MissingAssemblySymbol : AssemblySymbol
+    internal class MissingAssemblySymbol : AssemblySymbol
     {
-        readonly AssemblyIdentity identity;
+        protected readonly AssemblyIdentity identity;
+        protected readonly MissingModuleSymbol moduleSymbol;
+
+        private ImmutableArray<ModuleSymbol> _lazyModules;
 
         public MissingAssemblySymbol(AssemblyIdentity identity)
         {
             Debug.Assert(identity != null);
             this.identity = identity;
+            moduleSymbol = new MissingModuleSymbol(this, 0);
         }
 
         internal sealed override bool IsMissing
@@ -61,14 +65,25 @@ namespace Aquila.CodeAnalysis.Symbols
             get { return Identity.PublicKey; }
         }
 
-        public override ImmutableArray<ModuleSymbol> Modules => ImmutableArray<ModuleSymbol>.Empty;
+        public override ImmutableArray<ModuleSymbol> Modules
+        {
+            get
+            {
+                if (_lazyModules.IsDefault)
+                {
+                    _lazyModules = ImmutableArray.Create<ModuleSymbol>(moduleSymbol);
+                }
+
+                return _lazyModules;
+            }
+        }
 
         public override int GetHashCode()
         {
             return identity.GetHashCode();
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(Symbol obj, TypeCompareKind compareKind)
         {
             return Equals(obj as MissingAssemblySymbol);
         }
@@ -106,7 +121,23 @@ namespace Aquila.CodeAnalysis.Symbols
             return ImmutableArray<AssemblySymbol>.Empty;
         }
 
-        public override INamespaceSymbol GlobalNamespace => null;
+        internal override void SetNoPiaResolutionAssemblies(ImmutableArray<AssemblySymbol> assemblies)
+        {
+            throw ExceptionUtilities.Unreachable;
+        }
+
+        internal override ImmutableArray<AssemblySymbol> GetNoPiaResolutionAssemblies()
+        {
+            return ImmutableArray<AssemblySymbol>.Empty;
+        }
+
+        public sealed override NamespaceSymbol GlobalNamespace
+        {
+            get
+            {
+                return this.moduleSymbol.GlobalNamespace;
+            }
+        }
 
         public override ICollection<string> TypeNames
         {
@@ -126,12 +157,24 @@ namespace Aquila.CodeAnalysis.Symbols
 
         internal override NamedTypeSymbol LookupTopLevelMetadataTypeWithCycleDetection(ref MetadataTypeName emittedName, ConsList<AssemblySymbol> visitedAssemblies, bool digThroughForwardedTypes)
         {
-            return new MissingMetadataTypeSymbol(emittedName.FullName, emittedName.ForcedArity, emittedName.IsMangled);
+            var result = this.moduleSymbol.LookupTopLevelMetadataType(ref emittedName);
+            Debug.Assert(result is MissingMetadataTypeSymbol);
+            return result;
         }
 
         internal override NamedTypeSymbol GetDeclaredSpecialType(SpecialType type)
         {
-            throw Roslyn.Utilities.ExceptionUtilities.Unreachable;
+            throw ExceptionUtilities.Unreachable;
+        }
+
+        internal override bool AreInternalsVisibleToThisAssembly(AssemblySymbol other)
+        {
+            return false;
+        }
+
+        internal override IEnumerable<ImmutableArray<byte>> GetInternalsVisibleToPublicKeys(string simpleName)
+        {
+            return SpecializedCollections.EmptyEnumerable<ImmutableArray<byte>>();
         }
 
         public override bool MightContainExtensionMethods
@@ -143,5 +186,10 @@ namespace Aquila.CodeAnalysis.Symbols
         }
 
         public override AssemblyMetadata GetMetadata() => null;
+
+        internal sealed override IEnumerable<NamedTypeSymbol> GetAllTopLevelForwardedTypes()
+        {
+            return SpecializedCollections.EmptyEnumerable<NamedTypeSymbol>();
+        }
     }
 }

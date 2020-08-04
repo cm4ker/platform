@@ -1,15 +1,21 @@
-﻿﻿using Microsoft.CodeAnalysis;
-using Roslyn.Utilities;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
-namespace Aquila.CodeAnalysis.Symbols
+ using System.Collections.Concurrent;
+ using System.Collections.Generic;
+ using System.Diagnostics;
+ using System.Linq;
+ using System.Threading;
+ using Microsoft.CodeAnalysis;
+ using Roslyn.Utilities;
+
+ namespace Aquila.CodeAnalysis.Symbols
 {
+    /// <summary>
+    /// A <see cref="NonMissingAssemblySymbol"/> is a special kind of <see cref="AssemblySymbol"/> that represents
+    /// an assembly that is not missing, i.e. the "real" thing.
+    /// </summary>
     internal abstract class NonMissingAssemblySymbol : AssemblySymbol
     {
         /// <summary>
@@ -24,44 +30,42 @@ namespace Aquila.CodeAnalysis.Symbols
         private readonly ConcurrentDictionary<MetadataTypeName.Key, NamedTypeSymbol> _emittedNameToTypeMap =
             new ConcurrentDictionary<MetadataTypeName.Key, NamedTypeSymbol>();
 
-        private NamedTypeSymbol LookupTopLevelMetadataTypeInCache(ref MetadataTypeName emittedName)
-        {
-            NamedTypeSymbol result = null;
-            if (_emittedNameToTypeMap.TryGetValue(emittedName.ToKey(), out result))
-            {
-                return result;
-            }
-
-            return null;
-        }
+        private NamespaceSymbol _globalNamespace;
 
         /// <summary>
-        /// For test purposes only.
+        /// Does this symbol represent a missing assembly.
         /// </summary>
-        internal NamedTypeSymbol CachedTypeByEmittedName(string emittedname)
-        {
-            MetadataTypeName mdName = MetadataTypeName.FromFullName(emittedname);
-            return _emittedNameToTypeMap[mdName.ToKey()];
-        }
-
-        /// <summary>
-        /// For test purposes only.
-        /// </summary>
-        internal int EmittedNameToTypeMapCount
+        internal sealed override bool IsMissing
         {
             get
             {
-                return _emittedNameToTypeMap.Count;
+                return false;
             }
         }
 
-        private void CacheTopLevelMetadataType(
-            ref MetadataTypeName emittedName,
-            NamedTypeSymbol result)
+        /// <summary>
+        /// Gets the merged root namespace that contains all namespaces and types defined in the modules
+        /// of this assembly. If there is just one module in this assembly, this property just returns the 
+        /// GlobalNamespace of that module.
+        /// </summary>
+        public sealed override NamespaceSymbol GlobalNamespace
         {
-            NamedTypeSymbol result1 = null;
-            result1 = _emittedNameToTypeMap.GetOrAdd(emittedName.ToKey(), result);
-            Debug.Assert(result1 == result || (result.IsErrorType() && result1.IsErrorType())); // object identity may differ in error cases
+            get
+            {
+                if ((object)_globalNamespace == null)
+                {
+                    // Get the root namespace from each module, and merge them all together. If there is only one, 
+                    // then MergedNamespaceSymbol.Create will just return that one.
+
+                    IEnumerable<NamespaceSymbol> allGlobalNamespaces = from m in Modules select m.GlobalNamespace;
+                    var result = MergedNamespaceSymbol.Create(new NamespaceExtent(this),
+                                                        null,
+                                                        allGlobalNamespaces.AsImmutable());
+                    Interlocked.CompareExchange(ref _globalNamespace, result, null);
+                }
+
+                return _globalNamespace;
+            }
         }
 
         /// <summary>
@@ -104,7 +108,7 @@ namespace Aquila.CodeAnalysis.Symbols
             if ((object)result != null)
             {
                 // We only cache result equivalent to digging through type forwarders, which
-                // might produce an forwarder specific ErrorTypeSymbol. We don't want to 
+                // might produce a forwarder specific ErrorTypeSymbol. We don't want to 
                 // return that error symbol, unless digThroughForwardedTypes is true.
                 if (digThroughForwardedTypes || (!result.IsErrorType() && (object)result.ContainingAssembly == (object)this))
                 {
@@ -112,8 +116,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 }
 
                 // According to the cache, the type wasn't found, or isn't declared in this assembly (forwarded).
-                throw new NotImplementedException();
-                //return new MissingMetadataTypeSymbol.TopLevel(this.Modules[0], ref emittedName);
+                return new MissingMetadataTypeSymbol.TopLevel(this.Modules[0], ref emittedName);
             }
             else
             {
@@ -126,14 +129,14 @@ namespace Aquila.CodeAnalysis.Symbols
 
                 result = modules[i].LookupTopLevelMetadataType(ref emittedName);
 
-                if (result is ErrorTypeSymbol)
+                if (result is MissingMetadataTypeSymbol)
                 {
                     for (i = 1; i < count; i++)
                     {
                         var newResult = modules[i].LookupTopLevelMetadataType(ref emittedName);
 
                         // Hold on to the first missing type result, unless we found the type.
-                        if (!(newResult is ErrorTypeSymbol))
+                        if (!(newResult is MissingMetadataTypeSymbol))
                         {
                             result = newResult;
                             break;
@@ -148,7 +151,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 if (!foundMatchInThisAssembly && digThroughForwardedTypes)
                 {
                     // We didn't find the type
-                    Debug.Assert(result is ErrorTypeSymbol);
+                    System.Diagnostics.Debug.Assert(result is MissingMetadataTypeSymbol);
 
                     NamedTypeSymbol forwarded = TryLookupForwardedMetadataTypeWithCycleDetection(ref emittedName, visitedAssemblies);
                     if ((object)forwarded != null)
@@ -157,7 +160,7 @@ namespace Aquila.CodeAnalysis.Symbols
                     }
                 }
 
-                Debug.Assert((object)result != null);
+                System.Diagnostics.Debug.Assert((object)result != null);
 
                 // Add result of the lookup into the cache
                 if (digThroughForwardedTypes || foundMatchInThisAssembly)
@@ -167,6 +170,48 @@ namespace Aquila.CodeAnalysis.Symbols
 
                 return result;
             }
+        }
+
+        internal override abstract NamedTypeSymbol TryLookupForwardedMetadataTypeWithCycleDetection(ref MetadataTypeName emittedName, ConsList<AssemblySymbol> visitedAssemblies);
+
+        private NamedTypeSymbol LookupTopLevelMetadataTypeInCache(ref MetadataTypeName emittedName)
+        {
+            NamedTypeSymbol result = null;
+            if (_emittedNameToTypeMap.TryGetValue(emittedName.ToKey(), out result))
+            {
+                return result;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// For test purposes only.
+        /// </summary>
+        internal NamedTypeSymbol CachedTypeByEmittedName(string emittedname)
+        {
+            MetadataTypeName mdName = MetadataTypeName.FromFullName(emittedname);
+            return _emittedNameToTypeMap[mdName.ToKey()];
+        }
+
+        /// <summary>
+        /// For test purposes only.
+        /// </summary>
+        internal int EmittedNameToTypeMapCount
+        {
+            get
+            {
+                return _emittedNameToTypeMap.Count;
+            }
+        }
+
+        private void CacheTopLevelMetadataType(
+            ref MetadataTypeName emittedName,
+            NamedTypeSymbol result)
+        {
+            NamedTypeSymbol result1 = null;
+            result1 = _emittedNameToTypeMap.GetOrAdd(emittedName.ToKey(), result);
+            System.Diagnostics.Debug.Assert(TypeSymbol.Equals(result1, result, TypeCompareKind.ConsiderEverything2)); // object identity may differ in error cases
         }
     }
 }

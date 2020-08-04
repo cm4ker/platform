@@ -15,6 +15,7 @@ using System.Reflection.Metadata;
 using Aquila.Syntax;
 using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
+using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
 
 namespace Pchp.CodeAnalysis.CodeGen
 {

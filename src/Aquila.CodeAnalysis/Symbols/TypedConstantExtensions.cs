@@ -1,19 +1,18 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using Microsoft.CodeAnalysis.Collections;
-using Microsoft.CodeAnalysis.Text;
-using Roslyn.Utilities;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.PooledObjects;
- using Pchp.CodeAnalysis;
+﻿﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+#nullable enable
+
+ using System.Diagnostics;
+ using System.Linq;
+ using System.Text;
+ using Microsoft.CodeAnalysis;
+ using Microsoft.CodeAnalysis.PooledObjects;
 
  namespace Aquila.CodeAnalysis.Symbols
 {
-    internal static class TypedConstantExtensions
+    public static class TypedConstantExtensions
     {
         /// <summary>
         /// Returns the System.String that represents the current TypedConstant.
@@ -31,8 +30,9 @@ using Microsoft.CodeAnalysis.PooledObjects;
                 return "{" + string.Join(", ", constant.Values.Select(v => v.ToCSharpString())) + "}";
             }
 
-            if (constant.Kind == TypedConstantKind.Type || constant.Type.SpecialType == SpecialType.System_Object)
+            if (constant.Kind == TypedConstantKind.Type || constant.TypeInternal!.SpecialType == SpecialType.System_Object)
             {
+                Debug.Assert(constant.Value is object);
                 return "typeof(" + constant.Value.ToString() + ")";
             }
 
@@ -42,7 +42,8 @@ using Microsoft.CodeAnalysis.PooledObjects;
                 return DisplayEnumConstant(constant);
             }
 
-            return constant.Value.ToString(); // SymbolDisplay.FormatPrimitive(constant.Value, quoteStrings: true, useHexadecimalNumbers: false);
+            Debug.Assert(constant.ValueInternal is object);
+            return Microsoft.CodeAnalysis.SymbolDisplay.FormatPrimitive(constant.ValueInternal, quoteStrings: true, useHexadecimalNumbers: false);
         }
 
         // Decode the value of enum constant
@@ -51,8 +52,9 @@ using Microsoft.CodeAnalysis.PooledObjects;
             Debug.Assert(constant.Kind == TypedConstantKind.Enum);
 
             // Create a ConstantValue of enum underlying type
-            SpecialType splType = ((INamedTypeSymbol)constant.Type).EnumUnderlyingType.SpecialType;
-            ConstantValue valueConstant = ConstantValue.Create(constant.Value, splType);
+            SpecialType splType = ((INamedTypeSymbol)constant.Type!).EnumUnderlyingType!.SpecialType;
+            Debug.Assert(constant.ValueInternal is object);
+            ConstantValue valueConstant = ConstantValue.Create(constant.ValueInternal, splType);
 
             string typeName = constant.Type.ToDisplayString(SymbolDisplayFormat.QualifiedNameOnlyFormat);
             if (valueConstant.IsUnsigned)
@@ -67,6 +69,8 @@ using Microsoft.CodeAnalysis.PooledObjects;
 
         private static string DisplayUnsignedEnumConstant(TypedConstant constant, SpecialType specialType, ulong constantToDecode, string typeName)
         {
+            Debug.Assert(constant.Kind == TypedConstantKind.Enum);
+
             // Specified valueConstant might have an exact matching enum field
             // or it might be a bitwise Or of multiple enum fields.
             // For the later case, we keep track of the current value of
@@ -74,18 +78,18 @@ using Microsoft.CodeAnalysis.PooledObjects;
             ulong curValue = 0;
 
             // Initialize the value string to empty
-            PooledStringBuilder pooledBuilder = null;
-            StringBuilder valueStringBuilder = null;
+            PooledStringBuilder? pooledBuilder = null;
+            StringBuilder? valueStringBuilder = null;
 
             // Iterate through all the constant members in the enum type
-            var members = constant.Type.GetMembers();
+            var members = constant.Type!.GetMembers();
             foreach (var member in members)
             {
                 var field = member as IFieldSymbol;
 
-                if ((object)field != null && field.HasConstantValue)
+                if (field is object && field.HasConstantValue)
                 {
-                    ConstantValue memberConstant = ConstantValue.Create(field.ConstantValue, specialType);
+                    ConstantValue memberConstant = ConstantValue.Create(field.ConstantValue!, specialType); // use MemberNotNull when available https://github.com/dotnet/roslyn/issues/41964
                     ulong memberValue = memberConstant.UInt64Value;
 
                     // Do we have an exact matching enum field
@@ -136,11 +140,16 @@ using Microsoft.CodeAnalysis.PooledObjects;
             }
 
             // Unable to decode the enum constant, just display the integral value
-            return constant.Value.ToString();
+            Debug.Assert(constant.ValueInternal is object);
+            var result = constant.ValueInternal.ToString();
+            Debug.Assert(result is object);
+            return result;
         }
 
         private static string DisplaySignedEnumConstant(TypedConstant constant, SpecialType specialType, long constantToDecode, string typeName)
         {
+            Debug.Assert(constant.Kind == TypedConstantKind.Enum);
+
             // Specified valueConstant might have an exact matching enum field
             // or it might be a bitwise Or of multiple enum fields.
             // For the later case, we keep track of the current value of
@@ -148,17 +157,17 @@ using Microsoft.CodeAnalysis.PooledObjects;
             long curValue = 0;
 
             // Initialize the value string to empty
-            PooledStringBuilder pooledBuilder = null;
-            StringBuilder valueStringBuilder = null;
+            PooledStringBuilder? pooledBuilder = null;
+            StringBuilder? valueStringBuilder = null;
 
             // Iterate through all the constant members in the enum type
-            var members = constant.Type.GetMembers();
+            var members = constant.Type!.GetMembers();
             foreach (var member in members)
             {
                 var field = member as IFieldSymbol;
-                if ((object)field != null && field.HasConstantValue)
+                if (field is object && field.HasConstantValue)
                 {
-                    ConstantValue memberConstant = ConstantValue.Create(field.ConstantValue, specialType);
+                    ConstantValue memberConstant = ConstantValue.Create(field.ConstantValue!, specialType); // use MemberNotNull when available https://github.com/dotnet/roslyn/issues/41964 
                     long memberValue = memberConstant.Int64Value;
 
                     // Do we have an exact matching enum field
@@ -209,32 +218,10 @@ using Microsoft.CodeAnalysis.PooledObjects;
             }
 
             // Unable to decode the enum constant, just display the integral value
-            return constant.Value.ToString();
-        }
-
-        public static TypedConstant CreateTypedConstant(this PhpCompilation compilation, ITypeSymbol typereference)
-        {
-            return new TypedConstant(compilation.GetWellKnownType(WellKnownType.System_Type), TypedConstantKind.Type, typereference);
-        }
-
-        public static TypedConstant CreateTypedConstant(this PhpCompilation compilation, string value)
-        {
-            return new TypedConstant(compilation.GetSpecialType(SpecialType.System_String), TypedConstantKind.Primitive, value);
-        }
-
-        public static TypedConstant CreateTypedConstant(this PhpCompilation compilation, byte value)
-        {
-            return new TypedConstant(compilation.GetSpecialType(SpecialType.System_Byte), TypedConstantKind.Primitive, value);
-        }
-
-        public static TypedConstant CreateTypedConstant(this PhpCompilation compilation, bool value)
-        {
-            return new TypedConstant(compilation.GetSpecialType(SpecialType.System_Boolean), TypedConstantKind.Primitive, value);
-        }
-
-        public static TypedConstant CreateTypedConstant(this PhpCompilation compilation, long value)
-        {
-            return new TypedConstant(compilation.GetSpecialType(SpecialType.System_Int64), TypedConstantKind.Primitive, value);
+            Debug.Assert(constant.ValueInternal is object);
+            var result = constant.ValueInternal.ToString();
+            Debug.Assert(result is object);
+            return result;
         }
     }
 }

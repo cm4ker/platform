@@ -22,6 +22,7 @@ using Pchp.CodeAnalysis.Emit;
 using Aquila.CodeAnalysis.Symbols;
 using Pchp.CodeAnalysis.Utilities;
 using Roslyn.Utilities;
+using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
 
 namespace Pchp.CodeAnalysis
 {

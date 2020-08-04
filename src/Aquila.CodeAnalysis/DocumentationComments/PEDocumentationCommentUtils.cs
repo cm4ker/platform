@@ -5,8 +5,9 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+ using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
 
-namespace Pchp.CodeAnalysis.DocumentationComments
+ namespace Pchp.CodeAnalysis.DocumentationComments
 {
     internal static class PEDocumentationCommentUtils
     {

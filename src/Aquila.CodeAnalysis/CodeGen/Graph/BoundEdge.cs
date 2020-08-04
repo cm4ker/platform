@@ -12,8 +12,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
+ using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
 
-namespace Pchp.CodeAnalysis.Semantics.Graph
+ namespace Pchp.CodeAnalysis.Semantics.Graph
 {
     partial class Edge : IGenerator
     {

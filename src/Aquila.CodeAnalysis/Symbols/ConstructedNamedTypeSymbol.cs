@@ -1,10 +1,14 @@
-﻿﻿using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
+﻿﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
-namespace Aquila.CodeAnalysis.Symbols
+ using System.Collections.Generic;
+ using System.Collections.Immutable;
+ using System.Diagnostics;
+ using Microsoft.CodeAnalysis;
+ using Roslyn.Utilities;
+
+ namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// A named type symbol that results from substituting a new owner for a type declaration.
@@ -21,26 +25,24 @@ namespace Aquila.CodeAnalysis.Symbols
         {
         }
 
-        public override ImmutableArray<TypeSymbol> TypeArguments
+        internal override ImmutableArray<TypeWithAnnotations> TypeArgumentsWithAnnotationsNoUseSiteDiagnostics
         {
-            get
-            {
-                return TypeParameters.CastArray<TypeSymbol>();
-            }
+            get { return GetTypeParametersAsTypeArguments(); }
         }
-
-        internal override bool HasTypeArgumentsCustomModifiers => false;
-
-        public override ImmutableArray<CustomModifier> GetTypeArgumentCustomModifiers(int ordinal) => GetEmptyTypeArgumentCustomModifiers(ordinal);
-
-        //internal override ImmutableArray<TypeSymbol> TypeArgumentsNoUseSiteDiagnostics
-        //{
-        //    get { return TypeParameters.Cast<TypeParameterSymbol, TypeSymbol>(); }
-        //}
 
         public override NamedTypeSymbol ConstructedFrom
         {
             get { return this; }
+        }
+
+        public override sealed bool AreLocalsZeroed
+        {
+            get { throw ExceptionUtilities.Unreachable; }
+        }
+
+        protected override NamedTypeSymbol WithTupleDataCore(Tuples.NamedTypeSymbol.TupleExtraData newData)
+        {
+            throw ExceptionUtilities.Unreachable;
         }
     }
 
@@ -49,31 +51,25 @@ namespace Aquila.CodeAnalysis.Symbols
     /// </summary>
     internal sealed class ConstructedNamedTypeSymbol : SubstitutedNamedTypeSymbol
     {
-        private readonly ImmutableArray<TypeSymbol> _typeArguments;
-        private readonly bool _hasTypeArgumentsCustomModifiers;
+        private readonly ImmutableArray<TypeWithAnnotations> _typeArgumentsWithAnnotations;
         private readonly NamedTypeSymbol _constructedFrom;
 
-        internal ConstructedNamedTypeSymbol(NamedTypeSymbol constructedFrom, ImmutableArray<TypeWithModifiers> typeArguments, bool unbound = false)
+        internal ConstructedNamedTypeSymbol(NamedTypeSymbol constructedFrom, ImmutableArray<TypeWithAnnotations> typeArgumentsWithAnnotations, bool unbound = false, Tuples.NamedTypeSymbol.TupleExtraData tupleData = null)
             : base(newContainer: constructedFrom.ContainingSymbol,
-                   map: new TypeMap(constructedFrom.ContainingType, constructedFrom.OriginalDefinition.TypeParameters, typeArguments),
+                   map: new TypeMap(constructedFrom.ContainingType, constructedFrom.OriginalDefinition.TypeParameters, typeArgumentsWithAnnotations),
                    originalDefinition: constructedFrom.OriginalDefinition,
-                   constructedFrom: constructedFrom, unbound: unbound)
+                   constructedFrom: constructedFrom, unbound: unbound, tupleData: tupleData)
         {
-            bool hasTypeArgumentsCustomModifiers = false;
-            _typeArguments = typeArguments.SelectAsArray(a =>
-                                                            {
-                                                                if (!a.CustomModifiers.IsDefaultOrEmpty)
-                                                                {
-                                                                    hasTypeArgumentsCustomModifiers = true;
-                                                                }
-
-                                                                return a.Type;
-                                                            });
-            _hasTypeArgumentsCustomModifiers = hasTypeArgumentsCustomModifiers;
+            _typeArgumentsWithAnnotations = typeArgumentsWithAnnotations;
             _constructedFrom = constructedFrom;
 
-            Debug.Assert(constructedFrom.Arity == typeArguments.Length);
+            Debug.Assert(constructedFrom.Arity == typeArgumentsWithAnnotations.Length);
             Debug.Assert(constructedFrom.Arity != 0);
+        }
+
+        protected override NamedTypeSymbol WithTupleDataCore(Tuples.NamedTypeSymbol.TupleExtraData newData)
+        {
+            return new ConstructedNamedTypeSymbol(_constructedFrom, _typeArgumentsWithAnnotations, IsUnboundGenericType, tupleData: newData);
         }
 
         public override NamedTypeSymbol ConstructedFrom
@@ -84,56 +80,15 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        public override ImmutableArray<TypeSymbol> TypeArguments
+        internal override ImmutableArray<TypeWithAnnotations> TypeArgumentsWithAnnotationsNoUseSiteDiagnostics
         {
             get
             {
-                return _typeArguments;
+                return _typeArgumentsWithAnnotations;
             }
         }
 
-        internal override bool HasTypeArgumentsCustomModifiers => _hasTypeArgumentsCustomModifiers;
-
-        public override ImmutableArray<CustomModifier> GetTypeArgumentCustomModifiers(int ordinal)
-        {
-            if (_hasTypeArgumentsCustomModifiers)
-            {
-                return TypeSubstitution.GetTypeArgumentsCustomModifiersFor(_constructedFrom.OriginalDefinition.TypeParameters[ordinal]);
-            }
-
-            return GetEmptyTypeArgumentCustomModifiers(ordinal);
-        }
-
-        //internal override ImmutableArray<TypeSymbol> TypeArgumentsNoUseSiteDiagnostics
-        //{
-        //    get
-        //    {
-        //        return _typeArguments;
-        //    }
-        //}
-
-        //internal override bool HasTypeArgumentsCustomModifiers
-        //{
-        //    get
-        //    {
-        //        return _hasTypeArgumentsCustomModifiers;
-        //    }
-        //}
-
-        //internal override ImmutableArray<ImmutableArray<CustomModifier>> TypeArgumentsCustomModifiers
-        //{
-        //    get
-        //    {
-        //        if (_hasTypeArgumentsCustomModifiers)
-        //        {
-        //            return TypeSubstitution.GetTypeArgumentsCustomModifiersFor(_constructedFrom.OriginalDefinition);
-        //        }
-
-        //        return CreateEmptyTypeArgumentsCustomModifiers();
-        //    }
-        //}
-
-        internal static bool TypeParametersMatchTypeArguments(ImmutableArray<TypeParameterSymbol> typeParameters, ImmutableArray<TypeWithModifiers> typeArguments)
+        internal static bool TypeParametersMatchTypeArguments(ImmutableArray<TypeParameterSymbol> typeParameters, ImmutableArray<TypeWithAnnotations> typeArguments)
         {
             int n = typeParameters.Length;
             Debug.Assert(typeArguments.Length == n);
@@ -150,26 +105,29 @@ namespace Aquila.CodeAnalysis.Symbols
             return true;
         }
 
-        //internal sealed override bool GetUnificationUseSiteDiagnosticRecursive(ref DiagnosticInfo result, Symbol owner, ref HashSet<TypeSymbol> checkedTypes)
-        //{
-        //    if (ConstructedFrom.GetUnificationUseSiteDiagnosticRecursive(ref result, owner, ref checkedTypes) ||
-        //        GetUnificationUseSiteDiagnosticRecursive(ref result, _typeArguments, owner, ref checkedTypes))
-        //    {
-        //        return true;
-        //    }
+        internal sealed override bool GetUnificationUseSiteDiagnosticRecursive(ref DiagnosticInfo result, Symbol owner, ref HashSet<TypeSymbol> checkedTypes)
+        {
+            if (ConstructedFrom.GetUnificationUseSiteDiagnosticRecursive(ref result, owner, ref checkedTypes) ||
+                GetUnificationUseSiteDiagnosticRecursive(ref result, _typeArgumentsWithAnnotations, owner, ref checkedTypes))
+            {
+                return true;
+            }
 
-        //    if (_hasTypeArgumentsCustomModifiers)
-        //    {
-        //        foreach (var modifiers in this.TypeArgumentsCustomModifiers)
-        //        {
-        //            if (GetUnificationUseSiteDiagnosticRecursive(ref result, modifiers, owner, ref checkedTypes))
-        //            {
-        //                return true;
-        //            }
-        //        }
-        //    }
+            var typeArguments = this.TypeArgumentsWithAnnotationsNoUseSiteDiagnostics;
+            foreach (var typeArg in typeArguments)
+            {
+                if (GetUnificationUseSiteDiagnosticRecursive(ref result, typeArg.CustomModifiers, owner, ref checkedTypes))
+                {
+                    return true;
+                }
+            }
 
-        //    return false;
-        //}
+            return false;
+        }
+
+        public override sealed bool AreLocalsZeroed
+        {
+            get { throw ExceptionUtilities.Unreachable; }
+        }
     }
 }

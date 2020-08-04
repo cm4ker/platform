@@ -1,27 +1,26 @@
-﻿﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.PooledObjects;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
-namespace Aquila.CodeAnalysis.Symbols
+ using System.Collections.Immutable;
+ using System.Threading;
+ using Microsoft.CodeAnalysis;
+ using Microsoft.CodeAnalysis.PooledObjects;
+
+ namespace Aquila.CodeAnalysis.Symbols
 {
     internal class ParameterSignature
     {
-        internal readonly ImmutableArray<TypeSymbol> parameterTypes;
+        internal readonly ImmutableArray<TypeWithAnnotations> parameterTypesWithAnnotations;
         internal readonly ImmutableArray<RefKind> parameterRefKinds;
 
         internal static readonly ParameterSignature NoParams =
-            new ParameterSignature(ImmutableArray<TypeSymbol>.Empty, default(ImmutableArray<RefKind>));
+            new ParameterSignature(ImmutableArray<TypeWithAnnotations>.Empty, default(ImmutableArray<RefKind>));
 
-        private ParameterSignature(ImmutableArray<TypeSymbol> parameterTypes,
-                                            ImmutableArray<RefKind> parameterRefKinds)
+        private ParameterSignature(ImmutableArray<TypeWithAnnotations> parameterTypesWithAnnotations,
+                                   ImmutableArray<RefKind> parameterRefKinds)
         {
-            this.parameterTypes = parameterTypes;
+            this.parameterTypesWithAnnotations = parameterTypesWithAnnotations;
             this.parameterRefKinds = parameterRefKinds;
         }
 
@@ -32,13 +31,13 @@ namespace Aquila.CodeAnalysis.Symbols
                 return NoParams;
             }
 
-            var types = ArrayBuilder<TypeSymbol>.GetInstance();
+            var types = ArrayBuilder<TypeWithAnnotations>.GetInstance();
             ArrayBuilder<RefKind> refs = null;
 
             for (int parm = 0; parm < parameters.Length; ++parm)
             {
                 var parameter = parameters[parm];
-                types.Add(parameter.Type);
+                types.Add(parameter.TypeWithAnnotations);
 
                 var refKind = parameter.RefKind;
                 if (refs == null)

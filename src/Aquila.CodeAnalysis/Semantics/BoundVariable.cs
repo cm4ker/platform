@@ -12,8 +12,9 @@ using Pchp.CodeAnalysis.FlowAnalysis;
 using Devsense.PHP.Syntax;
 using System.Diagnostics;
 using System.Collections.Immutable;
+ using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
 
-namespace Pchp.CodeAnalysis.Semantics
+ namespace Pchp.CodeAnalysis.Semantics
 {
     #region BoundVariable
 

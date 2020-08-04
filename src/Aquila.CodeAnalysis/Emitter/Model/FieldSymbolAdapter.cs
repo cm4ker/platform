@@ -23,8 +23,10 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
 
-            var customModifiers = this.CustomModifiers;
-            var isFixed = this.IsFixed;
+            TypeWithAnnotations fieldTypeWithAnnotations = this.TypeWithAnnotations;
+            var customModifiers = fieldTypeWithAnnotations.CustomModifiers;
+            
+            var isFixed = this.IsFixedSizeBuffer;
             var implType = isFixed ? this.FixedImplementationType(moduleBeingBuilt) : this.Type;
             var type = moduleBeingBuilt.Translate(implType, context.SyntaxNodeOpt, context.Diagnostics);
 

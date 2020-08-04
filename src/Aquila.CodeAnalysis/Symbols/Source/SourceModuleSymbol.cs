@@ -1,199 +1,586 @@
-﻿﻿using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Immutable;
-using System.Diagnostics;
- using Microsoft.CodeAnalysis.Symbols;
- using Pchp.CodeAnalysis;
+﻿﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
- namespace Aquila.CodeAnalysis.Symbols
+ using System.Collections.Generic;
+ using System.Collections.Immutable;
+ using System.Diagnostics;
+ using System.Reflection.PortableExecutable;
+ using System.Runtime.InteropServices;
+ using System.Threading;
+ using Aquila.CodeAnalysis.Symbols.Attributes;
+ using Aquila.CodeAnalysis.Symbols.Attributes.WellKnownAttributeData;
+ using Microsoft.CodeAnalysis;
+ using Microsoft.CodeAnalysis.PooledObjects;
+ using Roslyn.Utilities;
+
+ namespace Aquila.CodeAnalysis.Symbols.Source
 {
-    internal sealed class SourceModuleSymbol : ModuleSymbol, IModuleSymbol, IModuleSymbolInternal
+    /// <summary>
+    /// Represents the primary module of an assembly being built by compiler.
+    /// </summary>
+    internal sealed class SourceModuleSymbol : NonMissingModuleSymbol, IAttributeTargetSymbol
     {
-        readonly SourceAssemblySymbol _sourceAssembly;
-        readonly string _name;
-        readonly NamespaceSymbol _ns;
+        /// <summary>
+        /// Owning assembly.
+        /// </summary>
+        private readonly SourceAssemblySymbol _assemblySymbol;
+
+        private ImmutableArray<AssemblySymbol> _lazyAssembliesToEmbedTypesFrom;
+
+        private ThreeState _lazyContainsExplicitDefinitionOfNoPiaLocalTypes = ThreeState.Unknown;
 
         /// <summary>
-        /// Tables of all source symbols to be compiled within the source module.
+        /// The declarations corresponding to the source files of this module.
         /// </summary>
-        public SourceSymbolCollection SymbolCollection => DeclaringCompilation.SourceSymbolCollection;
+        private readonly DeclarationTable _sources;
 
-        public SourceModuleSymbol(SourceAssemblySymbol sourceAssembly, string name)
+        private SymbolCompletionState _state;
+        private CustomAttributesBag<CSharpAttributeData> _lazyCustomAttributesBag;
+        private ImmutableArray<Location> _locations;
+        private NamespaceSymbol _globalNamespace;
+
+        private bool _hasBadAttributes;
+
+        internal SourceModuleSymbol(
+            SourceAssemblySymbol assemblySymbol,
+            DeclarationTable declarations,
+            string moduleName)
         {
-            _sourceAssembly = sourceAssembly;
-            _name = name;
-            _ns = new SourceGlobalNamespaceSymbol(this);
+            Debug.Assert((object)assemblySymbol != null);
+
+            _assemblySymbol = assemblySymbol;
+            _sources = declarations;
+            _name = moduleName;
         }
 
-        bool ISymbolInternal.Equals(ISymbolInternal? other, TypeCompareKind compareKind)
+        internal void RecordPresenceOfBadAttributes()
         {
-            throw new NotImplementedException();
+            _hasBadAttributes = true;
         }
 
-        ISymbol ISymbolInternal.GetISymbol()
+        internal bool HasBadAttributes
         {
-            throw new NotImplementedException();
+            get
+            {
+                return _hasBadAttributes;
+            }
         }
 
-        public override string Name => _name;
+        internal override int Ordinal
+        {
+            get
+            {
+                return 0;
+            }
+        }
 
-        Compilation ISymbolInternal.DeclaringCompilation => DeclaringCompilation;
+        internal override Machine Machine
+        {
+            get
+            {
+                switch (DeclaringCompilation.Options.Platform)
+                {
+                    case Platform.Arm:
+                        return Machine.ArmThumb2;
+                    case Platform.X64:
+                        return Machine.Amd64;
+                    case Platform.Arm64:
+                        return Machine.Arm64;
+                    case Platform.Itanium:
+                        return Machine.IA64;
+                    default:
+                        return Machine.I386;
+                }
+            }
+        }
 
-        ISymbolInternal ISymbolInternal.ContainingSymbol => _containingSymbol;
+        internal override bool Bit32Required
+        {
+            get
+            {
+                return DeclaringCompilation.Options.Platform == Platform.X86;
+            }
+        }
 
-        IAssemblySymbolInternal ISymbolInternal.ContainingAssembly => _containingAssembly;
+        internal bool AnyReferencedAssembliesAreLinked
+        {
+            get
+            {
+                return GetAssembliesToEmbedTypesFrom().Length > 0;
+            }
+        }
 
-        IModuleSymbolInternal ISymbolInternal.ContainingModule => _containingModule;
+        internal bool MightContainNoPiaLocalTypes()
+        {
+            return AnyReferencedAssembliesAreLinked ||
+                ContainsExplicitDefinitionOfNoPiaLocalTypes;
+        }
 
-        INamedTypeSymbolInternal ISymbolInternal.ContainingType => _containingType;
+        internal ImmutableArray<AssemblySymbol> GetAssembliesToEmbedTypesFrom()
+        {
+            if (_lazyAssembliesToEmbedTypesFrom.IsDefault)
+            {
+                AssertReferencesInitialized();
+                var buffer = ArrayBuilder<AssemblySymbol>.GetInstance();
 
-        INamespaceSymbolInternal ISymbolInternal.ContainingNamespace => _containingNamespace;
+                foreach (AssemblySymbol asm in this.GetReferencedAssemblySymbols())
+                {
+                    if (asm.IsLinked)
+                    {
+                        buffer.Add(asm);
+                    }
+                }
 
-        public override Symbol ContainingSymbol => _sourceAssembly;
+                ImmutableInterlocked.InterlockedCompareExchange(ref _lazyAssembliesToEmbedTypesFrom,
+                                                    buffer.ToImmutableAndFree(),
+                                                    default(ImmutableArray<AssemblySymbol>));
+            }
 
-        public override NamespaceSymbol GlobalNamespace => _ns;
+            Debug.Assert(!_lazyAssembliesToEmbedTypesFrom.IsDefault);
+            return _lazyAssembliesToEmbedTypesFrom;
+        }
 
-        internal SourceAssemblySymbol SourceAssemblySymbol => _sourceAssembly;
+        internal bool ContainsExplicitDefinitionOfNoPiaLocalTypes
+        {
+            get
+            {
+                if (_lazyContainsExplicitDefinitionOfNoPiaLocalTypes == ThreeState.Unknown)
+                {
+                    _lazyContainsExplicitDefinitionOfNoPiaLocalTypes = NamespaceContainsExplicitDefinitionOfNoPiaLocalTypes(GlobalNamespace).ToThreeState();
+                }
 
-        public override AssemblySymbol ContainingAssembly => _sourceAssembly;
+                Debug.Assert(_lazyContainsExplicitDefinitionOfNoPiaLocalTypes != ThreeState.Unknown);
+                return _lazyContainsExplicitDefinitionOfNoPiaLocalTypes == ThreeState.True;
+            }
+        }
+
+        private static bool NamespaceContainsExplicitDefinitionOfNoPiaLocalTypes(NamespaceSymbol ns)
+        {
+            foreach (Symbol s in ns.GetMembersUnordered())
+            {
+                switch (s.Kind)
+                {
+                    case SymbolKind.Namespace:
+                        if (NamespaceContainsExplicitDefinitionOfNoPiaLocalTypes((NamespaceSymbol)s))
+                        {
+                            return true;
+                        }
+
+                        break;
+
+                    case SymbolKind.NamedType:
+                        if (((NamedTypeSymbol)s).IsExplicitDefinitionOfNoPiaLocalType)
+                        {
+                            return true;
+                        }
+
+                        break;
+                }
+            }
+
+            return false;
+        }
+
+        public override NamespaceSymbol GlobalNamespace
+        {
+            get
+            {
+                if ((object)_globalNamespace == null)
+                {
+                    var diagnostics = DiagnosticBag.GetInstance();
+                    var globalNS = new SourceNamespaceSymbol(
+                        this, this, DeclaringCompilation.MergedRootDeclaration, diagnostics);
+                    Debug.Assert(diagnostics.IsEmptyWithoutResolution);
+                    diagnostics.Free();
+                    Interlocked.CompareExchange(ref _globalNamespace, globalNS, null);
+                }
+
+                return _globalNamespace;
+            }
+        }
+
+        internal sealed override bool RequiresCompletion
+        {
+            get { return true; }
+        }
+
+        internal sealed override bool HasComplete(CompletionPart part)
+        {
+            return _state.HasComplete(part);
+        }
+
+        internal override void ForceComplete(SourceLocation locationOpt, CancellationToken cancellationToken)
+        {
+            while (true)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var incompletePart = _state.NextIncompletePart;
+                switch (incompletePart)
+                {
+                    case CompletionPart.Attributes:
+                        GetAttributes();
+                        break;
+
+                    case CompletionPart.StartValidatingReferencedAssemblies:
+                        {
+                            DiagnosticBag diagnostics = null;
+
+                            if (AnyReferencedAssembliesAreLinked)
+                            {
+                                diagnostics = DiagnosticBag.GetInstance();
+                                ValidateLinkedAssemblies(diagnostics, cancellationToken);
+                            }
+
+                            if (_state.NotePartComplete(CompletionPart.StartValidatingReferencedAssemblies))
+                            {
+                                if (diagnostics != null)
+                                {
+                                    _assemblySymbol.DeclaringCompilation.DeclarationDiagnostics.AddRange(diagnostics);
+                                }
+
+                                _state.NotePartComplete(CompletionPart.FinishValidatingReferencedAssemblies);
+                            }
+
+                            if (diagnostics != null)
+                            {
+                                diagnostics.Free();
+                            }
+                        }
+                        break;
+
+                    case CompletionPart.FinishValidatingReferencedAssemblies:
+                        // some other thread has started validating references (otherwise we would be in the case above) so
+                        // we just wait for it to both finish and report the diagnostics.
+                        Debug.Assert(_state.HasComplete(CompletionPart.StartValidatingReferencedAssemblies));
+                        _state.SpinWaitComplete(CompletionPart.FinishValidatingReferencedAssemblies, cancellationToken);
+                        break;
+
+                    case CompletionPart.MembersCompleted:
+                        this.GlobalNamespace.ForceComplete(locationOpt, cancellationToken);
+
+                        if (this.GlobalNamespace.HasComplete(CompletionPart.MembersCompleted))
+                        {
+                            _state.NotePartComplete(CompletionPart.MembersCompleted);
+                        }
+                        else
+                        {
+                            Debug.Assert(locationOpt != null, "If no location was specified, then the namespace members should be completed");
+                            return;
+                        }
+
+                        break;
+
+                    case CompletionPart.None:
+                        return;
+
+                    default:
+                        // any other values are completion parts intended for other kinds of symbols
+                        _state.NotePartComplete(incompletePart);
+                        break;
+                }
+
+                _state.SpinWaitComplete(incompletePart, cancellationToken);
+            }
+        }
+
+        private void ValidateLinkedAssemblies(DiagnosticBag diagnostics, CancellationToken cancellationToken)
+        {
+            foreach (AssemblySymbol a in GetReferencedAssemblySymbols())
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (!a.IsMissing && a.IsLinked)
+                {
+                    bool hasGuidAttribute = false;
+                    bool hasImportedFromTypeLibOrPrimaryInteropAssemblyAttribute = false;
+
+                    foreach (var attrData in a.GetAttributes())
+                    {
+                        if (attrData.IsTargetAttribute(a, AttributeDescription.GuidAttribute))
+                        {
+                            string guidString;
+                            if (attrData.TryGetGuidAttributeValue(out guidString))
+                            {
+                                hasGuidAttribute = true;
+                            }
+                        }
+                        else if (attrData.IsTargetAttribute(a, AttributeDescription.ImportedFromTypeLibAttribute))
+                        {
+                            if (attrData.CommonConstructorArguments.Length == 1)
+                            {
+                                hasImportedFromTypeLibOrPrimaryInteropAssemblyAttribute = true;
+                            }
+                        }
+                        else if (attrData.IsTargetAttribute(a, AttributeDescription.PrimaryInteropAssemblyAttribute))
+                        {
+                            if (attrData.CommonConstructorArguments.Length == 2)
+                            {
+                                hasImportedFromTypeLibOrPrimaryInteropAssemblyAttribute = true;
+                            }
+                        }
+
+                        if (hasGuidAttribute && hasImportedFromTypeLibOrPrimaryInteropAssemblyAttribute)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (!hasGuidAttribute)
+                    {
+                        // ERRID_PIAHasNoAssemblyGuid1/ERR_NoPIAAssemblyMissingAttribute
+                        diagnostics.Add(ErrorCode.ERR_NoPIAAssemblyMissingAttribute, NoLocation.Singleton, a, AttributeDescription.GuidAttribute.FullName);
+                    }
+
+                    if (!hasImportedFromTypeLibOrPrimaryInteropAssemblyAttribute)
+                    {
+                        // ERRID_PIAHasNoTypeLibAttribute1/ERR_NoPIAAssemblyMissingAttributes
+                        diagnostics.Add(ErrorCode.ERR_NoPIAAssemblyMissingAttributes, NoLocation.Singleton, a,
+                                                   AttributeDescription.ImportedFromTypeLibAttribute.FullName,
+                                                   AttributeDescription.PrimaryInteropAssemblyAttribute.FullName);
+                    }
+                }
+            }
+        }
 
         public override ImmutableArray<Location> Locations
         {
             get
             {
-                throw new NotImplementedException();
+                if (_locations.IsDefault)
+                {
+                    ImmutableInterlocked.InterlockedInitialize(
+                        ref _locations,
+                        DeclaringCompilation.MergedRootDeclaration.Declarations.SelectAsArray(d => (Location)d.Location));
+                }
+
+                return _locations;
             }
         }
-
-        internal override PhpCompilation DeclaringCompilation => _sourceAssembly.DeclaringCompilation;
 
         /// <summary>
-        /// Lookup a top level type referenced from metadata, names should be
-        /// compared case-sensitively.
+        /// The name (contains extension)
         /// </summary>
-        /// <param name="emittedName">
-        /// Full type name, possibly with generic name mangling.
-        /// </param>
-        /// <returns>
-        /// Symbol for the type, or MissingMetadataSymbol if the type isn't found.
-        /// </returns>
-        /// <remarks></remarks>
-        internal sealed override NamedTypeSymbol LookupTopLevelMetadataType(ref MetadataTypeName emittedName)
+        private readonly string _name;
+
+        public override string Name
         {
-            NamedTypeSymbol result;
-            NamespaceSymbol scope = this.GlobalNamespace; //.LookupNestedNamespace(emittedName.NamespaceSegments);
-
-            if ((object)scope == null)
+            get
             {
-                // We failed to locate the namespace
-                throw new NotImplementedException();
-                //result = new MissingMetadataTypeSymbol.TopLevel(this, ref emittedName);
+                return _name;
             }
-            else
-            {
-                result = scope.LookupMetadataType(ref emittedName);
-            }
-
-            Debug.Assert((object)result != null);
-            return result;
         }
 
-        ImmutableArray<AttributeData> _lazyAttributesToEmit;
-        private ISymbolInternal _containingSymbol;
-        private IAssemblySymbolInternal _containingAssembly;
-        private IModuleSymbolInternal _containingModule;
-        private INamedTypeSymbolInternal _containingType;
-        private INamespaceSymbolInternal _containingNamespace;
-
-        internal override IEnumerable<AttributeData> GetCustomAttributesToEmit(CommonModuleCompilationState compilationState)
+        public override Symbol ContainingSymbol
         {
-            var attrs = base.GetCustomAttributesToEmit(compilationState);
-
-            if (_lazyAttributesToEmit.IsDefault)
+            get
             {
-                _lazyAttributesToEmit = CreateAttributesToEmit().ToImmutableArray();
+                return _assemblySymbol;
             }
-
-            attrs = attrs.Concat(_lazyAttributesToEmit);
-
-            //
-            return attrs;
         }
 
-        IEnumerable<AttributeData> CreateAttributesToEmit()
+        public override AssemblySymbol ContainingAssembly
         {
-            // [ImportPhpType( ... )]
-            var ctor = (MethodSymbol)DeclaringCompilation.GetTypeByMetadataName("Pchp.Core.ImportPhpTypeAttribute").InstanceConstructors.Single();
-            foreach (var t in DeclaringCompilation.GlobalSemantics.GetReferencedTypes())
+            get
             {
-                yield return new SynthesizedAttributeData(
-                    ctor,
-                    ImmutableArray.Create(DeclaringCompilation.CreateTypedConstant(
-                        t.IsTraitType() ? t.ConstructedFrom.ConstructUnboundGenericType() : t)),
-                    ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
+                return _assemblySymbol;
             }
-
-            // [ImportPhpFunctions( ... )]
-            ctor = (MethodSymbol)DeclaringCompilation.GetTypeByMetadataName("Pchp.Core.ImportPhpFunctionsAttribute").InstanceConstructors.Single();
-            var tcontainers = DeclaringCompilation.GlobalSemantics.ExtensionContainers.Where(x => !x.IsPhpSourceFile());
-            foreach (var t in tcontainers)
-            {
-                // only if contains functions
-                if (t.GetMembers().OfType<MethodSymbol>().Any(DeclaringCompilation.GlobalSemantics.IsFunction))
-                {
-                    yield return new SynthesizedAttributeData(
-                        ctor,
-                        ImmutableArray.Create(DeclaringCompilation.CreateTypedConstant(t)),
-                        ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
-                }
-            }
-
-            // [ImportPhpConstants( ... )]
-            ctor = (MethodSymbol)DeclaringCompilation.GetTypeByMetadataName("Pchp.Core.ImportPhpConstantsAttribute").InstanceConstructors.Single();
-            //tcontainers = DeclaringCompilation.GlobalSemantics.ExtensionContainers.Where(x => !x.IsPhpSourceFile());
-            foreach (var t in tcontainers)
-            {
-                // only if contains constants
-                if (t.GetMembers().Any(DeclaringCompilation.GlobalSemantics.IsGlobalConstant))
-                {
-                    yield return new SynthesizedAttributeData(
-                        ctor,
-                        ImmutableArray.Create(DeclaringCompilation.CreateTypedConstant(t)),
-                        ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
-                }
-            }
-
-            // [ExportPhpScript]
-
-            // [PhpPackageReference( ... )]
-            ctor = (MethodSymbol)DeclaringCompilation.GetTypeByMetadataName("Pchp.Core.PhpPackageReferenceAttribute").InstanceConstructors.Single();
-            foreach (var a in DeclaringCompilation.GlobalSemantics.ReferencedPhpPackageReferences)
-            {
-                var scriptType = a.GetTypeByMetadataName(WellKnownPchpNames.DefaultScriptClassName); // <Script> for PHP libraries
-                if (scriptType.IsErrorTypeOrNull())
-                {
-                    // pick any type as a refernce for C# extension libraries
-                    var alltypes = a.PrimaryModule.GlobalNamespace.GetTypeMembers();
-                    scriptType =
-                        alltypes.FirstOrDefault(x => x.DeclaredAccessibility == Accessibility.Public) ??
-                        alltypes.FirstOrDefault(x => x.DeclaredAccessibility == Accessibility.Internal);
-                }
-
-                if (scriptType.IsValidType())
-                {
-                    yield return new SynthesizedAttributeData(
-                        ctor,
-                        ImmutableArray.Create(DeclaringCompilation.CreateTypedConstant(scriptType)),
-                        ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
-                }
-            }
-
-            //
-            yield break;
         }
+
+        internal SourceAssemblySymbol ContainingSourceAssembly
+        {
+            get
+            {
+                return _assemblySymbol;
+            }
+        }
+
+        /// <remarks>
+        /// This override is essential - it's a base case of the recursive definition.
+        /// </remarks>
+        internal override CSharpCompilation DeclaringCompilation
+        {
+            get
+            {
+                return _assemblySymbol.DeclaringCompilation;
+            }
+        }
+
+        internal override ICollection<string> TypeNames
+        {
+            get
+            {
+                return _sources.TypeNames;
+            }
+        }
+
+        internal override ICollection<string> NamespaceNames
+        {
+            get
+            {
+                return _sources.NamespaceNames;
+            }
+        }
+
+        IAttributeTargetSymbol IAttributeTargetSymbol.AttributesOwner
+        {
+            get { return _assemblySymbol; }
+        }
+
+        AttributeLocation IAttributeTargetSymbol.DefaultAttributeLocation
+        {
+            get { return AttributeLocation.Module; }
+        }
+
+        AttributeLocation IAttributeTargetSymbol.AllowedAttributeLocations
+        {
+            get
+            {
+                return ContainingAssembly.IsInteractive ? AttributeLocation.None : AttributeLocation.Assembly | AttributeLocation.Module;
+            }
+        }
+
+        /// <summary>
+        /// Returns a bag of applied custom attributes and data decoded from well-known attributes. Returns null if there are no attributes applied on the symbol.
+        /// </summary>
+        /// <remarks>
+        /// Forces binding and decoding of attributes.
+        /// </remarks>
+        private CustomAttributesBag<CSharpAttributeData> GetAttributesBag()
+        {
+            if (_lazyCustomAttributesBag == null || !_lazyCustomAttributesBag.IsSealed)
+            {
+                var mergedAttributes = ((SourceAssemblySymbol)this.ContainingAssembly).GetAttributeDeclarations();
+                if (LoadAndValidateAttributes(OneOrMany.Create(mergedAttributes), ref _lazyCustomAttributesBag))
+                {
+                    var completed = _state.NotePartComplete(CompletionPart.Attributes);
+                    Debug.Assert(completed);
+                }
+            }
+
+            return _lazyCustomAttributesBag;
+        }
+
+        /// <summary>
+        /// Gets the attributes applied on this symbol.
+        /// Returns an empty array if there are no attributes.
+        /// </summary>
+        /// <remarks>
+        /// NOTE: This method should always be kept as a sealed override.
+        /// If you want to override attribute binding logic for a sub-class, then override <see cref="GetAttributesBag"/> method.
+        /// </remarks>
+        public sealed override ImmutableArray<CSharpAttributeData> GetAttributes()
+        {
+            return this.GetAttributesBag().Attributes;
+        }
+
+        /// <summary>
+        /// Returns data decoded from well-known attributes applied to the symbol or null if there are no applied attributes.
+        /// </summary>
+        /// <remarks>
+        /// Forces binding and decoding of attributes.
+        /// </remarks>
+        private ModuleWellKnownAttributeData GetDecodedWellKnownAttributeData()
+        {
+            var attributesBag = _lazyCustomAttributesBag;
+            if (attributesBag == null || !attributesBag.IsDecodedWellKnownAttributeDataComputed)
+            {
+                attributesBag = this.GetAttributesBag();
+            }
+
+            return (ModuleWellKnownAttributeData)attributesBag.DecodedWellKnownAttributeData;
+        }
+
+        internal override void DecodeWellKnownAttribute(ref DecodeWellKnownAttributeArguments<AttributeSyntax, CSharpAttributeData, AttributeLocation> arguments)
+        {
+            Debug.Assert((object)arguments.AttributeSyntaxOpt != null);
+
+            var attribute = arguments.Attribute;
+            Debug.Assert(!attribute.HasErrors);
+            Debug.Assert(arguments.SymbolPart == AttributeLocation.None);
+
+            if (attribute.IsTargetAttribute(this, AttributeDescription.DefaultCharSetAttribute))
+            {
+                CharSet charSet = attribute.GetConstructorArgument<CharSet>(0, SpecialType.System_Enum);
+                if (!ModuleWellKnownAttributeData.IsValidCharSet(charSet))
+                {
+                    CSharpSyntaxNode attributeArgumentSyntax = attribute.GetAttributeArgumentSyntax(0, arguments.AttributeSyntaxOpt);
+                    arguments.Diagnostics.Add(ErrorCode.ERR_InvalidAttributeArgument, attributeArgumentSyntax.Location, arguments.AttributeSyntaxOpt.GetErrorDisplayName());
+                }
+                else
+                {
+                    arguments.GetOrCreateData<ModuleWellKnownAttributeData>().DefaultCharacterSet = charSet;
+                }
+            }
+            else if (ReportExplicitUseOfReservedAttributes(in arguments,
+                ReservedAttributes.NullableContextAttribute | ReservedAttributes.NullablePublicOnlyAttribute))
+            {
+            }
+            else if (attribute.IsTargetAttribute(this, AttributeDescription.SkipLocalsInitAttribute))
+            {
+                CSharpAttributeData.DecodeSkipLocalsInitAttribute<ModuleWellKnownAttributeData>(DeclaringCompilation, ref arguments);
+            }
+        }
+
+        internal override void AddSynthesizedAttributes(PEModuleBuilder moduleBuilder, ref ArrayBuilder<SynthesizedAttributeData> attributes)
+        {
+            base.AddSynthesizedAttributes(moduleBuilder, ref attributes);
+
+            var compilation = _assemblySymbol.DeclaringCompilation;
+            if (compilation.Options.AllowUnsafe)
+            {
+                // NOTE: GlobalAttrBind::EmitCompilerGeneratedAttrs skips attribute if the well-known type isn't available.
+                if (!(compilation.GetWellKnownType(WellKnownType.System_Security_UnverifiableCodeAttribute) is MissingMetadataTypeSymbol))
+                {
+                    AddSynthesizedAttribute(ref attributes, compilation.TrySynthesizeAttribute(
+                        WellKnownMember.System_Security_UnverifiableCodeAttribute__ctor));
+                }
+            }
+
+            if (moduleBuilder.ShouldEmitNullablePublicOnlyAttribute())
+            {
+                var includesInternals = ImmutableArray.Create(
+                    new TypedConstant(compilation.GetSpecialType(SpecialType.System_Boolean), TypedConstantKind.Primitive, _assemblySymbol.InternalsAreVisible));
+                AddSynthesizedAttribute(ref attributes, moduleBuilder.SynthesizeNullablePublicOnlyAttribute(includesInternals));
+            }
+        }
+
+        internal override bool HasAssemblyCompilationRelaxationsAttribute
+        {
+            get
+            {
+                CommonAssemblyWellKnownAttributeData<NamedTypeSymbol> decodedData = ((SourceAssemblySymbol)this.ContainingAssembly).GetSourceDecodedWellKnownAttributeData();
+                return decodedData != null && decodedData.HasCompilationRelaxationsAttribute;
+            }
+        }
+
+        internal override bool HasAssemblyRuntimeCompatibilityAttribute
+        {
+            get
+            {
+                CommonAssemblyWellKnownAttributeData<NamedTypeSymbol> decodedData = ((SourceAssemblySymbol)this.ContainingAssembly).GetSourceDecodedWellKnownAttributeData();
+                return decodedData != null && decodedData.HasRuntimeCompatibilityAttribute;
+            }
+        }
+
+        internal override CharSet? DefaultMarshallingCharSet
+        {
+            get
+            {
+                var data = GetDecodedWellKnownAttributeData();
+                return data != null && data.HasDefaultCharSetAttribute ? data.DefaultCharacterSet : (CharSet?)null;
+            }
+        }
+
+        public sealed override bool AreLocalsZeroed
+        {
+            get
+            {
+                var data = GetDecodedWellKnownAttributeData();
+                return data?.HasSkipLocalsInitAttribute != true;
+            }
+        }
+
+        public override ModuleMetadata GetMetadata() => null;
     }
 }

@@ -19,15 +19,16 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
 
-            var type = moduleBeingBuilt.Translate(this.ElementType, syntaxNodeOpt: context.SyntaxNodeOpt, diagnostics: context.Diagnostics);
+            TypeWithAnnotations elementType = this.ElementTypeWithAnnotations;
+            var type = moduleBeingBuilt.Translate(elementType.Type, syntaxNodeOpt: context.SyntaxNodeOpt, diagnostics: context.Diagnostics);
 
-            if (this.CustomModifiers.Length == 0)
+            if (elementType.CustomModifiers.Length == 0)
             {
                 return type;
             }
             else
             {
-                return new Cci.ModifiedTypeReference(type, this.CustomModifiers.As<Cci.ICustomModifier>());
+                return new Cci.ModifiedTypeReference(type, ImmutableArray<Cci.ICustomModifier>.CastUp(elementType.CustomModifiers));
             }
         }
 
@@ -39,25 +40,8 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        ImmutableArray<int> Cci.IArrayTypeReference.LowerBounds
-        {
-            get
-            {
-                var lowerBounds = this.LowerBounds;
-
-                if (lowerBounds.IsDefault)
-                {
-                    return Enumerable.Repeat(0, Rank).ToImmutableArray();
-                }
-                else
-                {
-                    return lowerBounds;
-                }
-            }
-        }
-
+        ImmutableArray<int> Cci.IArrayTypeReference.LowerBounds => LowerBounds;
         int Cci.IArrayTypeReference.Rank => Rank;
-
         ImmutableArray<int> Cci.IArrayTypeReference.Sizes => Sizes;
 
         void Cci.IReference.Dispatch(Cci.MetadataVisitor visitor)
@@ -71,16 +55,16 @@ namespace Aquila.CodeAnalysis.Symbols
         TypeDefinitionHandle Cci.ITypeReference.TypeDef => default(TypeDefinitionHandle);
         Cci.PrimitiveTypeCode Cci.ITypeReference.TypeCode => Cci.PrimitiveTypeCode.NotPrimitive;
 
-        Cci.ITypeDefinition Cci.ITypeReference.GetResolvedType(EmitContext context) => null;
-        Cci.IGenericMethodParameterReference Cci.ITypeReference.AsGenericMethodParameterReference => null;
-        Cci.IGenericTypeInstanceReference Cci.ITypeReference.AsGenericTypeInstanceReference => null;
-        Cci.IGenericTypeParameterReference Cci.ITypeReference.AsGenericTypeParameterReference => null;
-        Cci.INamespaceTypeDefinition Cci.ITypeReference.AsNamespaceTypeDefinition(EmitContext context) => null;
-        Cci.INamespaceTypeReference Cci.ITypeReference.AsNamespaceTypeReference => null;
-        Cci.INestedTypeDefinition Cci.ITypeReference.AsNestedTypeDefinition(EmitContext context) => null;
-        Cci.INestedTypeReference Cci.ITypeReference.AsNestedTypeReference => null;
-        Cci.ISpecializedNestedTypeReference Cci.ITypeReference.AsSpecializedNestedTypeReference => null;
-        Cci.ITypeDefinition Cci.ITypeReference.AsTypeDefinition(EmitContext context) => null;
-        Cci.IDefinition Cci.IReference.AsDefinition(EmitContext context) => null;
+        Cci.ITypeDefinition? Cci.ITypeReference.GetResolvedType(EmitContext context) => null;
+        Cci.IGenericMethodParameterReference? Cci.ITypeReference.AsGenericMethodParameterReference => null;
+        Cci.IGenericTypeInstanceReference? Cci.ITypeReference.AsGenericTypeInstanceReference => null;
+        Cci.IGenericTypeParameterReference? Cci.ITypeReference.AsGenericTypeParameterReference => null;
+        Cci.INamespaceTypeDefinition? Cci.ITypeReference.AsNamespaceTypeDefinition(EmitContext context) => null;
+        Cci.INamespaceTypeReference? Cci.ITypeReference.AsNamespaceTypeReference => null;
+        Cci.INestedTypeDefinition? Cci.ITypeReference.AsNestedTypeDefinition(EmitContext context) => null;
+        Cci.INestedTypeReference? Cci.ITypeReference.AsNestedTypeReference => null;
+        Cci.ISpecializedNestedTypeReference? Cci.ITypeReference.AsSpecializedNestedTypeReference => null;
+        Cci.ITypeDefinition? Cci.ITypeReference.AsTypeDefinition(EmitContext context) => null;
+        Cci.IDefinition? Cci.IReference.AsDefinition(EmitContext context) => null;
     }
 }

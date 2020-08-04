@@ -15,6 +15,7 @@ using Aquila.Syntax.Text;
 using Peachpie.CodeAnalysis.Utilities;
 using Pchp.CodeAnalysis.Semantics.TypeRef;
 using Pchp.CodeAnalysis.Utilities;
+using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 
 namespace Pchp.CodeAnalysis.FlowAnalysis.Passes

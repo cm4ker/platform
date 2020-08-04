@@ -1,15 +1,16 @@
-﻿﻿using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
- using Pchp.CodeAnalysis;
- using Cci = Microsoft.Cci;
+﻿﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
-namespace Aquila.CodeAnalysis.Symbols
+ using System.Collections.Generic;
+ using System.Collections.Immutable;
+ using System.Diagnostics;
+ using Aquila.CodeAnalysis.Symbols.Source;
+ using Microsoft.CodeAnalysis;
+ using Microsoft.CodeAnalysis.PooledObjects;
+ using Roslyn.Utilities;
+
+ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 {
     internal class SynthesizedInstanceConstructor : SynthesizedInstanceMethodSymbol
     {
@@ -25,10 +26,10 @@ namespace Aquila.CodeAnalysis.Symbols
         // Consider overriding when implementing a synthesized subclass.
         //
 
-        //internal override bool GenerateDebugInfo
-        //{
-        //    get { return true; }
-        //}
+        internal override bool GenerateDebugInfo
+        {
+            get { return true; }
+        }
 
         public override ImmutableArray<ParameterSymbol> Parameters
         {
@@ -77,11 +78,11 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get
             {
-                //if (_containingType.IsComImport)
-                //{
-                //    Debug.Assert(_containingType.TypeKind == TypeKind.Class);
-                //    return System.Reflection.MethodImplAttributes.Runtime | System.Reflection.MethodImplAttributes.InternalCall;
-                //}
+                if (_containingType.IsComImport)
+                {
+                    Debug.Assert(_containingType.TypeKind == TypeKind.Class);
+                    return System.Reflection.MethodImplAttributes.Runtime | System.Reflection.MethodImplAttributes.InternalCall;
+                }
 
                 if (_containingType.TypeKind == TypeKind.Delegate)
                 {
@@ -102,25 +103,25 @@ namespace Aquila.CodeAnalysis.Symbols
             return null;
         }
 
-        //internal sealed override MarshalPseudoCustomAttributeData ReturnValueMarshallingInformation
-        //{
-        //    get { return null; }
-        //}
+        internal sealed override MarshalPseudoCustomAttributeData ReturnValueMarshallingInformation
+        {
+            get { return null; }
+        }
 
-        //internal sealed override bool HasDeclarativeSecurity
-        //{
-        //    get { return false; }
-        //}
+        internal sealed override bool HasDeclarativeSecurity
+        {
+            get { return false; }
+        }
 
-        //internal sealed override IEnumerable<Cci.SecurityAttribute> GetSecurityInformation()
-        //{
-        //    throw ExceptionUtilities.Unreachable;
-        //}
+        internal sealed override IEnumerable<Microsoft.Cci.SecurityAttribute> GetSecurityInformation()
+        {
+            throw ExceptionUtilities.Unreachable;
+        }
 
-        //internal sealed override ImmutableArray<string> GetAppliedConditionalSymbols()
-        //{
-        //    return ImmutableArray<string>.Empty;
-        //}
+        internal sealed override ImmutableArray<string> GetAppliedConditionalSymbols()
+        {
+            return ImmutableArray<string>.Empty;
+        }
 
         public sealed override bool IsVararg
         {
@@ -132,36 +133,43 @@ namespace Aquila.CodeAnalysis.Symbols
             get { return ImmutableArray<TypeParameterSymbol>.Empty; }
         }
 
-        //internal sealed override LexicalSortKey GetLexicalSortKey()
-        //{
-        //    //For the sake of matching the metadata output of the native compiler, make synthesized constructors appear last in the metadata.
-        //    //This is not critical, but it makes it easier on tools that are comparing metadata.
-        //    return LexicalSortKey.SynthesizedCtor;
-        //}
+        internal override LexicalSortKey GetLexicalSortKey()
+        {
+            //For the sake of matching the metadata output of the native compiler, make synthesized constructors appear last in the metadata.
+            //This is not critical, but it makes it easier on tools that are comparing metadata.
+            return LexicalSortKey.SynthesizedCtor;
+        }
 
         public sealed override ImmutableArray<Location> Locations
         {
             get { return ContainingType.Locations; }
         }
 
-        public override RefKind RefKind => RefKind.None;
-
-        public sealed override TypeSymbol ReturnType
+        public override RefKind RefKind
         {
-            get { return ContainingAssembly.GetSpecialType(SpecialType.System_Void); }
+            get { return RefKind.None; }
         }
 
-        public sealed override ImmutableArray<CustomModifier> ReturnTypeCustomModifiers
+        public sealed override TypeWithAnnotations ReturnTypeWithAnnotations
+        {
+            get { return TypeWithAnnotations.Create(ContainingAssembly.GetSpecialType(SpecialType.System_Void)); }
+        }
+
+        public sealed override FlowAnalysisAnnotations ReturnTypeFlowAnalysisAnnotations => FlowAnalysisAnnotations.None;
+
+        public sealed override ImmutableHashSet<string> ReturnNotNullIfParameterNotNull => ImmutableHashSet<string>.Empty;
+
+        public override ImmutableArray<CustomModifier> RefCustomModifiers
         {
             get { return ImmutableArray<CustomModifier>.Empty; }
         }
 
-        public sealed override ImmutableArray<TypeSymbol> TypeArguments
+        public sealed override ImmutableArray<TypeWithAnnotations> TypeArgumentsWithAnnotations
         {
-            get { return ImmutableArray<TypeSymbol>.Empty; }
+            get { return ImmutableArray<TypeWithAnnotations>.Empty; }
         }
 
-        public sealed override ISymbol AssociatedSymbol
+        public sealed override Symbol AssociatedSymbol
         {
             get { return null; }
         }
@@ -187,7 +195,7 @@ namespace Aquila.CodeAnalysis.Symbols
             {
                 // Synthesized constructors of ComImport type are extern
                 NamedTypeSymbol containingType = this.ContainingType;
-                return (object)containingType != null && false/*containingType.IsComImport*/;
+                return (object)containingType != null && containingType.IsComImport;
             }
         }
 
@@ -241,9 +249,9 @@ namespace Aquila.CodeAnalysis.Symbols
             get { return false; }
         }
 
-        public sealed override Cci.CallingConvention CallingConvention
+        internal sealed override Microsoft.Cci.CallingConvention CallingConvention
         {
-            get { return Cci.CallingConvention.HasThis; }
+            get { return Microsoft.Cci.CallingConvention.HasThis; }
         }
 
         internal sealed override bool IsExplicitInterfaceImplementation
@@ -256,12 +264,51 @@ namespace Aquila.CodeAnalysis.Symbols
             get { return ImmutableArray<MethodSymbol>.Empty; }
         }
 
-        //internal sealed override int CalculateLocalSyntaxOffset(int localPosition, SyntaxTree localTree)
-        //{
-        //    var containingType = (SourceMemberContainerTypeSymbol)this.ContainingType;
-        //    return containingType.CalculateSyntaxOffsetInSynthesizedConstructor(localPosition, localTree, isStatic: false);
-        //}
+        internal sealed override int CalculateLocalSyntaxOffset(int localPosition, SyntaxTree localTree)
+        {
+            var containingType = (SourceMemberContainerTypeSymbol)this.ContainingType;
+            return containingType.CalculateSyntaxOffsetInSynthesizedConstructor(localPosition, localTree, isStatic: false);
+        }
 
+        internal sealed override DiagnosticInfo GetUseSiteDiagnostic()
+        {
+            return ReturnTypeWithAnnotations.Type.GetUseSiteDiagnostic();
+        }
         #endregion
+
+        protected void GenerateMethodBodyCore(TypeCompilationState compilationState, DiagnosticBag diagnostics)
+        {
+            var factory = new SyntheticBoundNodeFactory(this, this.GetNonNullSyntaxNode(), compilationState, diagnostics);
+            factory.CurrentFunction = this;
+            if (ContainingType.BaseTypeNoUseSiteDiagnostics is MissingMetadataTypeSymbol)
+            {
+                // System_Attribute was not found or was inaccessible
+                factory.CloseMethod(factory.Block());
+                return;
+            }
+
+            var baseConstructorCall = MethodCompiler.GenerateBaseParameterlessConstructorInitializer(this, diagnostics);
+            if (baseConstructorCall == null)
+            {
+                // Attribute..ctor was not found or was inaccessible
+                factory.CloseMethod(factory.Block());
+                return;
+            }
+
+            var statements = ArrayBuilder<BoundStatement>.GetInstance();
+            statements.Add(factory.ExpressionStatement(baseConstructorCall));
+            GenerateMethodBodyStatements(factory, statements, diagnostics);
+            statements.Add(factory.Return());
+
+            var block = factory.Block(statements.ToImmutableAndFree());
+
+            factory.CloseMethod(block);
+        }
+
+        internal virtual void GenerateMethodBodyStatements(SyntheticBoundNodeFactory factory, ArrayBuilder<BoundStatement> statements, DiagnosticBag diagnostics)
+        {
+            // overridden in a derived class to add extra statements to the body of the generated constructor
+        }
+
     }
 }

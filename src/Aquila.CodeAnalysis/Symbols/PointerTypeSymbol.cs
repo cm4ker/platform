@@ -1,12 +1,14 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
- using Microsoft.CodeAnalysis.Symbols;
- using Pchp.CodeAnalysis;
+﻿﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+ using System;
+ using System.Collections.Generic;
+ using System.Collections.Immutable;
+ using System.Diagnostics;
+ using Microsoft.CodeAnalysis;
+ using Microsoft.CodeAnalysis.PooledObjects;
+ using Roslyn.Utilities;
 
  namespace Aquila.CodeAnalysis.Symbols
 {
@@ -14,48 +16,19 @@ using Microsoft.CodeAnalysis;
     /// Represents a pointer type such as "int *". Pointer types
     /// are used only in unsafe code.
     /// </summary>
-    internal sealed partial class PointerTypeSymbol : TypeSymbol, IPointerTypeSymbol, ITypeSymbolInternal
+    internal sealed partial class PointerTypeSymbol : TypeSymbol
     {
-        private readonly TypeSymbol _pointedAtType;
-        private readonly ImmutableArray<CustomModifier> _customModifiers;
-        private Compilation _declaringCompilation;
-        private ISymbolInternal _containingSymbol;
-        private IAssemblySymbolInternal _containingAssembly;
-        private IModuleSymbolInternal _containingModule;
-        private INamedTypeSymbolInternal _containingType;
-        private INamespaceSymbolInternal _containingNamespace;
+        private readonly TypeWithAnnotations _pointedAtType;
 
         /// <summary>
         /// Create a new PointerTypeSymbol.
         /// </summary>
         /// <param name="pointedAtType">The type being pointed at.</param>
-        internal PointerTypeSymbol(TypeSymbol pointedAtType)
-            : this(pointedAtType, ImmutableArray<CustomModifier>.Empty)
+        internal PointerTypeSymbol(TypeWithAnnotations pointedAtType)
         {
-        }
-
-        /// <summary>
-        /// Create a new PointerTypeSymbol.
-        /// </summary>
-        /// <param name="pointedAtType">The type being pointed at.</param>
-        /// <param name="customModifiers">Custom modifiers for the element type of this array type.</param>
-        internal PointerTypeSymbol(TypeSymbol pointedAtType, ImmutableArray<CustomModifier> customModifiers)
-        {
-            Debug.Assert((object)pointedAtType != null);
+            Debug.Assert(pointedAtType.HasType);
 
             _pointedAtType = pointedAtType;
-            _customModifiers = customModifiers.NullToEmpty();
-        }
-
-        /// <summary>
-        /// The list of custom modifiers, if any, associated with the pointer type.
-        /// </summary>
-        public ImmutableArray<CustomModifier> CustomModifiers
-        {
-            get
-            {
-                return _customModifiers;
-            }
         }
 
         public override Accessibility DeclaredAccessibility
@@ -88,9 +61,9 @@ using Microsoft.CodeAnalysis;
         }
 
         /// <summary>
-        /// Gets the type of the storage location that an instance of the pointer type points to.
+        /// Gets the type of the storage location that an instance of the pointer type points to, along with its annotations.
         /// </summary>
-        public TypeSymbol PointedAtType
+        public TypeWithAnnotations PointedAtTypeWithAnnotations
         {
             get
             {
@@ -98,32 +71,59 @@ using Microsoft.CodeAnalysis;
             }
         }
 
-        //internal override NamedTypeSymbol BaseTypeNoUseSiteDiagnostics
-        //{
-        //    get
-        //    {
-        //        // Pointers do not support boxing, so they really have no base type.
-        //        return null;
-        //    }
-        //}
+        /// <summary>
+        /// Gets the type of the storage location that an instance of the pointer type points to.
+        /// </summary>
+        public TypeSymbol PointedAtType => PointedAtTypeWithAnnotations.Type;
 
-        //internal override ImmutableArray<NamedTypeSymbol> InterfacesNoUseSiteDiagnostics(ConsList<Symbol> basesBeingResolved)
-        //{
-        //    // Pointers do not support boxing, so they really have no interfaces
-        //    return ImmutableArray<NamedTypeSymbol>.Empty;
-        //}
+        internal override NamedTypeSymbol BaseTypeNoUseSiteDiagnostics
+        {
+            get
+            {
+                // Pointers do not support boxing, so they really have no base type.
+                return null;
+            }
+        }
 
-        public override bool IsReferenceType => false;
+        internal override ImmutableArray<NamedTypeSymbol> InterfacesNoUseSiteDiagnostics(ConsList<TypeSymbol> basesBeingResolved)
+        {
+            // Pointers do not support boxing, so they really have no interfaces
+            return ImmutableArray<NamedTypeSymbol>.Empty;
+        }
 
-        public override bool IsValueType => true;
+        public override bool IsReferenceType
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-        //internal sealed override bool IsManagedType
-        //{
-        //    get
-        //    {
-        //        return false;
-        //    }
-        //}
+        public override bool IsValueType
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        internal sealed override ManagedKind GetManagedKind(ref HashSet<DiagnosticInfo> useSiteDiagnostics) => ManagedKind.Unmanaged;
+
+        public sealed override bool IsRefLikeType
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public sealed override bool IsReadOnly
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         internal sealed override ObsoleteAttributeData ObsoleteAttributeData
         {
@@ -136,11 +136,6 @@ using Microsoft.CodeAnalysis;
         }
 
         public override ImmutableArray<Symbol> GetMembers(string name)
-        {
-            return ImmutableArray<Symbol>.Empty;
-        }
-
-        public override ImmutableArray<Symbol> GetMembersByPhpName(string name)
         {
             return ImmutableArray<Symbol>.Empty;
         }
@@ -160,40 +155,60 @@ using Microsoft.CodeAnalysis;
             return ImmutableArray<NamedTypeSymbol>.Empty;
         }
 
-        bool ISymbolInternal.Equals(ISymbolInternal? other, TypeCompareKind compareKind)
+        public override SymbolKind Kind
         {
-            throw new NotImplementedException();
+            get
+            {
+                return SymbolKind.PointerType;
+            }
         }
 
-        ISymbol ISymbolInternal.GetISymbol()
+        public override TypeKind TypeKind
         {
-            throw new NotImplementedException();
+            get
+            {
+                return TypeKind.Pointer;
+            }
         }
 
-        public override SymbolKind Kind => SymbolKind.PointerType;
-
-        ITypeSymbol ITypeSymbolInternal.GetITypeSymbol()
+        public override Symbol ContainingSymbol
         {
-            throw new NotImplementedException();
+            get
+            {
+                return null;
+            }
         }
 
-        public override TypeKind TypeKind => TypeKind.Pointer;
+        public override ImmutableArray<Location> Locations
+        {
+            get
+            {
+                return ImmutableArray<Location>.Empty;
+            }
+        }
 
-        Compilation ISymbolInternal.DeclaringCompilation => _declaringCompilation;
+        public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
+        {
+            get
+            {
+                return ImmutableArray<SyntaxReference>.Empty;
+            }
+        }
 
-        ISymbolInternal ISymbolInternal.ContainingSymbol => _containingSymbol;
+        internal override TResult Accept<TArgument, TResult>(CSharpSymbolVisitor<TArgument, TResult> visitor, TArgument argument)
+        {
+            return visitor.VisitPointerType(this, argument);
+        }
 
-        IAssemblySymbolInternal ISymbolInternal.ContainingAssembly => _containingAssembly;
+        public override void Accept(CSharpSymbolVisitor visitor)
+        {
+            visitor.VisitPointerType(this);
+        }
 
-        IModuleSymbolInternal ISymbolInternal.ContainingModule => _containingModule;
-
-        INamedTypeSymbolInternal ISymbolInternal.ContainingType => _containingType;
-
-        INamespaceSymbolInternal ISymbolInternal.ContainingNamespace => _containingNamespace;
-
-        public override Symbol ContainingSymbol => null;
-
-        public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences => ImmutableArray<SyntaxReference>.Empty;
+        public override TResult Accept<TResult>(CSharpSymbolVisitor<TResult> visitor)
+        {
+            return visitor.VisitPointerType(this);
+        }
 
         public override int GetHashCode()
         {
@@ -208,96 +223,89 @@ using Microsoft.CodeAnalysis;
                 current = ((PointerTypeSymbol)current).PointedAtType;
             }
 
-            return Roslyn.Utilities.Hash.Combine(current, indirections);
+            return Hash.Combine(current, indirections);
         }
 
-        internal override bool Equals(TypeSymbol t2, bool ignoreCustomModifiersAndArraySizesAndLowerBounds = false, bool ignoreDynamic = false)
+        internal override bool Equals(TypeSymbol t2, TypeCompareKind comparison, IReadOnlyDictionary<TypeParameterSymbol, bool> isValueTypeOverrideOpt = null)
         {
-            return this.Equals(t2 as PointerTypeSymbol, ignoreCustomModifiersAndArraySizesAndLowerBounds, ignoreDynamic);
+            return this.Equals(t2 as PointerTypeSymbol, comparison, isValueTypeOverrideOpt);
         }
 
-        internal bool Equals(PointerTypeSymbol other, bool ignoreCustomModifiersAndArraySizesAndLowerBounds = false, bool ignoreDynamic = false)
+        private bool Equals(PointerTypeSymbol other, TypeCompareKind comparison, IReadOnlyDictionary<TypeParameterSymbol, bool> isValueTypeOverrideOpt)
         {
             if (ReferenceEquals(this, other))
             {
                 return true;
             }
 
-            if ((object)other == null || !other._pointedAtType.Equals(_pointedAtType, ignoreCustomModifiersAndArraySizesAndLowerBounds, ignoreDynamic))
+            if ((object)other == null || !other._pointedAtType.Equals(_pointedAtType, comparison, isValueTypeOverrideOpt))
             {
                 return false;
-            }
-
-            if (!ignoreCustomModifiersAndArraySizesAndLowerBounds)
-            {
-                // Make sure custom modifiers are the same.
-                var mod = this.CustomModifiers;
-                var otherMod = other.CustomModifiers;
-
-                int count = mod.Length;
-
-                if (count != otherMod.Length)
-                {
-                    return false;
-                }
-
-                for (int i = 0; i < count; i++)
-                {
-                    if (!mod[i].Equals(otherMod[i]))
-                    {
-                        return false;
-                    }
-                }
             }
 
             return true;
         }
 
-        //internal override DiagnosticInfo GetUseSiteDiagnostic()
-        //{
-        //    DiagnosticInfo result = null;
-
-        //    // Check type, custom modifiers
-        //    if (DeriveUseSiteDiagnosticFromType(ref result, this.PointedAtType) ||
-        //        DeriveUseSiteDiagnosticFromCustomModifiers(ref result, this.CustomModifiers))
-        //    {
-        //    }
-
-        //    return result;
-        //}
-
-        //internal override bool GetUnificationUseSiteDiagnosticRecursive(ref DiagnosticInfo result, Symbol owner, ref HashSet<TypeSymbol> checkedTypes)
-        //{
-        //    return this.PointedAtType.GetUnificationUseSiteDiagnosticRecursive(ref result, owner, ref checkedTypes) ||
-        //           GetUnificationUseSiteDiagnosticRecursive(ref result, this.CustomModifiers, owner, ref checkedTypes);
-        //}
-
-        #region IPointerTypeSymbol Members
-
-        ITypeSymbol IPointerTypeSymbol.PointedAtType
+        internal override void AddNullableTransforms(ArrayBuilder<byte> transforms)
         {
-            get { return this.PointedAtType; }
+            PointedAtTypeWithAnnotations.AddNullableTransforms(transforms);
         }
 
-        ImmutableArray<CustomModifier> IPointerTypeSymbol.CustomModifiers
+        internal override bool ApplyNullableTransforms(byte defaultTransformFlag, ImmutableArray<byte> transforms, ref int position, out TypeSymbol result)
         {
-            get { return this.CustomModifiers; }
+            TypeWithAnnotations oldPointedAtType = PointedAtTypeWithAnnotations;
+            TypeWithAnnotations newPointedAtType;
+
+            if (!oldPointedAtType.ApplyNullableTransforms(defaultTransformFlag, transforms, ref position, out newPointedAtType))
+            {
+                result = this;
+                return false;
+            }
+
+            result = WithPointedAtType(newPointedAtType);
+            return true;
         }
 
-        #endregion
-
-        #region ISymbol Members
-
-        public override void Accept(SymbolVisitor visitor)
+        internal override TypeSymbol SetNullabilityForReferenceTypes(Func<TypeWithAnnotations, TypeWithAnnotations> transform)
         {
-            visitor.VisitPointerType(this);
+            return WithPointedAtType(transform(PointedAtTypeWithAnnotations));
         }
 
-        public override TResult Accept<TResult>(SymbolVisitor<TResult> visitor)
+        internal override TypeSymbol MergeEquivalentTypes(TypeSymbol other, VarianceKind variance)
         {
-            return visitor.VisitPointerType(this);
+            Debug.Assert(this.Equals(other, TypeCompareKind.IgnoreDynamicAndTupleNames | TypeCompareKind.IgnoreNullableModifiersForReferenceTypes));
+            TypeWithAnnotations pointedAtType = PointedAtTypeWithAnnotations.MergeEquivalentTypes(((PointerTypeSymbol)other).PointedAtTypeWithAnnotations, VarianceKind.None);
+            return WithPointedAtType(pointedAtType);
         }
 
-        #endregion
+        internal PointerTypeSymbol WithPointedAtType(TypeWithAnnotations newPointedAtType)
+        {
+            return PointedAtTypeWithAnnotations.IsSameAs(newPointedAtType) ? this : new PointerTypeSymbol(newPointedAtType);
+        }
+
+        internal override DiagnosticInfo GetUseSiteDiagnostic()
+        {
+            DiagnosticInfo result = null;
+
+            // Check type, custom modifiers
+            DeriveUseSiteDiagnosticFromType(ref result, this.PointedAtTypeWithAnnotations, AllowedRequiredModifierType.None);
+            return result;
+        }
+
+        internal override bool GetUnificationUseSiteDiagnosticRecursive(ref DiagnosticInfo result, Symbol owner, ref HashSet<TypeSymbol> checkedTypes)
+        {
+            return this.PointedAtTypeWithAnnotations.GetUnificationUseSiteDiagnosticRecursive(ref result, owner, ref checkedTypes);
+        }
+
+        protected override ISymbol CreateISymbol()
+        {
+            return new PublicModel.PointerTypeSymbol(this, DefaultNullableAnnotation);
+        }
+
+        protected override ITypeSymbol CreateITypeSymbol(Microsoft.CodeAnalysis.NullableAnnotation nullableAnnotation)
+        {
+            Debug.Assert(nullableAnnotation != DefaultNullableAnnotation);
+            return new PublicModel.PointerTypeSymbol(this, nullableAnnotation);
+        }
     }
 }

@@ -1,12 +1,16 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Linq;
-using Microsoft.CodeAnalysis.Text;
-using Roslyn.Utilities;
-using Microsoft.CodeAnalysis;
- using Pchp.CodeAnalysis;
+﻿﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+ using System;
+ using System.Collections.Generic;
+ using System.Collections.Immutable;
+ using System.Diagnostics;
+ using System.Linq;
+ using Aquila.CodeAnalysis.Symbols.Source;
+ using Aquila.CodeAnalysis.Symbols.Synthesized;
+ using Microsoft.CodeAnalysis;
+ using Roslyn.Utilities;
 
  namespace Aquila.CodeAnalysis.Symbols
 {
@@ -39,23 +43,23 @@ using Microsoft.CodeAnalysis;
             }
         }
 
-        ///// <summary>
-        ///// Get the types of the parameters of a member symbol.  Should be a method, property, or event.
-        ///// </summary>
-        //internal static ImmutableArray<TypeSymbol> GetParameterTypes(this Symbol member)
-        //{
-        //    switch (member.Kind)
-        //    {
-        //        case SymbolKind.Method:
-        //            return ((MethodSymbol)member).ParameterTypes;
-        //        case SymbolKind.Property:
-        //            return ((PropertySymbol)member).ParameterTypes;
-        //        case SymbolKind.Event:
-        //            return ImmutableArray<TypeSymbol>.Empty;
-        //        default:
-        //            throw ExceptionUtilities.UnexpectedValue(member.Kind);
-        //    }
-        //}
+        /// <summary>
+        /// Get the types of the parameters of a member symbol.  Should be a method, property, or event.
+        /// </summary>
+        internal static ImmutableArray<TypeWithAnnotations> GetParameterTypes(this Symbol member)
+        {
+            switch (member.Kind)
+            {
+                case SymbolKind.Method:
+                    return ((MethodSymbol)member).ParameterTypesWithAnnotations;
+                case SymbolKind.Property:
+                    return ((PropertySymbol)member).ParameterTypesWithAnnotations;
+                case SymbolKind.Event:
+                    return ImmutableArray<TypeWithAnnotations>.Empty;
+                default:
+                    throw ExceptionUtilities.UnexpectedValue(member.Kind);
+            }
+        }
 
         internal static bool GetIsVararg(this Symbol member)
         {
@@ -71,23 +75,23 @@ using Microsoft.CodeAnalysis;
             }
         }
 
-        ///// <summary>
-        ///// Get the ref kinds of the parameters of a member symbol.  Should be a method, property, or event.
-        ///// </summary>
-        //internal static ImmutableArray<RefKind> GetParameterRefKinds(this Symbol member)
-        //{
-        //    switch (member.Kind)
-        //    {
-        //        case SymbolKind.Method:
-        //            return ((MethodSymbol)member).ParameterRefKinds;
-        //        case SymbolKind.Property:
-        //            return ((PropertySymbol)member).ParameterRefKinds;
-        //        case SymbolKind.Event:
-        //            return ImmutableArray<RefKind>.Empty;
-        //        default:
-        //            throw ExceptionUtilities.UnexpectedValue(member.Kind);
-        //    }
-        //}
+        /// <summary>
+        /// Get the ref kinds of the parameters of a member symbol.  Should be a method, property, or event.
+        /// </summary>
+        internal static ImmutableArray<RefKind> GetParameterRefKinds(this Symbol member)
+        {
+            switch (member.Kind)
+            {
+                case SymbolKind.Method:
+                    return ((MethodSymbol)member).ParameterRefKinds;
+                case SymbolKind.Property:
+                    return ((PropertySymbol)member).ParameterRefKinds;
+                case SymbolKind.Event:
+                    return default(ImmutableArray<RefKind>);
+                default:
+                    throw ExceptionUtilities.UnexpectedValue(member.Kind);
+            }
+        }
 
         internal static int GetParameterCount(this Symbol member)
         {
@@ -98,24 +102,53 @@ using Microsoft.CodeAnalysis;
                 case SymbolKind.Property:
                     return ((PropertySymbol)member).ParameterCount;
                 case SymbolKind.Event:
+                case SymbolKind.Field:
                     return 0;
                 default:
                     throw ExceptionUtilities.UnexpectedValue(member.Kind);
             }
         }
 
-        //internal static bool HasUnsafeParameter(this Symbol member)
-        //{
-        //    foreach (TypeSymbol parameterType in member.GetParameterTypes())
-        //    {
-        //        if (parameterType.IsUnsafe())
-        //        {
-        //            return true;
-        //        }
-        //    }
+        internal static bool HasUnsafeParameter(this Symbol member)
+        {
+            foreach (var parameterType in member.GetParameterTypes())
+            {
+                if (parameterType.Type.IsUnsafe())
+                {
+                    return true;
+                }
+            }
 
-        //    return false;
-        //}
+            return false;
+        }
+
+        public static bool IsEventOrPropertyWithImplementableNonPublicAccessor(this Symbol symbol)
+        {
+            Debug.Assert(symbol.ContainingType.IsInterface);
+
+            switch (symbol.Kind)
+            {
+                case SymbolKind.Property:
+                    var propertySymbol = (PropertySymbol)symbol;
+                    return isImplementableAndNotPublic(propertySymbol.GetMethod) || isImplementableAndNotPublic(propertySymbol.SetMethod);
+
+                case SymbolKind.Event:
+                    var eventSymbol = (EventSymbol)symbol;
+                    return isImplementableAndNotPublic(eventSymbol.AddMethod) || isImplementableAndNotPublic(eventSymbol.RemoveMethod);
+            }
+
+            return false;
+
+            bool isImplementableAndNotPublic(MethodSymbol accessor)
+            {
+                return accessor.IsImplementable() && accessor.DeclaredAccessibility != Accessibility.Public;
+            }
+        }
+
+        public static bool IsImplementable(this MethodSymbol methodOpt)
+        {
+            return (object)methodOpt != null && !methodOpt.IsSealed && (methodOpt.IsAbstract || methodOpt.IsVirtual);
+        }
 
         public static bool IsAccessor(this MethodSymbol methodSymbol)
         {
@@ -127,11 +160,11 @@ using Microsoft.CodeAnalysis;
             return symbol.Kind == SymbolKind.Method && IsAccessor((MethodSymbol)symbol);
         }
 
-        //public static bool IsIndexedPropertyAccessor(this MethodSymbol methodSymbol)
-        //{
-        //    var propertyOrEvent = methodSymbol.AssociatedSymbol;
-        //    return ((object)propertyOrEvent != null) && propertyOrEvent.IsIndexedProperty();
-        //}
+        public static bool IsIndexedPropertyAccessor(this MethodSymbol methodSymbol)
+        {
+            var propertyOrEvent = methodSymbol.AssociatedSymbol;
+            return ((object)propertyOrEvent != null) && propertyOrEvent.IsIndexedProperty();
+        }
 
         public static bool IsOperator(this MethodSymbol methodSymbol)
         {
@@ -158,72 +191,76 @@ using Microsoft.CodeAnalysis;
             return symbol.Kind == SymbolKind.Method && ((MethodSymbol)symbol).MethodKind == MethodKind.Conversion;
         }
 
-        ///// <summary>
-        ///// Count the number of custom modifiers in/on the return type
-        ///// and parameters of the specified method.
-        ///// </summary>
-        //public static int CustomModifierCount(this MethodSymbol method)
-        //{
-        //    int count = 0;
+        /// <summary>
+        /// Count the number of custom modifiers in/on the return type
+        /// and parameters of the specified method.
+        /// </summary>
+        public static int CustomModifierCount(this MethodSymbol method)
+        {
+            int count = 0;
 
-        //    count += method.ReturnTypeCustomModifiers.Length;
-        //    count += method.ReturnType.CustomModifierCount();
+            var methodReturnType = method.ReturnTypeWithAnnotations;
+            count += methodReturnType.CustomModifiers.Length + method.RefCustomModifiers.Length;
+            count += methodReturnType.Type.CustomModifierCount();
 
-        //    foreach (ParameterSymbol param in method.Parameters)
-        //    {
-        //        count += param.CustomModifiers.Length;
-        //        count += param.Type.CustomModifierCount();
-        //    }
+            foreach (ParameterSymbol param in method.Parameters)
+            {
+                var paramType = param.TypeWithAnnotations;
+                count += paramType.CustomModifiers.Length + param.RefCustomModifiers.Length;
+                count += paramType.Type.CustomModifierCount();
+            }
 
-        //    return count;
-        //}
+            return count;
+        }
 
-        //public static int CustomModifierCount(this Symbol m)
-        //{
-        //    switch (m.Kind)
-        //    {
-        //        case SymbolKind.ArrayType:
-        //        case SymbolKind.ErrorType:
-        //        case SymbolKind.NamedType:
-        //        case SymbolKind.PointerType:
-        //        case SymbolKind.TypeParameter:
-        //            return ((TypeSymbol)m).CustomModifierCount();
-        //        case SymbolKind.Event:
-        //            throw new NotImplementedException();
-        //            //return ((EventSymbol)m).CustomModifierCount();
-        //        case SymbolKind.Method:
-        //            return ((MethodSymbol)m).CustomModifierCount();
-        //        case SymbolKind.Property:
-        //            return ((PropertySymbol)m).CustomModifierCount();
-        //        default:
-        //            throw ExceptionUtilities.UnexpectedValue(m.Kind);
-        //    }
-        //}
+        public static int CustomModifierCount(this Symbol m)
+        {
+            switch (m.Kind)
+            {
+                case SymbolKind.ArrayType:
+                case SymbolKind.ErrorType:
+                case SymbolKind.NamedType:
+                case SymbolKind.PointerType:
+                case SymbolKind.TypeParameter:
+                case SymbolKind.FunctionPointerType:
+                    return ((TypeSymbol)m).CustomModifierCount();
+                case SymbolKind.Event:
+                    return ((EventSymbol)m).CustomModifierCount();
+                case SymbolKind.Method:
+                    return ((MethodSymbol)m).CustomModifierCount();
+                case SymbolKind.Property:
+                    return ((PropertySymbol)m).CustomModifierCount();
+                default:
+                    throw ExceptionUtilities.UnexpectedValue(m.Kind);
+            }
+        }
 
-        //public static int CustomModifierCount(this EventSymbol e)
-        //{
-        //    return e.Type.CustomModifierCount();
-        //}
+        public static int CustomModifierCount(this EventSymbol e)
+        {
+            return e.Type.CustomModifierCount();
+        }
 
-        ///// <summary>
-        ///// Count the number of custom modifiers in/on the type
-        ///// and parameters (for indexers) of the specified property.
-        ///// </summary>
-        //public static int CustomModifierCount(this PropertySymbol property)
-        //{
-        //    int count = 0;
+        /// <summary>
+        /// Count the number of custom modifiers in/on the type
+        /// and parameters (for indexers) of the specified property.
+        /// </summary>
+        public static int CustomModifierCount(this PropertySymbol property)
+        {
+            int count = 0;
 
-        //    count += property.TypeCustomModifiers.Length;
-        //    count += property.Type.CustomModifierCount();
+            var type = property.TypeWithAnnotations;
+            count += type.CustomModifiers.Length + property.RefCustomModifiers.Length;
+            count += type.Type.CustomModifierCount();
 
-        //    foreach (ParameterSymbol param in property.Parameters)
-        //    {
-        //        count += param.CustomModifiers.Length;
-        //        count += param.Type.CustomModifierCount();
-        //    }
+            foreach (ParameterSymbol param in property.Parameters)
+            {
+                var paramType = param.TypeWithAnnotations;
+                count += paramType.CustomModifiers.Length + param.RefCustomModifiers.Length;
+                count += paramType.Type.CustomModifierCount();
+            }
 
-        //    return count;
-        //}
+            return count;
+        }
 
         internal static Symbol SymbolAsMember(this Symbol s, NamedTypeSymbol newOwner)
         {
@@ -237,8 +274,8 @@ using Microsoft.CodeAnalysis;
                     return ((NamedTypeSymbol)s).AsMember(newOwner);
                 case SymbolKind.Property:
                     return ((PropertySymbol)s).AsMember(newOwner);
-                //case SymbolKind.Event:
-                //    return ((EventSymbol)s).AsMember(newOwner);
+                case SymbolKind.Event:
+                    return ((EventSymbol)s).AsMember(newOwner);
                 default:
                     throw ExceptionUtilities.UnexpectedValue(s.Kind);
             }
@@ -280,41 +317,53 @@ using Microsoft.CodeAnalysis;
             return minAritySymbol;
         }
 
-        //internal static ImmutableArray<TypeParameterSymbol> GetMemberTypeParameters(this Symbol symbol)
-        //{
-        //    switch (symbol.Kind)
-        //    {
-        //        case SymbolKind.Method:
-        //            return ((MethodSymbol)symbol).TypeParameters;
-        //        case SymbolKind.NamedType:
-        //        case SymbolKind.ErrorType:
-        //            return ((NamedTypeSymbol)symbol).TypeParameters;
-        //        case SymbolKind.Field:
-        //        case SymbolKind.Property:
-        //        case SymbolKind.Event:
-        //            return ImmutableArray<TypeParameterSymbol>.Empty;
-        //        default:
-        //            throw ExceptionUtilities.UnexpectedValue(symbol.Kind);
-        //    }
-        //}
+        internal static ImmutableArray<TypeParameterSymbol> GetMemberTypeParameters(this Symbol symbol)
+        {
+            switch (symbol.Kind)
+            {
+                case SymbolKind.Method:
+                    return ((MethodSymbol)symbol).TypeParameters;
+                case SymbolKind.NamedType:
+                case SymbolKind.ErrorType:
+                    return ((NamedTypeSymbol)symbol).TypeParameters;
+                case SymbolKind.Field:
+                case SymbolKind.Property:
+                case SymbolKind.Event:
+                    return ImmutableArray<TypeParameterSymbol>.Empty;
+                default:
+                    throw ExceptionUtilities.UnexpectedValue(symbol.Kind);
+            }
+        }
 
-        //internal static ImmutableArray<TypeSymbol> GetMemberTypeArgumentsNoUseSiteDiagnostics(this Symbol symbol)
-        //{
-        //    switch (symbol.Kind)
-        //    {
-        //        case SymbolKind.Method:
-        //            return ((MethodSymbol)symbol).TypeArguments;
-        //        case SymbolKind.NamedType:
-        //        case SymbolKind.ErrorType:
-        //            return ((NamedTypeSymbol)symbol).TypeArgumentsNoUseSiteDiagnostics;
-        //        case SymbolKind.Field:
-        //        case SymbolKind.Property:
-        //        case SymbolKind.Event:
-        //            return ImmutableArray<TypeSymbol>.Empty;
-        //        default:
-        //            throw ExceptionUtilities.UnexpectedValue(symbol.Kind);
-        //    }
-        //}
+        internal static ImmutableArray<TypeSymbol> GetMemberTypeArgumentsNoUseSiteDiagnostics(this Symbol symbol)
+        {
+            switch (symbol.Kind)
+            {
+                case SymbolKind.Method:
+                    return ((MethodSymbol)symbol).TypeArgumentsWithAnnotations.SelectAsArray(TypeMap.AsTypeSymbol);
+                case SymbolKind.NamedType:
+                case SymbolKind.ErrorType:
+                    return ((NamedTypeSymbol)symbol).TypeArgumentsWithAnnotationsNoUseSiteDiagnostics.SelectAsArray(TypeMap.AsTypeSymbol);
+                case SymbolKind.Field:
+                case SymbolKind.Property:
+                case SymbolKind.Event:
+                    return ImmutableArray<TypeSymbol>.Empty;
+                default:
+                    throw ExceptionUtilities.UnexpectedValue(symbol.Kind);
+            }
+        }
+
+        internal static bool IsConstructor(this MethodSymbol method)
+        {
+            switch (method.MethodKind)
+            {
+                case MethodKind.Constructor:
+                case MethodKind.StaticConstructor:
+                    return true;
+                default:
+                    return false;
+            }
+        }
 
         /// <summary>
         /// NOTE: every struct has a public parameterless constructor either used-defined or default one
@@ -331,210 +380,184 @@ using Microsoft.CodeAnalysis;
         /// </summary>
         internal static bool IsDefaultValueTypeConstructor(this MethodSymbol method)
         {
-            if (!method.ContainingType.IsValueType)
-            {
-                return false;
-            }
-
-            if (!method.IsParameterlessConstructor() || !method.IsImplicitlyDeclared)
-            {
-                return false;
-            }
-
-            var container = method.ContainingType as SourceTypeSymbol;
-            if ((object)container == null)
-            {
-                // synthesized ctor not from source -> must be default
-                return true;
-            }
-
-            // if we are here we have a struct in source for which a parameterless ctor was not provided by the user.
-            // So, are we ok with default behavior?
-            // Returning false will result in a production of synthesized parameterless ctor 
-
-            // this ctor is not default if we have instance initializers
-            throw new NotImplementedException();
-            //return container.InstanceInitializers.IsDefaultOrEmpty;
+            return method.IsImplicitlyDeclared &&
+                   method.ContainingType.IsValueType &&
+                   method.IsParameterlessConstructor();
         }
 
-        ///// <summary>
-        ///// If the event has a AddMethod, return that.  Otherwise check the overridden
-        ///// event, if any.  Repeat for each overridden event.
-        ///// </summary>
-        ///// <remarks>
-        ///// This method exists to mimic the behavior of GetOwnOrInheritedGetMethod, but it
-        ///// should only ever look at the overridden event in error scenarios.
-        ///// </remarks>
-        //internal static MethodSymbol GetOwnOrInheritedAddMethod(this EventSymbol @event)
-        //{
-        //    while ((object)@event != null)
-        //    {
-        //        MethodSymbol addMethod = @event.AddMethod;
-        //        if ((object)addMethod != null)
-        //        {
-        //            return addMethod;
-        //        }
-
-        //        @event = @event.IsOverride ? @event.OverriddenEvent : null;
-        //    }
-
-        //    return null;
-        //}
-
-        ///// <summary>
-        ///// If the event has a RemoveMethod, return that.  Otherwise check the overridden
-        ///// event, if any.  Repeat for each overridden event.
-        ///// </summary>
-        ///// <remarks>
-        ///// This method exists to mimic the behavior of GetOwnOrInheritedSetMethod, but it
-        ///// should only ever look at the overridden event in error scenarios.
-        ///// </remarks>
-        //internal static MethodSymbol GetOwnOrInheritedRemoveMethod(this EventSymbol @event)
-        //{
-        //    while ((object)@event != null)
-        //    {
-        //        MethodSymbol removeMethod = @event.RemoveMethod;
-        //        if ((object)removeMethod != null)
-        //        {
-        //            return removeMethod;
-        //        }
-
-        //        @event = @event.IsOverride ? @event.OverriddenEvent : null;
-        //    }
-
-        //    return null;
-        //}
-
-        //internal static bool IsExplicitInterfaceImplementation(this Symbol member)
-        //{
-        //    switch (member.Kind)
-        //    {
-        //        case SymbolKind.Method:
-        //            return ((MethodSymbol)member).IsExplicitInterfaceImplementation;
-        //        case SymbolKind.Property:
-        //            return ((PropertySymbol)member).IsExplicitInterfaceImplementation;
-        //        case SymbolKind.Event:
-        //            return ((EventSymbol)member).IsExplicitInterfaceImplementation;
-        //        default:
-        //            return false;
-        //    }
-        //}
-
-        //internal static bool IsPartialMethod(this Symbol member)
-        //{
-        //    var sms = member as SourceMethodSymbol;
-        //    return (object)sms != null && sms.IsPartial;
-        //}
-
-        //internal static bool IsPartialImplementation(this Symbol member)
-        //{
-        //    var sms = member as SourceMemberMethodSymbol;
-        //    return (object)sms != null && sms.IsPartialImplementation;
-        //}
-
-        //internal static bool IsPartialDefinition(this Symbol member)
-        //{
-        //    var sms = member as SourceMemberMethodSymbol;
-        //    return (object)sms != null && sms.IsPartialDefinition;
-        //}
-
-        //internal static ImmutableArray<Symbol> GetExplicitInterfaceImplementations(this Symbol member)
-        //{
-        //    switch (member.Kind)
-        //    {
-        //        case SymbolKind.Method:
-        //            return ((MethodSymbol)member).ExplicitInterfaceImplementations.Cast<MethodSymbol, Symbol>();
-        //        case SymbolKind.Property:
-        //            return ((PropertySymbol)member).ExplicitInterfaceImplementations.Cast<PropertySymbol, Symbol>();
-        //        case SymbolKind.Event:
-        //            return ((EventSymbol)member).ExplicitInterfaceImplementations.Cast<EventSymbol, Symbol>();
-        //        default:
-        //            return ImmutableArray<Symbol>.Empty;
-        //    }
-        //}
-
-        internal static TypeSymbol GetTypeOrReturnType(this Symbol member)
+        /// <summary>
+        /// Indicates whether the method should be emitted.
+        /// </summary>
+        internal static bool ShouldEmit(this MethodSymbol method)
         {
-            TypeSymbol returnType;
-            ImmutableArray<CustomModifier> returnTypeCustomModifiers;
-            GetTypeOrReturnType(member, out returnType, out returnTypeCustomModifiers);
-            return returnType;
+            // Don't emit the default value type constructor - the runtime handles that
+            if (method.IsDefaultValueTypeConstructor())
+            {
+                return false;
+            }
+
+            if (method is SynthesizedStaticConstructor cctor && !cctor.ShouldEmit())
+            {
+                return false;
+            }
+
+            // Don't emit partial methods without an implementation part.
+            if (method.IsPartialMethod() && method.PartialImplementationPart is null)
+            {
+                return false;
+            }
+
+            return true;
         }
 
-        internal static void GetTypeOrReturnType(this Symbol member, out TypeSymbol returnType, out ImmutableArray<CustomModifier> returnTypeCustomModifiers)
+        /// <summary>
+        /// If the event has a AddMethod, return that.  Otherwise check the overridden
+        /// event, if any.  Repeat for each overridden event.
+        /// </summary>
+        /// <remarks>
+        /// This method exists to mimic the behavior of GetOwnOrInheritedGetMethod, but it
+        /// should only ever look at the overridden event in error scenarios.
+        /// </remarks>
+        internal static MethodSymbol GetOwnOrInheritedAddMethod(this EventSymbol @event)
+        {
+            while ((object)@event != null)
+            {
+                MethodSymbol addMethod = @event.AddMethod;
+                if ((object)addMethod != null)
+                {
+                    return addMethod;
+                }
+
+                @event = @event.IsOverride ? @event.OverriddenEvent : null;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// If the event has a RemoveMethod, return that.  Otherwise check the overridden
+        /// event, if any.  Repeat for each overridden event.
+        /// </summary>
+        /// <remarks>
+        /// This method exists to mimic the behavior of GetOwnOrInheritedSetMethod, but it
+        /// should only ever look at the overridden event in error scenarios.
+        /// </remarks>
+        internal static MethodSymbol GetOwnOrInheritedRemoveMethod(this EventSymbol @event)
+        {
+            while ((object)@event != null)
+            {
+                MethodSymbol removeMethod = @event.RemoveMethod;
+                if ((object)removeMethod != null)
+                {
+                    return removeMethod;
+                }
+
+                @event = @event.IsOverride ? @event.OverriddenEvent : null;
+            }
+
+            return null;
+        }
+
+        internal static bool IsExplicitInterfaceImplementation(this Symbol member)
         {
             switch (member.Kind)
             {
-                case SymbolKind.Local:
-                    returnType = (TypeSymbol)((ILocalSymbol)member).Type;
-                    returnTypeCustomModifiers = ImmutableArray<CustomModifier>.Empty;
-                    break;
-                case SymbolKind.Field:
-                    FieldSymbol field = (FieldSymbol)member;
-                    returnType = field.Type;
-                    returnTypeCustomModifiers = ImmutableArray<CustomModifier>.Empty;
-                    break;
                 case SymbolKind.Method:
-                    MethodSymbol method = (MethodSymbol)member;
-                    returnType = method.ReturnType;
-                    returnTypeCustomModifiers = method.ReturnTypeCustomModifiers;
-                    break;
+                    return ((MethodSymbol)member).IsExplicitInterfaceImplementation;
                 case SymbolKind.Property:
-                    PropertySymbol property = (PropertySymbol)member;
-                    returnType = property.Type;
-                    returnTypeCustomModifiers = property.TypeCustomModifiers;
-                    break;
+                    return ((PropertySymbol)member).IsExplicitInterfaceImplementation;
                 case SymbolKind.Event:
-                    throw new NotImplementedException();
-                    //EventSymbol @event = (EventSymbol)member;
-                    //returnType = @event.Type;
-                    //returnTypeCustomModifiers = ImmutableArray<CustomModifier>.Empty;
-                    //break;
-                case SymbolKind.Parameter:
-                    var p = (ParameterSymbol)member;
-                    returnType = p.Type;
-                    returnTypeCustomModifiers = p.CustomModifiers;
-                    break;
+                    return ((EventSymbol)member).IsExplicitInterfaceImplementation;
+                default:
+                    return false;
+            }
+        }
+
+        internal static bool IsPartialMethod(this Symbol member)
+        {
+            var sms = member as SourceMemberMethodSymbol;
+            return sms?.IsPartial == true;
+        }
+
+        internal static bool IsPartialImplementation(this Symbol member)
+        {
+            var sms = member as SourceOrdinaryMethodSymbol;
+            return sms?.IsPartialImplementation == true;
+        }
+
+        internal static bool IsPartialDefinition(this Symbol member)
+        {
+            var sms = member as SourceOrdinaryMethodSymbol;
+            return sms?.IsPartialDefinition == true;
+        }
+
+        internal static bool ContainsTupleNames(this Symbol member)
+        {
+            switch (member.Kind)
+            {
+                case SymbolKind.Method:
+                    var method = (MethodSymbol)member;
+                    return method.ReturnType.ContainsTupleNames() || method.Parameters.Any(p => p.Type.ContainsTupleNames());
+                case SymbolKind.Property:
+                    return ((PropertySymbol)member).Type.ContainsTupleNames();
+                case SymbolKind.Event:
+                    return ((EventSymbol)member).Type.ContainsTupleNames();
+                default:
+                    // We currently don't need to use this method for fields or locals
+                    throw ExceptionUtilities.UnexpectedValue(member.Kind);
+            }
+        }
+
+        internal static ImmutableArray<Symbol> GetExplicitInterfaceImplementations(this Symbol member)
+        {
+            switch (member.Kind)
+            {
+                case SymbolKind.Method:
+                    return ((MethodSymbol)member).ExplicitInterfaceImplementations.Cast<MethodSymbol, Symbol>();
+                case SymbolKind.Property:
+                    return ((PropertySymbol)member).ExplicitInterfaceImplementations.Cast<PropertySymbol, Symbol>();
+                case SymbolKind.Event:
+                    return ((EventSymbol)member).ExplicitInterfaceImplementations.Cast<EventSymbol, Symbol>();
+                default:
+                    return ImmutableArray<Symbol>.Empty;
+            }
+        }
+
+        internal static Symbol GetOverriddenMember(this Symbol member)
+        {
+            switch (member.Kind)
+            {
+                case SymbolKind.Method:
+                    return ((MethodSymbol)member).OverriddenMethod;
+                case SymbolKind.Property:
+                    return ((PropertySymbol)member).OverriddenProperty;
+                case SymbolKind.Event:
+                    return ((EventSymbol)member).OverriddenEvent;
                 default:
                     throw ExceptionUtilities.UnexpectedValue(member.Kind);
             }
         }
 
-        //internal static Symbol GetOverriddenMember(this Symbol member)
-        //{
-        //    switch (member.Kind)
-        //    {
-        //        case SymbolKind.Method:
-        //            return ((MethodSymbol)member).OverriddenMethod;
-        //        case SymbolKind.Property:
-        //            return ((PropertySymbol)member).OverriddenProperty;
-        //        case SymbolKind.Event:
-        //            return ((EventSymbol)member).OverriddenEvent;
-        //        default:
-        //            throw ExceptionUtilities.UnexpectedValue(member.Kind);
-        //    }
-        //}
+        internal static Symbol GetLeastOverriddenMember(this Symbol member, NamedTypeSymbol accessingTypeOpt)
+        {
+            switch (member.Kind)
+            {
+                case SymbolKind.Method:
+                    var method = (MethodSymbol)member;
+                    return method.GetConstructedLeastOverriddenMethod(accessingTypeOpt);
 
-        //internal static Symbol GetLeastOverriddenMember(this Symbol member, NamedTypeSymbol accessingTypeOpt)
-        //{
-        //    switch (member.Kind)
-        //    {
-        //        case SymbolKind.Method:
-        //            var method = (MethodSymbol)member;
-        //            return method.GetConstructedLeastOverriddenMethod(accessingTypeOpt);
+                case SymbolKind.Property:
+                    var property = (PropertySymbol)member;
+                    return property.GetLeastOverriddenProperty(accessingTypeOpt);
 
-        //        case SymbolKind.Property:
-        //            var property = (PropertySymbol)member;
-        //            return property.GetLeastOverriddenProperty(accessingTypeOpt);
+                case SymbolKind.Event:
+                    var evnt = (EventSymbol)member;
+                    return evnt.GetLeastOverriddenEvent(accessingTypeOpt);
 
-        //        case SymbolKind.Event:
-        //            var evnt = (EventSymbol)member;
-        //            return evnt.GetLeastOverriddenEvent(accessingTypeOpt);
-
-        //        default:
-        //            return member;
-        //    }
-        //}
+                default:
+                    return member;
+            }
+        }
 
         internal static bool IsFieldOrFieldLikeEvent(this Symbol member, out FieldSymbol field)
         {
@@ -544,9 +567,8 @@ using Microsoft.CodeAnalysis;
                     field = (FieldSymbol)member;
                     return true;
                 case SymbolKind.Event:
-                    throw new NotImplementedException();
-                    //field = ((EventSymbol)member).AssociatedField;
-                    //return (object)field != null;
+                    field = ((EventSymbol)member).AssociatedField;
+                    return (object)field != null;
                 default:
                     field = null;
                     return false;
@@ -557,13 +579,12 @@ using Microsoft.CodeAnalysis;
         {
             if (member.Kind == SymbolKind.Method)
             {
-                member = (Symbol)((MethodSymbol)member).AssociatedSymbol ?? member;
+                member = ((MethodSymbol)member).AssociatedSymbol ?? member;
             }
 
-            throw new NotImplementedException();
-            //return member.IsIndexer() ? member.MetadataName :
-            //    member.IsExplicitInterfaceImplementation() ? ExplicitInterfaceHelpers.GetMemberNameWithoutInterfaceName(member.Name) :
-            //    member.Name;
+            return member.IsIndexer() ? member.MetadataName :
+                member.IsExplicitInterfaceImplementation() ? ExplicitInterfaceHelpers.GetMemberNameWithoutInterfaceName(member.Name) :
+                member.Name;
         }
     }
 }

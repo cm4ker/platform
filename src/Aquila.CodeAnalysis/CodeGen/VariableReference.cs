@@ -11,6 +11,7 @@ using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis.Symbols;
 using Peachpie.CodeAnalysis.Utilities;
 using Cci = Microsoft.Cci;
+using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
 
 namespace Pchp.CodeAnalysis.Semantics
 {

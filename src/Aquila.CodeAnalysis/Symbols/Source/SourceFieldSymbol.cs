@@ -1,346 +1,386 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using Microsoft.CodeAnalysis;
-using Roslyn.Utilities;
-using Pchp.CodeAnalysis.FlowAnalysis;
-using Pchp.CodeAnalysis.Semantics;
-using Devsense.PHP.Syntax;
-using Devsense.PHP.Syntax.Ast;
-using Pchp.CodeAnalysis.Utilities;
-using System.Globalization;
-using System.Threading;
- using Aquila.Compiler.Utilities;
- using Pchp.CodeAnalysis;
+﻿﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
- namespace Aquila.CodeAnalysis.Symbols
+ using System.Collections.Generic;
+ using System.Collections.Immutable;
+ using System.Diagnostics;
+ using System.Globalization;
+ using System.Threading;
+ using Aquila.CodeAnalysis.Symbols.Attributes;
+ using Microsoft.CodeAnalysis;
+ using Microsoft.CodeAnalysis.PooledObjects;
+
+ namespace Aquila.CodeAnalysis.Symbols.Source
 {
-    /// <summary>
-    /// Declares a CLR field representing a PHP field (a class constant or a field).
-    /// </summary>
-    /// <remarks>
-    /// Its CLR properties vary depending on <see cref="SourceFieldSymbol.Initializer"/> and its evaluation.
-    /// Some expressions have to be evaluated in runtime which causes the field to be contained in <see cref="SynthesizedStaticFieldsHolder"/>.
-    /// </remarks>
-    internal partial class SourceFieldSymbol : FieldSymbol, IPhpPropertySymbol
+    internal abstract class SourceFieldSymbol : FieldSymbolWithAttributesAndModifiers
     {
-        #region IPhpPropertySymbol
+        protected readonly SourceMemberContainerTypeSymbol containingType;
 
-        /// <summary>
-        /// The PHP field kind - a class constant, an instance field or a static field.
-        /// </summary>
-        public PhpPropertyKind FieldKind => _fieldKind;
+        protected SourceFieldSymbol(SourceMemberContainerTypeSymbol containingType)
+        {
+            Debug.Assert((object)containingType != null);
 
-        TypeSymbol IPhpPropertySymbol.ContainingStaticsHolder
+            this.containingType = containingType;
+        }
+
+        public abstract override string Name { get; }
+
+        protected override IAttributeTargetSymbol AttributeOwner
+        {
+            get { return this; }
+        }
+
+        internal sealed override bool RequiresCompletion
+        {
+            get { return true; }
+        }
+
+        internal bool IsNew
         {
             get
             {
-                return RequiresHolder ? (TypeSymbol)_containingType.StaticsContainer : null;
+                return (Modifiers & DeclarationModifiers.New) != 0;
             }
         }
 
-        bool IPhpPropertySymbol.RequiresContext => this.Initializer != null && this.Initializer.RequiresContext;
+        protected void CheckAccessibility(DiagnosticBag diagnostics)
+        {
+            var info = ModifierUtils.CheckAccessibility(Modifiers, this, isExplicitInterfaceImplementation: false);
+            if (info != null)
+            {
+                diagnostics.Add(new CSDiagnostic(info, this.ErrorLocation));
+            }
+        }
 
-        TypeSymbol IPhpPropertySymbol.DeclaringType => _containingType;
+        protected void ReportModifiersDiagnostics(DiagnosticBag diagnostics)
+        {
+            if (ContainingType.IsSealed && this.DeclaredAccessibility.HasProtected())
+            {
+                diagnostics.Add(AccessCheck.GetProtectedMemberInSealedTypeError(containingType), ErrorLocation, this);
+            }
+            else if (IsVolatile && IsReadOnly)
+            {
+                diagnostics.Add(ErrorCode.ERR_VolatileAndReadonly, ErrorLocation, this);
+            }
+            else if (containingType.IsStatic && !IsStatic)
+            {
+                diagnostics.Add(ErrorCode.ERR_InstanceMemberInStaticClass, ErrorLocation, this);
+            }
+            else if (!IsStatic && !IsReadOnly && containingType.IsReadOnly)
+            {
+                diagnostics.Add(ErrorCode.ERR_FieldsInRoStruct, ErrorLocation);
+            }
 
-        /// <summary>
-        /// Optional. The field initializer expression.
-        /// </summary>
-        public override BoundExpression Initializer => _initializer;
+            // TODO: Consider checking presence of core type System.Runtime.CompilerServices.IsVolatile
+            // if there is a volatile modifier. Perhaps an appropriate error should be reported if the
+            // type isn't available.
+        }
 
-        #endregion
-
-        readonly SourceTypeSymbol _containingType;
-        readonly string _fieldName;
-
-        readonly PhpPropertyKind _fieldKind;
-
-        readonly Location _location;
-
-        /// <summary>
-        /// Optional associated PHPDoc block defining the field type hint.
-        /// </summary>
-        internal PHPDocBlock PHPDocBlock => _phpDoc;
-        readonly PHPDocBlock _phpDoc;
-
-        /// <summary>
-        /// Declared accessibility - private, protected or public.
-        /// </summary>
-        readonly Accessibility _accessibility;
-
-        readonly BoundExpression _initializer;
-
-        readonly ImmutableArray<AttributeData> _customAttributes;
-
-        /// <summary>
-        /// Gets value indicating whether this field redefines a field from a base type.
-        /// </summary>
-        public bool IsRedefinition => !ReferenceEquals(OverridenDefinition, null);
-
-        /// <summary>
-        /// Gets field from a base type that is redefined by this field.
-        /// </summary>
-        public FieldSymbol OverridenDefinition
+        protected ImmutableArray<CustomModifier> RequiredCustomModifiers
         {
             get
             {
-                if (ReferenceEquals(_originaldefinition, null))
+                if (!IsVolatile)
                 {
-                    // resolve overriden field symbol
-                    _originaldefinition = ResolveOverridenDefinition() ?? this;
+                    return ImmutableArray<CustomModifier>.Empty;
                 }
-
-                return ReferenceEquals(_originaldefinition, this) ? null : _originaldefinition;
-            }
-        }
-        FieldSymbol _originaldefinition;
-
-        FieldSymbol ResolveOverridenDefinition()
-        {
-            // lookup base types whether this field declaration isn't a redefinition
-            if (this.FieldKind == PhpPropertyKind.InstanceField)
-            {
-                for (var t = _containingType.BaseType; t != null && t.SpecialType != SpecialType.System_Object; t = t.BaseType)
+                else
                 {
-                    var candidates = t.GetMembers(_fieldName)
-                        .OfType<FieldSymbol>()
-                        .Where(f => f.IsStatic == false && f.DeclaredAccessibility != Accessibility.Private);
-
-                    //
-                    var fld = candidates.FirstOrDefault();
-                    if (fld != null)
-                    {
-                        return fld is SourceFieldSymbol srcf ? srcf.OverridenDefinition ?? fld : fld;
-                    }
+                    return ImmutableArray.Create<CustomModifier>(
+                            CSharpCustomModifier.CreateRequired(this.ContainingAssembly.GetSpecialType(SpecialType.System_Runtime_CompilerServices_IsVolatile)));
                 }
             }
-
-            return null;
         }
 
-        /// <summary>
-        /// Optional property that provides public access to <see cref="OverridenDefinition"/> if it is protected.
-        /// </summary>
-        public PropertySymbol FieldAccessorProperty
+        public sealed override Symbol ContainingSymbol
         {
             get
             {
-                if (IsRedefinition && OverridenDefinition.DeclaredAccessibility < this.DeclaredAccessibility && _fieldAccessorProperty == null)
-                {
-                    // declare property accessing the field from outside:
-                    var type = OverridenDefinition.Type;
-
-                    // TYPE get_NAME()
-                    var getter = new SynthesizedMethodSymbol(this.ContainingType, "get_" + this.Name, false, false, type, this.DeclaredAccessibility);
-
-                    // void set_NAME(TYPE `value`)
-                    var setter = new SynthesizedMethodSymbol(this.ContainingType, "set_" + this.Name, false, false, DeclaringCompilation.CoreTypes.Void, this.DeclaredAccessibility);
-                    setter.SetParameters(new SynthesizedParameterSymbol(setter, type, 0, RefKind.None, "value"));
-
-                    // TYPE NAME { get; set; }
-                    var fieldAccessorProperty =
-                        new SynthesizedPropertySymbol(
-                            this.ContainingType, this.Name, false,
-                            type, this.DeclaredAccessibility,
-                            getter: getter, setter: setter);
-                    Interlocked.CompareExchange(ref _fieldAccessorProperty, fieldAccessorProperty, null);
-                }
-
-                return _fieldAccessorProperty;
+                return containingType;
             }
         }
-        PropertySymbol _fieldAccessorProperty;
 
-        public SourceFieldSymbol(SourceTypeSymbol type, string name, Location location, Accessibility accessibility, PHPDocBlock phpdoc, PhpPropertyKind kind, BoundExpression initializer = null, ImmutableArray<AttributeData> customAttributes = default)
+        public override NamedTypeSymbol ContainingType
         {
-            Contract.ThrowIfNull(type);
-            Contract.ThrowIfNull(name);
-
-            _containingType = type;
-            _fieldName = name;
-            _fieldKind = kind;
-            _accessibility = accessibility;
-            _phpDoc = phpdoc;
-            _initializer = initializer;
-            _location = location;
-            _customAttributes = customAttributes;
+            get
+            {
+                return this.containingType;
+            }
         }
 
-        #region FieldSymbol
-
-        public override string Name => _fieldName;
-
-        public override Symbol AssociatedSymbol => null;
-
-        public override Symbol ContainingSymbol => ((IPhpPropertySymbol)this).ContainingStaticsHolder ?? _containingType;
-
-        internal override PhpCompilation DeclaringCompilation => _containingType.DeclaringCompilation;
-
-        public override ImmutableArray<CustomModifier> CustomModifiers => ImmutableArray<CustomModifier>.Empty;
-
-        public override Accessibility DeclaredAccessibility => _accessibility;
-
-        public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences { get { throw new NotImplementedException(); } }
-
-        public override bool IsVolatile => false;
-
-        public override ImmutableArray<Location> Locations => ImmutableArray.Create(_location);
-
-        internal override bool HasRuntimeSpecialName => false;
-
-        internal override bool HasSpecialName => false;
-
-        internal override bool IsNotSerialized => false;
-
-        internal override MarshalPseudoCustomAttributeData MarshallingInformation => null;
-
-        internal override ObsoleteAttributeData ObsoleteAttributeData => null;
-
-        internal override int? TypeLayoutOffset => null;
-
-        public override ImmutableArray<AttributeData> GetAttributes()
+        internal sealed override void DecodeWellKnownAttribute(ref DecodeWellKnownAttributeArguments<AttributeSyntax, CSharpAttributeData, AttributeLocation> arguments)
         {
-            var attrs = _customAttributes;
+            Debug.Assert((object)arguments.AttributeSyntaxOpt != null);
 
-            // attributes from syntax node
-            if (attrs.IsDefaultOrEmpty)
+            var attribute = arguments.Attribute;
+            Debug.Assert(!attribute.HasErrors);
+            Debug.Assert(arguments.SymbolPart == AttributeLocation.None);
+
+            if (attribute.IsTargetAttribute(this, AttributeDescription.FixedBufferAttribute))
             {
-                attrs = ImmutableArray<AttributeData>.Empty;
+                // error CS1716: Do not use 'System.Runtime.CompilerServices.FixedBuffer' attribute. Use the 'fixed' field modifier instead.
+                arguments.Diagnostics.Add(ErrorCode.ERR_DoNotUseFixedBufferAttr, arguments.AttributeSyntaxOpt.Name.Location);
             }
             else
             {
-                // initialize attribute data if necessary:
-                attrs
-                    .OfType<SourceCustomAttribute>()
-                    .ForEach(x => x.Bind(this, _containingType.ContainingFile));
+                base.DecodeWellKnownAttribute(ref arguments);
             }
-
-            // attributes from PHPDoc
-            if (_phpDoc != null)
-            {
-                var deprecated = _phpDoc.GetElement<PHPDocBlock.DeprecatedTag>();
-                if (deprecated != null)
-                {
-                    // [ObsoleteAttribute(message, false)]
-                    attrs = attrs.Add(DeclaringCompilation.CreateObsoleteAttribute(deprecated));
-                }
-
-                // ...
-            }
-
-
-            //
-            return attrs;
         }
 
-        #endregion
-
-        internal override ConstantValue GetConstantValue(bool earlyDecodingWellKnownAttributes)
+        internal override void AfterAddingTypeMembersChecks(ConversionsBase conversions, DiagnosticBag diagnostics)
         {
-            return (_fieldKind == PhpPropertyKind.ClassConstant) ? Initializer?.ConstantValue.ToConstantValueOrNull() : null;
+            var compilation = DeclaringCompilation;
+            var location = ErrorLocation;
+
+            if (Type.ContainsNativeInteger())
+            {
+                compilation.EnsureNativeIntegerAttributeExists(diagnostics, location, modifyCompilation: true);
+            }
+
+            if (compilation.ShouldEmitNullableAttributes(this) &&
+                TypeWithAnnotations.NeedsNullableAttribute())
+            {
+                compilation.EnsureNullableAttributeExists(diagnostics, location, modifyCompilation: true);
+            }
         }
 
-        internal override TypeSymbol GetFieldType(ConsList<FieldSymbol> fieldsBeingBound)
+        internal sealed override bool HasRuntimeSpecialName
         {
-            // TODO: PHP 7.4 typed properties // https://github.com/peachpiecompiler/peachpie/issues/766
-
-            //
-            if ((IsConst || IsReadOnly) && Initializer != null)
+            get
             {
-                // resolved type symbol if possible
-                if (Initializer.ResultType != null)
-                {
-                    return Initializer.ResultType;
-                }
+                return this.Name == WellKnownMemberNames.EnumBackingFieldName;
+            }
+        }
+    }
 
-                // resolved value type if possible
-                var cvalue = Initializer.ConstantValue;
-                if (cvalue.HasValue)
-                {
-                    var specialType = (cvalue.Value != null)
-                        ? cvalue.ToConstantValueOrNull()?.SpecialType
-                        : SpecialType.System_Object;    // NULL
+    internal abstract class SourceFieldSymbolWithSyntaxReference : SourceFieldSymbol
+    {
+        private readonly string _name;
+        private readonly Location _location;
+        private readonly SyntaxReference _syntaxReference;
 
-                    if (specialType.HasValue && specialType != SpecialType.None)
-                    {
-                        return DeclaringCompilation.GetSpecialType(specialType.Value);
-                    }
-                }
+        private string _lazyDocComment;
+        private string _lazyExpandedDocComment;
+        private ConstantValue _lazyConstantEarlyDecodingValue = Microsoft.CodeAnalysis.ConstantValue.Unset;
+        private ConstantValue _lazyConstantValue = Microsoft.CodeAnalysis.ConstantValue.Unset;
 
-                //
-                //return DeclaringCompilation.GetTypeFromTypeRef(typectx, Initializer.TypeRefMask);
+
+        protected SourceFieldSymbolWithSyntaxReference(SourceMemberContainerTypeSymbol containingType, string name, SyntaxReference syntax, Location location)
+            : base(containingType)
+        {
+            Debug.Assert(name != null);
+            Debug.Assert(syntax != null);
+            Debug.Assert(location != null);
+
+            _name = name;
+            _syntaxReference = syntax;
+            _location = location;
+        }
+
+        public SyntaxTree SyntaxTree
+        {
+            get
+            {
+                return _syntaxReference.SyntaxTree;
+            }
+        }
+
+        public CSharpSyntaxNode SyntaxNode
+        {
+            get
+            {
+                return (CSharpSyntaxNode)_syntaxReference.GetSyntax();
+            }
+        }
+
+        public sealed override string Name
+        {
+            get
+            {
+                return _name;
+            }
+        }
+
+        internal override LexicalSortKey GetLexicalSortKey()
+        {
+            return new LexicalSortKey(_location, this.DeclaringCompilation);
+        }
+
+        public sealed override ImmutableArray<Location> Locations
+        {
+            get
+            {
+                return ImmutableArray.Create(_location);
+            }
+        }
+
+        internal sealed override Location ErrorLocation
+        {
+            get
+            {
+                return _location;
+            }
+        }
+
+        public sealed override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
+        {
+            get
+            {
+                return ImmutableArray.Create<SyntaxReference>(_syntaxReference);
+            }
+        }
+
+        public sealed override string GetDocumentationCommentXml(CultureInfo preferredCulture = null, bool expandIncludes = false, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            ref var lazyDocComment = ref expandIncludes ? ref _lazyExpandedDocComment : ref _lazyDocComment;
+            return SourceDocumentationCommentUtils.GetAndCacheDocumentationComment(this, expandIncludes, ref lazyDocComment);
+        }
+
+        internal sealed override ConstantValue GetConstantValue(ConstantFieldsInProgress inProgress, bool earlyDecodingWellKnownAttributes)
+        {
+            var value = this.GetLazyConstantValue(earlyDecodingWellKnownAttributes);
+            if (value != Microsoft.CodeAnalysis.ConstantValue.Unset)
+            {
+                return value;
             }
 
-            // PHPDoc @var type
-            if ((DeclaringCompilation.Options.PhpDocTypes & PhpDocTypes.FieldTypes) != 0)
+            if (!inProgress.IsEmpty)
             {
-                var vartag = FindPhpDocVarTag();
-                if (vartag != null && vartag.TypeNamesArray.Length != 0)
-                {
-                    var dummyctx = TypeRefFactory.CreateTypeRefContext(_containingType);
-                    var tmask = PHPDoc.GetTypeMask(dummyctx, vartag.TypeNamesArray, NameUtils.GetNamingContext(_containingType.Syntax));
-                    return DeclaringCompilation.GetTypeFromTypeRef(dummyctx, tmask);
-                }
+                // Add this field as a dependency of the original field, and
+                // return Unset. The outer GetConstantValue caller will call
+                // this method again after evaluating any dependencies.
+                inProgress.AddDependency(this);
+                return Microsoft.CodeAnalysis.ConstantValue.Unset;
             }
 
-            // default
-            return DeclaringCompilation.CoreTypes.PhpValue;
+            // Order dependencies.
+            var order = ArrayBuilder<ConstantEvaluationHelpers.FieldInfo>.GetInstance();
+            this.OrderAllDependencies(order, earlyDecodingWellKnownAttributes);
+
+            // Evaluate fields in order.
+            foreach (var info in order)
+            {
+                // Bind the field value regardless of whether the field represents
+                // the start of a cycle. In the cycle case, there will be unevaluated
+                // dependencies and the result will be ConstantValue.Bad plus cycle error.
+                var field = info.Field;
+                field.BindConstantValueIfNecessary(earlyDecodingWellKnownAttributes, startsCycle: info.StartsCycle);
+            }
+
+            order.Free();
+
+            // Return the value of this field.
+            return this.GetLazyConstantValue(earlyDecodingWellKnownAttributes);
         }
 
         /// <summary>
-        /// <c>const</c> whether the field is a constant and its value can be resolved as constant value.
+        /// Return the constant value dependencies. Compute the dependencies
+        /// if necessary by evaluating the constant value but only persist the
+        /// constant value if there were no dependencies. (If there are dependencies,
+        /// the constant value will be re-evaluated after evaluating dependencies.)
         /// </summary>
-        public override bool IsConst => _fieldKind == PhpPropertyKind.ClassConstant && GetConstantValue(false) != null;
-
-        /// <summary>
-        /// <c>readonly</c> applies to class constants that have to be evaluated at runtime.
-        /// </summary>
-        public override bool IsReadOnly => _fieldKind == PhpPropertyKind.ClassConstant && GetConstantValue(false) == null;
-
-        /// <summary>
-        /// Whether the field is real CLR static field.
-        /// </summary>
-        public override bool IsStatic => _fieldKind == PhpPropertyKind.AppStaticField || IsConst; // either field is CLR static field or constant (Literal field must be Static).
-
-        internal PHPDocBlock.TypeVarDescTag FindPhpDocVarTag()
+        internal ImmutableHashSet<SourceFieldSymbolWithSyntaxReference> GetConstantValueDependencies(bool earlyDecodingWellKnownAttributes)
         {
-            if (_phpDoc != null)
+            var value = this.GetLazyConstantValue(earlyDecodingWellKnownAttributes);
+            if (value != Microsoft.CodeAnalysis.ConstantValue.Unset)
             {
-                foreach (var vartype in _phpDoc.Elements.OfType<PHPDocBlock.TypeVarDescTag>())
-                {
-                    if (string.IsNullOrEmpty(vartype.VariableName) || vartype.VariableName.Substring(1) == this.MetadataName)
-                    {
-                        return vartype;
-                    }
-                }
+                // Constant value already determined. No need to
+                // compute dependencies since the constant values
+                // of all dependencies should be evaluated as well.
+                return ImmutableHashSet<SourceFieldSymbolWithSyntaxReference>.Empty;
             }
 
-            return null;
-        }
+            ImmutableHashSet<SourceFieldSymbolWithSyntaxReference> dependencies;
+            var builder = PooledHashSet<SourceFieldSymbolWithSyntaxReference>.GetInstance();
+            var diagnostics = DiagnosticBag.GetInstance();
+            value = MakeConstantValue(builder, earlyDecodingWellKnownAttributes, diagnostics);
 
-        public override string GetDocumentationCommentXml(CultureInfo preferredCulture = null, bool expandIncludes = false, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var summary = string.Empty;
-
-            if (_phpDoc != null)
+            // Only persist if there are no dependencies and the calculation
+            // completed successfully. (We could probably persist in other
+            // scenarios but it's probably not worth the added complexity.)
+            if ((builder.Count == 0) &&
+                (value != null) &&
+                !value.IsBad &&
+                (value != Microsoft.CodeAnalysis.ConstantValue.Unset) &&
+                !diagnostics.HasAnyResolvedErrors())
             {
-                summary = _phpDoc.Summary;
-
-                if (string.IsNullOrWhiteSpace(summary))
-                {
-                    // try @var or @staticvar:
-                    var vartag = FindPhpDocVarTag();
-                    if (vartag != null)
-                    {
-                        summary = vartag.Description;
-                    }
-                }
+                this.SetLazyConstantValue(
+                    value,
+                    earlyDecodingWellKnownAttributes,
+                    diagnostics,
+                    startsCycle: false);
+                dependencies = ImmutableHashSet<SourceFieldSymbolWithSyntaxReference>.Empty;
+            }
+            else
+            {
+                dependencies = ImmutableHashSet<SourceFieldSymbolWithSyntaxReference>.Empty.Union(builder);
             }
 
-            return summary;
+            diagnostics.Free();
+            builder.Free();
+            return dependencies;
         }
+
+        private void BindConstantValueIfNecessary(bool earlyDecodingWellKnownAttributes, bool startsCycle)
+        {
+            if (this.GetLazyConstantValue(earlyDecodingWellKnownAttributes) != Microsoft.CodeAnalysis.ConstantValue.Unset)
+            {
+                return;
+            }
+
+            var builder = PooledHashSet<SourceFieldSymbolWithSyntaxReference>.GetInstance();
+            var diagnostics = DiagnosticBag.GetInstance();
+            if (startsCycle)
+            {
+                diagnostics.Add(ErrorCode.ERR_CircConstValue, _location, this);
+            }
+
+            var value = MakeConstantValue(builder, earlyDecodingWellKnownAttributes, diagnostics);
+            this.SetLazyConstantValue(
+                value,
+                earlyDecodingWellKnownAttributes,
+                diagnostics,
+                startsCycle);
+            diagnostics.Free();
+            builder.Free();
+        }
+
+        private ConstantValue GetLazyConstantValue(bool earlyDecodingWellKnownAttributes)
+        {
+            return earlyDecodingWellKnownAttributes ? _lazyConstantEarlyDecodingValue : _lazyConstantValue;
+        }
+
+        private void SetLazyConstantValue(
+            ConstantValue value,
+            bool earlyDecodingWellKnownAttributes,
+            DiagnosticBag diagnostics,
+            bool startsCycle)
+        {
+            Debug.Assert(value != Microsoft.CodeAnalysis.ConstantValue.Unset);
+            Debug.Assert((GetLazyConstantValue(earlyDecodingWellKnownAttributes) == Microsoft.CodeAnalysis.ConstantValue.Unset) ||
+                (GetLazyConstantValue(earlyDecodingWellKnownAttributes) == value));
+
+            if (earlyDecodingWellKnownAttributes)
+            {
+                Interlocked.CompareExchange(ref _lazyConstantEarlyDecodingValue, value, Microsoft.CodeAnalysis.ConstantValue.Unset);
+            }
+            else
+            {
+                if (Interlocked.CompareExchange(ref _lazyConstantValue, value, Microsoft.CodeAnalysis.ConstantValue.Unset) == Microsoft.CodeAnalysis.ConstantValue.Unset)
+                {
+#if REPORT_ALL
+                    Console.WriteLine("Thread {0}, Field {1}, StartsCycle {2}", Thread.CurrentThread.ManagedThreadId, this, startsCycle);
+#endif
+                    this.AddDeclarationDiagnostics(diagnostics);
+                    // CompletionPart.ConstantValue is the last part for a field
+                    DeclaringCompilation.SymbolDeclaredEvent(this);
+                    var wasSetThisThread = this.state.NotePartComplete(CompletionPart.ConstantValue);
+                    Debug.Assert(wasSetThisThread);
+                }
+            }
+        }
+
+        protected abstract ConstantValue MakeConstantValue(HashSet<SourceFieldSymbolWithSyntaxReference> dependencies, bool earlyDecodingWellKnownAttributes, DiagnosticBag diagnostics);
     }
 }

@@ -1,26 +1,31 @@
-﻿﻿using Microsoft.CodeAnalysis;
-using Roslyn.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
- using Pchp.CodeAnalysis;
- using Cci = Microsoft.Cci;
+﻿﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
-namespace Aquila.CodeAnalysis.Symbols
+ using System.Collections.Generic;
+ using System.Collections.Immutable;
+ using System.Diagnostics;
+ using System.Linq;
+ using Microsoft.CodeAnalysis;
+ using Roslyn.Utilities;
+
+ namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// Represents a property or indexer.
     /// </summary>
-    internal abstract partial class PropertySymbol : Symbol, IPropertySymbol // TODO: IPhpValue and IPhpValue.HasNotNull
+    internal abstract partial class PropertySymbol : Symbol
     {
         /// <summary>
         /// As a performance optimization, cache parameter types and refkinds - overload resolution uses them a lot.
         /// </summary>
         private ParameterSignature _lazyParameterSignature;
+
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // Changes to the public interface of this class should remain synchronized with the VB version.
+        // Do not make any changes to the public interface without making the corresponding change
+        // to the VB version.
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         internal PropertySymbol()
         {
@@ -48,14 +53,45 @@ namespace Aquila.CodeAnalysis.Symbols
         }
 
         /// <summary>
-        /// The type of the property. 
+        /// If a property is annotated with `[MemberNotNull(...)]` attributes, returns the list of members
+        /// listed in those attributes.
+        /// Otherwise, an empty array.
         /// </summary>
-        public abstract TypeSymbol Type { get; }
+        internal virtual ImmutableArray<string> NotNullMembers => ImmutableArray<string>.Empty;
+
+        internal virtual ImmutableArray<string> NotNullWhenTrueMembers => ImmutableArray<string>.Empty;
+
+        internal virtual ImmutableArray<string> NotNullWhenFalseMembers => ImmutableArray<string>.Empty;
 
         /// <summary>
-        /// The list of custom modifiers, if any, associated with the type of the property. 
+        /// Indicates whether or not the property returns by reference
         /// </summary>
-        public abstract ImmutableArray<CustomModifier> TypeCustomModifiers { get; }
+        public bool ReturnsByRef { get { return this.RefKind == RefKind.Ref; } }
+
+        /// <summary>
+        /// Indicates whether or not the property returns a readonly reference
+        /// </summary>
+        public bool ReturnsByRefReadonly { get { return this.RefKind == RefKind.RefReadOnly; } }
+
+        /// <summary>
+        /// Gets the ref kind of the property.
+        /// </summary>
+        public abstract RefKind RefKind { get; }
+
+        /// <summary>
+        /// The type of the property along with its annotations.
+        /// </summary>
+        public abstract TypeWithAnnotations TypeWithAnnotations { get; }
+
+        /// <summary>
+        /// The type of the property.
+        /// </summary>
+        public TypeSymbol Type => TypeWithAnnotations.Type;
+
+        /// <summary>
+        /// Custom modifiers associated with the ref modifier, or an empty array if there are none.
+        /// </summary>
+        public abstract ImmutableArray<CustomModifier> RefCustomModifiers { get; }
 
         /// <summary>
         /// The parameters of this property. If this property has no parameters, returns
@@ -76,12 +112,12 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        internal ImmutableArray<TypeSymbol> ParameterTypes
+        internal ImmutableArray<TypeWithAnnotations> ParameterTypesWithAnnotations
         {
             get
             {
                 ParameterSignature.PopulateParameterSignature(this.Parameters, ref _lazyParameterSignature);
-                return _lazyParameterSignature.parameterTypes;
+                return _lazyParameterSignature.parameterTypesWithAnnotations;
             }
         }
 
@@ -93,6 +129,11 @@ namespace Aquila.CodeAnalysis.Symbols
                 return _lazyParameterSignature.parameterRefKinds;
             }
         }
+
+        /// <summary>
+        /// Returns true if this symbol requires an instance reference as the implicit receiver. This is false if the symbol is static.
+        /// </summary>
+        public virtual bool RequiresInstanceReceiver => !IsStatic;
 
         /// <summary>
         /// Returns whether the property is really an indexer.
@@ -123,7 +164,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get
             {
-                var property = this.GetLeastOverriddenProperty((NamedTypeSymbol)this.ContainingType);
+                var property = (PropertySymbol)this.GetLeastOverriddenMember(this.ContainingType);
                 return (object)property.SetMethod == null;
             }
         }
@@ -135,10 +176,16 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get
             {
-                var property = this.GetLeastOverriddenProperty((NamedTypeSymbol)this.ContainingType);
+                var property = (PropertySymbol)this.GetLeastOverriddenMember(this.ContainingType);
                 return (object)property.GetMethod == null;
             }
         }
+
+        /// <summary>
+        /// True if the property itself is excluded from code coverage instrumentation.
+        /// True for source properties marked with <see cref="AttributeDescription.ExcludeFromCodeCoverageAttribute"/>.
+        /// </summary>
+        internal virtual bool IsDirectlyExcludedFromCodeCoverage { get => false; }
 
         /// <summary>
         /// True if this symbol has a special name (metadata flag SpecialName is set).
@@ -161,7 +208,7 @@ namespace Aquila.CodeAnalysis.Symbols
             get;
         }
 
-        internal abstract Cci.CallingConvention CallingConvention { get; }
+        internal abstract Microsoft.Cci.CallingConvention CallingConvention { get; }
 
         internal abstract bool MustCallMethodsDirectly { get; }
 
@@ -176,8 +223,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 {
                     if (IsDefinition)
                     {
-                        //return (PropertySymbol)OverriddenOrHiddenMembers.GetOverriddenMember();
-                        return this.ResolveOverridenMember();
+                        return (PropertySymbol)OverriddenOrHiddenMembers.GetOverriddenMember();
                     }
 
                     return (PropertySymbol)OverriddenOrHiddenMembersResult.GetOverriddenMember(this, OriginalDefinition.OverriddenProperty);
@@ -186,13 +232,13 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        //internal virtual OverriddenOrHiddenMembersResult OverriddenOrHiddenMembers
-        //{
-        //    get
-        //    {
-        //        return this.MakeOverriddenOrHiddenMembers();
-        //    }
-        //}
+        internal virtual OverriddenOrHiddenMembersResult OverriddenOrHiddenMembers
+        {
+            get
+            {
+                return this.MakeOverriddenOrHiddenMembers();
+            }
+        }
 
         internal bool HidesBasePropertiesByName
         {
@@ -234,8 +280,8 @@ namespace Aquila.CodeAnalysis.Symbols
                 //
                 // See InternalsVisibleToAndStrongNameTests: IvtVirtualCall1, IvtVirtualCall2, IvtVirtual_ParamsAndDynamic.
                 PropertySymbol overridden = p.OverriddenProperty;
-                //HashSet<DiagnosticInfo> useSiteDiagnostics = null;
-                if ((object)overridden == null) // || !AccessCheck.IsSymbolAccessible(overridden, accessingType, ref useSiteDiagnostics))
+                HashSet<DiagnosticInfo> useSiteDiagnostics = null;
+                if ((object)overridden == null || !AccessCheck.IsSymbolAccessible(overridden, accessingType, ref useSiteDiagnostics))
                 {
                     break;
                 }
@@ -278,116 +324,103 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        public bool HasRefOrOutParameter()
+        /// <summary>
+        /// Implements visitor pattern.
+        /// </summary>
+        internal override TResult Accept<TArgument, TResult>(CSharpSymbolVisitor<TArgument, TResult> visitor, TArgument argument)
         {
-            foreach (ParameterSymbol param in this.Parameters)
-            {
-                if (param.RefKind != RefKind.None)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return visitor.VisitProperty(this, argument);
         }
 
-        public virtual bool ReturnsByRef => false;
-
-        public virtual bool ReturnsByRefReadonly => false;
-
-        public virtual RefKind RefKind => RefKind.None;
-
-        internal virtual PropertySymbol AsMember(NamedTypeSymbol newOwner)
-        {
-            Debug.Assert(this.IsDefinition);
-            Debug.Assert(ReferenceEquals(newOwner.OriginalDefinition, this.ContainingSymbol.OriginalDefinition));
-            return (newOwner == this.ContainingSymbol) ? this : new SubstitutedPropertySymbol(newOwner as SubstitutedNamedTypeSymbol, this);
-        }
-
-        #region IPropertySymbol Members
-
-        bool IPropertySymbol.IsIndexer
-        {
-            get { return this.IsIndexer; }
-        }
-
-        ITypeSymbol IPropertySymbol.Type
-        {
-            get { return this.Type; }
-        }
-
-        ImmutableArray<IParameterSymbol> IPropertySymbol.Parameters
-        {
-            get { return StaticCast<IParameterSymbol>.From(this.Parameters); }
-        }
-
-        IMethodSymbol IPropertySymbol.GetMethod
-        {
-            get { return this.GetMethod; }
-        }
-
-        IMethodSymbol IPropertySymbol.SetMethod
-        {
-            get { return this.SetMethod; }
-        }
-
-        IPropertySymbol IPropertySymbol.OriginalDefinition
-        {
-            get { return this.OriginalDefinition; }
-        }
-
-        IPropertySymbol IPropertySymbol.OverriddenProperty
-        {
-            get { return this.OverriddenProperty; }
-        }
-
-        ImmutableArray<IPropertySymbol> IPropertySymbol.ExplicitInterfaceImplementations
-        {
-            get { return this.ExplicitInterfaceImplementations.Cast<PropertySymbol, IPropertySymbol>(); }
-        }
-
-        bool IPropertySymbol.IsReadOnly
-        {
-            get { return this.IsReadOnly; }
-        }
-
-        bool IPropertySymbol.IsWriteOnly
-        {
-            get { return this.IsWriteOnly; }
-        }
-
-        bool IPropertySymbol.IsWithEvents
-        {
-            get { return false; }
-        }
-
-        ImmutableArray<CustomModifier> IPropertySymbol.TypeCustomModifiers
-        {
-            get { return this.TypeCustomModifiers; }
-        }
-
-        ImmutableArray<CustomModifier> IPropertySymbol.RefCustomModifiers => ImmutableArray<CustomModifier>.Empty;
-
-        #endregion
-
-        #region ISymbol Members
-
-        public override void Accept(SymbolVisitor visitor)
+        public override void Accept(CSharpSymbolVisitor visitor)
         {
             visitor.VisitProperty(this);
         }
 
-        public override TResult Accept<TResult>(SymbolVisitor<TResult> visitor)
+        public override TResult Accept<TResult>(CSharpSymbolVisitor<TResult> visitor)
         {
             return visitor.VisitProperty(this);
         }
 
+        internal PropertySymbol AsMember(NamedTypeSymbol newOwner)
+        {
+            Debug.Assert(this.IsDefinition);
+            Debug.Assert(ReferenceEquals(newOwner.OriginalDefinition, this.ContainingSymbol.OriginalDefinition));
+            return newOwner.IsDefinition ? this : new SubstitutedPropertySymbol(newOwner as SubstitutedNamedTypeSymbol, this);
+        }
+
+        #region Use-Site Diagnostics
+
+        internal override DiagnosticInfo GetUseSiteDiagnostic()
+        {
+            if (this.IsDefinition)
+            {
+                return base.GetUseSiteDiagnostic();
+            }
+
+            return this.OriginalDefinition.GetUseSiteDiagnostic();
+        }
+
+        internal bool CalculateUseSiteDiagnostic(ref DiagnosticInfo result)
+        {
+            Debug.Assert(this.IsDefinition);
+
+            // Check return type, custom modifiers and parameters:
+            if (DeriveUseSiteDiagnosticFromType(ref result, this.TypeWithAnnotations, AllowedRequiredModifierType.None) ||
+                DeriveUseSiteDiagnosticFromCustomModifiers(ref result, this.RefCustomModifiers, AllowedRequiredModifierType.System_Runtime_InteropServices_InAttribute) ||
+                DeriveUseSiteDiagnosticFromParameters(ref result, this.Parameters))
+            {
+                return true;
+            }
+
+            // If the member is in an assembly with unified references, 
+            // we check if its definition depends on a type from a unified reference.
+            if (this.ContainingModule.HasUnifiedReferences)
+            {
+                HashSet<TypeSymbol> unificationCheckedTypes = null;
+                if (this.TypeWithAnnotations.GetUnificationUseSiteDiagnosticRecursive(ref result, this, ref unificationCheckedTypes) ||
+                    GetUnificationUseSiteDiagnosticRecursive(ref result, this.RefCustomModifiers, this, ref unificationCheckedTypes) ||
+                    GetUnificationUseSiteDiagnosticRecursive(ref result, this.Parameters, this, ref unificationCheckedTypes))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Return error code that has highest priority while calculating use site error for this symbol. 
+        /// </summary>
+        protected override int HighestPriorityUseSiteError
+        {
+            get
+            {
+                return (int)ErrorCode.ERR_BindToBogus;
+            }
+        }
+
+        public sealed override bool HasUnsupportedMetadata
+        {
+            get
+            {
+                DiagnosticInfo info = GetUseSiteDiagnostic();
+                return (object)info != null && (info.Code == (int)ErrorCode.ERR_BindToBogus || info.Code == (int)ErrorCode.ERR_ByRefReturnUnsupported);
+            }
+        }
+
         #endregion
+
+        protected sealed override ISymbol CreateISymbol()
+        {
+            return new PublicModel.PropertySymbol(this);
+        }
 
         #region Equality
 
-        public override bool Equals(object obj)
+        public override bool Equals(Symbol symbol, TypeCompareKind compareKind)
         {
-            PropertySymbol other = obj as PropertySymbol;
+            PropertySymbol other = symbol as PropertySymbol;
 
             if (ReferenceEquals(null, other))
             {
@@ -399,9 +432,14 @@ namespace Aquila.CodeAnalysis.Symbols
                 return true;
             }
 
+            if (other is NativeIntegerPropertySymbol nps)
+            {
+                return nps.Equals(this, compareKind);
+            }
+
             // This checks if the property have the same definition and the type parameters on the containing types have been
             // substituted in the same way.
-            return this.ContainingType == other.ContainingType && ReferenceEquals(this.OriginalDefinition, other.OriginalDefinition);
+            return TypeSymbol.Equals(this.ContainingType, other.ContainingType, compareKind) && ReferenceEquals(this.OriginalDefinition, other.OriginalDefinition);
         }
 
         public override int GetHashCode()

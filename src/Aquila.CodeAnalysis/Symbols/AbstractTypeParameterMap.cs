@@ -1,34 +1,33 @@
-﻿﻿using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
-namespace Aquila.CodeAnalysis.Symbols
+ using System.Diagnostics;
+ using System.Text;
+ using Microsoft.CodeAnalysis;
+
+ namespace Aquila.CodeAnalysis.Symbols
 {
     [DebuggerDisplay("{GetDebuggerDisplay(), nq}")]
     internal abstract class AbstractTypeParameterMap : AbstractTypeMap
     {
-        protected readonly SmallDictionary<TypeParameterSymbol, TypeWithModifiers> Mapping;
+        protected readonly SmallDictionary<TypeParameterSymbol, TypeWithAnnotations> Mapping;
 
-        protected AbstractTypeParameterMap(SmallDictionary<TypeParameterSymbol, TypeWithModifiers> mapping)
+        protected AbstractTypeParameterMap(SmallDictionary<TypeParameterSymbol, TypeWithAnnotations> mapping)
         {
             this.Mapping = mapping;
         }
 
-        protected sealed override TypeWithModifiers SubstituteTypeParameter(TypeParameterSymbol typeParameter)
+        protected sealed override TypeWithAnnotations SubstituteTypeParameter(TypeParameterSymbol typeParameter)
         {
             // It might need to be substituted directly.
-            TypeWithModifiers result;
+            TypeWithAnnotations result;
             if (Mapping.TryGetValue(typeParameter, out result))
             {
                 return result;
             }
 
-            return new TypeWithModifiers(typeParameter);
+            return TypeWithAnnotations.Create(typeParameter);
         }
 
         private string GetDebuggerDisplay()

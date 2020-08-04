@@ -10,8 +10,9 @@ using System.Diagnostics;
 using Devsense.PHP.Syntax;
 using Roslyn.Utilities;
 using Pchp.CodeAnalysis.Utilities;
+ using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
 
-namespace Pchp.CodeAnalysis.Semantics.Model
+ namespace Pchp.CodeAnalysis.Semantics.Model
 {
     internal class GlobalSymbolProvider : ISymbolProvider
     {

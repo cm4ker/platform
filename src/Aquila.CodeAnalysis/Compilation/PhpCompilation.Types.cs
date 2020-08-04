@@ -16,8 +16,9 @@ using System.Threading;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Operations;
  using Pchp.CodeAnalysis.Semantics;
+ using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
 
-namespace Pchp.CodeAnalysis
+ namespace Pchp.CodeAnalysis
 {
     partial class PhpCompilation
     {

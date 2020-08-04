@@ -18,7 +18,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         Cci.ITypeReference Cci.ICustomModifier.GetModifier(EmitContext context)
         {
-            return ((PEModuleBuilder)context.Module).Translate(this.Modifier, context.SyntaxNodeOpt, context.Diagnostics);
+            return ((PEModuleBuilder)context.Module).Translate(this.ModifierSymbol, context.SyntaxNodeOpt, context.Diagnostics);
         }
     }
 }

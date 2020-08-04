@@ -1,12 +1,11 @@
-﻿﻿using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
- using Pchp.CodeAnalysis;
+﻿﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+ using System.Collections.Immutable;
+ using System.Diagnostics;
+ using Aquila.CodeAnalysis.Symbols.Wrapped;
+ using Microsoft.CodeAnalysis;
 
  namespace Aquila.CodeAnalysis.Symbols
 {
@@ -35,49 +34,70 @@ using System.Threading.Tasks;
             _mapOrType = map;
         }
 
-        protected override Symbol OriginalSymbolDefinition => underlyingParameter.OriginalDefinition;
+        public override ParameterSymbol OriginalDefinition
+        {
+            get { return _underlyingParameter.OriginalDefinition; }
+        }
 
         public override Symbol ContainingSymbol
         {
             get { return _containingSymbol; }
         }
 
-        internal override TypeSymbol Type
+        public override TypeWithAnnotations TypeWithAnnotations
         {
             get
             {
                 var mapOrType = _mapOrType;
-                var type = mapOrType as TypeSymbol;
-                if (type != null)
+                if (mapOrType is TypeWithAnnotations type)
                 {
                     return type;
                 }
 
-                TypeWithModifiers substituted = ((TypeMap)mapOrType).SubstituteType(this.underlyingParameter.Type);
+                TypeWithAnnotations substituted = ((TypeMap)mapOrType).SubstituteType(this._underlyingParameter.TypeWithAnnotations);
 
-                type = substituted.Type;
-
-                if (substituted.CustomModifiers.IsDefaultOrEmpty)
+                if (substituted.CustomModifiers.IsEmpty &&
+                    this._underlyingParameter.TypeWithAnnotations.CustomModifiers.IsEmpty &&
+                    this._underlyingParameter.RefCustomModifiers.IsEmpty)
                 {
-                    _mapOrType = type;
+                    _mapOrType = substituted;
                 }
 
-                return type;
+                return substituted;
             }
         }
 
-        public override ImmutableArray<CustomModifier> CustomModifiers
+
+        public override ImmutableArray<CustomModifier> RefCustomModifiers
         {
             get
             {
                 var map = _mapOrType as TypeMap;
-                return map != null ? map.SubstituteCustomModifiers(this.underlyingParameter.Type, this.underlyingParameter.CustomModifiers) : this.underlyingParameter.CustomModifiers;
+                return map != null ? map.SubstituteCustomModifiers(this._underlyingParameter.RefCustomModifiers) : this._underlyingParameter.RefCustomModifiers;
             }
         }
 
-        //public override string GetDocumentationCommentXml(CultureInfo preferredCulture = null, bool expandIncludes = false, CancellationToken cancellationToken = default(CancellationToken))
-        //{
-        //    return underlyingParameter.GetDocumentationCommentXml(preferredCulture, expandIncludes, cancellationToken);
-        //}
+        public sealed override bool Equals(Symbol obj, TypeCompareKind compareKind)
+        {
+            if ((object)this == obj)
+            {
+                return true;
+            }
+
+            // Equality of ordinal and containing symbol is a correct
+            // implementation for all ParameterSymbols, but we don't 
+            // define it on the base type because most can simply use
+            // ReferenceEquals.
+
+            var other = obj as SubstitutedParameterSymbol;
+            return (object)other != null &&
+                this.Ordinal == other.Ordinal &&
+                this.ContainingSymbol.Equals(other.ContainingSymbol, compareKind);
+        }
+
+        public sealed override int GetHashCode()
+        {
+            return Roslyn.Utilities.Hash.Combine(ContainingSymbol, _underlyingParameter.Ordinal);
+        }
     }
 }

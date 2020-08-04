@@ -1,8 +1,10 @@
-﻿﻿using System.Collections.Generic;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis;
+﻿﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
-namespace Aquila.CodeAnalysis.Symbols
+ using Microsoft.CodeAnalysis;
+
+ namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// Utility class for substituting actual type arguments for formal generic type parameters.
@@ -10,11 +12,11 @@ namespace Aquila.CodeAnalysis.Symbols
     internal sealed class MutableTypeMap : AbstractTypeParameterMap
     {
         internal MutableTypeMap()
-            : base(new SmallDictionary<TypeParameterSymbol, TypeWithModifiers>())
+            : base(new SmallDictionary<TypeParameterSymbol, TypeWithAnnotations>())
         {
         }
 
-        internal void Add(TypeParameterSymbol key, TypeWithModifiers value)
+        internal void Add(TypeParameterSymbol key, TypeWithAnnotations value)
         {
             this.Mapping.Add(key, value);
         }

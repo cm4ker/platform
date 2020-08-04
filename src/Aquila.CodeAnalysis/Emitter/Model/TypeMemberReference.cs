@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Aquila.CodeAnalysis.Emitter.Model;
 using Microsoft.CodeAnalysis.Emit;
 using Roslyn.Utilities;
 using Cci = Microsoft.Cci;

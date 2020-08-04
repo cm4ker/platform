@@ -14,6 +14,8 @@ using Microsoft.CodeAnalysis.PooledObjects;
 using Cci = Microsoft.Cci;
 using Microsoft.CodeAnalysis.Emit.NoPia;
 using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.Metadata.PE;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Microsoft.CodeAnalysis.Symbols;
 using Pchp.CodeAnalysis.Emitter;
 using Pchp.CodeAnalysis.Utilities;
@@ -660,15 +662,15 @@ namespace Pchp.CodeAnalysis.Emit
             //
             if (symbol.DeclaredAccessibility != Accessibility.Public)
             {
-                if (
-                    PhpFieldSymbolExtension
-                        .IsInStaticsHolder(
-                            symbol as FieldSymbol) || // field is generated within `_statics` holder class and must be accessed from outside // note: maybe internal?
-                    ((symbol.ContainingSymbol is SourceTraitTypeSymbol) && (symbol is SourceMethodSymbol ||
-                                                                            symbol is SourceFieldSymbol ||
-                                                                            symbol is SynthesizedTraitMethodSymbol ||
-                                                                            symbol is SynthesizedTraitFieldSymbol))
-                ) // member is in trait => hence must be friend with any class (public)
+                //TODO: some 
+                // if (
+                //     PhpFieldSymbolExtension.IsInStaticsHolder(symbol as FieldSymbol) || 
+                //     // field is generated within `_statics` holder class and must be accessed from outside // note: maybe internal?
+                //     ((symbol.ContainingSymbol is SourceTraitTypeSymbol) && (symbol is SourceMethodSymbol ||
+                //                                                             symbol is SourceFieldSymbol ||
+                //                                                             symbol is SynthesizedTraitMethodSymbol ||
+                //                                                             symbol is SynthesizedTraitFieldSymbol))
+                // ) // member is in trait => hence must be friend with any class (public)
                 {
                     return Cci.TypeMemberVisibility.Public;
                 }

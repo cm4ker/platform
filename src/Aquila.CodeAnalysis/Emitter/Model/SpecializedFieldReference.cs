@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
 using Aquila.CodeAnalysis.Symbols;
 using Cci = Microsoft.Cci;
+using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
 
 namespace Pchp.CodeAnalysis.Emit
 {

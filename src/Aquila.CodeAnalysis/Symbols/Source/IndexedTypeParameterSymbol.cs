@@ -1,13 +1,16 @@
-﻿﻿using System;
-using System.Collections.Immutable;
-using System.Threading;
-using Microsoft.CodeAnalysis.Text;
-using Roslyn.Utilities;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.PooledObjects;
- using Pchp.CodeAnalysis;
+﻿﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
- namespace Aquila.CodeAnalysis.Symbols
+ using System;
+ using System.Collections.Generic;
+ using System.Collections.Immutable;
+ using System.Threading;
+ using Microsoft.CodeAnalysis;
+ using Microsoft.CodeAnalysis.PooledObjects;
+ using Roslyn.Utilities;
+
+ namespace Aquila.CodeAnalysis.Symbols.Source
 {
     /// <summary>
     /// Indexed type parameters are used in place of type parameters for method signatures.  There is
@@ -28,9 +31,13 @@ using Microsoft.CodeAnalysis.PooledObjects;
             _index = index;
         }
 
-        public override string Name => string.Empty;
-
-        public override TypeParameterKind TypeParameterKind => TypeParameterKind.Method;
+        public override TypeParameterKind TypeParameterKind
+        {
+            get
+            {
+                return TypeParameterKind.Method;
+            }
+        }
 
         internal static TypeParameterSymbol GetTypeParameter(int index)
         {
@@ -94,7 +101,7 @@ using Microsoft.CodeAnalysis.PooledObjects;
         }
 
         // These object are unique (per index).
-        internal override bool Equals(TypeSymbol t2, bool ignoreCustomModifiersAndArraySizesAndLowerBounds, bool ignoreDynamic)
+        internal override bool Equals(TypeSymbol t2, TypeCompareKind comparison, IReadOnlyDictionary<TypeParameterSymbol, bool> isValueTypeOverrideOpt = null)
         {
             return ReferenceEquals(this, t2);
         }
@@ -115,6 +122,20 @@ using Microsoft.CodeAnalysis.PooledObjects;
         }
 
         public override bool HasReferenceTypeConstraint
+        {
+            get { return false; }
+        }
+
+        internal override bool? ReferenceTypeConstraintIsNullable
+        {
+            get { return false; }
+        }
+
+        public override bool HasNotNullConstraint => false;
+
+        internal override bool? IsNotNullable => null;
+
+        public override bool HasUnmanagedTypeConstraint
         {
             get { return false; }
         }
@@ -152,9 +173,9 @@ using Microsoft.CodeAnalysis.PooledObjects;
         {
         }
 
-        internal override ImmutableArray<TypeSymbol> GetConstraintTypes(ConsList<TypeParameterSymbol> inProgress)
+        internal override ImmutableArray<TypeWithAnnotations> GetConstraintTypes(ConsList<TypeParameterSymbol> inProgress)
         {
-            return ImmutableArray<TypeSymbol>.Empty;
+            return ImmutableArray<TypeWithAnnotations>.Empty;
         }
 
         internal override ImmutableArray<NamedTypeSymbol> GetInterfaces(ConsList<TypeParameterSymbol> inProgress)

@@ -1,18 +1,30 @@
-﻿﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using Roslyn.Utilities;
-using Microsoft.CodeAnalysis;
-using System;
- using Pchp.CodeAnalysis;
+﻿﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+#nullable enable
+
+ using System.Collections.Generic;
+ using System.Collections.Immutable;
+ using System.Diagnostics;
+ using Aquila.CodeAnalysis.Symbols.Source;
+ using Microsoft.CodeAnalysis;
+ using Microsoft.CodeAnalysis.Symbols;
+ using Roslyn.Utilities;
 
  namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// Represents either a namespace or a type.
     /// </summary>
-    internal abstract class NamespaceOrTypeSymbol : Symbol, INamespaceOrTypeSymbol
+    internal abstract class NamespaceOrTypeSymbol : Symbol, INamespaceOrTypeSymbolInternal
     {
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // Changes to the public interface of this class should remain synchronized with the VB version.
+        // Do not make any changes to the public interface without making the corresponding change
+        // to the VB version.
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
         // Only the compiler can create new instances.
         internal NamespaceOrTypeSymbol()
         {
@@ -21,12 +33,24 @@ using System;
         /// <summary>
         /// Returns true if this symbol is a namespace. If it is not a namespace, it must be a type.
         /// </summary>
-        public bool IsNamespace => Kind == SymbolKind.Namespace;
+        public bool IsNamespace
+        {
+            get
+            {
+                return Kind == SymbolKind.Namespace;
+            }
+        }
 
         /// <summary>
         /// Returns true if this symbols is a type. Equivalent to !IsNamespace.
         /// </summary>
-        public bool IsType => !IsNamespace;
+        public bool IsType
+        {
+            get
+            {
+                return !IsNamespace;
+            }
+        }
 
         /// <summary>
         /// Returns true if this symbol is "virtual", has an implementation, and does not override a
@@ -36,7 +60,13 @@ using System;
         /// <returns>
         /// Always returns false.
         /// </returns>
-        public sealed override bool IsVirtual => false;
+        public sealed override bool IsVirtual
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         /// <summary>
         /// Returns true if this symbol was declared to override a base class member; i.e., declared
@@ -46,7 +76,13 @@ using System;
         /// <returns>
         /// Always returns false.
         /// </returns>
-        public sealed override bool IsOverride => false;
+        public sealed override bool IsOverride
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         /// <summary>
         /// Returns true if this symbol has external implementation; i.e., declared with the 
@@ -55,7 +91,13 @@ using System;
         /// <returns>
         /// Always returns false.
         /// </returns>
-        public sealed override bool IsExtern => false;
+        public sealed override bool IsExtern
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         /// <summary>
         /// Get all the members of this symbol.
@@ -63,7 +105,21 @@ using System;
         /// <returns>An ImmutableArray containing all the members of this symbol. If this symbol has no members,
         /// returns an empty ImmutableArray. Never returns null.</returns>
         public abstract ImmutableArray<Symbol> GetMembers();
-        
+
+        /// <summary>
+        /// Get all the members of this symbol. The members may not be in a particular order, and the order
+        /// may not be stable from call-to-call.
+        /// </summary>
+        /// <returns>An ImmutableArray containing all the members of this symbol. If this symbol has no members,
+        /// returns an empty ImmutableArray. Never returns null.</returns>
+        internal virtual ImmutableArray<Symbol> GetMembersUnordered()
+        {
+            // Default implementation is to use ordered version. When performance indicates, we specialize to have
+            // separate implementation.
+
+            return GetMembers().ConditionallyDeOrder();
+        }
+
         /// <summary>
         /// Get all the members of this symbol that have a particular name.
         /// </summary>
@@ -72,11 +128,18 @@ using System;
         public abstract ImmutableArray<Symbol> GetMembers(string name);
 
         /// <summary>
-        /// Gets all the members with particular PHP name visible in PHP scope.
+        /// Get all the members of this symbol that are types. The members may not be in a particular order, and the order
+        /// may not be stable from call-to-call.
         /// </summary>
-        /// <param name="name">The case-insensitive name of the symbol (method, field, constant).</param>
-        /// <returns>An ImmutableArray containing all the members with given name.</returns>
-        public abstract ImmutableArray<Symbol> GetMembersByPhpName(string name);
+        /// <returns>An ImmutableArray containing all the types that are members of this symbol. If this symbol has no type members,
+        /// returns an empty ImmutableArray. Never returns null.</returns>
+        internal virtual ImmutableArray<NamedTypeSymbol> GetTypeMembersUnordered()
+        {
+            // Default implementation is to use ordered version. When performance indicates, we specialize to have
+            // separate implementation.
+
+            return GetTypeMembers().ConditionallyDeOrder();
+        }
 
         /// <summary>
         /// Get all the members of this symbol that are types.
@@ -103,48 +166,64 @@ using System;
         {
             // default implementation does a post-filter. We can override this if its a performance burden, but 
             // experience is that it won't be.
-
-            var result = GetTypeMembers(name);
-            if (arity >= 0)
-            {
-                result = result.WhereAsArray(type => type.Arity == arity);
-            }
-
-            return result;
+            return GetTypeMembers(name).WhereAsArray((t, arity) => t.Arity == arity, arity);
         }
 
         /// <summary>
-        /// Finds types or namespaces described by a qualified name.
+        /// Get a source type symbol for the given declaration syntax.
         /// </summary>
-        /// <param name="qualifiedName">Sequence of simple plain names.</param>
-        /// <returns>
-        /// A set of namespace or type symbols with given qualified name (might comprise of types with multiple generic arities), 
-        /// or an empty set if the member can't be found (the qualified name is ambiguous or the symbol doesn't exist).
-        /// </returns>
-        /// <remarks>
-        /// "C.D" matches C.D, C{T}.D, C{S,T}.D{U}, etc.
-        /// </remarks>
-        internal IEnumerable<NamespaceOrTypeSymbol> GetNamespaceOrTypeByQualifiedName(IEnumerable<string> qualifiedName)
+        /// <returns>Null if there is no matching declaration.</returns>
+        internal SourceNamedTypeSymbol? GetSourceTypeMember(TypeDeclarationSyntax syntax)
         {
-            NamespaceOrTypeSymbol namespaceOrType = this;
-            IEnumerable<NamespaceOrTypeSymbol> symbols = null;
-            foreach (string name in qualifiedName)
-            {
-                if (symbols != null)
-                {
-                    throw new NotImplementedException();
-                    //// there might be multiple types of different arity, prefer a non-generic type:
-                    //namespaceOrType = symbols.OfMinimalArity();
-                    //if ((object)namespaceOrType == null)
-                    //{
-                    //    return SpecializedCollections.EmptyEnumerable<NamespaceOrTypeSymbol>();
-                    //}
-                }
+            return GetSourceTypeMember(syntax.Identifier.ValueText, syntax.Arity, syntax.Kind(), syntax);
+        }
 
-                symbols = namespaceOrType.GetMembers(name).OfType<NamespaceOrTypeSymbol>();
+        /// <summary>
+        /// Get a source type symbol for the given declaration syntax.
+        /// </summary>
+        /// <returns>Null if there is no matching declaration.</returns>
+        internal SourceNamedTypeSymbol? GetSourceTypeMember(DelegateDeclarationSyntax syntax)
+        {
+            return GetSourceTypeMember(syntax.Identifier.ValueText, syntax.Arity, syntax.Kind(), syntax);
+        }
+
+        /// <summary>
+        /// Get a source type symbol of given name, arity and kind.  If a tree and syntax are provided, restrict the results
+        /// to those that are declared within the given syntax.
+        /// </summary>
+        /// <returns>Null if there is no matching declaration.</returns>
+        internal SourceNamedTypeSymbol? GetSourceTypeMember(
+            string name,
+            int arity,
+            SyntaxKind kind,
+            CSharpSyntaxNode syntax)
+        {
+            TypeKind typeKind = kind.ToDeclarationKind().ToTypeKind();
+
+            foreach (var member in GetTypeMembers(name, arity))
+            {
+                var memberT = member as SourceNamedTypeSymbol;
+                if ((object?)memberT != null && memberT.TypeKind == typeKind)
+                {
+                    if (syntax != null)
+                    {
+                        foreach (var loc in memberT.Locations)
+                        {
+                            if (loc.IsInSource && loc.SourceTree == syntax.SyntaxTree && syntax.Span.Contains(loc.SourceSpan))
+                            {
+                                return memberT;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return memberT;
+                    }
+                }
             }
 
-            return symbols;
+            // None found.
+            return null;
         }
 
         /// <summary>
@@ -168,12 +247,12 @@ using System;
                 return new MissingMetadataTypeSymbol.Nested((NamedTypeSymbol)scope, ref emittedTypeName);
             }
 
-            NamedTypeSymbol namedType = null;
+            NamedTypeSymbol? namedType = null;
 
             ImmutableArray<NamedTypeSymbol> namespaceOrTypeMembers;
             bool isTopLevel = scope.IsNamespace;
 
-            //Debug.Assert(!isTopLevel || scope.ToDisplayString(SymbolDisplayFormat.QualifiedNameOnlyFormat) == emittedTypeName.NamespaceName);
+            Debug.Assert(!isTopLevel || scope.ToDisplayString(SymbolDisplayFormat.QualifiedNameOnlyFormat) == emittedTypeName.NamespaceName);
 
             if (emittedTypeName.IsMangled)
             {
@@ -182,15 +261,13 @@ using System;
                 if (emittedTypeName.ForcedArity == -1 || emittedTypeName.ForcedArity == emittedTypeName.InferredArity)
                 {
                     // Let's handle mangling case first.
-                    namespaceOrTypeMembers = scope.Kind == SymbolKind.NamedType // we don't have proper namese symbols, only global one so FullName it is
-                        ? scope.GetTypeMembers(emittedTypeName.UnmangledTypeName)
-                        : scope.GetTypeMembers(emittedTypeName.FullName);
+                    namespaceOrTypeMembers = scope.GetTypeMembers(emittedTypeName.UnmangledTypeName);
 
                     foreach (var named in namespaceOrTypeMembers)
                     {
                         if (emittedTypeName.InferredArity == named.Arity && named.MangleName)
                         {
-                            if ((object)namedType != null)
+                            if ((object?)namedType != null)
                             {
                                 namedType = null;
                                 break;
@@ -230,13 +307,13 @@ using System;
                 }
             }
 
-            namespaceOrTypeMembers = scope.GetTypeMembers(emittedTypeName.FullName);
+            namespaceOrTypeMembers = scope.GetTypeMembers(emittedTypeName.TypeName);
 
             foreach (var named in namespaceOrTypeMembers)
             {
                 if (!named.MangleName && (forcedArity == -1 || forcedArity == named.Arity))
                 {
-                    if ((object)namedType != null)
+                    if ((object?)namedType != null)
                     {
                         namedType = null;
                         break;
@@ -246,50 +323,53 @@ using System;
                 }
             }
 
-            Done:
-            if ((object)namedType == null)
+Done:
+            if ((object?)namedType == null)
             {
-                return new MissingMetadataTypeSymbol(emittedTypeName.FullName, emittedTypeName.ForcedArity, emittedTypeName.IsMangled);
-                //if (isTopLevel)
-                //{
-                //    return new MissingMetadataTypeSymbol.TopLevel(scope.ContainingModule, ref emittedTypeName);
-                //}
-                //else
-                //{
-                //    return new MissingMetadataTypeSymbol.Nested((NamedTypeSymbol)scope, ref emittedTypeName);
-                //}
+                if (isTopLevel)
+                {
+                    return new MissingMetadataTypeSymbol.TopLevel(scope.ContainingModule, ref emittedTypeName);
+                }
+                else
+                {
+                    return new MissingMetadataTypeSymbol.Nested((NamedTypeSymbol)scope, ref emittedTypeName);
+                }
             }
 
             return namedType;
         }
 
-        #region INamespaceOrTypeSymbol Members
-
-        ImmutableArray<ISymbol> INamespaceOrTypeSymbol.GetMembers()
+        /// <summary>
+        /// Finds types or namespaces described by a qualified name.
+        /// </summary>
+        /// <param name="qualifiedName">Sequence of simple plain names.</param>
+        /// <returns>
+        /// A set of namespace or type symbols with given qualified name (might comprise of types with multiple generic arities), 
+        /// or an empty set if the member can't be found (the qualified name is ambiguous or the symbol doesn't exist).
+        /// </returns>
+        /// <remarks>
+        /// "C.D" matches C.D, C{T}.D, C{S,T}.D{U}, etc.
+        /// </remarks>
+        internal IEnumerable<NamespaceOrTypeSymbol>? GetNamespaceOrTypeByQualifiedName(IEnumerable<string> qualifiedName)
         {
-            return StaticCast<ISymbol>.From(this.GetMembers());
-        }
+            NamespaceOrTypeSymbol namespaceOrType = this;
+            IEnumerable<NamespaceOrTypeSymbol>? symbols = null;
+            foreach (string name in qualifiedName)
+            {
+                if (symbols != null)
+                {
+                    // there might be multiple types of different arity, prefer a non-generic type:
+                    namespaceOrType = symbols.OfMinimalArity();
+                    if ((object)namespaceOrType == null)
+                    {
+                        return SpecializedCollections.EmptyEnumerable<NamespaceOrTypeSymbol>();
+                    }
+                }
 
-        ImmutableArray<ISymbol> INamespaceOrTypeSymbol.GetMembers(string name)
-        {
-            return StaticCast<ISymbol>.From(this.GetMembers(name));
-        }
+                symbols = namespaceOrType.GetMembers(name).OfType<NamespaceOrTypeSymbol>();
+            }
 
-        ImmutableArray<INamedTypeSymbol> INamespaceOrTypeSymbol.GetTypeMembers()
-        {
-            return StaticCast<INamedTypeSymbol>.From(this.GetTypeMembers());
+            return symbols;
         }
-
-        ImmutableArray<INamedTypeSymbol> INamespaceOrTypeSymbol.GetTypeMembers(string name)
-        {
-            return StaticCast<INamedTypeSymbol>.From(this.GetTypeMembers(name));
-        }
-
-        ImmutableArray<INamedTypeSymbol> INamespaceOrTypeSymbol.GetTypeMembers(string name, int arity)
-        {
-            return StaticCast<INamedTypeSymbol>.From(this.GetTypeMembers(name, arity));
-        }
-
-        #endregion
     }
 }
