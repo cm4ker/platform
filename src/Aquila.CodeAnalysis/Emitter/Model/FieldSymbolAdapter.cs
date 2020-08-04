@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cci = Microsoft.Cci;
 
-namespace Aquila.CodeAnalysis.Symbols
+namespace Pchp.CodeAnalysis.Symbols
 {
     internal partial class FieldSymbol :
         Cci.IFieldReference,
@@ -23,10 +23,8 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
 
-            TypeWithAnnotations fieldTypeWithAnnotations = this.TypeWithAnnotations;
-            var customModifiers = fieldTypeWithAnnotations.CustomModifiers;
-            
-            var isFixed = this.IsFixedSizeBuffer;
+            var customModifiers = this.CustomModifiers;
+            var isFixed = this.IsFixed;
             var implType = isFixed ? this.FixedImplementationType(moduleBeingBuilt) : this.Type;
             var type = moduleBeingBuilt.Translate(implType, context.SyntaxNodeOpt, context.Diagnostics);
 
@@ -297,7 +295,7 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 Debug.Assert(!this.IsDefinition);
-                return (FieldSymbol)this.OriginalDefinition;
+                return (Aquila.CodeAnalysis.Symbols.FieldSymbol)this.OriginalDefinition;
             }
         }
     }

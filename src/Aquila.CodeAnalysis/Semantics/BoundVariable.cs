@@ -31,7 +31,7 @@ using System.Collections.Immutable;
         /// <summary>
         /// Associated symbol, local or parameter.
         /// </summary>
-        internal abstract Symbol Symbol { get; }
+        internal abstract Aquila.CodeAnalysis.Symbols.Symbol Symbol { get; }
 
         /// <summary>
         /// Name of the variable.
@@ -69,7 +69,7 @@ using System.Collections.Immutable;
 
         ImmutableArray<IOperation> IVariableDeclaratorOperation.IgnoredArguments => ImmutableArray<IOperation>.Empty;
 
-        internal override Symbol Symbol => _symbol;
+        internal override Aquila.CodeAnalysis.Symbols.Symbol Symbol => _symbol;
 
         public override OperationKind Kind => OperationKind.VariableDeclaration;
 
@@ -88,7 +88,7 @@ using System.Collections.Immutable;
     {
         public override OperationKind Kind => OperationKind.VariableDeclaration;
 
-        internal override Symbol Symbol => null;
+        internal override Aquila.CodeAnalysis.Symbols.Symbol Symbol => null;
 
         IVariableInitializerOperation IVariableDeclaratorOperation.Initializer => null;
 
@@ -138,7 +138,7 @@ using System.Collections.Immutable;
 
         public IOperation Value => _initializer;
 
-        internal override Symbol Symbol => _symbol;
+        internal override Aquila.CodeAnalysis.Symbols.Symbol Symbol => _symbol;
 
         public override OperationKind Kind => OperationKind.ParameterInitializer;
 
@@ -170,7 +170,7 @@ using System.Collections.Immutable;
 
         public override string Name => VariableName.ThisVariableName.Value;
 
-        internal override Symbol Symbol => null;
+        internal override Aquila.CodeAnalysis.Symbols.Symbol Symbol => null;
 
         public override void Accept(OperationVisitor visitor)
             => visitor.DefaultVisit(this);
@@ -197,7 +197,7 @@ using System.Collections.Immutable;
 
         public override OperationKind Kind => OperationKind.None;
 
-        internal override Symbol Symbol
+        internal override Aquila.CodeAnalysis.Symbols.Symbol Symbol
         {
             get
             {

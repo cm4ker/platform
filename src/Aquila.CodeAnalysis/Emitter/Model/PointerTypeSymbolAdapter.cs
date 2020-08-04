@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Emit;
 using Pchp.CodeAnalysis.Emit;
 using Cci = Microsoft.Cci;
 
-namespace Aquila.CodeAnalysis.Symbols
+namespace Pchp.CodeAnalysis.Symbols
 {
     internal partial class PointerTypeSymbol : Cci.IPointerTypeReference
     {

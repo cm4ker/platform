@@ -10,9 +10,10 @@ using Pchp.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.CodeGen;
 using System.Diagnostics;
+using Aquila.CodeAnalysis.Symbols;
 using Microsoft.CodeAnalysis;
 
-namespace Aquila.CodeAnalysis.Symbols
+namespace Pchp.CodeAnalysis.Symbols
 {
     internal partial class ParameterSymbol :
         Cci.IParameterTypeInformation,

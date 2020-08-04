@@ -1,29 +1,26 @@
-﻿﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+﻿using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
 
- using System.Collections.Immutable;
-
- namespace Aquila.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
     internal sealed class ConstructedMethodSymbol : SubstitutedMethodSymbol
     {
-        private readonly ImmutableArray<TypeWithAnnotations> _typeArgumentsWithAnnotations;
+        private readonly ImmutableArray<TypeSymbol> _typeArguments;
 
-        internal ConstructedMethodSymbol(MethodSymbol constructedFrom, ImmutableArray<TypeWithAnnotations> typeArgumentsWithAnnotations)
+        internal ConstructedMethodSymbol(MethodSymbol constructedFrom, ImmutableArray<TypeSymbol> typeArguments)
             : base(containingSymbol: constructedFrom.ContainingType,
-                   map: new TypeMap(constructedFrom.ContainingType, ((MethodSymbol)constructedFrom.OriginalDefinition).TypeParameters, typeArgumentsWithAnnotations),
+                   map: new TypeMap(constructedFrom.ContainingType, ((MethodSymbol)constructedFrom.OriginalDefinition).TypeParameters, typeArguments.SelectAsArray(TypeMap.TypeSymbolAsTypeWithModifiers)),
                    originalDefinition: (MethodSymbol)constructedFrom.OriginalDefinition,
                    constructedFrom: constructedFrom)
         {
-            _typeArgumentsWithAnnotations = typeArgumentsWithAnnotations;
+            _typeArguments = typeArguments;
         }
 
-        public override ImmutableArray<TypeWithAnnotations> TypeArgumentsWithAnnotations
+        public override ImmutableArray<TypeSymbol> TypeArguments
         {
             get
             {
-                return _typeArgumentsWithAnnotations;
+                return _typeArguments;
             }
         }
     }

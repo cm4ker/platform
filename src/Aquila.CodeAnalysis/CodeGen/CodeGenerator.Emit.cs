@@ -3,8 +3,6 @@ using Microsoft.CodeAnalysis.CodeGen;
 using Pchp.CodeAnalysis.Emit;
 using Pchp.CodeAnalysis.FlowAnalysis;
 using Pchp.CodeAnalysis.Semantics;
-using Aquila.CodeAnalysis.Symbols;
-using Peachpie.CodeAnalysis.Symbols;
 using Peachpie.CodeAnalysis.Utilities;
 using System;
 using System.Collections.Generic;
@@ -12,10 +10,27 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata;
+using Aquila.CodeAnalysis.Errors;
+using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.Attributes;
+using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.Syntax;
 using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
-using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
+using Pchp.CodeAnalysis.Symbols;
+using ArrayTypeSymbol = Aquila.CodeAnalysis.Symbols.ArrayTypeSymbol;
+using FieldSymbol = Aquila.CodeAnalysis.Symbols.FieldSymbol;
+using MethodSymbol = Aquila.CodeAnalysis.Symbols.MethodSymbol;
+using NamedTypeSymbol = Aquila.CodeAnalysis.Symbols.NamedTypeSymbol;
+using ParameterSymbol = Aquila.CodeAnalysis.Symbols.ParameterSymbol;
+using PropertySymbol = Aquila.CodeAnalysis.Symbols.PropertySymbol;
+using SourceFunctionSymbol = Aquila.CodeAnalysis.Symbols.SourceFunctionSymbol;
+using SourceGlobalMethodSymbol = Aquila.CodeAnalysis.Symbols.SourceGlobalMethodSymbol;
+using SourceLambdaSymbol = Aquila.CodeAnalysis.Symbols.SourceLambdaSymbol;
+using SourceRoutineSymbol = Aquila.CodeAnalysis.Symbols.SourceRoutineSymbol;
+using SourceTypeSymbol = Aquila.CodeAnalysis.Symbols.SourceTypeSymbol;
 
 namespace Pchp.CodeAnalysis.CodeGen
 {
@@ -1520,7 +1535,7 @@ namespace Pchp.CodeAnalysis.CodeGen
                     case ImportValueAttributeData.ValueSpec.CallerArgs:
                         //Debug.Assert(p.Type.IsSZArray() && ((ArrayTypeSymbol)p.Type).ElementType.Is_PhpValue()); // PhpValue[]
                         //return Emit_ArgsArray(CoreTypes.PhpValue);     // PhpValue[]
-                        if ((Symbol)FunctionArgsArray?.Type == p.Type)
+                        if ((Aquila.CodeAnalysis.Symbols.Symbol)FunctionArgsArray?.Type == p.Type)
                         {
                             _il.EmitLocalLoad(FunctionArgsArray);
                             return p.Type;
@@ -2394,7 +2409,7 @@ namespace Pchp.CodeAnalysis.CodeGen
             void EmitLoadArgument(CodeGenerator cg, ParameterSymbol targetp)
             {
                 Debug.Assert(TmpLocal != null);
-                Debug.Assert(targetp.Type == (Symbol)TmpLocal.Type);
+                Debug.Assert(targetp.Type == (Aquila.CodeAnalysis.Symbols.Symbol)TmpLocal.Type);
 
                 if (targetp.RefKind != RefKind.Out)
                 {

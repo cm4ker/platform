@@ -261,7 +261,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         private readonly List<IBoundTypeRef>/*!*/_typeRefs = new List<IBoundTypeRef>();
 
         /// <summary>Corresponding compilation object. Cannot be <c>null</c>.</summary>
-        private readonly PhpCompilation _compilation;
+        private readonly Aquila.CodeAnalysis.Symbols.PhpCompilation _compilation;
 
         internal BoundTypeRefFactory BoundTypeRefFactory => _compilation.TypeRefFactory;
 
@@ -288,11 +288,11 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
         #region Initialization
 
-        internal TypeRefContext(PhpCompilation compilation, SourceTypeSymbol selfType)
+        internal TypeRefContext(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, SourceTypeSymbol selfType)
             : this(compilation, selfType, thisType: selfType)
         { }
 
-        internal TypeRefContext(PhpCompilation compilation, SourceTypeSymbol selfType, SourceTypeSymbol thisType)
+        internal TypeRefContext(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, SourceTypeSymbol selfType, SourceTypeSymbol thisType)
         {
             _compilation = compilation ?? throw ExceptionUtilities.ArgumentNull(nameof(compilation));
             _selfType = selfType;

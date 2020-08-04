@@ -1,31 +1,17 @@
-﻿﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics;
+using Microsoft.CodeAnalysis;
 
- using System.Collections.Generic;
- using System.Collections.Immutable;
- using System.Diagnostics;
- using Microsoft.CodeAnalysis;
- using Microsoft.CodeAnalysis.PooledObjects;
- using Microsoft.CodeAnalysis.Symbols;
-
- namespace Aquila.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
+
     /// <summary>
     /// Represents a namespace.
     /// </summary>
-    internal abstract partial class NamespaceSymbol : NamespaceOrTypeSymbol, INamespaceSymbolInternal
+    internal abstract partial class NamespaceSymbol : NamespaceOrTypeSymbol, INamespaceSymbol
     {
-        // PERF: initialization of the following fields will allocate, so we make them lazy
-        private ImmutableArray<NamedTypeSymbol> _lazyTypesMightContainExtensionMethods;
-        private string _lazyQualifiedName;
-
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // Changes to the public interface of this class should remain synchronized with the VB version.
-        // Do not make any changes to the public interface without making the corresponding change
-        // to the VB version.
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
         /// <summary>
         /// Get all the members of this symbol that are namespaces.
         /// </summary>
@@ -49,25 +35,32 @@
             }
         }
 
-        internal abstract NamespaceExtent Extent { get; }
-
         /// <summary>
         /// The kind of namespace: Module, Assembly or Compilation.
         /// Module namespaces contain only members from the containing module that share the same namespace name.
         /// Assembly namespaces contain members for all modules in the containing assembly that share the same namespace name.
         /// Compilation namespaces contain all members, from source or referenced metadata (assemblies and modules) that share the same namespace name.
         /// </summary>
-        public NamespaceKind NamespaceKind
+        public virtual NamespaceKind NamespaceKind
         {
-            get { return this.Extent.Kind; }
+            get
+            {
+                throw new NotSupportedException();
+            }
         }
 
         /// <summary>
         /// The containing compilation for compilation namespaces.
         /// </summary>
-        public CSharpCompilation ContainingCompilation
+        public virtual PhpCompilation ContainingCompilation
         {
-            get { return this.NamespaceKind == NamespaceKind.Compilation ? this.Extent.Compilation : null; }
+            get
+            {
+                if (this.NamespaceKind == NamespaceKind.Compilation)
+                    throw new NotSupportedException();
+
+                return null;
+            }
         }
 
         /// <summary>
@@ -84,27 +77,20 @@
             }
         }
 
-        public sealed override NamedTypeSymbol ContainingType
-        {
-            get
-            {
-                return null;
-            }
-        }
+        public sealed override NamedTypeSymbol ContainingType => null;
 
         /// <summary>
         /// Containing assembly.
         /// </summary>
         public abstract override AssemblySymbol ContainingAssembly { get; }
 
-        internal override ModuleSymbol ContainingModule
+        internal override IModuleSymbol ContainingModule
         {
             get
             {
-                var extent = this.Extent;
-                if (extent.Kind == NamespaceKind.Module)
+                if (NamespaceKind == NamespaceKind.Module)
                 {
-                    return extent.Module;
+                    throw new NotSupportedException();
                 }
 
                 return null;
@@ -114,13 +100,7 @@
         /// <summary>
         /// Gets the kind of this symbol.
         /// </summary>
-        public sealed override SymbolKind Kind
-        {
-            get
-            {
-                return SymbolKind.Namespace;
-            }
-        }
+        public sealed override SymbolKind Kind => SymbolKind.Namespace;
 
         public override sealed bool IsImplicitlyDeclared
         {
@@ -128,24 +108,6 @@
             {
                 return this.IsGlobalNamespace;
             }
-        }
-
-        /// <summary>
-        /// Implements visitor pattern.
-        /// </summary>
-        internal override TResult Accept<TArgument, TResult>(CSharpSymbolVisitor<TArgument, TResult> visitor, TArgument argument)
-        {
-            return visitor.VisitNamespace(this, argument);
-        }
-
-        public override void Accept(CSharpSymbolVisitor visitor)
-        {
-            visitor.VisitNamespace(this);
-        }
-
-        public override TResult Accept<TResult>(CSharpSymbolVisitor<TResult> visitor)
-        {
-            return visitor.VisitNamespace(this);
         }
 
         // Only the compiler can create namespace symbols.
@@ -157,39 +119,20 @@
         /// Get this accessibility that was declared on this symbol. For symbols that do not have
         /// accessibility declared on them, returns NotApplicable.
         /// </summary>
-        public sealed override Accessibility DeclaredAccessibility
-        {
-            // C# spec 3.5.1: Namespaces implicitly have public declared accessibility.
-            get
-            {
-                return Accessibility.Public;
-            }
-        }
+        public sealed override Accessibility DeclaredAccessibility => Accessibility.Public;
 
         /// <summary>
         /// Returns true if this symbol is "static"; i.e., declared with the "static" modifier or
         /// implicitly static.
         /// </summary>
-        public sealed override bool IsStatic
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public sealed override bool IsStatic => true;
 
         /// <summary>
         /// Returns true if this symbol was declared as requiring an override; i.e., declared with
         /// the "abstract" modifier. Also returns true on a type declared as "abstract", all
         /// interface types, and members of interface types.
         /// </summary>
-        public sealed override bool IsAbstract
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public sealed override bool IsAbstract => false;
 
         /// <summary>
         /// Returns true if this symbol was declared to override a base class member and was also
@@ -197,22 +140,13 @@
         /// types that do not allow a derived class (declared with "sealed" or "static" or "struct"
         /// or "enum" or "delegate").
         /// </summary>
-        public sealed override bool IsSealed
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public sealed override bool IsSealed => false;
 
         /// <summary>
         /// Returns data decoded from Obsolete attribute or null if there is no Obsolete attribute.
         /// This property returns ObsoleteAttributeData.Uninitialized if attribute arguments haven't been decoded yet.
         /// </summary>
-        internal sealed override ObsoleteAttributeData ObsoleteAttributeData
-        {
-            get { return null; }
-        }
+        internal sealed override ObsoleteAttributeData ObsoleteAttributeData => null;
 
         /// <summary>
         /// Returns an implicit type symbol for this namespace or null if there is none. This type
@@ -222,14 +156,16 @@
         {
             get
             {
-                var types = this.GetTypeMembers(TypeSymbol.ImplicitTypeName);
-                if (types.Length == 0)
-                {
-                    return null;
-                }
+                throw new NotImplementedException();
 
-                Debug.Assert(types.Length == 1);
-                return types[0];
+                //var types = this.GetTypeMembers(TypeSymbol.ImplicitTypeName);
+                //if (types.Length == 0)
+                //{
+                //    return null;
+                //}
+
+                //Debug.Assert(types.Length == 1);
+                //return types[0];
             }
         }
 
@@ -292,92 +228,58 @@
             return null;
         }
 
-        internal NamespaceSymbol GetNestedNamespace(NameSyntax name)
+        #region INamespaceSymbol Members
+
+        IEnumerable<INamespaceOrTypeSymbol> INamespaceSymbol.GetMembers()
         {
-            switch (name.Kind())
-            {
-                case SyntaxKind.GenericName: // DeclarationTreeBuilder.VisitNamespace uses the PlainName, even for generic names
-                case SyntaxKind.IdentifierName:
-                    return this.GetNestedNamespace(((SimpleNameSyntax)name).Identifier.ValueText);
-
-                case SyntaxKind.QualifiedName:
-                    var qn = (QualifiedNameSyntax)name;
-                    var leftNs = this.GetNestedNamespace(qn.Left);
-                    if ((object)leftNs != null)
-                    {
-                        return leftNs.GetNestedNamespace(qn.Right);
-                    }
-
-                    break;
-
-                case SyntaxKind.AliasQualifiedName:
-                    // This is an error scenario, but we should still handle it.
-                    // We recover in the same way as DeclarationTreeBuilder.VisitNamespaceDeclaration.
-                    return this.GetNestedNamespace(name.GetUnqualifiedName().Identifier.ValueText);
-            }
-
-            return null;
+            return this.GetMembers().OfType<INamespaceOrTypeSymbol>();
         }
 
-        private ImmutableArray<NamedTypeSymbol> TypesMightContainExtensionMethods
+        IEnumerable<INamespaceOrTypeSymbol> INamespaceSymbol.GetMembers(string name)
+        {
+            return this.GetMembers(name).OfType<INamespaceOrTypeSymbol>();
+        }
+
+        IEnumerable<INamespaceSymbol> INamespaceSymbol.GetNamespaceMembers()
+        {
+            return this.GetNamespaceMembers();
+        }
+
+        NamespaceKind INamespaceSymbol.NamespaceKind
+        {
+            get { return this.NamespaceKind; }
+        }
+
+        Compilation INamespaceSymbol.ContainingCompilation
         {
             get
             {
-                var typesWithExtensionMethods = this._lazyTypesMightContainExtensionMethods;
-                if (typesWithExtensionMethods.IsDefault)
-                {
-                    this._lazyTypesMightContainExtensionMethods = this.GetTypeMembersUnordered().WhereAsArray(t => t.MightContainExtensionMethods);
-                    typesWithExtensionMethods = this._lazyTypesMightContainExtensionMethods;
-                }
-
-                return typesWithExtensionMethods;
+                return this.ContainingCompilation;
             }
         }
 
-
-        /// <summary>
-        /// Add all extension methods in this namespace to the given list. If name or arity
-        /// or both are provided, only those extension methods that match are included.
-        /// </summary>
-        /// <param name="methods">Methods list</param>
-        /// <param name="nameOpt">Optional method name</param>
-        /// <param name="arity">Method arity</param>
-        /// <param name="options">Lookup options</param>
-        internal virtual void GetExtensionMethods(ArrayBuilder<MethodSymbol> methods, string nameOpt, int arity, LookupOptions options)
-        {
-            var assembly = this.ContainingAssembly;
-
-            // Only MergedAssemblySymbol should have a null ContainingAssembly
-            // and MergedAssemblySymbol overrides GetExtensionMethods.
-            Debug.Assert((object)assembly != null);
-
-            if (!assembly.MightContainExtensionMethods)
-            {
-                return;
-            }
-
-            var typesWithExtensionMethods = this.TypesMightContainExtensionMethods;
-
-            foreach (var type in typesWithExtensionMethods)
-            {
-                type.DoGetExtensionMethods(methods, nameOpt, arity, options);
-            }
-        }
-
-        internal string QualifiedName
+        ImmutableArray<INamespaceSymbol> INamespaceSymbol.ConstituentNamespaces
         {
             get
             {
-                return _lazyQualifiedName ??
-                    (_lazyQualifiedName = this.ToDisplayString(SymbolDisplayFormat.QualifiedNameOnlyFormat));
+                return StaticCast<INamespaceSymbol>.From(this.ConstituentNamespaces);
             }
         }
 
-        protected sealed override ISymbol CreateISymbol()
+        #endregion
+
+        #region ISymbol Members
+
+        public override void Accept(SymbolVisitor visitor)
         {
-            return new PublicModel.NamespaceSymbol(this);
+            visitor.VisitNamespace(this);
         }
 
-        bool INamespaceSymbolInternal.IsGlobalNamespace => this.IsGlobalNamespace;
+        public override TResult Accept<TResult>(SymbolVisitor<TResult> visitor)
+        {
+            return visitor.VisitNamespace(this);
+        }
+
+        #endregion
     }
 }

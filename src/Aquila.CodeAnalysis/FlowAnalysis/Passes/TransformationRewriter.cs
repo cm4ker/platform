@@ -22,7 +22,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
         private readonly SourceRoutineSymbol _routine;
         private readonly HashSet<BoundCopyValue> _unnecessaryCopies;    // Possibly null if all are necessary
 
-        protected PhpCompilation DeclaringCompilation => _routine.DeclaringCompilation;
+        protected Aquila.CodeAnalysis.Symbols.PhpCompilation DeclaringCompilation => _routine.DeclaringCompilation;
         protected BoundTypeRefFactory BoundTypeRefFactory => DeclaringCompilation.TypeRefFactory;
 
         public int TransformationCount { get; private set; }

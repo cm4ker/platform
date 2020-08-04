@@ -1,18 +1,11 @@
-﻿﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+﻿using System;
+using System.Collections.Immutable;
+using System.Diagnostics;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.PooledObjects;
+using Roslyn.Utilities;
 
-#nullable enable
-
- using System;
- using System.Collections.Generic;
- using System.Collections.Immutable;
- using System.Diagnostics;
- using Microsoft.CodeAnalysis;
- using Microsoft.CodeAnalysis.PooledObjects;
- using Roslyn.Utilities;
-
- namespace Aquila.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
     internal static partial class TypeSymbolExtensions
     {
@@ -39,39 +32,35 @@
             var typeArguments = UnboundArgumentErrorTypeSymbol.CreateTypeArguments(
                 constructedFrom.TypeParameters,
                 n,
-                new CSDiagnosticInfo(ErrorCode.ERR_UnexpectedUnboundGenericName));
+                null);// new CSDiagnosticInfo(ErrorCode.ERR_UnexpectedUnboundGenericName));
             return constructedFrom.Construct(typeArguments, unbound: true);
         }
     }
 
     internal sealed class UnboundArgumentErrorTypeSymbol : ErrorTypeSymbol
     {
-        public static ImmutableArray<TypeWithAnnotations> CreateTypeArguments(ImmutableArray<TypeParameterSymbol> typeParameters, int n, DiagnosticInfo errorInfo)
+        public static ImmutableArray<TypeWithModifiers> CreateTypeArguments(ImmutableArray<TypeParameterSymbol> typeParameters, int n, DiagnosticInfo errorInfo)
         {
-            var result = ArrayBuilder<TypeWithAnnotations>.GetInstance();
+            var result = ArrayBuilder<TypeWithModifiers>.GetInstance();
             for (int i = 0; i < n; i++)
             {
                 string name = (i < typeParameters.Length) ? typeParameters[i].Name : string.Empty;
-                result.Add(TypeWithAnnotations.Create(new UnboundArgumentErrorTypeSymbol(name, errorInfo)));
+                result.Add(new TypeWithModifiers(new UnboundArgumentErrorTypeSymbol(name, errorInfo)));
             }
             return result.ToImmutableAndFree();
         }
 
-        public static readonly ErrorTypeSymbol Instance = new UnboundArgumentErrorTypeSymbol(string.Empty, new CSDiagnosticInfo(ErrorCode.ERR_UnexpectedUnboundGenericName));
+        public static readonly ErrorTypeSymbol Instance = new UnboundArgumentErrorTypeSymbol(string.Empty, null/*new CSDiagnosticInfo(ErrorCode.ERR_UnexpectedUnboundGenericName)*/);
 
         private readonly string _name;
         private readonly DiagnosticInfo _errorInfo;
 
-        private UnboundArgumentErrorTypeSymbol(string name, DiagnosticInfo errorInfo, Tuples.NamedTypeSymbol.TupleExtraData? tupleData = null)
-            : base(tupleData)
+        public override CandidateReason CandidateReason => CandidateReason.None;
+
+        private UnboundArgumentErrorTypeSymbol(string name, DiagnosticInfo errorInfo)
         {
             _name = name;
             _errorInfo = errorInfo;
-        }
-
-        protected override NamedTypeSymbol WithTupleDataCore(Tuples.NamedTypeSymbol.TupleExtraData newData)
-        {
-            return new UnboundArgumentErrorTypeSymbol(_name, _errorInfo, newData);
         }
 
         public override string Name
@@ -91,25 +80,23 @@
             }
         }
 
-        internal override DiagnosticInfo ErrorInfo
-        {
-            get
-            {
-                return _errorInfo;
-            }
-        }
+        //internal override DiagnosticInfo ErrorInfo
+        //{
+        //    get
+        //    {
+        //        return _errorInfo;
+        //    }
+        //}
 
-        internal override bool Equals(TypeSymbol t2, TypeCompareKind comparison, IReadOnlyDictionary<TypeParameterSymbol, bool>? isValueTypeOverrideOpt = null)
+        internal override bool Equals(TypeSymbol t2, bool ignoreCustomModifiersAndArraySizesAndLowerBounds, bool ignoreDynamic)
         {
-            Debug.Assert(isValueTypeOverrideOpt == null);
-
             if ((object)t2 == (object)this)
             {
                 return true;
             }
 
-            UnboundArgumentErrorTypeSymbol? other = t2 as UnboundArgumentErrorTypeSymbol;
-            return (object?)other != null && string.Equals(other._name, _name, StringComparison.Ordinal) && object.Equals(other._errorInfo, _errorInfo);
+            UnboundArgumentErrorTypeSymbol other = t2 as UnboundArgumentErrorTypeSymbol;
+            return (object)other != null && string.Equals(other._name, _name, StringComparison.Ordinal) && object.Equals(other._errorInfo, _errorInfo);
         }
 
         public override int GetHashCode()

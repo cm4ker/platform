@@ -27,7 +27,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
 
         private bool CallsParentCtor { get; set; }
 
-        PhpCompilation DeclaringCompilation => _routine.DeclaringCompilation;
+        Aquila.CodeAnalysis.Symbols.PhpCompilation DeclaringCompilation => _routine.DeclaringCompilation;
 
         TypeRefContext TypeCtx => _routine.TypeRefContext;
 
@@ -867,7 +867,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
             }
         }
 
-        static string GetMemberNameForDiagnostic(Symbol target, bool isMemberName)
+        static string GetMemberNameForDiagnostic(Aquila.CodeAnalysis.Symbols.Symbol target, bool isMemberName)
         {
             string name = target.PhpName();
 
@@ -892,7 +892,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
             }
         }
 
-        void CheckObsoleteSymbol(LangElement syntax, Symbol target, bool isMemberCall)
+        void CheckObsoleteSymbol(LangElement syntax, Aquila.CodeAnalysis.Symbols.Symbol target, bool isMemberCall)
         {
             var obsolete = target?.ObsoleteAttributeData;
             if (obsolete != null)

@@ -2554,7 +2554,7 @@ namespace Pchp.CodeAnalysis.Semantics
 
         #region IVariableReference
 
-        Symbol IVariableReference.Symbol => null;
+        Aquila.CodeAnalysis.Symbols.Symbol IVariableReference.Symbol => null;
 
         TypeSymbol IVariableReference.Type => null; // throw new NotImplementedException();
 
@@ -4114,7 +4114,7 @@ namespace Pchp.CodeAnalysis.Semantics
 
         #region IBoundReference
 
-        Symbol IVariableReference.Symbol => null;
+        Aquila.CodeAnalysis.Symbols.Symbol IVariableReference.Symbol => null;
 
         TypeSymbol IVariableReference.Type => DeclaringCompilation.CoreTypes.PhpValue;
 

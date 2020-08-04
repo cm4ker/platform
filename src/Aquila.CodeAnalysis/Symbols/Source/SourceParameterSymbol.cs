@@ -1,268 +1,356 @@
-﻿﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Threading;
+using Aquila.CodeAnalysis.Symbols.Synthesized;
+using Microsoft.CodeAnalysis;
+using Pchp.CodeAnalysis;
+using Pchp.CodeAnalysis.Semantics;
 
- using System.Collections.Immutable;
- using System.Diagnostics;
- using System.Threading;
- using Aquila.CodeAnalysis.Symbols.Attributes;
- using Microsoft.CodeAnalysis;
-
- namespace Aquila.CodeAnalysis.Symbols.Source
+namespace Aquila.CodeAnalysis.Symbols.Source
 {
     /// <summary>
-    /// Base class for parameters can be referred to from source code.
+    /// Represents a PHP function parameter.
     /// </summary>
-    /// <remarks>
-    /// These parameters can potentially be targeted by an attribute specified in source code. 
-    /// As an optimization we distinguish simple parameters (no attributes, no modifiers, etc.) and complex parameters.
-    /// </remarks>
-    internal abstract class SourceParameterSymbol : SourceParameterSymbolBase
+    internal sealed class SourceParameterSymbol : ParameterSymbol
     {
-        protected SymbolCompletionState state;
-        protected readonly TypeWithAnnotations parameterType;
-        private readonly string _name;
-        private readonly ImmutableArray<Location> _locations;
-        private readonly RefKind _refKind;
+        readonly SourceRoutineSymbol _routine;
+        readonly FormalParam _syntax;
 
-        public static SourceParameterSymbol Create(
-            Binder context,
-            Symbol owner,
-            TypeWithAnnotations parameterType,
-            ParameterSyntax syntax,
-            RefKind refKind,
-            SyntaxToken identifier,
-            int ordinal,
-            bool isParams,
-            bool isExtensionMethodThis,
-            bool addRefReadOnlyModifier,
-            DiagnosticBag declarationDiagnostics)
+        /// <summary>
+        /// Index of the source parameter, relative to the first source parameter.
+        /// </summary>
+        readonly int _relindex;
+        readonly PHPDocBlock.ParamTag _ptagOpt;
+
+        internal PHPDocBlock.ParamTag PHPDocOpt => _ptagOpt;
+
+        TypeSymbol _lazyType;
+
+        /// <summary>
+        /// Optional. The parameter initializer expression i.e. bound <see cref="FormalParam.InitValue"/>.
+        /// </summary>
+        public override BoundExpression Initializer => _initializer;
+        readonly BoundExpression _initializer;
+
+        /// <summary>
+        /// Whether the parameter needs to be copied when passed by value.
+        /// Can be set to <c>false</c> by analysis (e.g. unused parameter or only delegation to another method).
+        /// </summary>
+        public bool CopyOnPass { get; set; } = true;
+
+        public override FieldSymbol DefaultValueField
         {
-            Debug.Assert(!(owner is LambdaSymbol)); // therefore we don't need to deal with discard parameters
-
-            var name = identifier.ValueText;
-            var locations = ImmutableArray.Create<Location>(new SourceLocation(identifier));
-
-            if (isParams)
+            get
             {
-                // touch the constructor in order to generate proper use-site diagnostics
-                Binder.ReportUseSiteDiagnosticForSynthesizedAttribute(context.Compilation,
-                    WellKnownMember.System_ParamArrayAttribute__ctor,
-                    declarationDiagnostics,
-                    identifier.Parent.GetLocation());
+                if (_lazyDefaultValueField == null && Initializer != null && ExplicitDefaultConstantValue == null)
+                {
+                    TypeSymbol fldtype; // type of the field
+                    
+                    if (Initializer is BoundArrayEx arr)
+                    {
+                        // special case: empty array
+                        if (arr.Items.Length == 0 && !_syntax.PassedByRef)
+                        {
+                            // OPTIMIZATION: reference the singleton field directly, the called routine is responsible to perform copy if necessary
+                            // parameter MUST NOT be `PassedByRef` https://github.com/peachpiecompiler/peachpie/issues/591
+                            // PhpArray.Empty
+                            return DeclaringCompilation.CoreMethods.PhpArray.Empty;
+                        }
+
+                        //   
+                        fldtype = DeclaringCompilation.CoreTypes.PhpArray;
+                    }
+                    else if (Initializer is BoundPseudoClassConst)
+                    {
+                        fldtype = DeclaringCompilation.GetSpecialType(SpecialType.System_String);
+                    }
+                    else
+                    {
+                        fldtype = DeclaringCompilation.CoreTypes.PhpValue;
+                    }
+
+                    // The construction of the default value may require a Context, cannot be created as a static singletong
+                    // Additionally; default values of REF parameter must be created every time from scratch! https://github.com/peachpiecompiler/peachpie/issues/591
+                    if (Initializer.RequiresContext ||
+                        (_syntax.PassedByRef && fldtype.IsReferenceType && fldtype.SpecialType != SpecialType.System_String))  // we can cache the default value even for Refs if it is an immutable value
+                    {
+                        // Func<Context, PhpValue>
+                        fldtype = DeclaringCompilation.GetWellKnownType(WellKnownType.System_Func_T2).Construct(
+                            DeclaringCompilation.CoreTypes.Context,
+                            DeclaringCompilation.CoreTypes.PhpValue);
+                    }
+
+                    // determine the field container:
+                    NamedTypeSymbol fieldcontainer = ContainingType; // by default in the containing class/trait/file
+                    string fieldname = $"<{ContainingSymbol.Name}.{Name}>_DefaultValue";
+
+                    //if (fieldcontainer.IsInterface)
+                    //{
+                    //    fieldcontainer = _routine.ContainingFile;
+                    //    fieldname = ContainingType.Name + "." + fieldname;
+                    //}
+
+                    // public static readonly T ..;
+                    var field = new SynthesizedFieldSymbol(
+                        fieldcontainer,
+                        fldtype,
+                        fieldname,
+                        accessibility: Accessibility.Public,
+                        isStatic: true, isReadOnly: true);
+
+                    //
+                    Interlocked.CompareExchange(ref _lazyDefaultValueField, field, null);
+                }
+                return _lazyDefaultValueField;
             }
-
-            ImmutableArray<CustomModifier> inModifiers = ParameterHelpers.ConditionallyCreateInModifiers(refKind, addRefReadOnlyModifier, context, declarationDiagnostics, syntax);
-
-            if (!inModifiers.IsDefaultOrEmpty)
-            {
-                return new SourceComplexParameterSymbolWithCustomModifiersPrecedingByRef(
-                    owner,
-                    ordinal,
-                    parameterType,
-                    refKind,
-                    inModifiers,
-                    name,
-                    locations,
-                    syntax.GetReference(),
-                    ConstantValue.Unset,
-                    isParams,
-                    isExtensionMethodThis);
-            }
-
-            if (!isParams &&
-                !isExtensionMethodThis &&
-                (syntax.Default == null) &&
-                (syntax.AttributeLists.Count == 0) &&
-                !owner.IsPartialMethod())
-            {
-                return new SourceSimpleParameterSymbol(owner, parameterType, ordinal, refKind, name, isDiscard: false, locations);
-            }
-
-            return new SourceComplexParameterSymbol(
-                owner,
-                ordinal,
-                parameterType,
-                refKind,
-                name,
-                locations,
-                syntax.GetReference(),
-                ConstantValue.Unset,
-                isParams,
-                isExtensionMethodThis);
         }
+        FieldSymbol _lazyDefaultValueField;
 
-        protected SourceParameterSymbol(
-            Symbol owner,
-            TypeWithAnnotations parameterType,
-            int ordinal,
-            RefKind refKind,
-            string name,
-            ImmutableArray<Location> locations)
-            : base(owner, ordinal)
+        public SourceParameterSymbol(SourceRoutineSymbol routine, FormalParam syntax, int relindex, PHPDocBlock.ParamTag ptagOpt)
         {
-#if DEBUG
-            foreach (var location in locations)
-            {
-                Debug.Assert(location != null);
-            }
-#endif
-            Debug.Assert((owner.Kind == SymbolKind.Method) || (owner.Kind == SymbolKind.Property));
-            this.parameterType = parameterType;
-            _refKind = refKind;
-            _name = name;
-            _locations = locations;
-        }
+            Contract.ThrowIfNull(routine);
+            Contract.ThrowIfNull(syntax);
+            Debug.Assert(relindex >= 0);
 
-        internal override ParameterSymbol WithCustomModifiersAndParams(TypeSymbol newType, ImmutableArray<CustomModifier> newCustomModifiers, ImmutableArray<CustomModifier> newRefCustomModifiers, bool newIsParams)
-        {
-            return WithCustomModifiersAndParamsCore(newType, newCustomModifiers, newRefCustomModifiers, newIsParams);
-        }
-
-        internal SourceParameterSymbol WithCustomModifiersAndParamsCore(TypeSymbol newType, ImmutableArray<CustomModifier> newCustomModifiers, ImmutableArray<CustomModifier> newRefCustomModifiers, bool newIsParams)
-        {
-            newType = CustomModifierUtils.CopyTypeCustomModifiers(newType, this.Type, this.ContainingAssembly);
-
-            TypeWithAnnotations newTypeWithModifiers = this.TypeWithAnnotations.WithTypeAndModifiers(newType, newCustomModifiers);
-
-            if (newRefCustomModifiers.IsEmpty)
-            {
-                return new SourceComplexParameterSymbol(
-                    this.ContainingSymbol,
-                    this.Ordinal,
-                    newTypeWithModifiers,
-                    _refKind,
-                    _name,
-                    _locations,
-                    this.SyntaxReference,
-                    this.ExplicitDefaultConstantValue,
-                    newIsParams,
-                    this.IsExtensionMethodThis);
-            }
-
-            // Local functions should never have custom modifiers
-            Debug.Assert(!(ContainingSymbol is LocalFunctionSymbol));
-
-            return new SourceComplexParameterSymbolWithCustomModifiersPrecedingByRef(
-                this.ContainingSymbol,
-                this.Ordinal,
-                newTypeWithModifiers,
-                _refKind,
-                newRefCustomModifiers,
-                _name,
-                _locations,
-                this.SyntaxReference,
-                this.ExplicitDefaultConstantValue,
-                newIsParams,
-                this.IsExtensionMethodThis);
-        }
-
-        internal sealed override bool RequiresCompletion
-        {
-            get { return true; }
-        }
-
-        internal sealed override bool HasComplete(CompletionPart part)
-        {
-            return state.HasComplete(part);
-        }
-
-        internal override void ForceComplete(SourceLocation locationOpt, CancellationToken cancellationToken)
-        {
-            state.DefaultForceComplete(this, cancellationToken);
+            _routine = routine;
+            _syntax = syntax;
+            _relindex = relindex;
+            _ptagOpt = ptagOpt;
+            _initializer = (syntax.InitValue != null)
+                ? new SemanticsBinder(DeclaringCompilation, routine.ContainingFile.SyntaxTree, locals: null, routine: null, self: routine.ContainingType as SourceTypeSymbol)
+                    .BindWholeExpression(syntax.InitValue, BoundAccess.Read)
+                    .SingleBoundElement()
+                : null;
         }
 
         /// <summary>
-        /// True if the parameter is marked by <see cref="System.Runtime.InteropServices.OptionalAttribute"/>.
+        /// Containing routine.
         /// </summary>
-        internal abstract bool HasOptionalAttribute { get; }
+        internal SourceRoutineSymbol Routine => _routine;
+
+        public override Symbol ContainingSymbol => _routine;
+
+        internal override PhpCompilation DeclaringCompilation => _routine.DeclaringCompilation;
+
+        internal override IModuleSymbol ContainingModule => _routine.ContainingModule;
+
+        public override NamedTypeSymbol ContainingType => _routine.ContainingType;
+
+        public override string Name => _syntax.Name.Name.Value;
+
+        public override bool IsThis => false;
+
+        public FormalParam Syntax => _syntax;
 
         /// <summary>
-        /// True if the parameter has default argument syntax.
+        /// The parameter is a constructor property.
         /// </summary>
-        internal abstract bool HasDefaultArgumentSyntax { get; }
+        public bool IsConstructorProperty => _syntax.IsConstructorProperty;
 
-        internal abstract SyntaxList<AttributeListSyntax> AttributeDeclarationList { get; }
+        internal sealed override TypeSymbol Type
+        {
+            get
+            {
+                if (_lazyType == null)
+                {
+                    Interlocked.CompareExchange(ref _lazyType, ResolveType(), null);
+                }
 
-        internal abstract CustomAttributesBag<CSharpAttributeData> GetAttributesBag();
+                return _lazyType;
+            }
+        }
 
         /// <summary>
-        /// Gets the attributes applied on this symbol.
-        /// Returns an empty array if there are no attributes.
+        /// Gets value indicating that if the parameters type is a reference type,
+        /// it is not allowed to pass a null value.
         /// </summary>
-        public sealed override ImmutableArray<CSharpAttributeData> GetAttributes()
+        public override bool HasNotNull
         {
-            return this.GetAttributesBag().Attributes;
+            get
+            {
+                // when providing type hint, only allow null if explicitly specified:
+                if (_syntax.TypeHint == null || _syntax.TypeHint is NullableTypeRef || DefaultsToNull)
+                {
+                    return false;
+                }
+
+                //
+                return true;
+            }
         }
+
+        internal bool DefaultsToNull => _initializer != null && _initializer.ConstantValue.IsNull();
 
         /// <summary>
-        /// The declaration diagnostics for a parameter depend on the containing symbol.
-        /// For instance, if the containing symbol is a method the declaration diagnostics
-        /// go on the compilation, but if it is a local function it is part of the local
-        /// function's declaration diagnostics.
+        /// Gets value indicating whether the parameter has been replaced with <see cref="SourceRoutineSymbol.VarargsParam"/>.
         /// </summary>
-        internal override void AddDeclarationDiagnostics(DiagnosticBag diagnostics)
-            => ContainingSymbol.AddDeclarationDiagnostics(diagnostics);
+        internal bool IsFake => (Routine.GetParamsParameter() != null && Routine.GetParamsParameter() != this && Ordinal >= Routine.GetParamsParameter().Ordinal);
 
-        internal abstract SyntaxReference SyntaxReference { get; }
+        TypeSymbol ResolveType()
+        {
+            if (IsThis)
+            {
+                // <this> parameter
+                if (_routine is SourceGlobalMethodSymbol)
+                {
+                    // "AnyType" in case of $this in global scope
+                    return DeclaringCompilation.CoreTypes.PhpValue;
+                }
 
-        internal abstract bool IsExtensionMethodThis { get; }
+                return ContainingType;
+            }
 
-        public sealed override RefKind RefKind
+            //return DeclaringCompilation.GetTypeFromTypeRef(_routine, _routine.ControlFlowGraph.GetParamTypeMask(this));
+
+            // determine parameter type from the signature:
+
+            // aliased parameter:
+            if (_syntax.IsOut || _syntax.PassedByRef)
+            {
+                if (_syntax.IsVariadic)
+                {
+                    // PhpAlias[]
+                    return ArrayTypeSymbol.CreateSZArray(this.ContainingAssembly, DeclaringCompilation.CoreTypes.PhpAlias);
+                }
+                else
+                {
+                    // PhpAlias
+                    return DeclaringCompilation.CoreTypes.PhpAlias;
+                }
+            }
+
+            // 1. specified type hint
+            var typeHint = _syntax.TypeHint;
+            if (typeHint is ReservedTypeRef rtref)
+            {
+                // workaround for https://github.com/peachpiecompiler/peachpie/issues/281
+                // remove once it gets updated in parser
+                if (rtref.Type == ReservedTypeRef.ReservedType.self) return _routine.ContainingType; // self
+            }
+            var result = DeclaringCompilation.GetTypeFromTypeRef(typeHint, _routine.ContainingType as SourceTypeSymbol, nullable: DefaultsToNull);
+
+            // 2. optionally type specified in PHPDoc
+            if (result == null && _ptagOpt != null && _ptagOpt.TypeNamesArray.Length != 0
+                && (DeclaringCompilation.Options.PhpDocTypes & PhpDocTypes.ParameterTypes) != 0)
+            {
+                var typectx = _routine.TypeRefContext;
+                var tmask = Pchp.CodeAnalysis.FlowAnalysis.PHPDoc.GetTypeMask(typectx, _ptagOpt.TypeNamesArray, _routine.GetNamingContext());
+                if (!tmask.IsVoid && !tmask.IsAnyType)
+                {
+                    result = DeclaringCompilation.GetTypeFromTypeRef(typectx, tmask);
+                }
+            }
+
+            // 3 default:
+            if (result == null)
+            {
+                // TODO: use type from overriden method
+
+                result = DeclaringCompilation.CoreTypes.PhpValue;
+            }
+
+            // variadic (result[])
+            if (_syntax.IsVariadic)
+            {
+                result = ArrayTypeSymbol.CreateSZArray(this.ContainingAssembly, result);
+            }
+
+            //
+            return result;
+        }
+
+        public override RefKind RefKind
         {
             get
             {
-                return _refKind;
+                //if (_syntax.IsOut)
+                //    return RefKind.Out;
+
+                return RefKind.None;
             }
         }
 
-        public sealed override string Name
+        public override bool IsParams => _syntax.IsVariadic;
+
+        public override int Ordinal => _relindex + _routine.ImplicitParameters.Length;
+
+        /// <summary>
+        /// Zero-based index of the source parameter.
+        /// </summary>
+        public int ParameterIndex => _relindex;
+
+        public override ImmutableArray<Location> Locations
         {
             get
             {
-                return _name;
+                return ImmutableArray.Create(Location.Create(Routine.ContainingFile.SyntaxTree, _syntax.Name.Span.ToTextSpan()));
             }
         }
 
-        public sealed override ImmutableArray<Location> Locations
+        public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
         {
             get
             {
-                return _locations;
+                throw new NotImplementedException();
             }
         }
 
-        public sealed override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
+        internal override IEnumerable<AttributeData> GetCustomAttributesToEmit(CommonModuleCompilationState compilationState)
+        {
+            // [param]   
+            if (IsParams)
+            {
+                yield return DeclaringCompilation.CreateParamsAttribute();
+            }
+
+            // [NotNull]
+            if (HasNotNull && Type.IsReferenceType)
+            {
+                yield return DeclaringCompilation.CreateNotNullAttribute();
+            }
+
+            // [DefaultValue]
+            if (DefaultValueField != null)
+            {
+                yield return DeclaringCompilation.CreateDefaultValueAttribute(ContainingType, DefaultValueField);
+            }
+
+            //
+            yield break;
+        }
+
+        public override bool IsOptional => this.HasExplicitDefaultValue;
+
+        internal override ConstantValue ExplicitDefaultConstantValue
         {
             get
             {
-                return IsImplicitlyDeclared ?
-                    ImmutableArray<SyntaxReference>.Empty :
-                    GetDeclaringSyntaxReferenceHelper<ParameterSyntax>(_locations);
+                ConstantValue value = null;
+
+                if (Initializer != null)
+                {
+                    // NOTE: the constant does not have to have the exact same type as the parameter, it is up to the caller of the method to process DefaultValue and convert it if necessary
+
+                    value = Initializer.ConstantValue.ToConstantValueOrNull();
+                    if (value != null)
+                    {
+                        return value;
+                    }
+
+                    // NOTE: non-literal default values (like array()) must be handled by creating a ghost method overload calling this method:
+
+                    // Template:
+                    // foo($a = [], $b = [1, 2, 3]) =>
+                    // + foo($a, $b){ /* this routine */ }
+                    // + foo($a) => foo($a, [1, 2, 3])
+                    // + foo() => foo([], [1, 2, 3)
+                }
+
+                //
+                return value;
             }
         }
-
-        public sealed override TypeWithAnnotations TypeWithAnnotations
-        {
-            get
-            {
-                return this.parameterType;
-            }
-        }
-
-        public override bool IsImplicitlyDeclared
-        {
-            get
-            {
-                // Parameters of accessors are always synthesized. (e.g., parameter of indexer accessors).
-                // The non-synthesized accessors are on the property/event itself.
-                MethodSymbol owningMethod = ContainingSymbol as MethodSymbol;
-                return (object)owningMethod != null && owningMethod.IsAccessor();
-            }
-        }
-
-        internal override bool IsMetadataIn => RefKind == RefKind.In;
-
-        internal override bool IsMetadataOut => RefKind == RefKind.Out;
     }
 }

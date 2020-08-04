@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Microsoft.CodeAnalysis.Emit;
 using Roslyn.Utilities;
 using Microsoft.CodeAnalysis;
@@ -10,12 +11,12 @@ namespace Pchp.CodeAnalysis.Emit
     internal sealed class PENetModuleBuilder : PEModuleBuilder
     {
         internal PENetModuleBuilder(
-            PhpCompilation compilation,
+            Aquila.CodeAnalysis.Symbols.PhpCompilation compilation,
             IModuleSymbol sourceModule,
             EmitOptions emitOptions,
             Cci.ModulePropertiesForSerialization serializationProperties,
             IEnumerable<ResourceDescription> manifestResources)
-            : base(compilation, (Aquila.CodeAnalysis.Symbols.SourceModuleSymbol)sourceModule, serializationProperties, manifestResources, OutputKind.NetModule, emitOptions)
+            : base(compilation, (SourceModuleSymbol)sourceModule, serializationProperties, manifestResources, OutputKind.NetModule, emitOptions)
         {
         }
 

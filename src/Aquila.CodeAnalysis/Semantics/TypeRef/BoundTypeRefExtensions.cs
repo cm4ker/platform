@@ -36,7 +36,7 @@ namespace Pchp.CodeAnalysis.Semantics
         /// Gets <see cref="TypeSymbol"/> suitable to be used for the runtime operations.
         /// Does not return <c>null</c> nor <see cref="ErrorTypeSymbol"/>.
         /// </summary>
-        public static TypeSymbol ResolveRuntimeType(this IBoundTypeRef tref, PhpCompilation compilation)
+        public static TypeSymbol ResolveRuntimeType(this IBoundTypeRef tref, Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
         {
             var boundType = (BoundTypeRef)tref;
 

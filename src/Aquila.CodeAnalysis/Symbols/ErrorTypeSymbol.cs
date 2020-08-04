@@ -1,702 +1,215 @@
-﻿﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics;
+using Microsoft.CodeAnalysis;
+using Roslyn.Utilities;
 
-#nullable enable
-
- using System.Collections.Generic;
- using System.Collections.Immutable;
- using System.Diagnostics;
- using System.Runtime.InteropServices;
- using Microsoft.CodeAnalysis;
- using Roslyn.Utilities;
-
- namespace Aquila.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// An ErrorSymbol is used when the compiler cannot determine a symbol object to return because
-    /// of an error. For example, if a field is declared "Goo x;", and the type "Goo" cannot be
+    /// of an error. For example, if a field is declared "Foo x;", and the type "Foo" cannot be
     /// found, an ErrorSymbol is returned when asking the field "x" what it's type is.
     /// </summary>
-    internal abstract partial class ErrorTypeSymbol : NamedTypeSymbol
+    internal abstract partial class ErrorTypeSymbol : NamedTypeSymbol, IErrorTypeSymbol
     {
         internal static readonly ErrorTypeSymbol UnknownResultType = new UnsupportedMetadataTypeSymbol();
 
-        private ImmutableArray<TypeParameterSymbol> _lazyTypeParameters;
+        public abstract CandidateReason CandidateReason { get; }
+
+        public override string Name => string.Empty;
+
+        public override int Arity => 0;
+
+        internal override bool HasTypeArgumentsCustomModifiers => false;
+
+        public override ImmutableArray<CustomModifier> GetTypeArgumentCustomModifiers(int ordinal) => GetEmptyTypeArgumentCustomModifiers(ordinal);
+
+        public override TypeKind TypeKind => TypeKind.Error;
+
+        public override SymbolKind Kind => SymbolKind.ErrorType;
+
+        public override Accessibility DeclaredAccessibility => Accessibility.NotApplicable;
+
+        public virtual ImmutableArray<ISymbol> CandidateSymbols => ImmutableArray<ISymbol>.Empty;
 
         /// <summary>
-        /// The underlying error.
-        /// </summary>
-        internal abstract DiagnosticInfo? ErrorInfo { get; }
-
-        /// <summary>
-        /// Summary of the reason why the type is bad.
-        /// </summary>
-        internal virtual LookupResultKind ResultKind { get { return LookupResultKind.Empty; } }
-
-        /// <summary>
-        /// Called by <see cref="AbstractTypeMap.SubstituteType(TypeSymbol)"/> to perform substitution
+        /// Called by <see cref="AbstractTypeMap.SubstituteType"/> to perform substitution
         /// on types with TypeKind ErrorType.  The general pattern is to use the type map
         /// to perform substitution on the wrapped type, if any, and then construct a new
         /// error type symbol from the result (if there was a change).
         /// </summary>
-        internal TypeWithAnnotations Substitute(AbstractTypeMap typeMap)
+        internal virtual TypeWithModifiers Substitute(AbstractTypeMap typeMap)
         {
-            return TypeWithAnnotations.Create(typeMap.SubstituteNamedType(this));
+            return new TypeWithModifiers((ErrorTypeSymbol)typeMap.SubstituteNamedType(this));
         }
 
-        /// <summary>
-        /// When constructing this ErrorTypeSymbol, there may have been symbols that seemed to
-        /// be what the user intended, but were unsuitable. For example, a type might have been
-        /// inaccessible, or ambiguous. This property returns the possible symbols that the user
-        /// might have intended. It will return no symbols if no possible symbols were found.
-        /// See the CandidateReason property to understand why the symbols were unsuitable.
-        /// </summary>
-        public virtual ImmutableArray<Symbol> CandidateSymbols
+        internal override bool MangleName => false;
+
+        internal override bool IsWindowsRuntimeImport => false;
+
+        internal override bool ShouldAddWinRTMembers => false;
+
+        internal override TypeLayout Layout => default(TypeLayout);
+
+        public override Symbol ContainingSymbol => null;
+
+        public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences => ImmutableArray<SyntaxReference>.Empty;
+
+        public override bool IsStatic => false;
+
+        public override bool IsAbstract => false;
+
+        public override bool IsSealed => false;
+
+        public override bool IsSerializable => false;
+
+        internal override bool IsInterface => false;
+
+        internal override ObsoleteAttributeData ObsoleteAttributeData => null;
+
+        internal override IEnumerable<IFieldSymbol> GetFieldsToEmit()
         {
-            get
-            {
-                return ImmutableArray<Symbol>.Empty;
-            }
+            yield break;
         }
 
-        ///<summary>
-        /// If CandidateSymbols returns one or more symbols, returns the reason that those
-        /// symbols were not chosen. Otherwise, returns None.
-        /// </summary>
-        public CandidateReason CandidateReason
-        {
-            get
-            {
-                if (!CandidateSymbols.IsEmpty)
-                {
-                    Debug.Assert(ResultKind != LookupResultKind.Viable, "Shouldn't have viable result kind on error symbol");
-                    return ResultKind.ToCandidateReason();
-                }
-                else
-                {
-                    return CandidateReason.None;
-                }
-            }
-        }
+        internal override ImmutableArray<NamedTypeSymbol> GetDeclaredInterfaces(ConsList<Symbol> basesBeingResolved) => ImmutableArray<NamedTypeSymbol>.Empty;
 
-        internal override DiagnosticInfo? GetUseSiteDiagnostic()
-        {
-            return this.ErrorInfo;
-        }
+        internal override ImmutableArray<NamedTypeSymbol> GetInterfacesToEmit() => ImmutableArray<NamedTypeSymbol>.Empty;
 
-        /// <summary>
-        /// Returns true if this type is known to be a reference type. It is never the case that
-        /// IsReferenceType and IsValueType both return true. However, for an unconstrained type
-        /// parameter, IsReferenceType and IsValueType will both return false.
-        /// </summary>
-        public override bool IsReferenceType
-        {
-            // TODO: Consider returning False.
-            get { return true; }
-        }
+        public override ImmutableArray<Symbol> GetMembers() => ImmutableArray<Symbol>.Empty;
 
-        /// <summary>
-        /// Returns true if this type is known to be a value type. It is never the case that
-        /// IsReferenceType and IsValueType both return true. However, for an unconstrained type
-        /// parameter, IsReferenceType and IsValueType will both return false.
-        /// </summary>
-        public sealed override bool IsValueType
-        {
-            get { return false; }
-        }
+        public override ImmutableArray<Symbol> GetMembers(string name) => ImmutableArray<Symbol>.Empty;
 
-        public sealed override bool IsRefLikeType
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override ImmutableArray<Symbol> GetMembersByPhpName(string name) => ImmutableArray<Symbol>.Empty;
 
-        public sealed override bool IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override ImmutableArray<NamedTypeSymbol> GetTypeMembers() => ImmutableArray<NamedTypeSymbol>.Empty;
 
-        /// <summary>
-        /// Collection of names of members declared within this type.
-        /// </summary>
-        public override IEnumerable<string> MemberNames
-        {
-            get
-            {
-                return SpecializedCollections.EmptyEnumerable<string>();
-            }
-        }
-
-        /// <summary>
-        /// Get all the members of this symbol.
-        /// </summary>
-        /// <returns>An ImmutableArray containing all the members of this symbol. If this symbol has no members,
-        /// returns an empty ImmutableArray. Never returns Null.</returns>
-        public override ImmutableArray<Symbol> GetMembers()
-        {
-            if (IsTupleType)
-            {
-                var result = AddOrWrapTupleMembers(ImmutableArray<Symbol>.Empty);
-                RoslynDebug.Assert(result is object);
-                return result.ToImmutableAndFree();
-            }
-
-            return ImmutableArray<Symbol>.Empty;
-        }
-
-        /// <summary>
-        /// Get all the members of this symbol that have a particular name.
-        /// </summary>
-        /// <returns>An ImmutableArray containing all the members of this symbol with the given name. If there are
-        /// no members with this name, returns an empty ImmutableArray. Never returns Null.</returns>
-        public override ImmutableArray<Symbol> GetMembers(string name)
-        {
-            return GetMembers().WhereAsArray((m, name) => m.Name == name, name);
-        }
-
-        internal sealed override IEnumerable<FieldSymbol> GetFieldsToEmit()
-        {
-            throw ExceptionUtilities.Unreachable;
-        }
-
-        internal override ImmutableArray<Symbol> GetEarlyAttributeDecodingMembers()
-        {
-            return this.GetMembersUnordered();
-        }
-
-        internal override ImmutableArray<Symbol> GetEarlyAttributeDecodingMembers(string name)
-        {
-            return this.GetMembers(name);
-        }
-
-        /// <summary>
-        /// Get all the members of this symbol that are types.
-        /// </summary>
-        /// <returns>An ImmutableArray containing all the types that are members of this symbol. If this symbol has no type members,
-        /// returns an empty ImmutableArray. Never returns null.</returns>
-        public override ImmutableArray<NamedTypeSymbol> GetTypeMembers()
-        {
-            return ImmutableArray<NamedTypeSymbol>.Empty;
-        }
-
-        /// <summary>
-        /// Get all the members of this symbol that are types that have a particular name, of any arity.
-        /// </summary>
-        /// <returns>An ImmutableArray containing all the types that are members of this symbol with the given name.
-        /// If this symbol has no type members with this name,
-        /// returns an empty ImmutableArray. Never returns null.</returns>
-        public override ImmutableArray<NamedTypeSymbol> GetTypeMembers(string name)
-        {
-            return ImmutableArray<NamedTypeSymbol>.Empty;
-        }
-
-        /// <summary>
-        /// Get all the members of this symbol that are types that have a particular name and arity
-        /// </summary>
-        /// <returns>An ImmutableArray containing all the types that are members of this symbol with the given name and arity.
-        /// If this symbol has no type members with this name and arity,
-        /// returns an empty ImmutableArray. Never returns null.</returns>
-        public override ImmutableArray<NamedTypeSymbol> GetTypeMembers(string name, int arity)
-        {
-            return ImmutableArray<NamedTypeSymbol>.Empty;
-        }
-
-        /// <summary>
-        /// Gets the kind of this symbol.
-        /// </summary>
-        public sealed override SymbolKind Kind
-        {
-            get
-            {
-                return SymbolKind.ErrorType;
-            }
-        }
-
-        /// <summary>
-        /// Gets the kind of this type.
-        /// </summary>
-        public sealed override TypeKind TypeKind
-        {
-            get
-            {
-                return TypeKind.Error;
-            }
-        }
-
-        internal sealed override bool IsInterface
-        {
-            get { return false; }
-        }
-
-        /// <summary>
-        /// Get the symbol that logically contains this symbol. 
-        /// </summary>
-        public override Symbol? ContainingSymbol
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Gets the locations where this symbol was originally defined, either in source or
-        /// metadata. Some symbols (for example, partial classes) may be defined in more than one
-        /// location.
-        /// </summary>
-        public override ImmutableArray<Location> Locations
-        {
-            get
-            {
-                return ImmutableArray<Location>.Empty;
-            }
-        }
-
-        public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
-        {
-            get
-            {
-                return ImmutableArray<SyntaxReference>.Empty;
-            }
-        }
-
-        /// <summary>
-        /// Returns the arity of this type, or the number of type parameters it takes.
-        /// A non-generic type has zero arity.
-        /// </summary>
-        public override int Arity
-        {
-            get
-            {
-                return 0;
-            }
-        }
-
-        /// <summary>
-        /// Gets the name of this symbol. Symbols without a name return the empty string; null is
-        /// never returned.
-        /// </summary>
-        public override string Name
-        {
-            get
-            {
-                return string.Empty;
-            }
-        }
-
-        /// <summary>
-        /// Returns the type arguments that have been substituted for the type parameters. 
-        /// If nothing has been substituted for a give type parameters,
-        /// then the type parameter itself is consider the type argument.
-        /// </summary>
-        internal override ImmutableArray<TypeWithAnnotations> TypeArgumentsWithAnnotationsNoUseSiteDiagnostics
-        {
-            get
-            {
-                return GetTypeParametersAsTypeArguments();
-            }
-        }
-
-        /// <summary>
-        /// Returns the type parameters that this type has. If this is a non-generic type,
-        /// returns an empty ImmutableArray.  
-        /// </summary>
-        public override ImmutableArray<TypeParameterSymbol> TypeParameters
-        {
-            get
-            {
-                if (_lazyTypeParameters.IsDefault)
-                {
-                    ImmutableInterlocked.InterlockedCompareExchange(ref _lazyTypeParameters,
-                        GetTypeParameters(),
-                        default(ImmutableArray<TypeParameterSymbol>));
-                }
-                return _lazyTypeParameters;
-            }
-        }
-
-        private ImmutableArray<TypeParameterSymbol> GetTypeParameters()
-        {
-            int arity = this.Arity;
-            if (arity == 0)
-            {
-                return ImmutableArray<TypeParameterSymbol>.Empty;
-            }
-            else
-            {
-                var @params = new TypeParameterSymbol[arity];
-                for (int i = 0; i < arity; i++)
-                {
-                    @params[i] = new ErrorTypeParameterSymbol(this, string.Empty, i);
-                }
-                return @params.AsImmutableOrNull();
-            }
-        }
-
-        /// <summary>
-        /// Returns the type symbol that this type was constructed from. This type symbol
-        /// has the same containing type (if any), but has type arguments that are the same
-        /// as the type parameters (although its containing type might not).
-        /// </summary>
-        public override NamedTypeSymbol ConstructedFrom
-        {
-            get
-            {
-                return this;
-            }
-        }
-
-        /// <summary>
-        /// Implements visitor pattern.
-        /// </summary>
-        internal override TResult Accept<TArgument, TResult>(CSharpSymbolVisitor<TArgument, TResult> visitor, TArgument argument)
-        {
-            return visitor.VisitErrorType(this, argument);
-        }
-
-        // Only the compiler should create error symbols.
-        internal ErrorTypeSymbol(Tuples.NamedTypeSymbol.TupleExtraData? tupleData = null)
-            : base(tupleData)
-        {
-        }
-
-        /// <summary>
-        /// Get this accessibility that was declared on this symbol. For symbols that do not have
-        /// accessibility declared on them, returns NotApplicable.
-        /// </summary>
-        public sealed override Accessibility DeclaredAccessibility
-        {
-            get
-            {
-                return Accessibility.NotApplicable;
-            }
-        }
-
-        /// <summary>
-        /// Returns true if this symbol is "static"; i.e., declared with the "static" modifier or
-        /// implicitly static.
-        /// </summary>
-        public sealed override bool IsStatic
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Returns true if this symbol was declared as requiring an override; i.e., declared with
-        /// the "abstract" modifier. Also returns true on a type declared as "abstract", all
-        /// interface types, and members of interface types.
-        /// </summary>
-        public sealed override bool IsAbstract
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Returns true if this symbol was declared to override a base class member and was also
-        /// sealed from further overriding; i.e., declared with the "sealed" modifier.  Also set for
-        /// types that do not allow a derived class (declared with "sealed" or "static" or "struct"
-        /// or "enum" or "delegate").
-        /// </summary>
-        public sealed override bool IsSealed
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        internal sealed override bool HasSpecialName
-        {
-            get { return false; }
-        }
-
-        public sealed override bool MightContainExtensionMethods
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        internal override NamedTypeSymbol? BaseTypeNoUseSiteDiagnostics => null;
-
-        internal override bool HasCodeAnalysisEmbeddedAttribute => false;
-
-        internal override ImmutableArray<NamedTypeSymbol> InterfacesNoUseSiteDiagnostics(ConsList<TypeSymbol>? basesBeingResolved)
-        {
-            return ImmutableArray<NamedTypeSymbol>.Empty;
-        }
-
-        internal override ImmutableArray<NamedTypeSymbol> GetInterfacesToEmit()
-        {
-            return ImmutableArray<NamedTypeSymbol>.Empty;
-        }
-
-        internal override NamedTypeSymbol? GetDeclaredBaseType(ConsList<TypeSymbol> basesBeingResolved)
-        {
-            return null;
-        }
-
-        internal override ImmutableArray<NamedTypeSymbol> GetDeclaredInterfaces(ConsList<TypeSymbol> basesBeingResolved)
-        {
-            return ImmutableArray<NamedTypeSymbol>.Empty;
-        }
-
-        protected override NamedTypeSymbol ConstructCore(ImmutableArray<TypeWithAnnotations> typeArguments, bool unbound)
-        {
-            return new ConstructedErrorTypeSymbol(this, typeArguments);
-        }
-
-        internal override NamedTypeSymbol AsMember(NamedTypeSymbol newOwner)
-        {
-            Debug.Assert(this.IsDefinition);
-            Debug.Assert(ReferenceEquals(newOwner.OriginalDefinition, this.ContainingSymbol?.OriginalDefinition));
-            return newOwner.IsDefinition ? this : new SubstitutedNestedErrorTypeSymbol(newOwner, this);
-        }
-
-        internal sealed override bool ShouldAddWinRTMembers
-        {
-            get { return false; }
-        }
-
-        internal sealed override bool IsWindowsRuntimeImport
-        {
-            get { return false; }
-        }
-
-        internal sealed override TypeLayout Layout
-        {
-            get { return default(TypeLayout); }
-        }
-
-        internal override CharSet MarshallingCharSet
-        {
-            get { return DefaultMarshallingCharSet; }
-        }
-
-        public sealed override bool IsSerializable
-        {
-            get { return false; }
-        }
-
-        internal sealed override bool HasDeclarativeSecurity
-        {
-            get { return false; }
-        }
-
-        internal sealed override bool IsComImport
-        {
-            get { return false; }
-        }
-
-        internal sealed override ObsoleteAttributeData? ObsoleteAttributeData
-        {
-            get { return null; }
-        }
-
-        internal sealed override IEnumerable<Microsoft.Cci.SecurityAttribute> GetSecurityInformation()
-        {
-            throw ExceptionUtilities.Unreachable;
-        }
-
-        internal sealed override ImmutableArray<string> GetAppliedConditionalSymbols()
-        {
-            return ImmutableArray<string>.Empty;
-        }
-
-        internal override AttributeUsageInfo GetAttributeUsageInfo()
-        {
-            return AttributeUsageInfo.Null;
-        }
-
-        internal virtual bool Unreported
-        {
-            get { return false; }
-        }
-
-        public sealed override bool AreLocalsZeroed
-        {
-            get { throw ExceptionUtilities.Unreachable; }
-        }
-
-        internal override NamedTypeSymbol AsNativeInteger() => throw ExceptionUtilities.Unreachable;
-
-        internal override NamedTypeSymbol? NativeIntegerUnderlyingType => null;
-
-        protected sealed override ISymbol CreateISymbol()
-        {
-            return new PublicModel.ErrorTypeSymbol(this, DefaultNullableAnnotation);
-        }
-
-        protected sealed override ITypeSymbol CreateITypeSymbol(Microsoft.CodeAnalysis.NullableAnnotation nullableAnnotation)
-        {
-            Debug.Assert(nullableAnnotation != DefaultNullableAnnotation);
-            return new PublicModel.ErrorTypeSymbol(this, nullableAnnotation);
-        }
+        public override ImmutableArray<NamedTypeSymbol> GetTypeMembers(string name) => ImmutableArray<NamedTypeSymbol>.Empty;
     }
 
-    internal abstract class SubstitutedErrorTypeSymbol : ErrorTypeSymbol
+    internal sealed class UnsupportedMetadataTypeSymbol : ErrorTypeSymbol
     {
-        private readonly ErrorTypeSymbol _originalDefinition;
-        private int _hashCode;
+        readonly BadImageFormatException _mrEx;
 
-        protected SubstitutedErrorTypeSymbol(ErrorTypeSymbol originalDefinition, Tuples.NamedTypeSymbol.TupleExtraData? tupleData = null)
-            : base(tupleData)
+        internal UnsupportedMetadataTypeSymbol(BadImageFormatException mrEx = null)
         {
-            _originalDefinition = originalDefinition;
+            _mrEx = mrEx;
         }
 
-        public override NamedTypeSymbol OriginalDefinition
-        {
-            get { return _originalDefinition; }
-        }
+        public override CandidateReason CandidateReason => CandidateReason.None;
 
         internal override bool MangleName
         {
-            get { return _originalDefinition.MangleName; }
-        }
-
-        internal override DiagnosticInfo? ErrorInfo
-        {
-            get { return _originalDefinition.ErrorInfo; }
-        }
-
-        public override int Arity
-        {
-            get { return _originalDefinition.Arity; }
-        }
-
-        public override string Name
-        {
-            get { return _originalDefinition.Name; }
-        }
-
-        public override ImmutableArray<Location> Locations
-        {
-            get { return _originalDefinition.Locations; }
-        }
-
-        public override ImmutableArray<Symbol> CandidateSymbols
-        {
-            get { return _originalDefinition.CandidateSymbols; }
-        }
-
-        internal override LookupResultKind ResultKind
-        {
-            get { return _originalDefinition.ResultKind; }
-        }
-
-        internal override DiagnosticInfo? GetUseSiteDiagnostic()
-        {
-            return _originalDefinition.GetUseSiteDiagnostic();
-        }
-
-        public override int GetHashCode()
-        {
-            if (_hashCode == 0)
+            get
             {
-                _hashCode = this.ComputeHashCode();
+                return false;
             }
-            return _hashCode;
         }
     }
 
-    internal sealed class ConstructedErrorTypeSymbol : SubstitutedErrorTypeSymbol
+    internal class MissingMetadataTypeSymbol : ErrorTypeSymbol
     {
-        private readonly ErrorTypeSymbol _constructedFrom;
-        private readonly ImmutableArray<TypeWithAnnotations> _typeArgumentsWithAnnotations;
-        private readonly TypeMap _map;
-
-        public ConstructedErrorTypeSymbol(ErrorTypeSymbol constructedFrom, ImmutableArray<TypeWithAnnotations> typeArgumentsWithAnnotations, Tuples.NamedTypeSymbol.TupleExtraData? tupleData = null) :
-            base((ErrorTypeSymbol)constructedFrom.OriginalDefinition, tupleData)
+        /// <summary>
+        /// Represents nested missing type.
+        /// </summary>
+        internal class Nested : MissingMetadataTypeSymbol
         {
-            _constructedFrom = constructedFrom;
-            _typeArgumentsWithAnnotations = typeArgumentsWithAnnotations;
-            _map = new TypeMap(constructedFrom.ContainingType, constructedFrom.OriginalDefinition.TypeParameters, typeArgumentsWithAnnotations);
+            private readonly NamedTypeSymbol _containingType;
+
+            public Nested(NamedTypeSymbol containingType, string name, int arity, bool mangleName)
+                : base(name, arity, mangleName)
+            {
+                Debug.Assert((object)containingType != null);
+
+                _containingType = containingType;
+            }
+
+            public Nested(NamedTypeSymbol containingType, ref MetadataTypeName emittedName)
+                : this(containingType, ref emittedName, emittedName.ForcedArity == -1 || emittedName.ForcedArity == emittedName.InferredArity)
+            {
+            }
+
+            private Nested(NamedTypeSymbol containingType, ref MetadataTypeName emittedName, bool mangleName)
+                : this(containingType,
+                       mangleName ? emittedName.UnmangledTypeName : emittedName.TypeName,
+                       mangleName ? emittedName.InferredArity : emittedName.ForcedArity,
+                       mangleName)
+            {
+            }
+
+            public override Symbol ContainingSymbol
+            {
+                get
+                {
+                    return _containingType;
+                }
+            }
+
+
+            public override SpecialType SpecialType
+            {
+                get
+                {
+                    return SpecialType.None; // do not have nested types among CORE types yet.
+                }
+            }
+
+            public override int GetHashCode()
+            {
+                return Hash.Combine(_containingType, Hash.Combine(MetadataName, _arity));
+            }
+
+            internal override bool Equals(TypeSymbol t2, bool ignoreCustomModifiersAndArraySizesAndLowerBounds = false, bool ignoreDynamic = false)
+            {
+                if (ReferenceEquals(this, t2))
+                {
+                    return true;
+                }
+
+                var other = t2 as Nested;
+                return (object)other != null && string.Equals(MetadataName, other.MetadataName, StringComparison.Ordinal) &&
+                    _arity == other._arity &&
+                    _containingType.Equals(other._containingType, ignoreCustomModifiersAndArraySizesAndLowerBounds, ignoreDynamic);
+            }
         }
 
-        protected override NamedTypeSymbol WithTupleDataCore(Tuples.NamedTypeSymbol.TupleExtraData newData)
-        {
-            return new ConstructedErrorTypeSymbol(_constructedFrom, _typeArgumentsWithAnnotations, tupleData: newData);
-        }
+        protected readonly string _name;
+        protected readonly int _arity;
+        protected readonly bool _mangleName;
 
-        public override ImmutableArray<TypeParameterSymbol> TypeParameters
+        public MissingMetadataTypeSymbol(string name, int arity, bool mangleName)
         {
-            get { return _constructedFrom.TypeParameters; }
-        }
+            Debug.Assert(name != null);
 
-        internal override ImmutableArray<TypeWithAnnotations> TypeArgumentsWithAnnotationsNoUseSiteDiagnostics
-        {
-            get { return _typeArgumentsWithAnnotations; }
-        }
+            this._name = name;
+            this._arity = arity;
+            this._mangleName = (mangleName && arity > 0);
 
-        public override NamedTypeSymbol ConstructedFrom
-        {
-            get { return _constructedFrom; }
         }
+        public override CandidateReason CandidateReason => CandidateReason.None;
 
-        public override Symbol? ContainingSymbol
-        {
-            get { return _constructedFrom.ContainingSymbol; }
-        }
-
-        internal override TypeMap TypeSubstitution
-        {
-            get { return _map; }
-        }
+        public override string Name => _name;
+        internal override bool MangleName => _mangleName;
+        public override int Arity => _arity;
     }
 
-    internal sealed class SubstitutedNestedErrorTypeSymbol : SubstitutedErrorTypeSymbol
+    internal sealed class AmbiguousErrorTypeSymbol : ErrorTypeSymbol
     {
-        private readonly NamedTypeSymbol _containingSymbol;
-        private readonly ImmutableArray<TypeParameterSymbol> _typeParameters;
-        private readonly TypeMap _map;
+        internal ImmutableArray<NamedTypeSymbol> _candidates;
 
-        public SubstitutedNestedErrorTypeSymbol(NamedTypeSymbol containingSymbol, ErrorTypeSymbol originalDefinition) :
-            base(originalDefinition)
+        public AmbiguousErrorTypeSymbol(ImmutableArray<NamedTypeSymbol> candidates)
         {
-            _containingSymbol = containingSymbol;
-            _map = containingSymbol.TypeSubstitution.WithAlphaRename(originalDefinition, this, out _typeParameters);
+            Debug.Assert(!candidates.IsDefaultOrEmpty);
+            _candidates = candidates;
         }
 
-        public override ImmutableArray<TypeParameterSymbol> TypeParameters
-        {
-            get { return _typeParameters; }
-        }
+        public override CandidateReason CandidateReason => CandidateReason.Ambiguous;
+        public override ImmutableArray<ISymbol> CandidateSymbols => _candidates.CastArray<ISymbol>();
 
-        internal override ImmutableArray<TypeWithAnnotations> TypeArgumentsWithAnnotationsNoUseSiteDiagnostics
-        {
-            get { return GetTypeParametersAsTypeArguments(); }
-        }
-
-        public override NamedTypeSymbol ConstructedFrom
-        {
-            get { return this; }
-        }
-
-        public override Symbol ContainingSymbol
-        {
-            get { return _containingSymbol; }
-        }
-
-        internal override TypeMap TypeSubstitution
-        {
-            get { return _map; }
-        }
-
-        protected override NamedTypeSymbol WithTupleDataCore(Tuples.NamedTypeSymbol.TupleExtraData newData)
-            => throw ExceptionUtilities.Unreachable;
+        public override string Name => _candidates[0].Name;
+        internal override bool MangleName => _candidates[0].MangleName;
+        public override int Arity => 0;
     }
 }

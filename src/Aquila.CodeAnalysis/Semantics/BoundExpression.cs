@@ -1429,7 +1429,7 @@ namespace Pchp.CodeAnalysis.Semantics
         /// <summary>In case of an instance method, this is its receiver instance.</summary>
         internal BoundExpression Receiver { get; set; }
 
-        internal BoundCallableConvert(BoundExpression operand, PhpCompilation compilation)
+        internal BoundCallableConvert(BoundExpression operand, Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
             : base(operand, compilation.TypeRefFactory.Create(compilation.CoreTypes.IPhpCallable.Symbol))
         {
         }
@@ -2133,7 +2133,7 @@ namespace Pchp.CodeAnalysis.Semantics
     /// </summary>
     public partial class BoundArrayItemEx : BoundReferenceExpression, IArrayElementReferenceOperation
     {
-        internal PhpCompilation DeclaringCompilation { get; }
+        internal Aquila.CodeAnalysis.Symbols.PhpCompilation DeclaringCompilation { get; }
 
         public BoundExpression Array
         {
@@ -2158,7 +2158,7 @@ namespace Pchp.CodeAnalysis.Semantics
         ImmutableArray<IOperation> IArrayElementReferenceOperation.Indices
             => (_index != null) ? ImmutableArray.Create((IOperation) _index) : ImmutableArray<IOperation>.Empty;
 
-        public BoundArrayItemEx(PhpCompilation compilation, BoundExpression array, BoundExpression index)
+        public BoundArrayItemEx(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, BoundExpression array, BoundExpression index)
         {
             Contract.ThrowIfNull(array);
 
@@ -2197,7 +2197,7 @@ namespace Pchp.CodeAnalysis.Semantics
 
     public partial class BoundArrayItemOrdEx : BoundArrayItemEx
     {
-        public BoundArrayItemOrdEx(PhpCompilation compilation, BoundExpression array, BoundExpression index) :
+        public BoundArrayItemOrdEx(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, BoundExpression array, BoundExpression index) :
             base(compilation, array, index)
         {
         }

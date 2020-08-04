@@ -8,7 +8,7 @@ using Cci = Microsoft.Cci;
 using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis.Emit;
 
-namespace Aquila.CodeAnalysis.Symbols
+namespace Pchp.CodeAnalysis.Symbols
 {
     internal partial class TypeParameterSymbol :
         Cci.IGenericParameterReference,
@@ -203,7 +203,7 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 Debug.Assert(this.IsDefinition);
-                return (MethodSymbol)this.ContainingSymbol;
+                return (Aquila.CodeAnalysis.Symbols.MethodSymbol)this.ContainingSymbol;
             }
         }
 
@@ -212,7 +212,7 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 Debug.Assert(this.IsDefinition);
-                return (NamedTypeSymbol)this.ContainingSymbol;
+                return (Aquila.CodeAnalysis.Symbols.NamedTypeSymbol)this.ContainingSymbol;
             }
         }
 
@@ -295,7 +295,7 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 CheckDefinitionInvariant();
-                return (MethodSymbol)this.ContainingSymbol;
+                return (Aquila.CodeAnalysis.Symbols.MethodSymbol)this.ContainingSymbol;
             }
         }
 
@@ -304,7 +304,7 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 CheckDefinitionInvariant();
-                return (NamedTypeSymbol)this.ContainingSymbol;
+                return (Aquila.CodeAnalysis.Symbols.NamedTypeSymbol)this.ContainingSymbol;
             }
         }
     }

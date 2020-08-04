@@ -1,57 +1,46 @@
-﻿﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+﻿using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using Aquila.CodeAnalysis.Symbols.Php;
+using Microsoft.CodeAnalysis;
+using Pchp.CodeAnalysis.Emit;
+using Pchp.CodeAnalysis.Semantics;
+using Roslyn.Utilities;
 
- using System.Collections.Generic;
- using System.Diagnostics;
- using System.Runtime.InteropServices;
- using Microsoft.CodeAnalysis;
- using Microsoft.CodeAnalysis.Symbols;
- using Pchp.CodeAnalysis.Emit;
- using Roslyn.Utilities;
-
- namespace Aquila.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// Represents a field in a class, struct or enum
     /// </summary>
-    internal abstract partial class FieldSymbol : Symbol, IFieldSymbolInternal
+    internal abstract partial class FieldSymbol : Symbol, IFieldSymbol, IPhpValue
     {
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // Changes to the public interface of this class should remain synchronized with the VB version.
-        // Do not make any changes to the public interface without making the corresponding change
-        // to the VB version.
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
         internal FieldSymbol()
         {
         }
+
+        /// <summary>
+        /// Optional. Gets the initializer.
+        /// </summary>
+        public virtual BoundExpression Initializer => null;
+
+        /// <summary>
+        /// Value indicating the field has [NotNull] metadata.
+        /// </summary>
+        public virtual bool HasNotNull => false;
 
         /// <summary>
         /// The original definition of this symbol. If this symbol is constructed from another
         /// symbol by type substitution then OriginalDefinition gets the original symbol as it was defined in
         /// source or metadata.
         /// </summary>
-        public new virtual FieldSymbol OriginalDefinition
-        {
-            get
-            {
-                return this;
-            }
-        }
+        public new virtual FieldSymbol OriginalDefinition => this;
 
-        protected override sealed Symbol OriginalSymbolDefinition
-        {
-            get
-            {
-                return this.OriginalDefinition;
-            }
-        }
+        protected override sealed Symbol OriginalSymbolDefinition => this.OriginalDefinition;
 
         /// <summary>
-        /// Gets the type of this field along with its annotations.
+        /// Gets the type of this field.
         /// </summary>
-        public TypeWithAnnotations TypeWithAnnotations
+        public TypeSymbol Type
         {
             get
             {
@@ -59,14 +48,12 @@
             }
         }
 
-        public abstract FlowAnalysisAnnotations FlowAnalysisAnnotations { get; }
+        internal abstract TypeSymbol GetFieldType(ConsList<FieldSymbol> fieldsBeingBound);
 
         /// <summary>
-        /// Gets the type of this field.
+        /// Gets the list of custom modifiers, if any, associated with the field.
         /// </summary>
-        public TypeSymbol Type => TypeWithAnnotations.Type;
-
-        internal abstract TypeWithAnnotations GetFieldType(ConsList<FieldSymbol> fieldsBeingBound);
+        public abstract ImmutableArray<CustomModifier> CustomModifiers { get; }
 
         /// <summary>
         /// If this field serves as a backing variable for an automatically generated
@@ -88,27 +75,22 @@
         public abstract bool IsVolatile { get; }
 
         /// <summary>
-        /// Returns true if this symbol requires an instance reference as the implicit receiver. This is false if the symbol is static.
-        /// </summary>
-        public virtual bool RequiresInstanceReceiver => !IsStatic;
-
-        /// <summary>
         /// Returns true if this field was declared as "fixed".
         /// Note that for a fixed-size buffer declaration, this.Type will be a pointer type, of which
         /// the pointed-to type will be the declared element type of the fixed-size buffer.
         /// </summary>
-        public virtual bool IsFixedSizeBuffer { get { return false; } }
+        public virtual bool IsFixed { get { return false; } }
 
         /// <summary>
-        /// If IsFixedSizeBuffer is true, the value between brackets in the fixed-size-buffer declaration.
-        /// If IsFixedSizeBuffer is false FixedSize is 0.
+        /// If IsFixed is true, the value between brackets in the fixed-size-buffer declaration.
+        /// If IsFixed is false FixedSize is 0.
         /// Note that for fixed-a size buffer declaration, this.Type will be a pointer type, of which
         /// the pointed-to type will be the declared element type of the fixed-size buffer.
         /// </summary>
         public virtual int FixedSize { get { return 0; } }
 
         /// <summary>
-        /// If this.IsFixedSizeBuffer is true, returns the underlying implementation type for the
+        /// If this.IsFixed is true, returns the underlying implementation type for the
         /// fixed-size buffer when emitted.  Otherwise returns null.
         /// </summary>
         internal virtual NamedTypeSymbol FixedImplementationType(PEModuleBuilder emitModule)
@@ -131,7 +113,12 @@
         // metadata constant unless they are of type decimal, because decimals are not regarded as constant by the CLR.
         public bool IsMetadataConstant
         {
-            get { return this.IsConst && (this.Type.SpecialType != SpecialType.System_Decimal); }
+            get
+            {
+                var isconst = this.IsConst && (this.Type.SpecialType != SpecialType.System_Decimal);
+                Debug.Assert(!isconst || IsStatic, "Literal field must be Static.");
+                return isconst;
+            }
         }
 
         /// <summary>
@@ -147,7 +134,7 @@
                     return false;
                 }
 
-                ConstantValue constantValue = GetConstantValue(ConstantFieldsInProgress.Empty, earlyDecodingWellKnownAttributes: false);
+                ConstantValue constantValue = GetConstantValue(earlyDecodingWellKnownAttributes: false);
                 return constantValue != null && !constantValue.IsBad; //can be null in error scenarios
             }
         }
@@ -165,12 +152,12 @@
                     return null;
                 }
 
-                ConstantValue constantValue = GetConstantValue(ConstantFieldsInProgress.Empty, earlyDecodingWellKnownAttributes: false);
+                ConstantValue constantValue = GetConstantValue(earlyDecodingWellKnownAttributes: false);
                 return constantValue == null ? null : constantValue.Value; //can be null in error scenarios
             }
         }
 
-        internal abstract ConstantValue GetConstantValue(ConstantFieldsInProgress inProgress, bool earlyDecodingWellKnownAttributes);
+        internal abstract ConstantValue GetConstantValue(bool earlyDecodingWellKnownAttributes);
 
         /// <summary>
         /// Gets the kind of this symbol.
@@ -183,20 +170,11 @@
             }
         }
 
-        internal override TResult Accept<TArgument, TResult>(CSharpSymbolVisitor<TArgument, TResult> visitor, TArgument argument)
-        {
-            return visitor.VisitField(this, argument);
-        }
-
-        public override void Accept(CSharpSymbolVisitor visitor)
-        {
-            visitor.VisitField(this);
-        }
-
-        public override TResult Accept<TResult>(CSharpSymbolVisitor<TResult> visitor)
-        {
-            return visitor.VisitField(this);
-        }
+        /// <summary>
+        /// If this field represents a tuple element, returns a corresponding default element
+        ///  field. Otherwise returns null.
+        /// </summary>
+        public virtual IFieldSymbol CorrespondingTupleField => null;
 
         /// <summary>
         /// Returns false because field can't be abstract.
@@ -269,24 +247,6 @@
         internal abstract bool IsNotSerialized { get; }
 
         /// <summary>
-        /// True if this field has a pointer type.
-        /// </summary>
-        /// <remarks>
-        /// By default we defer to this.Type.IsPointerOrFunctionPointer() 
-        /// However in some cases this may cause circular dependency via binding a
-        /// pointer that points to the type that contains the current field.
-        /// Fortunately in those cases we do not need to force binding of the field's type 
-        /// and can just check the declaration syntax if the field type is not yet known.
-        /// </remarks>
-        internal virtual bool HasPointerType
-        {
-            get
-            {
-                return this.Type.IsPointerOrFunctionPointer();
-            }
-        }
-
-        /// <summary>
         /// Describes how the field is marshalled when passed to native code.
         /// Null if no specific marshalling information is available for the field.
         /// </summary>
@@ -316,159 +276,55 @@
         /// </summary>
         internal abstract int? TypeLayoutOffset { get; }
 
-        internal virtual FieldSymbol AsMember(NamedTypeSymbol newOwner)
+        internal FieldSymbol AsMember(NamedTypeSymbol newOwner)
         {
             Debug.Assert(this.IsDefinition);
             Debug.Assert(ReferenceEquals(newOwner.OriginalDefinition, this.ContainingSymbol.OriginalDefinition));
-            return newOwner.IsDefinition ? this : new SubstitutedFieldSymbol(newOwner as SubstitutedNamedTypeSymbol, this);
+            return (newOwner == this.ContainingSymbol) ? this : new SubstitutedFieldSymbol(newOwner as SubstitutedNamedTypeSymbol, this);
         }
 
-        #region Use-Site Diagnostics
+        #region IFieldSymbol Members
 
-        internal override DiagnosticInfo GetUseSiteDiagnostic()
-        {
-            if (this.IsDefinition)
-            {
-                return base.GetUseSiteDiagnostic();
-            }
-
-            return this.OriginalDefinition.GetUseSiteDiagnostic();
-        }
-
-        internal bool CalculateUseSiteDiagnostic(ref DiagnosticInfo result)
-        {
-            Debug.Assert(IsDefinition);
-
-            // Check type, custom modifiers
-            if (DeriveUseSiteDiagnosticFromType(ref result, this.TypeWithAnnotations, AllowedRequiredModifierType.System_Runtime_CompilerServices_Volatile))
-            {
-                return true;
-            }
-
-            // If the member is in an assembly with unified references, 
-            // we check if its definition depends on a type from a unified reference.
-            if (this.ContainingModule.HasUnifiedReferences)
-            {
-                HashSet<TypeSymbol> unificationCheckedTypes = null;
-                if (this.TypeWithAnnotations.GetUnificationUseSiteDiagnosticRecursive(ref result, this, ref unificationCheckedTypes))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Return error code that has highest priority while calculating use site error for this symbol. 
-        /// </summary>
-        protected override int HighestPriorityUseSiteError
+        ISymbol IFieldSymbol.AssociatedSymbol
         {
             get
             {
-                return (int)ErrorCode.ERR_BindToBogus;
+                return this.AssociatedSymbol;
             }
         }
 
-        public sealed override bool HasUnsupportedMetadata
+        ITypeSymbol IFieldSymbol.Type
         {
             get
             {
-                DiagnosticInfo info = GetUseSiteDiagnostic();
-                return (object)info != null && info.Code == (int)ErrorCode.ERR_BindToBogus;
+                return this.Type;
             }
+        }
+
+        ImmutableArray<CustomModifier> IFieldSymbol.CustomModifiers
+        {
+            get { return this.CustomModifiers; }
+        }
+
+        IFieldSymbol IFieldSymbol.OriginalDefinition
+        {
+            get { return this.OriginalDefinition; }
         }
 
         #endregion
 
-        /// <summary>
-        /// Returns True when field symbol is not mapped directly to a field in the underlying tuple struct.
-        /// </summary>
-        public virtual bool IsVirtualTupleField
+        #region ISymbol Members
+
+        public override void Accept(SymbolVisitor visitor)
         {
-            get
-            {
-                return false;
-            }
+            visitor.VisitField(this);
         }
 
-        /// <summary>
-        /// Returns true if this is a field representing a Default element like Item1, Item2...
-        /// </summary>
-        public virtual bool IsDefaultTupleElement
+        public override TResult Accept<TResult>(SymbolVisitor<TResult> visitor)
         {
-            get
-            {
-                return false;
-            }
+            return visitor.VisitField(this);
         }
 
-        /// <summary>
-        /// If this is a field of a tuple type, return corresponding underlying field from the
-        /// tuple underlying type. Otherwise, null. In case of a malformed underlying type
-        /// the corresponding underlying field might be missing, return null in this case too.
-        /// </summary>
-        public virtual FieldSymbol TupleUnderlyingField
-        {
-            get
-            {
-                return ContainingType.IsTupleType ? this : null;
-            }
-        }
-
-        /// <summary>
-        /// If this field represents a tuple element, returns a corresponding default element field.
-        /// Otherwise returns null.
-        /// </summary>
-        public virtual FieldSymbol CorrespondingTupleField
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Returns true if a given field is a tuple element
-        /// </summary>
-        internal bool IsTupleElement()
-        {
-            return this.CorrespondingTupleField is object;
-        }
-
-        /// <summary>
-        /// If this is a field representing a tuple element,
-        /// returns the index of the element (zero-based).
-        /// Otherwise returns -1
-        /// </summary>
-        public virtual int TupleElementIndex
-        {
-            get
-            {
-                return -1;
-            }
-        }
-
-        bool IFieldSymbolInternal.IsVolatile => this.IsVolatile;
-
-        protected override ISymbol CreateISymbol()
-        {
-            return new PublicModel.FieldSymbol(this);
-        }
-
-        public override bool Equals(Symbol other, TypeCompareKind compareKind)
-        {
-            if (other is SubstitutedFieldSymbol sfs)
-            {
-                return sfs.Equals(this, compareKind);
-            }
-
-            return base.Equals(other, compareKind);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
+        #endregion
     }
 }

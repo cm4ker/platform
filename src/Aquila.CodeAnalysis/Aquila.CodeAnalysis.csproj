@@ -16,7 +16,7 @@
 
         <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
 
-        <PackageReference Include="Aquila.Microsoft.CodeAnalysis" Version="0.0.4" />
+        <PackageReference Include="Aquila.Microsoft.CodeAnalysis" Version="0.0.5" />
 
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.4" />
 <!--        <PackageReference Include="NETStandard.Library" Version="2.0.3" />-->

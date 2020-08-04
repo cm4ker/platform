@@ -165,7 +165,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// <param name="ctx">Type context.</param>
         /// <param name="compilation">Type provider.</param>
         /// <returns>True iff <c>[]</c> operator is allowed.</returns>
-        internal static bool HasArrayAccess(TypeRefMask type, TypeRefContext/*!*/ctx, PhpCompilation/*!*/compilation)
+        internal static bool HasArrayAccess(TypeRefMask type, TypeRefContext/*!*/ctx, Aquila.CodeAnalysis.Symbols.PhpCompilation/*!*/compilation)
         {
             // quick check:
             if (type.IsAnyType || type.IsVoid || type.IsRef)

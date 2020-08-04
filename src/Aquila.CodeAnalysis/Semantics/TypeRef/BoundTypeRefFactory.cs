@@ -46,7 +46,7 @@ namespace Pchp.CodeAnalysis.Semantics
         /// Initializes new instance of <see cref="BoundTypeRefFactory"/>.
         /// </summary>
         /// <param name="compilation">Bound compilation.</param>
-        public BoundTypeRefFactory(PhpCompilation compilation)
+        public BoundTypeRefFactory(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
         {
             // TBD
         }

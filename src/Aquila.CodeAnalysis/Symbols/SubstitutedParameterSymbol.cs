@@ -1,13 +1,8 @@
-﻿﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+﻿using System.Collections.Immutable;
+using System.Diagnostics;
+using Microsoft.CodeAnalysis;
 
- using System.Collections.Immutable;
- using System.Diagnostics;
- using Aquila.CodeAnalysis.Symbols.Wrapped;
- using Microsoft.CodeAnalysis;
-
- namespace Aquila.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
     internal sealed class SubstitutedParameterSymbol : WrappedParameterSymbol
     {
@@ -34,70 +29,49 @@
             _mapOrType = map;
         }
 
-        public override ParameterSymbol OriginalDefinition
-        {
-            get { return _underlyingParameter.OriginalDefinition; }
-        }
+        protected override Symbol OriginalSymbolDefinition => underlyingParameter.OriginalDefinition;
 
         public override Symbol ContainingSymbol
         {
             get { return _containingSymbol; }
         }
 
-        public override TypeWithAnnotations TypeWithAnnotations
+        internal override TypeSymbol Type
         {
             get
             {
                 var mapOrType = _mapOrType;
-                if (mapOrType is TypeWithAnnotations type)
+                var type = mapOrType as TypeSymbol;
+                if (type != null)
                 {
                     return type;
                 }
 
-                TypeWithAnnotations substituted = ((TypeMap)mapOrType).SubstituteType(this._underlyingParameter.TypeWithAnnotations);
+                TypeWithModifiers substituted = ((TypeMap)mapOrType).SubstituteType(this.underlyingParameter.Type);
 
-                if (substituted.CustomModifiers.IsEmpty &&
-                    this._underlyingParameter.TypeWithAnnotations.CustomModifiers.IsEmpty &&
-                    this._underlyingParameter.RefCustomModifiers.IsEmpty)
+                type = substituted.Type;
+
+                if (substituted.CustomModifiers.IsDefaultOrEmpty)
                 {
-                    _mapOrType = substituted;
+                    _mapOrType = type;
                 }
 
-                return substituted;
+                return type;
             }
         }
 
-
-        public override ImmutableArray<CustomModifier> RefCustomModifiers
+        public override ImmutableArray<CustomModifier> CustomModifiers
         {
             get
             {
                 var map = _mapOrType as TypeMap;
-                return map != null ? map.SubstituteCustomModifiers(this._underlyingParameter.RefCustomModifiers) : this._underlyingParameter.RefCustomModifiers;
+                return map != null ? map.SubstituteCustomModifiers(this.underlyingParameter.Type, this.underlyingParameter.CustomModifiers) : this.underlyingParameter.CustomModifiers;
             }
         }
 
-        public sealed override bool Equals(Symbol obj, TypeCompareKind compareKind)
-        {
-            if ((object)this == obj)
-            {
-                return true;
-            }
-
-            // Equality of ordinal and containing symbol is a correct
-            // implementation for all ParameterSymbols, but we don't 
-            // define it on the base type because most can simply use
-            // ReferenceEquals.
-
-            var other = obj as SubstitutedParameterSymbol;
-            return (object)other != null &&
-                this.Ordinal == other.Ordinal &&
-                this.ContainingSymbol.Equals(other.ContainingSymbol, compareKind);
-        }
-
-        public sealed override int GetHashCode()
-        {
-            return Roslyn.Utilities.Hash.Combine(ContainingSymbol, _underlyingParameter.Ordinal);
-        }
+        //public override string GetDocumentationCommentXml(CultureInfo preferredCulture = null, bool expandIncludes = false, CancellationToken cancellationToken = default(CancellationToken))
+        //{
+        //    return underlyingParameter.GetDocumentationCommentXml(preferredCulture, expandIncludes, cancellationToken);
+        //}
     }
 }

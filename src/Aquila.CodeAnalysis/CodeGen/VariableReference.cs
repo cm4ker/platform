@@ -437,7 +437,7 @@ namespace Pchp.CodeAnalysis.Semantics
             lhs.Dispose();
         }
 
-        public static LhsStack EmitReceiver(CodeGenerator cg, Symbol symbol, TypeSymbol receiver)
+        public static LhsStack EmitReceiver(CodeGenerator cg, Aquila.CodeAnalysis.Symbols.Symbol symbol, TypeSymbol receiver)
         {
             //
             if (symbol.IsStatic)
@@ -494,7 +494,7 @@ namespace Pchp.CodeAnalysis.Semantics
             }
         }
 
-        public static LhsStack EmitReceiver(CodeGenerator cg, ref LhsStack lhs, Symbol symbol, BoundExpression receiver)
+        public static LhsStack EmitReceiver(CodeGenerator cg, ref LhsStack lhs, Aquila.CodeAnalysis.Symbols.Symbol symbol, BoundExpression receiver)
         {
             // TODO: try load Receiver address directly if necessary, otherwise cg.EmitStructAddr
             // TODO: use LhsStack
@@ -551,7 +551,7 @@ namespace Pchp.CodeAnalysis.Semantics
         /// Optional.
         /// Gets the referenced symbol.
         /// </summary>
-        Symbol Symbol { get; }
+        Aquila.CodeAnalysis.Symbols.Symbol Symbol { get; }
 
         /// <summary>
         /// Gets native type of the variable.
@@ -627,7 +627,7 @@ namespace Pchp.CodeAnalysis.Semantics
 
         public BoundVariableName BoundName { get; } // TODO: move to IVariableReference?
 
-        public Symbol Symbol { get; protected set; }
+        public Aquila.CodeAnalysis.Symbols.Symbol Symbol { get; protected set; }
 
         /// <summary>Containing routine symbol. Cannot be <c>null</c>.</summary>
         internal SourceRoutineSymbol Routine { get; }
@@ -640,7 +640,7 @@ namespace Pchp.CodeAnalysis.Semantics
 
         public virtual IPlace Place { get; protected set; }
 
-        public LocalVariableReference(VariableKind kind, SourceRoutineSymbol routine, Symbol symbol,
+        public LocalVariableReference(VariableKind kind, SourceRoutineSymbol routine, Aquila.CodeAnalysis.Symbols.Symbol symbol,
             BoundVariableName name)
         {
             this.VariableKind = kind;
@@ -1292,7 +1292,7 @@ namespace Pchp.CodeAnalysis.Semantics
     {
         new VariableName Name => BoundName.NameValue;
 
-        PropertySymbol /*!*/ ResolveSuperglobalProperty(PhpCompilation compilation)
+        PropertySymbol /*!*/ ResolveSuperglobalProperty(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
         {
             PropertySymbol prop;
 
@@ -1372,7 +1372,7 @@ namespace Pchp.CodeAnalysis.Semantics
 
         public FieldSymbol Field => (FieldSymbol) Symbol;
 
-        public Symbol Symbol { get; }
+        public Aquila.CodeAnalysis.Symbols.Symbol Symbol { get; }
 
         public TypeSymbol Type => Field.Type;
 
@@ -1491,7 +1491,7 @@ namespace Pchp.CodeAnalysis.Semantics
 
         public PropertySymbol Property => (PropertySymbol) Symbol;
 
-        public Symbol Symbol { get; }
+        public Aquila.CodeAnalysis.Symbols.Symbol Symbol { get; }
 
         public TypeSymbol Type => Property.Type;
 
@@ -1571,7 +1571,7 @@ namespace Pchp.CodeAnalysis.Semantics
             _boundfield = boundfield ?? throw ExceptionUtilities.ArgumentNull(nameof(boundfield));
         }
 
-        public Symbol Symbol => null;
+        public Aquila.CodeAnalysis.Symbols.Symbol Symbol => null;
 
         public TypeSymbol Type => null;
 
@@ -1749,7 +1749,7 @@ namespace Pchp.CodeAnalysis.Semantics
 
         public IPlace Place { get; }
 
-        public Symbol Symbol => throw new NotImplementedException();
+        public Aquila.CodeAnalysis.Symbols.Symbol Symbol => throw new NotImplementedException();
 
         public TypeSymbol Type => Place.Type;
 

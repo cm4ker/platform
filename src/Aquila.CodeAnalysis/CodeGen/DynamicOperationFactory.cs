@@ -473,7 +473,7 @@ namespace Pchp.CodeAnalysis.CodeGen
                 => EmitWrapParam(_cg.CoreTypes.Dynamic_UnpackingParam_T.Symbol.Construct(value), value);
         }
 
-        readonly PhpCompilation _compilation;
+        readonly Aquila.CodeAnalysis.Symbols.PhpCompilation _compilation;
         readonly NamedTypeSymbol _container;
         readonly CodeGenerator _cg;
 

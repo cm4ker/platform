@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 {
     internal static class CommentIdResolver
     {
-        public static string GetId(Symbol symbol)
+        public static string GetId(Aquila.CodeAnalysis.Symbols.Symbol symbol)
         {
             if (symbol is MethodSymbol) return GetId((MethodSymbol)symbol);
             if (symbol is TypeSymbol) return GetId((TypeSymbol)symbol);

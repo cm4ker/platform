@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
-using Aquila.CodeAnalysis.Symbols;
+using Pchp.CodeAnalysis.Symbols;
 using Cci = Microsoft.Cci;
-using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
+using FieldSymbol = Aquila.CodeAnalysis.Symbols.FieldSymbol;
 
 namespace Pchp.CodeAnalysis.Emit
 {
@@ -24,7 +24,7 @@ namespace Pchp.CodeAnalysis.Emit
             _underlyingField = underlyingField;
         }
 
-        protected override Symbol UnderlyingSymbol
+        protected override Aquila.CodeAnalysis.Symbols.Symbol UnderlyingSymbol
         {
             get
             {

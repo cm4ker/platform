@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.Text;
-using Aquila.CodeAnalysis.Symbols;
+using Pchp.CodeAnalysis.Symbols;
+using NamedTypeSymbol = Aquila.CodeAnalysis.Symbols.NamedTypeSymbol;
 
 namespace Pchp.CodeAnalysis.Emit
 {

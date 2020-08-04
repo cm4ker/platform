@@ -187,7 +187,7 @@ namespace Pchp.CodeAnalysis.Semantics
                 routine: cg.Routine);
         }
 
-        void EmitInit(Emit.PEModuleBuilder module, DiagnosticBag diagnostic, PhpCompilation compilation,
+        void EmitInit(Emit.PEModuleBuilder module, DiagnosticBag diagnostic, Aquila.CodeAnalysis.Symbols.PhpCompilation compilation,
             SynthesizedStaticLocHolder holder, BoundExpression initializer, SourceRoutineSymbol routine)
         {
             var requiresContext = initializer != null && initializer.RequiresContext;

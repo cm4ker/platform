@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Aquila.CodeAnalysis.Emitter.Model;
 using Microsoft.CodeAnalysis.Emit;
 using Roslyn.Utilities;
 using Cci = Microsoft.Cci;
@@ -8,7 +7,7 @@ namespace Pchp.CodeAnalysis.Emit
 {
     internal abstract class TypeMemberReference : Cci.ITypeMemberReference
     {
-        protected abstract Symbol UnderlyingSymbol { get; }
+        protected abstract Aquila.CodeAnalysis.Symbols.Symbol UnderlyingSymbol { get; }
 
         public virtual Cci.ITypeReference GetContainingType(EmitContext context)
         {

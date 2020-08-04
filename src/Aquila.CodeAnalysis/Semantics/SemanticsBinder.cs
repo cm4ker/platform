@@ -129,7 +129,7 @@ namespace Pchp.CodeAnalysis.Semantics
         /// <summary>
         /// Compilation.
         /// </summary>
-        internal PhpCompilation DeclaringCompilation { get; }
+        internal Aquila.CodeAnalysis.Symbols.PhpCompilation DeclaringCompilation { get; }
 
         /// <summary>Gets <see cref="BoundTypeRefFactory"/> instance.</summary>
         internal BoundTypeRefFactory BoundTypeRefFactory => DeclaringCompilation.TypeRefFactory;
@@ -148,7 +148,7 @@ namespace Pchp.CodeAnalysis.Semantics
         /// <param name="locals">Table of local variables within routine.</param>
         /// <param name="self">Current self context.</param>
         /// <param name="compilation">Declaring compilation.</param>
-        public static SemanticsBinder Create(PhpCompilation compilation, SyntaxTree file, LocalsTable locals,
+        public static SemanticsBinder Create(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, SyntaxTree file, LocalsTable locals,
             SourceTypeSymbol self = null)
         {
             Debug.Assert(locals != null);
@@ -168,7 +168,7 @@ namespace Pchp.CodeAnalysis.Semantics
                 : new SemanticsBinder(compilation, file, locals, routine, self);
         }
 
-        public SemanticsBinder(PhpCompilation compilation, SyntaxTree file, LocalsTable locals = null,
+        public SemanticsBinder(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, SyntaxTree file, LocalsTable locals = null,
             SourceRoutineSymbol routine = null, SourceTypeSymbol self = null)
         {
             DeclaringCompilation = compilation;
@@ -1457,7 +1457,7 @@ namespace Pchp.CodeAnalysis.Semantics
 
         #region Construction
 
-        public GeneratorSemanticsBinder(PhpCompilation compilation, ImmutableArray<AST.IYieldLikeEx> yields,
+        public GeneratorSemanticsBinder(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, ImmutableArray<AST.IYieldLikeEx> yields,
             LocalsTable locals, SourceRoutineSymbol routine, SourceTypeSymbol self)
             : base(compilation, routine.ContainingFile.SyntaxTree, locals, routine, self)
         {

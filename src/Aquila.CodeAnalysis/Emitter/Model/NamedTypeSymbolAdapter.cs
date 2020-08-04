@@ -10,8 +10,12 @@ using Pchp.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
 using System.Linq;
+ using Aquila.CodeAnalysis.Symbols;
+ using Aquila.CodeAnalysis.Symbols.PE;
+ using Aquila.CodeAnalysis.Symbols.Source;
+ using SourceTypeSymbol = Aquila.CodeAnalysis.Symbols.Source.SourceTypeSymbol;
 
-namespace Aquila.CodeAnalysis.Symbols
+ namespace Pchp.CodeAnalysis.Symbols
 {
     internal partial class NamedTypeSymbol :
         Cci.ITypeReference,
@@ -221,7 +225,7 @@ namespace Aquila.CodeAnalysis.Symbols
             PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
 
             Debug.Assert(((Cci.ITypeReference)this).AsTypeDefinition(context) != null);
-            NamedTypeSymbol baseType = this.BaseType; // .BaseTypeNoUseSiteDiagnostics;
+            Aquila.CodeAnalysis.Symbols.NamedTypeSymbol baseType = this.BaseType; // .BaseTypeNoUseSiteDiagnostics;
 
             if (this.TypeKind == TypeKind.Submission)
             {
@@ -268,7 +272,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
             PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
 
-            foreach (var method in this.GetMembers().OfType<MethodSymbol>().Concat(moduleBeingBuilt.GetSynthesizedMethods(this)))
+            foreach (var method in this.GetMembers().OfType<Aquila.CodeAnalysis.Symbols.MethodSymbol>().Concat(moduleBeingBuilt.GetSynthesizedMethods(this)))
             {
                 Debug.Assert((object)method.PartialDefinitionPart == null); // must be definition
 
@@ -365,7 +369,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
             PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
 
-            foreach (NamedTypeSymbol iiface in this.GetInterfacesToEmit())
+            foreach (Aquila.CodeAnalysis.Symbols.NamedTypeSymbol iiface in this.GetInterfacesToEmit())
             {
                 var typeRef = moduleBeingBuilt.Translate(iiface, null, context.Diagnostics,
                     fromImplements: true);
@@ -375,13 +379,13 @@ namespace Aquila.CodeAnalysis.Symbols
             yield break;
         }
 
-        protected ImmutableArray<NamedTypeSymbol> CalculateInterfacesToEmit()
+        protected ImmutableArray<Aquila.CodeAnalysis.Symbols.NamedTypeSymbol> CalculateInterfacesToEmit()
         {
             Debug.Assert(this.IsDefinition);
             Debug.Assert(this.ContainingModule is SourceModuleSymbol);
 
-            ArrayBuilder<NamedTypeSymbol> builder = ArrayBuilder<NamedTypeSymbol>.GetInstance();
-            HashSet<NamedTypeSymbol> seen = null;
+            ArrayBuilder<Aquila.CodeAnalysis.Symbols.NamedTypeSymbol> builder = ArrayBuilder<Aquila.CodeAnalysis.Symbols.NamedTypeSymbol>.GetInstance();
+            HashSet<Aquila.CodeAnalysis.Symbols.NamedTypeSymbol> seen = null;
             InterfacesVisit(this, builder, ref seen);
             return builder.ToImmutableAndFree();
         }
@@ -392,17 +396,17 @@ namespace Aquila.CodeAnalysis.Symbols
         /// <remarks>
         /// Pre-order depth-first search.
         /// </remarks>
-        private static void InterfacesVisit(NamedTypeSymbol namedType, ArrayBuilder<NamedTypeSymbol> builder, ref HashSet<NamedTypeSymbol> seen)
+        private static void InterfacesVisit(Aquila.CodeAnalysis.Symbols.NamedTypeSymbol namedType, ArrayBuilder<Aquila.CodeAnalysis.Symbols.NamedTypeSymbol> builder, ref HashSet<Aquila.CodeAnalysis.Symbols.NamedTypeSymbol> seen)
         {
             // It's not clear how important the order of these interfaces is, but Dev10
             // maintains pre-order depth-first/declaration order, so we probably should as well.
             // That's why we're not using InterfacesAndTheirBaseInterfaces - it's an unordered set.
-            foreach (NamedTypeSymbol @interface in namedType.Interfaces) // NoUseSiteDiagnostics())
+            foreach (Aquila.CodeAnalysis.Symbols.NamedTypeSymbol @interface in namedType.Interfaces) // NoUseSiteDiagnostics())
             {
                 if (seen == null)
                 {
                     // Don't allocate until we see at least one interface.
-                    seen = new HashSet<NamedTypeSymbol>();
+                    seen = new HashSet<Aquila.CodeAnalysis.Symbols.NamedTypeSymbol>();
                 }
                 if (seen.Add(@interface))
                 {
@@ -415,7 +419,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// <summary>
         /// Gets the set of interfaces to emit on this type. This set can be different from the set returned by Interfaces property.
         /// </summary>
-        internal abstract ImmutableArray<NamedTypeSymbol> GetInterfacesToEmit();
+        internal abstract ImmutableArray<Aquila.CodeAnalysis.Symbols.NamedTypeSymbol> GetInterfacesToEmit();
 
         bool Cci.ITypeDefinition.IsAbstract
         {
@@ -489,8 +493,6 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        public bool IsDelegate { get; }
-
         bool Cci.ITypeDefinition.IsRuntimeSpecial
         {
             get
@@ -500,13 +502,6 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        public INamedTypeSymbol Construct(ImmutableArray<ITypeSymbol> typeArguments, ImmutableArray<NullableAnnotation> typeArgumentNullableAnnotations)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ImmutableArray<NullableAnnotation> TypeArgumentNullableAnnotations { get; }
-
         bool Cci.ITypeDefinition.IsSerializable
         {
             get
@@ -515,8 +510,6 @@ namespace Aquila.CodeAnalysis.Symbols
                 return false; // this.IsSerializable;
             }
         }
-
-        public INamedTypeSymbol? NativeIntegerUnderlyingType { get; }
 
         bool Cci.ITypeDefinition.IsSpecialName
         {
@@ -607,7 +600,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             CheckDefinitionInvariant();
 
-            foreach (NamedTypeSymbol type in this.GetTypeMembers()) // Ordered.
+            foreach (Aquila.CodeAnalysis.Symbols.NamedTypeSymbol type in this.GetTypeMembers()) // Ordered.
             {
                 yield return type;
             }
@@ -746,7 +739,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 // consumer cannot figure where namespace ends and actual type name starts.
                 // Therefore it is a good practice to avoid type names with dots.
                 // Exception: The EE copies type names from metadata, which may contain dots already.
-                Debug.Assert(this.IsErrorType() ||
+                Debug.Assert(TypeSymbolExtensions.IsErrorType(this) ||
                     !unsuffixedName.Contains(".") ||
                     this.OriginalDefinition is PENamedTypeSymbol, "type name contains dots: " + unsuffixedName);
 

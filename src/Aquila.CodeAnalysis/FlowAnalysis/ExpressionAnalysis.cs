@@ -45,7 +45,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// </summary>
         internal TypeRefContext TypeCtx => State.TypeRefContext;
 
-        protected PhpCompilation DeclaringCompilation => _model.Compilation;
+        protected Aquila.CodeAnalysis.Symbols.PhpCompilation DeclaringCompilation => _model.Compilation;
 
         protected BoundTypeRefFactory BoundTypeRefFactory => DeclaringCompilation.TypeRefFactory;
 
@@ -2576,7 +2576,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             // TODO: check constant name
 
             // bind to app-wide constant if possible
-            var symbol = (Symbol)_model.ResolveConstant(x.Name.ToString());
+            var symbol = (Aquila.CodeAnalysis.Symbols.Symbol)_model.ResolveConstant(x.Name.ToString());
             var field = symbol as FieldSymbol;
 
             if (!BindConstantValue(x, field))

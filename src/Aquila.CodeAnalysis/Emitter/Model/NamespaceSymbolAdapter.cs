@@ -1,6 +1,6 @@
 ﻿using Cci = Microsoft.Cci;
 
-namespace Aquila.CodeAnalysis.Symbols
+namespace Pchp.CodeAnalysis.Symbols
 {
     internal partial class NamespaceSymbol : Cci.INamespace
     {

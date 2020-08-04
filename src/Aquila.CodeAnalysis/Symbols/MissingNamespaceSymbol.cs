@@ -1,13 +1,9 @@
-﻿﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+﻿using System.Collections.Immutable;
+using System.Diagnostics;
+using Microsoft.CodeAnalysis;
+using Roslyn.Utilities;
 
- using System.Collections.Immutable;
- using System.Diagnostics;
- using Microsoft.CodeAnalysis;
- using Roslyn.Utilities;
-
- namespace Aquila.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// A <see cref="MissingNamespaceSymbol"/> is a special kind of <see cref="NamespaceSymbol"/> that represents
@@ -18,13 +14,13 @@
         private readonly string _name;
         private readonly Symbol _containingSymbol;
 
-        public MissingNamespaceSymbol(MissingModuleSymbol containingModule)
-        {
-            Debug.Assert((object)containingModule != null);
+        //public MissingNamespaceSymbol(MissingModuleSymbol containingModule)
+        //{
+        //    Debug.Assert((object)containingModule != null);
 
-            _containingSymbol = containingModule;
-            _name = string.Empty;
-        }
+        //    _containingSymbol = containingModule;
+        //    _name = string.Empty;
+        //}
 
         public MissingNamespaceSymbol(NamespaceSymbol containingNamespace, string name)
         {
@@ -59,25 +55,12 @@
             }
         }
 
-        internal override NamespaceExtent Extent
-        {
-            get
-            {
-                if (_containingSymbol.Kind == SymbolKind.NetModule)
-                {
-                    return new NamespaceExtent((ModuleSymbol)_containingSymbol);
-                }
-
-                return ((NamespaceSymbol)_containingSymbol).Extent;
-            }
-        }
-
         public override int GetHashCode()
         {
             return Hash.Combine(_containingSymbol.GetHashCode(), _name.GetHashCode());
         }
 
-        public override bool Equals(Symbol obj, TypeCompareKind compareKind)
+        public override bool Equals(object obj)
         {
             if (ReferenceEquals(this, obj))
             {
@@ -86,7 +69,7 @@
 
             MissingNamespaceSymbol other = obj as MissingNamespaceSymbol;
 
-            return (object)other != null && _name.Equals(other._name) && _containingSymbol.Equals(other._containingSymbol, compareKind);
+            return (object)other != null && _name.Equals(other._name) && _containingSymbol.Equals(other._containingSymbol);
         }
 
         public override ImmutableArray<Location> Locations
@@ -126,6 +109,11 @@
         }
 
         public override ImmutableArray<Symbol> GetMembers(string name)
+        {
+            return ImmutableArray<Symbol>.Empty;
+        }
+
+        public override ImmutableArray<Symbol> GetMembersByPhpName(string name)
         {
             return ImmutableArray<Symbol>.Empty;
         }

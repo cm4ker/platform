@@ -1,37 +1,120 @@
-﻿﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+﻿using System;
+using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Globalization;
+using System.Threading;
+using Aquila.CodeAnalysis.Symbols.Php;
+using Microsoft.CodeAnalysis;
+using Pchp.CodeAnalysis.CodeGen;
+using Roslyn.Utilities;
 
- using System.Collections.Immutable;
- using System.Threading;
- using Aquila.CodeAnalysis.Symbols.Attributes;
- using Aquila.CodeAnalysis.Symbols.Wrapped;
- using Microsoft.CodeAnalysis;
- using Roslyn.Utilities;
-
- namespace Aquila.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
-    internal sealed class SubstitutedFieldSymbol : WrappedFieldSymbol
+    internal sealed class SubstitutedFieldSymbol : FieldSymbol, IPhpPropertySymbol
     {
-        private readonly SubstitutedNamedTypeSymbol _containingType;
+        #region IPhpPropertySymbol
 
-        private TypeWithAnnotations.Boxed _lazyType;
+        PhpPropertyKind IPhpPropertySymbol.FieldKind => ((IPhpPropertySymbol)OriginalDefinition).FieldKind;
 
-        internal SubstitutedFieldSymbol(SubstitutedNamedTypeSymbol containingType, FieldSymbol substitutedFrom)
-            : base((FieldSymbol)substitutedFrom.OriginalDefinition)
+        TypeSymbol IPhpPropertySymbol.ContainingStaticsHolder
         {
-            _containingType = containingType;
+            get
+            {
+                if (_containingType.IsStaticsContainer())
+                {
+                    return _containingType;
+                }
+
+                if (PhpFieldSymbolExtension.IsInStaticsHolder(_originalDefinition))
+                {
+                    return _containingType.TryGetStaticsHolder();
+                }
+
+                return null;
+            }
         }
 
-        internal override TypeWithAnnotations GetFieldType(ConsList<FieldSymbol> fieldsBeingBound)
+        bool IPhpPropertySymbol.RequiresContext => ((IPhpPropertySymbol)OriginalDefinition).RequiresContext;
+
+        TypeSymbol IPhpPropertySymbol.DeclaringType => throw new NotImplementedException();
+
+        void IPhpPropertySymbol.EmitInit(CodeGenerator cg) { throw new NotSupportedException(); }
+
+        public override bool HasNotNull => OriginalDefinition.HasNotNull;
+
+        #endregion
+
+        NamedTypeSymbol _containingType;
+        readonly FieldSymbol _originalDefinition;
+        readonly object _token;
+
+        private TypeSymbol _lazyType;
+
+        internal SubstitutedFieldSymbol(NamedTypeSymbol containingType, FieldSymbol substitutedFrom)
+            : this(containingType, substitutedFrom, containingType)
         {
-            if (_lazyType == null)
+        }
+
+        internal SubstitutedFieldSymbol(NamedTypeSymbol containingType, FieldSymbol substitutedFrom, object token)
+        {
+            _containingType = containingType;
+            _originalDefinition = substitutedFrom.OriginalDefinition as FieldSymbol;
+            _token = token ?? _containingType;
+        }
+
+        internal override TypeSymbol GetFieldType(ConsList<FieldSymbol> fieldsBeingBound)
+        {
+            if ((object)_lazyType == null)
             {
-                var type = _containingType.TypeSubstitution.SubstituteType(OriginalDefinition.GetFieldType(fieldsBeingBound));
-                Interlocked.CompareExchange(ref _lazyType, new TypeWithAnnotations.Boxed(type), null);
+                Interlocked.CompareExchange(ref _lazyType, _containingType.TypeSubstitution.SubstituteType(_originalDefinition.GetFieldType(fieldsBeingBound)).Type, null);
             }
 
-            return _lazyType.Value;
+            return _lazyType;
+        }
+
+        public override string Name
+        {
+            get
+            {
+                return _originalDefinition.Name;
+            }
+        }
+
+        public override string GetDocumentationCommentXml(CultureInfo preferredCulture = null, bool expandIncludes = false, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return _originalDefinition.GetDocumentationCommentXml(preferredCulture, expandIncludes, cancellationToken);
+        }
+
+        internal override bool HasSpecialName
+        {
+            get
+            {
+                return _originalDefinition.HasSpecialName;
+            }
+        }
+
+        internal override bool HasRuntimeSpecialName
+        {
+            get
+            {
+                return _originalDefinition.HasRuntimeSpecialName;
+            }
+        }
+
+        internal override bool IsNotSerialized
+        {
+            get
+            {
+                return _originalDefinition.IsNotSerialized;
+            }
+        }
+
+        internal override int? TypeLayoutOffset
+        {
+            get
+            {
+                return _originalDefinition.TypeLayoutOffset;
+            }
         }
 
         public override Symbol ContainingSymbol
@@ -50,39 +133,48 @@
             }
         }
 
+        internal void SetContainingType(SubstitutedNamedTypeSymbol type)
+        {
+            Debug.Assert(_lazyType == null);
+
+            _lazyType = null;
+            _containingType = type;
+        }
+
         public override FieldSymbol OriginalDefinition
         {
             get
             {
-                return _underlyingField;
+                return _originalDefinition.OriginalDefinition;
             }
         }
 
-        public override bool IsImplicitlyDeclared
+        public override ImmutableArray<Location> Locations
         {
             get
             {
-                if (this.ContainingType.IsTupleType && this.IsDefaultTupleElement)
-                {
-                    // To improve backwards compatibility with earlier implementation of tuples,
-                    // we pretend that default tuple element fields are implicitly declared, despite having locations
-                    return true;
-                }
-
-                return base.IsImplicitlyDeclared;
+                return _originalDefinition.Locations;
             }
         }
 
-        public override ImmutableArray<CSharpAttributeData> GetAttributes()
+        public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
         {
-            return OriginalDefinition.GetAttributes();
+            get
+            {
+                return _originalDefinition.DeclaringSyntaxReferences;
+            }
+        }
+
+        public override ImmutableArray<AttributeData> GetAttributes()
+        {
+            return _originalDefinition.GetAttributes();
         }
 
         public override Symbol AssociatedSymbol
         {
             get
             {
-                Symbol underlying = OriginalDefinition.AssociatedSymbol;
+                Symbol underlying = _originalDefinition.AssociatedSymbol;
 
                 if ((object)underlying == null)
                 {
@@ -93,41 +185,114 @@
             }
         }
 
-        internal override NamedTypeSymbol FixedImplementationType(PEModuleBuilder emitModule)
+        public override bool IsStatic
         {
-            // This occurs rarely, if ever.  The scenario would be a generic struct
-            // containing a fixed-size buffer.  Given the rarity there would be little
-            // benefit to "optimizing" the performance of this by caching the
-            // translated implementation type.
-            return (NamedTypeSymbol)_containingType.TypeSubstitution.SubstituteType(OriginalDefinition.FixedImplementationType(emitModule)).Type;
+            get
+            {
+                return _originalDefinition.IsStatic;
+            }
         }
 
-        public override bool Equals(Symbol obj, TypeCompareKind compareKind)
+        public override bool IsReadOnly
+        {
+            get
+            {
+                return _originalDefinition.IsReadOnly;
+            }
+        }
+
+        public override bool IsConst
+        {
+            get
+            {
+                return _originalDefinition.IsConst;
+            }
+        }
+
+        internal override ObsoleteAttributeData ObsoleteAttributeData
+        {
+            get
+            {
+                return _originalDefinition.ObsoleteAttributeData;
+            }
+        }
+
+        public override object ConstantValue
+        {
+            get
+            {
+                return _originalDefinition.ConstantValue;
+            }
+        }
+
+        internal override ConstantValue GetConstantValue(bool earlyDecodingWellKnownAttributes)
+        {
+            return _originalDefinition.GetConstantValue(earlyDecodingWellKnownAttributes);
+        }
+
+        internal override MarshalPseudoCustomAttributeData MarshallingInformation
+        {
+            get
+            {
+                return _originalDefinition.MarshallingInformation;
+            }
+        }
+
+        public override bool IsVolatile
+        {
+            get
+            {
+                return _originalDefinition.IsVolatile;
+            }
+        }
+
+        public override bool IsImplicitlyDeclared
+        {
+            get
+            {
+                return _originalDefinition.IsImplicitlyDeclared;
+            }
+        }
+
+        public override Accessibility DeclaredAccessibility
+        {
+            get
+            {
+                return _originalDefinition.DeclaredAccessibility;
+            }
+        }
+
+        public override ImmutableArray<CustomModifier> CustomModifiers
+        {
+            get
+            {
+                return _containingType.TypeSubstitution.SubstituteCustomModifiers(_originalDefinition.Type, _originalDefinition.CustomModifiers);
+            }
+        }
+
+        //internal override NamedTypeSymbol FixedImplementationType(PEModuleBuilder emitModule)
+        //{
+        //    // This occurs rarely, if ever.  The scenario would be a generic struct
+        //    // containing a fixed-size buffer.  Given the rarity there would be little
+        //    // benefit to "optimizing" the performance of this by caching the
+        //    // translated implementation type.
+        //    return (NamedTypeSymbol)_containingType.TypeSubstitution.SubstituteType(_originalDefinition.FixedImplementationType(emitModule)).Type;
+        //}
+
+        public override bool Equals(object obj)
         {
             if ((object)this == obj)
             {
                 return true;
             }
 
-            var other = obj as FieldSymbol;
-            return (object)other != null && TypeSymbol.Equals(_containingType, other.ContainingType, compareKind) && OriginalDefinition == other.OriginalDefinition;
+            var other = obj as SubstitutedFieldSymbol;
+            return (object)other != null && _token == other._token && _originalDefinition == other._originalDefinition;
         }
 
         public override int GetHashCode()
         {
-            var code = this.OriginalDefinition.GetHashCode();
-
-            // If the containing type of the original definition is the same as our containing type
-            // it's possible that we will compare equal to the original definition under certain conditions 
-            // (e.g, ignoring nullability) and want to retain the same hashcode. As such only make
-            // the containing type part of the hashcode when we know equality isn't possible
-            var containingHashCode = _containingType.GetHashCode();
-            if (containingHashCode != this.OriginalDefinition.ContainingType.GetHashCode())
-            {
-                code = Hash.Combine(containingHashCode, code);
-            }
-
-            return code;
+            return Hash.Combine(_token, _originalDefinition.GetHashCode());
         }
     }
 }

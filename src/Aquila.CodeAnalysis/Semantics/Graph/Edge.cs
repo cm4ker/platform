@@ -9,8 +9,9 @@ using Devsense.PHP.Syntax;
 using Devsense.PHP.Syntax.Ast;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
+ using Aquila.Syntax;
 
-namespace Pchp.CodeAnalysis.Semantics.Graph
+ namespace Pchp.CodeAnalysis.Semantics.Graph
 {
     /// <summary>
     /// Represents an edge to other blocks.

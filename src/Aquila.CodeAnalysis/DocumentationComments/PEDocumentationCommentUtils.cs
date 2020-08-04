@@ -12,7 +12,7 @@ using System.Threading.Tasks;
     internal static class PEDocumentationCommentUtils
     {
         internal static string GetDocumentationComment(
-            Symbol symbol,
+            Aquila.CodeAnalysis.Symbols.Symbol symbol,
             PEModuleSymbol containingPEModule,
             CultureInfo preferredCulture,
             CancellationToken cancellationToken,

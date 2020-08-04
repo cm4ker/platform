@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cci = Microsoft.Cci;
 
-namespace Aquila.CodeAnalysis.Symbols
+namespace Pchp.CodeAnalysis.Symbols
 {
     internal partial class PropertySymbol : Cci.IPropertyDefinition
     {
@@ -57,7 +57,7 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 CheckDefinitionInvariant();
-                MethodSymbol getMethod = this.GetMethod;
+                Aquila.CodeAnalysis.Symbols.MethodSymbol getMethod = this.GetMethod;
                 if ((object)getMethod != null || !this.IsSealed)
                 {
                     return getMethod;
@@ -117,7 +117,7 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 CheckDefinitionInvariant();
-                MethodSymbol setMethod = this.SetMethod;
+                Aquila.CodeAnalysis.Symbols.MethodSymbol setMethod = this.SetMethod;
                 if ((object)setMethod != null || !this.IsSealed)
                 {
                     return setMethod;

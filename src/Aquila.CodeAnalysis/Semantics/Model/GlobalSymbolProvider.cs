@@ -18,7 +18,7 @@ using Pchp.CodeAnalysis.Utilities;
     {
         #region Fields
 
-        readonly PhpCompilation _compilation;
+        readonly Aquila.CodeAnalysis.Symbols.PhpCompilation _compilation;
         readonly ISymbolProvider _next;
 
         ImmutableArray<NamedTypeSymbol> _lazyExtensionContainers;
@@ -35,13 +35,13 @@ using Pchp.CodeAnalysis.Utilities;
 
         #endregion
 
-        public GlobalSymbolProvider(PhpCompilation compilation)
+        public GlobalSymbolProvider(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
         {
             _compilation = compilation ?? throw new ArgumentNullException(nameof(compilation));
             _next = new SourceSymbolProvider(compilation.SourceSymbolCollection);
         }
 
-        static IEnumerable<PEAssemblySymbol> GetExtensionLibraries(PhpCompilation compilation)
+        static IEnumerable<PEAssemblySymbol> GetExtensionLibraries(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
             => compilation
             .GetBoundReferenceManager()
             .ExplicitReferencesSymbols
@@ -59,7 +59,7 @@ using Pchp.CodeAnalysis.Utilities;
             }
         }
 
-        static IEnumerable<NamedTypeSymbol> ResolveExtensionContainers(PhpCompilation compilation)
+        static IEnumerable<NamedTypeSymbol> ResolveExtensionContainers(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
         {
             var libraries = GetExtensionLibraries(compilation).SelectMany(r => r.ExtensionContainers);
             var synthesized = compilation.SourceSymbolCollection.DefinedConstantsContainer;
@@ -80,7 +80,7 @@ using Pchp.CodeAnalysis.Utilities;
             return method != null && method.IsStatic && method.DeclaredAccessibility == Accessibility.Public && method.MethodKind == MethodKind.Ordinary && !method.IsPhpHidden(_compilation);
         }
 
-        internal bool IsGlobalConstant(Symbol symbol)
+        internal bool IsGlobalConstant(Aquila.CodeAnalysis.Symbols.Symbol symbol)
         {
             if (symbol is FieldSymbol field)
             {
@@ -254,7 +254,7 @@ using Pchp.CodeAnalysis.Utilities;
         /// <summary>
         /// Gets declaring compilation.
         /// </summary>
-        public PhpCompilation Compilation => _compilation;
+        public Aquila.CodeAnalysis.Symbols.PhpCompilation Compilation => _compilation;
 
         public INamedTypeSymbol ResolveType(QualifiedName name, Dictionary<QualifiedName, INamedTypeSymbol> resolved = null)
         {
@@ -372,7 +372,7 @@ using Pchp.CodeAnalysis.Utilities;
             {
                 var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-                foreach (var t in GetExtensionLibraries(_compilation).Cast<Symbol>().Concat(ExtensionContainers).Concat(ExportedTypes.Values))   // assemblies & containers & types
+                foreach (var t in GetExtensionLibraries(_compilation).Cast<Aquila.CodeAnalysis.Symbols.Symbol>().Concat(ExtensionContainers).Concat(ExportedTypes.Values))   // assemblies & containers & types
                 {
                     result.UnionWith(SymbolExtensions.PhpExtensionAttributeValues(t.GetPhpExtensionAttribute()));
                 }

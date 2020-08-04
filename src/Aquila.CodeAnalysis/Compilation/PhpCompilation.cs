@@ -174,12 +174,12 @@ namespace Pchp.CodeAnalysis
         /// <summary>
         /// Create a duplicate of this compilation with different symbol instances.
         /// </summary>
-        public new PhpCompilation Clone()
+        public new Aquila.CodeAnalysis.Symbols.PhpCompilation Clone()
         {
             return Update(reuseReferenceManager: true);
         }
 
-        private PhpCompilation Update(
+        private Aquila.CodeAnalysis.Symbols.PhpCompilation Update(
             string assemblyName = null,
             PhpCompilationOptions options = null,
             IEnumerable<MetadataReference> references = null,
@@ -187,7 +187,7 @@ namespace Pchp.CodeAnalysis
             bool reuseReferenceManager = false,
             IEnumerable<PhpSyntaxTree> syntaxTrees = null)
         {
-            var compilation = new PhpCompilation(
+            var compilation = new Aquila.CodeAnalysis.Symbols.PhpCompilation(
                 assemblyName ?? this.AssemblyName,
                 options ?? _options,
                 references != null ? references.AsImmutable() : this.ExternalReferences,
@@ -204,14 +204,14 @@ namespace Pchp.CodeAnalysis
             return compilation;
         }
 
-        private PhpCompilation WithPhpSyntaxTrees(IEnumerable<PhpSyntaxTree> syntaxTrees)
+        private Aquila.CodeAnalysis.Symbols.PhpCompilation WithPhpSyntaxTrees(IEnumerable<PhpSyntaxTree> syntaxTrees)
         {
             return Update(
                 reuseReferenceManager: true,
                 syntaxTrees: syntaxTrees);
         }
 
-        public PhpCompilation WithPhpOptions(PhpCompilationOptions options)
+        public Aquila.CodeAnalysis.Symbols.PhpCompilation WithPhpOptions(PhpCompilationOptions options)
         {
             return Update(options: options);
         }
@@ -294,7 +294,7 @@ namespace Pchp.CodeAnalysis
             get { return SourceAssembly.StrongNameKeys; }
         }
 
-        public static PhpCompilation Create(
+        public static Aquila.CodeAnalysis.Symbols.PhpCompilation Create(
             string assemblyName,
             IEnumerable<PhpSyntaxTree> syntaxTrees = null,
             IEnumerable<MetadataReference> references = null,
@@ -303,7 +303,7 @@ namespace Pchp.CodeAnalysis
         {
             Debug.Assert(options != null);
 
-            var compilation = new PhpCompilation(
+            var compilation = new Aquila.CodeAnalysis.Symbols.PhpCompilation(
                 assemblyName,
                 options,
                 ValidateReferences<CompilationReference>(references),
@@ -1075,9 +1075,9 @@ namespace Pchp.CodeAnalysis
                     // global functions
                     table.GetFunctions().OfType<SourceRoutineSymbol>()
                         // classes, interfaces, traits
-                        .Concat<Symbol>(table.GetDeclaredTypes())
+                        .Concat<Aquila.CodeAnalysis.Symbols.Symbol>(table.GetDeclaredTypes())
                         // type members - properties, constants
-                        .Concat<Symbol>(table.GetDeclaredTypes().SelectMany(t =>
+                        .Concat<Aquila.CodeAnalysis.Symbols.Symbol>(table.GetDeclaredTypes().SelectMany(t =>
                             t.GetMembers().Where(m => m is SourceRoutineSymbol || m is SourceFieldSymbol)));
 
                 var resources = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);

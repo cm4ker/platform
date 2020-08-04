@@ -1,21 +1,11 @@
-﻿﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+﻿using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using Microsoft.CodeAnalysis;
+using Roslyn.Utilities;
 
- using System.Collections.Concurrent;
- using System.Collections.Generic;
- using System.Diagnostics;
- using System.Linq;
- using System.Threading;
- using Microsoft.CodeAnalysis;
- using Roslyn.Utilities;
-
- namespace Aquila.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
-    /// <summary>
-    /// A <see cref="NonMissingAssemblySymbol"/> is a special kind of <see cref="AssemblySymbol"/> that represents
-    /// an assembly that is not missing, i.e. the "real" thing.
-    /// </summary>
     internal abstract class NonMissingAssemblySymbol : AssemblySymbol
     {
         /// <summary>
@@ -30,42 +20,44 @@
         private readonly ConcurrentDictionary<MetadataTypeName.Key, NamedTypeSymbol> _emittedNameToTypeMap =
             new ConcurrentDictionary<MetadataTypeName.Key, NamedTypeSymbol>();
 
-        private NamespaceSymbol _globalNamespace;
-
-        /// <summary>
-        /// Does this symbol represent a missing assembly.
-        /// </summary>
-        internal sealed override bool IsMissing
+        private NamedTypeSymbol LookupTopLevelMetadataTypeInCache(ref MetadataTypeName emittedName)
         {
-            get
+            NamedTypeSymbol result = null;
+            if (_emittedNameToTypeMap.TryGetValue(emittedName.ToKey(), out result))
             {
-                return false;
+                return result;
             }
+
+            return null;
         }
 
         /// <summary>
-        /// Gets the merged root namespace that contains all namespaces and types defined in the modules
-        /// of this assembly. If there is just one module in this assembly, this property just returns the 
-        /// GlobalNamespace of that module.
+        /// For test purposes only.
         /// </summary>
-        public sealed override NamespaceSymbol GlobalNamespace
+        internal NamedTypeSymbol CachedTypeByEmittedName(string emittedname)
+        {
+            MetadataTypeName mdName = MetadataTypeName.FromFullName(emittedname);
+            return _emittedNameToTypeMap[mdName.ToKey()];
+        }
+
+        /// <summary>
+        /// For test purposes only.
+        /// </summary>
+        internal int EmittedNameToTypeMapCount
         {
             get
             {
-                if ((object)_globalNamespace == null)
-                {
-                    // Get the root namespace from each module, and merge them all together. If there is only one, 
-                    // then MergedNamespaceSymbol.Create will just return that one.
-
-                    IEnumerable<NamespaceSymbol> allGlobalNamespaces = from m in Modules select m.GlobalNamespace;
-                    var result = MergedNamespaceSymbol.Create(new NamespaceExtent(this),
-                                                        null,
-                                                        allGlobalNamespaces.AsImmutable());
-                    Interlocked.CompareExchange(ref _globalNamespace, result, null);
-                }
-
-                return _globalNamespace;
+                return _emittedNameToTypeMap.Count;
             }
+        }
+
+        private void CacheTopLevelMetadataType(
+            ref MetadataTypeName emittedName,
+            NamedTypeSymbol result)
+        {
+            NamedTypeSymbol result1 = null;
+            result1 = _emittedNameToTypeMap.GetOrAdd(emittedName.ToKey(), result);
+            Debug.Assert(result1 == result || (result.IsErrorType() && result1.IsErrorType())); // object identity may differ in error cases
         }
 
         /// <summary>
@@ -108,7 +100,7 @@
             if ((object)result != null)
             {
                 // We only cache result equivalent to digging through type forwarders, which
-                // might produce a forwarder specific ErrorTypeSymbol. We don't want to 
+                // might produce an forwarder specific ErrorTypeSymbol. We don't want to 
                 // return that error symbol, unless digThroughForwardedTypes is true.
                 if (digThroughForwardedTypes || (!result.IsErrorType() && (object)result.ContainingAssembly == (object)this))
                 {
@@ -116,7 +108,8 @@
                 }
 
                 // According to the cache, the type wasn't found, or isn't declared in this assembly (forwarded).
-                return new MissingMetadataTypeSymbol.TopLevel(this.Modules[0], ref emittedName);
+                throw new NotImplementedException();
+                //return new MissingMetadataTypeSymbol.TopLevel(this.Modules[0], ref emittedName);
             }
             else
             {
@@ -129,14 +122,14 @@
 
                 result = modules[i].LookupTopLevelMetadataType(ref emittedName);
 
-                if (result is MissingMetadataTypeSymbol)
+                if (result is ErrorTypeSymbol)
                 {
                     for (i = 1; i < count; i++)
                     {
                         var newResult = modules[i].LookupTopLevelMetadataType(ref emittedName);
 
                         // Hold on to the first missing type result, unless we found the type.
-                        if (!(newResult is MissingMetadataTypeSymbol))
+                        if (!(newResult is ErrorTypeSymbol))
                         {
                             result = newResult;
                             break;
@@ -151,7 +144,7 @@
                 if (!foundMatchInThisAssembly && digThroughForwardedTypes)
                 {
                     // We didn't find the type
-                    System.Diagnostics.Debug.Assert(result is MissingMetadataTypeSymbol);
+                    Debug.Assert(result is ErrorTypeSymbol);
 
                     NamedTypeSymbol forwarded = TryLookupForwardedMetadataTypeWithCycleDetection(ref emittedName, visitedAssemblies);
                     if ((object)forwarded != null)
@@ -160,7 +153,7 @@
                     }
                 }
 
-                System.Diagnostics.Debug.Assert((object)result != null);
+                Debug.Assert((object)result != null);
 
                 // Add result of the lookup into the cache
                 if (digThroughForwardedTypes || foundMatchInThisAssembly)
@@ -170,48 +163,6 @@
 
                 return result;
             }
-        }
-
-        internal override abstract NamedTypeSymbol TryLookupForwardedMetadataTypeWithCycleDetection(ref MetadataTypeName emittedName, ConsList<AssemblySymbol> visitedAssemblies);
-
-        private NamedTypeSymbol LookupTopLevelMetadataTypeInCache(ref MetadataTypeName emittedName)
-        {
-            NamedTypeSymbol result = null;
-            if (_emittedNameToTypeMap.TryGetValue(emittedName.ToKey(), out result))
-            {
-                return result;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// For test purposes only.
-        /// </summary>
-        internal NamedTypeSymbol CachedTypeByEmittedName(string emittedname)
-        {
-            MetadataTypeName mdName = MetadataTypeName.FromFullName(emittedname);
-            return _emittedNameToTypeMap[mdName.ToKey()];
-        }
-
-        /// <summary>
-        /// For test purposes only.
-        /// </summary>
-        internal int EmittedNameToTypeMapCount
-        {
-            get
-            {
-                return _emittedNameToTypeMap.Count;
-            }
-        }
-
-        private void CacheTopLevelMetadataType(
-            ref MetadataTypeName emittedName,
-            NamedTypeSymbol result)
-        {
-            NamedTypeSymbol result1 = null;
-            result1 = _emittedNameToTypeMap.GetOrAdd(emittedName.ToKey(), result);
-            System.Diagnostics.Debug.Assert(TypeSymbol.Equals(result1, result, TypeCompareKind.ConsiderEverything2)); // object identity may differ in error cases
         }
     }
 }

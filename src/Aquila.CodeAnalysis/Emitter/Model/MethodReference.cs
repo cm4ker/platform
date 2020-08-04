@@ -3,9 +3,9 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using Microsoft.CodeAnalysis.Emit;
 using Cci = Microsoft.Cci;
-using Aquila.CodeAnalysis.Symbols;
+using Pchp.CodeAnalysis.Symbols;
 using Microsoft.CodeAnalysis;
-using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
+using MethodSymbol = Aquila.CodeAnalysis.Symbols.MethodSymbol;
 
 namespace Pchp.CodeAnalysis.Emit
 {
@@ -20,7 +20,7 @@ namespace Pchp.CodeAnalysis.Emit
             this.UnderlyingMethod = underlyingMethod;
         }
 
-        protected override Symbol UnderlyingSymbol
+        protected override Aquila.CodeAnalysis.Symbols.Symbol UnderlyingSymbol
         {
             get
             {

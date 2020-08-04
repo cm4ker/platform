@@ -9,7 +9,7 @@ using Cci = Microsoft.Cci;
 using Pchp.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis;
 
-namespace Aquila.CodeAnalysis.Symbols
+namespace Pchp.CodeAnalysis.Symbols
 {
     internal partial class MethodSymbol :
         Cci.ITypeMemberReference,
@@ -265,7 +265,7 @@ namespace Aquila.CodeAnalysis.Symbols
             if (!PEModuleBuilder.IsGenericType(this.ContainingType))
             {
                 // NoPia method might come through here.
-                return ((PEModuleBuilder)context.Module).Translate((MethodSymbol)this.OriginalDefinition, context.Diagnostics, true);
+                return ((PEModuleBuilder)context.Module).Translate((Aquila.CodeAnalysis.Symbols.MethodSymbol)this.OriginalDefinition, context.Diagnostics, true);
             }
 
             throw new NotImplementedException();
@@ -276,7 +276,7 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 Debug.Assert(((Cci.IMethodReference)this).AsSpecializedMethodReference != null);
-                return (MethodSymbol)this.OriginalDefinition;
+                return (Aquila.CodeAnalysis.Symbols.MethodSymbol)this.OriginalDefinition;
             }
         }
 
@@ -549,14 +549,6 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         internal abstract bool IsMetadataVirtual(bool ignoreInterfaceImplementationChanges = false);
 
-        public IMethodSymbol Construct(ImmutableArray<ITypeSymbol> typeArguments, ImmutableArray<NullableAnnotation> typeArgumentNullableAnnotations)
-        {
-            throw new NotImplementedException();
-        }
-
-        public NullableAnnotation ReturnNullableAnnotation { get; }
-        public ImmutableArray<NullableAnnotation> TypeArgumentNullableAnnotations { get; }
-
         ImmutableArray<Cci.IParameterDefinition> Cci.IMethodDefinition.Parameters
         {
             get
@@ -565,10 +557,6 @@ namespace Aquila.CodeAnalysis.Symbols
                 return EnumerateDefinitionParameters();
             }
         }
-
-        public bool IsReadOnly { get; }
-        public bool IsInitOnly { get; }
-        public NullableAnnotation ReceiverNullableAnnotation { get; }
 
         bool Cci.IMethodDefinition.RequiresSecurityObject
         {
@@ -661,6 +649,5 @@ namespace Aquila.CodeAnalysis.Symbols
         }
 
         ImmutableArray<Cci.ICustomModifier> Cci.ISignature.RefCustomModifiers => ImmutableArray<Cci.ICustomModifier>.Empty;
-        public bool IsConditional { get; }
     }
 }

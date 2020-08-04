@@ -11,7 +11,7 @@ namespace Pchp.CodeAnalysis.DocumentationComments
 {
     internal class DocumentationCommentCompiler
     {
-        internal static void WriteDocumentationCommentXml(PhpCompilation compilation, string assemblyName, Stream xmlDocStream, DiagnosticBag xmlDiagnostics, CancellationToken cancellationToken)
+        internal static void WriteDocumentationCommentXml(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, string assemblyName, Stream xmlDocStream, DiagnosticBag xmlDiagnostics, CancellationToken cancellationToken)
         {
             if (xmlDocStream != null)
             {
@@ -76,7 +76,7 @@ namespace Pchp.CodeAnalysis.DocumentationComments
             return encodedText.ToString();
         }
 
-        DocumentationCommentCompiler WriteCompilation(PhpCompilation compilation, string assemblyName)
+        DocumentationCommentCompiler WriteCompilation(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, string assemblyName)
         {
             _writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             _writer.WriteLine("<doc>");

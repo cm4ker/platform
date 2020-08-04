@@ -1,11 +1,7 @@
-﻿﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+﻿using System.Collections.Immutable;
+using System.Diagnostics;
 
- using System.Collections.Immutable;
- using System.Diagnostics;
-
- namespace Aquila.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// The effective "bounds" of a type parameter: the constraint types, effective
@@ -17,11 +13,8 @@
     {
         public static readonly TypeParameterBounds Unset = new TypeParameterBounds();
 
-        /// <summary>
-        /// Creates a "late" bound instance with all fields set.
-        /// </summary>
         public TypeParameterBounds(
-            ImmutableArray<TypeWithAnnotations> constraintTypes,
+            ImmutableArray<TypeSymbol> constraintTypes,
             ImmutableArray<NamedTypeSymbol> interfaces,
             NamedTypeSymbol effectiveBaseClass,
             TypeSymbol deducedBaseType)
@@ -45,7 +38,7 @@
         /// The type parameters, classes, and interfaces explicitly declared as
         /// constraint types on the containing type parameter, with cycles removed.
         /// </summary>
-        public readonly ImmutableArray<TypeWithAnnotations> ConstraintTypes;
+        public readonly ImmutableArray<TypeSymbol> ConstraintTypes;
 
         /// <summary>
         /// The set of interfaces explicitly declared on the containing type
@@ -76,13 +69,5 @@
         /// Deduced base type is used to check that consistency rules are satisfied.
         /// </summary>
         public readonly TypeSymbol DeducedBaseType;
-    }
-
-    internal static class TypeParameterBoundsExtensions
-    {
-        internal static bool IsSet(this TypeParameterBounds boundsOpt)
-        {
-            return boundsOpt != TypeParameterBounds.Unset;
-        }
     }
 }

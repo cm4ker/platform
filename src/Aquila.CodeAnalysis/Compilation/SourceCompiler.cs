@@ -24,7 +24,7 @@ namespace Pchp.CodeAnalysis
     /// </summary>
     internal class SourceCompiler
     {
-        readonly PhpCompilation _compilation;
+        readonly Aquila.CodeAnalysis.Symbols.PhpCompilation _compilation;
         readonly PEModuleBuilder _moduleBuilder;
         readonly bool _emittingPdb;
         readonly DiagnosticBag _diagnostics;
@@ -40,7 +40,7 @@ namespace Pchp.CodeAnalysis
 
         public bool ConcurrentBuild => _compilation.Options.ConcurrentBuild;
 
-        private SourceCompiler(PhpCompilation compilation, PEModuleBuilder moduleBuilder, bool emittingPdb, DiagnosticBag diagnostics, CancellationToken cancellationToken)
+        private SourceCompiler(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, PEModuleBuilder moduleBuilder, bool emittingPdb, DiagnosticBag diagnostics, CancellationToken cancellationToken)
         {
             Contract.ThrowIfNull(compilation);
             Contract.ThrowIfNull(diagnostics);
@@ -450,7 +450,7 @@ namespace Pchp.CodeAnalysis
             return true;
         }
 
-        public static IEnumerable<Diagnostic> BindAndAnalyze(PhpCompilation compilation, CancellationToken cancellationToken)
+        public static IEnumerable<Diagnostic> BindAndAnalyze(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, CancellationToken cancellationToken)
         {
             var manager = compilation.GetBoundReferenceManager();   // ensure the references are resolved! (binds ReferenceManager)
 
@@ -512,7 +512,7 @@ namespace Pchp.CodeAnalysis
         }
 
         public static void CompileSources(
-            PhpCompilation compilation,
+            Aquila.CodeAnalysis.Symbols.PhpCompilation compilation,
             PEModuleBuilder moduleBuilder,
             bool emittingPdb,
             bool hasDeclarationErrors,

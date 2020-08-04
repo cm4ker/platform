@@ -76,7 +76,7 @@ namespace Pchp.CodeAnalysis.Semantics
         /// Resolve <see cref="ITypeSymbol"/> if possible.
         /// Can be <c>null</c>.
         /// </summary>
-        ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation);
+        ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation);
     }
 
     /// <summary>
@@ -94,7 +94,7 @@ namespace Pchp.CodeAnalysis.Semantics
         public virtual ImmutableArray<IBoundTypeRef> TypeArguments => ImmutableArray<IBoundTypeRef>.Empty;
 
         public abstract ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false);
-        public abstract ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation);
+        public abstract ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation);
 
         /// <summary>
         /// Gets type mask of the type reference in given context.

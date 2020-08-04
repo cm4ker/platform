@@ -14,7 +14,7 @@ namespace Pchp.CodeAnalysis.Semantics.Model
     {
         readonly SourceSymbolCollection _table;
 
-        public PhpCompilation Compilation => _table.Compilation;
+        public Aquila.CodeAnalysis.Symbols.PhpCompilation Compilation => _table.Compilation;
 
         public SourceSymbolProvider(SourceSymbolCollection table)
         {

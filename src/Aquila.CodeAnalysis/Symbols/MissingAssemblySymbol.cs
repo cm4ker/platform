@@ -1,32 +1,24 @@
-﻿﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics;
+using Microsoft.CodeAnalysis;
+using Roslyn.Utilities;
 
- using System;
- using System.Collections.Generic;
- using System.Collections.Immutable;
- using System.Diagnostics;
- using Microsoft.CodeAnalysis;
- using Roslyn.Utilities;
-
- namespace Aquila.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// A <see cref="MissingAssemblySymbol"/> is a special kind of <see cref="AssemblySymbol"/> that represents
     /// an assembly that couldn't be found.
     /// </summary>
-    internal class MissingAssemblySymbol : AssemblySymbol
+    internal sealed class MissingAssemblySymbol : AssemblySymbol
     {
-        protected readonly AssemblyIdentity identity;
-        protected readonly MissingModuleSymbol moduleSymbol;
-
-        private ImmutableArray<ModuleSymbol> _lazyModules;
+        readonly AssemblyIdentity identity;
 
         public MissingAssemblySymbol(AssemblyIdentity identity)
         {
             Debug.Assert(identity != null);
             this.identity = identity;
-            moduleSymbol = new MissingModuleSymbol(this, 0);
         }
 
         internal sealed override bool IsMissing
@@ -65,25 +57,14 @@
             get { return Identity.PublicKey; }
         }
 
-        public override ImmutableArray<ModuleSymbol> Modules
-        {
-            get
-            {
-                if (_lazyModules.IsDefault)
-                {
-                    _lazyModules = ImmutableArray.Create<ModuleSymbol>(moduleSymbol);
-                }
-
-                return _lazyModules;
-            }
-        }
+        public override ImmutableArray<ModuleSymbol> Modules => ImmutableArray<ModuleSymbol>.Empty;
 
         public override int GetHashCode()
         {
             return identity.GetHashCode();
         }
 
-        public override bool Equals(Symbol obj, TypeCompareKind compareKind)
+        public override bool Equals(object obj)
         {
             return Equals(obj as MissingAssemblySymbol);
         }
@@ -121,23 +102,7 @@
             return ImmutableArray<AssemblySymbol>.Empty;
         }
 
-        internal override void SetNoPiaResolutionAssemblies(ImmutableArray<AssemblySymbol> assemblies)
-        {
-            throw ExceptionUtilities.Unreachable;
-        }
-
-        internal override ImmutableArray<AssemblySymbol> GetNoPiaResolutionAssemblies()
-        {
-            return ImmutableArray<AssemblySymbol>.Empty;
-        }
-
-        public sealed override NamespaceSymbol GlobalNamespace
-        {
-            get
-            {
-                return this.moduleSymbol.GlobalNamespace;
-            }
-        }
+        public override INamespaceSymbol GlobalNamespace => null;
 
         public override ICollection<string> TypeNames
         {
@@ -157,24 +122,12 @@
 
         internal override NamedTypeSymbol LookupTopLevelMetadataTypeWithCycleDetection(ref MetadataTypeName emittedName, ConsList<AssemblySymbol> visitedAssemblies, bool digThroughForwardedTypes)
         {
-            var result = this.moduleSymbol.LookupTopLevelMetadataType(ref emittedName);
-            Debug.Assert(result is MissingMetadataTypeSymbol);
-            return result;
+            return new MissingMetadataTypeSymbol(emittedName.FullName, emittedName.ForcedArity, emittedName.IsMangled);
         }
 
         internal override NamedTypeSymbol GetDeclaredSpecialType(SpecialType type)
         {
-            throw ExceptionUtilities.Unreachable;
-        }
-
-        internal override bool AreInternalsVisibleToThisAssembly(AssemblySymbol other)
-        {
-            return false;
-        }
-
-        internal override IEnumerable<ImmutableArray<byte>> GetInternalsVisibleToPublicKeys(string simpleName)
-        {
-            return SpecializedCollections.EmptyEnumerable<ImmutableArray<byte>>();
+            throw Roslyn.Utilities.ExceptionUtilities.Unreachable;
         }
 
         public override bool MightContainExtensionMethods
@@ -186,10 +139,5 @@
         }
 
         public override AssemblyMetadata GetMetadata() => null;
-
-        internal sealed override IEnumerable<NamedTypeSymbol> GetAllTopLevelForwardedTypes()
-        {
-            return SpecializedCollections.EmptyEnumerable<NamedTypeSymbol>();
-        }
     }
 }

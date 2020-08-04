@@ -1,25 +1,17 @@
-﻿﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using Microsoft.CodeAnalysis;
 
- using System.Collections.Generic;
- using System.Collections.Immutable;
- using System.Linq;
- using Microsoft.CodeAnalysis;
- using Roslyn.Utilities;
-
- namespace Aquila.CodeAnalysis.Symbols.Synthesized
+namespace Aquila.CodeAnalysis.Symbols.Synthesized
 {
-    /// <summary>
-    /// Dynamic call-site delegate, for call-sites that do not
-    /// match System.Action or System.Func signatures.
-    /// </summary>
     internal sealed class SynthesizedDelegateSymbol : SynthesizedContainer
     {
         private readonly NamespaceOrTypeSymbol _containingSymbol;
         private readonly MethodSymbol _constructor;
         private readonly MethodSymbol _invoke;
 
+        // constructor for dynamic call-site delegate:
         public SynthesizedDelegateSymbol(
             NamespaceOrTypeSymbol containingSymbol,
             string name,
@@ -63,9 +55,14 @@
         public override ImmutableArray<Symbol> GetMembers(string name)
         {
             return
-                (name == _constructor.Name) ? ImmutableArray.Create<Symbol>(_constructor) :
-                (name == _invoke.Name) ? ImmutableArray.Create<Symbol>(_invoke) :
+                (name.StringsEqual(_constructor.Name, false)) ? ImmutableArray.Create<Symbol>(_constructor) :
+                (name.StringsEqual(_invoke.Name, false)) ? ImmutableArray.Create<Symbol>(_invoke) :
                 ImmutableArray<Symbol>.Empty;
+        }
+
+        public override ImmutableArray<Symbol> GetMembersByPhpName(string name)
+        {
+            return base.GetMembersByPhpName(name); // none
         }
 
         public override Accessibility DeclaredAccessibility
@@ -78,12 +75,9 @@
             get { return true; }
         }
 
-        internal override NamedTypeSymbol BaseTypeNoUseSiteDiagnostics
-            => ContainingAssembly.GetSpecialType(SpecialType.System_MulticastDelegate);
-
-        public sealed override bool AreLocalsZeroed
+        public override NamedTypeSymbol BaseType // NoUseSiteDiagnostics
         {
-            get { throw ExceptionUtilities.Unreachable; }
+            get { return ContainingAssembly.GetSpecialType(SpecialType.System_MulticastDelegate); }
         }
 
         private sealed class DelegateConstructor : SynthesizedInstanceConstructor
@@ -94,8 +88,8 @@
                 : base(containingType)
             {
                 _parameters = ImmutableArray.Create<ParameterSymbol>(
-                   SynthesizedParameterSymbol.Create(this, TypeWithAnnotations.Create(objectType), 0, RefKind.None, "object"),
-                   SynthesizedParameterSymbol.Create(this, TypeWithAnnotations.Create(intPtrType), 1, RefKind.None, "method"));
+                   new SynthesizedParameterSymbol(this, objectType, 0, RefKind.None, "object"),
+                   new SynthesizedParameterSymbol(this, intPtrType, 1, RefKind.None, "method"));
             }
 
             public override ImmutableArray<ParameterSymbol> Parameters
@@ -125,7 +119,7 @@
                     // we don't need to distinguish between out and ref since this is an internal synthesized symbol:
                     var refKind = !byRefParameters.IsNull && byRefParameters[i] ? RefKind.Ref : RefKind.None;
 
-                    parameters[i] = SynthesizedParameterSymbol.Create(this, TypeWithAnnotations.Create(typeParams[i]), i, refKind);
+                    parameters[i] = new SynthesizedParameterSymbol(this, typeParams[i], i, refKind);
                 }
 
                 _parameters = parameters.AsImmutableOrNull();
@@ -179,25 +173,25 @@
                 get { return System.Reflection.MethodImplAttributes.Runtime; }
             }
 
-            internal override bool HasDeclarativeSecurity
-            {
-                get { return false; }
-            }
+            //internal override bool HasDeclarativeSecurity
+            //{
+            //    get { return false; }
+            //}
 
             public override DllImportData GetDllImportData()
             {
                 return null;
             }
 
-            internal override IEnumerable<Microsoft.Cci.SecurityAttribute> GetSecurityInformation()
-            {
-                throw ExceptionUtilities.Unreachable;
-            }
+            //internal override IEnumerable<Microsoft.Cci.SecurityAttribute> GetSecurityInformation()
+            //{
+            //    throw ExceptionUtilities.Unreachable;
+            //}
 
-            internal override MarshalPseudoCustomAttributeData ReturnValueMarshallingInformation
-            {
-                get { return null; }
-            }
+            //internal override MarshalPseudoCustomAttributeData ReturnValueMarshallingInformation
+            //{
+            //    get { return null; }
+            //}
 
             internal override bool RequiresSecurityObject
             {
@@ -216,7 +210,7 @@
 
             public override bool ReturnsVoid
             {
-                get { return _returnType.IsVoidType(); }
+                get { return _returnType.SpecialType == SpecialType.System_Void; }
             }
 
             public override bool IsAsync
@@ -226,21 +220,20 @@
 
             public override RefKind RefKind
             {
-                get { return RefKind.None; }
+                get
+                {
+                    return RefKind.None;
+                }
             }
 
-            public override TypeWithAnnotations ReturnTypeWithAnnotations
+            public override TypeSymbol ReturnType
             {
-                get { return TypeWithAnnotations.Create(_returnType); }
+                get { return _returnType; }
             }
 
-            public override FlowAnalysisAnnotations ReturnTypeFlowAnalysisAnnotations => FlowAnalysisAnnotations.None;
-
-            public override ImmutableHashSet<string> ReturnNotNullIfParameterNotNull => ImmutableHashSet<string>.Empty;
-
-            public override ImmutableArray<TypeWithAnnotations> TypeArgumentsWithAnnotations
+            public override ImmutableArray<TypeSymbol> TypeArguments
             {
-                get { return ImmutableArray<TypeWithAnnotations>.Empty; }
+                get { return ImmutableArray<TypeSymbol>.Empty; }
             }
 
             public override ImmutableArray<TypeParameterSymbol> TypeParameters
@@ -258,39 +251,34 @@
                 get { return ImmutableArray<MethodSymbol>.Empty; }
             }
 
-            public override ImmutableArray<CustomModifier> RefCustomModifiers
+            public override ImmutableArray<CustomModifier> ReturnTypeCustomModifiers
             {
                 get { return ImmutableArray<CustomModifier>.Empty; }
             }
 
-            public override Symbol AssociatedSymbol
+            public override ISymbol AssociatedSymbol
             {
                 get { return null; }
             }
 
-            internal override ImmutableArray<string> GetAppliedConditionalSymbols()
-            {
-                return ImmutableArray<string>.Empty;
-            }
+            //internal override ImmutableArray<string> GetAppliedConditionalSymbols()
+            //{
+            //    return ImmutableArray<string>.Empty;
+            //}
 
-            internal override Microsoft.Cci.CallingConvention CallingConvention
+            public override Microsoft.Cci.CallingConvention CallingConvention
             {
                 get { return Microsoft.Cci.CallingConvention.HasThis; }
             }
 
-            internal override bool GenerateDebugInfo
-            {
-                get { return false; }
-            }
+            //internal override bool GenerateDebugInfo
+            //{
+            //    get { return false; }
+            //}
 
             public override Symbol ContainingSymbol
             {
                 get { return _containingType; }
-            }
-
-            public override ImmutableArray<Location> Locations
-            {
-                get { return ImmutableArray<Location>.Empty; }
             }
 
             public override Accessibility DeclaredAccessibility

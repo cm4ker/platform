@@ -34,7 +34,7 @@ using Microsoft.CodeAnalysis.Operations;
         /// Lazy cache of well known members.
         /// Not yet known value is represented by ErrorTypeSymbol.UnknownResultType
         /// </summary>
-        private Symbol[] _lazyWellKnownTypeMembers;
+        private Aquila.CodeAnalysis.Symbols.Symbol[] _lazyWellKnownTypeMembers;
 
         internal Conversions/*!*/Conversions { get; }
 
@@ -307,7 +307,7 @@ using Microsoft.CodeAnalysis.Operations;
 
         Dictionary<Accessibility, AttributeData> _lazyPhpMemberVisibilityAttribute = null;
 
-        internal AttributeData GetPhpMemberVisibilityAttribute(Symbol member, Accessibility accessibility)
+        internal AttributeData GetPhpMemberVisibilityAttribute(Aquila.CodeAnalysis.Symbols.Symbol member, Accessibility accessibility)
         {
             if (member is FieldSymbol || member is MethodSymbol || member is PropertySymbol)
             {
@@ -368,7 +368,7 @@ using Microsoft.CodeAnalysis.Operations;
         /// If a well-known member of a generic type instantiation is needed use this method to get the corresponding generic definition and 
         /// <see cref="MethodSymbol.AsMember"/> to construct an instantiation.
         /// </remarks>
-        internal Symbol GetWellKnownTypeMember(WellKnownMember member)
+        internal Aquila.CodeAnalysis.Symbols.Symbol GetWellKnownTypeMember(WellKnownMember member)
         {
             Debug.Assert(member >= 0 && member < WellKnownMember.Count);
 
@@ -379,7 +379,7 @@ using Microsoft.CodeAnalysis.Operations;
             {
                 if (_lazyWellKnownTypeMembers == null)
                 {
-                    var wellKnownTypeMembers = new Symbol[(int)WellKnownMember.Count];
+                    var wellKnownTypeMembers = new Aquila.CodeAnalysis.Symbols.Symbol[(int)WellKnownMember.Count];
 
                     for (int i = 0; i < wellKnownTypeMembers.Length; i++)
                     {
@@ -393,7 +393,7 @@ using Microsoft.CodeAnalysis.Operations;
                 NamedTypeSymbol type = descriptor.DeclaringTypeId <= (int)SpecialType.Count
                                             ? this.GetSpecialType((SpecialType)descriptor.DeclaringTypeId)
                                             : this.GetWellKnownType((WellKnownType)descriptor.DeclaringTypeId);
-                Symbol result = null;
+                Aquila.CodeAnalysis.Symbols.Symbol result = null;
 
                 if (!type.IsErrorType())
                 {
@@ -491,14 +491,14 @@ using Microsoft.CodeAnalysis.Operations;
         /// <summary>
         /// Get the symbol for the predefined type member from the COR Library referenced by this compilation.
         /// </summary>
-        internal Symbol GetSpecialTypeMember(SpecialMember specialMember)
+        internal Aquila.CodeAnalysis.Symbols.Symbol GetSpecialTypeMember(SpecialMember specialMember)
         {
             return this.CorLibrary.GetDeclaredSpecialTypeMember(specialMember);
         }
 
-        internal static Symbol GetRuntimeMember(NamedTypeSymbol declaringType, ref MemberDescriptor descriptor, SignatureComparer<MethodSymbol, FieldSymbol, PropertySymbol, TypeSymbol, ParameterSymbol> comparer, IAssemblySymbol accessWithinOpt)
+        internal static Aquila.CodeAnalysis.Symbols.Symbol GetRuntimeMember(NamedTypeSymbol declaringType, ref MemberDescriptor descriptor, SignatureComparer<MethodSymbol, FieldSymbol, PropertySymbol, TypeSymbol, ParameterSymbol> comparer, IAssemblySymbol accessWithinOpt)
         {
-            Symbol result = null;
+            Aquila.CodeAnalysis.Symbols.Symbol result = null;
             SymbolKind targetSymbolKind;
             MethodKind targetMethodKind = MethodKind.Ordinary;
             bool isStatic = (descriptor.Flags & MemberFlags.Static) != 0;
@@ -1015,9 +1015,9 @@ using Microsoft.CodeAnalysis.Operations;
 
         private class WellKnownMembersSignatureComparer : SpecialMembersSignatureComparer
         {
-            private readonly PhpCompilation _compilation;
+            private readonly Aquila.CodeAnalysis.Symbols.PhpCompilation _compilation;
 
-            public WellKnownMembersSignatureComparer(PhpCompilation compilation)
+            public WellKnownMembersSignatureComparer(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
             {
                 _compilation = compilation;
             }

@@ -49,7 +49,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             throw new NotSupportedException();
         }
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
         {
             var ct = compilation.CoreTypes;
 
@@ -158,7 +158,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
 
         public override string ToString() => _type.ToString().ToLowerInvariant();
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
         {
             if (this.ResolvedType != null)
             {
@@ -265,7 +265,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             throw new NotSupportedException();
         }
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
         {
             return compilation.CoreTypes.PhpArray.Symbol;
         }
@@ -315,7 +315,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             throw ExceptionUtilities.Unreachable;
         }
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
         {
             return compilation.CoreTypes.Closure.Symbol;
         }
@@ -382,7 +382,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             }
         }
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
         {
             if (ResolvedType.IsValidType() && !ResolvedType.IsUnreachable)
             {
@@ -480,7 +480,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             return cg.EmitLoadPhpTypeInfo(t);
         }
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
         {
             var resolved = (NamedTypeSymbol)(_targetType.Type ?? _targetType.ResolveTypeSymbol(compilation));
 
@@ -627,7 +627,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
 
         public override bool Equals(IBoundTypeRef other) => base.Equals(other) || (other is BoundIndirectTypeRef it && it._typeExpression == _typeExpression);
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
         {
             // MOVED TO GRAPH REWRITER:
 
@@ -699,7 +699,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             throw new NotImplementedException();
         }
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
         {
             var result = (TypeSymbol)TypeRefs[0].ResolveTypeSymbol(compilation);
 
@@ -821,7 +821,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
 
         public override IBoundTypeRef Transfer(TypeRefContext source, TypeRefContext target) => this;
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation) => _symbol;
+        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation) => _symbol;
 
         public override TypeRefMask GetTypeRefMask(TypeRefContext ctx)
         {
@@ -885,7 +885,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
 
         public override bool Equals(IBoundTypeRef other) => base.Equals(other) || (other is BoundTypeRefFromPlace pt && pt._place == _place);
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation) => throw ExceptionUtilities.Unreachable;
+        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation) => throw ExceptionUtilities.Unreachable;
 
         public override IBoundTypeRef Transfer(TypeRefContext source, TypeRefContext target) => throw ExceptionUtilities.Unreachable;
     }

@@ -12,8 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
- using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
-
+ 
  namespace Pchp.CodeAnalysis.Semantics.Graph
 {
     partial class Edge : IGenerator
@@ -608,7 +607,7 @@ using System.Collections.Immutable;
             }
         }
 
-        static bool IsAPairValue(TypeSymbol type, out Symbol key, out Symbol value)
+        static bool IsAPairValue(TypeSymbol type, out Aquila.CodeAnalysis.Symbols.Symbol key, out Aquila.CodeAnalysis.Symbols.Symbol value)
         {
             key = value = default;
 

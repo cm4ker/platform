@@ -20,9 +20,9 @@ using Cci = Microsoft.Cci;
     {
         readonly PEModuleBuilder _module;
 
-        public PhpCompilation DeclaringCompilation => _module.Compilation;
+        public Aquila.CodeAnalysis.Symbols.PhpCompilation DeclaringCompilation => _module.Compilation;
 
-        readonly ConcurrentDictionary<Cci.ITypeDefinition, List<Symbol>> _membersByType = new ConcurrentDictionary<Cci.ITypeDefinition, List<Symbol>>();
+        readonly ConcurrentDictionary<Cci.ITypeDefinition, List<Aquila.CodeAnalysis.Symbols.Symbol>> _membersByType = new ConcurrentDictionary<Cci.ITypeDefinition, List<Aquila.CodeAnalysis.Symbols.Symbol>>();
 
         public SynthesizedManager(PEModuleBuilder module)
         {
@@ -33,12 +33,12 @@ using Cci = Microsoft.Cci;
 
         #region Synthesized Members
 
-        List<Symbol> EnsureList(Cci.ITypeDefinition type)
+        List<Aquila.CodeAnalysis.Symbols.Symbol> EnsureList(Cci.ITypeDefinition type)
         {
-            return _membersByType.GetOrAdd(type, (_) => new List<Symbol>());
+            return _membersByType.GetOrAdd(type, (_) => new List<Aquila.CodeAnalysis.Symbols.Symbol>());
         }
 
-        void AddMember(Cci.ITypeDefinition type, Symbol member)
+        void AddMember(Cci.ITypeDefinition type, Aquila.CodeAnalysis.Symbols.Symbol member)
         {
             var members = EnsureList(type);
             lock (members)
@@ -176,7 +176,7 @@ using Cci = Microsoft.Cci;
         /// <returns>Enumeration of synthesized type members.</returns>
         public IEnumerable<T> GetMembers<T>(Cci.ITypeDefinition container) where T : ISymbol
         {
-            List<Symbol> list;
+            List<Aquila.CodeAnalysis.Symbols.Symbol> list;
             if (_membersByType.TryGetValue(container, out list) && list.Count != 0)
             {
                 return list.OfType<T>();

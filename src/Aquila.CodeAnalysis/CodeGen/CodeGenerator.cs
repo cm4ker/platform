@@ -306,7 +306,7 @@ namespace Pchp.CodeAnalysis.CodeGen
         /// <summary>
         /// Gets a reference to compilation object.
         /// </summary>
-        public PhpCompilation DeclaringCompilation => _moduleBuilder.Compilation;
+        public Aquila.CodeAnalysis.Symbols.PhpCompilation DeclaringCompilation => _moduleBuilder.Compilation;
 
         /// <summary>Gets <see cref="BoundTypeRefFactory"/> instance.</summary>
         BoundTypeRefFactory BoundTypeRefFactory => DeclaringCompilation.TypeRefFactory;

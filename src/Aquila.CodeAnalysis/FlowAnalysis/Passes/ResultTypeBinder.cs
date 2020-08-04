@@ -16,11 +16,11 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
     /// </summary>
     internal class ResultTypeBinder : GraphExplorer<TypeSymbol>
     {
-        public PhpCompilation/*!*/DeclaringCompilation { get; }
+        public Aquila.CodeAnalysis.Symbols.PhpCompilation/*!*/DeclaringCompilation { get; }
 
         #region Initialization
 
-        public ResultTypeBinder(PhpCompilation compilation)
+        public ResultTypeBinder(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
         {
             DeclaringCompilation = compilation ?? throw ExceptionUtilities.ArgumentNull(nameof(compilation));
         }
