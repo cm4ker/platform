@@ -1,20 +1,14 @@
-﻿﻿using Microsoft.CodeAnalysis.Operations;
+﻿using Microsoft.CodeAnalysis.Operations;
 using Aquila.CodeAnalysis.Symbols;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeGen;
-using Pchp.CodeAnalysis.CodeGen;
-using Pchp.CodeAnalysis.FlowAnalysis;
-using Devsense.PHP.Syntax;
 using System.Diagnostics;
 using System.Collections.Immutable;
- using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
+using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.Syntax.Syntax;
 
- namespace Pchp.CodeAnalysis.Semantics
+
+namespace Pchp.CodeAnalysis.Semantics
 {
     #region BoundVariable
 
@@ -76,7 +70,8 @@ using System.Collections.Immutable;
         public override void Accept(OperationVisitor visitor)
             => visitor.VisitVariableDeclarator(this);
 
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor, TArgument argument)
+        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
+            TArgument argument)
             => visitor.VisitVariableDeclarator(this, argument);
     }
 
@@ -92,7 +87,7 @@ using System.Collections.Immutable;
 
         IVariableInitializerOperation IVariableDeclaratorOperation.Initializer => null;
 
-        ILocalSymbol IVariableDeclaratorOperation.Symbol => (ILocalSymbol)Symbol;
+        ILocalSymbol IVariableDeclaratorOperation.Symbol => (ILocalSymbol) Symbol;
 
         ImmutableArray<IOperation> IVariableDeclaratorOperation.IgnoredArguments => ImmutableArray<IOperation>.Empty;
 
@@ -110,7 +105,8 @@ using System.Collections.Immutable;
         public override void Accept(OperationVisitor visitor)
             => visitor.VisitVariableDeclarator(this);
 
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor, TArgument argument)
+        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
+            TArgument argument)
             => visitor.VisitVariableDeclarator(this, argument);
     }
 
@@ -145,7 +141,8 @@ using System.Collections.Immutable;
         public override void Accept(OperationVisitor visitor)
             => visitor.VisitParameterInitializer(this);
 
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor, TArgument argument)
+        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
+            TArgument argument)
             => visitor.VisitParameterInitializer(this, argument);
     }
 
@@ -175,7 +172,8 @@ using System.Collections.Immutable;
         public override void Accept(OperationVisitor visitor)
             => visitor.DefaultVisit(this);
 
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor, TArgument argument)
+        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
+            TArgument argument)
             => visitor.DefaultVisit(this, argument);
     }
 
@@ -199,10 +197,7 @@ using System.Collections.Immutable;
 
         internal override Aquila.CodeAnalysis.Symbols.Symbol Symbol
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
         }
 
         public override void Accept(OperationVisitor visitor)
@@ -210,7 +205,8 @@ using System.Collections.Immutable;
             throw new NotSupportedException();
         }
 
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor, TArgument argument)
+        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
+            TArgument argument)
         {
             throw new NotSupportedException();
         }

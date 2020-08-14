@@ -1,17 +1,12 @@
-﻿﻿using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections.Immutable;
-using System.Reflection.Metadata;
-using System.Text;
-using Devsense.PHP.Syntax;
-using Devsense.PHP.Syntax.Ast;
+using Aquila.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
 using Pchp.CodeAnalysis.CodeGen;
 using Pchp.CodeAnalysis.FlowAnalysis;
-using Pchp.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Symbols;
-using Peachpie.CodeAnalysis.Utilities;
+using Aquila.Syntax;
 
 namespace Pchp.CodeAnalysis.Semantics
 {
@@ -70,13 +65,13 @@ namespace Pchp.CodeAnalysis.Semantics
         /// Transfers this type reference to the target type context.
         /// The method may return <c>this</c> instance, it cannot return <c>null</c>.
         /// </summary>
-        IBoundTypeRef/*!*/Transfer(TypeRefContext/*!*/source, TypeRefContext/*!*/target);
+        IBoundTypeRef /*!*/ Transfer(TypeRefContext /*!*/source, TypeRefContext /*!*/target);
 
         /// <summary>
         /// Resolve <see cref="ITypeSymbol"/> if possible.
         /// Can be <c>null</c>.
         /// </summary>
-        ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation);
+        ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation);
     }
 
     /// <summary>
@@ -94,12 +89,13 @@ namespace Pchp.CodeAnalysis.Semantics
         public virtual ImmutableArray<IBoundTypeRef> TypeArguments => ImmutableArray<IBoundTypeRef>.Empty;
 
         public abstract ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false);
-        public abstract ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation);
+        public abstract ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation);
 
         /// <summary>
         /// Gets type mask of the type reference in given context.
         /// </summary>
-        public virtual TypeRefMask GetTypeRefMask(TypeRefContext ctx) => WithNullableMask(ctx.GetTypeMask(this, false), ctx);
+        public virtual TypeRefMask GetTypeRefMask(TypeRefContext ctx) =>
+            WithNullableMask(ctx.GetTypeMask(this, false), ctx);
 
         /// <summary>Add <c>NULL</c> type mask if <see cref="IsNullable"/> is set to <c>true</c>.</summary>
         protected TypeRefMask WithNullableMask(TypeRefMask mask, TypeRefContext ctx)
@@ -128,7 +124,10 @@ namespace Pchp.CodeAnalysis.Semantics
         public override ITypeSymbol Type => ResolvedType;
 
         public override void Accept(OperationVisitor visitor) => visitor.DefaultVisit(this);
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor, TArgument argument) => visitor.DefaultVisit(this, argument);
+
+        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
+            TArgument argument) => visitor.DefaultVisit(this, argument);
+
         public virtual TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) => visitor.VisitTypeRef(this);
     }
 }

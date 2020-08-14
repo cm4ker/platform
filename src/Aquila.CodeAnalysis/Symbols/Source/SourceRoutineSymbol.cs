@@ -6,14 +6,18 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
+using Aquila.Shared.Tree;
+using Aquila.Syntax;
+using Aquila.Syntax.Ast;
+using Aquila.Syntax.Ast.Statements;
 using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis.FlowAnalysis;
 using Pchp.CodeAnalysis.Semantics;
 using Pchp.CodeAnalysis.Semantics.Graph;
-using DiagnosticBagExtensions = Pchp.CodeAnalysis.DiagnosticBagExtensions;
 
-namespace Aquila.CodeAnalysis.Symbols.Source
+namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// Base symbol representing a method or a function from source.
@@ -48,7 +52,9 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                     // build control flow graph
                     var cfg = new ControlFlowGraph(
                         this.Statements,
-                        SemanticsBinder.Create(DeclaringCompilation, ContainingFile.SyntaxTree, LocalsTable, ContainingType as SourceTypeSymbol));
+                        SemanticsBinder.Create(DeclaringCompilation, ContainingFile.SyntaxTree, LocalsTable,
+                            /*ContainingType as SourceTypeSymbol*/ null
+                        ));
                     cfg.Start.FlowState = state;
 
                     //
@@ -58,10 +64,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 //
                 return _cfg;
             }
-            internal set
-            {
-                _cfg = value;
-            }
+            internal set { _cfg = value; }
         }
 
         /// <summary>
@@ -85,7 +88,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         protected abstract TypeRefContext CreateTypeRefContext();
 
-        internal abstract Signature SyntaxSignature { get; }
+        // internal abstract Signature SyntaxSignature { get; }
 
         /// <summary>
         /// Specified return type.
@@ -95,12 +98,12 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         /// <summary>
         /// Gets routine declaration syntax.
         /// </summary>
-        internal abstract AstNode Syntax { get; }
+        internal abstract Node Syntax { get; }
 
-        /// <summary>
-        /// Optionaly gets routines PHP doc block.
-        /// </summary>
-        internal abstract PHPDocBlock PHPDocBlock { get; }
+        // /// <summary>
+        // /// Optionaly gets routines PHP doc block.
+        // /// </summary>
+        // internal abstract PHPDocBlock PHPDocBlock { get; }
 
         /// <summary>
         /// Reference to a containing file symbol.
@@ -111,8 +114,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             ImmutableArray.Create(
                 Location.Create(
                     ContainingFile.SyntaxTree,
-                    Syntax is ILangElement element ? element.Span.ToTextSpan() : default
-            ));
+                    Syntax is LangElement element ? element.Span.ToTextSpan() : default
+                ));
 
         public override bool IsUnreachable => (Flags & RoutineFlags.IsUnreachable) != 0;
 
@@ -130,10 +133,12 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         {
             var index = 0;
 
-            if (IsStatic)  // instance methods have <ctx> in <this>.<ctx> field, see SourceNamedTypeSymbol._lazyContextField
+            if (IsStatic
+            ) // instance methods have <ctx> in <this>.<ctx> field, see SourceNamedTypeSymbol._lazyContextField
             {
                 // Context <ctx>
-                yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.Context, SpecialParameterSymbol.ContextName, index++);
+                yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.Context,
+                    SpecialParameterSymbol.ContextName, index++);
             }
         }
 
@@ -149,94 +154,99 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         {
             // check mandatory behind and optional parameter
             bool foundopt = false;
-            var ps = SyntaxSignature.FormalParams;
-            for (int i = 0; i < ps.Length; i++)
-            {
-                var p = ps[i];
-                if (p == null)
-                {
-                    continue;
-                }
-
-                if (p.InitValue == null)
-                {
-                    if (foundopt && !p.IsVariadic)
-                    {
-                        diagnostic.Add(DiagnosticBagExtensions.ParserDiagnostic(this, p.Span, Devsense.PHP.Errors.Warnings.MandatoryBehindOptionalParam, "$" + p.Name.Name.Value));
-                    }
-                }
-                else
-                {
-                    foundopt = true;
-                }
-
-                //
-                if (p.IsVariadic && i < ps.Length - 1)
-                {
-                    // Fatal Error: variadic parameter (...) must be the last parameter
-                    diagnostic.Add(this, p, Errors.ErrorCode.ERR_VariadicParameterNotLast);
-                }
-
-                // constructor property
-                if (p.IsConstructorProperty)
-                {
-                    if (!string.Equals(this.Name, Devsense.PHP.Syntax.Name.SpecialMethodNames.Construct.Value, StringComparison.InvariantCultureIgnoreCase) ||
-                        !(this is SourceMethodSymbol))
-                    {
-                        // ERR: not a constructor
-                        diagnostic.Add(this, p, Errors.ErrorCode.ERR_CtorPropertyNotCtor);
-                    }
-                    else if (this.IsAbstract || this.ContainingType.IsInterface)
-                    {
-                        diagnostic.Add(this, p, Errors.ErrorCode.ERR_CtorPropertyAbstractCtor);
-                    }
-                    else if (this.IsStatic) // function, static method, static ctor
-                    {
-                        diagnostic.Add(this, p, Errors.ErrorCode.ERR_CtorPropertyStaticCtor);
-                    }
-                    else if (p.TypeHint is PrimitiveTypeRef pt && (
-                        pt.PrimitiveTypeName == PrimitiveTypeRef.PrimitiveType.callable ||
-                        pt.PrimitiveTypeName == PrimitiveTypeRef.PrimitiveType.iterable))
-                    {
-                        diagnostic.Add(this, p, Errors.ErrorCode.ERR_PropertyTypeNotAllowed, this.ContainingType.PhpName(), p.Name, pt.PrimitiveTypeName.ToString());
-                    }
-                    else if (p.TypeHint is ReservedTypeRef rt && (
-                        rt.Type == ReservedTypeRef.ReservedType.@static))
-                    {
-                        diagnostic.Add(this, p, Errors.ErrorCode.ERR_PropertyTypeNotAllowed, this.ContainingType.PhpName(), p.Name, rt.Type.ToString());
-                    }
-                    else if (p.IsVariadic)
-                    {
-                        diagnostic.Add(this, p, Errors.ErrorCode.ERR_CtorPropertyVariadic);
-                    }
-                }
-            }
+            // var ps = SyntaxSignature.FormalParams;
+            // for (int i = 0; i < ps.Length; i++)
+            // {
+            //     var p = ps[i];
+            //     if (p == null)
+            //     {
+            //         continue;
+            //     }
+            //
+            //     if (p.InitValue == null)
+            //     {
+            //         if (foundopt && !p.IsVariadic)
+            //         {
+            //             diagnostic.Add(DiagnosticBagExtensions.ParserDiagnostic(this, p.Span,
+            //                 Devsense.PHP.Errors.Warnings.MandatoryBehindOptionalParam, "$" + p.Name.Name.Value));
+            //         }
+            //     }
+            //     else
+            //     {
+            //         foundopt = true;
+            //     }
+            //
+            //     //
+            //     if (p.IsVariadic && i < ps.Length - 1)
+            //     {
+            //         // Fatal Error: variadic parameter (...) must be the last parameter
+            //         diagnostic.Add(this, p, Errors.ErrorCode.ERR_VariadicParameterNotLast);
+            //     }
+            //
+            //     // constructor property
+            //     if (p.IsConstructorProperty)
+            //     {
+            //         if (!string.Equals(this.Name, Devsense.PHP.Syntax.Name.SpecialMethodNames.Construct.Value,
+            //                 StringComparison.InvariantCultureIgnoreCase) ||
+            //             !(this is SourceMethodSymbol))
+            //         {
+            //             // ERR: not a constructor
+            //             diagnostic.Add(this, p, Errors.ErrorCode.ERR_CtorPropertyNotCtor);
+            //         }
+            //         else if (this.IsAbstract || this.ContainingType.IsInterface)
+            //         {
+            //             diagnostic.Add(this, p, Errors.ErrorCode.ERR_CtorPropertyAbstractCtor);
+            //         }
+            //         else if (this.IsStatic) // function, static method, static ctor
+            //         {
+            //             diagnostic.Add(this, p, Errors.ErrorCode.ERR_CtorPropertyStaticCtor);
+            //         }
+            //         else if (p.TypeHint is PrimitiveTypeRef pt && (
+            //             pt.PrimitiveTypeName == PrimitiveTypeRef.PrimitiveType.callable ||
+            //             pt.PrimitiveTypeName == PrimitiveTypeRef.PrimitiveType.iterable))
+            //         {
+            //             diagnostic.Add(this, p, Errors.ErrorCode.ERR_PropertyTypeNotAllowed,
+            //                 this.ContainingType.PhpName(), p.Name, pt.PrimitiveTypeName.ToString());
+            //         }
+            //         else if (p.TypeHint is ReservedTypeRef rt && (
+            //             rt.Type == ReservedTypeRef.ReservedType.@static))
+            //         {
+            //             diagnostic.Add(this, p, Errors.ErrorCode.ERR_PropertyTypeNotAllowed,
+            //                 this.ContainingType.PhpName(), p.Name, rt.Type.ToString());
+            //         }
+            //         else if (p.IsVariadic)
+            //         {
+            //             diagnostic.Add(this, p, Errors.ErrorCode.ERR_CtorPropertyVariadic);
+            //         }
+            //     }
+            // }
         }
 
-        /// <summary>
-        /// Constructs routine source parameters.
-        /// </summary>
-        protected IEnumerable<SourceParameterSymbol> BuildSrcParams(IEnumerable<FormalParam> formalparams, PHPDocBlock phpdocOpt = null)
-        {
-            var pindex = 0; // zero-based relative index
-
-            foreach (var p in formalparams)
-            {
-                if (p == null)
-                {
-                    continue;
-                }
-
-                var ptag = (phpdocOpt != null) ? PHPDoc.GetParamTag(phpdocOpt, pindex, p.Name.Name.Value) : null;
-
-                yield return new SourceParameterSymbol(this, p, relindex: pindex++, ptagOpt: ptag);
-            }
-        }
-
-        protected virtual IEnumerable<SourceParameterSymbol> BuildSrcParams(Signature signature, PHPDocBlock phpdocOpt = null)
-        {
-            return BuildSrcParams(signature.FormalParams, phpdocOpt);
-        }
+        // /// <summary>
+        // /// Constructs routine source parameters.
+        // /// </summary>
+        // protected IEnumerable<SourceParameterSymbol> BuildSrcParams(IEnumerable<Parameter> formalparams, PHPDocBlock phpdocOpt = null)
+        // {
+        //     var pindex = 0; // zero-based relative index
+        //
+        //     foreach (var p in formalparams)
+        //     {
+        //         if (p == null)
+        //         {
+        //             continue;
+        //         }
+        //
+        //         var ptag = (phpdocOpt != null) ? PHPDoc.GetParamTag(phpdocOpt, pindex, p.Name.Name.Value) : null;
+        //
+        //         yield return new SourceParameterSymbol(this, p, relindex: pindex++, ptagOpt: ptag);
+        //     }
+        // }
+        //
+        // protected virtual IEnumerable<SourceParameterSymbol> BuildSrcParams(Signature signature,
+        //     PHPDocBlock phpdocOpt = null)
+        // {
+        //     return BuildSrcParams(signature.FormalParams, phpdocOpt);
+        // }
 
         internal virtual ImmutableArray<ParameterSymbol> ImplicitParameters
         {
@@ -244,16 +254,20 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             {
                 if (_implicitParameters.IsDefault)
                 {
-                    ImmutableInterlocked.InterlockedInitialize(ref _implicitParameters, BuildImplicitParams().ToImmutableArray());
+                    ImmutableInterlocked.InterlockedInitialize(ref _implicitParameters,
+                        BuildImplicitParams().ToImmutableArray());
                 }
 
                 var currentImplicitParameters = _implicitParameters;
-                if (RequiresLateStaticBoundParam && !currentImplicitParameters.Any(SpecialParameterSymbol.IsLateStaticParameter))
+                if (RequiresLateStaticBoundParam &&
+                    !currentImplicitParameters.Any(SpecialParameterSymbol.IsLateStaticParameter))
                 {
                     // PhpTypeInfo <static>
                     var implicitParameters = currentImplicitParameters.Add(
-                        new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.PhpTypeInfo, SpecialParameterSymbol.StaticTypeName, currentImplicitParameters.Length));
-                    ImmutableInterlocked.InterlockedCompareExchange(ref _implicitParameters, implicitParameters, currentImplicitParameters);
+                        new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.PhpTypeInfo,
+                            SpecialParameterSymbol.StaticTypeName, currentImplicitParameters.Length));
+                    ImmutableInterlocked.InterlockedCompareExchange(ref _implicitParameters, implicitParameters,
+                        currentImplicitParameters);
                 }
 
                 //
@@ -267,8 +281,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             {
                 if (_srcParams == null)
                 {
-                    var srcParams = BuildSrcParams(this.SyntaxSignature, this.PHPDocBlock).ToArray();
-                    Interlocked.CompareExchange(ref _srcParams, srcParams, null);
+                    // var srcParams = BuildSrcParams(this.SyntaxSignature, this.PHPDocBlock).ToArray();
+                    // Interlocked.CompareExchange(ref _srcParams, srcParams, null);
                 }
 
                 return _srcParams;
@@ -318,7 +332,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                         // create implicit [... params]
                         var implicitVarArg = new SynthesizedParameterSymbol( // IsImplicitlyDeclared, IsParams
                             this,
-                            ArrayTypeSymbol.CreateSZArray(this.ContainingAssembly, this.DeclaringCompilation.CoreTypes.PhpValue),
+                            ArrayTypeSymbol.CreateSZArray(this.ContainingAssembly,
+                                this.DeclaringCompilation.CoreTypes.PhpValue),
                             0,
                             RefKind.None,
                             SpecialParameterSymbol.ParamsName, isParams: true);
@@ -329,7 +344,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 if (_implicitVarArg != null)
                 {
                     // implicit params replaces all the optional arguments!!
-                    int mandatory = ImplicitParameters.Length + this.SourceParameters.TakeWhile(p => p.Initializer == null).Count();
+                    int mandatory = ImplicitParameters.Length +
+                                    this.SourceParameters.TakeWhile(p => p.Initializer == null).Count();
                     _implicitVarArg.UpdateOrdinal(mandatory);
                 }
 
@@ -354,7 +370,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public override bool IsVirtual => !IsSealed && !IsStatic;
 
-        public override bool CastToFalse => false;  // source routines never cast special values to FALSE
+        public override bool CastToFalse => false; // source routines never cast special values to FALSE
 
         public override bool HasNotNull => !ReturnsNull;
 
@@ -442,7 +458,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 {
                     // if type hint is provided,
                     // only can be NULL if specified
-                    return thint.IsNullable();
+                    return true;// thint.IsNullable();
                 }
             }
         }
@@ -451,38 +467,38 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public override TypeSymbol ReturnType => PhpRoutineSymbolExtensions.ConstructClrReturnType(this);
 
-        public override ImmutableArray<AttributeData> GetAttributes()
-        {
-            // attributes from syntax node
-            if (this.Syntax.TryGetCustomAttributes(out var attrs))
-            {
-                // initialize attribute data if necessary:
-                attrs
-                    .OfType<SourceCustomAttribute>()
-                    .ForEach(x => x.Bind(this, this.ContainingFile));
-            }
-            else
-            {
-                attrs = ImmutableArray<AttributeData>.Empty;
-            }
-
-            // attributes from PHPDoc
-            var phpdoc = this.PHPDocBlock;
-            if (phpdoc != null)
-            {
-                var deprecated = phpdoc.GetElement<PHPDocBlock.DeprecatedTag>();
-                if (deprecated != null)
-                {
-                    // [ObsoleteAttribute(message, false)]
-                    attrs = attrs.Add(DeclaringCompilation.CreateObsoleteAttribute(deprecated));
-                }
-
-                // ...
-            }
-
-            //
-            return base.GetAttributes().AddRange(attrs);
-        }
+        // public override ImmutableArray<AttributeData> GetAttributes()
+        // {
+        //     // attributes from syntax node
+        //     if (this.Syntax.TryGetCustomAttributes(out var attrs))
+        //     {
+        //         // initialize attribute data if necessary:
+        //         attrs
+        //             .OfType<SourceCustomAttribute>()
+        //             .ForEach(x => x.Bind(this, this.ContainingFile));
+        //     }
+        //     else
+        //     {
+        //         attrs = ImmutableArray<AttributeData>.Empty;
+        //     }
+        //
+        //     // attributes from PHPDoc
+        //     var phpdoc = this.PHPDocBlock;
+        //     if (phpdoc != null)
+        //     {
+        //         var deprecated = phpdoc.GetElement<PHPDocBlock.DeprecatedTag>();
+        //         if (deprecated != null)
+        //         {
+        //             // [ObsoleteAttribute(message, false)]
+        //             attrs = attrs.Add(DeclaringCompilation.CreateObsoleteAttribute(deprecated));
+        //         }
+        //
+        //         // ...
+        //     }
+        //
+        //     //
+        //     return base.GetAttributes().AddRange(attrs);
+        // }
 
         public override ImmutableArray<AttributeData> GetReturnTypeAttributes()
         {
@@ -490,7 +506,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             {
                 // [return: NotNull]
                 var returnType = this.ReturnType;
-                if (returnType != null && (returnType.IsReferenceType || returnType.Is_PhpValue())) // only if it makes sense to check for NULL
+                if (returnType != null && (returnType.IsReferenceType || returnType.Is_PhpValue())
+                ) // only if it makes sense to check for NULL
                 {
                     return ImmutableArray.Create<AttributeData>(DeclaringCompilation.CreateNotNullAttribute());
                 }
@@ -504,11 +521,12 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         {
             get
             {
-                var deprecated = this.PHPDocBlock?.GetElement<PHPDocBlock.DeprecatedTag>();
-                if (deprecated != null)
-                {
-                    return new ObsoleteAttributeData(ObsoleteAttributeKind.Deprecated, deprecated.Version/*==Text*/, isError: false);
-                }
+                // var deprecated = this.PHPDocBlock?.GetElement<PHPDocBlock.DeprecatedTag>();
+                // if (deprecated != null)
+                // {
+                //     return new ObsoleteAttributeData(ObsoleteAttributeKind.Deprecated, deprecated.Version /*==Text*/,
+                //         isError: false);
+                // }
 
                 return null;
             }
@@ -518,11 +536,14 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         /// virtual = IsVirtual AND NewSlot 
         /// override = IsVirtual AND !NewSlot
         /// </summary>
-        internal override bool IsMetadataNewSlot(bool ignoreInterfaceImplementationChanges = false) => !IsOverride && IsMetadataVirtual(ignoreInterfaceImplementationChanges);
+        internal override bool IsMetadataNewSlot(bool ignoreInterfaceImplementationChanges = false) =>
+            !IsOverride && IsMetadataVirtual(ignoreInterfaceImplementationChanges);
 
         internal override bool IsMetadataVirtual(bool ignoreInterfaceImplementationChanges = false)
         {
-            return IsVirtual && (!ContainingType.IsSealed || IsOverride || IsAbstract || OverrideOfMethod() != null);  // do not make method virtual if not necessary
+            return IsVirtual &&
+                   (!ContainingType.IsSealed || IsOverride || IsAbstract ||
+                    OverrideOfMethod() != null); // do not make method virtual if not necessary
         }
 
         /// <summary>
@@ -531,7 +552,9 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         /// </summary>
         private MethodSymbol OverrideOfMethod()
         {
-            var overrides = ContainingType.ResolveOverrides(DiagnosticBag.GetInstance());   // Gets override resolution matrix. This is already resolved and does not cause an overhead.
+            var overrides =
+                ContainingType.ResolveOverrides(DiagnosticBag
+                    .GetInstance()); // Gets override resolution matrix. This is already resolved and does not cause an overhead.
 
             for (int i = 0; i < overrides.Length; i++)
             {
@@ -544,18 +567,22 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             return null;
         }
 
-        internal override bool IsMetadataFinal => base.IsMetadataFinal && IsMetadataVirtual(); // altered IsMetadataVirtual -> causes change to '.final' metadata as well
+        internal override bool IsMetadataFinal =>
+            base.IsMetadataFinal &&
+            IsMetadataVirtual(); // altered IsMetadataVirtual -> causes change to '.final' metadata as well
 
-        public override string GetDocumentationCommentXml(CultureInfo preferredCulture = null, bool expandIncludes = false, CancellationToken cancellationToken = default(CancellationToken))
+        public override string GetDocumentationCommentXml(CultureInfo preferredCulture = null,
+            bool expandIncludes = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (PHPDocBlock != null)
-            {
-                using (var output = new System.IO.StringWriter())
-                {
-                    Pchp.CodeAnalysis.DocumentationComments.DocumentationCommentCompiler.WriteRoutine(output, this);
-                    return output.ToString();
-                }
-            }
+            // if (PHPDocBlock != null)
+            // {
+            //     using (var output = new System.IO.StringWriter())
+            //     {
+            //         Pchp.CodeAnalysis.DocumentationComments.DocumentationCommentCompiler.WriteRoutine(output, this);
+            //         return output.ToString();
+            //     }
+            // }
+
             //
             return string.Empty;
         }

@@ -1,18 +1,18 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection.PortableExecutable;
 using System.Threading;
- using Aquila.CodeAnalysis.Symbols;
- using Aquila.CodeAnalysis.Symbols.Attributes;
- using Aquila.CodeAnalysis.Symbols.PE;
- using Aquila.CodeAnalysis.Symbols.Php;
- using Aquila.CodeAnalysis.Symbols.Source;
- using Aquila.CodeAnalysis.Symbols.Synthesized;
- using Microsoft.CodeAnalysis.CodeGen;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.Attributes;
+using Aquila.CodeAnalysis.Symbols.PE;
+using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.CodeAnalysis.Symbols.Synthesized;
+using Microsoft.CodeAnalysis.CodeGen;
 using Microsoft.CodeAnalysis.Emit;
 using Roslyn.Utilities;
 using Microsoft.CodeAnalysis;
@@ -23,24 +23,15 @@ using Pchp.CodeAnalysis.Symbols;
 using Pchp.CodeAnalysis.Emitter;
 using Pchp.CodeAnalysis.Utilities;
 using Pchp.CodeAnalysis.CodeGen;
- using ArrayTypeSymbol = Aquila.CodeAnalysis.Symbols.ArrayTypeSymbol;
- using FieldSymbol = Aquila.CodeAnalysis.Symbols.FieldSymbol;
- using MethodSymbol = Aquila.CodeAnalysis.Symbols.MethodSymbol;
- using NamedTypeSymbol = Aquila.CodeAnalysis.Symbols.NamedTypeSymbol;
- using ParameterSymbol = Aquila.CodeAnalysis.Symbols.ParameterSymbol;
- using PointerTypeSymbol = Aquila.CodeAnalysis.Symbols.PointerTypeSymbol;
- using PropertySymbol = Aquila.CodeAnalysis.Symbols.PropertySymbol;
- using SourceFieldSymbol = Aquila.CodeAnalysis.Symbols.Source.SourceFieldSymbol;
- using SourceMethodSymbol = Aquila.CodeAnalysis.Symbols.Source.SourceMethodSymbol;
- using SynthesizedTraitFieldSymbol = Aquila.CodeAnalysis.Symbols.Synthesized.SynthesizedTraitFieldSymbol;
- using TypeParameterSymbol = Aquila.CodeAnalysis.Symbols.TypeParameterSymbol;
 
- namespace Pchp.CodeAnalysis.Emit
+
+namespace Pchp.CodeAnalysis.Emit
 {
     internal abstract partial class PEModuleBuilder : CommonPEModuleBuilder, ITokenDeferral
     {
         private readonly SourceModuleSymbol _sourceModule;
-        private readonly Aquila.CodeAnalysis.Symbols.PhpCompilation _compilation;
+        private readonly PhpCompilation _compilation;
+
         private readonly EmitOptions _emitOptions;
         //private readonly Cci.ModulePropertiesForSerialization _serializationProperties;
 
@@ -54,23 +45,34 @@ using Pchp.CodeAnalysis.CodeGen;
         /// </summary>
         public SynthesizedManager SynthesizedManager { get; }
 
-        Cci.ICustomAttribute _debuggableAttribute, _phpextensionAttribute, _targetphpversionAttribute, _assemblyinformationalversionAttribute;
+        Cci.ICustomAttribute _debuggableAttribute,
+            _phpextensionAttribute,
+            _targetphpversionAttribute,
+            _assemblyinformationalversionAttribute;
 
-        protected readonly ConcurrentDictionary<Aquila.CodeAnalysis.Symbols.Symbol, Cci.IModuleReference> AssemblyOrModuleSymbolToModuleRefMap = new ConcurrentDictionary<Aquila.CodeAnalysis.Symbols.Symbol, Cci.IModuleReference>();
-        readonly ConcurrentDictionary<Aquila.CodeAnalysis.Symbols.Symbol, object> _genericInstanceMap = new ConcurrentDictionary<Aquila.CodeAnalysis.Symbols.Symbol, object>();
+        protected readonly ConcurrentDictionary<Aquila.CodeAnalysis.Symbols.Symbol, Cci.IModuleReference>
+            AssemblyOrModuleSymbolToModuleRefMap =
+                new ConcurrentDictionary<Aquila.CodeAnalysis.Symbols.Symbol, Cci.IModuleReference>();
+
+        readonly ConcurrentDictionary<Aquila.CodeAnalysis.Symbols.Symbol, object> _genericInstanceMap =
+            new ConcurrentDictionary<Aquila.CodeAnalysis.Symbols.Symbol, object>();
+
         readonly PhpRootModuleType _rootModuleType = new PhpRootModuleType();
         PrivateImplementationDetails _privateImplementationDetails;
-        HashSet<string> _namesOfTopLevelTypes;  // initialized with set of type names within first call to GetTopLevelTypes()
+
+        HashSet<string>
+            _namesOfTopLevelTypes; // initialized with set of type names within first call to GetTopLevelTypes()
 
         internal readonly CommonModuleCompilationState CompilationState;
 
         /// <summary>
         /// Builders for synthesized static constructors.
         /// </summary>
-        readonly ConcurrentDictionary<Cci.ITypeDefinition, ILBuilder> _cctorBuilders = new ConcurrentDictionary<Cci.ITypeDefinition, ILBuilder>(ReferenceEqualityComparer.Instance);
+        readonly ConcurrentDictionary<Cci.ITypeDefinition, ILBuilder> _cctorBuilders =
+            new ConcurrentDictionary<Cci.ITypeDefinition, ILBuilder>(ReferenceEqualityComparer.Instance);
 
         protected PEModuleBuilder(
-            Aquila.CodeAnalysis.Symbols.PhpCompilation compilation,
+            PhpCompilation compilation,
             SourceModuleSymbol sourceModule,
             Cci.ModulePropertiesForSerialization serializationProperties,
             IEnumerable<ResourceDescription> manifestResources,
@@ -113,28 +115,32 @@ using Pchp.CodeAnalysis.CodeGen;
         /// </summary>
         /// <param name="container">Containing type symbol.</param>
         /// <returns>Enumeration of synthesized fields.</returns>
-        public IEnumerable<FieldSymbol> GetSynthesizedFields(Cci.ITypeDefinition container) => SynthesizedManager.GetMembers<FieldSymbol>(container);
+        public IEnumerable<FieldSymbol> GetSynthesizedFields(Cci.ITypeDefinition container) =>
+            SynthesizedManager.GetMembers<FieldSymbol>(container);
 
         /// <summary>
         /// Gets enumeration of synthesized properties for <paramref name="container"/>.
         /// </summary>
         /// <param name="container">Containing type symbol.</param>
         /// <returns>Enumeration of synthesized properties.</returns>
-        public IEnumerable<PropertySymbol> GetSynthesizedProperties(Cci.ITypeDefinition container) => SynthesizedManager.GetMembers<PropertySymbol>(container);
+        public IEnumerable<PropertySymbol> GetSynthesizedProperties(Cci.ITypeDefinition container) =>
+            SynthesizedManager.GetMembers<PropertySymbol>(container);
 
         /// <summary>
         /// Gets enumeration of synthesized methods for <paramref name="container"/>.
         /// </summary>
         /// <param name="container">Containing type symbol.</param>
         /// <returns>Enumeration of synthesized methods.</returns>
-        public IEnumerable<MethodSymbol> GetSynthesizedMethods(Cci.ITypeDefinition container) => SynthesizedManager.GetMembers<MethodSymbol>(container);
+        public IEnumerable<MethodSymbol> GetSynthesizedMethods(Cci.ITypeDefinition container) =>
+            SynthesizedManager.GetMembers<MethodSymbol>(container);
 
         /// <summary>
         /// Gets enumeration of synthesized nested types for <paramref name="container"/>.
         /// </summary>
         /// <param name="container">Containing type symbol.</param>
         /// <returns>Enumeration of synthesized nested types.</returns>
-        public IEnumerable<TypeSymbol> GetSynthesizedTypes(Cci.ITypeDefinition container) => SynthesizedManager.GetMembers<TypeSymbol>(container);
+        public IEnumerable<TypeSymbol> GetSynthesizedTypes(Cci.ITypeDefinition container) =>
+            SynthesizedManager.GetMembers<TypeSymbol>(container);
 
         #endregion
 
@@ -142,10 +148,7 @@ using Pchp.CodeAnalysis.CodeGen;
 
         public ArrayMethods ArrayMethods
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
         }
 
         public override int CurrentGenerationOrdinal => 0; // used for EditAndContinue
@@ -157,9 +160,14 @@ using Pchp.CodeAnalysis.CodeGen;
             {
                 if (_debuggableAttribute == null)
                 {
-                    var debuggableAttrCtor = (MethodSymbol)this.Compilation.GetWellKnownTypeMember(WellKnownMember.System_Diagnostics_DebuggableAttribute__ctorDebuggingModes);
+                    var debuggableAttrCtor =
+                        (MethodSymbol) this.Compilation.GetWellKnownTypeMember(WellKnownMember
+                            .System_Diagnostics_DebuggableAttribute__ctorDebuggingModes);
                     _debuggableAttribute = new SynthesizedAttributeData(debuggableAttrCtor,
-                        ImmutableArray.Create(new TypedConstant(Compilation.CoreTypes.Int32.Symbol, TypedConstantKind.Primitive, DebuggableAttribute.DebuggingModes.Default | DebuggableAttribute.DebuggingModes.DisableOptimizations)),
+                        ImmutableArray.Create(new TypedConstant(Compilation.CoreTypes.Int32.Symbol,
+                            TypedConstantKind.Primitive,
+                            DebuggableAttribute.DebuggingModes.Default |
+                            DebuggableAttribute.DebuggingModes.DisableOptimizations)),
                         ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
                 }
 
@@ -179,21 +187,28 @@ using Pchp.CodeAnalysis.CodeGen;
             // [assembly: PhpExtension(new string[0])]
             if (_phpextensionAttribute == null)
             {
-                var phpextensionAttributeCtor = this.Compilation.PhpCorLibrary.GetTypeByMetadataName(CoreTypes.PhpExtensionAttributeFullName).InstanceConstructors.First();
+                var phpextensionAttributeCtor = this.Compilation.PhpCorLibrary
+                    .GetTypeByMetadataName(CoreTypes.PhpExtensionAttributeFullName).InstanceConstructors.First();
                 _phpextensionAttribute = new SynthesizedAttributeData(phpextensionAttributeCtor,
-                    ImmutableArray.Create(new TypedConstant(Compilation.CreateArrayTypeSymbol(Compilation.CoreTypes.String.Symbol), ImmutableArray<TypedConstant>.Empty)),  // string[] { }
+                    ImmutableArray.Create(new TypedConstant(
+                        Compilation.CreateArrayTypeSymbol(Compilation.CoreTypes.String.Symbol),
+                        ImmutableArray<TypedConstant>.Empty)), // string[] { }
                     ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
             }
+
             yield return _phpextensionAttribute;
 
             // [assembly: TargetPhpLanguage(LanguageVersion : "7.0", ShortOpenTag : false)]
             if (_targetphpversionAttribute == null)
             {
-                var targetphpversionAttribute = this.Compilation.PhpCorLibrary.GetTypeByMetadataName(CoreTypes.TargetPhpLanguageAttributeFullName);
+                var targetphpversionAttribute =
+                    this.Compilation.PhpCorLibrary.GetTypeByMetadataName(CoreTypes.TargetPhpLanguageAttributeFullName);
                 if (targetphpversionAttribute.IsErrorTypeOrNull() == false)
                 {
                     var parseOptions = this.Compilation.Options.ParseOptions ?? PhpParseOptions.Default;
-                    var targetphpversionAttributeCtor = this.Compilation.PhpCorLibrary.GetTypeByMetadataName(CoreTypes.TargetPhpLanguageAttributeFullName).InstanceConstructors.First();
+                    var targetphpversionAttributeCtor = this.Compilation.PhpCorLibrary
+                        .GetTypeByMetadataName(CoreTypes.TargetPhpLanguageAttributeFullName).InstanceConstructors
+                        .First();
                     _targetphpversionAttribute = new SynthesizedAttributeData(targetphpversionAttributeCtor,
                         ImmutableArray.Create(
                             Compilation.CreateTypedConstant(parseOptions.LanguageVersion?.ToString(2)),
@@ -201,6 +216,7 @@ using Pchp.CodeAnalysis.CodeGen;
                         ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
                 }
             }
+
             if (_targetphpversionAttribute != null)
             {
                 yield return _targetphpversionAttribute;
@@ -211,12 +227,14 @@ using Pchp.CodeAnalysis.CodeGen;
             {
                 if (_assemblyinformationalversionAttribute == null)
                 {
-                    var attr = (NamedTypeSymbol)this.Compilation.GetTypeByMetadataName("System.Reflection.AssemblyInformationalVersionAttribute");
+                    var attr = (NamedTypeSymbol) this.Compilation.GetTypeByMetadataName(
+                        "System.Reflection.AssemblyInformationalVersionAttribute");
                     if (attr != null)
                     {
                         _assemblyinformationalversionAttribute = new SynthesizedAttributeData(
                             attr.InstanceConstructors[0],
-                            ImmutableArray.Create(Compilation.CreateTypedConstant(Compilation.SourceAssembly.FileVersion)),
+                            ImmutableArray.Create(
+                                Compilation.CreateTypedConstant(Compilation.SourceAssembly.FileVersion)),
                             ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
                     }
                 }
@@ -281,10 +299,7 @@ using Pchp.CodeAnalysis.CodeGen;
 
         public override IEnumerable<string> LinkedAssembliesDebugInfo
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
         }
 
         internal override string ModuleName => Name;
@@ -315,7 +330,8 @@ using Pchp.CodeAnalysis.CodeGen;
                 if (!_cctorBuilders.TryGetValue(container, out il))
                 {
                     var cctor = SynthesizedManager.EnsureStaticCtor(container); // ensure .cctor is declared
-                    _cctorBuilders[container] = il = new ILBuilder(this, new LocalSlotManager(null), _compilation.Options.OptimizationLevel.AsOptimizationLevel());
+                    _cctorBuilders[container] = il = new ILBuilder(this, new LocalSlotManager(null),
+                        _compilation.Options.OptimizationLevel.AsOptimizationLevel());
                 }
             }
 
@@ -353,7 +369,7 @@ using Pchp.CodeAnalysis.CodeGen;
             var tDllLoader = tDllLoader_T.Construct(this.ScriptType);
 
             // .AddScriptReference()
-            var addmethod = (MethodSymbol)tDllLoader.GetMembers("AddScriptReference").Single();
+            var addmethod = (MethodSymbol) tDllLoader.GetMembers("AddScriptReference").Single();
 
             // .call Context.DllLoader<TScript>.Bootstrap()
             il
@@ -365,22 +381,16 @@ using Pchp.CodeAnalysis.CodeGen;
 
         internal override Compilation CommonCompilation => _compilation;
 
-        internal Aquila.CodeAnalysis.Symbols.PhpCompilation Compilation => _compilation;
+        internal PhpCompilation Compilation => _compilation;
 
         internal override CommonEmbeddedTypesManager CommonEmbeddedTypesManagerOpt
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
         }
 
         internal override CommonModuleCompilationState CommonModuleCompilationState
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
         }
 
         internal override IAssemblySymbol CommonCorLibrary => _compilation.CorLibrary;
@@ -399,7 +409,8 @@ using Pchp.CodeAnalysis.CodeGen;
             return Translate(_compilation.CorLibrary, context.Diagnostics);
         }
 
-        protected override IEnumerable<Cci.IAssemblyReference> GetAssemblyReferencesFromAddedModules(DiagnosticBag diagnostics)
+        protected override IEnumerable<Cci.IAssemblyReference> GetAssemblyReferencesFromAddedModules(
+            DiagnosticBag diagnostics)
         {
             // Cannot be retrieved from GetCoreLibraryReferenceToEmit, because it can return only one reference
             Debug.Assert(_compilation.PhpCorLibrary != null);
@@ -426,7 +437,8 @@ using Pchp.CodeAnalysis.CodeGen;
             return ImmutableArray<Cci.ExportedType>.Empty; // throw new NotImplementedException();
         }
 
-        public Cci.IFieldReference GetFieldForData(ImmutableArray<byte> data, SyntaxNode syntaxNode, DiagnosticBag diagnostics)
+        public Cci.IFieldReference GetFieldForData(ImmutableArray<byte> data, SyntaxNode syntaxNode,
+            DiagnosticBag diagnostics)
         {
             throw new NotImplementedException();
         }
@@ -448,7 +460,8 @@ using Pchp.CodeAnalysis.CodeGen;
 
         //IEnumerable<Cci.ManagedResource> _lazyManagedResources;
 
-        protected override void AddEmbeddedResourcesFromAddedModules(ArrayBuilder<Cci.ManagedResource> builder, DiagnosticBag diagnostics)
+        protected override void AddEmbeddedResourcesFromAddedModules(ArrayBuilder<Cci.ManagedResource> builder,
+            DiagnosticBag diagnostics)
         {
             throw new NotSupportedException(); // override
         }
@@ -611,7 +624,7 @@ using Pchp.CodeAnalysis.CodeGen;
         internal virtual IEnumerable<Cci.INamespaceTypeDefinition> GetTopLevelTypesCore(EmitContext context)
         {
             // <script> type containing assembly level symbols
-            yield return this.ScriptType;   // TODO: move to anonymous type manager
+            yield return this.ScriptType; // TODO: move to anonymous type manager
 
             foreach (var t in this.Compilation.AnonymousTypeManager.GetAllCreatedTemplates())
                 yield return t;
@@ -624,8 +637,8 @@ using Pchp.CodeAnalysis.CodeGen;
             foreach (var f in _sourceModule.SymbolCollection.GetFiles())
                 yield return f;
 
-            foreach (var t in _sourceModule.SymbolCollection.GetTypes())
-                yield return t;
+            // foreach (var t in _sourceModule.SymbolCollection.GetTypes())
+            //     yield return t;
 
             //var namespacesToProcess = new Stack<INamespaceSymbol>();
             //namespacesToProcess.Push(this.SourceModule.GlobalNamespace);
@@ -656,8 +669,15 @@ using Pchp.CodeAnalysis.CodeGen;
             //
             if (symbol.DeclaredAccessibility != Accessibility.Public)
             {
-                if (PhpFieldSymbolExtension.IsInStaticsHolder(symbol as FieldSymbol) || // field is generated within `_statics` holder class and must be accessed from outside // note: maybe internal?
-                    ((symbol.ContainingSymbol is SourceTraitTypeSymbol) && (symbol is SourceMethodSymbol || symbol is SourceFieldSymbol || symbol is SynthesizedTraitMethodSymbol || symbol is SynthesizedTraitFieldSymbol)))  // member is in trait => hence must be friend with any class (public)
+                if (
+                    PhpFieldSymbolExtension
+                        .IsInStaticsHolder(
+                            symbol as FieldSymbol) || // field is generated within `_statics` holder class and must be accessed from outside // note: maybe internal?
+                    ((symbol.ContainingSymbol is SourceTraitTypeSymbol) && (symbol is SourceMethodSymbol ||
+                                                                            symbol is SourceFieldSymbol ||
+                                                                            symbol is SynthesizedTraitMethodSymbol ||
+                                                                            symbol is SynthesizedTraitFieldSymbol))
+                ) // member is in trait => hence must be friend with any class (public)
                 {
                     return Cci.TypeMemberVisibility.Public;
                 }
@@ -717,7 +737,8 @@ using Pchp.CodeAnalysis.CodeGen;
                         return Cci.TypeMemberVisibility.Family;
                     }
 
-                case Accessibility.ProtectedAndInternal: // Not supported by language, but we should be able to import it.
+                case Accessibility.ProtectedAndInternal
+                    : // Not supported by language, but we should be able to import it.
                     Debug.Assert(symbol.ContainingType.TypeKind != TypeKind.Submission);
                     return Cci.TypeMemberVisibility.FamilyAndAssembly;
 
@@ -773,7 +794,7 @@ using Pchp.CodeAnalysis.CodeGen;
 
         internal override bool SupportsPrivateImplClass
         {
-            get { return false; }   // TODO: true when GetSpecialType() will be implemented
+            get { return false; } // TODO: true when GetSpecialType() will be implemented
         }
 
         internal override IModuleSymbol CommonSourceModule => SourceModule;
@@ -787,7 +808,7 @@ using Pchp.CodeAnalysis.CodeGen;
 
         static void VisitTopLevelType(Cci.NoPiaReferenceIndexer noPiaIndexer, Cci.INamespaceTypeDefinition type)
         {
-            noPiaIndexer?.Visit((Cci.ITypeDefinition)type);
+            noPiaIndexer?.Visit((Cci.ITypeDefinition) type);
         }
 
         public override bool IsPlatformType(Cci.ITypeReference typeRef, Cci.PlatformType platformType)
@@ -797,10 +818,10 @@ using Pchp.CodeAnalysis.CodeGen;
             {
                 if (platformType == Cci.PlatformType.SystemType)
                 {
-                    return (object)namedType == (object)Compilation.GetWellKnownType(WellKnownType.System_Type);
+                    return (object) namedType == (object) Compilation.GetWellKnownType(WellKnownType.System_Type);
                 }
 
-                return namedType.SpecialType == (SpecialType)platformType;
+                return namedType.SpecialType == (SpecialType) platformType;
             }
 
             return false;
@@ -822,12 +843,14 @@ using Pchp.CodeAnalysis.CodeGen;
             return ImmutableArray<Cci.INamespaceTypeDefinition>.Empty; // throw new NotImplementedException();
         }
 
-        internal override ImmutableDictionary<Cci.ITypeDefinition, ImmutableArray<Cci.ITypeDefinitionMember>> GetSynthesizedMembers()
+        internal override ImmutableDictionary<Cci.ITypeDefinition, ImmutableArray<Cci.ITypeDefinitionMember>>
+            GetSynthesizedMembers()
         {
             throw new NotImplementedException(); // _synthesized.GetMembers
         }
 
-        internal Cci.INamedTypeReference GetSpecialType(SpecialType specialType, SyntaxNode syntaxNodeOpt, DiagnosticBag diagnostics)
+        internal Cci.INamedTypeReference GetSpecialType(SpecialType specialType, SyntaxNode syntaxNodeOpt,
+            DiagnosticBag diagnostics)
         {
             Debug.Assert(diagnostics != null);
 
@@ -841,28 +864,29 @@ using Pchp.CodeAnalysis.CodeGen;
             //                                   syntaxNodeOpt != null ? syntaxNodeOpt.Location : NoLocation.Singleton);
             //}
 
-            return (Cci.INamedTypeReference)Translate(typeSymbol, syntaxNodeOpt, diagnostics, needDeclaration: true);
+            return (Cci.INamedTypeReference) Translate(typeSymbol, syntaxNodeOpt, diagnostics, needDeclaration: true);
         }
 
         internal override Cci.IAssemblyReference Translate(IAssemblySymbol iassembly, DiagnosticBag diagnostics)
         {
-            var assembly = (AssemblySymbol)iassembly;
+            var assembly = (AssemblySymbol) iassembly;
 
             if (ReferenceEquals(SourceModule.ContainingAssembly, assembly))
             {
-                return (Cci.IAssemblyReference)this;
+                return (Cci.IAssemblyReference) this;
             }
 
             Cci.IModuleReference reference;
 
             if (AssemblyOrModuleSymbolToModuleRefMap.TryGetValue(assembly, out reference))
             {
-                return (Cci.IAssemblyReference)reference;
+                return (Cci.IAssemblyReference) reference;
             }
 
             AssemblyReference asmRef = new AssemblyReference(assembly);
 
-            AssemblyReference cachedAsmRef = (AssemblyReference)AssemblyOrModuleSymbolToModuleRefMap.GetOrAdd(assembly, asmRef);
+            AssemblyReference cachedAsmRef =
+                (AssemblyReference) AssemblyOrModuleSymbolToModuleRefMap.GetOrAdd(assembly, asmRef);
 
             if (cachedAsmRef == asmRef)
             {
@@ -870,12 +894,13 @@ using Pchp.CodeAnalysis.CodeGen;
             }
 
             // TryAdd because whatever is associated with assembly should be associated with Modules[0]
-            AssemblyOrModuleSymbolToModuleRefMap.TryAdd((ModuleSymbol)assembly.Modules[0], cachedAsmRef);
+            AssemblyOrModuleSymbolToModuleRefMap.TryAdd((ModuleSymbol) assembly.Modules[0], cachedAsmRef);
 
             return cachedAsmRef;
         }
 
-        private void ValidateReferencedAssembly(AssemblySymbol assembly, AssemblyReference asmRef, DiagnosticBag diagnostics)
+        private void ValidateReferencedAssembly(AssemblySymbol assembly, AssemblyReference asmRef,
+            DiagnosticBag diagnostics)
         {
             //AssemblyIdentity asmIdentity = SourceModule.ContainingAssembly.Identity;
             //AssemblyIdentity refIdentity = asmRef.MetadataIdentity;
@@ -921,9 +946,10 @@ using Pchp.CodeAnalysis.CodeGen;
             //}
         }
 
-        internal override Cci.IMethodReference Translate(IMethodSymbol symbol, DiagnosticBag diagnostics, bool needDeclaration)
+        internal override Cci.IMethodReference Translate(IMethodSymbol symbol, DiagnosticBag diagnostics,
+            bool needDeclaration)
         {
-            return Translate((MethodSymbol)symbol, null, diagnostics, /*null,*/ needDeclaration);
+            return Translate((MethodSymbol) symbol, null, diagnostics, /*null,*/ needDeclaration);
         }
 
         //internal Cci.IMethodReference Translate(
@@ -992,7 +1018,7 @@ using Pchp.CodeAnalysis.CodeGen;
                 {
                     if (_genericInstanceMap.TryGetValue(methodSymbol, out reference))
                     {
-                        return (Cci.IMethodReference)reference;
+                        return (Cci.IMethodReference) reference;
                     }
 
                     if (methodIsGeneric)
@@ -1013,7 +1039,7 @@ using Pchp.CodeAnalysis.CodeGen;
                         methodRef = new SpecializedMethodReference(methodSymbol);
                     }
 
-                    methodRef = (Cci.IMethodReference)_genericInstanceMap.GetOrAdd(methodSymbol, methodRef);
+                    methodRef = (Cci.IMethodReference) _genericInstanceMap.GetOrAdd(methodSymbol, methodRef);
 
                     return methodRef;
                 }
@@ -1043,12 +1069,12 @@ using Pchp.CodeAnalysis.CodeGen;
 
                     if (_genericInstanceMap.TryGetValue(methodSymbol, out reference))
                     {
-                        methodRef = (Cci.IMethodReference)reference;
+                        methodRef = (Cci.IMethodReference) reference;
                     }
                     else
                     {
                         methodRef = new SpecializedMethodReference(methodSymbol);
-                        methodRef = (Cci.IMethodReference)_genericInstanceMap.GetOrAdd(methodSymbol, methodRef);
+                        methodRef = (Cci.IMethodReference) _genericInstanceMap.GetOrAdd(methodSymbol, methodRef);
                     }
                 }
                 else
@@ -1076,12 +1102,14 @@ using Pchp.CodeAnalysis.CodeGen;
         internal static Cci.IGenericParameterReference Translate(TypeParameterSymbol param)
         {
             if (!param.IsDefinition)
-                throw new InvalidOperationException(/*string.Format(CSharpResources.GenericParameterDefinition, param.Name)*/);
+                throw new InvalidOperationException(
+                    /*string.Format(CSharpResources.GenericParameterDefinition, param.Name)*/);
 
             return param;
         }
 
-        internal sealed override Cci.ITypeReference Translate(ITypeSymbol typeSymbol, SyntaxNode syntaxNodeOpt, DiagnosticBag diagnostics)
+        internal sealed override Cci.ITypeReference Translate(ITypeSymbol typeSymbol, SyntaxNode syntaxNodeOpt,
+            DiagnosticBag diagnostics)
         {
             Debug.Assert(diagnostics != null);
 
@@ -1091,17 +1119,17 @@ using Pchp.CodeAnalysis.CodeGen;
                 //    return Translate((DynamicTypeSymbol)typeSymbol, syntaxNodeOpt, diagnostics);
 
                 case SymbolKind.ArrayType:
-                    return Translate((ArrayTypeSymbol)typeSymbol);
+                    return Translate((ArrayTypeSymbol) typeSymbol);
 
                 case SymbolKind.ErrorType:
                 case SymbolKind.NamedType:
-                    return Translate((NamedTypeSymbol)typeSymbol, syntaxNodeOpt, diagnostics);
+                    return Translate((NamedTypeSymbol) typeSymbol, syntaxNodeOpt, diagnostics);
 
                 case SymbolKind.PointerType:
-                    return Translate((PointerTypeSymbol)typeSymbol);
+                    return Translate((PointerTypeSymbol) typeSymbol);
 
                 case SymbolKind.TypeParameter:
-                    return Translate((TypeParameterSymbol)typeSymbol);
+                    return Translate((TypeParameterSymbol) typeSymbol);
             }
 
             throw ExceptionUtilities.UnexpectedValue(typeSymbol.Kind);
@@ -1129,11 +1157,11 @@ using Pchp.CodeAnalysis.CodeGen;
 
                 if (_genericInstanceMap.TryGetValue(fieldSymbol, out reference))
                 {
-                    return (Cci.IFieldReference)reference;
+                    return (Cci.IFieldReference) reference;
                 }
 
                 fieldRef = new SpecializedFieldReference(fieldSymbol);
-                fieldRef = (Cci.IFieldReference)_genericInstanceMap.GetOrAdd(fieldSymbol, fieldRef);
+                fieldRef = (Cci.IFieldReference) _genericInstanceMap.GetOrAdd(fieldSymbol, fieldRef);
 
                 return fieldRef;
             }
@@ -1210,10 +1238,10 @@ using Pchp.CodeAnalysis.CodeGen;
                 {
                     if (_genericInstanceMap.TryGetValue(namedTypeSymbol, out reference))
                     {
-                        return (Cci.INamedTypeReference)reference;
+                        return (Cci.INamedTypeReference) reference;
                     }
 
-                    if ((object)container != null)
+                    if ((object) container != null)
                     {
                         if (IsGenericType(container))
                         {
@@ -1230,21 +1258,21 @@ using Pchp.CodeAnalysis.CodeGen;
                         typeRef = new GenericNamespaceTypeInstanceReference(namedTypeSymbol);
                     }
 
-                    typeRef = (Cci.INamedTypeReference)_genericInstanceMap.GetOrAdd(namedTypeSymbol, typeRef);
+                    typeRef = (Cci.INamedTypeReference) _genericInstanceMap.GetOrAdd(namedTypeSymbol, typeRef);
 
                     return typeRef;
                 }
                 else if (IsGenericType(container))
                 {
-                    Debug.Assert((object)container != null);
+                    Debug.Assert((object) container != null);
 
                     if (_genericInstanceMap.TryGetValue(namedTypeSymbol, out reference))
                     {
-                        return (Cci.INamedTypeReference)reference;
+                        return (Cci.INamedTypeReference) reference;
                     }
 
                     typeRef = new SpecializedNestedTypeReference(namedTypeSymbol);
-                    typeRef = (Cci.INamedTypeReference)_genericInstanceMap.GetOrAdd(namedTypeSymbol, typeRef);
+                    typeRef = (Cci.INamedTypeReference) _genericInstanceMap.GetOrAdd(namedTypeSymbol, typeRef);
 
                     return typeRef;
                 }
@@ -1258,7 +1286,7 @@ using Pchp.CodeAnalysis.CodeGen;
             //    return _embeddedTypesManagerOpt.EmbedTypeIfNeedTo(namedTypeSymbol, fromImplements, syntaxNodeOpt, diagnostics);
             //}
 
-            return (Cci.ITypeReference)namedTypeSymbol;
+            return (Cci.ITypeReference) namedTypeSymbol;
         }
 
         internal static Cci.IArrayTypeReference Translate(ArrayTypeSymbol symbol)
@@ -1278,12 +1306,12 @@ using Pchp.CodeAnalysis.CodeGen;
 
         private bool IsSourceDefinition(IMethodSymbol method)
         {
-            return (object)method.ContainingModule == _sourceModule && method.IsDefinition;
+            return (object) method.ContainingModule == _sourceModule && method.IsDefinition;
         }
 
         public static bool IsGenericType(INamedTypeSymbol toCheck)
         {
-            while ((object)toCheck != null)
+            while ((object) toCheck != null)
             {
                 if (toCheck.Arity > 0)
                 {

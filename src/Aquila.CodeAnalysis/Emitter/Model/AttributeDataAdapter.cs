@@ -8,7 +8,7 @@ using Cci = Microsoft.Cci;
 using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis.Emit;
 
-namespace Pchp.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
     internal abstract partial class BaseAttributeData : Cci.ICustomAttribute
     {
@@ -26,13 +26,15 @@ namespace Pchp.CodeAnalysis.Symbols
                 Debug.Assert(argument.Kind != TypedConstantKind.Error);
                 builder.Add(CreateMetadataExpression(argument, context));
             }
+
             return builder.ToImmutableAndFree();
         }
 
         Cci.IMethodReference Cci.ICustomAttribute.Constructor(EmitContext context, bool reportDiagnostics)
         {
-            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
-            return (Cci.IMethodReference)moduleBeingBuilt.Translate(this.AttributeConstructor, /*context.SyntaxNodeOpt, */context.Diagnostics, false);
+            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder) context.Module;
+            return (Cci.IMethodReference) moduleBeingBuilt.Translate(
+                this.AttributeConstructor, /*context.SyntaxNodeOpt, */context.Diagnostics, false);
         }
 
         ImmutableArray<Cci.IMetadataNamedArgument> Cci.ICustomAttribute.GetNamedArguments(EmitContext context)
@@ -48,29 +50,25 @@ namespace Pchp.CodeAnalysis.Symbols
             {
                 builder.Add(CreateMetadataNamedArgument(namedArgument.Key, namedArgument.Value, context));
             }
+
             return builder.ToImmutableAndFree();
         }
 
         int Cci.ICustomAttribute.ArgumentCount
         {
-            get
-            {
-                return this.CommonConstructorArguments.Length;
-            }
+            get { return this.CommonConstructorArguments.Length; }
         }
 
         ushort Cci.ICustomAttribute.NamedArgumentCount
         {
-            get
-            {
-                return (ushort)this.CommonNamedArguments.Length;
-            }
+            get { return (ushort) this.CommonNamedArguments.Length; }
         }
 
         Cci.ITypeReference Cci.ICustomAttribute.GetType(EmitContext context)
         {
-            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
-            return moduleBeingBuilt.Translate(this.AttributeClass, syntaxNodeOpt: context.SyntaxNodeOpt, diagnostics: context.Diagnostics);
+            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder) context.Module;
+            return moduleBeingBuilt.Translate(this.AttributeClass, syntaxNodeOpt: context.SyntaxNodeOpt,
+                diagnostics: context.Diagnostics);
         }
 
         bool Cci.ICustomAttribute.AllowMultiple
@@ -102,13 +100,13 @@ namespace Pchp.CodeAnalysis.Symbols
         {
             Debug.Assert(!argument.Values.IsDefault);
             var values = argument.Values;
-            var arrayType = Emit.PEModuleBuilder.Translate((Aquila.CodeAnalysis.Symbols.ArrayTypeSymbol)argument.Type);
+            var arrayType = Emit.PEModuleBuilder.Translate((Aquila.CodeAnalysis.Symbols.ArrayTypeSymbol) argument.Type);
 
             if (values.Length == 0)
             {
                 return new MetadataCreateArray(arrayType,
-                                               arrayType.GetElementType(context),
-                                               ImmutableArray<Cci.IMetadataExpression>.Empty);
+                    arrayType.GetElementType(context),
+                    ImmutableArray<Cci.IMetadataExpression>.Empty);
             }
 
             var metadataExprs = new Cci.IMetadataExpression[values.Length];
@@ -118,49 +116,54 @@ namespace Pchp.CodeAnalysis.Symbols
             }
 
             return new MetadataCreateArray(arrayType,
-                                           arrayType.GetElementType(context),
-                                           metadataExprs.AsImmutableOrNull());
+                arrayType.GetElementType(context),
+                metadataExprs.AsImmutableOrNull());
         }
 
         private static MetadataTypeOf CreateType(TypedConstant argument, EmitContext context)
         {
             Debug.Assert(argument.Value != null);
-            var moduleBeingBuilt = (PEModuleBuilder)context.Module;
-            var syntaxNodeOpt = (SyntaxNode)context.SyntaxNodeOpt;
+            var moduleBeingBuilt = (PEModuleBuilder) context.Module;
+            var syntaxNodeOpt = (SyntaxNode) context.SyntaxNodeOpt;
             var diagnostics = context.Diagnostics;
-            return new MetadataTypeOf(moduleBeingBuilt.Translate((TypeSymbol)argument.Value, syntaxNodeOpt, diagnostics),
-                                      moduleBeingBuilt.Translate((TypeSymbol)argument.Type, syntaxNodeOpt, diagnostics));
+            return new MetadataTypeOf(
+                moduleBeingBuilt.Translate((TypeSymbol) argument.Value, syntaxNodeOpt, diagnostics),
+                moduleBeingBuilt.Translate((TypeSymbol) argument.Type, syntaxNodeOpt, diagnostics));
         }
 
         private static MetadataConstant CreateMetadataConstant(ITypeSymbol type, object value, EmitContext context)
         {
-            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
-            return moduleBeingBuilt.CreateConstant((TypeSymbol)type, value, syntaxNodeOpt: context.SyntaxNodeOpt, diagnostics: context.Diagnostics);
+            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder) context.Module;
+            return moduleBeingBuilt.CreateConstant((TypeSymbol) type, value, syntaxNodeOpt: context.SyntaxNodeOpt,
+                diagnostics: context.Diagnostics);
         }
 
-        private Cci.IMetadataNamedArgument CreateMetadataNamedArgument(string name, TypedConstant argument, EmitContext context)
+        private Cci.IMetadataNamedArgument CreateMetadataNamedArgument(string name, TypedConstant argument,
+            EmitContext context)
         {
             var symbol = LookupName(name);
             var value = CreateMetadataExpression(argument, context);
             TypeSymbol type;
             var fieldSymbol = symbol as Aquila.CodeAnalysis.Symbols.FieldSymbol;
-            if ((object)fieldSymbol != null)
+            if ((object) fieldSymbol != null)
             {
                 type = fieldSymbol.Type;
             }
             else
             {
-                type = ((Aquila.CodeAnalysis.Symbols.PropertySymbol)symbol).Type;
+                type = ((Aquila.CodeAnalysis.Symbols.PropertySymbol) symbol).Type;
             }
 
-            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
-            return new MetadataNamedArgument(symbol, moduleBeingBuilt.Translate(type, syntaxNodeOpt: context.SyntaxNodeOpt, diagnostics: context.Diagnostics), value);
+            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder) context.Module;
+            return new MetadataNamedArgument(symbol,
+                moduleBeingBuilt.Translate(type, syntaxNodeOpt: context.SyntaxNodeOpt,
+                    diagnostics: context.Diagnostics), value);
         }
 
         private Aquila.CodeAnalysis.Symbols.Symbol LookupName(string name)
         {
             var type = this.AttributeClass;
-            while ((object)type != null)
+            while ((object) type != null)
             {
                 foreach (var member in type.GetMembers(name))
                 {
@@ -169,6 +172,7 @@ namespace Pchp.CodeAnalysis.Symbols
                         return member;
                     }
                 }
+
                 type = type.BaseType; // BaseTypeNoUseSiteDiagnostics;
             }
 

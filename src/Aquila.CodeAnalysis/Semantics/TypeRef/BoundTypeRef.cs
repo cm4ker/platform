@@ -1,18 +1,17 @@
-﻿﻿using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata;
-using System.Text;
- using Aquila.Compiler.Utilities;
- using Devsense.PHP.Syntax;
+using Aquila.CodeAnalysis;
+using Aquila.Compiler.Utilities;
 using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis.CodeGen;
 using Pchp.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.Syntax.Syntax;
 using Peachpie.CodeAnalysis.Utilities;
-using static Devsense.PHP.Syntax.Ast.ReservedTypeRef;
 
 namespace Pchp.CodeAnalysis.Semantics.TypeRef
 {
@@ -49,7 +48,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             throw new NotSupportedException();
         }
 
-        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
         {
             var ct = compilation.CoreTypes;
 
@@ -79,19 +78,43 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
 
             switch (_type)
             {
-                case PhpTypeCode.Void: result = 0; break;
-                case PhpTypeCode.Boolean: result = ctx.GetBooleanTypeMask(); break;
-                case PhpTypeCode.Long: result = ctx.GetLongTypeMask(); break;
-                case PhpTypeCode.Double: result = ctx.GetDoubleTypeMask(); break;
-                case PhpTypeCode.String: result = ctx.GetStringTypeMask(); break;
-                case PhpTypeCode.WritableString: result = ctx.GetWritableStringTypeMask(); break;
-                case PhpTypeCode.PhpArray: result = ctx.GetArrayTypeMask(); break;
-                case PhpTypeCode.Resource: result = ctx.GetResourceTypeMask(); break;
-                case PhpTypeCode.Object: result = ctx.GetSystemObjectTypeMask(); break;
+                case PhpTypeCode.Void:
+                    result = 0;
+                    break;
+                case PhpTypeCode.Boolean:
+                    result = ctx.GetBooleanTypeMask();
+                    break;
+                case PhpTypeCode.Long:
+                    result = ctx.GetLongTypeMask();
+                    break;
+                case PhpTypeCode.Double:
+                    result = ctx.GetDoubleTypeMask();
+                    break;
+                case PhpTypeCode.String:
+                    result = ctx.GetStringTypeMask();
+                    break;
+                case PhpTypeCode.WritableString:
+                    result = ctx.GetWritableStringTypeMask();
+                    break;
+                case PhpTypeCode.PhpArray:
+                    result = ctx.GetArrayTypeMask();
+                    break;
+                case PhpTypeCode.Resource:
+                    result = ctx.GetResourceTypeMask();
+                    break;
+                case PhpTypeCode.Object:
+                    result = ctx.GetSystemObjectTypeMask();
+                    break;
                 case PhpTypeCode.Null: return ctx.GetNullTypeMask();
-                case PhpTypeCode.Iterable: result = ctx.GetArrayTypeMask() | ctx.GetTypeMask(ctx.BoundTypeRefFactory.TraversableTypeRef, true); break;   // array | Traversable
-                case PhpTypeCode.Callable: result = ctx.GetArrayTypeMask() | ctx.GetStringTypeMask() | ctx.GetSystemObjectTypeMask(); break;// array | string | object
-                case PhpTypeCode.Mixed: result = TypeRefMask.AnyType; break;
+                case PhpTypeCode.Iterable:
+                    result = ctx.GetArrayTypeMask() | ctx.GetTypeMask(ctx.BoundTypeRefFactory.TraversableTypeRef, true);
+                    break; // array | Traversable
+                case PhpTypeCode.Callable:
+                    result = ctx.GetArrayTypeMask() | ctx.GetStringTypeMask() | ctx.GetSystemObjectTypeMask();
+                    break; // array | string | object
+                case PhpTypeCode.Mixed:
+                    result = TypeRefMask.AnyType;
+                    break;
                 default:
                     throw ExceptionUtilities.UnexpectedValue(_type);
             }
@@ -118,126 +141,130 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             }
         }
 
-        public override bool Equals(IBoundTypeRef other) => base.Equals(other) || (other is BoundPrimitiveTypeRef pt && pt._type == this._type);
+        public override bool Equals(IBoundTypeRef other) =>
+            base.Equals(other) || (other is BoundPrimitiveTypeRef pt && pt._type == this._type);
     }
 
     #endregion
 
     #region BoundReservedTypeRef
 
-    sealed class BoundReservedTypeRef : BoundTypeRef
-    {
-        public ReservedType ReservedType => _type;
-        readonly ReservedType _type;
-
-        readonly SourceTypeSymbol _self;
-
-        public BoundReservedTypeRef(ReservedType type, SourceTypeSymbol self = null)
-        {
-            _type = type;
-            _self = self;
-        }
-
-        public override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
-        {
-            switch (_type)
-            {
-                case ReservedType.@static:
-                    return cg.EmitLoadStaticPhpTypeInfo();
-
-                case ReservedType.self:
-                    return cg.EmitLoadSelf(throwOnError: true);
-
-                case ReservedType.parent:
-                    return cg.EmitLoadParent();
-
-                default:
-                    throw ExceptionUtilities.Unreachable;
-            }
-        }
-
-        public override string ToString() => _type.ToString().ToLowerInvariant();
-
-        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
-        {
-            if (this.ResolvedType != null)
-            {
-                return this.ResolvedType;
-            }
-
-            if (_self == null || _self.IsTrait)
-            {
-                // no self, parent, static resolvable in compile-time:
-                return new MissingMetadataTypeSymbol(ToString(), 0, false);
-            }
-
-            // resolve types that parser skipped
-            switch (_type)
-            {
-                case ReservedType.self:
-                    return _self;
-
-                case ReservedType.parent:
-                    var btype = _self.BaseType;
-                    return (btype == null || btype.IsObjectType()) // no "System.Object" in PHP, invalid parent
-                        ? new MissingMetadataTypeSymbol(ToString(), 0, false)
-                        : btype;
-
-                case ReservedType.@static:
-                    if (_self.IsSealed)
-                    {
-                        // `static` == `self` <=> self is sealed
-                        return _self;
-                    }
-                    break;
-            }
-
-            // unk
-            return null;
-        }
-
-        public override TypeRefMask GetTypeRefMask(TypeRefContext ctx)
-        {
-            switch (_type)
-            {
-                case ReservedType.@static:
-                    return ctx.GetStaticTypeMask();
-
-                case ReservedType.self:
-                    return ctx.GetSelfTypeMask();
-
-                case ReservedType.parent:
-                    return ctx.GetParentTypeMask();
-
-                default:
-                    throw ExceptionUtilities.Unreachable;
-            }
-        }
-
-        public override IBoundTypeRef Transfer(TypeRefContext source, TypeRefContext target)
-        {
-            switch (_type)
-            {
-                case ReservedType.@static:
-                    if (source.ThisType != null)
-                        return new BoundTypeRefFromSymbol(source.ThisType);
-                    break;
-
-                case ReservedType.self:
-                    if (_self != null)
-                        return new BoundTypeRefFromSymbol(source.SelfType);
-                    break;
-
-                case ReservedType.parent:
-                    if (_self?.BaseType != null)
-                        return new BoundTypeRefFromSymbol(source.ThisType.BaseType);
-                    break;
-            }
-
-            // unk
-            return target.BoundTypeRefFactory.ObjectTypeRef;
-        }
-    }
+    //
+    // sealed class BoundReservedTypeRef : BoundTypeRef
+    // {
+    //     public ReservedType ReservedType => _type;
+    //     readonly ReservedType _type;
+    //
+    //     readonly SourceTypeSymbol _self;
+    //
+    //     public BoundReservedTypeRef(ReservedType type, SourceTypeSymbol self = null)
+    //     {
+    //         _type = type;
+    //         _self = self;
+    //     }
+    //
+    //     public override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
+    //     {
+    //         switch (_type)
+    //         {
+    //             case ReservedType.@static:
+    //                 return cg.EmitLoadStaticPhpTypeInfo();
+    //
+    //             case ReservedType.self:
+    //                 return cg.EmitLoadSelf(throwOnError: true);
+    //
+    //             case ReservedType.parent:
+    //                 return cg.EmitLoadParent();
+    //
+    //             default:
+    //                 throw ExceptionUtilities.Unreachable;
+    //         }
+    //     }
+    //
+    //     public override string ToString() => _type.ToString().ToLowerInvariant();
+    //
+    //     public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
+    //     {
+    //         if (this.ResolvedType != null)
+    //         {
+    //             return this.ResolvedType;
+    //         }
+    //
+    //         if (_self == null || _self.IsTrait)
+    //         {
+    //             // no self, parent, static resolvable in compile-time:
+    //             return new MissingMetadataTypeSymbol(ToString(), 0, false);
+    //         }
+    //
+    //         // resolve types that parser skipped
+    //         switch (_type)
+    //         {
+    //             case ReservedType.self:
+    //                 return _self;
+    //
+    //             case ReservedType.parent:
+    //                 var btype = _self.BaseType;
+    //                 return (btype == null || btype.IsObjectType()) // no "System.Object" in PHP, invalid parent
+    //                     ? new MissingMetadataTypeSymbol(ToString(), 0, false)
+    //                     : btype;
+    //
+    //             case ReservedType.@static:
+    //                 if (_self.IsSealed)
+    //                 {
+    //                     // `static` == `self` <=> self is sealed
+    //                     return _self;
+    //                 }
+    //
+    //                 break;
+    //         }
+    //
+    //         // unk
+    //         return null;
+    //     }
+    //
+    //     public override TypeRefMask GetTypeRefMask(TypeRefContext ctx)
+    //     {
+    //         switch (_type)
+    //         {
+    //             case ReservedType.@static:
+    //                 return ctx.GetStaticTypeMask();
+    //
+    //             case ReservedType.self:
+    //                 return ctx.GetSelfTypeMask();
+    //
+    //             case ReservedType.parent:
+    //                 return ctx.GetParentTypeMask();
+    //
+    //             default:
+    //                 throw ExceptionUtilities.Unreachable;
+    //         }
+    //     }
+    //
+    //     public override IBoundTypeRef Transfer(TypeRefContext source, TypeRefContext target)
+    //     {
+    //         switch (_type)
+    //         {
+    //             case ReservedType.@static:
+    //                 if (source.ThisType != null)
+    //                     return new BoundTypeRefFromSymbol(source.ThisType);
+    //                 break;
+    //
+    //             case ReservedType.self:
+    //                 if (_self != null)
+    //                     return new BoundTypeRefFromSymbol(source.SelfType);
+    //                 break;
+    //
+    //             case ReservedType.parent:
+    //                 if (_self?.BaseType != null)
+    //                     return new BoundTypeRefFromSymbol(source.ThisType.BaseType);
+    //                 break;
+    //         }
+    //
+    //         // unk
+    //         return target.BoundTypeRefFactory.ObjectTypeRef;
+    //     }
+    // }
+    //
 
     #endregion
 
@@ -265,7 +292,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             throw new NotSupportedException();
         }
 
-        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
         {
             return compilation.CoreTypes.PhpArray.Symbol;
         }
@@ -284,7 +311,9 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             return new BoundArrayTypeRef(target.AddToContext(source, _elementType));
         }
 
-        public override bool Equals(IBoundTypeRef other) => base.Equals(other) || (other is BoundArrayTypeRef at && at.ElementType == this.ElementType);
+        public override bool Equals(IBoundTypeRef other) => base.Equals(other) ||
+                                                            (other is BoundArrayTypeRef at &&
+                                                             at.ElementType == this.ElementType);
     }
 
     #endregion
@@ -315,7 +344,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             throw ExceptionUtilities.Unreachable;
         }
 
-        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
         {
             return compilation.CoreTypes.Closure.Symbol;
         }
@@ -326,10 +355,12 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
                 return this;
 
             // note: there should be no circular dependency
-            return new BoundLambdaTypeRef(target.AddToContext(source, _returnType)/*, _signature*/);
+            return new BoundLambdaTypeRef(target.AddToContext(source, _returnType) /*, _signature*/);
         }
 
-        public override bool Equals(IBoundTypeRef other) => base.Equals(other) || (other is BoundLambdaTypeRef lt && lt._returnType == this._returnType);
+        public override bool Equals(IBoundTypeRef other) => base.Equals(other) ||
+                                                            (other is BoundLambdaTypeRef lt &&
+                                                             lt._returnType == this._returnType);
 
         public override string ToString() => NameUtils.SpecialNames.Closure.ToString();
     }
@@ -347,7 +378,8 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
         readonly SourceTypeSymbol _self;
         readonly int _arity;
 
-        public BoundClassTypeRef(QualifiedName qname, SourceRoutineSymbol routine, SourceTypeSymbol self, int arity = -1)
+        public BoundClassTypeRef(QualifiedName qname, SourceRoutineSymbol routine, SourceTypeSymbol self,
+            int arity = -1)
         {
             if (qname.IsReservedClassName)
             {
@@ -364,7 +396,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
 
         public override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
         {
-            var t = ResolvedType ?? (TypeSymbol)ResolveTypeSymbol(cg.DeclaringCompilation);
+            var t = ResolvedType ?? (TypeSymbol) ResolveTypeSymbol(cg.DeclaringCompilation);
             if (t.IsValidType())
             {
                 return cg.EmitLoadPhpTypeInfo(t);
@@ -382,7 +414,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             }
         }
 
-        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
         {
             if (ResolvedType.IsValidType() && !ResolvedType.IsUnreachable)
             {
@@ -394,15 +426,17 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             if (_self != null)
             {
                 if (_self.FullName == ClassName) type = _self;
-                else if (_self.BaseType != null && _self.BaseType.PhpQualifiedName() == ClassName) type = _self.BaseType;
+                else if (_self.BaseType != null && _self.BaseType.PhpQualifiedName() == ClassName)
+                    type = _self.BaseType;
             }
 
             if (type == null)
             {
                 type = (_arity <= 0)
-                 ? (TypeSymbol)compilation.GlobalSemantics.ResolveType(ClassName)
-                 // generic types only exist in external references, use this method to resolve the symbol including arity (needs metadataname instead of QualifiedName)
-                 : compilation.GlobalSemantics.GetTypeFromNonExtensionAssemblies(MetadataHelpers.ComposeAritySuffixedMetadataName(ClassName.ClrName(), _arity));
+                    ? (TypeSymbol) compilation.GlobalSemantics.ResolveType(ClassName)
+                    // generic types only exist in external references, use this method to resolve the symbol including arity (needs metadataname instead of QualifiedName)
+                    : compilation.GlobalSemantics.GetTypeFromNonExtensionAssemblies(
+                        MetadataHelpers.ComposeAritySuffixedMetadataName(ClassName.ClrName(), _arity));
             }
 
             var containingFile = _routine?.ContainingFile ?? _self?.ContainingFile;
@@ -416,7 +450,8 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
                     .CandidateSymbols
                     .Cast<TypeSymbol>()
                     .Where(t => !t.IsUnreachable)
-                    .Where(x => x is SourceTypeSymbol srct && !srct.Syntax.IsConditional && srct.ContainingFile == containingFile))
+                    .Where(x => x is SourceTypeSymbol srct && !srct.Syntax.IsConditional &&
+                                srct.ContainingFile == containingFile))
                 {
                     if (best == null)
                     {
@@ -431,7 +466,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
 
                 if (best != null)
                 {
-                    type = (NamedTypeSymbol)best;
+                    type = (NamedTypeSymbol) best;
                 }
             }
 
@@ -439,7 +474,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             if (type.IsTraitType())
             {
                 // <!TSelf> -> <T<Object>>
-                var t = (NamedTypeSymbol)type;
+                var t = (NamedTypeSymbol) type;
                 type = t.Construct(t.Construct(compilation.CoreTypes.Object));
             }
 
@@ -451,7 +486,8 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
 
         public override TypeRefMask GetTypeRefMask(TypeRefContext ctx) => ctx.GetTypeMask(this, true);
 
-        public override bool Equals(IBoundTypeRef other) => base.Equals(other) || (other is BoundClassTypeRef ct && ct.ClassName == this.ClassName && ct.TypeArguments.IsDefaultOrEmpty);
+        public override bool Equals(IBoundTypeRef other) => base.Equals(other) || (other is BoundClassTypeRef ct &&
+            ct.ClassName == this.ClassName && ct.TypeArguments.IsDefaultOrEmpty);
     }
 
     #endregion
@@ -480,15 +516,16 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             return cg.EmitLoadPhpTypeInfo(t);
         }
 
-        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
         {
-            var resolved = (NamedTypeSymbol)(_targetType.Type ?? _targetType.ResolveTypeSymbol(compilation));
+            var resolved = (NamedTypeSymbol) (_targetType.Type ?? _targetType.ResolveTypeSymbol(compilation));
 
             if (resolved.IsValidType())
             {
                 // TODO: check _typeArguments are bound (no ErrorSymbol)
 
-                var boundTypeArgs = _typeArguments.SelectAsArray(tref => (TypeSymbol)(tref.Type ?? tref.ResolveTypeSymbol(compilation)));
+                var boundTypeArgs = _typeArguments.SelectAsArray(tref =>
+                    (TypeSymbol) (tref.Type ?? tref.ResolveTypeSymbol(compilation)));
 
                 return resolved.Construct(boundTypeArgs);
             }
@@ -507,7 +544,8 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
         {
             if (ReferenceEquals(this, other)) return true;
 
-            if (other is BoundGenericClassTypeRef gt && gt._targetType.Equals(_targetType) && gt._typeArguments.Length == _typeArguments.Length)
+            if (other is BoundGenericClassTypeRef gt && gt._targetType.Equals(_targetType) &&
+                gt._typeArguments.Length == _typeArguments.Length)
             {
                 for (int i = 0; i < _typeArguments.Length; i++)
                 {
@@ -625,9 +663,11 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             }
         }
 
-        public override bool Equals(IBoundTypeRef other) => base.Equals(other) || (other is BoundIndirectTypeRef it && it._typeExpression == _typeExpression);
+        public override bool Equals(IBoundTypeRef other) => base.Equals(other) ||
+                                                            (other is BoundIndirectTypeRef it &&
+                                                             it._typeExpression == _typeExpression);
 
-        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
         {
             // MOVED TO GRAPH REWRITER:
 
@@ -660,7 +700,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             if (source == target) return this;
 
             // it is "an" object within another routine:
-            return new BoundPrimitiveTypeRef(PhpTypeCode.Object) { IsNullable = false };
+            return new BoundPrimitiveTypeRef(PhpTypeCode.Object) {IsNullable = false};
         }
 
         public override TypeRefMask GetTypeRefMask(TypeRefContext ctx)
@@ -675,7 +715,8 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
 
         public override string ToString() => "{?}";
 
-        public override TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) => visitor.VisitIndirectTypeRef(this);
+        public override TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) =>
+            visitor.VisitIndirectTypeRef(this);
     }
 
     #endregion
@@ -699,9 +740,9 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             throw new NotImplementedException();
         }
 
-        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
         {
-            var result = (TypeSymbol)TypeRefs[0].ResolveTypeSymbol(compilation);
+            var result = (TypeSymbol) TypeRefs[0].ResolveTypeSymbol(compilation);
 
             for (int i = 1; i < TypeRefs.Length; i++)
             {
@@ -712,7 +753,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
                     continue;
                 }
 
-                result = compilation.Merge(result, (TypeSymbol)tref.ResolveTypeSymbol(compilation));
+                result = compilation.Merge(result, (TypeSymbol) tref.ResolveTypeSymbol(compilation));
             }
 
             //if (IsNullable)
@@ -742,7 +783,8 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             return result;
         }
 
-        public override TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) => visitor.VisitMultipleTypeRef(this);
+        public override TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) =>
+            visitor.VisitMultipleTypeRef(this);
 
         public BoundMultipleTypeRef Update(ImmutableArray<BoundTypeRef> trefs)
         {
@@ -807,7 +849,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
 
         public BoundTypeRefFromSymbol(ITypeSymbol symbol)
         {
-            Debug.Assert(((TypeSymbol)symbol).IsValidType());
+            Debug.Assert(((TypeSymbol) symbol).IsValidType());
 
             Debug.Assert(!symbol.Is_PhpValue());
             Debug.Assert(!symbol.Is_PhpAlias());
@@ -817,15 +859,17 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
 
         public override string ToString() => _symbol.ToString();
 
-        public override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false) => cg.EmitLoadPhpTypeInfo(_symbol);
+        public override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false) =>
+            cg.EmitLoadPhpTypeInfo(_symbol);
 
         public override IBoundTypeRef Transfer(TypeRefContext source, TypeRefContext target) => this;
 
-        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation) => _symbol;
+        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation) =>
+            _symbol;
 
         public override TypeRefMask GetTypeRefMask(TypeRefContext ctx)
         {
-            var t = (TypeSymbol)_symbol;
+            var t = (TypeSymbol) _symbol;
 
             switch (t.SpecialType)
             {
@@ -855,7 +899,8 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             return base.GetTypeRefMask(ctx);
         }
 
-        public override bool Equals(IBoundTypeRef other) => base.Equals(other) || (other is BoundTypeRefFromSymbol ts && ts._symbol == _symbol);
+        public override bool Equals(IBoundTypeRef other) =>
+            base.Equals(other) || (other is BoundTypeRefFromSymbol ts && ts._symbol == _symbol);
     }
 
     /// <summary>
@@ -883,11 +928,14 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
                 .Expect(cg.CoreTypes.PhpTypeInfo);
         }
 
-        public override bool Equals(IBoundTypeRef other) => base.Equals(other) || (other is BoundTypeRefFromPlace pt && pt._place == _place);
+        public override bool Equals(IBoundTypeRef other) =>
+            base.Equals(other) || (other is BoundTypeRefFromPlace pt && pt._place == _place);
 
-        public override ITypeSymbol ResolveTypeSymbol(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation) => throw ExceptionUtilities.Unreachable;
+        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation) =>
+            throw ExceptionUtilities.Unreachable;
 
-        public override IBoundTypeRef Transfer(TypeRefContext source, TypeRefContext target) => throw ExceptionUtilities.Unreachable;
+        public override IBoundTypeRef Transfer(TypeRefContext source, TypeRefContext target) =>
+            throw ExceptionUtilities.Unreachable;
     }
 
     #endregion

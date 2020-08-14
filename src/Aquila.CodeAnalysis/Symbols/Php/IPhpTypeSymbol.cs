@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Aquila.Syntax.Syntax;
+using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis.Symbols.Php
 {

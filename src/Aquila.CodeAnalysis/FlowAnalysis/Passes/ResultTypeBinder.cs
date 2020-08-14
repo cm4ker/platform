@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using Microsoft.CodeAnalysis.Operations;
+ using Aquila.CodeAnalysis;
+ using Aquila.CodeAnalysis.Semantics;
+ using Microsoft.CodeAnalysis.Operations;
 using Pchp.CodeAnalysis;
 using Pchp.CodeAnalysis.Semantics;
 using Pchp.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Symbols;
-using Peachpie.CodeAnalysis.Utilities;
+ using Aquila.CodeAnalysis.Symbols.Source;
+ using Peachpie.CodeAnalysis.Utilities;
 
 namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
 {
@@ -16,11 +19,11 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
     /// </summary>
     internal class ResultTypeBinder : GraphExplorer<TypeSymbol>
     {
-        public Aquila.CodeAnalysis.Symbols.PhpCompilation/*!*/DeclaringCompilation { get; }
+        public PhpCompilation/*!*/DeclaringCompilation { get; }
 
         #region Initialization
 
-        public ResultTypeBinder(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
+        public ResultTypeBinder(PhpCompilation compilation)
         {
             DeclaringCompilation = compilation ?? throw ExceptionUtilities.ArgumentNull(nameof(compilation));
         }

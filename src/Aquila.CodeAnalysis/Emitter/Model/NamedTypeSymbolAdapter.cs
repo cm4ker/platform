@@ -1,4 +1,4 @@
-﻿﻿using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Reflection.Metadata;
@@ -10,12 +10,11 @@ using Pchp.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
 using System.Linq;
- using Aquila.CodeAnalysis.Symbols;
- using Aquila.CodeAnalysis.Symbols.PE;
- using Aquila.CodeAnalysis.Symbols.Source;
- using SourceTypeSymbol = Aquila.CodeAnalysis.Symbols.Source.SourceTypeSymbol;
+using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.PE;
+using Aquila.CodeAnalysis.Symbols.Source;
 
- namespace Pchp.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
     internal partial class NamedTypeSymbol :
         Cci.ITypeReference,
@@ -41,7 +40,7 @@ using System.Linq;
 
         Cci.ITypeDefinition Cci.ITypeReference.GetResolvedType(EmitContext context)
         {
-            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
+            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder) context.Module;
 
             return AsTypeDefinitionImpl(moduleBeingBuilt);
         }
@@ -66,7 +65,7 @@ using System.Linq;
             get
             {
                 var peNamedType = this as PENamedTypeSymbol;
-                if ((object)peNamedType != null)
+                if ((object) peNamedType != null)
                 {
                     return peNamedType.Handle;
                 }
@@ -108,7 +107,7 @@ using System.Linq;
                 Debug.Assert(this.IsDefinitionOrDistinct());
 
                 if (this.IsDefinition &&
-                    (object)this.ContainingType == null)
+                    (object) this.ContainingType == null)
                 {
                     return this;
                 }
@@ -119,11 +118,11 @@ using System.Linq;
 
         Cci.INamespaceTypeDefinition Cci.ITypeReference.AsNamespaceTypeDefinition(EmitContext context)
         {
-            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
+            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder) context.Module;
 
             Debug.Assert(this.IsDefinitionOrDistinct());
 
-            if ((object)this.ContainingType == null &&
+            if ((object) this.ContainingType == null &&
                 this.IsDefinition &&
                 object.ReferenceEquals(this.ContainingModule, moduleBeingBuilt.SourceModule))
             {
@@ -137,7 +136,7 @@ using System.Linq;
         {
             get
             {
-                if ((object)this.ContainingType != null)
+                if ((object) this.ContainingType != null)
                 {
                     return this;
                 }
@@ -148,7 +147,7 @@ using System.Linq;
 
         Cci.INestedTypeDefinition Cci.ITypeReference.AsNestedTypeDefinition(EmitContext context)
         {
-            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
+            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder) context.Module;
 
             return AsNestedTypeDefinitionImpl(moduleBeingBuilt);
         }
@@ -157,7 +156,7 @@ using System.Linq;
         {
             Debug.Assert(this.IsDefinitionOrDistinct());
 
-            if ((object)this.ContainingType != null &&
+            if ((object) this.ContainingType != null &&
                 this.IsDefinition &&
                 object.ReferenceEquals(this.ContainingModule, moduleBeingBuilt.SourceModule))
             {
@@ -176,8 +175,8 @@ using System.Linq;
                 if (!this.IsDefinition &&
                     (this.Arity == 0 || PEModuleBuilder.IsGenericType(this.ContainingType)))
                 {
-                    Debug.Assert((object)this.ContainingType != null &&
-                            PEModuleBuilder.IsGenericType(this.ContainingType));
+                    Debug.Assert((object) this.ContainingType != null &&
+                                 PEModuleBuilder.IsGenericType(this.ContainingType));
                     return this;
                 }
 
@@ -187,7 +186,7 @@ using System.Linq;
 
         Cci.ITypeDefinition Cci.ITypeReference.AsTypeDefinition(EmitContext context)
         {
-            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
+            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder) context.Module;
 
             return AsTypeDefinitionImpl(moduleBeingBuilt);
         }
@@ -197,7 +196,8 @@ using System.Linq;
             Debug.Assert(this.IsDefinitionOrDistinct());
 
             if (this.IsDefinition && // can't be generic instantiation
-                object.ReferenceEquals(this.ContainingModule, moduleBeingBuilt.SourceModule)) // must be declared in the module we are building
+                object.ReferenceEquals(this.ContainingModule, moduleBeingBuilt.SourceModule)
+            ) // must be declared in the module we are building
             {
                 return this;
             }
@@ -215,27 +215,28 @@ using System.Linq;
 
         Cci.IDefinition Cci.IReference.AsDefinition(EmitContext context)
         {
-            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
+            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder) context.Module;
 
             return AsTypeDefinitionImpl(moduleBeingBuilt);
         }
 
         Cci.ITypeReference Cci.ITypeDefinition.GetBaseClass(EmitContext context)
         {
-            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
+            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder) context.Module;
 
-            Debug.Assert(((Cci.ITypeReference)this).AsTypeDefinition(context) != null);
+            Debug.Assert(((Cci.ITypeReference) this).AsTypeDefinition(context) != null);
             Aquila.CodeAnalysis.Symbols.NamedTypeSymbol baseType = this.BaseType; // .BaseTypeNoUseSiteDiagnostics;
 
             if (this.TypeKind == TypeKind.Submission)
             {
                 // although submission semantically doesn't have a base we need to emit one into metadata:
-                Debug.Assert((object)baseType == null);
+                Debug.Assert((object) baseType == null);
                 baseType = this.ContainingAssembly.GetSpecialType(SpecialType.System_Object);
             }
 
-            return ((object)baseType != null)
-                ? moduleBeingBuilt.Translate(baseType, null /* (SyntaxNode)context.SyntaxNodeOpt */, context.Diagnostics)
+            return ((object) baseType != null)
+                ? moduleBeingBuilt.Translate(baseType, null /* (SyntaxNode)context.SyntaxNodeOpt */,
+                    context.Diagnostics)
                 : null;
         }
 
@@ -261,7 +262,8 @@ using System.Linq;
             yield break;
         }
 
-        IEnumerable<Cci.MethodImplementation> Cci.ITypeDefinition.GetExplicitImplementationOverrides(EmitContext context)
+        IEnumerable<Cci.MethodImplementation> Cci.ITypeDefinition.GetExplicitImplementationOverrides(
+            EmitContext context)
         {
             CheckDefinitionInvariant();
 
@@ -270,18 +272,21 @@ using System.Linq;
                 yield break;
             }
 
-            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
+            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder) context.Module;
 
-            foreach (var method in this.GetMembers().OfType<Aquila.CodeAnalysis.Symbols.MethodSymbol>().Concat(moduleBeingBuilt.GetSynthesizedMethods(this)))
+            foreach (var method in this.GetMembers().OfType<Aquila.CodeAnalysis.Symbols.MethodSymbol>()
+                .Concat(moduleBeingBuilt.GetSynthesizedMethods(this)))
             {
-                Debug.Assert((object)method.PartialDefinitionPart == null); // must be definition
+                Debug.Assert((object) method.PartialDefinitionPart == null); // must be definition
 
                 var explicitImplementations = method.ExplicitInterfaceImplementations;
                 if (explicitImplementations.Length != 0)
                 {
                     foreach (var implemented in explicitImplementations)
                     {
-                        yield return new Cci.MethodImplementation(method, moduleBeingBuilt.TranslateOverriddenMethodReference(implemented, context.SyntaxNodeOpt, context.Diagnostics));
+                        yield return new Cci.MethodImplementation(method,
+                            moduleBeingBuilt.TranslateOverriddenMethodReference(implemented, context.SyntaxNodeOpt,
+                                context.Diagnostics));
                     }
                 }
 
@@ -320,10 +325,10 @@ using System.Linq;
 
             foreach (var f in GetFieldsToEmit())
             {
-                yield return (Cci.IFieldDefinition)f;
+                yield return (Cci.IFieldDefinition) f;
             }
 
-            var generated = ((PEModuleBuilder)context.Module).GetSynthesizedFields(this);
+            var generated = ((PEModuleBuilder) context.Module).GetSynthesizedFields(this);
             if (generated != null)
             {
                 foreach (var f in generated)
@@ -343,7 +348,7 @@ using System.Linq;
 
                 foreach (var t in this.TypeParameters)
                 {
-                    yield return (Cci.IGenericTypeParameter)t;
+                    yield return (Cci.IGenericTypeParameter) t;
                 }
             }
         }
@@ -360,14 +365,14 @@ using System.Linq;
 
         private ushort GenericParameterCountImpl
         {
-            get { return (ushort)this.Arity; }
+            get { return (ushort) this.Arity; }
         }
 
         IEnumerable<Cci.TypeReferenceWithAttributes> Cci.ITypeDefinition.Interfaces(EmitContext context)
         {
-            Debug.Assert(((Cci.ITypeReference)this).AsTypeDefinition(context) != null);
+            Debug.Assert(((Cci.ITypeReference) this).AsTypeDefinition(context) != null);
 
-            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
+            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder) context.Module;
 
             foreach (Aquila.CodeAnalysis.Symbols.NamedTypeSymbol iiface in this.GetInterfacesToEmit())
             {
@@ -384,7 +389,8 @@ using System.Linq;
             Debug.Assert(this.IsDefinition);
             Debug.Assert(this.ContainingModule is SourceModuleSymbol);
 
-            ArrayBuilder<Aquila.CodeAnalysis.Symbols.NamedTypeSymbol> builder = ArrayBuilder<Aquila.CodeAnalysis.Symbols.NamedTypeSymbol>.GetInstance();
+            ArrayBuilder<Aquila.CodeAnalysis.Symbols.NamedTypeSymbol> builder =
+                ArrayBuilder<Aquila.CodeAnalysis.Symbols.NamedTypeSymbol>.GetInstance();
             HashSet<Aquila.CodeAnalysis.Symbols.NamedTypeSymbol> seen = null;
             InterfacesVisit(this, builder, ref seen);
             return builder.ToImmutableAndFree();
@@ -396,18 +402,22 @@ using System.Linq;
         /// <remarks>
         /// Pre-order depth-first search.
         /// </remarks>
-        private static void InterfacesVisit(Aquila.CodeAnalysis.Symbols.NamedTypeSymbol namedType, ArrayBuilder<Aquila.CodeAnalysis.Symbols.NamedTypeSymbol> builder, ref HashSet<Aquila.CodeAnalysis.Symbols.NamedTypeSymbol> seen)
+        private static void InterfacesVisit(Aquila.CodeAnalysis.Symbols.NamedTypeSymbol namedType,
+            ArrayBuilder<Aquila.CodeAnalysis.Symbols.NamedTypeSymbol> builder,
+            ref HashSet<Aquila.CodeAnalysis.Symbols.NamedTypeSymbol> seen)
         {
             // It's not clear how important the order of these interfaces is, but Dev10
             // maintains pre-order depth-first/declaration order, so we probably should as well.
             // That's why we're not using InterfacesAndTheirBaseInterfaces - it's an unordered set.
-            foreach (Aquila.CodeAnalysis.Symbols.NamedTypeSymbol @interface in namedType.Interfaces) // NoUseSiteDiagnostics())
+            foreach (Aquila.CodeAnalysis.Symbols.NamedTypeSymbol @interface in namedType.Interfaces
+            ) // NoUseSiteDiagnostics())
             {
                 if (seen == null)
                 {
                     // Don't allocate until we see at least one interface.
                     seen = new HashSet<Aquila.CodeAnalysis.Symbols.NamedTypeSymbol>();
                 }
+
                 if (seen.Add(@interface))
                 {
                     builder.Add(@interface);
@@ -553,11 +563,11 @@ using System.Linq;
 
             foreach (var method in this.GetMethodsToEmit())
             {
-                Debug.Assert((object)method != null);
-                yield return (Cci.IMethodDefinition)method;
+                Debug.Assert((object) method != null);
+                yield return (Cci.IMethodDefinition) method;
             }
 
-            foreach (var m in ((PEModuleBuilder)context.Module).GetSynthesizedMethods(this))
+            foreach (var m in ((PEModuleBuilder) context.Module).GetSynthesizedMethods(this))
             {
                 yield return m;
             }
@@ -575,7 +585,7 @@ using System.Linq;
             {
                 if (m.Kind == SymbolKind.Method)
                 {
-                    var method = (IMethodSymbol)m;
+                    var method = (IMethodSymbol) m;
 
                     //if (method.IsPartialDefinition())
                     //{
@@ -605,7 +615,8 @@ using System.Linq;
                 yield return type;
             }
 
-            var generated = ((PEModuleBuilder)context.Module).GetSynthesizedTypes(this).Cast<Cci.INestedTypeDefinition>();
+            var generated = ((PEModuleBuilder) context.Module).GetSynthesizedTypes(this)
+                .Cast<Cci.INestedTypeDefinition>();
             foreach (var t in generated)
             {
                 yield return t;
@@ -618,11 +629,12 @@ using System.Linq;
 
             foreach (var property in this.GetPropertiesToEmit())
             {
-                Debug.Assert((object)property != null);
-                yield return (Cci.IPropertyDefinition)property;
+                Debug.Assert((object) property != null);
+                yield return (Cci.IPropertyDefinition) property;
             }
 
-            IEnumerable<Cci.IPropertyDefinition> generated = ((PEModuleBuilder)context.Module).GetSynthesizedProperties(this);
+            IEnumerable<Cci.IPropertyDefinition> generated =
+                ((PEModuleBuilder) context.Module).GetSynthesizedProperties(this);
 
             if (generated != null)
             {
@@ -641,7 +653,7 @@ using System.Linq;
             {
                 if (m.Kind == SymbolKind.Property)
                 {
-                    yield return (IPropertySymbol)m;
+                    yield return (IPropertySymbol) m;
                 }
             }
         }
@@ -660,7 +672,8 @@ using System.Linq;
             get
             {
                 CheckDefinitionInvariant();
-                return /*this.GetSecurityInformation() ??*/ SpecializedCollections.EmptyEnumerable<Cci.SecurityAttribute>();
+                return /*this.GetSecurityInformation() ??*/
+                    SpecializedCollections.EmptyEnumerable<Cci.SecurityAttribute>();
             }
         }
 
@@ -670,7 +683,7 @@ using System.Linq;
             {
                 CheckDefinitionInvariant();
                 var layout = this.Layout;
-                return (ushort)layout.Alignment;
+                return (ushort) layout.Alignment;
             }
         }
 
@@ -688,7 +701,7 @@ using System.Linq;
             get
             {
                 CheckDefinitionInvariant();
-                return (uint)this.Layout.Size;
+                return (uint) this.Layout.Size;
             }
         }
 
@@ -709,10 +722,7 @@ using System.Linq;
 
         bool Cci.INamedTypeReference.MangleName
         {
-            get
-            {
-                return this.Arity != 0;
-            }
+            get { return this.Arity != 0; }
         }
 
         string Cci.INamedEntity.Name
@@ -740,8 +750,9 @@ using System.Linq;
                 // Therefore it is a good practice to avoid type names with dots.
                 // Exception: The EE copies type names from metadata, which may contain dots already.
                 Debug.Assert(TypeSymbolExtensions.IsErrorType(this) ||
-                    !unsuffixedName.Contains(".") ||
-                    this.OriginalDefinition is PENamedTypeSymbol, "type name contains dots: " + unsuffixedName);
+                             !unsuffixedName.Contains(".") ||
+                             this.OriginalDefinition is PENamedTypeSymbol,
+                    "type name contains dots: " + unsuffixedName);
 
                 return unsuffixedName;
             }
@@ -749,9 +760,9 @@ using System.Linq;
 
         Cci.IUnitReference Cci.INamespaceTypeReference.GetUnit(EmitContext context)
         {
-            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
+            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder) context.Module;
 
-            Debug.Assert(((Cci.ITypeReference)this).AsNamespaceTypeReference != null);
+            Debug.Assert(((Cci.ITypeReference) this).AsNamespaceTypeReference != null);
             Debug.Assert(this.ContainingAssembly != null);
             return moduleBeingBuilt.Translate(this.ContainingAssembly, context.Diagnostics);
         }
@@ -762,7 +773,7 @@ using System.Linq;
             {
                 // INamespaceTypeReference is a type contained in a namespace
                 // if this method is called for a nested type, we are in big trouble.
-                Debug.Assert(((Cci.ITypeReference)this).AsNamespaceTypeReference != null);
+                Debug.Assert(((Cci.ITypeReference) this).AsNamespaceTypeReference != null);
                 var ns = this.ContainingSymbol as INamespaceSymbol;
                 if (ns != null)
                 {
@@ -777,7 +788,7 @@ using System.Linq;
         {
             get
             {
-                Debug.Assert((object)this.ContainingType == null && this.ContainingModule is SourceModuleSymbol);
+                Debug.Assert((object) this.ContainingType == null && this.ContainingModule is SourceModuleSymbol);
 
                 return PEModuleBuilder.MemberVisibility(this) == Cci.TypeMemberVisibility.Public;
             }
@@ -785,30 +796,30 @@ using System.Linq;
 
         Cci.ITypeReference Cci.ITypeMemberReference.GetContainingType(EmitContext context)
         {
-            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
+            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder) context.Module;
 
-            Debug.Assert(((Cci.ITypeReference)this).AsNestedTypeReference != null);
+            Debug.Assert(((Cci.ITypeReference) this).AsNestedTypeReference != null);
 
             Debug.Assert(this.IsDefinitionOrDistinct());
 
             if (!this.IsDefinition)
             {
                 return moduleBeingBuilt.Translate(this.ContainingType,
-                                                  syntaxNodeOpt: context.SyntaxNodeOpt,
-                                                  diagnostics: context.Diagnostics);
+                    syntaxNodeOpt: context.SyntaxNodeOpt,
+                    diagnostics: context.Diagnostics);
             }
 
-            return (Cci.ITypeReference)this.ContainingType;
+            return (Cci.ITypeReference) this.ContainingType;
         }
 
         Cci.ITypeDefinition Cci.ITypeDefinitionMember.ContainingTypeDefinition
         {
             get
             {
-                Debug.Assert((object)this.ContainingType != null);
+                Debug.Assert((object) this.ContainingType != null);
                 CheckDefinitionInvariant();
 
-                return (Cci.ITypeDefinition)this.ContainingType;
+                return (Cci.ITypeDefinition) this.ContainingType;
             }
         }
 
@@ -816,7 +827,7 @@ using System.Linq;
         {
             get
             {
-                Debug.Assert((object)this.ContainingType != null);
+                Debug.Assert((object) this.ContainingType != null);
                 CheckDefinitionInvariant();
 
                 return PEModuleBuilder.MemberVisibility(this);
@@ -825,9 +836,9 @@ using System.Linq;
 
         ImmutableArray<Cci.ITypeReference> Cci.IGenericTypeInstanceReference.GetGenericArguments(EmitContext context)
         {
-            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
+            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder) context.Module;
             var builder = ArrayBuilder<Microsoft.Cci.ITypeReference>.GetInstance();
-            Debug.Assert(((Cci.ITypeReference)this).AsGenericTypeInstanceReference != null);
+            Debug.Assert(((Cci.ITypeReference) this).AsGenericTypeInstanceReference != null);
 
             var modifiers = default(ImmutableArray<ImmutableArray<CustomModifier>>);
 
@@ -840,7 +851,8 @@ using System.Linq;
 
             for (int i = 0; i < arguments.Length; i++)
             {
-                var arg = moduleBeingBuilt.Translate(arguments[i], syntaxNodeOpt: context.SyntaxNodeOpt, diagnostics: context.Diagnostics);
+                var arg = moduleBeingBuilt.Translate(arguments[i], syntaxNodeOpt: context.SyntaxNodeOpt,
+                    diagnostics: context.Diagnostics);
 
                 if (!modifiers.IsDefault && !modifiers[i].IsDefaultOrEmpty)
                 {
@@ -855,21 +867,18 @@ using System.Linq;
 
         Cci.INamedTypeReference Cci.IGenericTypeInstanceReference.GetGenericType(EmitContext context)
         {
-            Debug.Assert(((Cci.ITypeReference)this).AsGenericTypeInstanceReference != null);
+            Debug.Assert(((Cci.ITypeReference) this).AsGenericTypeInstanceReference != null);
             return GenericTypeImpl;
         }
 
         private Cci.INamedTypeReference GenericTypeImpl
         {
-            get
-            {
-                return (Cci.INamedTypeReference)this.OriginalDefinition;
-            }
+            get { return (Cci.INamedTypeReference) this.OriginalDefinition; }
         }
 
         Cci.INestedTypeReference Cci.ISpecializedNestedTypeReference.GetUnspecializedVersion(EmitContext context)
         {
-            Debug.Assert(((Cci.ITypeReference)this).AsSpecializedNestedTypeReference != null);
+            Debug.Assert(((Cci.ITypeReference) this).AsSpecializedNestedTypeReference != null);
             var result = GenericTypeImpl.AsNestedTypeReference;
 
             Debug.Assert(result != null);

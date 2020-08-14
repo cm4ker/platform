@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using Aquila.Language.Ast.Definitions.Functions;
 using Aquila.Syntax;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Aquila.CodeAnalysis.Symbols;
-using Peachpie.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.CodeAnalysis.Symbols.Synthesized;
+using Aquila.Syntax.Ast.Functions;
 using Pchp.CodeAnalysis.Semantics.Graph;
+using Peachpie.CodeAnalysis.Utilities;
 
 namespace Pchp.CodeAnalysis.Semantics
 {
@@ -165,10 +167,10 @@ namespace Pchp.CodeAnalysis.Semantics
 
         internal MethodDecl FunctionDecl => (MethodDecl) PhpSyntax;
 
-        internal Aquila.CodeAnalysis.Symbols.SourceFunctionSymbol Function => _function;
-        readonly Aquila.CodeAnalysis.Symbols.SourceFunctionSymbol _function;
+        internal SourceFunctionSymbol Function => _function;
+        readonly SourceFunctionSymbol _function;
 
-        internal BoundFunctionDeclStatement(Aquila.CodeAnalysis.Symbols.SourceFunctionSymbol function)
+        internal BoundFunctionDeclStatement(SourceFunctionSymbol function)
         {
             Contract.ThrowIfNull(function);
 

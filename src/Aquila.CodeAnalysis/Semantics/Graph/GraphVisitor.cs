@@ -15,7 +15,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
         protected TResult Accept(BoundBlock x) => (x != null) ? x.Accept(this) : default;
 
         /// <summary>Visits given edge.</summary>
-        protected TResult Accept(Edge x) => (x != null) ? x.Accept(this) : default;
+        protected TResult Accept(Edge x) => (x != null) ? x.AcceptGraph(this) : default;
 
         #region ControlFlowGraph
 
@@ -41,21 +41,21 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
 
         #region Graph.Edge
 
-        protected virtual TResult DefaultVisitEdge(Edge x) => default;
+        protected virtual TResult DefaultVisitEdge(Graph.Edge x) => default;
 
-        public virtual TResult VisitCFGSimpleEdge(SimpleEdge x) => DefaultVisitEdge(x);
+        public virtual TResult VisitCFGSimpleEdge(Graph.SimpleEdge x) => DefaultVisitEdge(x);
 
-        public virtual TResult VisitCFGLeaveEdge(LeaveEdge x) => VisitCFGSimpleEdge(x);
+        public virtual TResult VisitCFGLeaveEdge(Graph.LeaveEdge x) => VisitCFGSimpleEdge(x);
 
-        public virtual TResult VisitCFGConditionalEdge(ConditionalEdge x) => DefaultVisitEdge(x);
+        public virtual TResult VisitCFGConditionalEdge(Graph.ConditionalEdge x) => DefaultVisitEdge(x);
 
-        public virtual TResult VisitCFGTryCatchEdge(TryCatchEdge x) => DefaultVisitEdge(x);
+        public virtual TResult VisitCFGTryCatchEdge(Graph.TryCatchEdge x) => DefaultVisitEdge(x);
 
-        public virtual TResult VisitCFGForeachEnumereeEdge(ForeachEnumereeEdge x) => DefaultVisitEdge(x);
+        public virtual TResult VisitCFGForeachEnumereeEdge(Graph.ForeachEnumereeEdge x) => DefaultVisitEdge(x);
 
-        public virtual TResult VisitCFGForeachMoveNextEdge(ForeachMoveNextEdge x) => DefaultVisitEdge(x);
+        public virtual TResult VisitCFGForeachMoveNextEdge(Graph.ForeachMoveNextEdge x) => DefaultVisitEdge(x);
 
-        public virtual TResult VisitCFGSwitchEdge(SwitchEdge x) => DefaultVisitEdge(x);
+        public virtual TResult VisitCFGSwitchEdge(Graph.SwitchEdge x) => DefaultVisitEdge(x);
 
         #endregion
     }

@@ -15,6 +15,7 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
  using Aquila.CodeAnalysis;
+ using Aquila.CodeAnalysis.Symbols.Source;
  using Cci = Microsoft.Cci;
 
 namespace Pchp.CodeAnalysis.CodeGen

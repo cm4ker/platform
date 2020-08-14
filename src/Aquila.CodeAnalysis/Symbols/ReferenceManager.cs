@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.PE;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis;
 using Roslyn.Utilities;
 
-namespace Aquila.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis
 {
     partial class PhpCompilation
     {
-        internal class ReferenceManager : CommonReferenceManager // TODO: inherit the generic version with all the Binding & resolving stuff
+        internal class
+            ReferenceManager : CommonReferenceManager // TODO: inherit the generic version with all the Binding & resolving stuff
         {
             ImmutableArray<MetadataReference> _lazyExplicitReferences;
             ImmutableArray<MetadataReference> _lazyImplicitReferences = ImmutableArray<MetadataReference>.Empty;
@@ -55,28 +57,34 @@ namespace Aquila.CodeAnalysis.Symbols
 
             internal override ImmutableArray<MetadataReference> ImplicitReferences => _lazyImplicitReferences;
 
-            internal override IEnumerable<KeyValuePair<AssemblyIdentity, PortableExecutableReference>> GetImplicitlyResolvedAssemblyReferences()
+            internal override IEnumerable<KeyValuePair<AssemblyIdentity, PortableExecutableReference>>
+                GetImplicitlyResolvedAssemblyReferences()
             {
                 foreach (var pair in _metadataMap)
                 {
                     var per = pair.Value as PortableExecutableReference;
                     if (per != null)
                     {
-                        yield return new KeyValuePair<AssemblyIdentity, PortableExecutableReference>(pair.Key.Identity, per);
+                        yield return new KeyValuePair<AssemblyIdentity, PortableExecutableReference>(pair.Key.Identity,
+                            per);
                     }
                 }
             }
 
-            internal override MetadataReference GetMetadataReference(IAssemblySymbol assemblySymbol) => _metadataMap.TryGetOrDefault(assemblySymbol);
+            internal override MetadataReference GetMetadataReference(IAssemblySymbol assemblySymbol) =>
+                _metadataMap.TryGetOrDefault(assemblySymbol);
 
-            internal override IEnumerable<KeyValuePair<MetadataReference, IAssemblySymbol>> GetReferencedAssemblies() => _referencesMap;
+            internal override IEnumerable<KeyValuePair<MetadataReference, IAssemblySymbol>> GetReferencedAssemblies() =>
+                _referencesMap;
 
-            internal override IEnumerable<ValueTuple<IAssemblySymbol, ImmutableArray<string>>> GetReferencedAssemblyAliases()
+            internal override IEnumerable<ValueTuple<IAssemblySymbol, ImmutableArray<string>>>
+                GetReferencedAssemblyAliases()
             {
                 yield break;
             }
 
-            internal IEnumerable<IAssemblySymbol> ExplicitReferencesSymbols => ExplicitReferences.Select(r => _referencesMap[r]).WhereNotNull();
+            internal IEnumerable<IAssemblySymbol> ExplicitReferencesSymbols =>
+                ExplicitReferences.Select(r => _referencesMap[r]).WhereNotNull();
 
             internal DiagnosticBag Diagnostics => _diagnostics;
 
@@ -100,7 +108,8 @@ namespace Aquila.CodeAnalysis.Symbols
                 return a.Name == b.Name && (!a.HasPublicKey || !b.HasPublicKey || a.PublicKey.Equals(b.PublicKey));
             }
 
-            AssemblySymbol CreateAssemblyFromIdentity(MetadataReferenceResolver resolver, AssemblyIdentity identity, string basePath, List<PEModuleSymbol> modules)
+            AssemblySymbol CreateAssemblyFromIdentity(MetadataReferenceResolver resolver, AssemblyIdentity identity,
+                string basePath, List<PEModuleSymbol> modules)
             {
                 if (!_observedMetadata.TryGetValue(identity, out var ass))
                 {
@@ -109,7 +118,7 @@ namespace Aquila.CodeAnalysis.Symbols
                     {
                         if (IsIdentitySimilar(pair.Key, identity))
                         {
-                            _observedMetadata[identity] = pair.Value;   // do not resolve this ever again
+                            _observedMetadata[identity] = pair.Value; // do not resolve this ever again
                             return pair.Value;
                         }
                     }
@@ -126,8 +135,11 @@ namespace Aquila.CodeAnalysis.Symbols
                     if (resolver != null)
                     {
                         string keytoken = string.Join("", identity.PublicKeyToken.Select(b => b.ToString("x2")));
-                        var pes = resolver.ResolveReference(identity.Name + ".dll", basePath, MetadataReferenceProperties.Assembly)
-                            .Concat(resolver.ResolveReference($"{identity.Name}/v4.0_{identity.Version}__{keytoken}/{identity.Name}.dll", basePath, MetadataReferenceProperties.Assembly));
+                        var pes = resolver.ResolveReference(identity.Name + ".dll", basePath,
+                                MetadataReferenceProperties.Assembly)
+                            .Concat(resolver.ResolveReference(
+                                $"{identity.Name}/v4.0_{identity.Version}__{keytoken}/{identity.Name}.dll", basePath,
+                                MetadataReferenceProperties.Assembly));
 
                         var pe = pes.FirstOrDefault();
                         if (pe != null)
@@ -170,7 +182,8 @@ namespace Aquila.CodeAnalysis.Symbols
                     }
 
                     //
-                    modules[i].SetReferences(new ModuleReferences<AssemblySymbol>(refs, symbols.AsImmutable(), ImmutableArray<UnifiedAssembly<AssemblySymbol>>.Empty));
+                    modules[i].SetReferences(new ModuleReferences<AssemblySymbol>(refs, symbols.AsImmutable(),
+                        ImmutableArray<UnifiedAssembly<AssemblySymbol>>.Empty));
                 }
             }
 
@@ -197,7 +210,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
                     foreach (PortableExecutableReference pe in externalRefs)
                     {
-                        var peass = ((AssemblyMetadata)pe.GetMetadata()).GetAssembly();
+                        var peass = ((AssemblyMetadata) pe.GetMetadata()).GetAssembly();
 
                         if (!observed.Add(peass.Identity))
                         {
@@ -207,7 +220,8 @@ namespace Aquila.CodeAnalysis.Symbols
                             continue;
                         }
 
-                        var symbol = _observedMetadata.TryGetOrDefault(peass.Identity) ?? PEAssemblySymbol.Create(pe, peass, isLinked: true);
+                        var symbol = _observedMetadata.TryGetOrDefault(peass.Identity) ??
+                                     PEAssemblySymbol.Create(pe, peass, isLinked: true);
                         if (symbol != null)
                         {
                             assemblies.Add(symbol);
@@ -248,7 +262,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 {
                     foreach (PortableExecutableReference pe in _lazyExplicitReferences)
                     {
-                        var ass = (AssemblySymbol)_referencesMap[pe];
+                        var ass = (AssemblySymbol) _referencesMap[pe];
                         Debug.Assert(ass != null);
                         assemblies.Add(ass);
                     }
@@ -269,6 +283,7 @@ namespace Aquila.CodeAnalysis.Symbols
                     _diagnostics.Add(Location.None, Errors.ErrorCode.ERR_MetadataFileNotFound, "Peachpie.Runtime.dll");
                     throw new DllNotFoundException("Peachpie.Runtime not found");
                 }
+
                 if (_lazyCorLibrary == null)
                 {
                     throw new DllNotFoundException("A corlib not found");

@@ -1,17 +1,21 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
 using System.Text;
+using Aquila.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis.CodeGen;
 using Pchp.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Symbols;
+using MoreLinq.Extensions;
 
 namespace Pchp.CodeAnalysis.Semantics
 {
     internal static class BoundTypeRefExtensions
     {
-        public static ITypeSymbol EmitLoadTypeInfo(this IBoundTypeRef tref, CodeGenerator cg, bool throwOnError = false) => ((BoundTypeRef)tref).EmitLoadTypeInfo(cg, throwOnError);
+        public static ITypeSymbol
+            EmitLoadTypeInfo(this IBoundTypeRef tref, CodeGenerator cg, bool throwOnError = false) =>
+            ((BoundTypeRef) tref).EmitLoadTypeInfo(cg, throwOnError);
 
         public static void EmitClassName(this IBoundTypeRef tref, CodeGenerator cg)
         {
@@ -36,11 +40,11 @@ namespace Pchp.CodeAnalysis.Semantics
         /// Gets <see cref="TypeSymbol"/> suitable to be used for the runtime operations.
         /// Does not return <c>null</c> nor <see cref="ErrorTypeSymbol"/>.
         /// </summary>
-        public static TypeSymbol ResolveRuntimeType(this IBoundTypeRef tref, Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
+        public static TypeSymbol ResolveRuntimeType(this IBoundTypeRef tref, PhpCompilation compilation)
         {
-            var boundType = (BoundTypeRef)tref;
+            var boundType = (BoundTypeRef) tref;
 
-            var t = boundType.ResolvedType ?? (TypeSymbol)boundType.ResolveTypeSymbol(compilation);
+            var t = boundType.ResolvedType ?? (TypeSymbol) boundType.ResolveTypeSymbol(compilation);
 
             if (t.IsErrorTypeOrNull()) // error type => class could not be found
             {
@@ -50,7 +54,6 @@ namespace Pchp.CodeAnalysis.Semantics
                     var common = compilation.FindCommonBase(ambiguous._candidates);
                     if (common.IsValidType())
                     {
-                        
                         return common;
                     }
                 }
@@ -64,16 +67,16 @@ namespace Pchp.CodeAnalysis.Semantics
         /// <summary>
         /// Gets value indicating the <paramref name="tref"/> represents <c>self</c> keyword.
         /// </summary>
-        public static bool IsSelf(this IBoundTypeRef tref) => tref is BoundReservedTypeRef reserved && reserved.ReservedType == Devsense.PHP.Syntax.Ast.ReservedTypeRef.ReservedType.self;
+        public static bool IsSelf(this IBoundTypeRef tref) => false;
 
         /// <summary>
         /// Gets value indicating the <paramref name="tref"/> represents <c>parent</c> keyword.
         /// </summary>
-        public static bool IsParent(this IBoundTypeRef tref) => tref is BoundReservedTypeRef reserved && reserved.ReservedType == Devsense.PHP.Syntax.Ast.ReservedTypeRef.ReservedType.parent;
+        public static bool IsParent(this IBoundTypeRef tref) => false;
 
         /// <summary>
         /// Gets value indicating the <paramref name="tref"/> represents <c>static</c> keyword.
         /// </summary>
-        public static bool IsStatic(this IBoundTypeRef tref) => tref is BoundReservedTypeRef reserved && reserved.ReservedType == Devsense.PHP.Syntax.Ast.ReservedTypeRef.ReservedType.@static;
+        public static bool IsStatic(this IBoundTypeRef tref) => false;
     }
 }

@@ -49,7 +49,7 @@ namespace Aquila.Syntax.Parser
             context.method_declaration().ForEach(x => VisitMethod_declaration(x));
             var methods = PopStack();
 
-            var cu = new CompilationUnit(context.ToLineInfo(), SyntaxKind.CompilationUnit, usings,
+            var cu = new SourceUnit(context.ToLineInfo(), SyntaxKind.CompilationUnit, usings,
                 methods.ToCollection<MethodList>(), FieldList.Empty);
 
             PopStack();
@@ -107,7 +107,7 @@ namespace Aquila.Syntax.Parser
 
         public override LangElement VisitName(ZSharpParser.NameContext context)
         {
-            Stack.Push(new IdentifierName(context.ToLineInfo(), SyntaxKind.NameExpression,
+            Stack.Push(new NameEx(context.ToLineInfo(), SyntaxKind.NameExpression, Operations.DirectVarUse,
                 context.IDENTIFIER().Identifier()));
             return null;
         }
@@ -166,30 +166,36 @@ namespace Aquila.Syntax.Parser
                 text = Regex.Unescape(text ?? throw new NullReferenceException());
 
                 if (context.string_literal().REGULAR_STRING() != null)
-                    result = new LiteralEx(li, SyntaxKind.LiteralExpression, text.Substring(1, text.Length - 2), false);
+                    result = new LiteralEx(li, SyntaxKind.LiteralExpression, Operations.StringLiteral,
+                        text.Substring(1, text.Length - 2), false);
                 else
-                    result = new LiteralEx(li, SyntaxKind.LiteralExpression, text.Substring(2, text.Length - 3), false);
+                    result = new LiteralEx(li, SyntaxKind.LiteralExpression, Operations.StringLiteral,
+                        text.Substring(2, text.Length - 3), false);
 
                 result.ObjectiveValue = result.Value;
             }
             else if (context.boolean_literal() != null)
             {
-                result = new LiteralEx(li, SyntaxKind.LiteralExpression, context.GetText(), false);
+                result = new LiteralEx(li, SyntaxKind.LiteralExpression, Operations.BoolLiteral, context.GetText(),
+                    false);
                 result.ObjectiveValue = bool.Parse(result.Value);
             }
             else if (context.INTEGER_LITERAL() != null)
             {
-                result = new LiteralEx(li, SyntaxKind.LiteralExpression, context.GetText(), false);
+                result = new LiteralEx(li, SyntaxKind.LiteralExpression, Operations.LongIntLiteral, context.GetText(),
+                    false);
                 result.ObjectiveValue = int.Parse(result.Value);
             }
             else if (context.REAL_LITERAL() != null)
             {
-                result = new LiteralEx(li, SyntaxKind.LiteralExpression, context.GetText(), false);
+                result = new LiteralEx(li, SyntaxKind.LiteralExpression, Operations.DoubleLiteral, context.GetText(),
+                    false);
                 result.ObjectiveValue = double.Parse(result.Value);
             }
             else if (context.CHARACTER_LITERAL() != null)
             {
-                result = new LiteralEx(li, SyntaxKind.LiteralExpression, context.GetText().Substring(1, 1), false);
+                result = new LiteralEx(li, SyntaxKind.LiteralExpression, Operations.CharLiteral,
+                    context.GetText().Substring(1, 1), false);
                 result.ObjectiveValue = result.Value[0];
             }
 
@@ -257,8 +263,7 @@ namespace Aquila.Syntax.Parser
             base.VisitCastExpression(context);
 
             var result = new CastEx(context.ToLineInfo(), SyntaxKind.CastExpression,
-                Stack.PopExpression(),
-                Stack.PopType(), UnaryOperatorType.Cast);
+                Operations.ObjectCast, Stack.PopExpression(), Stack.PopType());
 
             Stack.Push(result);
 
@@ -367,8 +372,9 @@ namespace Aquila.Syntax.Parser
 
             if (context.indexerExpression != null)
                 Stack.Push(new IndexerEx(context.ToLineInfo(), SyntaxKind.IndexerExpression,
+                    Operations.Indexer,
                     Stack.PopExpression(),
-                    Stack.PopExpression(), UnaryOperatorType.Indexer));
+                    Stack.PopExpression()));
 
             return null;
         }
@@ -380,14 +386,11 @@ namespace Aquila.Syntax.Parser
             var li = context.ToLineInfo();
 
             if (context.PLUS() != null)
-                Stack.Push(new LogicalOrArithmeticEx(li, SyntaxKind.PlusToken, Stack.PopExpression(),
-                    UnaryOperatorType.Positive));
+                Stack.Push(new UnaryEx(li, SyntaxKind.PlusToken, Operations.Plus, Stack.PopExpression()));
             if (context.MINUS() != null)
-                Stack.Push(new LogicalOrArithmeticEx(li, SyntaxKind.MinusToken, Stack.PopExpression(),
-                    UnaryOperatorType.Negative));
+                Stack.Push(new UnaryEx(li, SyntaxKind.MinusToken, Operations.Minus, Stack.PopExpression()));
             if (context.BANG() != null)
-                Stack.Push(new LogicalOrArithmeticEx(li, SyntaxKind.BangToken, Stack.PopExpression(),
-                    UnaryOperatorType.Not));
+                Stack.Push(new UnaryEx(li, SyntaxKind.BangToken, Operations.LogicNegation, Stack.PopExpression()));
 
 
             return Stack.PeekNode();
@@ -400,15 +403,16 @@ namespace Aquila.Syntax.Parser
 
             if (context.expression_multiplicative() != null)
             {
-                BinaryOperatorType opType = BinaryOperatorType.None;
+                Operations opType;
 
-                if (context.PERCENT() != null) opType = BinaryOperatorType.Modulo;
-                if (context.DIV() != null) opType = BinaryOperatorType.Divide;
-                if (context.STAR() != null) opType = BinaryOperatorType.Multiply;
+                if (context.PERCENT() != null) opType = Operations.Mod;
+                else if (context.DIV() != null) opType = Operations.Div;
+                else if (context.STAR() != null) opType = Operations.Mul;
+                else throw new Exception();
 
                 Stack.Push(new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression,
-                    Stack.PopExpression(),
-                    Stack.PopExpression(), opType));
+                    opType, Stack.PopExpression(),
+                    Stack.PopExpression()));
             }
 
             return null;
@@ -420,15 +424,15 @@ namespace Aquila.Syntax.Parser
 
             if (context.expression_equality() != null)
             {
-                BinaryOperatorType opType = BinaryOperatorType.None;
+                Operations opType;
 
 
-                if (context.OP_EQ() != null) opType = BinaryOperatorType.Equal;
-                if (context.OP_NE() != null) opType = BinaryOperatorType.NotEqual;
-
+                if (context.OP_EQ() != null) opType = Operations.Equal;
+                else if (context.OP_NE() != null) opType = Operations.NotEqual;
+                else throw new Exception();
                 Stack.Push(new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression,
-                    Stack.PopExpression(),
-                    Stack.PopExpression(), opType));
+                    opType, Stack.PopExpression(),
+                    Stack.PopExpression()));
             }
 
             return null;
@@ -455,16 +459,16 @@ namespace Aquila.Syntax.Parser
 
             if (context.expression_relational() != null)
             {
-                BinaryOperatorType opType = BinaryOperatorType.None;
+                Operations opType = Operations.Unknown;
 
-                if (context.GT() != null) opType = BinaryOperatorType.GreaterThen;
-                if (context.LT() != null) opType = BinaryOperatorType.LessThen;
-                if (context.OP_GE() != null) opType = BinaryOperatorType.GraterOrEqualTo;
-                if (context.OP_LE() != null) opType = BinaryOperatorType.LessOrEqualTo;
+                if (context.GT() != null) opType = Operations.GreaterThan;
+                if (context.LT() != null) opType = Operations.LessThan;
+                if (context.OP_GE() != null) opType = Operations.GreaterThanOrEqual;
+                if (context.OP_LE() != null) opType = Operations.LessThanOrEqual;
 
-                Stack.Push(new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression,
+                Stack.Push(new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression, opType,
                     Stack.PopExpression(),
-                    Stack.PopExpression(), opType));
+                    Stack.PopExpression()));
             }
 
 
@@ -477,14 +481,14 @@ namespace Aquila.Syntax.Parser
 
             if (context.expression_additive() != null)
             {
-                BinaryOperatorType opType = BinaryOperatorType.None;
+                Operations opType = Operations.Unknown;
 
-                if (context.PLUS() != null) opType = BinaryOperatorType.Add;
-                if (context.MINUS() != null) opType = BinaryOperatorType.Subtract;
+                if (context.PLUS() != null) opType = Operations.Add;
+                if (context.MINUS() != null) opType = Operations.Sub;
 
-                var result = new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression,
+                var result = new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression, opType,
                     Stack.PopExpression(),
-                    Stack.PopExpression(), opType);
+                    Stack.PopExpression());
 
                 Stack.Push(result);
             }
@@ -499,19 +503,20 @@ namespace Aquila.Syntax.Parser
 
             if (context.expression_binary() != null)
             {
-                BinaryOperatorType opType = BinaryOperatorType.None;
+                Operations opType = Operations.Unknown;
 
                 if (context.OP_AND() != null)
-                    opType = BinaryOperatorType.And;
+                    opType = Operations.And;
                 if (context.OP_OR() != null)
-                    opType = BinaryOperatorType.Or;
+                    opType = Operations.Or;
 
-                if (opType == BinaryOperatorType.None)
+                if (opType == Operations.Unknown)
                     throw new Exception("this should never happen");
 
-                Stack.Push(new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression,
-                    Stack.PopExpression(),
-                    Stack.PopExpression(), opType));
+                Stack.Push(
+                    new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression, opType,
+                        Stack.PopExpression(),
+                        Stack.PopExpression()));
             }
 
             return null;
@@ -521,7 +526,7 @@ namespace Aquila.Syntax.Parser
         {
             base.VisitAssignment(context);
 
-            Stack.Push(new AssignEx(context.ToLineInfo(), SyntaxKind.EqualsToken,
+            Stack.Push(new AssignEx(context.ToLineInfo(), SyntaxKind.EqualsToken, Operations.AssignValue,
                 Stack.PopExpression(), Stack.PopExpression()));
 
             return Stack.PeekNode();

@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Pchp.CodeAnalysis;
 
-namespace Aquila.CodeAnalysis.Symbols.Source
+namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// Variable kind.

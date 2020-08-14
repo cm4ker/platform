@@ -11,7 +11,7 @@ using System.Threading.Tasks;
  using Aquila.CodeAnalysis.Symbols.Source;
  using Cci = Microsoft.Cci;
 
-namespace Pchp.CodeAnalysis
+namespace Aquila.CodeAnalysis.Symbols
 {
     internal partial class Symbol : Cci.IReference
     {

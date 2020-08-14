@@ -56,7 +56,6 @@ namespace Aquila.CodeAnalysis.Errors
 
         public override int ERR_ErrorOpeningModuleFile => throw new NotImplementedException();
 
-        public override int ERR_MultipleAnalyzerConfigsInSameDir { get; }
         public override int ERR_ExpectedSingleScript => throw new NotImplementedException();
 
         public override int ERR_FailedToCreateTempFile => throw new NotImplementedException();
@@ -132,9 +131,6 @@ namespace Aquila.CodeAnalysis.Errors
         public override int ERR_EncUpdateFailedMissingAttribute => throw new NotImplementedException();
 
         public override int ERR_InvalidDebugInfo => throw new NotImplementedException();
-        public override int WRN_GeneratorFailedDuringInitialization { get; }
-        public override int WRN_GeneratorFailedDuringGeneration { get; }
-
         public override int ERR_BadAssemblyName => throw new NotImplementedException();
 
         public override int FTL_InvalidInputFileName => throw new NotImplementedException();

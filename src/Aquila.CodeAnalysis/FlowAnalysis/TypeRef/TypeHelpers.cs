@@ -9,8 +9,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+ using Aquila.CodeAnalysis;
 
-namespace Pchp.CodeAnalysis.FlowAnalysis
+ namespace Pchp.CodeAnalysis.FlowAnalysis
 {
     /// <summary>
     /// Provides helper methods for working with types.
@@ -165,7 +166,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// <param name="ctx">Type context.</param>
         /// <param name="compilation">Type provider.</param>
         /// <returns>True iff <c>[]</c> operator is allowed.</returns>
-        internal static bool HasArrayAccess(TypeRefMask type, TypeRefContext/*!*/ctx, Aquila.CodeAnalysis.Symbols.PhpCompilation/*!*/compilation)
+        internal static bool HasArrayAccess(TypeRefMask type, TypeRefContext/*!*/ctx, PhpCompilation/*!*/compilation)
         {
             // quick check:
             if (type.IsAnyType || type.IsVoid || type.IsRef)

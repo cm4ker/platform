@@ -4,10 +4,11 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Aquila.CodeAnalysis.Symbols.Attributes;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Microsoft.CodeAnalysis;
 using ImmutableArrayExtensions = System.Linq.ImmutableArrayExtensions;
 
-namespace Aquila.CodeAnalysis.Symbols.Source
+namespace Aquila.CodeAnalysis.Symbols
 {
     internal sealed class SourceModuleSymbol : ModuleSymbol, IModuleSymbol
     {

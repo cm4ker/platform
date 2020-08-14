@@ -1,4 +1,4 @@
-﻿﻿using Microsoft.CodeAnalysis.Emit;
+﻿using Microsoft.CodeAnalysis.Emit;
 using Pchp.CodeAnalysis.Emit;
 using Roslyn.Utilities;
 using System;
@@ -10,16 +10,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Cci = Microsoft.Cci;
 
-namespace Pchp.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
     internal partial class ArrayTypeSymbol :
         Cci.IArrayTypeReference
     {
         Cci.ITypeReference Cci.IArrayTypeReference.GetElementType(EmitContext context)
         {
-            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
+            PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder) context.Module;
 
-            var type = moduleBeingBuilt.Translate(this.ElementType, syntaxNodeOpt: context.SyntaxNodeOpt, diagnostics: context.Diagnostics);
+            var type = moduleBeingBuilt.Translate(this.ElementType, syntaxNodeOpt: context.SyntaxNodeOpt,
+                diagnostics: context.Diagnostics);
 
             if (this.CustomModifiers.Length == 0)
             {
@@ -33,10 +34,7 @@ namespace Pchp.CodeAnalysis.Symbols
 
         bool Cci.IArrayTypeReference.IsSZArray
         {
-            get
-            {
-                return this.IsSZArray;
-            }
+            get { return this.IsSZArray; }
         }
 
         ImmutableArray<int> Cci.IArrayTypeReference.LowerBounds
@@ -62,7 +60,7 @@ namespace Pchp.CodeAnalysis.Symbols
 
         void Cci.IReference.Dispatch(Cci.MetadataVisitor visitor)
         {
-            visitor.Visit((Cci.IArrayTypeReference)this);
+            visitor.Visit((Cci.IArrayTypeReference) this);
         }
 
         bool Cci.ITypeReference.IsEnum => false;

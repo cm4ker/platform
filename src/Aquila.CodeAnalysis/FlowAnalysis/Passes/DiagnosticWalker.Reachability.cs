@@ -1,13 +1,9 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
- using Aquila.CodeAnalysis.Errors;
- using Devsense.PHP.Syntax.Ast;
- using Pchp.CodeAnalysis.Semantics.Graph;
-using Peachpie.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.Errors;
+using Aquila.Syntax;
+using Pchp.CodeAnalysis.Semantics.Graph;
+
 
 namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
 {
@@ -32,11 +28,11 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
                 var reachable = value ? x.TrueTarget : x.FalseTarget;
                 var unreachable = value ? x.FalseTarget : x.TrueTarget;
 
-                reachable.Accept(this);  // Process only the reachable branch
+                reachable.Accept(this); // Process only the reachable branch
                 _unreachables.Enqueue(unreachable); // remember possible unreachable block
             }
             else
-	        {
+            {
                 x.TrueTarget.Accept(this);
                 x.FalseTarget.Accept(this);
             }
@@ -77,7 +73,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
 
         private static LangElement PickFirstSyntaxNode(BoundBlock block)
         {
-            var syntax = block.Statements.FirstOrDefault(st => st.PhpSyntax != null && !(st.PhpSyntax is PHPDocStmt))?.PhpSyntax;
+            var syntax = block.Statements.FirstOrDefault(st => st.PhpSyntax != null)
+                ?.PhpSyntax;
             if (syntax != null)
             {
                 return syntax;

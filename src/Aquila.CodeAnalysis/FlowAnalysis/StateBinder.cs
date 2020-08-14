@@ -1,12 +1,5 @@
 ﻿using Aquila.CodeAnalysis.Symbols;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Collections.Immutable;
-using Devsense.PHP.Syntax;
-using Devsense.PHP.Syntax.Ast;
+using Aquila.Syntax.Syntax;
 
 namespace Pchp.CodeAnalysis.FlowAnalysis
 {

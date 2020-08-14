@@ -1,4 +1,4 @@
-﻿﻿using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis.CodeGen;
 using System;
 using System.Collections.Generic;
@@ -11,6 +11,9 @@ using System.Reflection.Metadata;
 using Pchp.CodeAnalysis.FlowAnalysis;
 using Pchp.CodeAnalysis.Semantics;
 using System.Collections.Immutable;
+using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.CodeAnalysis.Symbols.Synthesized;
+using Pchp.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis.Symbols
 {
@@ -24,7 +27,7 @@ namespace Aquila.CodeAnalysis.Symbols
             var ps = ImplicitParameters;
             if (ps.Length != 0 && SpecialParameterSymbol.IsContextParameter(ps[0]))
             {
-                return new ParamPlace(ps[0]);  // <ctx>
+                return new ParamPlace(ps[0]); // <ctx>
             }
             else
             {
@@ -48,15 +51,15 @@ namespace Aquila.CodeAnalysis.Symbols
             if (thisPlace != null)
             {
                 //if (this.ContainingType.IsTraitType())
-                if (this.ContainingType is SourceTraitTypeSymbol trait)
-                {
-                    // $this ~ this.<>this
-                    return new FieldPlace(thisPlace, trait.RealThisField, module);
-                }
-                else
-                {
-                    Debug.Assert(!this.ContainingType.IsTraitType());
-                }
+                // if (this.ContainingType is SourceTraitTypeSymbol trait)
+                // {
+                //     // $this ~ this.<>this
+                //     return new FieldPlace(thisPlace, trait.RealThisField, module);
+                // }
+                // else
+                // {
+                //     Debug.Assert(!this.ContainingType.IsTraitType());
+                // }
             }
 
             //
@@ -103,7 +106,8 @@ namespace Aquila.CodeAnalysis.Symbols
         /// + foo() => foo([], [1, 2, 3)
         /// + foo($a) => foo($a, [1, 2, 3])
         /// </remarks>
-        protected IList<MethodSymbol> SynthesizeOverloadsWithOptionalParameters(PEModuleBuilder module, DiagnosticBag diagnostic)
+        protected IList<MethodSymbol> SynthesizeOverloadsWithOptionalParameters(PEModuleBuilder module,
+            DiagnosticBag diagnostic)
         {
             List<MethodSymbol> list = null;
 
@@ -113,8 +117,13 @@ namespace Aquila.CodeAnalysis.Symbols
 
             for (int i = 0; i <= srcparams.Length; i++) // how many to be copied from {srcparams}
             {
-                var isfake = /*srcparams[i - 1].IsFake*/ implicitVarArgs != null && i > 0 && srcparams[i - 1].Ordinal >= implicitVarArgs.Ordinal; // parameter was replaced with [params]
-                var hasdefault = false; // i < srcparams.Length && srcparams[i].HasUnmappedDefaultValue();  // ConstantValue couldn't be resolved for optional parameter
+                var isfake = /*srcparams[i - 1].IsFake*/ implicitVarArgs != null && i > 0 &&
+                                                         srcparams[i - 1].Ordinal >=
+                                                         implicitVarArgs
+                                                             .Ordinal; // parameter was replaced with [params]
+                var
+                    hasdefault =
+                        false; // i < srcparams.Length && srcparams[i].HasUnmappedDefaultValue();  // ConstantValue couldn't be resolved for optional parameter
 
                 if (isfake || hasdefault)
                 {
@@ -146,7 +155,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 }
             }
 
-            return list ?? (IList<MethodSymbol>)Array.Empty<MethodSymbol>();
+            return list ?? (IList<MethodSymbol>) Array.Empty<MethodSymbol>();
         }
 
         /// <summary>
@@ -171,39 +180,45 @@ namespace Aquila.CodeAnalysis.Symbols
                     {
                         SynthesizedMethodSymbol func = null;
 
-                        if (field.Type.Is_Func_Context_PhpValue())  // Func<Context, PhpValue>
+                        if (field.Type.Is_Func_Context_PhpValue()) // Func<Context, PhpValue>
                         {
                             // private static PhpValue func(Context) => INITIALIZER()
-                            func = new SynthesizedMethodSymbol(field.ContainingType, field.Name + "Func", isstatic: true, isvirtual: false, DeclaringCompilation.CoreTypes.PhpValue, isfinal: true);
-                            func.SetParameters(new SynthesizedParameterSymbol(func, DeclaringCompilation.CoreTypes.Context, 0, RefKind.None, name: SpecialParameterSymbol.ContextName));
+                            func = new SynthesizedMethodSymbol(field.ContainingType, field.Name + "Func",
+                                isstatic: true, isvirtual: false, DeclaringCompilation.CoreTypes.PhpValue,
+                                isfinal: true);
+                            func.SetParameters(new SynthesizedParameterSymbol(func,
+                                DeclaringCompilation.CoreTypes.Context, 0, RefKind.None,
+                                name: SpecialParameterSymbol.ContextName));
 
                             //
                             module.SetMethodBody(func, MethodGenerator.GenerateMethodBody(module, func, il =>
                             {
                                 var ctxPlace = new ArgPlace(DeclaringCompilation.CoreTypes.Context, 0);
-                                var cg = new CodeGenerator(il, module, diagnostics, module.Compilation.Options.OptimizationLevel, false, field.ContainingType, ctxPlace, null)
+                                var cg = new CodeGenerator(il, module, diagnostics,
+                                    module.Compilation.Options.OptimizationLevel, false, field.ContainingType, ctxPlace,
+                                    null)
                                 {
                                     CallerType = ContainingType,
                                     ContainingFile = ContainingFile,
-                                    IsInCachedArrayExpression = true,   // do not cache array initializers twice
+                                    IsInCachedArrayExpression = true, // do not cache array initializers twice
                                 };
 
                                 // return {Initializer}
                                 cg.EmitConvert(p.Initializer, func.ReturnType);
                                 cg.EmitRet(func.ReturnType);
-
                             }, null, diagnostics, false));
 
                             module.SynthesizedManager.AddMethod(func.ContainingType, func);
                         }
 
-                        using (var cg = new CodeGenerator(cctor, module, diagnostics, module.Compilation.Options.OptimizationLevel, false, field.ContainingType,
-                                contextPlace: null,
-                                thisPlace: null)
+                        using (var cg = new CodeGenerator(cctor, module, diagnostics,
+                            module.Compilation.Options.OptimizationLevel, false, field.ContainingType,
+                            contextPlace: null,
+                            thisPlace: null)
                         {
                             CallerType = ContainingType,
                             ContainingFile = ContainingFile,
-                            IsInCachedArrayExpression = true,   // do not cache array initializers twice
+                            IsInCachedArrayExpression = true, // do not cache array initializers twice
                         })
                         {
                             var fldplace = new FieldPlace(null, field, module);
@@ -217,14 +232,14 @@ namespace Aquila.CodeAnalysis.Symbols
                             {
                                 MethodSymbol funcsymbol = func;
 
-                                // bind func in case it is generic
-                                if (func.ContainingType is SourceTraitTypeSymbol st)
-                                {
-                                    funcsymbol = func.AsMember(st.Construct(st.TypeArguments));
-                                }
+                                // // bind func in case it is generic
+                                // if (func.ContainingType is SourceTraitTypeSymbol st)
+                                // {
+                                //     funcsymbol = func.AsMember(st.Construct(st.TypeArguments));
+                                // }
 
                                 // Func<,>(object @object, IntPtr method)
-                                var func_ctor = ((NamedTypeSymbol)field.Type).InstanceConstructors.Single(m =>
+                                var func_ctor = ((NamedTypeSymbol) field.Type).InstanceConstructors.Single(m =>
                                     m.ParameterCount == 2 &&
                                     m.Parameters[0].Type.SpecialType == SpecialType.System_Object &&
                                     m.Parameters[1].Type.SpecialType == SpecialType.System_IntPtr
@@ -236,6 +251,7 @@ namespace Aquila.CodeAnalysis.Symbols
                                 cg.EmitSymbolToken(funcsymbol, null);
                                 cg.EmitCall(ILOpCode.Newobj, func_ctor);
                             }
+
                             fldplace.EmitStore(cg.Builder);
                         }
                     }
@@ -268,7 +284,7 @@ namespace Aquila.CodeAnalysis.Symbols
             //    : genSymbol;
 
             var il = cg.Builder;
-            var lambda = this as SourceLambdaSymbol;
+            // var lambda = this as SourceLambdaSymbol;
 
             /* Template:
              * return BuildGenerator( <ctx>, new PhpArray(){ p1, p2, ... }, new GeneratorStateMachineDelegate((IntPtr)<genSymbol>), (RuntimeMethodHandle)this )
@@ -295,22 +311,26 @@ namespace Aquila.CodeAnalysis.Symbols
             cg.EmitOpCode(ILOpCode.Ldftn); // method
             cg.EmitSymbolToken(genSymbol, null);
 
-            cg.EmitCall(ILOpCode.Newobj, cg.CoreTypes.GeneratorStateMachineDelegate.Ctor(cg.CoreTypes.Object, cg.CoreTypes.IntPtr)); // GeneratorStateMachineDelegate(object @object, IntPtr method)
+            cg.EmitCall(ILOpCode.Newobj,
+                cg.CoreTypes.GeneratorStateMachineDelegate.Ctor(cg.CoreTypes.Object,
+                    cg.CoreTypes.IntPtr)); // GeneratorStateMachineDelegate(object @object, IntPtr method)
 
             // handleof(this)
             cg.EmitLoadToken(this, null);
 
             // create generator object via Operators factory method
-            cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.BuildGenerator_Context_PhpArray_PhpArray_GeneratorStateMachineDelegate_RuntimeMethodHandle);
+            cg.EmitCall(ILOpCode.Call,
+                cg.CoreMethods.Operators
+                    .BuildGenerator_Context_PhpArray_PhpArray_GeneratorStateMachineDelegate_RuntimeMethodHandle);
 
             // .SetGeneratorThis( object ) : Generator
-            if (!this.IsStatic || (lambda != null && lambda.UseThis))
-            {
-                GetPhpThisVariablePlaceWithoutGenerator(cg.Module).EmitLoad(cg.Builder);
-                cg.EmitCastClass(cg.DeclaringCompilation.GetSpecialType(SpecialType.System_Object));
-                cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.SetGeneratorThis_Generator_Object)
-                    .Expect(cg.CoreTypes.Generator);
-            }
+            // if (!this.IsStatic || (lambda != null && lambda.UseThis))
+            // {
+            //     GetPhpThisVariablePlaceWithoutGenerator(cg.Module).EmitLoad(cg.Builder);
+            //     cg.EmitCastClass(cg.DeclaringCompilation.GetSpecialType(SpecialType.System_Object));
+            //     cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.SetGeneratorThis_Generator_Object)
+            //         .Expect(cg.CoreTypes.Generator);
+            // }
 
             // .SetGeneratorLazyStatic( PhpTypeInfo ) : Generator
             if ((this.Flags & RoutineFlags.UsesLateStatic) != 0 && this.IsStatic)
@@ -321,12 +341,13 @@ namespace Aquila.CodeAnalysis.Symbols
             }
 
             // .SetGeneratorDynamicScope( scope ) : Generator
-            if (lambda != null)
-            {
-                lambda.GetCallerTypePlace().EmitLoad(cg.Builder); // RuntimeTypeContext
-                cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.SetGeneratorDynamicScope_Generator_RuntimeTypeHandle)
-                    .Expect(cg.CoreTypes.Generator);
-            }
+            // if (lambda != null)
+            // {
+            //     lambda.GetCallerTypePlace().EmitLoad(cg.Builder); // RuntimeTypeContext
+            //     cg.EmitCall(ILOpCode.Call,
+            //             cg.CoreMethods.Operators.SetGeneratorDynamicScope_Generator_RuntimeTypeHandle)
+            //         .Expect(cg.CoreTypes.Generator);
+            // }
 
             // Convert to return type (Generator or PhpValue, depends on analysis)
             cg.EmitConvert(cg.CoreTypes.Generator, 0, this.ReturnType);
@@ -336,7 +357,9 @@ namespace Aquila.CodeAnalysis.Symbols
             CreateStateMachineNextMethod(cg, genSymbol);
         }
 
-        private void InitializeParametersForGeneratorMethod(CodeGenerator cg, Microsoft.CodeAnalysis.CodeGen.ILBuilder il, Microsoft.CodeAnalysis.CodeGen.LocalDefinition generatorsLocals)
+        private void InitializeParametersForGeneratorMethod(CodeGenerator cg,
+            Microsoft.CodeAnalysis.CodeGen.ILBuilder il,
+            Microsoft.CodeAnalysis.CodeGen.LocalDefinition generatorsLocals)
         {
             // Emit init of unoptimized BoundParameters using separate CodeGenerator that has locals place pointing to our generator's locals array
             using (var localsArrayCg = new CodeGenerator(
@@ -349,7 +372,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 routine: this, // needed to support static variables (they need enclosing routine while binding)
                 locals: new LocalPlace(generatorsLocals),
                 localsInitialized: false
-                    ))
+            ))
             {
                 // EmitInit (for UnoptimizedLocals) copies arguments to locals array, does nothing for normal variables, handles local statics, global variables ...
                 LocalsTable.Variables.ForEach(v => v.EmitInit(localsArrayCg));
@@ -362,16 +385,17 @@ namespace Aquila.CodeAnalysis.Symbols
 
             // generate generator's next method body
             var genMethodBody = MethodGenerator.GenerateMethodBody(cg.Module, genSymbol, (_il) =>
-            {
-                GenerateStateMachinesNextMethod(cg, _il, genSymbol);
-            }
-            , null, cg.Diagnostics, cg.EmitPdbSequencePoints);
+                {
+                    GenerateStateMachinesNextMethod(cg, _il, genSymbol);
+                }
+                , null, cg.Diagnostics, cg.EmitPdbSequencePoints);
 
             cg.Module.SetMethodBody(genSymbol, genMethodBody);
         }
 
         //Initialized a new CodeGenerator for generation of SourceGeneratorSymbol (state machine's next method)
-        private void GenerateStateMachinesNextMethod(CodeGenerator cg, Microsoft.CodeAnalysis.CodeGen.ILBuilder _il, SourceGeneratorSymbol genSymbol)
+        private void GenerateStateMachinesNextMethod(CodeGenerator cg, Microsoft.CodeAnalysis.CodeGen.ILBuilder _il,
+            SourceGeneratorSymbol genSymbol)
         {
             // TODO: get correct ThisPlace, ReturnType etc. resolution & binding out of the box without GN_SGS hacks
             // using SourceGeneratorSymbol
@@ -388,9 +412,10 @@ namespace Aquila.CodeAnalysis.Symbols
                 locals: new ParamPlace(genSymbol.LocalsParameter),
                 localsInitialized: true,
                 tempLocals: new ParamPlace(genSymbol.TmpLocalsParameter)
-                    )
+            )
             {
-                GeneratorStateMachineMethod = genSymbol,    // Pass SourceGeneratorSymbol to CG for additional yield and StartBlock emit 
+                GeneratorStateMachineMethod =
+                    genSymbol, // Pass SourceGeneratorSymbol to CG for additional yield and StartBlock emit 
             })
             {
                 stateMachineNextCg.GenerateScope(this.ControlFlowGraph.Start, int.MaxValue);
@@ -455,18 +480,18 @@ namespace Aquila.CodeAnalysis.Symbols
             if (thisplace != null)
             {
                 // <this>.<ctx> in instance methods
-                var t = (SourceTypeSymbol)this.ContainingType;
+                // var t = (SourceTypeSymbol) this.ContainingType;
 
-                var ctx_field = t.ContextStore;
-                if (ctx_field != null)  // might be null in interfaces
-                {
-                    return new FieldPlace(thisplace, ctx_field, module);
-                }
-                else
-                {
-                    Debug.Assert(t.IsInterface);
-                    return null;
-                }
+                // var ctx_field = t.ContextStore;
+                // if (ctx_field != null) // might be null in interfaces
+                // {
+                //     return new FieldPlace(thisplace, ctx_field, module);
+                // }
+                // else
+                // {
+                //     Debug.Assert(t.IsInterface);
+                //     return null;
+                // }
             }
 
             //
@@ -492,7 +517,8 @@ namespace Aquila.CodeAnalysis.Symbols
 
             module.SetMethodBody(this, MethodGenerator.GenerateMethodBody(module, this, (il) =>
             {
-                var cg = new CodeGenerator(this, il, module, diagnostic, module.Compilation.Options.OptimizationLevel, false);
+                var cg = new CodeGenerator(this, il, module, diagnostic, module.Compilation.Options.OptimizationLevel,
+                    false);
 
                 // Template: return default(T)
                 cg.EmitRetDefault();
@@ -511,8 +537,8 @@ namespace Aquila.CodeAnalysis.Symbols
             lock (cctor)
             {
                 using (var cg = new CodeGenerator(
-                        cctor, module, diagnostic, PhpOptimizationLevel.Release, false, this.ContainingType,
-                        contextPlace: null, thisPlace: null, routine: this))
+                    cctor, module, diagnostic, PhpOptimizationLevel.Release, false, this.ContainingType,
+                    contextPlace: null, thisPlace: null, routine: this))
                 {
                     var field = new FieldPlace(null, this.EnsureRoutineInfoField(module), module);
 
@@ -521,9 +547,11 @@ namespace Aquila.CodeAnalysis.Symbols
 
                     cctor.EmitStringConstant(this.QualifiedName.ToString());
                     cctor.EmitLoadToken(module, DiagnosticBag.GetInstance(), this, null);
-                    cg.Emit_NewArray(cg.CoreTypes.RuntimeMethodHandle, overloads.AsImmutable(), m => cg.EmitLoadToken(m, null));
+                    cg.Emit_NewArray(cg.CoreTypes.RuntimeMethodHandle, overloads.AsImmutable(),
+                        m => cg.EmitLoadToken(m, null));
 
-                    cctor.EmitCall(module, DiagnosticBag.GetInstance(), ILOpCode.Call, cg.CoreMethods.Reflection.CreateUserRoutine_string_RuntimeMethodHandle_RuntimeMethodHandleArr);
+                    cctor.EmitCall(module, DiagnosticBag.GetInstance(), ILOpCode.Call,
+                        cg.CoreMethods.Reflection.CreateUserRoutine_string_RuntimeMethodHandle_RuntimeMethodHandleArr);
 
                     field.EmitStore(cctor);
                 }
@@ -534,62 +562,66 @@ namespace Aquila.CodeAnalysis.Symbols
         }
     }
 
-    partial class SourceLambdaSymbol
-    {
-        internal override IPlace GetContextPlace(PEModuleBuilder module)
-        {
-            // Template: Operators.Context(<closure>)
-            return new OperatorPlace(DeclaringCompilation.CoreMethods.Operators.Context_Closure, new ParamPlace(ClosureParameter));
-        }
-
-        internal override IPlace GetThisPlace()
-        {
-            if (UseThis)
-            {
-                // Template: Operators.Context(<closure>)
-                return new OperatorPlace(DeclaringCompilation.CoreMethods.Operators.This_Closure, new ParamPlace(ClosureParameter));
-            }
-
-            return base.GetThisPlace();
-        }
-
-        internal override IPlace GetPhpThisVariablePlaceWithoutGenerator(PEModuleBuilder module = null)
-        {
-            return GetThisPlace();
-        }
-
-        internal IPlace GetCallerTypePlace()
-        {
-            // Template: Operators.Scope(<closure>)
-            return new OperatorPlace(DeclaringCompilation.CoreMethods.Operators.Scope_Closure, new ParamPlace(ClosureParameter));
-        }
-
-        internal override IList<MethodSymbol> SynthesizeStubs(PEModuleBuilder module, DiagnosticBag diagnostic)
-        {
-            var overloads = base.SynthesizeStubs(module, diagnostic);
-
-            // synthesize RoutineInfo:
-            var cctor = module.GetStaticCtorBuilder(Container);
-            lock (cctor)
-            {
-                var field = new FieldPlace(null, this.EnsureRoutineInfoField(module), module);
-
-                var ct = module.Compilation.CoreTypes;
-
-                // {RoutineInfoField} = new PhpAnonymousRoutineInfo(name, handle)
-                field.EmitStorePrepare(cctor);
-
-                cctor.EmitStringConstant(this.MetadataName);
-                cctor.EmitLoadToken(module, DiagnosticBag.GetInstance(), this, null);
-                cctor.EmitCall(module, DiagnosticBag.GetInstance(), ILOpCode.Call, ct.Operators.Method("AnonymousRoutine", ct.String, ct.RuntimeMethodHandle));
-
-                field.EmitStore(cctor);
-            }
-
-            //
-            return overloads;
-        }
-    }
+    // partial class SourceLambdaSymbol
+    // {
+    //     internal override IPlace GetContextPlace(PEModuleBuilder module)
+    //     {
+    //         // Template: Operators.Context(<closure>)
+    //         return new OperatorPlace(DeclaringCompilation.CoreMethods.Operators.Context_Closure,
+    //             new ParamPlace(ClosureParameter));
+    //     }
+    //
+    //     internal override IPlace GetThisPlace()
+    //     {
+    //         if (UseThis)
+    //         {
+    //             // Template: Operators.Context(<closure>)
+    //             return new OperatorPlace(DeclaringCompilation.CoreMethods.Operators.This_Closure,
+    //                 new ParamPlace(ClosureParameter));
+    //         }
+    //
+    //         return base.GetThisPlace();
+    //     }
+    //
+    //     internal override IPlace GetPhpThisVariablePlaceWithoutGenerator(PEModuleBuilder module = null)
+    //     {
+    //         return GetThisPlace();
+    //     }
+    //
+    //     internal IPlace GetCallerTypePlace()
+    //     {
+    //         // Template: Operators.Scope(<closure>)
+    //         return new OperatorPlace(DeclaringCompilation.CoreMethods.Operators.Scope_Closure,
+    //             new ParamPlace(ClosureParameter));
+    //     }
+    //
+    //     internal override IList<MethodSymbol> SynthesizeStubs(PEModuleBuilder module, DiagnosticBag diagnostic)
+    //     {
+    //         var overloads = base.SynthesizeStubs(module, diagnostic);
+    //
+    //         // synthesize RoutineInfo:
+    //         var cctor = module.GetStaticCtorBuilder(Container);
+    //         lock (cctor)
+    //         {
+    //             var field = new FieldPlace(null, this.EnsureRoutineInfoField(module), module);
+    //
+    //             var ct = module.Compilation.CoreTypes;
+    //
+    //             // {RoutineInfoField} = new PhpAnonymousRoutineInfo(name, handle)
+    //             field.EmitStorePrepare(cctor);
+    //
+    //             cctor.EmitStringConstant(this.MetadataName);
+    //             cctor.EmitLoadToken(module, DiagnosticBag.GetInstance(), this, null);
+    //             cctor.EmitCall(module, DiagnosticBag.GetInstance(), ILOpCode.Call,
+    //                 ct.Operators.Method("AnonymousRoutine", ct.String, ct.RuntimeMethodHandle));
+    //
+    //             field.EmitStore(cctor);
+    //         }
+    //
+    //         //
+    //         return overloads;
+    //     }
+    // }
 
     partial class SourceGeneratorSymbol
     {

@@ -1,15 +1,11 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System;
 using System.Diagnostics;
-using System.Text;
+using Aquila.CodeAnalysis.Symbols;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
-using Pchp.CodeAnalysis;
-using Aquila.CodeAnalysis.Symbols;
 using Peachpie.CodeAnalysis.Utilities;
 
-namespace Pchp.CodeAnalysis.Semantics
+namespace Aquila.CodeAnalysis.Semantics
 {
     /// <summary>
     /// Possible conversion operation.
@@ -48,9 +44,9 @@ namespace Pchp.CodeAnalysis.Semantics
 
     sealed class Conversions
     {
-        readonly Aquila.CodeAnalysis.Symbols.PhpCompilation _compilation;
+        readonly PhpCompilation _compilation;
 
-        public Conversions(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
+        public Conversions(PhpCompilation compilation)
         {
             _compilation = compilation ?? throw ExceptionUtilities.ArgumentNull();
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Aquila.CodeAnalysis.Symbols.Php;
 using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis.FlowAnalysis;
 using Pchp.CodeAnalysis.Semantics;
@@ -35,10 +36,10 @@ namespace Aquila.CodeAnalysis.Symbols
             /// <summary>
             /// Builds the visibility scope.
             /// </summary>
-            public VisibilityScope(NamedTypeSymbol self, Source.SourceRoutineSymbol routine)
+            public VisibilityScope(NamedTypeSymbol self, SourceRoutineSymbol routine)
             {
                 Scope = self;
-                ScopeIsDynamic = self.IsTraitType() || routine is Source.SourceLambdaSymbol || (routine?.IsGlobalScope == true);
+                ScopeIsDynamic = self.IsTraitType() || routine is SourceLambdaSymbol || (routine?.IsGlobalScope == true);
             }
         }
 

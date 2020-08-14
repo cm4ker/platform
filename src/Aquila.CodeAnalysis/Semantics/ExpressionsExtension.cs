@@ -1,10 +1,4 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
- using Aquila.Syntax;
- using Devsense.PHP.Syntax.Ast;
+﻿using Aquila.Syntax;
 
 namespace Pchp.CodeAnalysis.Semantics
 {

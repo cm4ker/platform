@@ -92,9 +92,9 @@ namespace Pchp.CodeAnalysis.Semantics
 
         public virtual TResult VisitGlobalConstDecl(BoundGlobalConstDeclStatement x) => DefaultVisitOperation(x);
 
-        public virtual TResult VisitPseudoConstUse(BoundPseudoConst x) => DefaultVisitOperation(x);
-
-        public virtual TResult VisitPseudoClassConstUse(BoundPseudoClassConst x) => DefaultVisitOperation(x);
+        // public virtual TResult VisitPseudoConstUse(BoundPseudoConst x) => DefaultVisitOperation(x);
+        //
+        // public virtual TResult VisitPseudoClassConstUse(BoundPseudoClassConst x) => DefaultVisitOperation(x);
 
         public virtual TResult VisitIsEmpty(BoundIsEmptyEx x) => DefaultVisitOperation(x);
 
@@ -130,7 +130,7 @@ namespace Pchp.CodeAnalysis.Semantics
 
         public virtual TResult VisitFunctionDeclaration(BoundFunctionDeclStatement x) => DefaultVisitOperation(x);
 
-        public virtual TResult VisitTypeDeclaration(BoundTypeDeclStatement x) => DefaultVisitOperation(x);
+        // public virtual TResult VisitTypeDeclaration(BoundTypeDeclStatement x) => DefaultVisitOperation(x);
 
         public virtual TResult VisitGlobalStatement(BoundGlobalVariableStatement x) => DefaultVisitOperation(x);
 

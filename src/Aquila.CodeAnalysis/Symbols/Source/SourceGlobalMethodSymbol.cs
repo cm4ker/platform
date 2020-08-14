@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Security.Cryptography.Xml;
+using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.Shared.Tree;
+using Aquila.Syntax.Ast;
+using Aquila.Syntax.Ast.Statements;
 using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis;
 using Pchp.CodeAnalysis.FlowAnalysis;
 
-namespace Aquila.CodeAnalysis.Symbols.Source
+namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// Global code as a static [Main] method.
@@ -22,37 +27,42 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             _file = file;
         }
 
-        internal override Signature SyntaxSignature => new Signature(false, Array.Empty<FormalParam>(), Span.Invalid);
+        //internal override Signature SyntaxSignature => new Signature(false, Array.Empty<FormalParam>(), Span.Invalid);
 
         internal override TypeRef SyntaxReturnType => null;
 
         public override bool IsGlobalScope => true;
 
-        internal override bool RequiresLateStaticBoundParam => false;   // not supported in global code
+        internal override bool RequiresLateStaticBoundParam => false; // not supported in global code
 
         protected override IEnumerable<ParameterSymbol> BuildImplicitParams()
         {
             int index = 0;
 
             // Context <ctx>
-            yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.Context, SpecialParameterSymbol.ContextName, index++);
+            yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.Context,
+                SpecialParameterSymbol.ContextName, index++);
 
             // PhpArray <locals>
-            yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.PhpArray, SpecialParameterSymbol.LocalsName, index++);
+            yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.PhpArray,
+                SpecialParameterSymbol.LocalsName, index++);
 
             // object @this
-            yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.Object, SpecialParameterSymbol.ThisName, index++);
+            yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.Object,
+                SpecialParameterSymbol.ThisName, index++);
 
             // RuntimeTypeHandle <self>
-            yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.RuntimeTypeHandle, SpecialParameterSymbol.SelfName, index++);
+            yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.RuntimeTypeHandle,
+                SpecialParameterSymbol.SelfName, index++);
         }
 
-        protected override IEnumerable<SourceParameterSymbol> BuildSrcParams(Signature signature, PHPDocBlock phpdocOpt = null)
-        {
-            return Array.Empty<SourceParameterSymbol>();
-        }
+        // protected override IEnumerable<SourceParameterSymbol> BuildSrcParams(Signature signature, PHPDocBlock phpdocOpt = null)
+        // {
+        //     return Array.Empty<SourceParameterSymbol>();
+        // }
 
-        public ParameterSymbol ThisParameter => this.ImplicitParameters.First(p => p.Name == SpecialParameterSymbol.ThisName);
+        public ParameterSymbol ThisParameter =>
+            this.ImplicitParameters.First(p => p.Name == SpecialParameterSymbol.ThisName);
 
         public ParameterSymbol SelfParameter => this.ImplicitParameters.First(SpecialParameterSymbol.IsSelfParameter);
 
@@ -68,10 +78,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
         }
 
         public override bool IsAbstract => false;
@@ -88,15 +95,16 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         {
             get
             {
-                return ImmutableArray.Create(Location.Create(ContainingFile.SyntaxTree, default(Microsoft.CodeAnalysis.Text.TextSpan)));
+                return ImmutableArray.Create(Location.Create(ContainingFile.SyntaxTree,
+                    default(Microsoft.CodeAnalysis.Text.TextSpan)));
             }
         }
 
-        internal override IList<Statement> Statements => _file.SyntaxTree.Root.Statements;
+        internal override IList<Statement> Statements => null; //_file.SyntaxTree.Root.Statements;
 
-        internal override AstNode Syntax => _file.SyntaxTree.Root;
+        internal override Node Syntax => null; // _file.SyntaxTree.Root;
 
-        internal override PHPDocBlock PHPDocBlock => null;
+        //internal override PHPDocBlock PHPDocBlock => null;
 
         internal override PhpCompilation DeclaringCompilation => _file.DeclaringCompilation;
 

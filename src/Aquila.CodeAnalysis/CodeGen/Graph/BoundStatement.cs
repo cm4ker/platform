@@ -5,6 +5,10 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.CodeAnalysis.Symbols.Synthesized;
 
 namespace Pchp.CodeAnalysis.Semantics
 {
@@ -90,7 +94,7 @@ namespace Pchp.CodeAnalysis.Semantics
                 cg.EmitConvert(this.Returned, rtype);
 
                 // TODO: check for null, if return type is not nullable
-                if (cg.Routine.SyntaxReturnType != null && cg.Routine.SyntaxReturnType.IsNullable() == false)
+                if (cg.Routine.SyntaxReturnType != null)
                 {
                     //// Template: Debug.Assert( <STACK> != null )
                     //cg.Builder.EmitOpCode(ILOpCode.Dup);
@@ -116,16 +120,16 @@ namespace Pchp.CodeAnalysis.Semantics
         }
     }
 
-    partial class BoundTypeDeclStatement
-    {
-        internal override void Emit(CodeGenerator cg)
-        {
-            cg.EmitSequencePoint(this.TypeDecl.HeadingSpan);
-
-            // <ctx>.DeclareType<T>()
-            cg.EmitDeclareType(this.DeclaredType);
-        }
-    }
+    // partial class BoundTypeDeclStatement
+    // {
+    //     internal override void Emit(CodeGenerator cg)
+    //     {
+    //         cg.EmitSequencePoint(this.TypeDecl.HeadingSpan);
+    //
+    //         // <ctx>.DeclareType<T>()
+    //         cg.EmitDeclareType(this.DeclaredType);
+    //     }
+    // }
 
     partial class BoundGlobalVariableStatement
     {
@@ -187,7 +191,7 @@ namespace Pchp.CodeAnalysis.Semantics
                 routine: cg.Routine);
         }
 
-        void EmitInit(Emit.PEModuleBuilder module, DiagnosticBag diagnostic, Aquila.CodeAnalysis.Symbols.PhpCompilation compilation,
+        void EmitInit(Emit.PEModuleBuilder module, DiagnosticBag diagnostic, PhpCompilation compilation,
             SynthesizedStaticLocHolder holder, BoundExpression initializer, SourceRoutineSymbol routine)
         {
             var requiresContext = initializer != null && initializer.RequiresContext;

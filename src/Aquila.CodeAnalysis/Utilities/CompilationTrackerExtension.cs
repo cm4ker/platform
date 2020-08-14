@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Text;
+using Aquila.CodeAnalysis;
 
 namespace Pchp.CodeAnalysis.Utilities
 {
@@ -67,7 +68,7 @@ namespace Pchp.CodeAnalysis.Utilities
             { }
         }
 
-        public static void TrackOnCompleted(this Aquila.CodeAnalysis.Symbols.PhpCompilation c)
+        public static void TrackOnCompleted(this PhpCompilation c)
         {
             if (!c.EventSources.IsDefaultOrEmpty)
             {
@@ -75,7 +76,7 @@ namespace Pchp.CodeAnalysis.Utilities
             }
         }
 
-        public static void TrackException(this Aquila.CodeAnalysis.Symbols.PhpCompilation c, Exception ex)
+        public static void TrackException(this PhpCompilation c, Exception ex)
         {
             if (ex is AggregateException aex && aex.InnerExceptions != null)
             {
@@ -98,17 +99,17 @@ namespace Pchp.CodeAnalysis.Utilities
             }
         }
 
-        public static void TrackMetric(this Aquila.CodeAnalysis.Symbols.PhpCompilation c, string name, double value)
+        public static void TrackMetric(this PhpCompilation c, string name, double value)
         {
             TrackMetric(c.EventSources, name, value);
         }
 
-        public static void TrackEvent(this Aquila.CodeAnalysis.Symbols.PhpCompilation c, string name)
+        public static void TrackEvent(this PhpCompilation c, string name)
         {
             c.EventSources.ForEach(o => o.OnNext(name));
         }
 
-        public static TimeSpanMetric StartMetric(this Aquila.CodeAnalysis.Symbols.PhpCompilation c, string name)
+        public static TimeSpanMetric StartMetric(this PhpCompilation c, string name)
         {
             return StartMetric(c.EventSources, name);
         }

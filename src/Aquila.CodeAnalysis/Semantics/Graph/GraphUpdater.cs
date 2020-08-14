@@ -152,9 +152,9 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
 
         protected override object DefaultVisitBlock(BoundBlock x) => throw new InvalidOperationException();
 
-        protected virtual Edge AcceptEdge(BoundBlock from, Edge edge)
+        protected virtual Graph.Edge AcceptEdge(BoundBlock from, Graph.Edge edge)
         {
-            return (Edge)edge?.Accept(this);
+            return (Graph.Edge)edge?.Accept(this);
         }
 
         public override object VisitCFGBlock(BoundBlock x)
@@ -199,19 +199,19 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
 
         #region Graph.Edge
 
-        protected override object DefaultVisitEdge(Edge x) => throw new InvalidOperationException();
+        protected override object DefaultVisitEdge(Graph.Edge x) => throw new InvalidOperationException();
 
-        public override object VisitCFGSimpleEdge(SimpleEdge x)
+        public override object VisitCFGSimpleEdge(Graph.SimpleEdge x)
         {
             return x.Update((BoundBlock)Accept(x.Target));
         }
 
-        public override object VisitCFGLeaveEdge(LeaveEdge x)
+        public override object VisitCFGLeaveEdge(Graph.LeaveEdge x)
         {
             return x.Update((BoundBlock)Accept(x.Target));
         }
 
-        public override object VisitCFGConditionalEdge(ConditionalEdge x)
+        public override object VisitCFGConditionalEdge(Graph.ConditionalEdge x)
         {
             IsConditional = true;
 
@@ -221,7 +221,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
                 (BoundExpression)Accept(x.Condition));
         }
 
-        public override object VisitCFGTryCatchEdge(TryCatchEdge x)
+        public override object VisitCFGTryCatchEdge(Graph.TryCatchEdge x)
         {
             IsConditional = true;
 
@@ -232,7 +232,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
                 (BoundBlock)Accept(x.NextBlock));
         }
 
-        public override object VisitCFGForeachEnumereeEdge(ForeachEnumereeEdge x)
+        public override object VisitCFGForeachEnumereeEdge(Graph.ForeachEnumereeEdge x)
         {
             IsConditional = true;
 
@@ -244,7 +244,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             if (updated != x)
             {
                 // Fix reference from the following ForEachMoveNextEdge
-                var moveNext = (ForeachMoveNextEdge)updated.NextBlock.NextEdge;
+                var moveNext = (Graph.ForeachMoveNextEdge)updated.NextBlock.NextEdge;
                 Debug.Assert(moveNext.EnumereeEdge == x);
                 updated.NextBlock.NextEdge = moveNext.Update(
                     moveNext.BodyBlock,
@@ -258,7 +258,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             return updated;
         }
 
-        public override object VisitCFGForeachMoveNextEdge(ForeachMoveNextEdge x)
+        public override object VisitCFGForeachMoveNextEdge(Graph.ForeachMoveNextEdge x)
         {
             IsConditional = true;
 
@@ -271,7 +271,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
                 x.MoveNextSpan);
         }
 
-        public override object VisitCFGSwitchEdge(SwitchEdge x)
+        public override object VisitCFGSwitchEdge(Graph.SwitchEdge x)
         {
             IsConditional = true;
 
@@ -519,17 +519,17 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
                 (BoundExpression)Accept(x.Value));
         }
 
-        public override object VisitPseudoConstUse(BoundPseudoConst x)
-        {
-            return x;
-        }
-
-        public override object VisitPseudoClassConstUse(BoundPseudoClassConst x)
-        {
-            return x.Update(
-                (BoundTypeRef)Accept(x.TargetType),
-                x.ConstType);
-        }
+        // public override object VisitPseudoConstUse(BoundPseudoConst x)
+        // {
+        //     return x;
+        // }
+        //
+        // public override object VisitPseudoClassConstUse(BoundPseudoClassConst x)
+        // {
+        //     return x.Update(
+        //         (BoundTypeRef)Accept(x.TargetType),
+        //         x.ConstType);
+        // }
 
         public override object VisitIsEmpty(BoundIsEmptyEx x)
         {
@@ -618,10 +618,10 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             return x;
         }
 
-        public override object VisitTypeDeclaration(BoundTypeDeclStatement x)
-        {
-            return x;
-        }
+        // public override object VisitTypeDeclaration(BoundTypeDeclStatement x)
+        // {
+        //     return x;
+        // }
 
         public override object VisitGlobalStatement(BoundGlobalVariableStatement x)
         {

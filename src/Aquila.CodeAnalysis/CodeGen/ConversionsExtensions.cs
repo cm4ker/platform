@@ -6,7 +6,8 @@ using Microsoft.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Symbols;
 using System.Reflection.Metadata;
 using System.Diagnostics;
-using Microsoft.CodeAnalysis;
+ using Aquila.CodeAnalysis.Semantics;
+ using Microsoft.CodeAnalysis;
 using Peachpie.CodeAnalysis.Utilities;
 using Pchp.CodeAnalysis.Semantics;
 

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis.Text;
 

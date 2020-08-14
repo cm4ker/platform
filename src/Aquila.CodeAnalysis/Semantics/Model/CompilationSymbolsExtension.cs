@@ -1,10 +1,10 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System;
 using System.Linq;
-using System.Text;
-using Devsense.PHP.Syntax;
+using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.Syntax.Syntax;
 
 namespace Pchp.CodeAnalysis.Semantics
 {
@@ -16,7 +16,7 @@ namespace Pchp.CodeAnalysis.Semantics
         /// <summary>
         /// Gets value indicating the extension is defined in compilation time.
         /// </summary>
-        public static bool HasPhpExtenion(this Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, string extension_name)
+        public static bool HasPhpExtenion(this PhpCompilation compilation, string extension_name)
         {
             return compilation.GlobalSemantics.Extensions.Contains(extension_name, StringComparer.OrdinalIgnoreCase);
         }
@@ -26,12 +26,14 @@ namespace Pchp.CodeAnalysis.Semantics
         /// Can be <c>null</c> if function could not be found.
         /// Can be an <see cref="AmbiguousMethodSymbol"/> in case there are more functions possible or possible overrides.
         /// </summary>
-        public static IPhpRoutineSymbol ResolveFunction(this Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, QualifiedName name, SourceRoutineSymbol routine)
+        public static IPhpRoutineSymbol ResolveFunction(this PhpCompilation compilation, QualifiedName name,
+            SourceRoutineSymbol routine)
         {
             var symbol = compilation.GlobalSemantics.ResolveFunction(name);
             if (symbol != null)
             {
-                if (symbol is AmbiguousMethodSymbol ambiguous && !ambiguous.IsOverloadable && ambiguous.Ambiguities.All(a => a is SourceFunctionSymbol))
+                if (symbol is AmbiguousMethodSymbol ambiguous && !ambiguous.IsOverloadable &&
+                    ambiguous.Ambiguities.All(a => a is SourceFunctionSymbol))
                 {
                     // there are more functions with same name within the compilation (in sources),
                     // we can pick the right one if it is declared unconditionally and in current file or included from within current routine:
@@ -40,9 +42,11 @@ namespace Pchp.CodeAnalysis.Semantics
 
                     for (int i = 0; i < candidates.Length; i++)
                     {
-                        var c = (SourceFunctionSymbol)candidates[i];
+                        var c = (SourceFunctionSymbol) candidates[i];
                         // function is unconditionally declared in this file:
-                        if (c.IsUnreachable == false && !c.IsConditional && routine != null && routine.ContainingFile == c.ContainingFile)  // TODO: or {c.ContainingFile} included unconditionally
+                        if (c.IsUnreachable == false && !c.IsConditional && routine != null &&
+                            routine.ContainingFile == c.ContainingFile
+                        ) // TODO: or {c.ContainingFile} included unconditionally
                         {
                             if (result == null)
                             {

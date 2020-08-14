@@ -1,22 +1,20 @@
-﻿﻿using Microsoft.CodeAnalysis.Operations;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System;
-using Devsense.PHP.Syntax;
-using Devsense.PHP.Syntax.Ast;
-using Microsoft.CodeAnalysis.Text;
-using System.Collections.Immutable;
- using Aquila.Syntax;
+using Aquila.Shared.Tree;
+using Aquila.Syntax;
+using Pchp.CodeAnalysis;
+using Pchp.CodeAnalysis.Semantics;
+using Pchp.CodeAnalysis.Semantics.Graph;
+using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 
- namespace Pchp.CodeAnalysis.Semantics.Graph
+namespace Pchp.CodeAnalysis.Semantics.Graph
 {
     /// <summary>
     /// Represents an edge to other blocks.
     /// </summary>
-    public abstract partial class Edge : AstNode
+    public abstract partial class Edge : Node
     {
         /// <summary>
         /// Associated syntax node.
@@ -26,7 +24,7 @@ using System.Collections.Immutable;
         /// <summary>
         /// Target blocks.
         /// </summary>
-        public abstract IEnumerable<BoundBlock>/*!!*/Targets { get; }
+        public abstract IEnumerable<BoundBlock> /*!!*/ Targets { get; }
 
         /// <summary>
         /// The block after the edge. Can be a <c>null</c> reference.
@@ -68,15 +66,16 @@ using System.Collections.Immutable;
         /// </summary>
         public virtual ImmutableArray<CaseBlock> CaseBlocks => ImmutableArray<CaseBlock>.Empty;
 
-        internal Edge(BoundBlock/*!*/source)
+        internal Edge(BoundBlock /*!*/source)
         {
             Contract.ThrowIfNull(source);
         }
 
         protected Edge()
-        { }
+        {
+        }
 
-        protected void Connect(BoundBlock/*!*/source)
+        protected void Connect(BoundBlock /*!*/source)
         {
             source.NextEdge = this;
         }
@@ -97,6 +96,7 @@ using System.Collections.Immutable;
         /// Target block.
         /// </summary>
         public BoundBlock Target => _target;
+
         private readonly BoundBlock _target;
 
         /// <summary>
@@ -132,7 +132,7 @@ using System.Collections.Immutable;
         /// <summary>
         /// Target blocks.
         /// </summary>
-        public override IEnumerable<BoundBlock> Targets => new BoundBlock[] { _target };
+        public override IEnumerable<BoundBlock> Targets => new BoundBlock[] {_target};
 
         /// <summary>
         /// Visits the object by given visitor.
@@ -153,7 +153,8 @@ using System.Collections.Immutable;
 
         internal LeaveEdge(BoundBlock target)
             : base(target)
-        { }
+        {
+        }
 
         public new LeaveEdge Update(BoundBlock target)
         {
@@ -189,12 +190,12 @@ using System.Collections.Immutable;
         /// <summary>
         /// Target true block.
         /// </summary>
-        public BoundBlock/*!*/TrueTarget => _true;
+        public BoundBlock /*!*/ TrueTarget => _true;
 
         /// <summary>
         /// Target false block.
         /// </summary>
-        public BoundBlock/*!*/FalseTarget => _false;
+        public BoundBlock /*!*/ FalseTarget => _false;
 
         internal ConditionalEdge(BoundBlock source, BoundBlock @true, BoundBlock @false, BoundExpression cond)
             : base(source)
@@ -228,7 +229,7 @@ using System.Collections.Immutable;
         /// <summary>
         /// All target blocks.
         /// </summary>
-        public override IEnumerable<BoundBlock> Targets => new BoundBlock[] { _true, _false };
+        public override IEnumerable<BoundBlock> Targets => new BoundBlock[] {_true, _false};
 
         public override bool IsConditional
         {
@@ -263,11 +264,12 @@ using System.Collections.Immutable;
         /// </summary>
         public BoundBlock BodyBlock => _body;
 
-        internal TryCatchEdge(BoundBlock source, BoundBlock body, ImmutableArray<CatchBlock> catchBlocks, BoundBlock finallyBlock, BoundBlock endBlock)
+        internal TryCatchEdge(BoundBlock source, BoundBlock body, ImmutableArray<CatchBlock> catchBlocks,
+            BoundBlock finallyBlock, BoundBlock endBlock)
             : base(source)
         {
             Debug.Assert(catchBlocks != null);
-            Debug.Assert(catchBlocks.Length != 0 || finallyBlock != null);  // catch or finally or both
+            Debug.Assert(catchBlocks.Length != 0 || finallyBlock != null); // catch or finally or both
 
             _body = body;
             _catchBlocks = catchBlocks;
@@ -276,10 +278,11 @@ using System.Collections.Immutable;
             Connect(source);
         }
 
-        internal TryCatchEdge(BoundBlock body, ImmutableArray<CatchBlock> catchBlocks, BoundBlock finallyBlock, BoundBlock endBlock)
+        internal TryCatchEdge(BoundBlock body, ImmutableArray<CatchBlock> catchBlocks, BoundBlock finallyBlock,
+            BoundBlock endBlock)
         {
             Debug.Assert(catchBlocks != null);
-            Debug.Assert(catchBlocks.Length != 0 || finallyBlock != null);  // catch or finally or both
+            Debug.Assert(catchBlocks.Length != 0 || finallyBlock != null); // catch or finally or both
 
             _body = body;
             _catchBlocks = catchBlocks;
@@ -287,7 +290,8 @@ using System.Collections.Immutable;
             _end = endBlock;
         }
 
-        public TryCatchEdge Update(BoundBlock body, ImmutableArray<CatchBlock> catchBlocks, BoundBlock finallyBlock, BoundBlock endBlock)
+        public TryCatchEdge Update(BoundBlock body, ImmutableArray<CatchBlock> catchBlocks, BoundBlock finallyBlock,
+            BoundBlock endBlock)
         {
             if (body == _body && catchBlocks == _catchBlocks && finallyBlock == _finallyBlock && endBlock == _end)
             {
@@ -298,7 +302,6 @@ using System.Collections.Immutable;
                 return new TryCatchEdge(body, catchBlocks, finallyBlock, endBlock)
                 {
                     EmitCatchFinallyOutsideScope = this.EmitCatchFinallyOutsideScope,
-
                 };
             }
         }
@@ -354,12 +357,14 @@ using System.Collections.Immutable;
         /// Array to enumerate through.
         /// </summary>
         public BoundExpression Enumeree => _enumeree;
+
         private readonly BoundExpression _enumeree;
 
         public bool AreValuesAliased => _aliasedValues;
         readonly bool _aliasedValues;
 
-        internal ForeachEnumereeEdge(BoundBlock/*!*/source, BoundBlock/*!*/target, BoundExpression/*!*/enumeree, bool aliasedValues)
+        internal ForeachEnumereeEdge(BoundBlock /*!*/source, BoundBlock /*!*/target, BoundExpression /*!*/enumeree,
+            bool aliasedValues)
             : base(source, target)
         {
             Contract.ThrowIfNull(enumeree);
@@ -367,7 +372,7 @@ using System.Collections.Immutable;
             _aliasedValues = aliasedValues;
         }
 
-        internal ForeachEnumereeEdge(BoundBlock/*!*/target, BoundExpression/*!*/enumeree, bool aliasedValues)
+        internal ForeachEnumereeEdge(BoundBlock /*!*/target, BoundExpression /*!*/enumeree, bool aliasedValues)
             : base(target)
         {
             Contract.ThrowIfNull(enumeree);
@@ -390,7 +395,8 @@ using System.Collections.Immutable;
         /// <summary>
         /// Visits the object by given visitor.
         /// </summary>
-        public override TResult Accept<TResult>(GraphVisitor<TResult> visitor) => visitor.VisitCFGForeachEnumereeEdge(this);
+        public override TResult Accept<TResult>(GraphVisitor<TResult> visitor) =>
+            visitor.VisitCFGForeachEnumereeEdge(this);
     }
 
     /// <summary>
@@ -431,7 +437,9 @@ using System.Collections.Immutable;
         /// </summary>
         public BoundReferenceExpression ValueVariable { get; }
 
-        internal ForeachMoveNextEdge(BoundBlock/*!*/source, BoundBlock/*!*/body, BoundBlock/*!*/end, ForeachEnumereeEdge/*!*/enumereeEdge, BoundReferenceExpression keyVar, BoundReferenceExpression/*!*/valueVar, TextSpan moveSpan)
+        internal ForeachMoveNextEdge(BoundBlock /*!*/source, BoundBlock /*!*/body, BoundBlock /*!*/end,
+            ForeachEnumereeEdge /*!*/enumereeEdge, BoundReferenceExpression keyVar,
+            BoundReferenceExpression /*!*/valueVar, TextSpan moveSpan)
             : base(source)
         {
             Contract.ThrowIfNull(body);
@@ -449,7 +457,8 @@ using System.Collections.Immutable;
             Connect(source);
         }
 
-        internal ForeachMoveNextEdge(BoundBlock/*!*/body, BoundBlock/*!*/end, ForeachEnumereeEdge/*!*/enumereeEdge, BoundReferenceExpression keyVar, BoundReferenceExpression/*!*/valueVar, TextSpan moveSpan)
+        internal ForeachMoveNextEdge(BoundBlock /*!*/body, BoundBlock /*!*/end, ForeachEnumereeEdge /*!*/enumereeEdge,
+            BoundReferenceExpression keyVar, BoundReferenceExpression /*!*/valueVar, TextSpan moveSpan)
         {
             Contract.ThrowIfNull(body);
             Contract.ThrowIfNull(end);
@@ -463,9 +472,11 @@ using System.Collections.Immutable;
             this.MoveNextSpan = moveSpan;
         }
 
-        public ForeachMoveNextEdge Update(BoundBlock body, BoundBlock end, ForeachEnumereeEdge enumereeEdge, BoundReferenceExpression keyVar, BoundReferenceExpression/*!*/valueVar, TextSpan moveSpan)
+        public ForeachMoveNextEdge Update(BoundBlock body, BoundBlock end, ForeachEnumereeEdge enumereeEdge,
+            BoundReferenceExpression keyVar, BoundReferenceExpression /*!*/valueVar, TextSpan moveSpan)
         {
-            if (body == BodyBlock && end == _end && enumereeEdge == EnumereeEdge && keyVar == KeyVariable && valueVar == ValueVariable && moveSpan == MoveNextSpan)
+            if (body == BodyBlock && end == _end && enumereeEdge == EnumereeEdge && keyVar == KeyVariable &&
+                valueVar == ValueVariable && moveSpan == MoveNextSpan)
             {
                 return this;
             }
@@ -477,13 +488,14 @@ using System.Collections.Immutable;
 
         public override IEnumerable<BoundBlock> Targets
         {
-            get { return new BoundBlock[] { BodyBlock, _end }; }
+            get { return new BoundBlock[] {BodyBlock, _end}; }
         }
 
         /// <summary>
         /// Visits the object by given visitor.
         /// </summary>
-        public override TResult Accept<TResult>(GraphVisitor<TResult> visitor) => visitor.VisitCFGForeachMoveNextEdge(this);
+        public override TResult Accept<TResult>(GraphVisitor<TResult> visitor) =>
+            visitor.VisitCFGForeachMoveNextEdge(this);
     }
 
     /// <summary>
@@ -515,7 +527,8 @@ using System.Collections.Immutable;
         /// </summary>
         public CaseBlock DefaultBlock => _caseBlocks.FirstOrDefault(c => c.IsDefault);
 
-        internal SwitchEdge(BoundBlock source, BoundExpression switchValue, ImmutableArray<CaseBlock> caseBlocks, BoundBlock endBlock)
+        internal SwitchEdge(BoundBlock source, BoundExpression switchValue, ImmutableArray<CaseBlock> caseBlocks,
+            BoundBlock endBlock)
             : base(source)
         {
             Contract.ThrowIfDefault(caseBlocks);

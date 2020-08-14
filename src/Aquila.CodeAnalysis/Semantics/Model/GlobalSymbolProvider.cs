@@ -1,24 +1,26 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis.Symbols;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using Devsense.PHP.Syntax;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Symbols.PE;
+using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.Compiler.Utilities;
+using Aquila.Syntax.Syntax;
+using MoreLinq;
 using Roslyn.Utilities;
 using Pchp.CodeAnalysis.Utilities;
- using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
 
- namespace Pchp.CodeAnalysis.Semantics.Model
+namespace Pchp.CodeAnalysis.Semantics.Model
 {
     internal class GlobalSymbolProvider : ISymbolProvider
     {
         #region Fields
 
-        readonly Aquila.CodeAnalysis.Symbols.PhpCompilation _compilation;
+        readonly PhpCompilation _compilation;
         readonly ISymbolProvider _next;
 
         ImmutableArray<NamedTypeSymbol> _lazyExtensionContainers;
@@ -35,18 +37,19 @@ using Pchp.CodeAnalysis.Utilities;
 
         #endregion
 
-        public GlobalSymbolProvider(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
+        public GlobalSymbolProvider(PhpCompilation compilation)
         {
             _compilation = compilation ?? throw new ArgumentNullException(nameof(compilation));
             _next = new SourceSymbolProvider(compilation.SourceSymbolCollection);
         }
 
-        static IEnumerable<PEAssemblySymbol> GetExtensionLibraries(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
+        static IEnumerable<PEAssemblySymbol> GetExtensionLibraries(
+            PhpCompilation compilation)
             => compilation
-            .GetBoundReferenceManager()
-            .ExplicitReferencesSymbols
-            .OfType<PEAssemblySymbol>()
-            .Where(s => s.IsExtensionLibrary);
+                .GetBoundReferenceManager()
+                .ExplicitReferencesSymbols
+                .OfType<PEAssemblySymbol>()
+                .Where(s => s.IsExtensionLibrary);
 
         /// <summary>
         /// Enumerates referenced assemblies which are extension libraries (has PhpExtensionAttribute).
@@ -55,11 +58,12 @@ using Pchp.CodeAnalysis.Utilities;
         {
             get
             {
-                return GetExtensionLibraries(Compilation);//.Where( has scripts );
+                return GetExtensionLibraries(Compilation); //.Where( has scripts );
             }
         }
 
-        static IEnumerable<NamedTypeSymbol> ResolveExtensionContainers(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
+        static IEnumerable<NamedTypeSymbol> ResolveExtensionContainers(
+            PhpCompilation compilation)
         {
             var libraries = GetExtensionLibraries(compilation).SelectMany(r => r.ExtensionContainers);
             var synthesized = compilation.SourceSymbolCollection.DefinedConstantsContainer;
@@ -77,7 +81,8 @@ using Pchp.CodeAnalysis.Utilities;
 
         internal bool IsFunction(MethodSymbol method)
         {
-            return method != null && method.IsStatic && method.DeclaredAccessibility == Accessibility.Public && method.MethodKind == MethodKind.Ordinary && !method.IsPhpHidden(_compilation);
+            return method != null && method.IsStatic && method.DeclaredAccessibility == Accessibility.Public &&
+                   method.MethodKind == MethodKind.Ordinary && !method.IsPhpHidden(_compilation);
         }
 
         internal bool IsGlobalConstant(Aquila.CodeAnalysis.Symbols.Symbol symbol)
@@ -85,13 +90,14 @@ using Pchp.CodeAnalysis.Utilities;
             if (symbol is FieldSymbol field)
             {
                 return (field.IsConst || (field.IsReadOnly && field.IsStatic)) &&
-                    field.DeclaredAccessibility == Accessibility.Public &&
-                    !field.IsPhpHidden(_compilation);
+                       field.DeclaredAccessibility == Accessibility.Public &&
+                       !field.IsPhpHidden(_compilation);
             }
 
             if (symbol is PropertySymbol prop)
             {
-                return prop.IsStatic && prop.DeclaredAccessibility == Accessibility.Public && !prop.IsPhpHidden(_compilation);
+                return prop.IsStatic && prop.DeclaredAccessibility == Accessibility.Public &&
+                       !prop.IsPhpHidden(_compilation);
             }
 
             return false;
@@ -123,12 +129,13 @@ using Pchp.CodeAnalysis.Utilities;
 
                     // lookup extensions and cor library for exported types
                     var libs = GetExtensionLibraries(_compilation).ToList();
-                    libs.Add((PEAssemblySymbol)_compilation.PhpCorLibrary);
+                    libs.Add((PEAssemblySymbol) _compilation.PhpCorLibrary);
 
                     //
                     foreach (var lib in libs)
                     {
-                        foreach (var t in lib.PrimaryModule.GlobalNamespace.GetTypeMembers().OfType<PENamedTypeSymbol>())
+                        foreach (var t in lib.PrimaryModule.GlobalNamespace.GetTypeMembers()
+                            .OfType<PENamedTypeSymbol>())
                         {
                             if (t.DeclaredAccessibility == Accessibility.Public)
                             {
@@ -184,12 +191,12 @@ using Pchp.CodeAnalysis.Utilities;
         IEnumerable<IPhpScriptTypeSymbol> GetScriptsFromReferencedAssemblies()
         {
             return _referencedScripts
-                ?? (_referencedScripts = GetExtensionLibraries(_compilation)
-                    .SelectMany(ass => ass.PrimaryModule.GlobalNamespace.GetTypeMembers())
-                    .OfType<IPhpScriptTypeSymbol>()
-                    .Where(t => t.RelativeFilePath != null)
-                    .Where(t => !t.IsPharEntry())// ignore Phar entries
-                    .ToArray());
+                   ?? (_referencedScripts = GetExtensionLibraries(_compilation)
+                       .SelectMany(ass => ass.PrimaryModule.GlobalNamespace.GetTypeMembers())
+                       .OfType<IPhpScriptTypeSymbol>()
+                       .Where(t => t.RelativeFilePath != null)
+                       .Where(t => !t.IsPharEntry()) // ignore Phar entries
+                       .ToArray());
         }
 
         IPhpScriptTypeSymbol[] _referencedScripts; // TODO: dictionary
@@ -223,7 +230,8 @@ using Pchp.CodeAnalysis.Utilities;
         /// Gets PHP types exported from referenced extension libraries and cor library.
         /// </summary>
         /// <returns></returns>
-        internal IEnumerable<NamedTypeSymbol> GetReferencedTypes() => ExportedTypes.Values.Where(t => t.IsValidType() && !t.IsPhpUserType());
+        internal IEnumerable<NamedTypeSymbol> GetReferencedTypes() =>
+            ExportedTypes.Values.Where(t => t.IsValidType() && !t.IsPhpUserType());
 
         public MultiDictionary<QualifiedName, MethodSymbol> ExportedFunctions
         {
@@ -254,9 +262,10 @@ using Pchp.CodeAnalysis.Utilities;
         /// <summary>
         /// Gets declaring compilation.
         /// </summary>
-        public Aquila.CodeAnalysis.Symbols.PhpCompilation Compilation => _compilation;
+        public PhpCompilation Compilation => _compilation;
 
-        public INamedTypeSymbol ResolveType(QualifiedName name, Dictionary<QualifiedName, INamedTypeSymbol> resolved = null)
+        public INamedTypeSymbol ResolveType(QualifiedName name,
+            Dictionary<QualifiedName, INamedTypeSymbol> resolved = null)
         {
             Debug.Assert(!name.IsReservedClassName);
             Debug.Assert(!name.IsEmpty());
@@ -320,7 +329,7 @@ using Pchp.CodeAnalysis.Utilities;
 
             // TODO: lookup include paths
             // TODO: calling script directory
-            
+
             // lookup referenced assemblies
             var script = GetScriptsFromReferencedAssemblies().FirstOrDefault(t => t.RelativeFilePath == path);
 
@@ -372,7 +381,8 @@ using Pchp.CodeAnalysis.Utilities;
             {
                 var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-                foreach (var t in GetExtensionLibraries(_compilation).Cast<Aquila.CodeAnalysis.Symbols.Symbol>().Concat(ExtensionContainers).Concat(ExportedTypes.Values))   // assemblies & containers & types
+                foreach (var t in GetExtensionLibraries(_compilation).Cast<Aquila.CodeAnalysis.Symbols.Symbol>()
+                    .Concat(ExtensionContainers).Concat(ExportedTypes.Values)) // assemblies & containers & types
                 {
                     result.UnionWith(SymbolExtensions.PhpExtensionAttributeValues(t.GetPhpExtensionAttribute()));
                 }

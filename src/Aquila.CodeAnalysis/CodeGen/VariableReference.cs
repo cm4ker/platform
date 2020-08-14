@@ -3,15 +3,20 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Semantics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
 using Pchp.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax.Syntax;
-using Microsoft.CodeAnalysis.Symbols;
+
 using Peachpie.CodeAnalysis.Utilities;
 using Cci = Microsoft.Cci;
-using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
+using SourceFieldSymbol = Aquila.CodeAnalysis.Symbols.SourceFieldSymbol;
+
 
 namespace Pchp.CodeAnalysis.Semantics
 {
@@ -864,21 +869,21 @@ namespace Pchp.CodeAnalysis.Semantics
                 }
             }
 
-            // check callable
-            if (srcparam.Syntax.TypeHint.IsCallable())
-            {
-                cg.EmitSequencePoint(srcparam.Syntax);
-
-                // Template: PhpException.ThrowIfArgumentNotCallable(<ctx>, current RuntimeTypeHandle, value, arg)
-                cg.EmitLoadContext();
-                cg.EmitCallerTypeHandle();
-                cg.EmitConvertToPhpValue(valueplace.EmitLoad(cg.Builder),
-                    default); // To handle conversion from PhpAlias when the parameter is by ref
-                cg.Builder.EmitBoolConstant(!srcparam.HasNotNull);
-                cg.Builder.EmitIntConstant(srcparam.ParameterIndex + 1);
-                cg.EmitPop(cg.EmitCall(ILOpCode.Call,
-                    cg.CoreMethods.Operators.ThrowIfArgumentNotCallable_Context_RuntimeTypeHandle_PhpValue_Bool_int));
-            }
+            // // check callable
+            // if (srcparam.Syntax.TypeHint.IsCallable())
+            // {
+            //     cg.EmitSequencePoint(srcparam.Syntax);
+            //
+            //     // Template: PhpException.ThrowIfArgumentNotCallable(<ctx>, current RuntimeTypeHandle, value, arg)
+            //     cg.EmitLoadContext();
+            //     cg.EmitCallerTypeHandle();
+            //     cg.EmitConvertToPhpValue(valueplace.EmitLoad(cg.Builder),
+            //         default); // To handle conversion from PhpAlias when the parameter is by ref
+            //     cg.Builder.EmitBoolConstant(!srcparam.HasNotNull);
+            //     cg.Builder.EmitIntConstant(srcparam.ParameterIndex + 1);
+            //     cg.EmitPop(cg.EmitCall(ILOpCode.Call,
+            //         cg.CoreMethods.Operators.ThrowIfArgumentNotCallable_Context_RuntimeTypeHandle_PhpValue_Bool_int));
+            // }
         }
 
         /// <summary>
@@ -1011,7 +1016,7 @@ namespace Pchp.CodeAnalysis.Semantics
             readonly IPlace _varargsplace;
             readonly int _index;
             bool _isparams => _p.IsParams;
-            bool _byref => _p.Syntax.PassedByRef;
+            // bool _byref => _p.Syntax.PassedByRef;
 
             readonly SourceParameterSymbol _p;
 
@@ -1209,17 +1214,17 @@ namespace Pchp.CodeAnalysis.Semantics
 
             // TODO: ? if (cg.HasUnoptimizedLocals && $this) <locals>["this"] = ...
 
-            if (srcparam.IsConstructorProperty)
-            {
-                var field = srcparam.ContainingType.GetMembers(srcparam.Name).OfType<SourceFieldSymbol>()
-                    .Single(); // throws if duplicit name
-                var field_place = new FieldPlace(this.Routine.GetThisPlace(), field, cg.Module);
-
-                // $this->{P} = {P};
-                field_place.EmitStorePrepare(cg.Builder);
-                cg.EmitConvert(Place.EmitLoad(cg.Builder), 0, field.Type);
-                field_place.EmitStore(cg.Builder);
-            }
+            // if (srcparam.IsConstructorProperty)
+            // {
+            //     var field = srcparam.ContainingType.GetMembers(srcparam.Name).OfType<SourceFieldSymbol>()
+            //         .Single(); // throws if duplicit name
+            //     var field_place = new FieldPlace(this.Routine.GetThisPlace(), field, cg.Module);
+            //
+            //     // $this->{P} = {P};
+            //     field_place.EmitStorePrepare(cg.Builder);
+            //     cg.EmitConvert(Place.EmitLoad(cg.Builder), 0, field.Type);
+            //     field_place.EmitStore(cg.Builder);
+            // }
         }
     }
 
@@ -1292,7 +1297,7 @@ namespace Pchp.CodeAnalysis.Semantics
     {
         new VariableName Name => BoundName.NameValue;
 
-        PropertySymbol /*!*/ ResolveSuperglobalProperty(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
+        PropertySymbol /*!*/ ResolveSuperglobalProperty(PhpCompilation compilation)
         {
             PropertySymbol prop;
 

@@ -4,6 +4,10 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Aquila.CodeAnalysis.Symbols.Attributes;
+using Aquila.Syntax;
+using Aquila.Syntax.Ast;
+using Aquila.Syntax.Ast.Expressions;
+using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis;
 using Peachpie.CodeAnalysis.Utilities;
@@ -53,11 +57,12 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             {
                 // TODO: check the attribute can bi bound to symbol
 
-                var type = (NamedTypeSymbol)symbol.DeclaringCompilation.GetTypeFromTypeRef(_tref);
+                var type = (NamedTypeSymbol) symbol.DeclaringCompilation.GetTypeFromTypeRef(_tref);
 
                 if (type.IsErrorTypeOrNull() || type.SpecialType == SpecialType.System_Object)
                 {
-                    DiagnosticBagExtensions.Add(symbol.DeclaringCompilation.DeclarationDiagnostics, Location.Create(file.SyntaxTree, _tref.Span.ToTextSpan()),
+                    DiagnosticBagExtensions.Add(symbol.DeclaringCompilation.DeclarationDiagnostics,
+                        Location.Create(file.SyntaxTree, _tref.Span.ToTextSpan()),
                         Errors.ErrorCode.ERR_TypeNameCannotBeResolved,
                         _tref.ToString());
 
@@ -67,7 +72,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 // bind arguments
                 if (!TryResolveCtor(type, symbol.DeclaringCompilation, out _ctor, out _ctorArgs) && type.IsValidType())
                 {
-                    DiagnosticBagExtensions.Add(symbol.DeclaringCompilation.DeclarationDiagnostics, Location.Create(file.SyntaxTree, _tref.Span.ToTextSpan()),
+                    DiagnosticBagExtensions.Add(symbol.DeclaringCompilation.DeclarationDiagnostics,
+                        Location.Create(file.SyntaxTree, _tref.Span.ToTextSpan()),
                         Errors.ErrorCode.ERR_NoMatchingOverload,
                         type.Name + "..ctor");
                 }
@@ -84,10 +90,11 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                     {
                         var prop = _properties[i];
                         var member =
-                            (Symbol)type.LookupMember<PropertySymbol>(prop.Key.Value) ??
-                            (Symbol)type.LookupMember<FieldSymbol>(prop.Key.Value);
+                            (Symbol) type.LookupMember<PropertySymbol>(prop.Key.Value) ??
+                            (Symbol) type.LookupMember<FieldSymbol>(prop.Key.Value);
 
-                        if (member != null && TryBindTypedConstant(member.GetTypeOrReturnType(), prop.Value, symbol.DeclaringCompilation, out var arg))
+                        if (member != null && TryBindTypedConstant(member.GetTypeOrReturnType(), prop.Value,
+                            symbol.DeclaringCompilation, out var arg))
                         {
                             namedArgs[i] = new KeyValuePair<string, TypedConstant>(prop.Key.Value, arg);
                         }
@@ -110,25 +117,25 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             switch (target.SpecialType)
             {
                 case SpecialType.System_Byte:
-                    result = new TypedConstant(target, TypedConstantKind.Primitive, (byte)value);
+                    result = new TypedConstant(target, TypedConstantKind.Primitive, (byte) value);
                     return true;
                 case SpecialType.System_Int32:
-                    result = new TypedConstant(target, TypedConstantKind.Primitive, (int)value);
+                    result = new TypedConstant(target, TypedConstantKind.Primitive, (int) value);
                     return true;
                 case SpecialType.System_Int64:
                     result = new TypedConstant(target, TypedConstantKind.Primitive, value);
                     return true;
                 case SpecialType.System_UInt32:
-                    result = new TypedConstant(target, TypedConstantKind.Primitive, (uint)value);
+                    result = new TypedConstant(target, TypedConstantKind.Primitive, (uint) value);
                     return true;
                 case SpecialType.System_UInt64:
-                    result = new TypedConstant(target, TypedConstantKind.Primitive, (ulong)value);
+                    result = new TypedConstant(target, TypedConstantKind.Primitive, (ulong) value);
                     return true;
                 case SpecialType.System_Double:
-                    result = new TypedConstant(target, TypedConstantKind.Primitive, (double)value);
+                    result = new TypedConstant(target, TypedConstantKind.Primitive, (double) value);
                     return true;
                 case SpecialType.System_Single:
-                    result = new TypedConstant(target, TypedConstantKind.Primitive, (float)value);
+                    result = new TypedConstant(target, TypedConstantKind.Primitive, (float) value);
                     return true;
                 default:
 
@@ -150,7 +157,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                     result = new TypedConstant(target, TypedConstantKind.Primitive, value);
                     return true;
                 case SpecialType.System_Single:
-                    result = new TypedConstant(target, TypedConstantKind.Primitive, (float)value);
+                    result = new TypedConstant(target, TypedConstantKind.Primitive, (float) value);
                     return true;
                 default:
                     result = default;
@@ -214,12 +221,13 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             return false;
         }
 
-        static bool TryBindTypedConstant(TypeSymbol target, LangElement element, PhpCompilation compilation, out TypedConstant result)
+        static bool TryBindTypedConstant(TypeSymbol target, LangElement element, PhpCompilation compilation,
+            out TypedConstant result)
         {
-
-            if (element is LongIntLiteral llit) return TryBindTypedConstant(target, llit.Value, out result);
-            if (element is DoubleLiteral dlit) return TryBindTypedConstant(target, dlit.Value, out result);
-            if (element is StringLiteral slit) return TryBindTypedConstant(target, slit.Value, out result);
+            if (element is LiteralEx lit)
+            {
+                return TryBindTypedConstant(target, lit.Value, out result);
+            }
 
             if (element is TypeRef tref)
             {
@@ -228,48 +236,49 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 return target == system_type;
             }
 
-            if (element is GlobalConstUse gconst)
-            {
-                var qname = gconst.FullName.Name.QualifiedName;
-                if (qname.IsSimpleName)
-                {
-                    // common constants
-                    if (qname == QualifiedName.True) return TryBindTypedConstant(target, true, out result);
-                    if (qname == QualifiedName.False) return TryBindTypedConstant(target, true, out result);
-                    if (qname == QualifiedName.Null) return TryBindTypedConstant(target, (object)null, out result);
+            // if (element is GlobalConstUse gconst)
+            // {
+            //     var qname = gconst.FullName.Name.QualifiedName;
+            //     if (qname.IsSimpleName)
+            //     {
+            //         // common constants
+            //         if (qname == QualifiedName.True) return TryBindTypedConstant(target, true, out result);
+            //         if (qname == QualifiedName.False) return TryBindTypedConstant(target, true, out result);
+            //         if (qname == QualifiedName.Null) return TryBindTypedConstant(target, (object) null, out result);
+            //
+            //         // lookup constant
+            //         var csymbol = compilation.GlobalSemantics.ResolveConstant(qname.Name.Value);
+            //         if (csymbol is FieldSymbol fld && fld.HasConstantValue)
+            //         {
+            //             return TryBindTypedConstant(target, fld.ConstantValue, out result);
+            //         }
+            //     }
+            //
+            //     // note: namespaced constants are unreachable
+            // }
 
-                    // lookup constant
-                    var csymbol = compilation.GlobalSemantics.ResolveConstant(qname.Name.Value);
-                    if (csymbol is FieldSymbol fld && fld.HasConstantValue)
-                    {
-                        return TryBindTypedConstant(target, fld.ConstantValue, out result);
-                    }
-                }
-
-                // note: namespaced constants are unreachable
-            }
-
-            if (element is ClassConstUse cconst)
-            {
-                // lookup the type container
-                var ctype = compilation.GetTypeFromTypeRef(cconst.TargetType);
-                if (ctype.IsValidType())
-                {
-                    // lookup constant/enum field (both are FieldSymbol)
-                    var member = ctype.LookupMember<FieldSymbol>(cconst.Name.Value);
-                    if (member != null && member.HasConstantValue)
-                    {
-                        return TryBindTypedConstant(target, member.ConstantValue, out result);
-                    }
-                }
-            }
+            // if (element is ClassConstUse cconst)
+            // {
+            //     // lookup the type container
+            //     var ctype = compilation.GetTypeFromTypeRef(cconst.TargetType);
+            //     if (ctype.IsValidType())
+            //     {
+            //         // lookup constant/enum field (both are FieldSymbol)
+            //         var member = ctype.LookupMember<FieldSymbol>(cconst.Name.Value);
+            //         if (member != null && member.HasConstantValue)
+            //         {
+            //             return TryBindTypedConstant(target, member.ConstantValue, out result);
+            //         }
+            //     }
+            // }
 
             //
             result = default;
             return false;
         }
 
-        bool TryResolveCtor(NamedTypeSymbol type, PhpCompilation compilation, out MethodSymbol ctor, out ImmutableArray<TypedConstant> args)
+        bool TryResolveCtor(NamedTypeSymbol type, PhpCompilation compilation, out MethodSymbol ctor,
+            out ImmutableArray<TypedConstant> args)
         {
             if (type.IsValidType())
             {
@@ -279,7 +288,12 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                     var m = candidates[i];
 
                     if (m.DeclaredAccessibility != Accessibility.Public) continue; // TODO: or current class context
-                    if (m.IsGenericMethod) { Debug.Fail("unexpected"); continue; } // NS
+                    if (m.IsGenericMethod)
+                    {
+                        Debug.Fail("unexpected");
+                        continue;
+                    } // NS
+
                     if (m.ParameterCount < _arguments.Length) continue; // be strict
 
                     var match = true;
@@ -338,7 +352,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         protected internal override ImmutableArray<TypedConstant> CommonConstructorArguments => _ctorArgs;
 
-        protected internal override ImmutableArray<KeyValuePair<string, TypedConstant>> CommonNamedArguments => _namedArgs;
+        protected internal override ImmutableArray<KeyValuePair<string, TypedConstant>> CommonNamedArguments =>
+            _namedArgs;
 
         internal override int GetTargetAttributeSignatureIndex(Symbol targetSymbol, AttributeDescription description)
         {

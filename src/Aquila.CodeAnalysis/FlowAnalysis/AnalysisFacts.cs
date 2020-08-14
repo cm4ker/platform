@@ -6,6 +6,9 @@ using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis.Semantics;
 using Pchp.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.PE;
+using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.CodeAnalysis.Symbols.Source;
 
 namespace Pchp.CodeAnalysis.FlowAnalysis
 {

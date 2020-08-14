@@ -3,12 +3,19 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using Aquila.Compiler.Utilities;
+using Aquila.Shared.Tree;
+using Aquila.Syntax.Ast;
+using Aquila.Syntax.Ast.Functions;
+using Aquila.Syntax.Ast.Statements;
+using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis.CodeGen;
 using Pchp.CodeAnalysis.FlowAnalysis;
 using Contract = Pchp.CodeAnalysis.Contract;
+using Pchp.CodeAnalysis;
 
-namespace Aquila.CodeAnalysis.Symbols.Source
+namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// Represents a global PHP function.
@@ -16,9 +23,9 @@ namespace Aquila.CodeAnalysis.Symbols.Source
     internal sealed partial class SourceFunctionSymbol : SourceRoutineSymbol
     {
         readonly SourceFileSymbol _file;
-        readonly FunctionDecl _syntax;
+        readonly MethodDecl _syntax;
 
-        FieldSymbol _lazyRoutineInfoField;    // internal static RoutineInfo !name;
+        FieldSymbol _lazyRoutineInfoField; // internal static RoutineInfo !name;
 
         /// <summary>
         /// Whether the function is declared conditionally.
@@ -27,7 +34,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         {
             get
             {
-                return _syntax.IsConditional && (Flags & RoutineFlags.MarkedDeclaredUnconditionally) == 0;
+                return false;
+                //                   _syntax.IsConditional && (Flags & RoutineFlags.MarkedDeclaredUnconditionally) == 0;
             }
             set
             {
@@ -44,7 +52,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             }
         }
 
-        public SourceFunctionSymbol(SourceFileSymbol file, FunctionDecl syntax)
+        public SourceFunctionSymbol(SourceFileSymbol file, MethodDecl syntax)
         {
             Contract.ThrowIfNull(file);
 
@@ -61,7 +69,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             if (_lazyRoutineInfoField == null)
             {
                 _lazyRoutineInfoField = module.SynthesizedManager
-                    .GetOrCreateSynthesizedField(_file, this.DeclaringCompilation.CoreTypes.RoutineInfo, "<>" + this.MetadataName,
+                    .GetOrCreateSynthesizedField(_file, this.DeclaringCompilation.CoreTypes.RoutineInfo,
+                        "<>" + this.MetadataName,
                         accessibility: Accessibility.Internal,
                         isstatic: true,
                         @readonly: true);
@@ -78,15 +87,15 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             return fld.EmitLoad(cg, holder: null);
         }
 
-        internal override Signature SyntaxSignature => _syntax.Signature;
+        // internal override Signature SyntaxSignature => _syntax.Signature;
 
         internal override TypeRef SyntaxReturnType => _syntax.ReturnType;
 
-        internal override AstNode Syntax => _syntax;
+        internal override Node Syntax => _syntax;
 
-        internal override PHPDocBlock PHPDocBlock => _syntax.PHPDoc;
+        // internal override PHPDocBlock PHPDocBlock => _syntax.PHPDoc;
 
-        internal override IList<Statement> Statements => _syntax.Body.Statements;
+        internal override IList<Statement> Statements => _syntax.Block.Statements.ToList();
 
         internal override SourceFileSymbol ContainingFile => _file;
 
@@ -96,26 +105,28 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public override void GetDiagnostics(DiagnosticBag diagnostic)
         {
-            if (this.QualifiedName == new QualifiedName(Devsense.PHP.Syntax.Name.AutoloadName))
-            {
-                if (this.DeclaringCompilation.Options.ParseOptions?.LanguageVersion >= new Version(7, 2))
-                {
-                    // __autoload is deprecated
-                    diagnostic.Add(this, _syntax, Errors.ErrorCode.WRN_SymbolDeprecated, string.Empty, this.QualifiedName, Peachpie.CodeAnalysis.Errors.ErrorStrings.AutoloadDeprecatedMessage);
-                }
-
-                // __autoload must have exactly one parameter
-                if (_syntax.Signature.FormalParams.Length != 1)
-                {
-                    diagnostic.Add(this, _syntax.Signature.Span.ToTextSpan(), Errors.ErrorCode.ERR_MustTakeArgs, "Function", this.QualifiedName.ToString(), 1);
-                }
-            }
+            // if (this.QualifiedName == new QualifiedName(Name.AutoloadName))
+            // {
+            //     if (this.DeclaringCompilation.Options.ParseOptions?.LanguageVersion >= new Version(7, 2))
+            //     {
+            //         // __autoload is deprecated
+            //         diagnostic.Add(this, _syntax, Errors.ErrorCode.WRN_SymbolDeprecated, string.Empty,
+            //             this.QualifiedName, Errors.ErrorStrings.AutoloadDeprecatedMessage);
+            //     }
+            //
+            //     // __autoload must have exactly one parameter
+            //     if (_syntax.Parameters.Count != 1)
+            //     {
+            //         diagnostic.Add(this, _syntax.Identifier.Span.ToTextSpan(), Errors.ErrorCode.ERR_MustTakeArgs,
+            //             "Function", this.QualifiedName.ToString(), 1);
+            //     }
+            // }
 
             //
             base.GetDiagnostics(diagnostic);
         }
 
-        internal QualifiedName QualifiedName => NameUtils.MakeQualifiedName(_syntax.Name, _syntax.ContainingNamespace);
+        internal QualifiedName QualifiedName => NameUtils.MakeQualifiedName(_syntax.Identifier.Text, false);
 
         public override string Name => this.QualifiedName.ClrName();
 
@@ -128,14 +139,16 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 if (IsConditional)
                 {
                     // ?order
-                    name += "?" + _file.Functions.TakeWhile(f => f != this).Where(f => f.QualifiedName == this.QualifiedName).Count().ToString();   // index of this function within functions with the same name
+                    name += "?" + _file.Functions.TakeWhile(f => f != this)
+                        .Where(f => f.QualifiedName == this.QualifiedName).Count()
+                        .ToString(); // index of this function within functions with the same name
                 }
 
                 return name;
             }
         }
 
-        public override string RoutineName => this.QualifiedName.ToString();    // __FUNCTION__
+        public override string RoutineName => this.QualifiedName.ToString(); // __FUNCTION__
 
         public override Symbol ContainingSymbol => _file.SourceModule;
 
@@ -147,10 +160,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
         }
 
         public override bool IsAbstract => false;

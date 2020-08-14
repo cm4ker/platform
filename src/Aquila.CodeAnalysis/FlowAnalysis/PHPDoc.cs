@@ -1,12 +1,10 @@
-﻿using Devsense.PHP.Syntax;
-using Pchp.CodeAnalysis.Semantics;
-using Aquila.CodeAnalysis.Symbols;
+﻿using Aquila.CodeAnalysis.Symbols;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Compiler.Utilities;
+using Aquila.Syntax.Syntax;
 
 namespace Pchp.CodeAnalysis.FlowAnalysis
 {
@@ -124,7 +122,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                             return typeCtx.GetSelfTypeMask();
                         }
 
-                        result = BoundTypeRefFactory.Create(qname, typeCtx.SelfType as SourceTypeSymbol).GetTypeRefMask(typeCtx);
+                        // result = BoundTypeRefFactory.Create(qname, typeCtx.SelfType as SourceTypeSymbol).GetTypeRefMask(typeCtx);
                     }
 
                     //Contract.Assert(!result.IsUninitialized);
@@ -151,7 +149,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets type mask at target ctype context representing given type names from given routine.
         /// </summary>
-        public static TypeRefMask GetTypeMask(TypeRefContext/*!*/targetCtx, Aquila.CodeAnalysis.Symbols.SourceRoutineSymbol/*!*/routine, string[] tnames, bool fullyQualified = false)
+        public static TypeRefMask GetTypeMask(TypeRefContext/*!*/targetCtx, SourceRoutineSymbol/*!*/routine, string[] tnames, bool fullyQualified = false)
         {
             Contract.ThrowIfNull(targetCtx);
             Contract.ThrowIfNull(routine);
@@ -171,40 +169,40 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             return targetCtx.AddToContext(ctx, mask);
         }
 
-        /// <summary>
-        /// Gets parameter type from given PHPDoc block.
-        /// </summary>
-        public static PHPDocBlock.ParamTag GetParamTag(PHPDocBlock phpdoc, int paramIndex, string paramName)
-        {
-            PHPDocBlock.ParamTag result = null;
-
-            if (phpdoc != null)
-            {
-                int pi = 0;
-                var elements = phpdoc.Elements;
-                foreach (var element in elements)
-                {
-                    var ptag = element as PHPDocBlock.ParamTag;
-                    if (ptag != null)
-                    {
-                        if (string.IsNullOrEmpty(ptag.VariableName))
-                        {
-                            if (pi == paramIndex)
-                                result = ptag;  // found @param by index
-                        }
-                        else if (string.Equals(ptag.VariableName.Substring(1), paramName, StringComparison.OrdinalIgnoreCase))
-                        {
-                            result = ptag;
-                            break;
-                        }
-
-                        //
-                        pi++;
-                    }
-                }
-            }
-
-            return result;
-        }
+        // /// <summary>
+        // /// Gets parameter type from given PHPDoc block.
+        // /// </summary>
+        // public static PHPDocBlock.ParamTag GetParamTag(PHPDocBlock phpdoc, int paramIndex, string paramName)
+        // {
+        //     PHPDocBlock.ParamTag result = null;
+        //
+        //     if (phpdoc != null)
+        //     {
+        //         int pi = 0;
+        //         var elements = phpdoc.Elements;
+        //         foreach (var element in elements)
+        //         {
+        //             var ptag = element as PHPDocBlock.ParamTag;
+        //             if (ptag != null)
+        //             {
+        //                 if (string.IsNullOrEmpty(ptag.VariableName))
+        //                 {
+        //                     if (pi == paramIndex)
+        //                         result = ptag;  // found @param by index
+        //                 }
+        //                 else if (string.Equals(ptag.VariableName.Substring(1), paramName, StringComparison.OrdinalIgnoreCase))
+        //                 {
+        //                     result = ptag;
+        //                     break;
+        //                 }
+        //
+        //                 //
+        //                 pi++;
+        //             }
+        //         }
+        //     }
+        //
+        //     return result;
+        // }
     }
 }

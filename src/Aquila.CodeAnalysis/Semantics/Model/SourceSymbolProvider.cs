@@ -1,12 +1,9 @@
-﻿﻿using Aquila.CodeAnalysis.Symbols;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Devsense.PHP.Syntax;
+﻿using System.Collections.Generic;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
-using Roslyn.Utilities;
-using Pchp.CodeAnalysis.Utilities;
 
 namespace Pchp.CodeAnalysis.Semantics.Model
 {
@@ -14,7 +11,7 @@ namespace Pchp.CodeAnalysis.Semantics.Model
     {
         readonly SourceSymbolCollection _table;
 
-        public Aquila.CodeAnalysis.Symbols.PhpCompilation Compilation => _table.Compilation;
+        public PhpCompilation Compilation => _table.Compilation;
 
         public SourceSymbolProvider(SourceSymbolCollection table)
         {
@@ -43,7 +40,8 @@ namespace Pchp.CodeAnalysis.Semantics.Model
             return _table.GetFile(relativePathNormalized);
         }
 
-        public INamedTypeSymbol ResolveType(QualifiedName name, Dictionary<QualifiedName, INamedTypeSymbol> resolved) => _table.GetType(name, resolved);
+        public INamedTypeSymbol ResolveType(QualifiedName name, Dictionary<QualifiedName, INamedTypeSymbol> resolved) =>
+            _table.GetType(name, resolved);
 
         public IPhpRoutineSymbol ResolveFunction(QualifiedName name)
         {

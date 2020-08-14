@@ -5,6 +5,7 @@ using System.Text;
 using Pchp.CodeAnalysis;
 using Pchp.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.Source;
 
 namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
 {

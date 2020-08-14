@@ -4,12 +4,13 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Aquila.CodeAnalysis.Symbols.Attributes;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
 using Roslyn.Utilities;
 
-namespace Aquila.CodeAnalysis.Symbols.Attributes
+namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// Represents an attribute applied to a Symbol.
@@ -124,7 +125,7 @@ namespace Aquila.CodeAnalysis.Symbols.Attributes
         /// <returns>A <see cref="System.String"/> that represents the current AttributeData.</returns>
         public override string ToString()
         {
-            if ((object)this.AttributeClass != null)
+            if ((object) this.AttributeClass != null)
             {
                 string className = this.AttributeClass.ToDisplayString(SymbolDisplayFormat.QualifiedNameOnlyFormat);
 
@@ -198,6 +199,7 @@ namespace Aquila.CodeAnalysis.Symbols.Attributes
         {
             get { return this.ApplicationSyntaxReference; }
         }
+
         #endregion
 
         #region Attribute Decoding
@@ -441,15 +443,17 @@ namespace Aquila.CodeAnalysis.Symbols.Attributes
         //}
 
         // This method checks if the given PermissionSetAttribute type has a property member with the given propName which is writable, non-generic, public and of string type.
-        private static bool PermissionSetAttributeTypeHasRequiredProperty(NamedTypeSymbol permissionSetType, string propName)
+        private static bool PermissionSetAttributeTypeHasRequiredProperty(NamedTypeSymbol permissionSetType,
+            string propName)
         {
             var members = permissionSetType.GetMembers(propName);
             if (members.Length == 1 && members[0].Kind == SymbolKind.Property)
             {
-                var property = (PropertySymbol)members[0];
-                if ((object)property.Type != null && property.Type.SpecialType == SpecialType.System_String &&
+                var property = (PropertySymbol) members[0];
+                if ((object) property.Type != null && property.Type.SpecialType == SpecialType.System_String &&
                     property.DeclaredAccessibility == Accessibility.Public && property.GetMemberArity() == 0 &&
-                    (object)property.SetMethod != null && property.SetMethod.DeclaredAccessibility == Accessibility.Public)
+                    (object) property.SetMethod != null &&
+                    property.SetMethod.DeclaredAccessibility == Accessibility.Public)
                 {
                     return true;
                 }
@@ -517,7 +521,7 @@ namespace Aquila.CodeAnalysis.Symbols.Attributes
         {
             Debug.Assert(!this.HasErrors);
 
-            var guidString = (string)this.CommonConstructorArguments[0].Value;
+            var guidString = (string) this.CommonConstructorArguments[0].Value;
 
             // Native compiler allows only a specific GUID format: "D" format (32 digits separated by hyphens)
             Guid guid;
@@ -561,12 +565,12 @@ namespace Aquila.CodeAnalysis.Symbols.Attributes
             {
                 case SymbolKind.Assembly:
                     if ((!emittingAssemblyAttributesInNetModule &&
-                            (IsTargetAttribute(target, AttributeDescription.AssemblyCultureAttribute) ||
-                             IsTargetAttribute(target, AttributeDescription.AssemblyVersionAttribute) ||
-                             IsTargetAttribute(target, AttributeDescription.AssemblyFlagsAttribute) ||
-                             IsTargetAttribute(target, AttributeDescription.AssemblyAlgorithmIdAttribute))) ||
+                         (IsTargetAttribute(target, AttributeDescription.AssemblyCultureAttribute) ||
+                          IsTargetAttribute(target, AttributeDescription.AssemblyVersionAttribute) ||
+                          IsTargetAttribute(target, AttributeDescription.AssemblyFlagsAttribute) ||
+                          IsTargetAttribute(target, AttributeDescription.AssemblyAlgorithmIdAttribute))) ||
                         IsTargetAttribute(target, AttributeDescription.TypeForwardedToAttribute) ||
-                        false)// IsSecurityAttribute(target.DeclaringCompilation))
+                        false) // IsSecurityAttribute(target.DeclaringCompilation))
                     {
                         return false;
                     }
@@ -607,7 +611,7 @@ namespace Aquila.CodeAnalysis.Symbols.Attributes
                             IsTargetAttribute(target, AttributeDescription.DllImportAttribute) ||
                             IsTargetAttribute(target, AttributeDescription.PreserveSigAttribute) ||
                             IsTargetAttribute(target, AttributeDescription.DynamicSecurityMethodAttribute) ||
-                            false)// IsSecurityAttribute(target.DeclaringCompilation))
+                            false) // IsSecurityAttribute(target.DeclaringCompilation))
                         {
                             return false;
                         }
@@ -625,7 +629,7 @@ namespace Aquila.CodeAnalysis.Symbols.Attributes
                         IsTargetAttribute(target, AttributeDescription.SerializableAttribute) ||
                         IsTargetAttribute(target, AttributeDescription.StructLayoutAttribute) ||
                         IsTargetAttribute(target, AttributeDescription.WindowsRuntimeImportAttribute) ||
-                        false)// IsSecurityAttribute(target.DeclaringCompilation))
+                        false) // IsSecurityAttribute(target.DeclaringCompilation))
                     {
                         return false;
                     }
@@ -660,7 +664,8 @@ namespace Aquila.CodeAnalysis.Symbols.Attributes
 
     internal static class AttributeDataExtensions
     {
-        internal static int IndexOfAttribute(this ImmutableArray<BaseAttributeData> attributes, Symbol targetSymbol, AttributeDescription description)
+        internal static int IndexOfAttribute(this ImmutableArray<BaseAttributeData> attributes, Symbol targetSymbol,
+            AttributeDescription description)
         {
             for (int i = 0; i < attributes.Length; i++)
             {
@@ -673,13 +678,15 @@ namespace Aquila.CodeAnalysis.Symbols.Attributes
             return -1;
         }
 
-        internal static SyntaxNode GetAttributeArgumentSyntax(this AttributeData attribute, int parameterIndex, SyntaxNode attributeSyntax)
+        internal static SyntaxNode GetAttributeArgumentSyntax(this AttributeData attribute, int parameterIndex,
+            SyntaxNode attributeSyntax)
         {
             Debug.Assert(attribute is SourceAttributeData);
-            return ((SourceAttributeData)attribute).GetAttributeArgumentSyntax(parameterIndex, attributeSyntax);
+            return ((SourceAttributeData) attribute).GetAttributeArgumentSyntax(parameterIndex, attributeSyntax);
         }
 
-        internal static Location GetAttributeArgumentSyntaxLocation(this AttributeData attribute, int parameterIndex, SyntaxNode attributeSyntaxOpt)
+        internal static Location GetAttributeArgumentSyntaxLocation(this AttributeData attribute, int parameterIndex,
+            SyntaxNode attributeSyntaxOpt)
         {
             if (attributeSyntaxOpt == null)
             {

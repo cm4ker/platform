@@ -1,4 +1,4 @@
-﻿﻿using Pchp.CodeAnalysis.CodeGen;
+﻿using Pchp.CodeAnalysis.CodeGen;
 using Pchp.CodeAnalysis.Semantics;
 using System;
 using System.Collections.Generic;
@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using Aquila.CodeAnalysis.Symbols.Php;
 
 namespace Aquila.CodeAnalysis.Symbols
 {
@@ -79,7 +80,7 @@ namespace Aquila.CodeAnalysis.Symbols
             if (_traitmember is FieldSymbol f)
             {
                 TypeSymbol instanceType;
-                var phpf = (IPhpPropertySymbol)f;
+                var phpf = (IPhpPropertySymbol) f;
                 if (phpf.FieldKind == PhpPropertyKind.InstanceField)
                 {
                     // Template: LOAD <>trait_T

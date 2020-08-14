@@ -7,7 +7,7 @@ using Aquila.CodeAnalysis.Symbols.Attributes;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Microsoft.CodeAnalysis;
 
-namespace Aquila.CodeAnalysis.Symbols.Source
+namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// PHP trait symbol.

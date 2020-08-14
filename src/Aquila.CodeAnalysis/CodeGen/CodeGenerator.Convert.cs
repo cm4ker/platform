@@ -13,8 +13,9 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+ using Aquila.CodeAnalysis.Semantics;
 
-namespace Pchp.CodeAnalysis.CodeGen
+ namespace Pchp.CodeAnalysis.CodeGen
 {
     partial class CodeGenerator
     {

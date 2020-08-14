@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Linq;
-using Devsense.PHP.Syntax;
 using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis.FlowAnalysis;
-using Pchp.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols;
-using AST = Devsense.PHP.Syntax.Ast;
 
 namespace Pchp.CodeAnalysis
 {
@@ -25,7 +19,8 @@ namespace Pchp.CodeAnalysis
                 case SpecialType.System_Int64: return ctx.GetLongTypeMask();
                 case SpecialType.System_Double: return ctx.GetDoubleTypeMask();
                 case SpecialType.System_String: return ctx.GetStringTypeMask() | (notNull ? 0 : ctx.GetNullTypeMask());
-                case SpecialType.System_Object: return ctx.GetSystemObjectTypeMask() | (notNull ? 0 : ctx.GetNullTypeMask());
+                case SpecialType.System_Object:
+                    return ctx.GetSystemObjectTypeMask() | (notNull ? 0 : ctx.GetNullTypeMask());
                 default:
 
                     TypeRefMask mask;
@@ -59,18 +54,19 @@ namespace Pchp.CodeAnalysis
                     return mask;
             }
         }
-        
+
         /// <summary>
         /// Creates type context for a method within given type, determines naming, type context.
         /// </summary>
-        public static TypeRefContext/*!*/CreateTypeRefContext(SourceTypeSymbol/*!*/containingType)
+        public static TypeRefContext /*!*/ CreateTypeRefContext(SourceTypeSymbol /*!*/containingType)
         {
             Contract.ThrowIfNull(containingType);
 
-            return new TypeRefContext(
-                containingType.DeclaringCompilation,
-                containingType, // scope
-                thisType: containingType.IsTrait ? null : containingType);
+            throw new NotImplementedException();
+            // return new TypeRefContext(
+            //     containingType.DeclaringCompilation,
+            //     containingType, // scope
+            //     thisType: containingType.IsTrait ? null : containingType);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿﻿using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
 using Microsoft.CodeAnalysis.PooledObjects;
 using Pchp.CodeAnalysis.CodeGen;
@@ -12,8 +12,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
- 
- namespace Pchp.CodeAnalysis.Semantics.Graph
+
+namespace Pchp.CodeAnalysis.Semantics.Graph
 {
     partial class Edge : IGenerator
     {
@@ -33,6 +33,7 @@ using System.Collections.Immutable;
             {
                 cg.EmitSequencePoint(this.PhpSyntax);
             }
+
             cg.Scope.ContinueWith(NextBlock);
         }
     }
@@ -126,8 +127,8 @@ using System.Collections.Immutable;
             // blocks so if the source contained both a catch and
             // a finally, nested scopes are emitted.
             bool emitNestedScopes = (!emitCatchesOnly &&
-                //(_catchBlocks.Length != 0) && // always true; there is at least one "catch" block (ScriptDiedException)
-                (_finallyBlock != null && !EmitCatchFinallyOutsideScope));
+                                     //(_catchBlocks.Length != 0) && // always true; there is at least one "catch" block (ScriptDiedException)
+                                     (_finallyBlock != null && !EmitCatchFinallyOutsideScope));
 
             // finally block not handled by CLR
             var nextExtraFinallyBlock = cg.ExtraFinallyBlock;
@@ -153,8 +154,10 @@ using System.Collections.Immutable;
                 if (_finallyBlock != null && EmitCatchFinallyOutsideScope)
                 {
                     cg.ExtraFinallyBlock = _finallyBlock;
-                    cg.ExtraFinallyStateVariable ??= cg.GetTemporaryLocal(cg.CoreTypes.Int32, longlive: true, immediateReturn: false);
-                    cg.ExceptionToRethrowVariable ??= cg.GetTemporaryLocal(cg.CoreTypes.Exception, longlive: true, immediateReturn: false);
+                    cg.ExtraFinallyStateVariable ??=
+                        cg.GetTemporaryLocal(cg.CoreTypes.Int32, longlive: true, immediateReturn: false);
+                    cg.ExceptionToRethrowVariable ??= cg.GetTemporaryLocal(cg.CoreTypes.Exception, longlive: true,
+                        immediateReturn: false);
                 }
 
                 // try body
@@ -165,8 +168,8 @@ using System.Collections.Immutable;
                 {
                     cg.Builder.EmitBranch(ILOpCode.Br,
                         (_finallyBlock != null && EmitCatchFinallyOutsideScope)
-                        ? _finallyBlock // goto finally
-                        : NextBlock     // goto next
+                            ? _finallyBlock // goto finally
+                            : NextBlock // goto next
                     );
                 }
             }
@@ -234,15 +237,19 @@ using System.Collections.Immutable;
                     // - 1: return; continue to nextExtraFinallyBlock, eventually EmitRet
                     // - 2: exception; rethrow exception (cg.ExceptionToRethrowVariable)
 
-                    var stateloc = cg.GetTemporaryLocal(cg.ExtraFinallyStateVariable.EmitLoad(cg.Builder), immediateReturn: true);
+                    var stateloc = cg.GetTemporaryLocal(cg.ExtraFinallyStateVariable.EmitLoad(cg.Builder),
+                        immediateReturn: true);
                     cg.Builder.EmitLocalStore(stateloc);
                     Debug.Assert(stateloc.Type.TypeCode == Microsoft.Cci.PrimitiveTypeCode.Int32);
-                    
+
                     cg.Builder.EmitIntegerSwitchJumpTable(
                         new[]
                         {
-                            new KeyValuePair<ConstantValue, object>(ConstantValue.Create((int)CodeGenerator.ExtraFinallyState.None), nextBlockOrExit),
-                            new KeyValuePair<ConstantValue, object>(ConstantValue.Create((int)CodeGenerator.ExtraFinallyState.Return), nextExtraFinallyBlock ?? cg.ExitBlock.GetReturnLabel()),
+                            new KeyValuePair<ConstantValue, object>(
+                                ConstantValue.Create((int) CodeGenerator.ExtraFinallyState.None), nextBlockOrExit),
+                            new KeyValuePair<ConstantValue, object>(
+                                ConstantValue.Create((int) CodeGenerator.ExtraFinallyState.Return),
+                                nextExtraFinallyBlock ?? cg.ExitBlock.GetReturnLabel()),
                             //new KeyValuePair<ConstantValue, object>(ConstantValue.Create((int)CodeGenerator.ExtraFinallyState.Exception), nextExtraFinallyBlock ?? cg.ExitBlock.GetRethrowLabel()),
                         },
                         nextExtraFinallyBlock ?? cg.ExitBlock.GetRethrowLabel(), // ExtraFinallyState.Exception
@@ -274,7 +281,7 @@ using System.Collections.Immutable;
             }
 
             // emit default catch block that continues to "finally" before rethrow;
-            
+
             var il = cg.Builder;
 
             // Template: 
@@ -286,13 +293,14 @@ using System.Collections.Immutable;
 
             il.AdjustStack(1); // Account for exception on the stack.
 
-            il.OpenLocalScope(ScopeType.Catch, cg.Module.Translate(cg.CoreTypes.Exception.Symbol, null, cg.Diagnostics));
+            il.OpenLocalScope(ScopeType.Catch,
+                cg.Module.Translate(cg.CoreTypes.Exception.Symbol, null, cg.Diagnostics));
 
             // ExceptionToRethrow = ex;
             cg.ExceptionToRethrowVariable.EmitStore();
 
             // ExtraFinallyState = 2;
-            il.EmitIntConstant((int)CodeGenerator.ExtraFinallyState.Exception); // rethrow state
+            il.EmitIntConstant((int) CodeGenerator.ExtraFinallyState.Exception); // rethrow state
             cg.ExtraFinallyStateVariable.EmitStore();
 
             // .leave _finally;
@@ -346,12 +354,12 @@ using System.Collections.Immutable;
                 il.EmitBranch(ILOpCode.Brtrue, lblFound);
             }
 
-            il.EmitOpCode(ILOpCode.Pop);    // POP object
+            il.EmitOpCode(ILOpCode.Pop); // POP object
             il.EmitBoolConstant(false);
             il.EmitBranch(ILOpCode.Br, lblEnd);
 
             il.MarkLabel(lblFound);
-            il.EmitOpCode(ILOpCode.Pop);    // POP object
+            il.EmitOpCode(ILOpCode.Pop); // POP object
             il.EmitBoolConstant(true);
 
             il.MarkLabel(lblEnd);
@@ -371,10 +379,11 @@ using System.Collections.Immutable;
             // set of types we catch in this catch block
             var trefs = catchBlock.TypeRef is TypeRef.BoundMultipleTypeRef mt
                 ? mt.TypeRefs
-                : ImmutableArray.Create((BoundTypeRef)catchBlock.TypeRef);
+                : ImmutableArray.Create((BoundTypeRef) catchBlock.TypeRef);
 
             // do we have to generate .filter or just .catch<type>:
-            if (trefs.Length != 1 || trefs[0].ResolvedType.IsErrorTypeOrNull() || !trefs[0].ResolvedType.IsOfType(cg.CoreTypes.Exception))
+            if (trefs.Length != 1 || trefs[0].ResolvedType.IsErrorTypeOrNull() ||
+                !trefs[0].ResolvedType.IsOfType(cg.CoreTypes.Exception))
             {
                 // Template: catch when
                 il.OpenLocalScope(ScopeType.Filter);
@@ -401,7 +410,8 @@ using System.Collections.Immutable;
                 il.MarkFilterConditionEnd();
 
                 // STACK : object
-                cg.EmitCastClass(cg.CoreTypes.Exception);   // has to be casted to System.Exception in order to generate valid IL
+                cg.EmitCastClass(cg.CoreTypes
+                    .Exception); // has to be casted to System.Exception in order to generate valid IL
                 cg.EmitCastClass(extype);
             }
             else
@@ -470,19 +480,22 @@ using System.Collections.Immutable;
                 {
                     node = node.Next;
                 }
+
                 if (node == null) continue;
 
                 // jump to next nested "try" or inside "yield" itself
-                var target = (object)node.Next?.Value/*next try block*/ ?? yield/*inside yield*/;
+                var target = (object) node.Next?.Value /*next try block*/ ?? yield /*inside yield*/;
 
                 // case YieldIndex: goto target;
-                yieldExLabels.Add(new KeyValuePair<ConstantValue, object>(ConstantValue.Create(yield.YieldIndex), target));
+                yieldExLabels.Add(
+                    new KeyValuePair<ConstantValue, object>(ConstantValue.Create(yield.YieldIndex), target));
             }
 
             if (yieldExLabels.Count != 0)
             {
                 // emit switch table that based on g._state jumps to appropriate continuation label
-                cg.Builder.EmitIntegerSwitchJumpTable(yieldExLabels.ToArray(), noContinuationLabel, cg.GeneratorStateLocal, Microsoft.Cci.PrimitiveTypeCode.Int32);
+                cg.Builder.EmitIntegerSwitchJumpTable(yieldExLabels.ToArray(), noContinuationLabel,
+                    cg.GeneratorStateLocal, Microsoft.Cci.PrimitiveTypeCode.Int32);
 
                 cg.Builder.MarkLabel(noContinuationLabel);
             }
@@ -501,7 +514,7 @@ using System.Collections.Immutable;
         {
             if (_aliasedValueLoc != null)
             {
-                Debug.Assert((TypeSymbol)_aliasedValueLoc.Type == cg.CoreTypes.PhpAlias);
+                Debug.Assert((TypeSymbol) _aliasedValueLoc.Type == cg.CoreTypes.PhpAlias);
                 // This is temporary workaround introducing a simple reference counting (https://github.com/peachpiecompiler/peachpie/issues/345)
                 // Note: it is not correct but it works in the way PHP developers thinks it works :)
 
@@ -560,7 +573,8 @@ using System.Collections.Immutable;
 
             if (t.Is_PhpValue())
             {
-                if (_aliasedValues)  // current() may get PhpAlias wrapped in PhpValue, make it PhpAlias again so it is handled properly
+                if (_aliasedValues
+                ) // current() may get PhpAlias wrapped in PhpValue, make it PhpAlias again so it is handled properly
                 {
                     // .EnsureAlias()
                     cg.EmitPhpValueAddr();
@@ -574,7 +588,7 @@ using System.Collections.Immutable;
                 }
             }
 
-            if (_aliasedValueLoc != null && (TypeSymbol)_aliasedValueLoc.Type == t)
+            if (_aliasedValueLoc != null && (TypeSymbol) _aliasedValueLoc.Type == t)
             {
                 // <_aliasedValue> = <STACK>
                 cg.Builder.EmitOpCode(ILOpCode.Dup);
@@ -607,18 +621,19 @@ using System.Collections.Immutable;
             }
         }
 
-        static bool IsAPairValue(TypeSymbol type, out Aquila.CodeAnalysis.Symbols.Symbol key, out Aquila.CodeAnalysis.Symbols.Symbol value)
+        static bool IsAPairValue(TypeSymbol type, out Aquila.CodeAnalysis.Symbols.Symbol key,
+            out Aquila.CodeAnalysis.Symbols.Symbol value)
         {
             key = value = default;
 
             if (type.IsValueType)
             {
-                if (type.Name == "ValueTuple" && ((NamedTypeSymbol)type).Arity == 2)
+                if (type.Name == "ValueTuple" && ((NamedTypeSymbol) type).Arity == 2)
                 {
                     key = type.GetMembers("Item1").Single();
                     value = type.GetMembers("Item2").Single();
                 }
-                else if (type.Name == "KeyValuePair" && ((NamedTypeSymbol)type).Arity == 2)
+                else if (type.Name == "KeyValuePair" && ((NamedTypeSymbol) type).Arity == 2)
                 {
                     key = type.GetMembers("Key").Single();
                     value = type.GetMembers("Value").Single();
@@ -626,10 +641,12 @@ using System.Collections.Immutable;
             }
 
             //
-            return key != null && value != null; ;
+            return key != null && value != null;
+            ;
         }
 
-        internal void EmitGetCurrent(CodeGenerator cg, BoundReferenceExpression valueVar, BoundReferenceExpression keyVar)
+        internal void EmitGetCurrent(CodeGenerator cg, BoundReferenceExpression valueVar,
+            BoundReferenceExpression keyVar)
         {
             Debug.Assert(_enumeratorLoc.IsValid);
 
@@ -645,7 +662,9 @@ using System.Collections.Immutable;
                 if (keyVar != null)
                 {
                     cg.EmitSequencePoint(keyVar.PhpSyntax);
-                    keyVar.BindPlace(cg).EmitStore(cg, () => VariableReferenceExtensions.EmitLoadValue(cg, _currentKey, _enumeratorLoc), keyVar.TargetAccess());
+                    keyVar.BindPlace(cg).EmitStore(cg,
+                        () => VariableReferenceExtensions.EmitLoadValue(cg, _currentKey, _enumeratorLoc),
+                        keyVar.TargetAccess());
                 }
             }
             else
@@ -670,14 +689,14 @@ using System.Collections.Immutable;
 
                     var keyplace = skey switch
                     {
-                        FieldSymbol fld => (IPlace)new FieldPlace(tmploc, fld, cg.Module),
+                        FieldSymbol fld => (IPlace) new FieldPlace(tmploc, fld, cg.Module),
                         PropertySymbol prop => new PropertyPlace(tmploc, prop, cg.Module),
                         _ => throw Roslyn.Utilities.ExceptionUtilities.Unreachable,
                     };
 
                     var valueplace = svalue switch
                     {
-                        FieldSymbol fld => (IPlace)new FieldPlace(tmploc, fld, cg.Module),
+                        FieldSymbol fld => (IPlace) new FieldPlace(tmploc, fld, cg.Module),
                         PropertySymbol prop => new PropertyPlace(tmploc, prop, cg.Module),
                         _ => throw Roslyn.Utilities.ExceptionUtilities.Unreachable,
                     };
@@ -709,11 +728,12 @@ using System.Collections.Immutable;
                         cg.EmitSequencePoint(keyVar.PhpSyntax);
 
                         // key = LOAD KeyVariable
-                        keyVar.BindPlace(cg).EmitStore(cg, () => _synthesizedIndexLoc.EmitLoad(cg.Builder), keyVar.TargetAccess());
+                        keyVar.BindPlace(cg).EmitStore(cg, () => _synthesizedIndexLoc.EmitLoad(cg.Builder),
+                            keyVar.TargetAccess());
 
                         // KeyVariable ++
                         _synthesizedIndexLoc.EmitLoad(cg.Builder); // Key
-                        cg.Builder.EmitLongConstant(1L);           // 1
+                        cg.Builder.EmitLongConstant(1L); // 1
 
                         cg.Builder.EmitOpCode(ILOpCode.Add);
 
@@ -792,7 +812,8 @@ using System.Collections.Immutable;
             var enumereeType = cg.Emit(this.Enumeree);
             Debug.Assert(enumereeType.SpecialType != SpecialType.System_Void);
 
-            var getEnumeratorMethod = enumereeType.LookupMember<MethodSymbol>(WellKnownMemberNames.GetEnumeratorMethodName);
+            var getEnumeratorMethod =
+                enumereeType.LookupMember<MethodSymbol>(WellKnownMemberNames.GetEnumeratorMethodName);
 
             TypeSymbol enumeratorType;
 
@@ -803,11 +824,15 @@ using System.Collections.Immutable;
                 // TODO: FastEnumerator if possible (addref on PhpArray ion readonly mode, not in generator, .. ) ?
 
                 // PhpArray.GetForeachEnumerator(bool)
-                enumeratorType = cg.EmitCall(ILOpCode.Callvirt, cg.CoreMethods.PhpArray.GetForeachEnumerator_Boolean);  // TODO: IPhpArray
+                enumeratorType =
+                    cg.EmitCall(ILOpCode.Callvirt,
+                        cg.CoreMethods.PhpArray.GetForeachEnumerator_Boolean); // TODO: IPhpArray
             }
             else if (enumereeType.IsOfType(cg.CoreTypes.IPhpEnumerable))
             {
-                var GetForeachEnumerator_Bool_RuntimeTypeHandle = cg.CoreTypes.IPhpEnumerable.Method("GetForeachEnumerator", cg.CoreTypes.Boolean, cg.CoreTypes.RuntimeTypeHandle);
+                var GetForeachEnumerator_Bool_RuntimeTypeHandle =
+                    cg.CoreTypes.IPhpEnumerable.Method("GetForeachEnumerator", cg.CoreTypes.Boolean,
+                        cg.CoreTypes.RuntimeTypeHandle);
 
                 // enumeree.GetForeachEnumerator(bool aliasedValues, RuntimeTypeHandle caller)
                 cg.Builder.EmitBoolConstant(_aliasedValues);
@@ -818,10 +843,13 @@ using System.Collections.Immutable;
             {
                 // use Iterator directly,
                 // do not allocate additional wrappers
-                enumeratorType = cg.CoreTypes.Iterator; // cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.GetForeachEnumerator_Iterator);
+                enumeratorType =
+                    cg.CoreTypes
+                        .Iterator; // cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.GetForeachEnumerator_Iterator);
             }
             // TODO: IPhpArray
-            else if (getEnumeratorMethod != null && getEnumeratorMethod.ParameterCount == 0 && enumereeType.IsReferenceType)
+            else if (getEnumeratorMethod != null && getEnumeratorMethod.ParameterCount == 0 &&
+                     enumereeType.IsReferenceType)
             {
                 // enumeree.GetEnumerator()
                 enumeratorType = cg.EmitCall(ILOpCode.Callvirt, getEnumeratorMethod);
@@ -833,7 +861,8 @@ using System.Collections.Immutable;
                 cg.EmitCallerTypeHandle();
 
                 // Operators.GetForeachEnumerator(PhpValue, bool, RuntimeTypeHandle)
-                enumeratorType = cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.GetForeachEnumerator_PhpValue_Bool_RuntimeTypeHandle);
+                enumeratorType = cg.EmitCall(ILOpCode.Call,
+                    cg.CoreMethods.Operators.GetForeachEnumerator_PhpValue_Bool_RuntimeTypeHandle);
             }
 
             // store the enumerator:
@@ -853,25 +882,34 @@ using System.Collections.Immutable;
 
                 // bind methods
                 _iterator_next = enumeratorType.LookupMember<MethodSymbol>("next"); // next()
-                _current = _currentValue = enumeratorType.LookupMember<MethodSymbol>("current");    // current()
-                _currentKey = enumeratorType.LookupMember<MethodSymbol>("key");     // key()
-                _moveNextMethod = enumeratorType.LookupMember<MethodSymbol>("valid");   // valid() // use it as the loop's control expression (MoveNext)
+                _current = _currentValue = enumeratorType.LookupMember<MethodSymbol>("current"); // current()
+                _currentKey = enumeratorType.LookupMember<MethodSymbol>("key"); // key()
+                _moveNextMethod =
+                    enumeratorType
+                        .LookupMember<MethodSymbol
+                        >("valid"); // valid() // use it as the loop's control expression (MoveNext)
             }
             else
             {
                 // bind methods
-                _current = enumeratorType.LookupMember<PropertySymbol>(WellKnownMemberNames.CurrentPropertyName)?.GetMethod;   // TODO: Err if no Current
-                _currentValue = enumeratorType.LookupMember<PropertySymbol>(_aliasedValues ? "CurrentValueAliased" : "CurrentValue")?.GetMethod;
+                _current = enumeratorType.LookupMember<PropertySymbol>(WellKnownMemberNames.CurrentPropertyName)
+                    ?.GetMethod; // TODO: Err if no Current
+                _currentValue = enumeratorType
+                    .LookupMember<PropertySymbol>(_aliasedValues ? "CurrentValueAliased" : "CurrentValue")?.GetMethod;
                 _currentKey = enumeratorType.LookupMember<PropertySymbol>("CurrentKey")?.GetMethod;
-                _disposeMethod = enumeratorType.LookupMember<MethodSymbol>("Dispose", m => m.ParameterCount == 0 && !m.IsStatic);
+                _disposeMethod =
+                    enumeratorType.LookupMember<MethodSymbol>("Dispose", m => m.ParameterCount == 0 && !m.IsStatic);
 
-                _moveNextMethod = enumeratorType.LookupMember<MethodSymbol>(WellKnownMemberNames.MoveNextMethodName);    // TODO: Err if there is no MoveNext()
+                _moveNextMethod =
+                    enumeratorType.LookupMember<MethodSymbol>(WellKnownMemberNames
+                        .MoveNextMethodName); // TODO: Err if there is no MoveNext()
                 Debug.Assert(_moveNextMethod.ReturnType.SpecialType == SpecialType.System_Boolean);
                 Debug.Assert(_moveNextMethod.IsStatic == false);
             }
 
             if (_disposeMethod != null
-                && cg.GeneratorStateMachineMethod == null)  // Temporary workaround allowing "yield" inside foreach. Yield cannot be inside TRY block, so we don't generate TRY for state machines. Remove this condition once we manage to bind try/catch/yield somehow
+                && cg.GeneratorStateMachineMethod == null
+            ) // Temporary workaround allowing "yield" inside foreach. Yield cannot be inside TRY block, so we don't generate TRY for state machines. Remove this condition once we manage to bind try/catch/yield somehow
             {
                 /* Template: try { body } finally { enumerator.Dispose }
                  */
@@ -885,7 +923,7 @@ using System.Collections.Immutable;
                 EmitBody(cg);
 
                 // }
-                cg.Builder.CloseLocalScope();   // /Try
+                cg.Builder.CloseLocalScope(); // /Try
 
                 // finally {
                 cg.Builder.OpenLocalScope(ScopeType.Finally);
@@ -894,8 +932,8 @@ using System.Collections.Immutable;
                 EmitDisposeAndClean(cg);
 
                 // }
-                cg.Builder.CloseLocalScope();   // /Finally
-                cg.Builder.CloseLocalScope();   // /TryCatchFinally
+                cg.Builder.CloseLocalScope(); // /Finally
+                cg.Builder.CloseLocalScope(); // /TryCatchFinally
             }
             else
             {
@@ -944,7 +982,8 @@ using System.Collections.Immutable;
             // if (enumerator.MoveNext())
             cg.EmitHiddenSequencePoint();
             cg.Builder.MarkLabel(lblMoveNext);
-            this.EnumereeEdge.EmitIteratorNext(cg); // Iterator.next() : void (only if we are enumerating the Iterator directly)
+            this.EnumereeEdge
+                .EmitIteratorNext(cg); // Iterator.next() : void (only if we are enumerating the Iterator directly)
 
             cg.EmitHiddenSequencePoint();
             cg.Builder.MarkLabel(this.EnumereeEdge._lbl_MoveNext);
@@ -960,7 +999,10 @@ using System.Collections.Immutable;
 
     partial class SwitchEdge
     {
-        static bool IsInt32(object value) => value is int || (value is long && (long)value <= int.MaxValue && (long)value >= int.MinValue);
+        static bool IsInt32(object value) => value is int ||
+                                             (value is long && (long) value <= int.MaxValue &&
+                                              (long) value >= int.MinValue);
+
         static bool IsString(object value) => value is string;
 
         internal override void Generate(CodeGenerator cg)
@@ -977,7 +1019,8 @@ using System.Collections.Immutable;
 
                 // no SWITCH or IF needed
 
-                cg.EmitPop(this.SwitchValue.WithAccess(BoundAccess.None).Emit(cg)); // None Access, also using BoundExpression.Emit directly to avoid CodeGenerator type specialization which is not needed
+                cg.EmitPop(this.SwitchValue.WithAccess(BoundAccess.None)
+                    .Emit(cg)); // None Access, also using BoundExpression.Emit directly to avoid CodeGenerator type specialization which is not needed
                 if (this.CaseBlocks.Length != 0)
                 {
                     cg.GenerateScope(this.CaseBlocks[0], NextBlock.Ordinal);
@@ -986,8 +1029,10 @@ using System.Collections.Immutable;
             else
             {
                 // CIL Switch:
-                bool allConst = this.CaseBlocks.All(c => c.IsDefault || (c.CaseValue.IsOnlyBoundElement && c.CaseValue.BoundElement.ConstantValue.HasValue));
-                bool allIntConst = allConst && this.CaseBlocks.All(c => c.IsDefault || IsInt32(c.CaseValue.BoundElement.ConstantValue.Value));
+                bool allConst = this.CaseBlocks.All(c =>
+                    c.IsDefault || (c.CaseValue.IsOnlyBoundElement && c.CaseValue.BoundElement.ConstantValue.HasValue));
+                bool allIntConst = allConst && this.CaseBlocks.All(c =>
+                    c.IsDefault || IsInt32(c.CaseValue.BoundElement.ConstantValue.Value));
                 //bool allconststrings = allconsts && this.CaseBlocks.All(c => c.IsDefault || IsString(c.CaseValue.ConstantValue.Value));
 
                 var default_block = this.DefaultBlock;
@@ -1006,7 +1051,8 @@ using System.Collections.Immutable;
                     cg.Builder.EmitLocalStore(switch_loc);
 
                     // switch (labels)
-                    cg.Builder.EmitIntegerSwitchJumpTable(GetSwitchCaseLabels(CaseBlocks), default_block ?? NextBlock, switch_loc, switch_type.PrimitiveTypeCode);
+                    cg.Builder.EmitIntegerSwitchJumpTable(GetSwitchCaseLabels(CaseBlocks), default_block ?? NextBlock,
+                        switch_loc, switch_type.PrimitiveTypeCode);
                 }
                 //else if (allconststrings)
                 //{
@@ -1026,12 +1072,17 @@ using System.Collections.Immutable;
                     foreach (var this_block in this.CaseBlocks)
                     {
                         var caseValueBag = this_block.CaseValue;
-                        if (caseValueBag.IsEmpty) { continue; }
+                        if (caseValueBag.IsEmpty)
+                        {
+                            continue;
+                        }
 
                         if (!caseValueBag.IsOnlyBoundElement)
                         {
-                            cg.ReturnTemporaryLocal(switch_loc); // statements in pre-bound-blocks could return (e.g. yieldStatement) & destroy stack-local switch_loc variable -> be defensive
-                            caseValueBag.PreBoundBlockFirst.Emit(cg); // emit all blocks that have to go before case value emit
+                            cg.ReturnTemporaryLocal(
+                                switch_loc); // statements in pre-bound-blocks could return (e.g. yieldStatement) & destroy stack-local switch_loc variable -> be defensive
+                            caseValueBag.PreBoundBlockFirst
+                                .Emit(cg); // emit all blocks that have to go before case value emit
                         }
 
                         // reininiaze switch_loc if destroyed previously
@@ -1067,7 +1118,6 @@ using System.Collections.Immutable;
                     // {
                     cg.GenerateScope(this.CaseBlocks[i], (next_case ?? NextBlock).Ordinal);
                     // }
-
                 }
             }
 
@@ -1088,7 +1138,8 @@ using System.Collections.Immutable;
                 }
                 else
                 {
-                    labelsBuilder.Add(new KeyValuePair<ConstantValue, object>(Int32Constant(section.CaseValue.BoundElement.ConstantValue.Value), section));
+                    labelsBuilder.Add(new KeyValuePair<ConstantValue, object>(
+                        Int32Constant(section.CaseValue.BoundElement.ConstantValue.Value), section));
                 }
             }
 
@@ -1098,9 +1149,9 @@ using System.Collections.Immutable;
         // TODO: move to helpers
         static ConstantValue Int32Constant(object value)
         {
-            if (value is int) return ConstantValue.Create((int)value);
-            if (value is long) return ConstantValue.Create((int)(long)value);
-            if (value is double) return ConstantValue.Create((int)(double)value);
+            if (value is int) return ConstantValue.Create((int) value);
+            if (value is long) return ConstantValue.Create((int) (long) value);
+            if (value is double) return ConstantValue.Create((int) (double) value);
 
             throw new ArgumentException();
         }

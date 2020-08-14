@@ -19,7 +19,7 @@ namespace Aquila.CodeAnalysis.Symbols.Php
         /// Gets value indicating the routine does not override any other routine.
         /// (static methods, private methods or sealed virtual methods not overriding anything)
         /// </summary>
-        static bool IsNotOverriding(Source.SourceRoutineSymbol routine)
+        static bool IsNotOverriding(SourceRoutineSymbol routine)
         {
             return
                 routine.IsStatic ||
@@ -32,7 +32,7 @@ namespace Aquila.CodeAnalysis.Symbols.Php
         /// The method handles returning by alias, PHP7 return type, PHPDoc @return tag and result of flow analysis.
         /// In case the routine is an override or can be overriden, the CLR type is a value.
         /// </summary>
-        internal static TypeSymbol ConstructClrReturnType(Source.SourceRoutineSymbol routine)
+        internal static TypeSymbol ConstructClrReturnType(SourceRoutineSymbol routine)
         {
             var compilation = routine.DeclaringCompilation;
 
@@ -344,39 +344,39 @@ namespace Aquila.CodeAnalysis.Symbols.Php
         /// </summary>
         /// <param name="routine">The analysed routine.</param>
         /// <returns>Value indicating the routine gets a generator.</returns>
-        internal static bool IsGeneratorMethod(this Source.SourceRoutineSymbol routine) => (routine.Flags & RoutineFlags.IsGenerator) != 0;
+        internal static bool IsGeneratorMethod(this SourceRoutineSymbol routine) => (routine.Flags & RoutineFlags.IsGenerator) != 0;
 
         /// <summary>
         /// Gets enumeration of all routines (global code, functions and methods) within the file.
         /// </summary>
-        internal static IEnumerable<Source.SourceRoutineSymbol> GetAllRoutines(this Source.SourceFileSymbol file)
+        internal static IEnumerable<SourceRoutineSymbol> GetAllRoutines(this SourceFileSymbol file)
         {
             // all functions + global code + methods + lambdas
-            var funcs = file.Functions.Cast<Source.SourceRoutineSymbol>();
-            var main = (Source.SourceRoutineSymbol)file.MainMethod;
+            var funcs = file.Functions.Cast<SourceRoutineSymbol>();
+            var main = (SourceRoutineSymbol)file.MainMethod;
 
             var types = file.ContainedTypes.SelectMany(t => t.AllReachableVersions());
-            var methods = types.SelectMany(f => f.GetMembers().OfType<Source.SourceRoutineSymbol>());
+            var methods = types.SelectMany(f => f.GetMembers().OfType<SourceRoutineSymbol>());
             var lambdas = ((ILambdaContainerSymbol)file).Lambdas;
 
             return funcs.Concat(main).Concat(methods).Concat(lambdas);
         }
 
-        /// <summary>
-        /// Gets PHPDoc assoviated with given source symbol.
-        /// </summary>
-        internal static bool TryGetPHPDocBlock(this Symbol symbol, out PHPDocBlock phpdoc)
-        {
-            phpdoc = symbol?.OriginalDefinition switch
-            {
-                Source.SourceRoutineSymbol routine => routine.PHPDocBlock,
-                Source.SourceFieldSymbol field => field.PHPDocBlock,
-                Source.SourceTypeSymbol type => type.Syntax.PHPDoc,
-                _ => null
-            };
-
-            return phpdoc != null;
-        }
+        // /// <summary>
+        // /// Gets PHPDoc assoviated with given source symbol.
+        // /// </summary>
+        // internal static bool TryGetPHPDocBlock(this Symbol symbol, out PHPDocBlock phpdoc)
+        // {
+        //     phpdoc = symbol?.OriginalDefinition switch
+        //     {
+        //         Source.SourceRoutineSymbol routine => routine.PHPDocBlock,
+        //         Source.SourceFieldSymbol field => field.PHPDocBlock,
+        //         //Source.SourceTypeSymbol type => type.Syntax.PHPDoc,
+        //         _ => null
+        //     };
+        //
+        //     return phpdoc != null;
+        // }
 
         /// <summary>
         /// The resource contains an additional textual metadata to be used by the runtime if needed (JSON format).

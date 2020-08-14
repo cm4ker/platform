@@ -5,7 +5,8 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
- using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
+ using Aquila.CodeAnalysis.Symbols.PE;
+
 
  namespace Pchp.CodeAnalysis.DocumentationComments
 {

@@ -23,8 +23,8 @@ namespace Aquila.CodeAnalysis.Symbols
             NamedTypeSymbol array,
             ImmutableArray<CustomModifier> customModifiers)
         {
-            Debug.Assert((object)elementType != null);
-            Debug.Assert((object)array != null);
+            Debug.Assert((object) elementType != null);
+            Debug.Assert((object) array != null);
 
             _elementType = elementType;
             _baseType = array;
@@ -42,7 +42,8 @@ namespace Aquila.CodeAnalysis.Symbols
                 return CreateSZArray(declaringAssembly, elementType, customModifiers);
             }
 
-            return CreateMDArray(declaringAssembly, elementType, rank, default(ImmutableArray<int>), default(ImmutableArray<int>), customModifiers);
+            return CreateMDArray(declaringAssembly, elementType, rank, default(ImmutableArray<int>),
+                default(ImmutableArray<int>), customModifiers);
         }
 
         internal static ArrayTypeSymbol CreateMDArray(
@@ -70,7 +71,8 @@ namespace Aquila.CodeAnalysis.Symbols
             ImmutableArray<int> lowerBounds,
             ImmutableArray<CustomModifier> customModifiers = default(ImmutableArray<CustomModifier>))
         {
-            return CreateMDArray(elementType, rank, sizes, lowerBounds, declaringAssembly.GetSpecialType(SpecialType.System_Array), customModifiers);
+            return CreateMDArray(elementType, rank, sizes, lowerBounds,
+                declaringAssembly.GetSpecialType(SpecialType.System_Array), customModifiers);
         }
 
         internal static ArrayTypeSymbol CreateSZArray(
@@ -87,7 +89,8 @@ namespace Aquila.CodeAnalysis.Symbols
             TypeSymbol elementType,
             ImmutableArray<CustomModifier> customModifiers = default(ImmutableArray<CustomModifier>))
         {
-            return CreateSZArray(elementType, declaringAssembly.GetSpecialType(SpecialType.System_Array), GetSZArrayInterfaces(elementType, declaringAssembly), customModifiers);
+            return CreateSZArray(elementType, declaringAssembly.GetSpecialType(SpecialType.System_Array),
+                GetSZArrayInterfaces(elementType, declaringAssembly), customModifiers);
         }
 
         private static ImmutableArray<NamedTypeSymbol> GetSZArrayInterfaces(
@@ -101,14 +104,17 @@ namespace Aquila.CodeAnalysis.Symbols
             var iListOfT = declaringAssembly.GetSpecialType(SpecialType.System_Collections_Generic_IList_T);
             if (!iListOfT.IsErrorType())
             {
-                constructedInterfaces.Add(new ConstructedNamedTypeSymbol(iListOfT, ImmutableArray.Create(new TypeWithModifiers(elementType))));
+                constructedInterfaces.Add(new ConstructedNamedTypeSymbol(iListOfT,
+                    ImmutableArray.Create(new TypeWithModifiers(elementType))));
             }
 
-            var iReadOnlyListOfT = declaringAssembly.GetSpecialType(SpecialType.System_Collections_Generic_IReadOnlyList_T);
+            var iReadOnlyListOfT =
+                declaringAssembly.GetSpecialType(SpecialType.System_Collections_Generic_IReadOnlyList_T);
 
             if (!iReadOnlyListOfT.IsErrorType())
             {
-                constructedInterfaces.Add(new ConstructedNamedTypeSymbol(iReadOnlyListOfT, ImmutableArray.Create(new TypeWithModifiers(elementType))));
+                constructedInterfaces.Add(new ConstructedNamedTypeSymbol(iReadOnlyListOfT,
+                    ImmutableArray.Create(new TypeWithModifiers(elementType))));
             }
 
             return constructedInterfaces.ToImmutableAndFree();
@@ -120,10 +126,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         public ImmutableArray<CustomModifier> CustomModifiers
         {
-            get
-            {
-                return _customModifiers;
-            }
+            get { return _customModifiers; }
         }
 
         /// <summary>
@@ -149,10 +152,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         internal virtual ImmutableArray<int> Sizes
         {
-            get
-            {
-                return ImmutableArray<int>.Empty;
-            }
+            get { return ImmutableArray<int>.Empty; }
         }
 
         /// <summary>
@@ -162,10 +162,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         internal virtual ImmutableArray<int> LowerBounds
         {
-            get
-            {
-                return default(ImmutableArray<int>);
-            }
+            get { return default(ImmutableArray<int>); }
         }
 
         /// <summary>
@@ -201,10 +198,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         public TypeSymbol ElementType
         {
-            get
-            {
-                return _elementType;
-            }
+            get { return _elementType; }
         }
 
         //internal override NamedTypeSymbol BaseTypeNoUseSiteDiagnostics
@@ -217,18 +211,12 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override bool IsReferenceType
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         public override bool IsValueType
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         //internal sealed override bool IsManagedType
@@ -276,37 +264,26 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override SymbolKind Kind
         {
-            get
-            {
-                return SymbolKind.ArrayType;
-            }
+            get { return SymbolKind.ArrayType; }
         }
 
         public override TypeKind TypeKind
         {
-            get
-            {
-                return TypeKind.Array;
-            }
+            get { return TypeKind.Array; }
         }
 
         public override Symbol ContainingSymbol
         {
-            get
-            {
-                return null;
-            }
+            get { return null; }
         }
 
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
         {
-            get
-            {
-                return ImmutableArray<SyntaxReference>.Empty;
-            }
+            get { return ImmutableArray<SyntaxReference>.Empty; }
         }
 
-        internal override bool Equals(TypeSymbol t2, bool ignoreCustomModifiersAndArraySizesAndLowerBounds, bool ignoreDynamic)
+        internal override bool Equals(TypeSymbol t2, bool ignoreCustomModifiersAndArraySizesAndLowerBounds,
+            bool ignoreDynamic)
         {
             return this.Equals(t2 as ArrayTypeSymbol, ignoreCustomModifiersAndArraySizesAndLowerBounds, ignoreDynamic);
         }
@@ -316,14 +293,15 @@ namespace Aquila.CodeAnalysis.Symbols
             return Equals(other, false, false);
         }
 
-        private bool Equals(ArrayTypeSymbol other, bool ignoreCustomModifiersAndArraySizesAndLowerBounds, bool ignoreDynamic)
+        private bool Equals(ArrayTypeSymbol other, bool ignoreCustomModifiersAndArraySizesAndLowerBounds,
+            bool ignoreDynamic)
         {
             if (ReferenceEquals(this, other))
             {
                 return true;
             }
 
-            if ((object)other == null || !other.HasSameShapeAs(this) ||
+            if ((object) other == null || !other.HasSameShapeAs(this) ||
                 !other.ElementType.Equals(ElementType, ignoreCustomModifiersAndArraySizesAndLowerBounds, ignoreDynamic))
             {
                 return false;
@@ -368,7 +346,7 @@ namespace Aquila.CodeAnalysis.Symbols
             TypeSymbol current = this;
             while (current.TypeKind == TypeKind.Array)
             {
-                var cur = (ArrayTypeSymbol)current;
+                var cur = (ArrayTypeSymbol) current;
                 hash = Hash.Combine(cur.Rank, hash);
                 current = cur.ElementType;
             }
@@ -378,34 +356,22 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override Accessibility DeclaredAccessibility
         {
-            get
-            {
-                return Accessibility.NotApplicable;
-            }
+            get { return Accessibility.NotApplicable; }
         }
 
         public override bool IsStatic
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public override bool IsAbstract
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public override bool IsSealed
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         //#region Use-Site Diagnostics
@@ -498,18 +464,12 @@ namespace Aquila.CodeAnalysis.Symbols
 
             public override int Rank
             {
-                get
-                {
-                    return 1;
-                }
+                get { return 1; }
             }
 
             internal override bool IsSZArray
             {
-                get
-                {
-                    return true;
-                }
+                get { return true; }
             }
 
             //internal override ImmutableArray<NamedTypeSymbol> InterfacesNoUseSiteDiagnostics(ConsList<Symbol> basesBeingResolved = null)
@@ -519,10 +479,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
             internal override bool HasDefaultSizesAndLowerBounds
             {
-                get
-                {
-                    return true;
-                }
+                get { return true; }
             }
         }
 
@@ -546,18 +503,12 @@ namespace Aquila.CodeAnalysis.Symbols
 
             public sealed override int Rank
             {
-                get
-                {
-                    return _rank;
-                }
+                get { return _rank; }
             }
 
             internal sealed override bool IsSZArray
             {
-                get
-                {
-                    return false;
-                }
+                get { return false; }
             }
 
             //internal sealed override ImmutableArray<NamedTypeSymbol> InterfacesNoUseSiteDiagnostics(ConsList<Symbol> basesBeingResolved = null)
@@ -567,10 +518,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
             internal override bool HasDefaultSizesAndLowerBounds
             {
-                get
-                {
-                    return true;
-                }
+                get { return true; }
             }
         }
 
@@ -589,33 +537,26 @@ namespace Aquila.CodeAnalysis.Symbols
                 : base(elementType, rank, array, customModifiers)
             {
                 Debug.Assert(!sizes.IsDefaultOrEmpty || !lowerBounds.IsDefault);
-                Debug.Assert(lowerBounds.IsDefaultOrEmpty || (!lowerBounds.IsEmpty && (lowerBounds.Length != rank || !lowerBounds.All(b => b == 0))));
+                Debug.Assert(lowerBounds.IsDefaultOrEmpty || (!lowerBounds.IsEmpty &&
+                                                              (lowerBounds.Length != rank ||
+                                                               !lowerBounds.All(b => b == 0))));
                 _sizes = sizes.NullToEmpty();
                 _lowerBounds = lowerBounds;
             }
 
             internal override ImmutableArray<int> Sizes
             {
-                get
-                {
-                    return _sizes;
-                }
+                get { return _sizes; }
             }
 
             internal override ImmutableArray<int> LowerBounds
             {
-                get
-                {
-                    return _lowerBounds;
-                }
+                get { return _lowerBounds; }
             }
 
             internal override bool HasDefaultSizesAndLowerBounds
             {
-                get
-                {
-                    return false;
-                }
+                get { return false; }
             }
         }
     }

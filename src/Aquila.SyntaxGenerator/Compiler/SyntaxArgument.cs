@@ -13,5 +13,7 @@ namespace Aquila.SyntaxGenerator.Compiler
         [XmlAttribute] public bool PassBase { get; set; }
 
         [XmlAttribute] public bool OnlyArgument { get; set; }
+
+        [XmlAttribute] public bool ImplicitPassInChildren { get; set; }
     }
 }

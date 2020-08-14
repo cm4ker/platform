@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cci = Microsoft.Cci;
 
-namespace Pchp.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
     internal partial class PropertySymbol : Cci.IPropertyDefinition
     {

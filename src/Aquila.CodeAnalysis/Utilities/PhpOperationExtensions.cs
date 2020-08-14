@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Globalization;
-using System.Text;
+﻿using System.Diagnostics;
 using Aquila.Syntax.Ast;
-using Devsense.PHP.Syntax.Ast;
-using Microsoft.CodeAnalysis;
-using Peachpie.CodeAnalysis.Utilities;
 
 namespace Pchp.CodeAnalysis.Semantics
 {

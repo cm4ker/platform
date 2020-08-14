@@ -16,12 +16,13 @@
     <Syntax IsList="true" Base="VarDeclarator" Name="DeclaratorList"/>
 
     <Syntax IsList="true" Base="UsingBase" Name="UsingList"/>
-    <Syntax IsList="true" Base="CompilationUnit" Name="CompilationUnitList"/>
+    <Syntax IsList="true" Base="CatchItem" Name="CatchList"/>
+    <Syntax IsList="true" Base="SourceUnit" Name="SourceUnitList"/>
 
     <!-- #endregion -->
 
     <!-- #region Structure -->
-    <Syntax Name="CompilationUnit">
+    <Syntax Name="SourceUnit">
         <Arguments>
             <List Name="Usings" Type="UsingList"/>
             <List Name="Methods" Type="MethodList"/>
@@ -82,7 +83,7 @@
             <!--            <List Name="GenericParameters" Type="GenericParameterList"/>-->
             <List Name="Annotations" Type="AnnotationList"/>
             <Single Name="Identifier" Type="IdentifierToken"/>
-            <Single Name="Type" Type="TypeRef"/>
+            <Single Name="ReturnType" Type="TypeRef"/>
         </Arguments>
     </Syntax>
 
@@ -103,51 +104,70 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="IdentifierName" Base="Expression">
+    <!-- #region Types-->
+    <Syntax Name="TypeRef" IsAbstract="true"/>
+
+    <Syntax Name="NamedTypeRef" Base="TypeRef">
         <Arguments>
-            <Single Name="Identifier" Type="IdentifierToken"/>
+            <Single Name="Value" Type="string" DenyChildrenFill="true" Default='"?"' Virtual="true"/>
         </Arguments>
     </Syntax>
 
+    <Syntax Name="PredefinedTypeRef" Base="TypeRef"/>
+
+    <Syntax Name="ArrayType" Base="TypeRef">
+        <Arguments>
+            <Single Name="Type" Type="TypeRef"/>
+        </Arguments>
+    </Syntax>
+
+    <!-- <Syntax Name="GenericType" Base="Type">
+        <Arguments>
+            <List Name="Args" Type="TypeList"/>
+        </Arguments>
+    </Syntax> -->
+
+    <!-- #endregion -->
+
     <!-- #region Expressions -->
 
-    <Syntax Name="Expression" IsAbstract="true"/>
+    <Syntax Name="Expression" IsAbstract="true">
+        <Arguments>
+            <Single Name="Operation" Type="Operations" ImplicitPassInChildren="true" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
 
     <Syntax Name="BinaryEx" Base="Expression" NS="Expressions">
         <Arguments>
             <Single Name="Right" Type="Expression"/>
             <Single Name="Left" Type="Expression"/>
-            <Single Name="BinaryOperatorType" Type="BinaryOperatorType" DenyChildrenFill="true"/>
+            <!--            <Single Name="BinaryOperatorType" Type="BinaryOperatorType" DenyChildrenFill="true"/>-->
         </Arguments>
     </Syntax>
 
-    <Syntax Name="UnaryEx" Base="Expression" IsAbstract="true" NS="Expressions">
+    <Syntax Name="UnaryExBase" IsAbstract="true" Base="Expression" NS="Expressions">
         <Arguments>
             <Single Name="Expression" Type="Expression"/>
-            <Single Name="OperaotrType" Type="UnaryOperatorType" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
 
-    <Syntax Name="CastEx" Base="UnaryEx" NS="Expressions">
+    <Syntax Name="CastEx" Base="UnaryExBase" NS="Expressions">
         <Arguments>
             <Single Name="Expression" Type="Expression" PassBase="true"/>
             <Single Name="CastType" Type="TypeRef"/>
-            <Single Name="OperaotrType" Type="UnaryOperatorType" DenyChildrenFill="true" PassBase="true"/>
         </Arguments>
     </Syntax>
 
-    <Syntax Name="IndexerEx" Base="UnaryEx" NS="Expressions">
+    <Syntax Name="IndexerEx" Base="UnaryExBase" NS="Expressions">
         <Arguments>
             <Single Name="Indexer" Type="Expression"/>
             <Single Name="Expression" Type="Expression" PassBase="true"/>
-            <Single Name="OperaotrType" Type="UnaryOperatorType" DenyChildrenFill="true" PassBase="true"/>
         </Arguments>
     </Syntax>
 
-    <Syntax Name="LogicalOrArithmeticEx" Base="UnaryEx" NS="Expressions">
+    <Syntax Name="UnaryEx" Base="UnaryExBase" NS="Expressions">
         <Arguments>
             <Single Name="Expression" Type="Expression" PassBase="true"/>
-            <Single Name="OperaotrType" Type="UnaryOperatorType" DenyChildrenFill="true" PassBase="true"/>
         </Arguments>
     </Syntax>
 
@@ -158,9 +178,9 @@
         </Arguments>
     </Syntax>
 
-    <!-- #region Call --> 
+    <!-- #region Call -->
 
-    <Syntax Name="Call" Base="Expression" NS="Expressions">
+    <Syntax Name="CallEx" Base="Expression" NS="Expressions">
         <Arguments>
             <List Name="Arguments" Type="ArgumentList"/>
             <Single Name="Expression" Type="Expression"/>
@@ -179,7 +199,7 @@
     <Syntax Name="New" Base="Expression" NS="Expressions">
         <Arguments>
             <Single Name="Namespace" Type="string" DenyChildrenFill="true"/>
-            <Single Name="Call" Type="Call"/>
+            <Single Name="Call" Type="CallEx"/>
         </Arguments>
     </Syntax>
 
@@ -190,45 +210,23 @@
         </Arguments>
     </Syntax>
 
-    <!-- #region Types-->
-    <!-- Special TypeRef expression -->
-    <Syntax Name="TypeRef" Base="Expression" IsAbstract="true" />
-
-
-    <Syntax Name="NamedTypeRef" Base="TypeRef">
-        <Arguments>
-            <Single Name="Value" Type="string" DenyChildrenFill="true" Default='"?"' Virtual="true"/>
-        </Arguments>
-    </Syntax>
-
-    <Syntax Name="PredefinedTypeSyntax" Base="TypeRef" />
-
-    <Syntax Name="ArrayType" Base="TypeRef">
-        <Arguments>
-            <Single Name="Type" Type="TypeRef"/>
-        </Arguments>
-    </Syntax>
-
-    <!-- <Syntax Name="GenericType" Base="Type">
-        <Arguments>
-            <List Name="Args" Type="TypeList"/>
-        </Arguments>
-    </Syntax> -->
-
-    <!-- #endregion -->
-
-    
     <Syntax Name="IncDecEx" Base="Expression" NS="Expressions">
         <Arguments>
             <Single Name="Operand" Type="Expression"/>
-            <Single Name="IsIncrement" Type="bool" DenyChildrenFill="true" OnlyArgument="true"/>
-            <Single Name="IsPost" Type="bool" DenyChildrenFill="true" OnlyArgument="true"/>
+            <Single Name="IsIncrement" Type="bool" DenyChildrenFill="true"/>
+            <Single Name="IsPost" Type="bool" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="ThrowEx" Base="Expression" NS="Expressions">
         <Arguments>
-            <Single Name="Exception" Type="Expression"/>
+            <Single Name="Expression" Type="Expression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="NameEx" Base="Expression" NS="Expressions">
+        <Arguments>
+            <Single Name="Identifier" Type="IdentifierToken"/>
         </Arguments>
     </Syntax>
 
@@ -244,14 +242,14 @@
         </Arguments>
     </Syntax>
 
-     <Syntax Name="Return" Base="Statement" NS="Statements">
+    <Syntax Name="Return" Base="Statement" NS="Statements">
         <Arguments>
             <Single Name="Expression" Type="Expression"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="Break" Base="Statement" NS="Statements"/>
-   
+
     <Syntax Name="Continue" Base="Statement" NS="Statements"/>
 
     <!-- #region Variable-->
@@ -269,8 +267,8 @@
             <Single Name="Identifier" Type="IdentifierToken"/>
         </Arguments>
     </Syntax>
-    
-     <!-- #endregion-->
+
+    <!-- #endregion-->
 
     <Syntax Name="DoWhileStmt" Base="Statement" NS="Statements">
         <Arguments>
@@ -279,13 +277,25 @@
         </Arguments>
     </Syntax>
 
+    <!-- #region Try -->
     <Syntax Name="TryStmt" Base="Statement" NS="Statements">
         <Arguments>
             <Single Name="TryBlock" Type="BlockStmt"/>
-            <Single Name="CatchBlock" Type="BlockStmt"/>
-            <Single Name="FinallyBlock" Type="BlockStmt"/>
+            <Single Name="Catches" Type="CatchList"/>
+            <Single Name="FinallyItem" Type="FinallyItem"/>
         </Arguments>
     </Syntax>
+    <Syntax Name="CatchItem" NS="Statements">
+        <Arguments>
+            <Single Name="Block" Type="BlockStmt"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="FinallyItem" NS="Statements">
+        <Arguments>
+            <Single Name="Block" Type="BlockStmt"/>
+        </Arguments>
+    </Syntax>
+    <!-- #endregion -->
 
     <Syntax Name="ExpressionStmt" Base="Statement" NS="Statements">
         <Arguments>

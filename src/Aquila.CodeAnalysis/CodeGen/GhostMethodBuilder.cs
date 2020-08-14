@@ -1,4 +1,4 @@
-﻿﻿using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,23 +9,27 @@ using Aquila.CodeAnalysis.Symbols;
 using Pchp.CodeAnalysis.CodeGen;
 using System.Diagnostics;
 using System.Collections.Immutable;
+using Aquila.CodeAnalysis.Symbols.Synthesized;
 
 namespace Pchp.CodeAnalysis.CodeGen
 {
     internal static class GhostMethodBuilder
     {
-        public static MethodSymbol CreateGhostOverload(MethodSymbol original, PEModuleBuilder module, DiagnosticBag diagnostic, int pcount)
+        public static MethodSymbol CreateGhostOverload(MethodSymbol original, PEModuleBuilder module,
+            DiagnosticBag diagnostic, int pcount)
         {
             Debug.Assert(original.Parameters.Length > pcount);
             return GhostMethodBuilder.CreateGhostOverload(
                 original, original.ContainingType, module, diagnostic,
-                ghostreturn: original.ReturnType, ghostparams: ImmutableArray.Create(original.Parameters, 0, pcount), explicitOverride: null);
+                ghostreturn: original.ReturnType, ghostparams: ImmutableArray.Create(original.Parameters, 0, pcount),
+                explicitOverride: null);
         }
 
         /// <summary>
         /// Creates ghost stub that calls method.
         /// </summary>
-        public static MethodSymbol CreateGhostOverload(this MethodSymbol method, NamedTypeSymbol containingtype, PEModuleBuilder module, DiagnosticBag diagnostic,
+        public static MethodSymbol CreateGhostOverload(this MethodSymbol method, NamedTypeSymbol containingtype,
+            PEModuleBuilder module, DiagnosticBag diagnostic,
             TypeSymbol ghostreturn, ImmutableArray<ParameterSymbol> ghostparams,
             bool phphidden = false,
             MethodSymbol explicitOverride = null)
@@ -41,7 +45,8 @@ namespace Pchp.CodeAnalysis.CodeGen
             //}
 
             var ghost = new SynthesizedMethodSymbol(
-                containingtype, /*prefix +*/ name, method.IsStatic, explicitOverride != null, ghostreturn, method.DeclaredAccessibility, isfinal: false, phphidden: phphidden)
+                containingtype, /*prefix +*/ name, method.IsStatic, explicitOverride != null, ghostreturn,
+                method.DeclaredAccessibility, isfinal: false, phphidden: phphidden)
             {
                 ExplicitOverride = explicitOverride,
                 ForwardedCall = method,
@@ -62,7 +67,8 @@ namespace Pchp.CodeAnalysis.CodeGen
         /// <summary>
         /// Generates ghost method body that calls <c>this</c> method.
         /// </summary>
-        static void GenerateGhostBody(PEModuleBuilder module, DiagnosticBag diagnostic, MethodSymbol method, SynthesizedMethodSymbol ghost)
+        static void GenerateGhostBody(PEModuleBuilder module, DiagnosticBag diagnostic, MethodSymbol method,
+            SynthesizedMethodSymbol ghost)
         {
             var containingtype = ghost.ContainingType;
 
@@ -73,14 +79,18 @@ namespace Pchp.CodeAnalysis.CodeGen
                     var thisPlace = ghost.HasThis ? new ArgPlace(containingtype, 0) : null;
 
                     // Context
-                    var ctxPlace = thisPlace != null && ghost.ContainingType is SourceTypeSymbol sourcetype
-                        ? (sourcetype.ContextStore != null ? new FieldPlace(thisPlace, sourcetype.ContextStore, module) : null)
-                        : (IPlace)new ArgPlace(module.Compilation.CoreTypes.Context, 0);
+                    var ctxPlace = //thisPlace != null && ghost.ContainingType is SourceTypeSymbol sourcetype
+                        //? (sourcetype.ContextStore != null ? new FieldPlace(thisPlace, sourcetype.ContextStore, module) : null)
+                        //: 
+                        (IPlace) new ArgPlace(module.Compilation.CoreTypes.Context, 0);
 
                     // .callvirt
-                    bool callvirt = ghost.ExplicitOverride != null && ghost.ExplicitOverride.ContainingType.IsInterface;  // implementing interface, otherwise we should be able to call specific method impl. non-virtually via ghost
+                    bool callvirt = ghost.ExplicitOverride != null &&
+                                    ghost.ExplicitOverride.ContainingType
+                                        .IsInterface; // implementing interface, otherwise we should be able to call specific method impl. non-virtually via ghost
 
-                    var cg = new CodeGenerator(il, module, diagnostic, module.Compilation.Options.OptimizationLevel, false, containingtype, ctxPlace, thisPlace)
+                    var cg = new CodeGenerator(il, module, diagnostic, module.Compilation.Options.OptimizationLevel,
+                        false, containingtype, ctxPlace, thisPlace)
                     {
                         DebugRoutine = ghost,
                     };

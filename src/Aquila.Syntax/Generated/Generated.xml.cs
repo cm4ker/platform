@@ -198,30 +198,51 @@ namespace Aquila.Syntax.Ast
 
 namespace Aquila.Syntax.Ast
 {
-    public class CompilationUnitList : SyntaxCollectionNode<CompilationUnit>
+    public class CatchList : SyntaxCollectionNode<CatchItem>
     {
-        public static CompilationUnitList Empty => new CompilationUnitList();
-        public CompilationUnitList(): base(Span.Empty)
+        public static CatchList Empty => new CatchList();
+        public CatchList(): base(Span.Empty)
         {
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            return visitor.VisitCompilationUnitList(this);
+            return visitor.VisitCatchList(this);
         }
 
         public override void Accept(AstVisitorBase visitor)
         {
-            visitor.VisitCompilationUnitList(this);
+            visitor.VisitCatchList(this);
         }
     }
 }
 
 namespace Aquila.Syntax.Ast
 {
-    public partial class CompilationUnit : LangElement
+    public class SourceUnitList : SyntaxCollectionNode<SourceUnit>
     {
-        public CompilationUnit(Span span, SyntaxKind syntaxKind, UsingList usings, MethodList methods, FieldList fields): base(span, syntaxKind)
+        public static SourceUnitList Empty => new SourceUnitList();
+        public SourceUnitList(): base(Span.Empty)
+        {
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitSourceUnitList(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitSourceUnitList(this);
+        }
+    }
+}
+
+namespace Aquila.Syntax.Ast
+{
+    public partial class SourceUnit : LangElement
+    {
+        public SourceUnit(Span span, SyntaxKind syntaxKind, UsingList usings, MethodList methods, FieldList fields): base(span, syntaxKind)
         {
             this.Attach(0, (LangElement)usings);
             this.Attach(1, (LangElement)methods);
@@ -254,12 +275,12 @@ namespace Aquila.Syntax.Ast
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            return visitor.VisitCompilationUnit(this);
+            return visitor.VisitSourceUnit(this);
         }
 
         public override void Accept(AstVisitorBase visitor)
         {
-            visitor.VisitCompilationUnit(this);
+            visitor.VisitSourceUnit(this);
         }
     }
 }
@@ -454,13 +475,13 @@ namespace Aquila.Syntax.Ast.Functions
 {
     public partial class MethodDecl : Member
     {
-        public MethodDecl(Span span, SyntaxKind syntaxKind, BlockStmt block, ParameterList parameters, AnnotationList annotations, IdentifierToken identifier, TypeRef type): base(span, syntaxKind)
+        public MethodDecl(Span span, SyntaxKind syntaxKind, BlockStmt block, ParameterList parameters, AnnotationList annotations, IdentifierToken identifier, TypeRef returnType): base(span, syntaxKind)
         {
             this.Attach(0, (LangElement)block);
             this.Attach(1, (LangElement)parameters);
             this.Attach(2, (LangElement)annotations);
             this.Attach(3, (LangElement)identifier);
-            this.Attach(4, (LangElement)type);
+            this.Attach(4, (LangElement)returnType);
         }
 
         public BlockStmt Block
@@ -495,7 +516,7 @@ namespace Aquila.Syntax.Ast.Functions
             }
         }
 
-        public TypeRef Type
+        public TypeRef ReturnType
         {
             get
             {
@@ -575,436 +596,7 @@ namespace Aquila.Syntax.Ast
 
 namespace Aquila.Syntax.Ast
 {
-    public partial class IdentifierName : Expression
-    {
-        public IdentifierName(Span span, SyntaxKind syntaxKind, IdentifierToken identifier): base(span, syntaxKind)
-        {
-            this.Attach(0, (LangElement)identifier);
-        }
-
-        public IdentifierToken Identifier
-        {
-            get
-            {
-                return (IdentifierToken)this.Children[0];
-            }
-        }
-
-        public override T Accept<T>(AstVisitorBase<T> visitor)
-        {
-            return visitor.VisitIdentifierName(this);
-        }
-
-        public override void Accept(AstVisitorBase visitor)
-        {
-            visitor.VisitIdentifierName(this);
-        }
-    }
-}
-
-namespace Aquila.Syntax.Ast
-{
-    public abstract partial class Expression : LangElement
-    {
-        public Expression(Span span, SyntaxKind syntaxKind): base(span, syntaxKind)
-        {
-        }
-
-        public override T Accept<T>(AstVisitorBase<T> visitor)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Accept(AstVisitorBase visitor)
-        {
-            throw new NotImplementedException();
-        }
-    }
-}
-
-namespace Aquila.Syntax.Ast.Expressions
-{
-    public partial class BinaryEx : Expression
-    {
-        public BinaryEx(Span span, SyntaxKind syntaxKind, Expression right, Expression left, BinaryOperatorType binaryOperatorType): base(span, syntaxKind)
-        {
-            this.Attach(0, (LangElement)right);
-            this.Attach(1, (LangElement)left);
-            BinaryOperatorType = binaryOperatorType;
-        }
-
-        public Expression Right
-        {
-            get
-            {
-                return (Expression)this.Children[0];
-            }
-        }
-
-        public Expression Left
-        {
-            get
-            {
-                return (Expression)this.Children[1];
-            }
-        }
-
-        public BinaryOperatorType BinaryOperatorType
-        {
-            get;
-        }
-
-        public override T Accept<T>(AstVisitorBase<T> visitor)
-        {
-            return visitor.VisitBinaryEx(this);
-        }
-
-        public override void Accept(AstVisitorBase visitor)
-        {
-            visitor.VisitBinaryEx(this);
-        }
-    }
-}
-
-namespace Aquila.Syntax.Ast.Expressions
-{
-    public abstract partial class UnaryEx : Expression
-    {
-        public UnaryEx(Span span, SyntaxKind syntaxKind, Expression expression, UnaryOperatorType operaotrType): base(span, syntaxKind)
-        {
-            this.Attach(0, (LangElement)expression);
-            OperaotrType = operaotrType;
-        }
-
-        public Expression Expression
-        {
-            get
-            {
-                return (Expression)this.Children[0];
-            }
-        }
-
-        public UnaryOperatorType OperaotrType
-        {
-            get;
-        }
-
-        public override T Accept<T>(AstVisitorBase<T> visitor)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Accept(AstVisitorBase visitor)
-        {
-            throw new NotImplementedException();
-        }
-    }
-}
-
-namespace Aquila.Syntax.Ast.Expressions
-{
-    public partial class CastEx : UnaryEx
-    {
-        public CastEx(Span span, SyntaxKind syntaxKind, Expression expression, TypeRef castType, UnaryOperatorType operaotrType): base(span, syntaxKind, expression, operaotrType)
-        {
-            this.Attach(0, (LangElement)expression);
-            this.Attach(1, (LangElement)castType);
-            OperaotrType = operaotrType;
-        }
-
-        public Expression Expression
-        {
-            get
-            {
-                return (Expression)this.Children[0];
-            }
-        }
-
-        public TypeRef CastType
-        {
-            get
-            {
-                return (TypeRef)this.Children[1];
-            }
-        }
-
-        public UnaryOperatorType OperaotrType
-        {
-            get;
-        }
-
-        public override T Accept<T>(AstVisitorBase<T> visitor)
-        {
-            return visitor.VisitCastEx(this);
-        }
-
-        public override void Accept(AstVisitorBase visitor)
-        {
-            visitor.VisitCastEx(this);
-        }
-    }
-}
-
-namespace Aquila.Syntax.Ast.Expressions
-{
-    public partial class IndexerEx : UnaryEx
-    {
-        public IndexerEx(Span span, SyntaxKind syntaxKind, Expression indexer, Expression expression, UnaryOperatorType operaotrType): base(span, syntaxKind, expression, operaotrType)
-        {
-            this.Attach(0, (LangElement)indexer);
-            this.Attach(1, (LangElement)expression);
-            OperaotrType = operaotrType;
-        }
-
-        public Expression Indexer
-        {
-            get
-            {
-                return (Expression)this.Children[0];
-            }
-        }
-
-        public Expression Expression
-        {
-            get
-            {
-                return (Expression)this.Children[1];
-            }
-        }
-
-        public UnaryOperatorType OperaotrType
-        {
-            get;
-        }
-
-        public override T Accept<T>(AstVisitorBase<T> visitor)
-        {
-            return visitor.VisitIndexerEx(this);
-        }
-
-        public override void Accept(AstVisitorBase visitor)
-        {
-            visitor.VisitIndexerEx(this);
-        }
-    }
-}
-
-namespace Aquila.Syntax.Ast.Expressions
-{
-    public partial class LogicalOrArithmeticEx : UnaryEx
-    {
-        public LogicalOrArithmeticEx(Span span, SyntaxKind syntaxKind, Expression expression, UnaryOperatorType operaotrType): base(span, syntaxKind, expression, operaotrType)
-        {
-            this.Attach(0, (LangElement)expression);
-            OperaotrType = operaotrType;
-        }
-
-        public Expression Expression
-        {
-            get
-            {
-                return (Expression)this.Children[0];
-            }
-        }
-
-        public UnaryOperatorType OperaotrType
-        {
-            get;
-        }
-
-        public override T Accept<T>(AstVisitorBase<T> visitor)
-        {
-            return visitor.VisitLogicalOrArithmeticEx(this);
-        }
-
-        public override void Accept(AstVisitorBase visitor)
-        {
-            visitor.VisitLogicalOrArithmeticEx(this);
-        }
-    }
-}
-
-namespace Aquila.Syntax.Ast.Expressions
-{
-    public partial class AssignEx : Expression
-    {
-        public AssignEx(Span span, SyntaxKind syntaxKind, Expression rValue, Expression lValue): base(span, syntaxKind)
-        {
-            this.Attach(0, (LangElement)rValue);
-            this.Attach(1, (LangElement)lValue);
-        }
-
-        public Expression RValue
-        {
-            get
-            {
-                return (Expression)this.Children[0];
-            }
-        }
-
-        public Expression LValue
-        {
-            get
-            {
-                return (Expression)this.Children[1];
-            }
-        }
-
-        public override T Accept<T>(AstVisitorBase<T> visitor)
-        {
-            return visitor.VisitAssignEx(this);
-        }
-
-        public override void Accept(AstVisitorBase visitor)
-        {
-            visitor.VisitAssignEx(this);
-        }
-    }
-}
-
-namespace Aquila.Syntax.Ast.Expressions
-{
-    public partial class Call : Expression
-    {
-        public Call(Span span, SyntaxKind syntaxKind, ArgumentList arguments, Expression expression): base(span, syntaxKind)
-        {
-            this.Attach(0, (LangElement)arguments);
-            this.Attach(1, (LangElement)expression);
-        }
-
-        public ArgumentList Arguments
-        {
-            get
-            {
-                return (ArgumentList)this.Children[0];
-            }
-        }
-
-        public Expression Expression
-        {
-            get
-            {
-                return (Expression)this.Children[1];
-            }
-        }
-
-        public override T Accept<T>(AstVisitorBase<T> visitor)
-        {
-            return visitor.VisitCall(this);
-        }
-
-        public override void Accept(AstVisitorBase visitor)
-        {
-            visitor.VisitCall(this);
-        }
-    }
-}
-
-namespace Aquila.Syntax.Ast.Functions
-{
-    public partial class Argument : LangElement
-    {
-        public Argument(Span span, SyntaxKind syntaxKind, Expression expression, PassMethod passMethod = PassMethod.ByValue): base(span, syntaxKind)
-        {
-            this.Attach(0, (LangElement)expression);
-            PassMethod = passMethod;
-        }
-
-        public Expression Expression
-        {
-            get
-            {
-                return (Expression)this.Children[0];
-            }
-        }
-
-        public PassMethod PassMethod
-        {
-            get;
-        }
-
-        public override T Accept<T>(AstVisitorBase<T> visitor)
-        {
-            return visitor.VisitArgument(this);
-        }
-
-        public override void Accept(AstVisitorBase visitor)
-        {
-            visitor.VisitArgument(this);
-        }
-    }
-}
-
-namespace Aquila.Syntax.Ast.Expressions
-{
-    public partial class New : Expression
-    {
-        public New(Span span, SyntaxKind syntaxKind,  string  @namespace, Call call): base(span, syntaxKind)
-        {
-            Namespace = @namespace;
-            this.Attach(0, (LangElement)call);
-        }
-
-        public string Namespace
-        {
-            get;
-        }
-
-        public Call Call
-        {
-            get
-            {
-                return (Call)this.Children[0];
-            }
-        }
-
-        public override T Accept<T>(AstVisitorBase<T> visitor)
-        {
-            return visitor.VisitNew(this);
-        }
-
-        public override void Accept(AstVisitorBase visitor)
-        {
-            visitor.VisitNew(this);
-        }
-    }
-}
-
-namespace Aquila.Syntax.Ast.Expressions
-{
-    public partial class LiteralEx : Expression
-    {
-        public LiteralEx(Span span, SyntaxKind syntaxKind, String value,  bool  isSqlLiteral): base(span, syntaxKind)
-        {
-            Value = value;
-            IsSqlLiteral = isSqlLiteral;
-        }
-
-        public String Value
-        {
-            get;
-        }
-
-        public bool IsSqlLiteral
-        {
-            get;
-        }
-
-        public override T Accept<T>(AstVisitorBase<T> visitor)
-        {
-            return visitor.VisitLiteralEx(this);
-        }
-
-        public override void Accept(AstVisitorBase visitor)
-        {
-            visitor.VisitLiteralEx(this);
-        }
-    }
-}
-
-namespace Aquila.Syntax.Ast
-{
-    public abstract partial class TypeRef : Expression
+    public abstract partial class TypeRef : LangElement
     {
         public TypeRef(Span span, SyntaxKind syntaxKind): base(span, syntaxKind)
         {
@@ -1050,20 +642,20 @@ namespace Aquila.Syntax.Ast
 
 namespace Aquila.Syntax.Ast
 {
-    public partial class PredefinedTypeSyntax : TypeRef
+    public partial class PredefinedTypeRef : TypeRef
     {
-        public PredefinedTypeSyntax(Span span, SyntaxKind syntaxKind): base(span, syntaxKind)
+        public PredefinedTypeRef(Span span, SyntaxKind syntaxKind): base(span, syntaxKind)
         {
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            return visitor.VisitPredefinedTypeSyntax(this);
+            return visitor.VisitPredefinedTypeRef(this);
         }
 
         public override void Accept(AstVisitorBase visitor)
         {
-            visitor.VisitPredefinedTypeSyntax(this);
+            visitor.VisitPredefinedTypeRef(this);
         }
     }
 }
@@ -1097,13 +689,391 @@ namespace Aquila.Syntax.Ast
     }
 }
 
+namespace Aquila.Syntax.Ast
+{
+    public abstract partial class Expression : LangElement
+    {
+        public Expression(Span span, SyntaxKind syntaxKind, Operations operation): base(span, syntaxKind)
+        {
+            Operation = operation;
+        }
+
+        public Operations Operation
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
+
+namespace Aquila.Syntax.Ast.Expressions
+{
+    public partial class BinaryEx : Expression
+    {
+        public BinaryEx(Span span, SyntaxKind syntaxKind, Operations operation, Expression right, Expression left): base(span, syntaxKind, operation)
+        {
+            this.Attach(0, (LangElement)right);
+            this.Attach(1, (LangElement)left);
+        }
+
+        public Expression Right
+        {
+            get
+            {
+                return (Expression)this.Children[0];
+            }
+        }
+
+        public Expression Left
+        {
+            get
+            {
+                return (Expression)this.Children[1];
+            }
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitBinaryEx(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitBinaryEx(this);
+        }
+    }
+}
+
+namespace Aquila.Syntax.Ast.Expressions
+{
+    public abstract partial class UnaryExBase : Expression
+    {
+        public UnaryExBase(Span span, SyntaxKind syntaxKind, Operations operation, Expression expression): base(span, syntaxKind, operation)
+        {
+            this.Attach(0, (LangElement)expression);
+        }
+
+        public Expression Expression
+        {
+            get
+            {
+                return (Expression)this.Children[0];
+            }
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
+
+namespace Aquila.Syntax.Ast.Expressions
+{
+    public partial class CastEx : UnaryExBase
+    {
+        public CastEx(Span span, SyntaxKind syntaxKind, Operations operation, Expression expression, TypeRef castType): base(span, syntaxKind, operation, expression)
+        {
+            this.Attach(0, (LangElement)expression);
+            this.Attach(1, (LangElement)castType);
+        }
+
+        public Expression Expression
+        {
+            get
+            {
+                return (Expression)this.Children[0];
+            }
+        }
+
+        public TypeRef CastType
+        {
+            get
+            {
+                return (TypeRef)this.Children[1];
+            }
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitCastEx(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitCastEx(this);
+        }
+    }
+}
+
+namespace Aquila.Syntax.Ast.Expressions
+{
+    public partial class IndexerEx : UnaryExBase
+    {
+        public IndexerEx(Span span, SyntaxKind syntaxKind, Operations operation, Expression indexer, Expression expression): base(span, syntaxKind, operation, expression)
+        {
+            this.Attach(0, (LangElement)indexer);
+            this.Attach(1, (LangElement)expression);
+        }
+
+        public Expression Indexer
+        {
+            get
+            {
+                return (Expression)this.Children[0];
+            }
+        }
+
+        public Expression Expression
+        {
+            get
+            {
+                return (Expression)this.Children[1];
+            }
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitIndexerEx(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitIndexerEx(this);
+        }
+    }
+}
+
+namespace Aquila.Syntax.Ast.Expressions
+{
+    public partial class UnaryEx : UnaryExBase
+    {
+        public UnaryEx(Span span, SyntaxKind syntaxKind, Operations operation, Expression expression): base(span, syntaxKind, operation, expression)
+        {
+            this.Attach(0, (LangElement)expression);
+        }
+
+        public Expression Expression
+        {
+            get
+            {
+                return (Expression)this.Children[0];
+            }
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitUnaryEx(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitUnaryEx(this);
+        }
+    }
+}
+
+namespace Aquila.Syntax.Ast.Expressions
+{
+    public partial class AssignEx : Expression
+    {
+        public AssignEx(Span span, SyntaxKind syntaxKind, Operations operation, Expression rValue, Expression lValue): base(span, syntaxKind, operation)
+        {
+            this.Attach(0, (LangElement)rValue);
+            this.Attach(1, (LangElement)lValue);
+        }
+
+        public Expression RValue
+        {
+            get
+            {
+                return (Expression)this.Children[0];
+            }
+        }
+
+        public Expression LValue
+        {
+            get
+            {
+                return (Expression)this.Children[1];
+            }
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitAssignEx(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitAssignEx(this);
+        }
+    }
+}
+
+namespace Aquila.Syntax.Ast.Expressions
+{
+    public partial class CallEx : Expression
+    {
+        public CallEx(Span span, SyntaxKind syntaxKind, Operations operation, ArgumentList arguments, Expression expression): base(span, syntaxKind, operation)
+        {
+            this.Attach(0, (LangElement)arguments);
+            this.Attach(1, (LangElement)expression);
+        }
+
+        public ArgumentList Arguments
+        {
+            get
+            {
+                return (ArgumentList)this.Children[0];
+            }
+        }
+
+        public Expression Expression
+        {
+            get
+            {
+                return (Expression)this.Children[1];
+            }
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitCallEx(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitCallEx(this);
+        }
+    }
+}
+
+namespace Aquila.Syntax.Ast.Functions
+{
+    public partial class Argument : LangElement
+    {
+        public Argument(Span span, SyntaxKind syntaxKind, Expression expression, PassMethod passMethod = PassMethod.ByValue): base(span, syntaxKind)
+        {
+            this.Attach(0, (LangElement)expression);
+            PassMethod = passMethod;
+        }
+
+        public Expression Expression
+        {
+            get
+            {
+                return (Expression)this.Children[0];
+            }
+        }
+
+        public PassMethod PassMethod
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitArgument(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitArgument(this);
+        }
+    }
+}
+
+namespace Aquila.Syntax.Ast.Expressions
+{
+    public partial class New : Expression
+    {
+        public New(Span span, SyntaxKind syntaxKind, Operations operation,  string  @namespace, CallEx call): base(span, syntaxKind, operation)
+        {
+            Namespace = @namespace;
+            this.Attach(0, (LangElement)call);
+        }
+
+        public string Namespace
+        {
+            get;
+        }
+
+        public CallEx Call
+        {
+            get
+            {
+                return (CallEx)this.Children[0];
+            }
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitNew(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitNew(this);
+        }
+    }
+}
+
+namespace Aquila.Syntax.Ast.Expressions
+{
+    public partial class LiteralEx : Expression
+    {
+        public LiteralEx(Span span, SyntaxKind syntaxKind, Operations operation, String value,  bool  isSqlLiteral): base(span, syntaxKind, operation)
+        {
+            Value = value;
+            IsSqlLiteral = isSqlLiteral;
+        }
+
+        public String Value
+        {
+            get;
+        }
+
+        public bool IsSqlLiteral
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitLiteralEx(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitLiteralEx(this);
+        }
+    }
+}
+
 namespace Aquila.Syntax.Ast.Expressions
 {
     public partial class IncDecEx : Expression
     {
-        public IncDecEx(Span span, SyntaxKind syntaxKind, Expression operand,  bool  isIncrement,  bool  isPost): base(span, syntaxKind)
+        public IncDecEx(Span span, SyntaxKind syntaxKind, Operations operation, Expression operand,  bool  isIncrement,  bool  isPost): base(span, syntaxKind, operation)
         {
             this.Attach(0, (LangElement)operand);
+            IsIncrement = isIncrement;
+            IsPost = isPost;
         }
 
         public Expression Operand
@@ -1112,6 +1082,16 @@ namespace Aquila.Syntax.Ast.Expressions
             {
                 return (Expression)this.Children[0];
             }
+        }
+
+        public bool IsIncrement
+        {
+            get;
+        }
+
+        public bool IsPost
+        {
+            get;
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
@@ -1130,12 +1110,12 @@ namespace Aquila.Syntax.Ast.Expressions
 {
     public partial class ThrowEx : Expression
     {
-        public ThrowEx(Span span, SyntaxKind syntaxKind, Expression exception): base(span, syntaxKind)
+        public ThrowEx(Span span, SyntaxKind syntaxKind, Operations operation, Expression expression): base(span, syntaxKind, operation)
         {
-            this.Attach(0, (LangElement)exception);
+            this.Attach(0, (LangElement)expression);
         }
 
-        public Expression Exception
+        public Expression Expression
         {
             get
             {
@@ -1151,6 +1131,35 @@ namespace Aquila.Syntax.Ast.Expressions
         public override void Accept(AstVisitorBase visitor)
         {
             visitor.VisitThrowEx(this);
+        }
+    }
+}
+
+namespace Aquila.Syntax.Ast.Expressions
+{
+    public partial class NameEx : Expression
+    {
+        public NameEx(Span span, SyntaxKind syntaxKind, Operations operation, IdentifierToken identifier): base(span, syntaxKind, operation)
+        {
+            this.Attach(0, (LangElement)identifier);
+        }
+
+        public IdentifierToken Identifier
+        {
+            get
+            {
+                return (IdentifierToken)this.Children[0];
+            }
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitNameEx(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitNameEx(this);
         }
     }
 }
@@ -1391,11 +1400,11 @@ namespace Aquila.Syntax.Ast.Statements
 {
     public partial class TryStmt : Statement
     {
-        public TryStmt(Span span, SyntaxKind syntaxKind, BlockStmt tryBlock, BlockStmt catchBlock, BlockStmt finallyBlock): base(span, syntaxKind)
+        public TryStmt(Span span, SyntaxKind syntaxKind, BlockStmt tryBlock, CatchList catches, FinallyItem finallyItem): base(span, syntaxKind)
         {
             this.Attach(0, (LangElement)tryBlock);
-            this.Attach(1, (LangElement)catchBlock);
-            this.Attach(2, (LangElement)finallyBlock);
+            this.Attach(1, (LangElement)catches);
+            this.Attach(2, (LangElement)finallyItem);
         }
 
         public BlockStmt TryBlock
@@ -1406,19 +1415,19 @@ namespace Aquila.Syntax.Ast.Statements
             }
         }
 
-        public BlockStmt CatchBlock
+        public CatchList Catches
         {
             get
             {
-                return (BlockStmt)this.Children[1];
+                return (CatchList)this.Children[1];
             }
         }
 
-        public BlockStmt FinallyBlock
+        public FinallyItem FinallyItem
         {
             get
             {
-                return (BlockStmt)this.Children[2];
+                return (FinallyItem)this.Children[2];
             }
         }
 
@@ -1430,6 +1439,64 @@ namespace Aquila.Syntax.Ast.Statements
         public override void Accept(AstVisitorBase visitor)
         {
             visitor.VisitTryStmt(this);
+        }
+    }
+}
+
+namespace Aquila.Syntax.Ast.Statements
+{
+    public partial class CatchItem : LangElement
+    {
+        public CatchItem(Span span, SyntaxKind syntaxKind, BlockStmt block): base(span, syntaxKind)
+        {
+            this.Attach(0, (LangElement)block);
+        }
+
+        public BlockStmt Block
+        {
+            get
+            {
+                return (BlockStmt)this.Children[0];
+            }
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitCatchItem(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitCatchItem(this);
+        }
+    }
+}
+
+namespace Aquila.Syntax.Ast.Statements
+{
+    public partial class FinallyItem : LangElement
+    {
+        public FinallyItem(Span span, SyntaxKind syntaxKind, BlockStmt block): base(span, syntaxKind)
+        {
+            this.Attach(0, (LangElement)block);
+        }
+
+        public BlockStmt Block
+        {
+            get
+            {
+                return (BlockStmt)this.Children[0];
+            }
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitFinallyItem(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitFinallyItem(this);
         }
     }
 }
@@ -1653,12 +1720,17 @@ namespace Aquila.Syntax
             return DefaultVisit(arg);
         }
 
-        public virtual T VisitCompilationUnitList(CompilationUnitList arg)
+        public virtual T VisitCatchList(CatchList arg)
         {
             return DefaultVisit(arg);
         }
 
-        public virtual T VisitCompilationUnit(CompilationUnit arg)
+        public virtual T VisitSourceUnitList(SourceUnitList arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitSourceUnit(SourceUnit arg)
         {
             return DefaultVisit(arg);
         }
@@ -1698,7 +1770,17 @@ namespace Aquila.Syntax
             return DefaultVisit(arg);
         }
 
-        public virtual T VisitIdentifierName(IdentifierName arg)
+        public virtual T VisitNamedTypeRef(NamedTypeRef arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitPredefinedTypeRef(PredefinedTypeRef arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitArrayType(ArrayType arg)
         {
             return DefaultVisit(arg);
         }
@@ -1718,7 +1800,7 @@ namespace Aquila.Syntax
             return DefaultVisit(arg);
         }
 
-        public virtual T VisitLogicalOrArithmeticEx(LogicalOrArithmeticEx arg)
+        public virtual T VisitUnaryEx(UnaryEx arg)
         {
             return DefaultVisit(arg);
         }
@@ -1728,7 +1810,7 @@ namespace Aquila.Syntax
             return DefaultVisit(arg);
         }
 
-        public virtual T VisitCall(Call arg)
+        public virtual T VisitCallEx(CallEx arg)
         {
             return DefaultVisit(arg);
         }
@@ -1748,27 +1830,17 @@ namespace Aquila.Syntax
             return DefaultVisit(arg);
         }
 
-        public virtual T VisitNamedTypeRef(NamedTypeRef arg)
-        {
-            return DefaultVisit(arg);
-        }
-
-        public virtual T VisitPredefinedTypeSyntax(PredefinedTypeSyntax arg)
-        {
-            return DefaultVisit(arg);
-        }
-
-        public virtual T VisitArrayType(ArrayType arg)
-        {
-            return DefaultVisit(arg);
-        }
-
         public virtual T VisitIncDecEx(IncDecEx arg)
         {
             return DefaultVisit(arg);
         }
 
         public virtual T VisitThrowEx(ThrowEx arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitNameEx(NameEx arg)
         {
             return DefaultVisit(arg);
         }
@@ -1809,6 +1881,16 @@ namespace Aquila.Syntax
         }
 
         public virtual T VisitTryStmt(TryStmt arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitCatchItem(CatchItem arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitFinallyItem(FinallyItem arg)
         {
             return DefaultVisit(arg);
         }
@@ -1881,12 +1963,17 @@ namespace Aquila.Syntax
             DefaultVisit(arg);
         }
 
-        public virtual void VisitCompilationUnitList(CompilationUnitList arg)
+        public virtual void VisitCatchList(CatchList arg)
         {
             DefaultVisit(arg);
         }
 
-        public virtual void VisitCompilationUnit(CompilationUnit arg)
+        public virtual void VisitSourceUnitList(SourceUnitList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitSourceUnit(SourceUnit arg)
         {
             DefaultVisit(arg);
         }
@@ -1926,7 +2013,17 @@ namespace Aquila.Syntax
             DefaultVisit(arg);
         }
 
-        public virtual void VisitIdentifierName(IdentifierName arg)
+        public virtual void VisitNamedTypeRef(NamedTypeRef arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitPredefinedTypeRef(PredefinedTypeRef arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitArrayType(ArrayType arg)
         {
             DefaultVisit(arg);
         }
@@ -1946,7 +2043,7 @@ namespace Aquila.Syntax
             DefaultVisit(arg);
         }
 
-        public virtual void VisitLogicalOrArithmeticEx(LogicalOrArithmeticEx arg)
+        public virtual void VisitUnaryEx(UnaryEx arg)
         {
             DefaultVisit(arg);
         }
@@ -1956,7 +2053,7 @@ namespace Aquila.Syntax
             DefaultVisit(arg);
         }
 
-        public virtual void VisitCall(Call arg)
+        public virtual void VisitCallEx(CallEx arg)
         {
             DefaultVisit(arg);
         }
@@ -1976,27 +2073,17 @@ namespace Aquila.Syntax
             DefaultVisit(arg);
         }
 
-        public virtual void VisitNamedTypeRef(NamedTypeRef arg)
-        {
-            DefaultVisit(arg);
-        }
-
-        public virtual void VisitPredefinedTypeSyntax(PredefinedTypeSyntax arg)
-        {
-            DefaultVisit(arg);
-        }
-
-        public virtual void VisitArrayType(ArrayType arg)
-        {
-            DefaultVisit(arg);
-        }
-
         public virtual void VisitIncDecEx(IncDecEx arg)
         {
             DefaultVisit(arg);
         }
 
         public virtual void VisitThrowEx(ThrowEx arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitNameEx(NameEx arg)
         {
             DefaultVisit(arg);
         }
@@ -2037,6 +2124,16 @@ namespace Aquila.Syntax
         }
 
         public virtual void VisitTryStmt(TryStmt arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitCatchItem(CatchItem arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitFinallyItem(FinallyItem arg)
         {
             DefaultVisit(arg);
         }

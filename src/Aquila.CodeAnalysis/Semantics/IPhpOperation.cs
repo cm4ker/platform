@@ -1,10 +1,4 @@
-﻿using Microsoft.CodeAnalysis.Operations;
-using Pchp.CodeAnalysis.FlowAnalysis;
-using Ast = Devsense.PHP.Syntax.Ast;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Pchp.CodeAnalysis.FlowAnalysis;
 using Aquila.Syntax;
 using Microsoft.CodeAnalysis;
 using Peachpie.CodeAnalysis.Utilities;

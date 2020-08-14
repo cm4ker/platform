@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +13,9 @@ using Pchp.CodeAnalysis.Semantics.Graph;
 using System.Reflection.Metadata;
 using System.Diagnostics;
 using System.Collections.Immutable;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Cci = Microsoft.Cci;
 using Pchp.CodeAnalysis.Semantics;
 
@@ -199,13 +202,19 @@ namespace Pchp.CodeAnalysis.CodeGen
         /// Place for loading a reference to <c>this</c>.
         /// </summary>
         public IPlace ThisPlaceOpt => _thisPlace;
+
         readonly IPlace _thisPlace;
 
         /// <summary>
         /// In case code generator emits body of a generator SM method,
         /// gets reference to synthesized method symbol with additional information.
         /// </summary>
-        internal SourceGeneratorSymbol GeneratorStateMachineMethod { get => _smmethod; set => _smmethod = value; }
+        internal SourceGeneratorSymbol GeneratorStateMachineMethod
+        {
+            get => _smmethod;
+            set => _smmethod = value;
+        }
+
         SourceGeneratorSymbol _smmethod;
 
         /// <summary>
@@ -223,8 +232,10 @@ namespace Pchp.CodeAnalysis.CodeGen
         {
             /// <summary>continue to NextBlock</summary>
             None = 0,
+
             /// <summary>continue to next ExtraFinallyBlock, eventually EmitRet</summary>
             Return = 1,
+
             /// <summary>rethrow exception (<see cref="ExceptionToRethrowVariable"/>)</summary>
             Exception = 2,
         }
@@ -289,6 +300,7 @@ namespace Pchp.CodeAnalysis.CodeGen
             get => _typeRefContext ?? this.Routine?.TypeRefContext;
             set => _typeRefContext = value;
         }
+
         TypeRefContext _typeRefContext;
 
         public DiagnosticBag Diagnostics => _diagnostics;
@@ -306,7 +318,7 @@ namespace Pchp.CodeAnalysis.CodeGen
         /// <summary>
         /// Gets a reference to compilation object.
         /// </summary>
-        public Aquila.CodeAnalysis.Symbols.PhpCompilation DeclaringCompilation => _moduleBuilder.Compilation;
+        public PhpCompilation DeclaringCompilation => _moduleBuilder.Compilation;
 
         /// <summary>Gets <see cref="BoundTypeRefFactory"/> instance.</summary>
         BoundTypeRefFactory BoundTypeRefFactory => DeclaringCompilation.TypeRefFactory;
@@ -355,31 +367,39 @@ namespace Pchp.CodeAnalysis.CodeGen
             get => GetSelfType(_callerType ?? (_routine is SourceMethodSymbol ? _routine.ContainingType : null));
             set => _callerType = value;
         }
+
         TypeSymbol _callerType;
         IPlace _callerTypePlace;
 
-        static TypeSymbol GetSelfType(TypeSymbol scope) => scope is SourceTraitTypeSymbol t ? t.TSelfParameter : scope;
+        static TypeSymbol GetSelfType(TypeSymbol scope) =>
+            throw new NotImplementedException(); //scope is SourceTraitTypeSymbol t) ? t.TSelfParameter : scope;
 
         public SourceFileSymbol ContainingFile
         {
             get => _containingFile;
             internal set => _containingFile = value;
         }
+
         SourceFileSymbol _containingFile;
 
-        internal ExitBlock ExitBlock => ((ExitBlock)this.Routine.ControlFlowGraph.Exit);
+        internal ExitBlock ExitBlock => ((ExitBlock) this.Routine.ControlFlowGraph.Exit);
 
         #endregion
 
         #region Construction
 
-        public CodeGenerator(ILBuilder il, PEModuleBuilder moduleBuilder, DiagnosticBag diagnostics, PhpOptimizationLevel optimizations, bool emittingPdb,
-            NamedTypeSymbol container, IPlace contextPlace, IPlace thisPlace, MethodSymbol routine = null, IPlace locals = null, bool localsInitialized = false, IPlace tempLocals = null)
+        public CodeGenerator(ILBuilder il, PEModuleBuilder moduleBuilder, DiagnosticBag diagnostics,
+            PhpOptimizationLevel optimizations, bool emittingPdb,
+            NamedTypeSymbol container, IPlace contextPlace, IPlace thisPlace, MethodSymbol routine = null,
+            IPlace locals = null, bool localsInitialized = false, IPlace tempLocals = null)
         {
             Contract.ThrowIfNull(il);
             Contract.ThrowIfNull(moduleBuilder);
 
-            if (localsInitialized) { Debug.Assert(locals != null); }
+            if (localsInitialized)
+            {
+                Debug.Assert(locals != null);
+            }
 
             _il = il;
             _moduleBuilder = moduleBuilder;
@@ -413,15 +433,19 @@ namespace Pchp.CodeAnalysis.CodeGen
         /// Used for emitting in a context of a different routine (parameter initializer).
         /// </summary>
         public CodeGenerator(CodeGenerator cg, SourceRoutineSymbol routine)
-            : this(cg._il, cg._moduleBuilder, cg._diagnostics, cg._optimizations, cg._emitPdbSequencePoints, routine.ContainingType, cg.ContextPlaceOpt, cg.ThisPlaceOpt, routine, cg._localsPlaceOpt, cg.InitializedLocals)
+            : this(cg._il, cg._moduleBuilder, cg._diagnostics, cg._optimizations, cg._emitPdbSequencePoints,
+                routine.ContainingType, cg.ContextPlaceOpt, cg.ThisPlaceOpt, routine, cg._localsPlaceOpt,
+                cg.InitializedLocals)
         {
             _emmittedTag = cg._emmittedTag;
             GeneratorStateLocal = cg.GeneratorStateLocal;
             ExtraFinallyBlock = cg.ExtraFinallyBlock;
         }
 
-        public CodeGenerator(SourceRoutineSymbol routine, ILBuilder il, PEModuleBuilder moduleBuilder, DiagnosticBag diagnostics, PhpOptimizationLevel optimizations, bool emittingPdb)
-            : this(il, moduleBuilder, diagnostics, optimizations, emittingPdb, routine.ContainingType, routine.GetContextPlace(moduleBuilder), routine.GetThisPlace(), routine)
+        public CodeGenerator(SourceRoutineSymbol routine, ILBuilder il, PEModuleBuilder moduleBuilder,
+            DiagnosticBag diagnostics, PhpOptimizationLevel optimizations, bool emittingPdb)
+            : this(il, moduleBuilder, diagnostics, optimizations, emittingPdb, routine.ContainingType,
+                routine.GetContextPlace(moduleBuilder), routine.GetThisPlace(), routine)
         {
             Contract.ThrowIfNull(routine);
 
@@ -449,7 +473,7 @@ namespace Pchp.CodeAnalysis.CodeGen
             for (var t = method.ContainingType; t != null; t = t.ContainingType)
             {
                 if (t is SourceFileSymbol s) return s;
-                if (t is SourceTypeSymbol st) return st.ContainingFile;
+                //if (t is SourceTypeSymbol st) return st.ContainingFile;
             }
 
             return null;
@@ -461,7 +485,8 @@ namespace Pchp.CodeAnalysis.CodeGen
             if (routine is SourceGlobalMethodSymbol)
             {
                 // second parameter
-                Debug.Assert(routine.ParameterCount >= 2 && routine.Parameters[1].Name == SpecialParameterSymbol.LocalsName);
+                Debug.Assert(routine.ParameterCount >= 2 &&
+                             routine.Parameters[1].Name == SpecialParameterSymbol.LocalsName);
 
                 localsAlreadyInitialized = true;
                 return new ParamPlace(routine.Parameters[1]);
@@ -470,7 +495,9 @@ namespace Pchp.CodeAnalysis.CodeGen
             {
                 // declare PhpArray <locals>
                 var symbol = new SynthesizedLocalSymbol(Routine, "<locals>", CoreTypes.PhpArray);
-                var localsDef = this.Builder.LocalSlotManager.DeclareLocal((Cci.ITypeReference)symbol.Type, symbol, symbol.Name, SynthesizedLocalKind.OptimizerTemp, LocalDebugId.None, 0, LocalSlotConstraints.None, ImmutableArray<bool>.Empty, ImmutableArray<string>.Empty, false);
+                var localsDef = this.Builder.LocalSlotManager.DeclareLocal((Cci.ITypeReference) symbol.Type, symbol,
+                    symbol.Name, SynthesizedLocalKind.OptimizerTemp, LocalDebugId.None, 0, LocalSlotConstraints.None,
+                    ImmutableArray<bool>.Empty, ImmutableArray<string>.Empty, false);
 
                 localsAlreadyInitialized = false;
                 return new LocalPlace(localsDef);
@@ -564,7 +591,6 @@ namespace Pchp.CodeAnalysis.CodeGen
 
         void IDisposable.Dispose()
         {
-
         }
 
         #endregion
@@ -586,6 +612,9 @@ namespace Pchp.CodeAnalysis.CodeGen
     {
         readonly string _name;
 
-        public NamedLabel(string name) { _name = name; }
+        public NamedLabel(string name)
+        {
+            _name = name;
+        }
     }
 }

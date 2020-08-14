@@ -7,12 +7,18 @@ using System.Linq;
 using System.Threading;
 using Aquila.CodeAnalysis.Symbols.Attributes;
 using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.CodeAnalysis.Syntax;
+using Aquila.Compiler.Utilities;
+using Aquila.Syntax.Ast.Functions;
+using Aquila.Syntax.Errors;
+using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis;
 using Pchp.CodeAnalysis.Utilities;
 using Roslyn.Utilities;
 
-namespace Aquila.CodeAnalysis.Symbols.Source
+namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// Represents a file within the mudule as a CLR type.
@@ -38,7 +44,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         /// <summary>
         /// List of functions declared within the file.
         /// </summary>
-        public ImmutableArray<SourceFunctionSymbol> Functions => _lazyMembers.OfType<SourceFunctionSymbol>().ToImmutableArray();
+        public ImmutableArray<SourceFunctionSymbol> Functions =>
+            _lazyMembers.OfType<SourceFunctionSymbol>().ToImmutableArray();
 
         /// <summary>
         /// List of types declared within the file.
@@ -88,32 +95,29 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         IEnumerable<SourceLambdaSymbol> ILambdaContainerSymbol.Lambdas
         {
-            get
-            {
-                return _lazyMembers.OfType<SourceLambdaSymbol>();
-            }
+            get { return _lazyMembers.OfType<SourceLambdaSymbol>(); }
         }
 
-        SourceLambdaSymbol ILambdaContainerSymbol.ResolveLambdaSymbol(LambdaFunctionExpr expr)
-        {
-            if (_lazyMembers != null)
-            {
-                for (int i = 0; i < _lazyMembers.Count; i++)
-                {
-                    if (_lazyMembers[i] is SourceLambdaSymbol s && s.Syntax == expr)
-                    {
-                        return s;
-                    }
-                }
-            }
-
-            if (expr == null)
-            {
-                throw new ArgumentNullException(nameof(expr));
-            }
-
-            throw ExceptionUtilities.Unreachable;
-        }
+        // SourceLambdaSymbol ILambdaContainerSymbol.ResolveLambdaSymbol(LambdaFunctionExpr expr)
+        // {
+        //     if (_lazyMembers != null)
+        //     {
+        //         for (int i = 0; i < _lazyMembers.Count; i++)
+        //         {
+        //             if (_lazyMembers[i] is SourceLambdaSymbol s && s.Syntax == expr)
+        //             {
+        //                 return s;
+        //             }
+        //         }
+        //     }
+        //
+        //     if (expr == null)
+        //     {
+        //         throw new ArgumentNullException(nameof(expr));
+        //     }
+        //
+        //     throw ExceptionUtilities.Unreachable;
+        // }
 
         /// <summary>
         /// Collects declaration diagnostics.
@@ -136,7 +140,9 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
                     if (!set.Add(f.QualifiedName))
                     {
-                        diagnostic.Add(DiagnosticBagExtensions.ParserDiagnostic(_syntaxTree, ((FunctionDecl)f.Syntax).HeadingSpan, Devsense.PHP.Errors.FatalErrors.FunctionRedeclared, f.QualifiedName.ToString()));
+                        diagnostic.Add(DiagnosticBagExtensions.ParserDiagnostic(_syntaxTree,
+                            ((MethodDecl) f.Syntax).Identifier.Span, FatalErrors.FunctionRedeclared,
+                            f.QualifiedName.ToString()));
                     }
                 }
 
@@ -164,7 +170,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
                     if (!set.Add(t.FullName))
                     {
-                        diagnostic.Add(DiagnosticBagExtensions.ParserDiagnostic(_syntaxTree, t.Syntax.HeadingSpan, Devsense.PHP.Errors.FatalErrors.TypeRedeclared, t.FullName.ToString()));
+                        diagnostic.Add(DiagnosticBagExtensions.ParserDiagnostic(_syntaxTree, t.Syntax.HeadingSpan,
+                            FatalErrors.TypeRedeclared, t.FullName.ToString()));
                     }
                 }
             }
@@ -178,7 +185,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
             if (!string.IsNullOrEmpty(_compilation.Options.SubDirectory))
             {
-                relpath = PhpFileUtilities.NormalizeSlashes(PathUtilities.CombinePathsUnchecked(_compilation.Options.SubDirectory, relpath));
+                relpath = PhpFileUtilities.NormalizeSlashes(
+                    PathUtilities.CombinePathsUnchecked(_compilation.Options.SubDirectory, relpath));
             }
 
             return relpath;
@@ -194,7 +202,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             get
             {
                 return (PathUtilities.GetDirectoryName(this.RelativeFilePath) ?? string.Empty)
-                    .TrimEnd(PathUtilities.AltDirectorySeparatorChar);     // NormalizeRelativeDirectoryPath
+                    .TrimEnd(PathUtilities.AltDirectorySeparatorChar); // NormalizeRelativeDirectoryPath
             }
         }
 
@@ -244,7 +252,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                     namedproperties = ImmutableArray.Create(
                         new KeyValuePair<string, TypedConstant>(
                             CoreMethods.ScriptAttribute_IsAutoloaded, DeclaringCompilation.CreateTypedConstant(true))
-                        );
+                    );
                 }
 
                 var scriptAttribute = new SynthesizedAttributeData(
@@ -262,17 +270,15 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public override NamedTypeSymbol BaseType
         {
-            get
-            {
-                return _compilation.CoreTypes.Object;
-            }
+            get { return _compilation.CoreTypes.Object; }
         }
 
         public override int Arity => 0;
 
         internal override bool HasTypeArgumentsCustomModifiers => false;
 
-        public override ImmutableArray<CustomModifier> GetTypeArgumentCustomModifiers(int ordinal) => GetEmptyTypeArgumentCustomModifiers(ordinal);
+        public override ImmutableArray<CustomModifier> GetTypeArgumentCustomModifiers(int ordinal) =>
+            GetEmptyTypeArgumentCustomModifiers(ordinal);
 
         public override Symbol ContainingSymbol => _compilation.SourceModule;
 
@@ -284,10 +290,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
         }
 
         internal override bool IsInterface => false;
@@ -304,7 +307,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         {
             get
             {
-                return ImmutableArray.Create(Location.Create(SyntaxTree, default(Microsoft.CodeAnalysis.Text.TextSpan)));
+                return ImmutableArray.Create(Location.Create(SyntaxTree,
+                    default(Microsoft.CodeAnalysis.Text.TextSpan)));
             }
         }
 
@@ -356,18 +360,22 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public override ImmutableArray<MethodSymbol> StaticConstructors => ImmutableArray<MethodSymbol>.Empty;
 
-        public override ImmutableArray<NamedTypeSymbol> GetTypeMembers() => _lazyMembers.OfType<NamedTypeSymbol>().AsImmutable();
+        public override ImmutableArray<NamedTypeSymbol> GetTypeMembers() =>
+            _lazyMembers.OfType<NamedTypeSymbol>().AsImmutable();
 
-        public override ImmutableArray<NamedTypeSymbol> GetTypeMembers(string name) => _lazyMembers.OfType<NamedTypeSymbol>().Where(t => t.Name.Equals(name, StringComparison.OrdinalIgnoreCase)).AsImmutable();
+        public override ImmutableArray<NamedTypeSymbol> GetTypeMembers(string name) => _lazyMembers
+            .OfType<NamedTypeSymbol>().Where(t => t.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+            .AsImmutable();
 
         internal override IEnumerable<IFieldSymbol> GetFieldsToEmit() => GetMembers().OfType<FieldSymbol>();
 
-        internal override ImmutableArray<NamedTypeSymbol> GetInterfacesToEmit() => ImmutableArray<NamedTypeSymbol>.Empty;
+        internal override ImmutableArray<NamedTypeSymbol> GetInterfacesToEmit() =>
+            ImmutableArray<NamedTypeSymbol>.Empty;
 
         internal override IEnumerable<IMethodSymbol> GetMethodsToEmit() =>
             GetMembers()
-            .Where(m => m.Kind == SymbolKind.Method && !m.IsUnreachable)
-            .Cast<IMethodSymbol>();
+                .Where(m => m.Kind == SymbolKind.Method && !m.IsUnreachable)
+                .Cast<IMethodSymbol>();
     }
 
     /// <summary>

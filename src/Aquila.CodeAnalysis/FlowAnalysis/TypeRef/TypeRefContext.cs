@@ -1,14 +1,15 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using Devsense.PHP.Syntax;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Semantics;
 using Pchp.CodeAnalysis.Semantics;
 using Pchp.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Symbols;
+using Aquila.Syntax.Syntax;
 using Peachpie.CodeAnalysis.Utilities;
-using AST = Devsense.PHP.Syntax.Ast;
+
 
 namespace Pchp.CodeAnalysis.FlowAnalysis
 {
@@ -50,7 +51,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 else
                 {
                     var enumerator = GetEnumerator();
-                    return enumerator.MoveNext() ? enumerator.Current : null;   // always true
+                    return enumerator.MoveNext() ? enumerator.Current : null; // always true
                 }
             }
 
@@ -81,11 +82,10 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                     }
                     else
                     {
-
                         var mask = _tmask;
                         int count = 0;
 
-                        for (int i = 0; mask != 0; i++, mask = (mask & ~(ulong)1) >> 1)
+                        for (int i = 0; mask != 0; i++, mask = (mask & ~(ulong) 1) >> 1)
                         {
                             if ((mask & 1) != 0) count++;
                         }
@@ -103,7 +103,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             /// <summary>
             /// Creates array and selects items into it.
             /// </summary>
-            public TResult[]/*!!*/Select<TResult>(Func<IBoundTypeRef, TResult> selector)
+            public TResult[] /*!!*/ Select<TResult>(Func<IBoundTypeRef, TResult> selector)
             {
                 var count = this.Count;
                 if (count == 0)
@@ -119,6 +119,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                     {
                         array[index++] = selector(enumerator.Current);
                     }
+
                     Debug.Assert(index == count);
                     return array;
                 }
@@ -169,7 +170,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             /// <summary>
             /// Determines whether all elements of a sequence satisfy a condition.
             /// </summary>
-            public bool All(Func<IBoundTypeRef, bool>/*!*/predicate)
+            public bool All(Func<IBoundTypeRef, bool> /*!*/predicate)
             {
                 if (!IsEmpty)
                 {
@@ -178,7 +179,6 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                     {
                         if (!predicate(enumerator.Current)) return false;
                     }
-
                 }
 
                 return true;
@@ -193,8 +193,10 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         {
             readonly TypeRefContext _ctx;
 
-            ulong _tmask;   // mask which bits are trimmed and moved by {_index} so we can quickly check there are no remaininig types
-            int _index;     // internal index to {_ctx._typeRefs}
+            ulong
+                _tmask; // mask which bits are trimmed and moved by {_index} so we can quickly check there are no remaininig types
+
+            int _index; // internal index to {_ctx._typeRefs}
 
             public TypeRefEnumerator(TypeRefContext ctx, ulong tmask)
             {
@@ -229,8 +231,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                     _index++;
 
                     isvalid = (_tmask & 1ul) != 0;
-                    _tmask >>= 1;   // move bit mask
-
+                    _tmask >>= 1; // move bit mask
                 } while (!isvalid && _tmask != 0); // found or remaining bits are zero
 
                 return isvalid;
@@ -245,10 +246,30 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// Bit masks initialized when such type is added to the context.
         /// Its bits corresponds to <see cref="_typeRefs"/> indices.
         /// </summary>
-        private ulong _isNullMask, _isObjectMask, _isArrayMask, _isLongMask, _isDoubleMask, _isBoolMask, _isStringMask, _isWritableStringMask, _isLambdaMask;
-        private ulong IsNumberMask { get { return _isLongMask | _isDoubleMask; } }
-        private ulong IsAStringMask { get { return _isStringMask | _isWritableStringMask; } }
-        private ulong IsNullableMask { get { return _isNullMask | _isObjectMask | _isArrayMask | IsAStringMask | _isLambdaMask; } }
+        private ulong _isNullMask,
+            _isObjectMask,
+            _isArrayMask,
+            _isLongMask,
+            _isDoubleMask,
+            _isBoolMask,
+            _isStringMask,
+            _isWritableStringMask,
+            _isLambdaMask;
+
+        private ulong IsNumberMask
+        {
+            get { return _isLongMask | _isDoubleMask; }
+        }
+
+        private ulong IsAStringMask
+        {
+            get { return _isStringMask | _isWritableStringMask; }
+        }
+
+        private ulong IsNullableMask
+        {
+            get { return _isNullMask | _isObjectMask | _isArrayMask | IsAStringMask | _isLambdaMask; }
+        }
 
         ///// <summary>
         ///// Allowed types for array key.
@@ -258,10 +279,11 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// List of types occuring in the context.
         /// </summary>
-        private readonly List<IBoundTypeRef>/*!*/_typeRefs = new List<IBoundTypeRef>();
+        private readonly List<IBoundTypeRef> /*!*/
+            _typeRefs = new List<IBoundTypeRef>();
 
         /// <summary>Corresponding compilation object. Cannot be <c>null</c>.</summary>
-        private readonly Aquila.CodeAnalysis.Symbols.PhpCompilation _compilation;
+        private readonly PhpCompilation _compilation;
 
         internal BoundTypeRefFactory BoundTypeRefFactory => _compilation.TypeRefFactory;
 
@@ -270,6 +292,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// Can be <c>null</c>.
         /// </summary>
         internal NamedTypeSymbol SelfType => _selfType;
+
         private readonly SourceTypeSymbol _selfType;
 
         /// <summary>
@@ -277,6 +300,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// Can be <c>null</c> if <c>$this</c> is resolved in runtime.
         /// </summary>
         internal NamedTypeSymbol ThisType => _thisType;
+
         private readonly SourceTypeSymbol _thisType;
 
         /// <summary>
@@ -288,11 +312,13 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
         #region Initialization
 
-        internal TypeRefContext(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, SourceTypeSymbol selfType)
+        internal TypeRefContext(PhpCompilation compilation, SourceTypeSymbol selfType)
             : this(compilation, selfType, thisType: selfType)
-        { }
+        {
+        }
 
-        internal TypeRefContext(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, SourceTypeSymbol selfType, SourceTypeSymbol thisType)
+        internal TypeRefContext(PhpCompilation compilation, SourceTypeSymbol selfType,
+            SourceTypeSymbol thisType)
         {
             _compilation = compilation ?? throw ExceptionUtilities.ArgumentNull(nameof(compilation));
             _selfType = selfType;
@@ -317,7 +343,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// </summary>
         /// <param name="typeRef">Type reference to be in the context.</param>
         /// <returns>Index of the type within the context. Can return <c>-1</c> if there is too many types in the context already.</returns>
-        public int AddToContext(IBoundTypeRef/*!*/typeRef)
+        public int AddToContext(IBoundTypeRef /*!*/typeRef)
         {
             Contract.ThrowIfNull(typeRef);
 
@@ -330,7 +356,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             return index;
         }
 
-        private int AddToContextNoCheck(IBoundTypeRef/*!*/typeRef)
+        private int AddToContextNoCheck(IBoundTypeRef /*!*/typeRef)
         {
             Contract.ThrowIfNull(typeRef);
             Debug.Assert(_typeRefs.IndexOf(typeRef) == -1);
@@ -349,11 +375,11 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// </summary>
         /// <param name="typeRef">Type.</param>
         /// <param name="index">Type index.</param>
-        private void UpdateMasks(IBoundTypeRef/*!*/typeRef, int index)
+        private void UpdateMasks(IBoundTypeRef /*!*/typeRef, int index)
         {
             Debug.Assert(index >= 0 && index < TypeRefMask.IndicesCount);
 
-            ulong mask = (ulong)1 << index;
+            ulong mask = (ulong) 1 << index;
 
             if (typeRef.IsObject) _isObjectMask |= mask;
             if (typeRef.IsArray) _isArrayMask |= mask;
@@ -389,7 +415,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// Adds properly types from another context.
         /// </summary>
         /// <param name="other">Another type context which types will be added to this one.</param>
-        internal void AddToContext(TypeRefContext/*!*/other)
+        internal void AddToContext(TypeRefContext /*!*/other)
         {
             Contract.ThrowIfNull(other);
 
@@ -405,7 +431,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// <param name="context">Context of <paramref name="mask"/>.</param>
         /// <param name="mask">Type mask representing types in <paramref name="context"/>.</param>
         /// <returns>Returns type mask in this context representing <paramref name="mask"/> as <paramref name="context"/>.</returns>
-        public TypeRefMask AddToContext(TypeRefContext/*!*/context, TypeRefMask mask)
+        public TypeRefMask AddToContext(TypeRefContext /*!*/context, TypeRefMask mask)
         {
             Contract.ThrowIfNull(context);
 
@@ -440,7 +466,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets enumeration of types matching given masks.
         /// </summary>
-        private TypeRefEnumerable/*!!*/GetTypes(TypeRefMask typemask, ulong bitmask)
+        private TypeRefEnumerable /*!!*/ GetTypes(TypeRefMask typemask, ulong bitmask)
         {
             var mask = typemask.Mask & bitmask & ~TypeRefMask.FlagsMask;
             if (mask == 0ul || typemask.IsAnyType)
@@ -453,7 +479,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             }
         }
 
-        private TypeRefMask GetPrimitiveTypeRefMask(IBoundTypeRef/*!*/typeref)
+        private TypeRefMask GetPrimitiveTypeRefMask(IBoundTypeRef /*!*/typeref)
         {
             Debug.Assert(typeref.IsPrimitiveType);
 
@@ -465,7 +491,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Does not lookup existing types whether there is typeref already.
         /// </summary>
-        private TypeRefMask GetPrimitiveTypeRefMaskNoCheck(IBoundTypeRef/*!*/typeref)
+        private TypeRefMask GetPrimitiveTypeRefMaskNoCheck(IBoundTypeRef /*!*/typeref)
         {
             Debug.Assert(typeref.IsPrimitiveType);
 
@@ -487,7 +513,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Helper method that builds <see cref="TypeRefMask"/> for given type in this context.
         /// </summary>
-        public TypeRefMask GetTypeMask(IBoundTypeRef/*!*/typeref, bool includesSubclasses)
+        public TypeRefMask GetTypeMask(IBoundTypeRef /*!*/typeref, bool includesSubclasses)
         {
             var index = AddToContext(typeref);
             var mask = TypeRefMask.CreateFromTypeIndex(index);
@@ -630,7 +656,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         public TypeRefMask GetCallableTypeMask()
         {
             // string | Closure | array | object
-            return GetStringTypeMask() | GetWritableStringTypeMask() | GetClosureTypeMask() | GetArrayTypeMask() | GetSystemObjectTypeMask();
+            return GetStringTypeMask() | GetWritableStringTypeMask() | GetClosureTypeMask() | GetArrayTypeMask() |
+                   GetSystemObjectTypeMask();
         }
 
         /// <summary>
@@ -650,11 +677,11 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
             if (elementType.IsAnyType)
             {
-                result = GetArrayTypeMask();  // generic array
+                result = GetArrayTypeMask(); // generic array
             }
             else if (elementType.IsVoid)
             {
-                result = GetTypeMask(new BoundArrayTypeRef(0), false);   // empty array
+                result = GetTypeMask(new BoundArrayTypeRef(0), false); // empty array
             }
             else if (elementType.IsSingleType)
             {
@@ -664,7 +691,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             {
                 result = 0;
 
-                if ((elementType & _isArrayMask) != 0)  // array elements contain another arrays
+                if ((elementType & _isArrayMask) != 0) // array elements contain another arrays
                 {
                     // simplify this to generic arrays
                     elementType &= ~_isArrayMask;
@@ -674,11 +701,11 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 // construct array type mask from array types with single element type
 
                 // go through all array types
-                var mask = elementType & ~(ulong)TypeRefMask.FlagsMask;
-                for (int i = 0; mask != 0; i++, mask = (mask & ~(ulong)1) >> 1)
-                    if ((mask & 1) != 0)    // _typeRefs[i].IsArray
+                var mask = elementType & ~(ulong) TypeRefMask.FlagsMask;
+                for (int i = 0; mask != 0; i++, mask = (mask & ~(ulong) 1) >> 1)
+                    if ((mask & 1) != 0) // _typeRefs[i].IsArray
                     {
-                        result |= GetTypeMask(new BoundArrayTypeRef((ulong)1 << i), false);
+                        result |= GetTypeMask(new BoundArrayTypeRef((ulong) 1 << i), false);
                     }
             }
 
@@ -742,7 +769,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         {
             if (_staticTypeMask == 0)
             {
-                _staticTypeMask = GetThisTypeMask();    // including subclasses
+                _staticTypeMask = GetThisTypeMask(); // including subclasses
             }
 
             return _staticTypeMask;
@@ -785,12 +812,15 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets enumeration of all types in the context.
         /// </summary>
-        public IList<IBoundTypeRef>/*!*/Types { get { return _typeRefs; } }
+        public IList<IBoundTypeRef> /*!*/ Types
+        {
+            get { return _typeRefs; }
+        }
 
         /// <summary>
         /// Gets types referenced by given type mask.
         /// </summary>
-        public TypeRefEnumerable/*!*/GetTypes(TypeRefMask mask)
+        public TypeRefEnumerable /*!*/ GetTypes(TypeRefMask mask)
         {
             return GetTypes(mask, TypeRefMask.AnyTypeMask);
         }
@@ -798,7 +828,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets types of type <c>object</c> (classes, interfaces, traits) referenced by given type mask.
         /// </summary>
-        public TypeRefEnumerable/*!*/GetObjectTypes(TypeRefMask mask)
+        public TypeRefEnumerable /*!*/ GetObjectTypes(TypeRefMask mask)
         {
             return mask.IsAnyType
                 ? default
@@ -868,72 +898,114 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets index of the given type within the context. Returns <c>-1</c> if such type is not present.
         /// </summary>
-        int GetTypeIndex(IBoundTypeRef/*!*/typeref) { return _typeRefs.IndexOf(typeref); }
+        int GetTypeIndex(IBoundTypeRef /*!*/typeref)
+        {
+            return _typeRefs.IndexOf(typeref);
+        }
 
         /// <summary>
         /// Gets value indicating whether given type mask represents a number.
         /// </summary>
-        public bool IsNumber(TypeRefMask mask) { return (mask.Mask & IsNumberMask) != 0; }
+        public bool IsNumber(TypeRefMask mask)
+        {
+            return (mask.Mask & IsNumberMask) != 0;
+        }
 
         /// <summary>
         /// Gets value indicating the type represents <c>NULL</c>.
         /// </summary>
-        public bool IsNull(TypeRefMask mask) { return (mask.Mask & _isNullMask) != 0 && !mask.IsAnyType; }
+        public bool IsNull(TypeRefMask mask)
+        {
+            return (mask.Mask & _isNullMask) != 0 && !mask.IsAnyType;
+        }
 
         /// <summary>
         /// Gets value indicating whether given type mask represents a string type (readonly or writable).
         /// </summary>
-        public bool IsAString(TypeRefMask mask) { return (mask.Mask & IsAStringMask) != 0; }
+        public bool IsAString(TypeRefMask mask)
+        {
+            return (mask.Mask & IsAStringMask) != 0;
+        }
 
         /// <summary>
         /// Gets value indicating whether given type mask represents UTF16 readonly string.
         /// </summary>
-        public bool IsReadonlyString(TypeRefMask mask) { return (mask.Mask & _isStringMask) != 0; }
+        public bool IsReadonlyString(TypeRefMask mask)
+        {
+            return (mask.Mask & _isStringMask) != 0;
+        }
 
         /// <summary>
         /// Gets value indicating whether given type mask represents a writablke string (string builder).
         /// </summary>
-        public bool IsWritableString(TypeRefMask mask) { return (mask.Mask & _isWritableStringMask) != 0; }
+        public bool IsWritableString(TypeRefMask mask)
+        {
+            return (mask.Mask & _isWritableStringMask) != 0;
+        }
 
         /// <summary>
         /// Gets value indicating whether given type mask represents a boolean.
         /// </summary>
-        public bool IsBoolean(TypeRefMask mask) { return (mask.Mask & _isBoolMask) != 0; }
+        public bool IsBoolean(TypeRefMask mask)
+        {
+            return (mask.Mask & _isBoolMask) != 0;
+        }
 
         /// <summary>
         /// Gets value indicating whether given type mask represents an integer type.
         /// </summary>
-        public bool IsLong(TypeRefMask mask) { return (mask.Mask & _isLongMask) != 0; }
+        public bool IsLong(TypeRefMask mask)
+        {
+            return (mask.Mask & _isLongMask) != 0;
+        }
 
         /// <summary>
         /// Gets value indicating whether given type mask represents a double type.
         /// </summary>
-        public bool IsDouble(TypeRefMask mask) { return (mask.Mask & _isDoubleMask) != 0; }
+        public bool IsDouble(TypeRefMask mask)
+        {
+            return (mask.Mask & _isDoubleMask) != 0;
+        }
 
         /// <summary>
         /// Gets value indicating whether given type mask represents an object.
         /// </summary>
-        public bool IsObject(TypeRefMask mask) { return (mask.Mask & _isObjectMask) != 0; }
+        public bool IsObject(TypeRefMask mask)
+        {
+            return (mask.Mask & _isObjectMask) != 0;
+        }
 
         /// <summary>
         /// Gets value indicating whether given type mask represents only object(s).
         /// </summary>
-        public bool IsObjectOnly(TypeRefMask mask) { return IsObject(mask) && (mask.TypesMask & ~_isObjectMask) == 0; }
+        public bool IsObjectOnly(TypeRefMask mask)
+        {
+            return IsObject(mask) && (mask.TypesMask & ~_isObjectMask) == 0;
+        }
 
         /// <summary>
         /// Gets value indicating whether given type mask represents an array.
         /// </summary>
-        public bool IsArray(TypeRefMask mask) { return (mask.Mask & _isArrayMask) != 0; }
+        public bool IsArray(TypeRefMask mask)
+        {
+            return (mask.Mask & _isArrayMask) != 0;
+        }
 
         /// <summary>
         /// Gets value indicating whether given type mask represents only array(s).
         /// </summary>
-        public bool IsArrayOnly(TypeRefMask mask) { return IsArray(mask) && (mask.TypesMask & ~_isArrayMask) == 0; }
+        public bool IsArrayOnly(TypeRefMask mask)
+        {
+            return IsArray(mask) && (mask.TypesMask & ~_isArrayMask) == 0;
+        }
 
         /// <summary>
         /// Gets value indicating whether given type mask represents a lambda function or <c>callable</c> primitive type.
         /// </summary>
-        public bool IsLambda(TypeRefMask mask) { return (mask.Mask & _isLambdaMask) != 0; }
+        public bool IsLambda(TypeRefMask mask)
+        {
+            return (mask.Mask & _isLambdaMask) != 0;
+        }
 
         ///// <summary>
         ///// Gets value indicating whether given type mask represents a resource.
@@ -943,7 +1015,10 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets value indicating whether given type can be <c>null</c>.
         /// </summary>
-        public bool IsNullable(TypeRefMask mask) { return (mask.Mask & IsNullableMask) != 0; }
+        public bool IsNullable(TypeRefMask mask)
+        {
+            return (mask.Mask & IsNullableMask) != 0;
+        }
 
         //public bool IsArrayKey(TypeRefMask mask) { return (mask.Mask & IsArrayKeyMask) != 0; }  // TODO: type can be of type object with method __toString() ?
 
@@ -955,7 +1030,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             TypeRefMask result;
             if (IsArray(mask) && !mask.IsAnyType)
             {
-                result = default(TypeRefMask);  // uninitalized
+                result = default(TypeRefMask); // uninitalized
 
                 var arrtypes = GetTypes(mask, _isArrayMask);
                 foreach (var t in arrtypes)
@@ -1002,7 +1077,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             // TODO: Consider adding _isResource mask if needed for efficiency
             // TODO: Consider traversing the combinations of inheritance tree in the case of objects, arrays and resources (skipped for inefficiency)
             return
-                (a & b & ~TypeRefMask.FlagsMask) != 0   // Either one of them is mixed or there is at least one type present in both
+                (a & b & ~TypeRefMask.FlagsMask) !=
+                0 // Either one of them is mixed or there is at least one type present in both
                 || a.IsRef || b.IsRef
                 || (IsObject(a) && IsObject(b))
                 || (IsArray(a) && IsArray(b))

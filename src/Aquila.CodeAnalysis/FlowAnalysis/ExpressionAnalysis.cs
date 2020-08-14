@@ -9,10 +9,15 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Symbols.PE;
+using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Compiler.Utilities;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Syntax;
-using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
+
 
 
 namespace Pchp.CodeAnalysis.FlowAnalysis
@@ -45,7 +50,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// </summary>
         internal TypeRefContext TypeCtx => State.TypeRefContext;
 
-        protected Aquila.CodeAnalysis.Symbols.PhpCompilation DeclaringCompilation => _model.Compilation;
+        protected PhpCompilation DeclaringCompilation => _model.Compilation;
 
         protected BoundTypeRefFactory BoundTypeRefFactory => DeclaringCompilation.TypeRefFactory;
 
@@ -2085,8 +2090,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 // include (dirname( __FILE__ ) . path) // changed to (__DIR__ . path) by graph rewriter
                 // include (__DIR__ . path)
                 if (concat.ArgumentsInSourceOrder.Length == 2 &&
-                    concat.ArgumentsInSourceOrder[0].Value is BoundPseudoConst pc &&
-                    pc.ConstType == PseudoConstUse.Types.Dir &&
+                    // concat.ArgumentsInSourceOrder[0].Value is BoundPseudoConst pc &&
+                    // pc.ConstType == PseudoConstUse.Types.Dir &&
                     concat.ArgumentsInSourceOrder[1].Value.ConstantValue.TryConvertToString(out path))
                 {
                     // create project relative path
@@ -2343,36 +2348,36 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
         #region VisitLambda
 
-        public override T VisitLambda(BoundLambda x)
-        {
-            var container = (ILambdaContainerSymbol)Routine.ContainingFile;
-            var symbol = container.ResolveLambdaSymbol((LambdaFunctionExpr)x.PhpSyntax);
-            if (symbol == null)
-            {
-                throw ExceptionUtilities.UnexpectedValue(symbol);
-            }
-
-            // lambda uses `static` => we have to know where it is:
-            Routine.Flags |= (symbol.Flags & RoutineFlags.UsesLateStatic);
-
-            // bind arguments to parameters
-            var ps = symbol.SourceParameters;
-
-            // first {N} source parameters correspond to "use" parameters
-            for (int pi = 0; pi < x.UseVars.Length; pi++)
-            {
-                x.UseVars[pi].Parameter = ps[pi];
-                VisitArgument(x.UseVars[pi]);
-            }
-
-            //
-            x.BoundLambdaMethod = symbol;
-            x.ResultType = DeclaringCompilation.CoreTypes.Closure;
-            Debug.Assert(x.ResultType != null);
-            x.TypeRefMask = TypeCtx.GetTypeMask(new BoundLambdaTypeRef(TypeRefMask.AnyType), false); // specific {Closure}, no null, no subclasses
-
-            return default;
-        }
+        // public override T VisitLambda(BoundLambda x)
+        // {
+        //     var container = (ILambdaContainerSymbol)Routine.ContainingFile;
+        //     var symbol = container.ResolveLambdaSymbol((LambdaFunctionExpr)x.PhpSyntax);
+        //     if (symbol == null)
+        //     {
+        //         throw ExceptionUtilities.UnexpectedValue(symbol);
+        //     }
+        //
+        //     // lambda uses `static` => we have to know where it is:
+        //     Routine.Flags |= (symbol.Flags & RoutineFlags.UsesLateStatic);
+        //
+        //     // bind arguments to parameters
+        //     var ps = symbol.SourceParameters;
+        //
+        //     // first {N} source parameters correspond to "use" parameters
+        //     for (int pi = 0; pi < x.UseVars.Length; pi++)
+        //     {
+        //         x.UseVars[pi].Parameter = ps[pi];
+        //         VisitArgument(x.UseVars[pi]);
+        //     }
+        //
+        //     //
+        //     x.BoundLambdaMethod = symbol;
+        //     x.ResultType = DeclaringCompilation.CoreTypes.Closure;
+        //     Debug.Assert(x.ResultType != null);
+        //     x.TypeRefMask = TypeCtx.GetTypeMask(new BoundLambdaTypeRef(TypeRefMask.AnyType), false); // specific {Closure}, no null, no subclasses
+        //
+        //     return default;
+        // }
 
         #endregion
 
@@ -2437,139 +2442,139 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             return default;
         }
 
-        public override T VisitPseudoConstUse(BoundPseudoConst x)
-        {
-            object value = null;
+        // public override T VisitPseudoConstUse(BoundPseudoConst x)
+        // {
+        //     object value = null;
+        //
+        //     switch (x.ConstType)
+        //     {
+        //         case PseudoConstUse.Types.Line:
+        //             value = x.PhpSyntax.ContainingSourceUnit.GetLineFromPosition(x.PhpSyntax.Span.Start) + 1;
+        //             break;
+        //
+        //         case PseudoConstUse.Types.Class:
+        //         case PseudoConstUse.Types.Trait:
+        //             {
+        //                 var containingtype = x.PhpSyntax.ContainingType;
+        //                 if (containingtype != null)
+        //                 {
+        //                     var intrait = containingtype.MemberAttributes.IsTrait();
+        //
+        //                     value = containingtype.QualifiedName.ToString();
+        //
+        //                     if (intrait && x.ConstType == PseudoConstUse.Types.Class)
+        //                     {
+        //                         // __CLASS__ inside trait resolved in runtime
+        //                         x.TypeRefMask = TypeCtx.GetStringTypeMask();
+        //                         return default;
+        //                     }
+        //
+        //                     if (!intrait && x.ConstType == PseudoConstUse.Types.Trait)
+        //                     {
+        //                         // __TRAIT__ inside class is empty string
+        //                         value = string.Empty;
+        //                     }
+        //                 }
+        //                 else
+        //                 {
+        //                     value = string.Empty;
+        //                 }
+        //             }
+        //             break;
+        //
+        //         case PseudoConstUse.Types.Method:
+        //             if (Routine == null)
+        //             {
+        //                 value = string.Empty;
+        //             }
+        //             else if (Routine is SourceLambdaSymbol)
+        //             {
+        //                 // value = __CLASS__::"{closure}"; // PHP 5
+        //                 value = "{closure}";    // PHP 7+
+        //             }
+        //             else
+        //             {
+        //                 var containingtype = x.PhpSyntax.ContainingType;
+        //                 value = containingtype != null
+        //                     ? containingtype.QualifiedName.ToString(new Name(Routine.RoutineName), false)
+        //                     : Routine.RoutineName;
+        //             }
+        //             break;
+        //
+        //         case PseudoConstUse.Types.Function:
+        //             if (Routine is SourceLambdaSymbol)
+        //             {
+        //                 value = "{closure}";
+        //             }
+        //             else
+        //             {
+        //                 value = Routine != null ? Routine.RoutineName : string.Empty;
+        //             }
+        //             break;
+        //
+        //         case PseudoConstUse.Types.Namespace:
+        //             var ns = x.PhpSyntax.ContainingNamespace;
+        //             value = ns != null && ns.QualifiedName.HasValue
+        //                 ? ns.QualifiedName.QualifiedName.NamespacePhpName
+        //                 : string.Empty;
+        //             break;
+        //
+        //         case PseudoConstUse.Types.Dir:
+        //         case PseudoConstUse.Types.File:
+        //             x.TypeRefMask = TypeCtx.GetStringTypeMask();
+        //             return default;
+        //
+        //         default:
+        //             throw ExceptionUtilities.UnexpectedValue(x.ConstType);
+        //     }
+        //
+        //     Debug.Assert(value != null);    // pseudoconstant has been set
+        //
+        //     x.ConstantValue = new Optional<object>(value);
+        //
+        //     if (value is string) x.TypeRefMask = TypeCtx.GetStringTypeMask();
+        //     else if (value is int || value is long) x.TypeRefMask = TypeCtx.GetLongTypeMask();
+        //     else throw ExceptionUtilities.UnexpectedValue(value);
+        //
+        //     return default;
+        // }
 
-            switch (x.ConstType)
-            {
-                case PseudoConstUse.Types.Line:
-                    value = x.PhpSyntax.ContainingSourceUnit.GetLineFromPosition(x.PhpSyntax.Span.Start) + 1;
-                    break;
-
-                case PseudoConstUse.Types.Class:
-                case PseudoConstUse.Types.Trait:
-                    {
-                        var containingtype = x.PhpSyntax.ContainingType;
-                        if (containingtype != null)
-                        {
-                            var intrait = containingtype.MemberAttributes.IsTrait();
-
-                            value = containingtype.QualifiedName.ToString();
-
-                            if (intrait && x.ConstType == PseudoConstUse.Types.Class)
-                            {
-                                // __CLASS__ inside trait resolved in runtime
-                                x.TypeRefMask = TypeCtx.GetStringTypeMask();
-                                return default;
-                            }
-
-                            if (!intrait && x.ConstType == PseudoConstUse.Types.Trait)
-                            {
-                                // __TRAIT__ inside class is empty string
-                                value = string.Empty;
-                            }
-                        }
-                        else
-                        {
-                            value = string.Empty;
-                        }
-                    }
-                    break;
-
-                case PseudoConstUse.Types.Method:
-                    if (Routine == null)
-                    {
-                        value = string.Empty;
-                    }
-                    else if (Routine is SourceLambdaSymbol)
-                    {
-                        // value = __CLASS__::"{closure}"; // PHP 5
-                        value = "{closure}";    // PHP 7+
-                    }
-                    else
-                    {
-                        var containingtype = x.PhpSyntax.ContainingType;
-                        value = containingtype != null
-                            ? containingtype.QualifiedName.ToString(new Name(Routine.RoutineName), false)
-                            : Routine.RoutineName;
-                    }
-                    break;
-
-                case PseudoConstUse.Types.Function:
-                    if (Routine is SourceLambdaSymbol)
-                    {
-                        value = "{closure}";
-                    }
-                    else
-                    {
-                        value = Routine != null ? Routine.RoutineName : string.Empty;
-                    }
-                    break;
-
-                case PseudoConstUse.Types.Namespace:
-                    var ns = x.PhpSyntax.ContainingNamespace;
-                    value = ns != null && ns.QualifiedName.HasValue
-                        ? ns.QualifiedName.QualifiedName.NamespacePhpName
-                        : string.Empty;
-                    break;
-
-                case PseudoConstUse.Types.Dir:
-                case PseudoConstUse.Types.File:
-                    x.TypeRefMask = TypeCtx.GetStringTypeMask();
-                    return default;
-
-                default:
-                    throw ExceptionUtilities.UnexpectedValue(x.ConstType);
-            }
-
-            Debug.Assert(value != null);    // pseudoconstant has been set
-
-            x.ConstantValue = new Optional<object>(value);
-
-            if (value is string) x.TypeRefMask = TypeCtx.GetStringTypeMask();
-            else if (value is int || value is long) x.TypeRefMask = TypeCtx.GetLongTypeMask();
-            else throw ExceptionUtilities.UnexpectedValue(value);
-
-            return default;
-        }
-
-        public override T VisitPseudoClassConstUse(BoundPseudoClassConst x)
-        {
-            base.VisitPseudoClassConstUse(x);
-
-            //
-            if (x.ConstType == PseudoClassConstUse.Types.Class)
-            {
-                x.TypeRefMask = TypeCtx.GetStringTypeMask();
-
-                // resolve the value:
-
-                var type = x.TargetType.Type as TypeSymbol;
-                if (type.IsValidType() && type is IPhpTypeSymbol phpt)
-                {
-                    x.ConstantValue = new Optional<object>(phpt.FullName.ToString());
-                }
-                else
-                {
-                    var tref = x.TargetType.PhpSyntax as TypeRef;
-                    var qname = tref?.QualifiedName;
-                    if (qname.HasValue)
-                    {
-                        if (!qname.Value.IsReservedClassName) // self, static, parent
-                        {
-                            x.ConstantValue = new Optional<object>(qname.Value.ToString());
-                        }
-                    }
-                }
-            }
-            else
-            {
-                throw ExceptionUtilities.UnexpectedValue(x.ConstType);
-            }
-
-            return default;
-        }
+        // public override T VisitPseudoClassConstUse(BoundPseudoClassConst x)
+        // {
+        //     base.VisitPseudoClassConstUse(x);
+        //
+        //     //
+        //     if (x.ConstType == PseudoClassConstUse.Types.Class)
+        //     {
+        //         x.TypeRefMask = TypeCtx.GetStringTypeMask();
+        //
+        //         // resolve the value:
+        //
+        //         var type = x.TargetType.Type as TypeSymbol;
+        //         if (type.IsValidType() && type is IPhpTypeSymbol phpt)
+        //         {
+        //             x.ConstantValue = new Optional<object>(phpt.FullName.ToString());
+        //         }
+        //         else
+        //         {
+        //             var tref = x.TargetType.PhpSyntax as TypeRef;
+        //             var qname = tref?.QualifiedName;
+        //             if (qname.HasValue)
+        //             {
+        //                 if (!qname.Value.IsReservedClassName) // self, static, parent
+        //                 {
+        //                     x.ConstantValue = new Optional<object>(qname.Value.ToString());
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     else
+        //     {
+        //         throw ExceptionUtilities.UnexpectedValue(x.ConstType);
+        //     }
+        //
+        //     return default;
+        // }
 
         public override T VisitGlobalConstUse(BoundGlobalConst x)
         {

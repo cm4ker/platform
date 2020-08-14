@@ -9,7 +9,7 @@ using Cci = Microsoft.Cci;
 using Pchp.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis;
 
-namespace Pchp.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
     internal partial class MethodSymbol :
         Cci.ITypeMemberReference,

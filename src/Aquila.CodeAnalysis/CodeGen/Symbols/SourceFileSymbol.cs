@@ -1,10 +1,7 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.CodeAnalysis;
- using Pchp.CodeAnalysis.Emit;
+﻿using Microsoft.CodeAnalysis;
+using Pchp.CodeAnalysis.Emit;
 
- namespace Aquila.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
     partial class SourceFileSymbol
     {

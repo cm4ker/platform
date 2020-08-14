@@ -5,6 +5,7 @@ using Aquila.Syntax;
 using Aquila.Syntax.Syntax;
 using Pchp.CodeAnalysis;
 using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.Source;
 
 namespace Aquila.Compiler.Utilities
 {
@@ -293,37 +294,37 @@ namespace Aquila.Compiler.Utilities
             return null;
         }
 
-        /// <summary>
-        /// Gets value indicating whether the expression is in form of <c>$GLOBALS[...]</c>.
-        /// </summary>
-        public static bool IsGlobalVar(ItemUse itemUse)
-        {
-            if (itemUse != null &&
-                itemUse.IsMemberOf == null && (itemUse.Array as VarLikeConstructUse)?.IsMemberOf == null &&
-                itemUse.Array is DirectVarUse)
-            {
-                // $GLOBALS[...]
-                var dvar = (DirectVarUse) itemUse.Array;
-                return (dvar.VarName.Value == VariableName.GlobalsName);
-            }
+        // /// <summary>
+        // /// Gets value indicating whether the expression is in form of <c>$GLOBALS[...]</c>.
+        // /// </summary>
+        // public static bool IsGlobalVar(ItemUse itemUse)
+        // {
+        //     if (itemUse != null &&
+        //         itemUse.IsMemberOf == null && (itemUse.Array as VarLikeConstructUse)?.IsMemberOf == null &&
+        //         itemUse.Array is DirectVarUse)
+        //     {
+        //         // $GLOBALS[...]
+        //         var dvar = (DirectVarUse) itemUse.Array;
+        //         return (dvar.VarName.Value == VariableName.GlobalsName);
+        //     }
+        //
+        //     return false;
+        // }
 
-            return false;
-        }
-
-        /// <summary>
-        /// Tries to resolve global variable name from array item use. (eg. <c>$GLOBALS["varname"]</c>).
-        /// </summary>
-        public static bool TryGetGlobalVarName(ItemUse itemUse, out VariableName varname)
-        {
-            if (IsGlobalVar(itemUse) && itemUse.Index is StringLiteral)
-            {
-                varname = new VariableName(((StringLiteral) itemUse.Index).Value);
-                return true;
-            }
-
-            varname = default(VariableName);
-            return false;
-        }
+        // /// <summary>
+        // /// Tries to resolve global variable name from array item use. (eg. <c>$GLOBALS["varname"]</c>).
+        // /// </summary>
+        // public static bool TryGetGlobalVarName(ItemUse itemUse, out VariableName varname)
+        // {
+        //     if (IsGlobalVar(itemUse) && itemUse.Index is StringLiteral)
+        //     {
+        //         varname = new VariableName(((StringLiteral) itemUse.Index).Value);
+        //         return true;
+        //     }
+        //
+        //     varname = default(VariableName);
+        //     return false;
+        // }
 
         public static bool StringsEqual(this string str1, string str2, bool ignoreCase) => string.Equals(str1, str2,
             ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);

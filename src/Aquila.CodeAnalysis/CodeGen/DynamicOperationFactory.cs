@@ -1,4 +1,4 @@
-﻿﻿using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
 using Pchp.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols;
@@ -11,6 +11,9 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.CodeAnalysis.Symbols.Synthesized;
 
 namespace Pchp.CodeAnalysis.CodeGen
 {
@@ -22,24 +25,28 @@ namespace Pchp.CodeAnalysis.CodeGen
             /// CallSite_T.Target method.
             /// </summary>
             public FieldSymbol Target => _target;
+
             SubstitutedFieldSymbol _target;
 
             /// <summary>
             /// CallSite_T field.
             /// </summary>
             public IPlace Place => new FieldPlace(null, _fld, _cg.Module);
+
             SynthesizedFieldSymbol _fld;
 
             /// <summary>
             /// Gets CallSite.Create method.
             /// </summary>
             public MethodSymbol CallSite_Create => _callsite_create;
+
             MethodSymbol _callsite_create;
 
             /// <summary>
             /// Gets emitted callsite arguments.
             /// </summary>
             public ImmutableArray<TypeSymbol> Arguments => _arguments.AsImmutable();
+
             readonly List<TypeSymbol> _arguments = new List<TypeSymbol>();
 
             public ImmutableArray<RefKind> ArgumentsRefKinds
@@ -57,12 +64,13 @@ namespace Pchp.CodeAnalysis.CodeGen
                     }
                 }
             }
+
             List<RefKind> _argumentsByRef = null;
 
             public void Prepare(CodeGenerator cg)
             {
                 Debug.Assert(cg != null);
-                _factory = cg.Factory;  // update cg and factory instance
+                _factory = cg.Factory; // update cg and factory instance
                 _arguments.Clear();
                 _argumentsByRef = null;
             }
@@ -76,9 +84,9 @@ namespace Pchp.CodeAnalysis.CodeGen
 
                 // TODO: check if it wasn't constructed already
 
-                _target.SetContainingType((SubstitutedNamedTypeSymbol)callsitetype);
+                _target.SetContainingType((SubstitutedNamedTypeSymbol) callsitetype);
                 _fld.SetFieldType(callsitetype);
-                _callsite_create = (MethodSymbol)_factory.CallSite_T_Create.SymbolAsMember(callsitetype);
+                _callsite_create = (MethodSymbol) _factory.CallSite_T_Create.SymbolAsMember(callsitetype);
 
                 // create callsite
 
@@ -92,13 +100,16 @@ namespace Pchp.CodeAnalysis.CodeGen
                     fldPlace.EmitStorePrepare(cctor);
 
                     var cg = _factory._cg;
-                    using (var cctor_cg = new CodeGenerator(cctor, cg.Module, cg.Diagnostics, cg.DeclaringCompilation.Options.OptimizationLevel, false, _factory._container, null, null, cg.Routine)
+                    using (var cctor_cg = new CodeGenerator(cctor, cg.Module, cg.Diagnostics,
+                        cg.DeclaringCompilation.Options.OptimizationLevel, false, _factory._container, null, null,
+                        cg.Routine)
                     {
                         CallerType = cg.CallerType,
                     })
                     {
                         binder_builder(cctor_cg);
-                        cctor.EmitCall(_factory._cg.Module, _factory._cg.Diagnostics, ILOpCode.Call, this.CallSite_Create);
+                        cctor.EmitCall(_factory._cg.Module, _factory._cg.Diagnostics, ILOpCode.Call,
+                            this.CallSite_Create);
 
                         fldPlace.EmitStore(cctor);
                     }
@@ -157,7 +168,7 @@ namespace Pchp.CodeAnalysis.CodeGen
                 _arguments.Add(t);
             }
 
-            public TypeSymbol EmitTargetInstance(Func<CodeGenerator, TypeSymbol>/*!*/emitter)
+            public TypeSymbol EmitTargetInstance(Func<CodeGenerator, TypeSymbol> /*!*/emitter)
             {
                 return EmitTargetInstance(emitter(_cg));
             }
@@ -211,6 +222,7 @@ namespace Pchp.CodeAnalysis.CodeGen
                             // construct Element<TNext> // TNext:typeof(element.Next)
                             element.Type = element.Type.Construct(element.Next.Type);
                         }
+
                         runtimeChain = element;
 
                         //
@@ -320,16 +332,22 @@ namespace Pchp.CodeAnalysis.CodeGen
                                 cg.Builder.EmitLocalAddress(chaintmp);
                                 for (var x = this; x != element; x = x.Next)
                                 {
-                                    var nextfield = new FieldPlace_Raw((FieldSymbol)x.Type.GetMembers("Next").Single(), cg.Module);
+                                    var nextfield = new FieldPlace_Raw((FieldSymbol) x.Type.GetMembers("Next").Single(),
+                                        cg.Module);
                                     nextfield.EmitLoadAddress(cg.Builder);
                                 }
 
                                 // Template: .<Field> = <Value>
-                                var valuefield = new FieldPlace_Raw((FieldSymbol)element.Type.GetMembers(pair.Key).Single(), cg.Module);
+                                var valuefield =
+                                    new FieldPlace_Raw((FieldSymbol) element.Type.GetMembers(pair.Key).Single(),
+                                        cg.Module);
                                 valuefield.EmitStorePrepare(cg.Builder);
                                 if (pair.Value is BoundExpression valueexpr) cg.EmitConvert(valueexpr, valuefield.Type);
-                                else if (pair.Value is BoundVariableName nameexpr) cg.EmitConvert(nameexpr.EmitVariableName(cg), 0, valuefield.Type);
-                                else throw Peachpie.CodeAnalysis.Utilities.ExceptionUtilities.UnexpectedValue(pair.Value);
+                                else if (pair.Value is BoundVariableName nameexpr)
+                                    cg.EmitConvert(nameexpr.EmitVariableName(cg), 0, valuefield.Type);
+                                else
+                                    throw Peachpie.CodeAnalysis.Utilities.ExceptionUtilities
+                                        .UnexpectedValue(pair.Value);
                                 valuefield.EmitStore(cg.Builder);
                             }
                         }
@@ -358,15 +376,16 @@ namespace Pchp.CodeAnalysis.CodeGen
                 // should be a not resolved field reference (dynamic), otherwise it's unnecessary
                 if (expr is BoundFieldRef fieldref &&
                     fieldref.IsInstanceField &&
-                    ((Microsoft.CodeAnalysis.Operations.IFieldReferenceOperation)fieldref).Field == null)
+                    ((Microsoft.CodeAnalysis.Operations.IFieldReferenceOperation) fieldref).Field == null)
                 {
-                    runtimeChainElement = new RuntimeChainElement(_cg.CoreTypes.RuntimeChain_Property_T, fieldref.Instance)
-                    {
-                        Fields = new List<KeyValuePair<string, BoundOperation>>(1)
+                    runtimeChainElement =
+                        new RuntimeChainElement(_cg.CoreTypes.RuntimeChain_Property_T, fieldref.Instance)
                         {
-                            new KeyValuePair<string, BoundOperation>("Name", fieldref.FieldName),
-                        }
-                    };
+                            Fields = new List<KeyValuePair<string, BoundOperation>>(1)
+                            {
+                                new KeyValuePair<string, BoundOperation>("Name", fieldref.FieldName),
+                            }
+                        };
                 }
 
                 // 2/ $$[Key], $$[]
@@ -374,19 +393,21 @@ namespace Pchp.CodeAnalysis.CodeGen
                 {
                     if (arritem.Index != null)
                     {
-                        runtimeChainElement = new RuntimeChainElement(_cg.CoreTypes.RuntimeChain_ArrayItem_T, arritem.Array)
-                        {
-                            Fields = new List<KeyValuePair<string, BoundOperation>>(1)
+                        runtimeChainElement =
+                            new RuntimeChainElement(_cg.CoreTypes.RuntimeChain_ArrayItem_T, arritem.Array)
                             {
-                                new KeyValuePair<string, BoundOperation>("Key", arritem.Index),
-                            }
-                        };
+                                Fields = new List<KeyValuePair<string, BoundOperation>>(1)
+                                {
+                                    new KeyValuePair<string, BoundOperation>("Key", arritem.Index),
+                                }
+                            };
                     }
                     else
                     {
-                        runtimeChainElement = new RuntimeChainElement(_cg.CoreTypes.RuntimeChain_ArrayNewItem_T, arritem.Array)
-                        {
-                        };
+                        runtimeChainElement =
+                            new RuntimeChainElement(_cg.CoreTypes.RuntimeChain_ArrayNewItem_T, arritem.Array)
+                            {
+                            };
                     }
                 }
 
@@ -402,7 +423,7 @@ namespace Pchp.CodeAnalysis.CodeGen
                 // Template: new wrapper(<STACK:value>)
 
                 var ctor = wrapper.InstanceConstructors.Single(m => m.ParameterCount == 1);
-                Debug.Assert((ITypeSymbol)ctor.Parameters[0].Type == value);
+                Debug.Assert((ITypeSymbol) ctor.Parameters[0].Type == value);
                 var t = _cg.EmitCall(ILOpCode.Newobj, ctor);
 
                 AddArg(t, byref: false);
@@ -432,7 +453,9 @@ namespace Pchp.CodeAnalysis.CodeGen
 
             /// <summary>Template: new TargetTypeParam(PhpTypeInfo)</summary>
             public TypeSymbol EmitTargetTypeParam(IBoundTypeRef tref)
-                => tref != null ? EmitWrapParam(_cg.CoreTypes.Dynamic_TargetTypeParam, tref.EmitLoadTypeInfo(_cg, true)) : null;
+                => tref != null
+                    ? EmitWrapParam(_cg.CoreTypes.Dynamic_TargetTypeParam, tref.EmitLoadTypeInfo(_cg, true))
+                    : null;
 
             /// <summary>Template: new LateStaticTypeParam(PhpTypeInfo)</summary>
             public TypeSymbol EmitLateStaticTypeParam(IBoundTypeRef tref)
@@ -473,7 +496,7 @@ namespace Pchp.CodeAnalysis.CodeGen
                 => EmitWrapParam(_cg.CoreTypes.Dynamic_UnpackingParam_T.Symbol.Construct(value), value);
         }
 
-        readonly Aquila.CodeAnalysis.Symbols.PhpCompilation _compilation;
+        readonly PhpCompilation _compilation;
         readonly NamedTypeSymbol _container;
         readonly CodeGenerator _cg;
 
@@ -482,10 +505,19 @@ namespace Pchp.CodeAnalysis.CodeGen
         MethodSymbol _callsite_generic_create;
         FieldSymbol _callsite_generic_target;
 
-        public NamedTypeSymbol CallSite => _callsitetype ?? (_callsitetype = _compilation.GetWellKnownType(WellKnownType.System_Runtime_CompilerServices_CallSite));
-        public NamedTypeSymbol CallSite_T => _callsitetype_generic ?? (_callsitetype_generic = _compilation.GetWellKnownType(WellKnownType.System_Runtime_CompilerServices_CallSite_T));
-        public MethodSymbol CallSite_T_Create => _callsite_generic_create ?? (_callsite_generic_create = (MethodSymbol)_compilation.GetWellKnownTypeMember(WellKnownMember.System_Runtime_CompilerServices_CallSite_T__Create));
-        public FieldSymbol CallSite_T_Target => _callsite_generic_target ?? (_callsite_generic_target = (FieldSymbol)_compilation.GetWellKnownTypeMember(WellKnownMember.System_Runtime_CompilerServices_CallSite_T__Target));
+        public NamedTypeSymbol CallSite => _callsitetype ?? (_callsitetype =
+            _compilation.GetWellKnownType(WellKnownType.System_Runtime_CompilerServices_CallSite));
+
+        public NamedTypeSymbol CallSite_T => _callsitetype_generic ?? (_callsitetype_generic =
+            _compilation.GetWellKnownType(WellKnownType.System_Runtime_CompilerServices_CallSite_T));
+
+        public MethodSymbol CallSite_T_Create => _callsite_generic_create ?? (_callsite_generic_create =
+            (MethodSymbol) _compilation.GetWellKnownTypeMember(WellKnownMember
+                .System_Runtime_CompilerServices_CallSite_T__Create));
+
+        public FieldSymbol CallSite_T_Target => _callsite_generic_target ?? (_callsite_generic_target =
+            (FieldSymbol) _compilation.GetWellKnownTypeMember(WellKnownMember
+                .System_Runtime_CompilerServices_CallSite_T__Target));
 
         public CallSiteData StartCallSite(string fldname) => new CallSiteData(this, fldname);
 
@@ -506,7 +538,8 @@ namespace Pchp.CodeAnalysis.CodeGen
         /// <param name="name">Field name prefix.</param>
         /// <param name="isstatic">Whether the field is static.</param>
         /// <returns>The synthesized field.</returns>
-        public SynthesizedFieldSymbol CreateSynthesizedField(TypeSymbol type, string name, bool isstatic) => _cg.Module.SynthesizedManager
+        public SynthesizedFieldSymbol CreateSynthesizedField(TypeSymbol type, string name, bool isstatic) => _cg.Module
+            .SynthesizedManager
             .GetOrCreateSynthesizedField(
                 _container, type, name, Accessibility.Internal, isstatic, false, true);
 
@@ -536,15 +569,16 @@ namespace Pchp.CodeAnalysis.CodeGen
                 return null;
             }
 
-            var delegateSignature = MakeCallSiteDelegateSignature(callSiteType, loweredReceiver, loweredArguments, loweredRight, resultType);
+            var delegateSignature = MakeCallSiteDelegateSignature(callSiteType, loweredReceiver, loweredArguments,
+                loweredRight, resultType);
             bool returnsVoid = resultType.SpecialType == SpecialType.System_Void;
             bool hasByRefs = receiverRefKind != RefKind.None || !refKinds.IsDefaultOrEmpty;
 
             if (!hasByRefs)
             {
-                var wkDelegateType = returnsVoid ?
-                    WellKnownTypes.GetWellKnownActionDelegate(invokeArgumentCount: delegateSignature.Length) :
-                    WellKnownTypes.GetWellKnownFunctionDelegate(invokeArgumentCount: delegateSignature.Length - 1);
+                var wkDelegateType = returnsVoid
+                    ? WellKnownTypes.GetWellKnownActionDelegate(invokeArgumentCount: delegateSignature.Length)
+                    : WellKnownTypes.GetWellKnownFunctionDelegate(invokeArgumentCount: delegateSignature.Length - 1);
 
                 if (wkDelegateType != WellKnownType.Unknown)
                 {
@@ -559,7 +593,8 @@ namespace Pchp.CodeAnalysis.CodeGen
             BitVector byRefs;
             if (hasByRefs)
             {
-                byRefs = BitVector.Create(1 + (loweredReceiver != null ? 1 : 0) + loweredArguments.Length + (loweredRight != null ? 1 : 0));
+                byRefs = BitVector.Create(1 + (loweredReceiver != null ? 1 : 0) + loweredArguments.Length +
+                                          (loweredRight != null ? 1 : 0));
 
                 int j = 1;
                 if (loweredReceiver != null)
@@ -585,13 +620,16 @@ namespace Pchp.CodeAnalysis.CodeGen
 
             int parameterCount = delegateSignature.Length - (returnsVoid ? 0 : 1);
 
-            return _compilation.AnonymousTypeManager.SynthesizeDelegate(parameterCount, byRefs, returnsVoid).Construct(delegateSignature);
+            return _compilation.AnonymousTypeManager.SynthesizeDelegate(parameterCount, byRefs, returnsVoid)
+                .Construct(delegateSignature);
         }
 
-        internal TypeSymbol[] MakeCallSiteDelegateSignature(TypeSymbol callSiteType, TypeSymbol receiver, ImmutableArray<TypeSymbol> arguments, TypeSymbol right, TypeSymbol resultType)
+        internal TypeSymbol[] MakeCallSiteDelegateSignature(TypeSymbol callSiteType, TypeSymbol receiver,
+            ImmutableArray<TypeSymbol> arguments, TypeSymbol right, TypeSymbol resultType)
         {
-            var systemObjectType = (TypeSymbol)_compilation.ObjectType;
-            var result = new TypeSymbol[1 + (receiver != null ? 1 : 0) + arguments.Length + (right != null ? 1 : 0) + (resultType.SpecialType == SpecialType.System_Void ? 0 : 1)];
+            var systemObjectType = (TypeSymbol) _compilation.ObjectType;
+            var result = new TypeSymbol[1 + (receiver != null ? 1 : 0) + arguments.Length + (right != null ? 1 : 0) +
+                                        (resultType.SpecialType == SpecialType.System_Void ? 0 : 1)];
             int j = 0;
 
             // CallSite:

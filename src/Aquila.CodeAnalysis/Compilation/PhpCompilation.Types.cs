@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,12 +13,15 @@ using Microsoft.CodeAnalysis.RuntimeMembers;
 using Roslyn.Utilities;
 using System.Collections.Immutable;
 using System.Threading;
+using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Symbols.Attributes;
+using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.Syntax.Ast;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Operations;
- using Pchp.CodeAnalysis.Semantics;
- using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
+using Pchp.CodeAnalysis.Semantics;
 
- namespace Pchp.CodeAnalysis
+namespace Aquila.CodeAnalysis
 {
     partial class PhpCompilation
     {
@@ -36,7 +39,7 @@ using Microsoft.CodeAnalysis.Operations;
         /// </summary>
         private Aquila.CodeAnalysis.Symbols.Symbol[] _lazyWellKnownTypeMembers;
 
-        internal Conversions/*!*/Conversions { get; }
+        internal Conversions /*!*/ Conversions { get; }
 
         /// <summary>
         /// Gets factory object for constructing <see cref="BoundTypeRef"/>.
@@ -49,12 +52,14 @@ using Microsoft.CodeAnalysis.Operations;
         /// Well known types associated with this compilation.
         /// </summary>
         internal CoreTypes CoreTypes => _coreTypes;
+
         readonly CoreTypes _coreTypes;
 
         /// <summary>
         /// Well known methods associated with this compilation.
         /// </summary>
         internal CoreMethods CoreMethods => _coreMethods;
+
         readonly CoreMethods _coreMethods;
 
         #endregion
@@ -101,7 +106,8 @@ using Microsoft.CodeAnalysis.Operations;
 
             // a string types unification
             if (IsAString(first) && IsAString(second))
-                return CoreTypes.PhpString; // a string builder; if both are system.string, system.string is returned earlier
+                return
+                    CoreTypes.PhpString; // a string builder; if both are system.string, system.string is returned earlier
 
             // TODO: simple array & PhpArray => PhpArray
 
@@ -135,7 +141,7 @@ using Microsoft.CodeAnalysis.Operations;
             }
             else
             {
-                var t = (TypeSymbol)types[0];
+                var t = (TypeSymbol) types[0];
                 for (int i = 1; i < types.Length && t != null && t.SpecialType != SpecialType.System_Object; i++)
                 {
                     t = FindCommonBase(t, types[i]);
@@ -158,8 +164,8 @@ using Microsoft.CodeAnalysis.Operations;
                 if (a.SpecialType != SpecialType.System_Object &&
                     b.SpecialType != SpecialType.System_Object)
                 {
-                    if (a.IsOfType(b)) return b;    // A >> B -> B
-                    if (b.IsOfType(a)) return a;    // A << B -> A
+                    if (a.IsOfType(b)) return b; // A >> B -> B
+                    if (b.IsOfType(a)) return a; // A << B -> A
 
                     // find common base
                     // find a common interface
@@ -167,20 +173,24 @@ using Microsoft.CodeAnalysis.Operations;
                     var set = new HashSet<TypeSymbol>();
 
                     // walk through "a" and remember all the base types
-                    for (var ax = a.BaseType; ax != null && ax.SpecialType != SpecialType.System_Object; ax = ax.BaseType)
+                    for (var ax = a.BaseType;
+                        ax != null && ax.SpecialType != SpecialType.System_Object;
+                        ax = ax.BaseType)
                         set.Add(ax);
                     foreach (var ax in a.AllInterfaces)
                         set.Add(ax);
 
                     // walk through "b" and find something in the hierarchy shared by "a",
                     // base types first
-                    for (var ax = b.BaseType; ax != null && ax.SpecialType != SpecialType.System_Object; ax = ax.BaseType)
+                    for (var ax = b.BaseType;
+                        ax != null && ax.SpecialType != SpecialType.System_Object;
+                        ax = ax.BaseType)
                         if (set.Contains(ax))
                             return ax; // a common base
 
                     foreach (var ax in b.AllInterfaces)
                         if (set.Contains(ax))
-                            return ax;  // a common interface
+                            return ax; // a common interface
                 }
 
                 //
@@ -205,7 +215,7 @@ using Microsoft.CodeAnalysis.Operations;
 
             if (type.IsValueType || type.IsOfType(CoreTypes.IPhpArray))
             {
-                return CoreTypes.PhpValue;    // Nullable bool|long|double -> PhpValue
+                return CoreTypes.PhpValue; // Nullable bool|long|double -> PhpValue
             }
 
             return type;
@@ -274,14 +284,15 @@ using Microsoft.CodeAnalysis.Operations;
         #region TypeSymbol From AST.TypeRef
 
         /// <summary>
-        /// Binds <see cref="AST.TypeRef"/> to a type symbol.
+        /// Binds <see cref="TypeRef"/> to a type symbol.
         /// </summary>
         /// <param name="tref">Type reference.</param>
         /// <param name="selfHint">Optional.
         /// Current type scope for better <paramref name="tref"/> resolution since <paramref name="tref"/> might be ambiguous</param>
         /// <param name="nullable">Whether the resulting type must be able to contain NULL. Default is <c>false</c>.</param>
         /// <returns>Resolved symbol.</returns>
-        internal TypeSymbol GetTypeFromTypeRef(AST.TypeRef tref, SourceTypeSymbol selfHint = null, bool nullable = false)
+        internal TypeSymbol GetTypeFromTypeRef(TypeRef tref, SourceTypeSymbol selfHint = null,
+            bool nullable = false)
         {
             if (tref == null)
             {
@@ -307,11 +318,11 @@ using Microsoft.CodeAnalysis.Operations;
 
         Dictionary<Accessibility, AttributeData> _lazyPhpMemberVisibilityAttribute = null;
 
-        internal AttributeData GetPhpMemberVisibilityAttribute(Aquila.CodeAnalysis.Symbols.Symbol member, Accessibility accessibility)
+        internal AttributeData GetPhpMemberVisibilityAttribute(Aquila.CodeAnalysis.Symbols.Symbol member,
+            Accessibility accessibility)
         {
             if (member is FieldSymbol || member is MethodSymbol || member is PropertySymbol)
             {
-
                 if (_lazyPhpMemberVisibilityAttribute == null)
                 {
                     _lazyPhpMemberVisibilityAttribute = new Dictionary<Accessibility, AttributeData>();
@@ -322,7 +333,8 @@ using Microsoft.CodeAnalysis.Operations;
                     // [PhpMemberVisibilityAttribute( {(int)DeclaredAccessibility} )]
                     attr = new SynthesizedAttributeData(
                         CoreTypes.PhpMemberVisibilityAttribute.Ctor(CoreTypes.Int32),
-                        ImmutableArray.Create(new TypedConstant(CoreTypes.Int32.Symbol, TypedConstantKind.Primitive, (int)accessibility)),
+                        ImmutableArray.Create(new TypedConstant(CoreTypes.Int32.Symbol, TypedConstantKind.Primitive,
+                            (int) accessibility)),
                         ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
 
                     _lazyPhpMemberVisibilityAttribute[accessibility] = attr;
@@ -356,7 +368,7 @@ using Microsoft.CodeAnalysis.Operations;
             if (value is ulong) return GetSpecialType(SpecialType.System_UInt64);
             if (value is float) return GetSpecialType(SpecialType.System_Single);
             if (value is char) return GetSpecialType(SpecialType.System_Char);
-            
+
             //
             throw ExceptionUtilities.UnexpectedValue(value);
         }
@@ -375,11 +387,12 @@ using Microsoft.CodeAnalysis.Operations;
             // Test hook: if a member is marked missing, then return null.
             if (IsMemberMissing(member)) return null;
 
-            if (_lazyWellKnownTypeMembers == null || ReferenceEquals(_lazyWellKnownTypeMembers[(int)member], ErrorTypeSymbol.UnknownResultType))
+            if (_lazyWellKnownTypeMembers == null || ReferenceEquals(_lazyWellKnownTypeMembers[(int) member],
+                ErrorTypeSymbol.UnknownResultType))
             {
                 if (_lazyWellKnownTypeMembers == null)
                 {
-                    var wellKnownTypeMembers = new Aquila.CodeAnalysis.Symbols.Symbol[(int)WellKnownMember.Count];
+                    var wellKnownTypeMembers = new Aquila.CodeAnalysis.Symbols.Symbol[(int) WellKnownMember.Count];
 
                     for (int i = 0; i < wellKnownTypeMembers.Length; i++)
                     {
@@ -390,32 +403,35 @@ using Microsoft.CodeAnalysis.Operations;
                 }
 
                 MemberDescriptor descriptor = WellKnownMembers.GetDescriptor(member);
-                NamedTypeSymbol type = descriptor.DeclaringTypeId <= (int)SpecialType.Count
-                                            ? this.GetSpecialType((SpecialType)descriptor.DeclaringTypeId)
-                                            : this.GetWellKnownType((WellKnownType)descriptor.DeclaringTypeId);
+                NamedTypeSymbol type = descriptor.DeclaringTypeId <= (int) SpecialType.Count
+                    ? this.GetSpecialType((SpecialType) descriptor.DeclaringTypeId)
+                    : this.GetWellKnownType((WellKnownType) descriptor.DeclaringTypeId);
                 Aquila.CodeAnalysis.Symbols.Symbol result = null;
 
                 if (!type.IsErrorType())
                 {
-                    result = GetRuntimeMember(type, ref descriptor, _wellKnownMemberSignatureComparer, accessWithinOpt: this.Assembly);
+                    result = GetRuntimeMember(type, ref descriptor, _wellKnownMemberSignatureComparer,
+                        accessWithinOpt: this.Assembly);
                 }
 
-                Interlocked.CompareExchange(ref _lazyWellKnownTypeMembers[(int)member], result, ErrorTypeSymbol.UnknownResultType);
+                Interlocked.CompareExchange(ref _lazyWellKnownTypeMembers[(int) member], result,
+                    ErrorTypeSymbol.UnknownResultType);
             }
 
-            return _lazyWellKnownTypeMembers[(int)member];
+            return _lazyWellKnownTypeMembers[(int) member];
         }
 
         internal NamedTypeSymbol GetWellKnownType(WellKnownType type)
         {
             Debug.Assert(type >= WellKnownType.First && type < WellKnownType.NextAvailable);
 
-            int index = (int)type - (int)WellKnownType.First;
-            if (_lazyWellKnownTypes == null || (object)_lazyWellKnownTypes[index] == null)
+            int index = (int) type - (int) WellKnownType.First;
+            if (_lazyWellKnownTypes == null || (object) _lazyWellKnownTypes[index] == null)
             {
                 if (_lazyWellKnownTypes == null)
                 {
-                    Interlocked.CompareExchange(ref _lazyWellKnownTypes, new NamedTypeSymbol[(int)WellKnownTypes.Count], null);
+                    Interlocked.CompareExchange(ref _lazyWellKnownTypes,
+                        new NamedTypeSymbol[(int) WellKnownTypes.Count], null);
                 }
 
                 string mdName = type.GetMetadataName();
@@ -429,10 +445,11 @@ using Microsoft.CodeAnalysis.Operations;
                 else
                 {
                     result = this.SourceAssembly.GetTypeByMetadataName(
-                        mdName, includeReferences: true, useCLSCompliantNameArityEncoding: true, isWellKnownType: true, warnings: warnings);
+                        mdName, includeReferences: true, useCLSCompliantNameArityEncoding: true, isWellKnownType: true,
+                        warnings: warnings);
                 }
 
-                if ((object)result == null)
+                if ((object) result == null)
                 {
                     // TODO: should GetTypeByMetadataName rather return a missing symbol?
                     //MetadataTypeName emittedName = MetadataTypeName.FromFullName(mdName, useCLSCompliantNameArityEncoding: true);
@@ -441,10 +458,11 @@ using Microsoft.CodeAnalysis.Operations;
                     result = new MissingMetadataTypeSymbol(mdName, 0, false);
                 }
 
-                if ((object)Interlocked.CompareExchange(ref _lazyWellKnownTypes[index], result, null) != null)
+                if ((object) Interlocked.CompareExchange(ref _lazyWellKnownTypes[index], result, null) != null)
                 {
                     Debug.Assert(
-                        result == _lazyWellKnownTypes[index] || (_lazyWellKnownTypes[index].IsErrorType() && result.IsErrorType())
+                        result == _lazyWellKnownTypes[index] ||
+                        (_lazyWellKnownTypes[index].IsErrorType() && result.IsErrorType())
                     );
                 }
                 else
@@ -464,18 +482,19 @@ using Microsoft.CodeAnalysis.Operations;
         /// </summary>
         internal new NamedTypeSymbol GetSpecialType(SpecialType specialType)
         {
-            return (NamedTypeSymbol)CommonGetSpecialType(specialType);
+            return (NamedTypeSymbol) CommonGetSpecialType(specialType);
         }
 
         internal override bool IsAttributeType(ITypeSymbol type)
         {
             HashSet<DiagnosticInfo> useSiteDiagnostics = null;
-            return ((TypeSymbol)type).IsDerivedFrom(GetWellKnownType(WellKnownType.System_Attribute), false, ref useSiteDiagnostics);
+            return ((TypeSymbol) type).IsDerivedFrom(GetWellKnownType(WellKnownType.System_Attribute), false,
+                ref useSiteDiagnostics);
         }
 
         internal override bool IsSystemTypeReference(ITypeSymbol type)
         {
-            return (TypeSymbol)type == GetWellKnownType(WellKnownType.System_Type);
+            return (TypeSymbol) type == GetWellKnownType(WellKnownType.System_Type);
         }
 
         protected override INamedTypeSymbol CommonGetSpecialType(SpecialType specialType)
@@ -496,7 +515,10 @@ using Microsoft.CodeAnalysis.Operations;
             return this.CorLibrary.GetDeclaredSpecialTypeMember(specialMember);
         }
 
-        internal static Aquila.CodeAnalysis.Symbols.Symbol GetRuntimeMember(NamedTypeSymbol declaringType, ref MemberDescriptor descriptor, SignatureComparer<MethodSymbol, FieldSymbol, PropertySymbol, TypeSymbol, ParameterSymbol> comparer, IAssemblySymbol accessWithinOpt)
+        internal static Aquila.CodeAnalysis.Symbols.Symbol GetRuntimeMember(NamedTypeSymbol declaringType,
+            ref MemberDescriptor descriptor,
+            SignatureComparer<MethodSymbol, FieldSymbol, PropertySymbol, TypeSymbol, ParameterSymbol> comparer,
+            IAssemblySymbol accessWithinOpt)
         {
             Aquila.CodeAnalysis.Symbols.Symbol result = null;
             SymbolKind targetSymbolKind;
@@ -537,7 +559,8 @@ using Microsoft.CodeAnalysis.Operations;
             {
                 Debug.Assert(member.Name.Equals(descriptor.Name));
 
-                if (member.Kind != targetSymbolKind || member.IsStatic != isStatic || !(member.DeclaredAccessibility == Accessibility.Public))
+                if (member.Kind != targetSymbolKind || member.IsStatic != isStatic ||
+                    !(member.DeclaredAccessibility == Accessibility.Public))
                 {
                     continue;
                 }
@@ -545,48 +568,50 @@ using Microsoft.CodeAnalysis.Operations;
                 switch (targetSymbolKind)
                 {
                     case SymbolKind.Method:
+                    {
+                        MethodSymbol method = (MethodSymbol) member;
+                        MethodKind methodKind = method.MethodKind;
+                        // Treat user-defined conversions and operators as ordinary methods for the purpose
+                        // of matching them here.
+                        if (methodKind == MethodKind.Conversion || methodKind == MethodKind.UserDefinedOperator)
                         {
-                            MethodSymbol method = (MethodSymbol)member;
-                            MethodKind methodKind = method.MethodKind;
-                            // Treat user-defined conversions and operators as ordinary methods for the purpose
-                            // of matching them here.
-                            if (methodKind == MethodKind.Conversion || methodKind == MethodKind.UserDefinedOperator)
-                            {
-                                methodKind = MethodKind.Ordinary;
-                            }
-
-                            if (method.Arity != descriptor.Arity || methodKind != targetMethodKind ||
-                                ((descriptor.Flags & MemberFlags.Virtual) != 0) != (method.IsVirtual || method.IsOverride || method.IsAbstract))
-                            {
-                                continue;
-                            }
-
-                            if (!comparer.MatchMethodSignature(method, descriptor.Signature))
-                            {
-                                continue;
-                            }
+                            methodKind = MethodKind.Ordinary;
                         }
+
+                        if (method.Arity != descriptor.Arity || methodKind != targetMethodKind ||
+                            ((descriptor.Flags & MemberFlags.Virtual) != 0) !=
+                            (method.IsVirtual || method.IsOverride || method.IsAbstract))
+                        {
+                            continue;
+                        }
+
+                        if (!comparer.MatchMethodSignature(method, descriptor.Signature))
+                        {
+                            continue;
+                        }
+                    }
 
                         break;
 
                     case SymbolKind.Property:
+                    {
+                        PropertySymbol property = (PropertySymbol) member;
+                        if (((descriptor.Flags & MemberFlags.Virtual) != 0) !=
+                            (property.IsVirtual || property.IsOverride || property.IsAbstract))
                         {
-                            PropertySymbol property = (PropertySymbol)member;
-                            if (((descriptor.Flags & MemberFlags.Virtual) != 0) != (property.IsVirtual || property.IsOverride || property.IsAbstract))
-                            {
-                                continue;
-                            }
-
-                            if (!comparer.MatchPropertySignature(property, descriptor.Signature))
-                            {
-                                continue;
-                            }
+                            continue;
                         }
+
+                        if (!comparer.MatchPropertySignature(property, descriptor.Signature))
+                        {
+                            continue;
+                        }
+                    }
 
                         break;
 
                     case SymbolKind.Field:
-                        if (!comparer.MatchFieldSignature((FieldSymbol)member, descriptor.Signature))
+                        if (!comparer.MatchFieldSignature((FieldSymbol) member, descriptor.Signature))
                         {
                             continue;
                         }
@@ -598,7 +623,7 @@ using Microsoft.CodeAnalysis.Operations;
                 }
 
                 // ambiguity
-                if ((object)result != null)
+                if ((object) result != null)
                 {
                     result = null;
                     break;
@@ -606,6 +631,7 @@ using Microsoft.CodeAnalysis.Operations;
 
                 result = member;
             }
+
             return result;
         }
 
@@ -623,9 +649,9 @@ using Microsoft.CodeAnalysis.Operations;
         protected override INamedTypeSymbol CommonGetTypeByMetadataName(string metadataName)
         {
             return ProbingAssemblies
-                    .Select(a => a.GetTypeByMetadataName(metadataName))
-                    .Where(a => a != null)
-                    .FirstOrDefault();
+                .Select(a => a.GetTypeByMetadataName(metadataName))
+                .Where(a => a != null)
+                .FirstOrDefault();
         }
 
         /// <summary>
@@ -635,7 +661,8 @@ using Microsoft.CodeAnalysis.Operations;
         {
             if (typeMask.IsRef)
             {
-                return CoreTypes.PhpValue;  // even we know the type, since there is an alias to the value, it can be anything
+                return
+                    CoreTypes.PhpValue; // even we know the type, since there is an alias to the value, it can be anything
             }
 
             if (!typeMask.IsAnyType)
@@ -689,7 +716,7 @@ using Microsoft.CodeAnalysis.Operations;
         /// <summary>
         /// Resolves <see cref="INamedTypeSymbol"/> best fitting given type mask.
         /// </summary>
-        internal TypeSymbol GetTypeFromTypeRef(SourceRoutineSymbol/*!*/routine, TypeRefMask typeMask)
+        internal TypeSymbol GetTypeFromTypeRef(SourceRoutineSymbol /*!*/routine, TypeRefMask typeMask)
         {
             Debug.Assert(routine != null);
             return this.GetTypeFromTypeRef(routine.TypeRefContext, typeMask);
@@ -701,7 +728,8 @@ using Microsoft.CodeAnalysis.Operations;
         /// </summary>
         public CommonConversion ClassifyExplicitConversion(ITypeSymbol source, ITypeSymbol destination)
         {
-            var conv = Conversions.ClassifyConversion((TypeSymbol)source, (TypeSymbol)destination, ConversionKind.Explicit);
+            var conv = Conversions.ClassifyConversion((TypeSymbol) source, (TypeSymbol) destination,
+                ConversionKind.Explicit);
             if (conv.Exists == false)
             {
                 // try regular implicit conversion instead
@@ -713,10 +741,12 @@ using Microsoft.CodeAnalysis.Operations;
 
         public override CommonConversion ClassifyCommonConversion(ITypeSymbol source, ITypeSymbol destination)
         {
-            return Conversions.ClassifyConversion((TypeSymbol)source, (TypeSymbol)destination, ConversionKind.Implicit | ConversionKind.Explicit);
+            return Conversions.ClassifyConversion((TypeSymbol) source, (TypeSymbol) destination,
+                ConversionKind.Implicit | ConversionKind.Explicit);
         }
 
-        internal override IConvertibleConversion ClassifyConvertibleConversion(IOperation source, ITypeSymbol destination, out Optional<object> constantValue)
+        internal override IConvertibleConversion ClassifyConvertibleConversion(IOperation source,
+            ITypeSymbol destination, out Optional<object> constantValue)
         {
             //constantValue = default;
 
@@ -755,7 +785,8 @@ using Microsoft.CodeAnalysis.Operations;
         /// </summary>
         internal static class DynamicTransformsEncoder
         {
-            internal static ImmutableArray<TypedConstant> Encode(TypeSymbol type, TypeSymbol booleanType, int customModifiersCount, RefKind refKind)
+            internal static ImmutableArray<TypedConstant> Encode(TypeSymbol type, TypeSymbol booleanType,
+                int customModifiersCount, RefKind refKind)
             {
                 var flagsBuilder = ArrayBuilder<bool>.GetInstance();
                 EncodeInternal(type, customModifiersCount, refKind, flagsBuilder);
@@ -779,7 +810,8 @@ using Microsoft.CodeAnalysis.Operations;
                 return transformFlagsBuilder.ToImmutableAndFree();
             }
 
-            internal static void EncodeInternal(TypeSymbol type, int customModifiersCount, RefKind refKind, ArrayBuilder<bool> transformFlagsBuilder)
+            internal static void EncodeInternal(TypeSymbol type, int customModifiersCount, RefKind refKind,
+                ArrayBuilder<bool> transformFlagsBuilder)
             {
                 Debug.Assert(!transformFlagsBuilder.Any());
 
@@ -795,48 +827,52 @@ using Microsoft.CodeAnalysis.Operations;
                 type.VisitType(s_encodeDynamicTransform, transformFlagsBuilder);
             }
 
-            private static readonly Func<TypeSymbol, ArrayBuilder<bool>, bool, bool> s_encodeDynamicTransform = (type, transformFlagsBuilder, isNestedNamedType) =>
-            {
-                // Encode transforms flag for this type and it's custom modifiers (if any).
-                switch (type.TypeKind)
+            private static readonly Func<TypeSymbol, ArrayBuilder<bool>, bool, bool> s_encodeDynamicTransform =
+                (type, transformFlagsBuilder, isNestedNamedType) =>
                 {
-                    case TypeKind.Dynamic:
-                        transformFlagsBuilder.Add(true);
-                        break;
+                    // Encode transforms flag for this type and it's custom modifiers (if any).
+                    switch (type.TypeKind)
+                    {
+                        case TypeKind.Dynamic:
+                            transformFlagsBuilder.Add(true);
+                            break;
 
-                    case TypeKind.Array:
-                        HandleCustomModifiers(((ArrayTypeSymbol)type).CustomModifiers.Length, transformFlagsBuilder);
-                        transformFlagsBuilder.Add(false);
-                        break;
-
-                    case TypeKind.Pointer:
-                        //HandleCustomModifiers(((PointerTypeSymbol)type).CustomModifiers.Length, transformFlagsBuilder);
-                        //transformFlagsBuilder.Add(false);
-                        //break;
-                        throw new NotImplementedException();
-
-                    default:
-                        // Encode transforms flag for this type.
-                        // For nested named types, a single flag (false) is encoded for the entire type name, followed by flags for all of the type arguments.
-                        // For example, for type "A<T>.B<dynamic>", encoded transform flags are:
-                        //      {
-                        //          false,  // Type "A.B"
-                        //          false,  // Type parameter "T"
-                        //          true,   // Type parameter "dynamic"
-                        //      }
-
-                        if (!isNestedNamedType)
-                        {
+                        case TypeKind.Array:
+                            HandleCustomModifiers(((ArrayTypeSymbol) type).CustomModifiers.Length,
+                                transformFlagsBuilder);
                             transformFlagsBuilder.Add(false);
-                        }
-                        break;
-                }
+                            break;
 
-                // Continue walking types
-                return false;
-            };
+                        case TypeKind.Pointer:
+                            //HandleCustomModifiers(((PointerTypeSymbol)type).CustomModifiers.Length, transformFlagsBuilder);
+                            //transformFlagsBuilder.Add(false);
+                            //break;
+                            throw new NotImplementedException();
 
-            private static void HandleCustomModifiers(int customModifiersCount, ArrayBuilder<bool> transformFlagsBuilder)
+                        default:
+                            // Encode transforms flag for this type.
+                            // For nested named types, a single flag (false) is encoded for the entire type name, followed by flags for all of the type arguments.
+                            // For example, for type "A<T>.B<dynamic>", encoded transform flags are:
+                            //      {
+                            //          false,  // Type "A.B"
+                            //          false,  // Type parameter "T"
+                            //          true,   // Type parameter "dynamic"
+                            //      }
+
+                            if (!isNestedNamedType)
+                            {
+                                transformFlagsBuilder.Add(false);
+                            }
+
+                            break;
+                    }
+
+                    // Continue walking types
+                    return false;
+                };
+
+            private static void HandleCustomModifiers(int customModifiersCount,
+                ArrayBuilder<bool> transformFlagsBuilder)
             {
                 for (int i = 0; i < customModifiersCount; i++)
                 {
@@ -846,7 +882,8 @@ using Microsoft.CodeAnalysis.Operations;
             }
         }
 
-        internal class SpecialMembersSignatureComparer : SignatureComparer<MethodSymbol, FieldSymbol, PropertySymbol, TypeSymbol, ParameterSymbol>
+        internal class SpecialMembersSignatureComparer : SignatureComparer<MethodSymbol, FieldSymbol, PropertySymbol,
+            TypeSymbol, ParameterSymbol>
         {
             // Fields
             public static readonly SpecialMembersSignatureComparer Instance = new SpecialMembersSignatureComparer();
@@ -862,11 +899,13 @@ using Microsoft.CodeAnalysis.Operations;
                 {
                     return null;
                 }
-                ArrayTypeSymbol array = (ArrayTypeSymbol)type;
+
+                ArrayTypeSymbol array = (ArrayTypeSymbol) type;
                 if (array.IsSZArray)
                 {
                     return null;
                 }
+
                 return array.ElementType;
             }
 
@@ -886,16 +925,20 @@ using Microsoft.CodeAnalysis.Operations;
                 {
                     return null;
                 }
-                NamedTypeSymbol named = (NamedTypeSymbol)type;
+
+                NamedTypeSymbol named = (NamedTypeSymbol) type;
                 if (named.Arity <= argumentIndex)
                 {
                     return null;
                 }
-                if ((object)named.ContainingType != null)
+
+                if ((object) named.ContainingType != null)
                 {
                     return null;
                 }
-                return named.TypeArguments[argumentIndex];//return named.TypeArgumentsNoUseSiteDiagnostics[argumentIndex];
+
+                return named.TypeArguments
+                    [argumentIndex]; //return named.TypeArgumentsNoUseSiteDiagnostics[argumentIndex];
             }
 
             protected override TypeSymbol GetGenericTypeDefinition(TypeSymbol type)
@@ -904,16 +947,19 @@ using Microsoft.CodeAnalysis.Operations;
                 {
                     return null;
                 }
-                NamedTypeSymbol named = (NamedTypeSymbol)type;
-                if ((object)named.ContainingType != null)
+
+                NamedTypeSymbol named = (NamedTypeSymbol) type;
+                if ((object) named.ContainingType != null)
                 {
                     return null;
                 }
+
                 if (named.Arity == 0)
                 {
                     return null;
                 }
-                return (NamedTypeSymbol)named.OriginalDefinition;
+
+                return (NamedTypeSymbol) named.OriginalDefinition;
             }
 
             protected override ImmutableArray<ParameterSymbol> GetParameters(MethodSymbol method)
@@ -950,11 +996,13 @@ using Microsoft.CodeAnalysis.Operations;
                 {
                     return null;
                 }
-                ArrayTypeSymbol array = (ArrayTypeSymbol)type;
+
+                ArrayTypeSymbol array = (ArrayTypeSymbol) type;
                 if (!array.IsSZArray)
                 {
                     return null;
                 }
+
                 return array.ElementType;
             }
 
@@ -974,11 +1022,13 @@ using Microsoft.CodeAnalysis.Operations;
                 {
                     return false;
                 }
-                TypeParameterSymbol typeParam = (TypeParameterSymbol)type;
+
+                TypeParameterSymbol typeParam = (TypeParameterSymbol) type;
                 if (typeParam.ContainingSymbol.Kind != SymbolKind.Method)
                 {
                     return false;
                 }
+
                 return (typeParam.Ordinal == paramPosition);
             }
 
@@ -988,11 +1038,13 @@ using Microsoft.CodeAnalysis.Operations;
                 {
                     return false;
                 }
-                TypeParameterSymbol typeParam = (TypeParameterSymbol)type;
+
+                TypeParameterSymbol typeParam = (TypeParameterSymbol) type;
                 if (typeParam.ContainingSymbol.Kind != SymbolKind.NamedType)
                 {
                     return false;
                 }
+
                 return (typeParam.Ordinal == paramPosition);
             }
 
@@ -1003,28 +1055,28 @@ using Microsoft.CodeAnalysis.Operations;
                     return false;
                 }
 
-                ArrayTypeSymbol array = (ArrayTypeSymbol)type;
+                ArrayTypeSymbol array = (ArrayTypeSymbol) type;
                 return (array.Rank == countOfDimensions);
             }
 
             protected override bool MatchTypeToTypeId(TypeSymbol type, int typeId)
             {
-                return (int)type.SpecialType == typeId;
+                return (int) type.SpecialType == typeId;
             }
         }
 
         private class WellKnownMembersSignatureComparer : SpecialMembersSignatureComparer
         {
-            private readonly Aquila.CodeAnalysis.Symbols.PhpCompilation _compilation;
+            private readonly PhpCompilation _compilation;
 
-            public WellKnownMembersSignatureComparer(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
+            public WellKnownMembersSignatureComparer(PhpCompilation compilation)
             {
                 _compilation = compilation;
             }
 
             protected override bool MatchTypeToTypeId(TypeSymbol type, int typeId)
             {
-                WellKnownType wellKnownId = (WellKnownType)typeId;
+                WellKnownType wellKnownId = (WellKnownType) typeId;
                 if (wellKnownId >= WellKnownType.First && wellKnownId < WellKnownType.NextAvailable)
                 {
                     return (type == _compilation.GetWellKnownType(wellKnownId));

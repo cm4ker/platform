@@ -8,8 +8,10 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Cci = Microsoft.Cci;
- using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
+ using Aquila.CodeAnalysis;
+ using Aquila.CodeAnalysis.Symbols.Synthesized;
+ using Cci = Microsoft.Cci;
+ 
 
  namespace Pchp.CodeAnalysis.Emit
 {
@@ -20,7 +22,7 @@ using Cci = Microsoft.Cci;
     {
         readonly PEModuleBuilder _module;
 
-        public Aquila.CodeAnalysis.Symbols.PhpCompilation DeclaringCompilation => _module.Compilation;
+        public PhpCompilation DeclaringCompilation => _module.Compilation;
 
         readonly ConcurrentDictionary<Cci.ITypeDefinition, List<Aquila.CodeAnalysis.Symbols.Symbol>> _membersByType = new ConcurrentDictionary<Cci.ITypeDefinition, List<Aquila.CodeAnalysis.Symbols.Symbol>>();
 

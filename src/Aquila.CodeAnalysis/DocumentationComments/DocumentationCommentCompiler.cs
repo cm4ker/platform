@@ -4,14 +4,18 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis.Symbols;
 using System.Text;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.Compiler.Utilities;
 using Aquila.Syntax.Syntax;
+using SourceFieldSymbol = Aquila.CodeAnalysis.Symbols.SourceFieldSymbol;
 
 namespace Pchp.CodeAnalysis.DocumentationComments
 {
     internal class DocumentationCommentCompiler
     {
-        internal static void WriteDocumentationCommentXml(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, string assemblyName, Stream xmlDocStream, DiagnosticBag xmlDiagnostics, CancellationToken cancellationToken)
+        internal static void WriteDocumentationCommentXml(PhpCompilation compilation, string assemblyName, Stream xmlDocStream, DiagnosticBag xmlDiagnostics, CancellationToken cancellationToken)
         {
             if (xmlDocStream != null)
             {
@@ -76,7 +80,7 @@ namespace Pchp.CodeAnalysis.DocumentationComments
             return encodedText.ToString();
         }
 
-        DocumentationCommentCompiler WriteCompilation(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, string assemblyName)
+        DocumentationCommentCompiler WriteCompilation(PhpCompilation compilation, string assemblyName)
         {
             _writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             _writer.WriteLine("<doc>");
@@ -260,79 +264,79 @@ namespace Pchp.CodeAnalysis.DocumentationComments
 
         void WriteType(SourceTypeSymbol type)
         {
-            _writer.WriteLine($"<member name=\"{CommentIdResolver.GetId(type)}\">");
-            var phpdoc = type.Syntax?.PHPDoc;
-            if (phpdoc != null)
-            {
-                WriteSummary(_writer, phpdoc.Summary);
-            }
-            _writer.WriteLine("</member>");
-
+            // _writer.WriteLine($"<member name=\"{CommentIdResolver.GetId(type)}\">");
+            // var phpdoc = type.Syntax?.PHPDoc;
+            // if (phpdoc != null)
+            // {
+            //     WriteSummary(_writer, phpdoc.Summary);
+            // }
+            // _writer.WriteLine("</member>");
             //
-            // fields
+            // //
+            // // fields
+            // //
             //
-
-            foreach (var field in type.GetMembers().OfType<SourceFieldSymbol>())
-            {
-                if ((phpdoc = field.PHPDocBlock) != null)
-                {
-                    var summary = phpdoc.Summary;
-                    var value = string.Empty;
-                    if (string.IsNullOrEmpty(summary))
-                    {
-                        // try @var or @staticvar:
-                        var vartag = field.FindPhpDocVarTag();
-                        if (vartag != null)
-                        {
-                            summary = vartag.Description;
-
-                            if (!string.IsNullOrEmpty(vartag.TypeNames))
-                            {
-                                value = string.Format("<value>{0}</value>", XmlEncode(vartag.TypeNames));
-                            }
-                        }
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(summary))
-                    {
-                        _writer.WriteLine($"<member name=\"{CommentIdResolver.GetId(field)}\">");
-                        WriteSummary(_writer, summary);
-                        _writer.WriteLine(value);
-                        _writer.WriteLine("</member>");
-                    }
-                }
-            }
-
+            // foreach (var field in type.GetMembers().OfType<SourceFieldSymbol>())
+            // {
+            //     if ((phpdoc = field.PHPDocBlock) != null)
+            //     {
+            //         var summary = phpdoc.Summary;
+            //         var value = string.Empty;
+            //         if (string.IsNullOrEmpty(summary))
+            //         {
+            //             // try @var or @staticvar:
+            //             var vartag = field.FindPhpDocVarTag();
+            //             if (vartag != null)
+            //             {
+            //                 summary = vartag.Description;
             //
-            // .ctor
+            //                 if (!string.IsNullOrEmpty(vartag.TypeNames))
+            //                 {
+            //                     value = string.Format("<value>{0}</value>", XmlEncode(vartag.TypeNames));
+            //                 }
+            //             }
+            //         }
             //
-            var ctors = type.InstanceConstructors;
-            for (int i = 0; i < ctors.Length; i++)
-            {
-                // find __construct()
-                if (ctors[i] is SynthesizedPhpCtorSymbol synctor && synctor.PhpConstructor is SourceRoutineSymbol php_construct)
-                {
-                    // annotate all generated .ctor() methods:
-                    for (int j = 0; j < ctors.Length; j++)
-                    {
-                        var ctor_id = CommentIdResolver.GetId(ctors[j]);
-
-                        if (ctors[j].IsInitFieldsOnly)
-                        {
-                            // annotate special .ctor that initializes only fields
-                            _writer.WriteLine($"<member name=\"{ctor_id}\">");
-                            WriteSummary(_writer, Aquila.CodeAnalysis.PhpResources.XmlDoc_FieldsOnlyCtor);
-                            _writer.WriteLine("</member>");
-                        }
-                        else
-                        {
-                            WriteRoutine(ctor_id, php_construct);
-                        }
-                    }
-
-                    break;
-                }
-            }
+            //         if (!string.IsNullOrWhiteSpace(summary))
+            //         {
+            //             _writer.WriteLine($"<member name=\"{CommentIdResolver.GetId(field)}\">");
+            //             WriteSummary(_writer, summary);
+            //             _writer.WriteLine(value);
+            //             _writer.WriteLine("</member>");
+            //         }
+            //     }
+            // }
+            //
+            // //
+            // // .ctor
+            // //
+            // var ctors = type.InstanceConstructors;
+            // for (int i = 0; i < ctors.Length; i++)
+            // {
+            //     // find __construct()
+            //     if (ctors[i] is SynthesizedPhpCtorSymbol synctor && synctor.PhpConstructor is SourceRoutineSymbol php_construct)
+            //     {
+            //         // annotate all generated .ctor() methods:
+            //         for (int j = 0; j < ctors.Length; j++)
+            //         {
+            //             var ctor_id = CommentIdResolver.GetId(ctors[j]);
+            //
+            //             if (ctors[j].IsInitFieldsOnly)
+            //             {
+            //                 // annotate special .ctor that initializes only fields
+            //                 _writer.WriteLine($"<member name=\"{ctor_id}\">");
+            //                 WriteSummary(_writer, Aquila.CodeAnalysis.PhpResources.XmlDoc_FieldsOnlyCtor);
+            //                 _writer.WriteLine("</member>");
+            //             }
+            //             else
+            //             {
+            //                 WriteRoutine(ctor_id, php_construct);
+            //             }
+            //         }
+            //
+            //         break;
+            //     }
+            // }
         }
 
         void WriteFile(SourceFileSymbol file)

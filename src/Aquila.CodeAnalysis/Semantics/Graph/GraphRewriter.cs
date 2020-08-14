@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Pchp.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Peachpie.CodeAnalysis.Utilities;
 
 namespace Pchp.CodeAnalysis.Semantics.Graph
@@ -124,12 +125,12 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
                 return base.VisitFunctionDeclaration(x);
             }
 
-            public override VoidStruct VisitTypeDeclaration(BoundTypeDeclStatement x)
-            {
-                _rewriter.OnUnreachableTypeFound(x.DeclaredType);
-
-                return base.VisitTypeDeclaration(x);
-            }
+            // public override VoidStruct VisitTypeDeclaration(BoundTypeDeclStatement x)
+            // {
+            //     _rewriter.OnUnreachableTypeFound(x.DeclaredType);
+            //
+            //     return base.VisitTypeDeclaration(x);
+            // }
         }
 
         #endregion
@@ -144,7 +145,9 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
 
         private BoundBlock TryGetNewVersion(BoundBlock block)
         {
-            return _updatedBlocks != null && _updatedBlocks.TryGetValue(block, out var mappedBlock) ? mappedBlock : block;
+            return _updatedBlocks != null && _updatedBlocks.TryGetValue(block, out var mappedBlock)
+                ? mappedBlock
+                : block;
         }
 
         private void MapToNewVersion(BoundBlock oldBlock, BoundBlock newBlock)
@@ -199,7 +202,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             _updatedBlocks = null;
 
             // Traverse the whole graph and possibly obtain new versions of start and exit
-            var updatedStart = (StartBlock)Accept(x.Start);
+            var updatedStart = (StartBlock) Accept(x.Start);
             var updatedExit = TryGetNewVersion(x.Exit);
 
             // Assume that yields and unreachable blocks stay the same
@@ -213,12 +216,12 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
 
                 // Rescan and repair nodes and edges if any blocks were modified
                 var repairer = new GraphRepairer(this);
-                updatedStart = (StartBlock)updatedStart.Accept(repairer);
+                updatedStart = (StartBlock) updatedStart.Accept(repairer);
                 updatedExit = TryGetNewVersion(x.Exit);
 
                 // Handle newly unreachable blocks
                 var newlyUnreachableBlocks =
-                    _possiblyUnreachableBlocks?.Where(b => !IsExplored(b)).ToList()  // Confirm that they are unexplored
+                    _possiblyUnreachableBlocks?.Where(b => !IsExplored(b)).ToList() // Confirm that they are unexplored
                     ?? Enumerable.Empty<BoundBlock>();
                 if (newlyUnreachableBlocks.Any())
                 {
@@ -237,21 +240,22 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
                 // (enables to properly produce reachability diagnostics)
                 unreachableBlocks =
                     unreachableBlocks.Concat(newlyUnreachableBlocks)
-                    .Select(b => (BoundBlock)b.Accept(repairer))
-                    .ToImmutableArray();
+                        .Select(b => (BoundBlock) b.Accept(repairer))
+                        .ToImmutableArray();
             }
 
             // Create a new CFG from the new versions of blocks and edges (expressions and statements are reused where unchanged)
             return x.Update(
                 updatedStart,
                 updatedExit,
-                x.Labels,           // Keep all the labels, they are here only for the diagnostic purposes
+                x.Labels, // Keep all the labels, they are here only for the diagnostic purposes
                 yields,
                 unreachableBlocks);
         }
 
         protected virtual void OnVisitCFG(ControlFlowGraph x)
-        { }
+        {
+        }
 
         #endregion
 
@@ -324,22 +328,24 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             }
         }
 
-        public virtual BoundBlock OnVisitCFGBlock(BoundBlock x) => (BoundBlock)base.VisitCFGBlock(x);
+        public virtual BoundBlock OnVisitCFGBlock(BoundBlock x) => (BoundBlock) base.VisitCFGBlock(x);
 
-        public virtual StartBlock OnVisitCFGStartBlock(StartBlock x) => (StartBlock)base.VisitCFGStartBlock(x);
+        public virtual StartBlock OnVisitCFGStartBlock(StartBlock x) => (StartBlock) base.VisitCFGStartBlock(x);
 
-        public virtual ExitBlock OnVisitCFGExitBlock(ExitBlock x) => (ExitBlock)base.VisitCFGExitBlock(x);
+        public virtual ExitBlock OnVisitCFGExitBlock(ExitBlock x) => (ExitBlock) base.VisitCFGExitBlock(x);
 
-        public virtual CatchBlock OnVisitCFGCatchBlock(CatchBlock x) => (CatchBlock)base.VisitCFGCatchBlock(x);
+        public virtual CatchBlock OnVisitCFGCatchBlock(CatchBlock x) => (CatchBlock) base.VisitCFGCatchBlock(x);
 
-        public virtual CaseBlock OnVisitCFGCaseBlock(CaseBlock x) => (CaseBlock)base.VisitCFGCaseBlock(x);
+        public virtual CaseBlock OnVisitCFGCaseBlock(CaseBlock x) => (CaseBlock) base.VisitCFGCaseBlock(x);
 
         #endregion
 
         protected private virtual void OnUnreachableRoutineFound(SourceRoutineSymbol routine)
-        { }
+        {
+        }
 
-        protected private virtual void OnUnreachableTypeFound(SourceTypeSymbol type)
-        { }
+        // protected private virtual void OnUnreachableTypeFound(SourceTypeSymbol type)
+        // {
+        // }
     }
 }

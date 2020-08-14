@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,25 +9,30 @@ using Pchp.CodeAnalysis.Semantics;
 using Microsoft.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Symbols;
 using System.Diagnostics;
- using Aquila.CodeAnalysis.Syntax;
- using Aquila.Compiler.Utilities;
+using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.CodeAnalysis.Syntax;
+using Aquila.Compiler.Utilities;
+using Aquila.Syntax.Ast;
 
- namespace Peachpie.CodeAnalysis.Utilities
+namespace Peachpie.CodeAnalysis.Utilities
 {
     static class ExceptionUtilities
     {
         /// <summary>
         /// Gets <see cref="System.NotImplementedException"/> with aproximate location of the error.
         /// </summary>
-        public static NotImplementedException NotImplementedException(this CodeGenerator cg, string message = null, IPhpOperation op = null)
+        public static NotImplementedException NotImplementedException(this CodeGenerator cg, string message = null,
+            IPhpOperation op = null)
         {
-            return NotImplementedException(cg.Builder, message, op: op, routine: cg.Routine, debugroutine: cg.DebugRoutine);
+            return NotImplementedException(cg.Builder, message, op: op, routine: cg.Routine,
+                debugroutine: cg.DebugRoutine);
         }
 
         /// <summary>
         /// Gets <see cref="System.NotImplementedException"/> with aproximate location of the error.
         /// </summary>
-        public static NotImplementedException NotImplementedException(ILBuilder il, string message = null, IPhpOperation op = null, SourceRoutineSymbol routine = null, MethodSymbol debugroutine = null)
+        public static NotImplementedException NotImplementedException(ILBuilder il, string message = null,
+            IPhpOperation op = null, SourceRoutineSymbol routine = null, MethodSymbol debugroutine = null)
         {
             string location = null;
 
@@ -35,15 +40,16 @@ using System.Diagnostics;
             if (syntax != null)
             {
                 // get location from AST
-                var unit = syntax.ContainingSourceUnit;
-                unit.GetLineColumnFromPosition(syntax.Span.Start, out int line, out int col);
-                location = $"{unit.FilePath}({line + 1}, {col + 1})";
+                var unit = syntax.FirstParent<SourceUnit>();
+                // unit.GetLineColumnFromPosition(syntax.Span.Start, out int line, out int col);
+                // location = $"{unit.FilePath}({line + 1}, {col + 1})";
             }
             else if (il.SeqPointsOpt != null && il.SeqPointsOpt.Count != 0)
             {
                 // get location from last sequence point
                 var pt = il.SeqPointsOpt.Last();
-                ((PhpSyntaxTree)pt.SyntaxTree).Source.GetLineColumnFromPosition(pt.Span.Start, out int line, out int col);
+                ((PhpSyntaxTree) pt.SyntaxTree).Source.GetLineColumnFromPosition(pt.Span.Start, out int line,
+                    out int col);
                 location = $"{pt.SyntaxTree.FilePath}({line + 1}, {col + 1})";
             }
             else if (routine != null)
@@ -54,10 +60,10 @@ using System.Diagnostics;
             {
                 location = $"{debugroutine.ContainingType.GetFullName()}::{debugroutine.RoutineName}";
 
-                if (debugroutine.ContainingType is SourceTypeSymbol srctype)
-                {
-                    location = $"{srctype.ContainingFile.SyntaxTree.FilePath} in {location}";
-                }
+                // if (debugroutine.ContainingType is SourceTypeSymbol srctype)
+                // {
+                //     // location = $"{srctype.ContainingFile.SyntaxTree.FilePath} in {location}";
+                // }
             }
             else
             {
@@ -80,7 +86,8 @@ using System.Diagnostics;
 
         public static InvalidOperationException UnexpectedValue(object o)
         {
-            string output = string.Format("Unexpected value '{0}' of type '{1}'", o, (o != null) ? o.GetType().FullName : "<unknown>");
+            string output = string.Format("Unexpected value '{0}' of type '{1}'", o,
+                (o != null) ? o.GetType().FullName : "<unknown>");
             Debug.Assert(false, output);
 
             // We do not throw from here because we don't want all Watson reports to be bucketed to this call.

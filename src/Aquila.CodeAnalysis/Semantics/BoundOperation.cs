@@ -1,11 +1,9 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
- using Aquila.CodeAnalysis;
- using Microsoft.CodeAnalysis;
+using Aquila.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
-using Aquila.CodeAnalysis.Symbols;
-using Ast = Devsense.PHP.Syntax.Ast;
+
 
 namespace Pchp.CodeAnalysis.Semantics
 {
@@ -40,6 +38,7 @@ namespace Pchp.CodeAnalysis.Semantics
 
         public abstract void Accept(OperationVisitor visitor);
 
-        public abstract TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor, TArgument argument);
+        public abstract TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
+            TArgument argument);
     }
 }

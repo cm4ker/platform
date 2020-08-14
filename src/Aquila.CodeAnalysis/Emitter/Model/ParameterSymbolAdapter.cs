@@ -13,7 +13,7 @@ using System.Diagnostics;
 using Aquila.CodeAnalysis.Symbols;
 using Microsoft.CodeAnalysis;
 
-namespace Pchp.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
     internal partial class ParameterSymbol :
         Cci.IParameterTypeInformation,

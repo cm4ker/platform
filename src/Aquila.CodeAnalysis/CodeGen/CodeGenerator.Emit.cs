@@ -10,7 +10,9 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata;
+using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Errors;
+using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Attributes;
 using Aquila.CodeAnalysis.Symbols.Php;
@@ -26,10 +28,6 @@ using MethodSymbol = Aquila.CodeAnalysis.Symbols.MethodSymbol;
 using NamedTypeSymbol = Aquila.CodeAnalysis.Symbols.NamedTypeSymbol;
 using ParameterSymbol = Aquila.CodeAnalysis.Symbols.ParameterSymbol;
 using PropertySymbol = Aquila.CodeAnalysis.Symbols.PropertySymbol;
-using SourceFunctionSymbol = Aquila.CodeAnalysis.Symbols.SourceFunctionSymbol;
-using SourceGlobalMethodSymbol = Aquila.CodeAnalysis.Symbols.SourceGlobalMethodSymbol;
-using SourceLambdaSymbol = Aquila.CodeAnalysis.Symbols.SourceLambdaSymbol;
-using SourceRoutineSymbol = Aquila.CodeAnalysis.Symbols.SourceRoutineSymbol;
 using SourceTypeSymbol = Aquila.CodeAnalysis.Symbols.SourceTypeSymbol;
 
 namespace Pchp.CodeAnalysis.CodeGen

@@ -77,7 +77,22 @@ namespace Aquila.SyntaxGenerator.Compiler
                     if (syntax.IsList)
                         cls = GenerateListClass(syntax);
                     else
-                        cls = GenerateClass(syntax);
+                    {
+                        IEnumerable<CompilerSyntax> getAllBaseClasses(CompilerSyntax syntax)
+                        {
+                            var baseSyntax = root.Syntaxes.FirstOrDefault(x => x.Name == syntax.Base);
+
+                            while (baseSyntax != null)
+                            {
+                                yield return baseSyntax;
+
+                                baseSyntax = root.Syntaxes.FirstOrDefault(x => x.Name == baseSyntax.Base);
+                            }
+                        }
+
+
+                        cls = GenerateClass(syntax, getAllBaseClasses(syntax).ToList());
+                    }
 
                     ns = ns.AddMembers(cls);
                     unit = unit.AddMembers(ns);
@@ -183,7 +198,7 @@ namespace Aquila.SyntaxGenerator.Compiler
         }
 
 
-        private static MemberDeclarationSyntax GenerateClass(CompilerSyntax syntax)
+        private static MemberDeclarationSyntax GenerateClass(CompilerSyntax syntax, List<CompilerSyntax> baseList)
         {
             List<MemberDeclarationSyntax> members = new List<MemberDeclarationSyntax>();
 
@@ -193,6 +208,30 @@ namespace Aquila.SyntaxGenerator.Compiler
 
             var initializer = constructor.Initializer;
 
+            //NOTE: handle ImplicitPassInChildren
+            foreach (var baseSyntax in baseList)
+            {
+                foreach (var argument in baseSyntax.Arguments)
+                {
+                    if (argument.ImplicitPassInChildren)
+                    {
+                        var parameterSyntax = SyntaxFactory
+                            .Parameter(SyntaxFactory.Identifier(argument.Name.ToCamelCase()))
+                            .WithType(SyntaxFactory.ParseName(argument.Type));
+
+                        if (argument is SyntaxArgumentSingle sas && sas.Default != null)
+                            parameterSyntax = parameterSyntax.WithDefault(
+                                SyntaxFactory.EqualsValueClause(SyntaxFactory.ParseExpression(sas.Default)));
+
+
+                        initializer = initializer.AddArgumentListArguments(
+                            SyntaxFactory.Argument(SyntaxFactory.ParseName(argument.Name.ToCamelCase())));
+
+
+                        constructor = constructor.AddParameterListParameters(parameterSyntax);
+                    }
+                }
+            }
 
             var slot = 0;
 
@@ -258,11 +297,15 @@ namespace Aquila.SyntaxGenerator.Compiler
             members.Add(GetVisitorMethod(syntax));
             members.Add(GetVisitorMethod2(syntax));
 
-            var cls = SyntaxFactory.ClassDeclaration(syntax.Name)
-                .WithModifiers(SyntaxTokenList.Create(publicToken))
-                .WithBaseList(SyntaxFactory.BaseList().AddTypes(SyntaxFactory
-                    .SimpleBaseType(
-                        SyntaxFactory.ParseTypeName(string.IsNullOrEmpty(syntax.Base) ? NameBase : syntax.Base))))
+            var cls = (ClassDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration($@"
+
+public class {syntax.Name} : {(string.IsNullOrEmpty(syntax.Base) ? NameBase : syntax.Base)}
+{{
+    
+}}
+");
+
+            cls = cls
                 .AddMembers(constructor)
                 .AddMembers(members.ToArray());
 

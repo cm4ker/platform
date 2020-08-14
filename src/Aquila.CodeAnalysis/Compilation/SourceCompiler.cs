@@ -15,7 +15,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax.Syntax;
+using SourceFieldSymbol = Aquila.CodeAnalysis.Symbols.SourceFieldSymbol;
+using SourceMethodSymbol = Aquila.CodeAnalysis.Symbols.SourceMethodSymbol;
 
 namespace Pchp.CodeAnalysis
 {
@@ -24,7 +29,7 @@ namespace Pchp.CodeAnalysis
     /// </summary>
     internal class SourceCompiler
     {
-        readonly Aquila.CodeAnalysis.Symbols.PhpCompilation _compilation;
+        readonly PhpCompilation _compilation;
         readonly PEModuleBuilder _moduleBuilder;
         readonly bool _emittingPdb;
         readonly DiagnosticBag _diagnostics;
@@ -40,7 +45,7 @@ namespace Pchp.CodeAnalysis
 
         public bool ConcurrentBuild => _compilation.Options.ConcurrentBuild;
 
-        private SourceCompiler(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, PEModuleBuilder moduleBuilder, bool emittingPdb, DiagnosticBag diagnostics, CancellationToken cancellationToken)
+        private SourceCompiler(PhpCompilation compilation, PEModuleBuilder moduleBuilder, bool emittingPdb, DiagnosticBag diagnostics, CancellationToken cancellationToken)
         {
             Contract.ThrowIfNull(compilation);
             Contract.ThrowIfNull(diagnostics);
@@ -450,7 +455,7 @@ namespace Pchp.CodeAnalysis
             return true;
         }
 
-        public static IEnumerable<Diagnostic> BindAndAnalyze(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, CancellationToken cancellationToken)
+        public static IEnumerable<Diagnostic> BindAndAnalyze(PhpCompilation compilation, CancellationToken cancellationToken)
         {
             var manager = compilation.GetBoundReferenceManager();   // ensure the references are resolved! (binds ReferenceManager)
 
@@ -512,7 +517,7 @@ namespace Pchp.CodeAnalysis
         }
 
         public static void CompileSources(
-            Aquila.CodeAnalysis.Symbols.PhpCompilation compilation,
+            PhpCompilation compilation,
             PEModuleBuilder moduleBuilder,
             bool emittingPdb,
             bool hasDeclarationErrors,

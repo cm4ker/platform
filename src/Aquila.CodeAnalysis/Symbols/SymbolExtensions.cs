@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Linq;
 using Aquila.CodeAnalysis.Symbols.PE;
 using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.Compiler.Utilities;
+using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis.Symbols
@@ -13,12 +15,14 @@ namespace Aquila.CodeAnalysis.Symbols
     {
         public static readonly Func<Symbol, bool> s_IsReachable = new Func<Symbol, bool>(t => !t.IsUnreachable);
 
-        public static IEnumerable<T> WhereReachable<T>(this IEnumerable<T> symbols) where T : Symbol => symbols.Where<T>(s_IsReachable);
+        public static IEnumerable<T> WhereReachable<T>(this IEnumerable<T> symbols) where T : Symbol =>
+            symbols.Where<T>(s_IsReachable);
 
         /// <summary>
         /// Returns a constructed named type symbol if 'type' is generic, otherwise just returns 'type'
         /// </summary>
-        public static NamedTypeSymbol ConstructIfGeneric(this NamedTypeSymbol type, ImmutableArray<TypeWithModifiers> typeArguments)
+        public static NamedTypeSymbol ConstructIfGeneric(this NamedTypeSymbol type,
+            ImmutableArray<TypeWithModifiers> typeArguments)
         {
             Debug.Assert(type.TypeParameters.IsEmpty == (typeArguments.Length == 0));
             return type.TypeParameters.IsEmpty ? type : type.Construct(typeArguments, unbound: false);
@@ -50,13 +54,15 @@ namespace Aquila.CodeAnalysis.Symbols
                     {
                         hascond = true;
 
-                        var condition = (string)attr.ConstructorArguments[0].Value;
-                        hasmatch = compilation == null || Enumerable.Contains(compilation.ConditionalOptions, condition);
+                        var condition = (string) attr.ConstructorArguments[0].Value;
+                        hasmatch = compilation == null ||
+                                   Enumerable.Contains(compilation.ConditionalOptions, condition);
                     }
                 }
 
-                if (hascond && !hasmatch) return true;  // conditions defined but not satisfied => hide
+                if (hascond && !hasmatch) return true; // conditions defined but not satisfied => hide
             }
+
             //
             return false;
         }
@@ -88,13 +94,13 @@ namespace Aquila.CodeAnalysis.Symbols
         /// <summary>
         /// Gets file symbol containing given symbol.
         /// </summary>
-        public static Source.SourceFileSymbol GetContainingFileSymbol(this Symbol s)
+        public static SourceFileSymbol GetContainingFileSymbol(this Symbol s)
         {
             return s?.OriginalDefinition switch
             {
-                Source.SourceFileSymbol file => file,
+                SourceFileSymbol file => file,
                 Source.SourceRoutineSymbol routine => routine.ContainingFile,
-                Source.SourceTypeSymbol type => type.ContainingFile,
+                SourceTypeSymbol type => type.ContainingFile,
                 _ => s != null ? GetContainingFileSymbol(s.ContainingSymbol) : null,
             };
         }
@@ -181,7 +187,8 @@ namespace Aquila.CodeAnalysis.Symbols
         /// <summary>
         /// Gets [PhpType] attribute and its parameters.
         /// </summary>
-        public static bool TryGetPhpTypeAttribute(this TypeSymbol symbol, out string typename, out string filename, out byte autoload)
+        public static bool TryGetPhpTypeAttribute(this TypeSymbol symbol, out string typename, out string filename,
+            out byte autoload)
         {
             typename = filename = null;
             autoload = 0;
@@ -192,15 +199,15 @@ namespace Aquila.CodeAnalysis.Symbols
                 var args = a.CommonConstructorArguments;
                 if (args.Length >= 2)
                 {
-                    typename = (string)args[0].Value;
-                    filename = (string)args[1].Value;
-                    autoload = args.Length >= 3 ? (byte)args[2].Value : (byte)0;
+                    typename = (string) args[0].Value;
+                    filename = (string) args[1].Value;
+                    autoload = args.Length >= 3 ? (byte) args[2].Value : (byte) 0;
                     return true;
                 }
                 else if (args.Length == 1)
                 {
-                    var phptype = (byte)args[0].Value; // see PhpTypeAttribute.PhpTypeName
-                    if (phptype == 1/*PhpTypeName.NameOnly*/) typename = symbol.Name;
+                    var phptype = (byte) args[0].Value; // see PhpTypeAttribute.PhpTypeName
+                    if (phptype == 1 /*PhpTypeName.NameOnly*/) typename = symbol.Name;
 
                     return true;
                 }
@@ -217,7 +224,8 @@ namespace Aquila.CodeAnalysis.Symbols
             {
                 var a = attrs[i];
 
-                var fullname = MetadataHelpers.BuildQualifiedName((a.AttributeClass as NamedTypeSymbol)?.NamespaceName, a.AttributeClass.Name);
+                var fullname = MetadataHelpers.BuildQualifiedName((a.AttributeClass as NamedTypeSymbol)?.NamespaceName,
+                    a.AttributeClass.Name);
                 if (fullname == clrname)
                 {
                     return a;
@@ -227,15 +235,17 @@ namespace Aquila.CodeAnalysis.Symbols
             return null;
         }
 
-        public static AttributeData GetPhpExtensionAttribute(this Symbol symbol) => GetAttribute(symbol, CoreTypes.PhpExtensionAttributeFullName);
+        public static AttributeData GetPhpExtensionAttribute(this Symbol symbol) =>
+            GetAttribute(symbol, CoreTypes.PhpExtensionAttributeFullName);
 
-        public static AttributeData GetPhpScriptAttribute(this TypeSymbol symbol) => GetAttribute(symbol, CoreTypes.PhpScriptAttributeFullName);
+        public static AttributeData GetPhpScriptAttribute(this TypeSymbol symbol) =>
+            GetAttribute(symbol, CoreTypes.PhpScriptAttributeFullName);
 
         /// <summary>
         /// Gets the list of extension names specified in given <c>PhpExtensionAttribute</c>.
         /// </summary>
         /// <returns>Enumeration of extensin names. Never returns <c>null</c>.</returns>
-        public static IEnumerable<string>/*!!*/PhpExtensionAttributeValues(this AttributeData phpextensionattribute)
+        public static IEnumerable<string> /*!!*/ PhpExtensionAttributeValues(this AttributeData phpextensionattribute)
         {
             if (phpextensionattribute != null)
             {
@@ -247,15 +257,16 @@ namespace Aquila.CodeAnalysis.Symbols
                         // [PhpExtensionAttribute(params string[] values)]
                         case TypedConstantKind.Array:
                             return args[0]
-                                .Values   // string[] extensions
-                                .Select(x => (string)x.Value);
+                                .Values // string[] extensions
+                                .Select(x => (string) x.Value);
 
                         // [PhpExtensionAttribute(string extensionName)]
                         case TypedConstantKind.Primitive:
                             if (args[0].Value is string extensionName)
                             {
-                                return new[] { extensionName };
+                                return new[] {extensionName};
                             }
+
                             break;
                     }
                 }

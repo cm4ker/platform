@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using Aquila.Language.Ast.Definitions.Statements;
+using Aquila.Syntax.Ast.Statements;
 using Aquila.Syntax.Text;
 
 namespace Pchp.CodeAnalysis.Semantics.Graph
@@ -9,7 +9,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
     /// <summary>
     /// Represents statements control flow graph.
     /// </summary>
-    public sealed partial class ControlFlowGraph : AstNode
+    public sealed partial class ControlFlowGraph
     {
         #region LabelBlockFlags, LabelBlockInfo
 
@@ -73,14 +73,24 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// Gets the control flow start block. Cannot be <c>null</c>.
         /// </summary>
-        public BoundBlock/*!*/Start { get { return _start; } }
-        readonly BoundBlock/*!*/_start;
-        
+        public BoundBlock /*!*/ Start
+        {
+            get { return _start; }
+        }
+
+        readonly BoundBlock /*!*/
+            _start;
+
         /// <summary>
         /// Gets the control flow exit block. Cannot be <c>null</c>.
         /// </summary>
-        public BoundBlock/*!*/Exit { get { return _exit; } }
-        readonly BoundBlock/*!*/_exit;
+        public BoundBlock /*!*/ Exit
+        {
+            get { return _exit; }
+        }
+
+        readonly BoundBlock /*!*/
+            _exit;
 
         ///// <summary>
         ///// Exception block. Can be <c>null</c>.
@@ -93,41 +103,57 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// Array of labels within routine. Can be <c>null</c>.
         /// </summary>
-        public ImmutableArray<LabelBlockState> Labels { get { return _labels; } }
+        public ImmutableArray<LabelBlockState> Labels
+        {
+            get { return _labels; }
+        }
+
         readonly ImmutableArray<LabelBlockState> _labels;
 
         /// <summary>
         /// Array of yield statements within routine. Can be <c>null</c>.
         /// </summary>
-        public ImmutableArray<BoundYieldStatement> Yields { get => _yields; }
+        public ImmutableArray<BoundYieldStatement> Yields
+        {
+            get => _yields;
+        }
+
         readonly ImmutableArray<BoundYieldStatement> _yields;
 
         /// <summary>
         /// List of blocks that are unreachable syntactically (statements after JumpStmt etc.).
         /// </summary>
-        public ImmutableArray<BoundBlock>/*!*/UnreachableBlocks { get { return _unreachable; } }
-        readonly ImmutableArray<BoundBlock>/*!*/_unreachable;
+        public ImmutableArray<BoundBlock> /*!*/ UnreachableBlocks
+        {
+            get { return _unreachable; }
+        }
+
+        readonly ImmutableArray<BoundBlock> /*!*/
+            _unreachable;
 
         /// <summary>
         /// Last "tag" color used. Used internally for graph algorithms.
         /// </summary>
         int _lastcolor = 0;
-        
+
         #endregion
 
         #region Construction
 
-        internal ControlFlowGraph(IList<Statement>/*!*/statements, SemanticsBinder/*!*/binder)
+        internal ControlFlowGraph(IList<Statement> /*!*/statements, SemanticsBinder /*!*/binder)
             : this(BuilderVisitor.Build(statements, binder), binder.Yields)
         {
         }
 
-        private ControlFlowGraph(BuilderVisitor/*!*/builder, ImmutableArray<BoundYieldStatement> yields)
-            : this(builder.Start, builder.Exit, builder.Declarations, /*builder.Exception*/null, builder.Labels, yields, builder.DeadBlocks)
+        private ControlFlowGraph(BuilderVisitor /*!*/builder, ImmutableArray<BoundYieldStatement> yields)
+            : this(builder.Start, builder.Exit, builder.Declarations, /*builder.Exception*/null, builder.Labels, yields,
+                builder.DeadBlocks)
         {
         }
 
-        private ControlFlowGraph(BoundBlock/*!*/start, BoundBlock/*!*/exit, IEnumerable<BoundStatement>/*!*/declarations, BoundBlock exception, ImmutableArray<LabelBlockState> labels, ImmutableArray<BoundYieldStatement> yields, ImmutableArray<BoundBlock> unreachable)
+        private ControlFlowGraph(BoundBlock /*!*/start, BoundBlock /*!*/exit,
+            IEnumerable<BoundStatement> /*!*/declarations, BoundBlock exception, ImmutableArray<LabelBlockState> labels,
+            ImmutableArray<BoundYieldStatement> yields, ImmutableArray<BoundBlock> unreachable)
         {
             Contract.ThrowIfNull(start);
             Contract.ThrowIfNull(exit);
@@ -142,15 +168,18 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             _unreachable = unreachable;
         }
 
-        internal ControlFlowGraph Update(BoundBlock start, BoundBlock exit, ImmutableArray<LabelBlockState> labels, ImmutableArray<BoundYieldStatement> yields, ImmutableArray<BoundBlock> unreachable)
+        internal ControlFlowGraph Update(BoundBlock start, BoundBlock exit, ImmutableArray<LabelBlockState> labels,
+            ImmutableArray<BoundYieldStatement> yields, ImmutableArray<BoundBlock> unreachable)
         {
-            if (start == _start && exit == _exit && labels == _labels && yields == _yields && unreachable == _unreachable)
+            if (start == _start && exit == _exit && labels == _labels && yields == _yields &&
+                unreachable == _unreachable)
             {
                 return this;
             }
             else
             {
-                return new ControlFlowGraph(start, exit, ImmutableArray<BoundStatement>.Empty, null, labels, yields, unreachable)
+                return new ControlFlowGraph(start, exit, ImmutableArray<BoundStatement>.Empty, null, labels, yields,
+                    unreachable)
                 {
                     _lastcolor = this._lastcolor
                 };

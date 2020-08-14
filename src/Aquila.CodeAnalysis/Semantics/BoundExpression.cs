@@ -6,11 +6,13 @@ using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using Pchp.CodeAnalysis.FlowAnalysis;
 using System.Diagnostics;
+using Aquila.CodeAnalysis;
 using Aquila.Compiler.Utilities;
 using Aquila.Syntax;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Syntax;
 using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Peachpie.CodeAnalysis.Utilities;
 
 namespace Pchp.CodeAnalysis.Semantics
@@ -972,17 +974,17 @@ namespace Pchp.CodeAnalysis.Semantics
 
         ImmutableArray<BoundArgument> _usevars;
 
-        public IBlockOperation Body => (BoundLambdaMethod != null) ? BoundLambdaMethod.ControlFlowGraph.Start : null;
+        public IBlockOperation Body => null;//(BoundLambdaMethod != null) ? BoundLambdaMethod.ControlFlowGraph.Start : null;
 
-        public IMethodSymbol Signature => BoundLambdaMethod;
+        public IMethodSymbol Signature => null; // BoundLambdaMethod;
 
         /// <summary>
         /// Reference to associated lambda method symbol.
         /// Bound during analysis.
         /// </summary>
-        internal SourceLambdaSymbol BoundLambdaMethod { get; set; }
+        //internal SourceLambdaSymbol BoundLambdaMethod { get; set; }
 
-        IMethodSymbol IAnonymousFunctionOperation.Symbol => BoundLambdaMethod;
+        IMethodSymbol IAnonymousFunctionOperation.Symbol => null;// BoundLambdaMethod;
 
         public override bool IsDeeplyCopied => false;
 
@@ -1429,7 +1431,7 @@ namespace Pchp.CodeAnalysis.Semantics
         /// <summary>In case of an instance method, this is its receiver instance.</summary>
         internal BoundExpression Receiver { get; set; }
 
-        internal BoundCallableConvert(BoundExpression operand, Aquila.CodeAnalysis.Symbols.PhpCompilation compilation)
+        internal BoundCallableConvert(BoundExpression operand, PhpCompilation compilation)
             : base(operand, compilation.TypeRefFactory.Create(compilation.CoreTypes.IPhpCallable.Symbol))
         {
         }
@@ -2133,7 +2135,7 @@ namespace Pchp.CodeAnalysis.Semantics
     /// </summary>
     public partial class BoundArrayItemEx : BoundReferenceExpression, IArrayElementReferenceOperation
     {
-        internal Aquila.CodeAnalysis.Symbols.PhpCompilation DeclaringCompilation { get; }
+        internal PhpCompilation DeclaringCompilation { get; }
 
         public BoundExpression Array
         {
@@ -2158,7 +2160,7 @@ namespace Pchp.CodeAnalysis.Semantics
         ImmutableArray<IOperation> IArrayElementReferenceOperation.Indices
             => (_index != null) ? ImmutableArray.Create((IOperation) _index) : ImmutableArray<IOperation>.Empty;
 
-        public BoundArrayItemEx(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, BoundExpression array, BoundExpression index)
+        public BoundArrayItemEx(PhpCompilation compilation, BoundExpression array, BoundExpression index)
         {
             Contract.ThrowIfNull(array);
 
@@ -2197,7 +2199,7 @@ namespace Pchp.CodeAnalysis.Semantics
 
     public partial class BoundArrayItemOrdEx : BoundArrayItemEx
     {
-        public BoundArrayItemOrdEx(Aquila.CodeAnalysis.Symbols.PhpCompilation compilation, BoundExpression array, BoundExpression index) :
+        public BoundArrayItemOrdEx(PhpCompilation compilation, BoundExpression array, BoundExpression index) :
             base(compilation, array, index)
         {
         }

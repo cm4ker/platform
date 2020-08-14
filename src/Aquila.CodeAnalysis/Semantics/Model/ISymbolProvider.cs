@@ -1,9 +1,11 @@
 ﻿using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis.Symbols;
 using System.Collections.Generic;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.Syntax.Syntax;
 
- namespace Pchp.CodeAnalysis.Semantics
+namespace Pchp.CodeAnalysis.Semantics
 {
     /// <summary>
     /// Represents PHP semantics.
@@ -15,7 +17,7 @@ using Aquila.Syntax.Syntax;
         /// <summary>
         /// Gets declaring compilation.
         /// </summary>
-        Aquila.CodeAnalysis.Symbols.PhpCompilation Compilation { get; }
+        PhpCompilation Compilation { get; }
 
         /// <summary>
         /// Gets a file by its path relative to current context.

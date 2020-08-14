@@ -2,6 +2,8 @@ namespace Aquila.Syntax.Ast
 {
     public enum Operations
     {
+        Unknown,
+
         // unary ops:
         Plus,
         Minus,
@@ -89,12 +91,13 @@ namespace Aquila.Syntax.Ast
         IndirectVarUse,
         DirectStaticFieldUse,
         IndirectStaticFieldUse,
-        ItemUse,
+        Indexer,
 
         // literals:
         NullLiteral,
         BoolLiteral,
         IntLiteral,
+        CharLiteral,
         LongIntLiteral,
         DoubleLiteral,
         StringLiteral,

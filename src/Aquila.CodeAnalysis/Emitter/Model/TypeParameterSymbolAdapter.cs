@@ -8,7 +8,7 @@ using Cci = Microsoft.Cci;
 using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis.Emit;
 
-namespace Pchp.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
     internal partial class TypeParameterSymbol :
         Cci.IGenericParameterReference,

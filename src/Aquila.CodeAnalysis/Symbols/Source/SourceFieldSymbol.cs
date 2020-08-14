@@ -4,14 +4,16 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
+using Aquila.Compiler.Utilities;
 using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis;
 using Pchp.CodeAnalysis.FlowAnalysis;
 using Pchp.CodeAnalysis.Semantics;
 using Roslyn.Utilities;
 
-namespace Aquila.CodeAnalysis.Symbols.Source
+namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// Declares a CLR field representing a PHP field (a class constant or a field).
@@ -33,13 +35,13 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         {
             get
             {
-                return RequiresHolder ? (TypeSymbol)_containingType.StaticsContainer : null;
+                return null; //RequiresHolder ? (TypeSymbol)_containingType.StaticsContainer : null;
             }
         }
 
         bool IPhpPropertySymbol.RequiresContext => this.Initializer != null && this.Initializer.RequiresContext;
 
-        TypeSymbol IPhpPropertySymbol.DeclaringType => _containingType;
+        TypeSymbol IPhpPropertySymbol.DeclaringType => null; //_containingType;
 
         /// <summary>
         /// Optional. The field initializer expression.
@@ -55,11 +57,12 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         readonly Location _location;
 
-        /// <summary>
-        /// Optional associated PHPDoc block defining the field type hint.
-        /// </summary>
-        internal PHPDocBlock PHPDocBlock => _phpDoc;
-        readonly PHPDocBlock _phpDoc;
+        // /// <summary>
+        // /// Optional associated PHPDoc block defining the field type hint.
+        // /// </summary>
+        // internal PHPDocBlock PHPDocBlock => _phpDoc;
+        //
+        // readonly PHPDocBlock _phpDoc;
 
         /// <summary>
         /// Declared accessibility - private, protected or public.
@@ -91,6 +94,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 return ReferenceEquals(_originaldefinition, this) ? null : _originaldefinition;
             }
         }
+
         FieldSymbol _originaldefinition;
 
         FieldSymbol ResolveOverridenDefinition()
@@ -98,19 +102,21 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             // lookup base types whether this field declaration isn't a redefinition
             if (this.FieldKind == PhpPropertyKind.InstanceField)
             {
-                for (var t = _containingType.BaseType; t != null && t.SpecialType != SpecialType.System_Object; t = t.BaseType)
-                {
-                    var candidates = t.GetMembers(_fieldName)
-                        .OfType<FieldSymbol>()
-                        .Where(f => f.IsStatic == false && f.DeclaredAccessibility != Accessibility.Private);
-
-                    //
-                    var fld = candidates.FirstOrDefault();
-                    if (fld != null)
-                    {
-                        return fld is SourceFieldSymbol srcf ? srcf.OverridenDefinition ?? fld : fld;
-                    }
-                }
+                // for (var t = _containingType.BaseType;
+                //     t != null && t.SpecialType != SpecialType.System_Object;
+                //     t = t.BaseType)
+                // {
+                //     var candidates = t.GetMembers(_fieldName)
+                //         .OfType<FieldSymbol>()
+                //         .Where(f => f.IsStatic == false && f.DeclaredAccessibility != Accessibility.Private);
+                //
+                //     //
+                //     var fld = candidates.FirstOrDefault();
+                //     if (fld != null)
+                //     {
+                //         return fld is SourceFieldSymbol srcf ? srcf.OverridenDefinition ?? fld : fld;
+                //     }
+                // }
             }
 
             return null;
@@ -123,16 +129,19 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         {
             get
             {
-                if (IsRedefinition && OverridenDefinition.DeclaredAccessibility < this.DeclaredAccessibility && _fieldAccessorProperty == null)
+                if (IsRedefinition && OverridenDefinition.DeclaredAccessibility < this.DeclaredAccessibility &&
+                    _fieldAccessorProperty == null)
                 {
                     // declare property accessing the field from outside:
                     var type = OverridenDefinition.Type;
 
                     // TYPE get_NAME()
-                    var getter = new SynthesizedMethodSymbol(this.ContainingType, "get_" + this.Name, false, false, type, this.DeclaredAccessibility);
+                    var getter = new SynthesizedMethodSymbol(this.ContainingType, "get_" + this.Name, false, false,
+                        type, this.DeclaredAccessibility);
 
                     // void set_NAME(TYPE `value`)
-                    var setter = new SynthesizedMethodSymbol(this.ContainingType, "set_" + this.Name, false, false, DeclaringCompilation.CoreTypes.Void, this.DeclaredAccessibility);
+                    var setter = new SynthesizedMethodSymbol(this.ContainingType, "set_" + this.Name, false, false,
+                        DeclaringCompilation.CoreTypes.Void, this.DeclaredAccessibility);
                     setter.SetParameters(new SynthesizedParameterSymbol(setter, type, 0, RefKind.None, "value"));
 
                     // TYPE NAME { get; set; }
@@ -147,9 +156,12 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 return _fieldAccessorProperty;
             }
         }
+
         PropertySymbol _fieldAccessorProperty;
 
-        public SourceFieldSymbol(SourceTypeSymbol type, string name, Location location, Accessibility accessibility, PHPDocBlock phpdoc, PhpPropertyKind kind, BoundExpression initializer = null, ImmutableArray<AttributeData> customAttributes = default)
+        public SourceFieldSymbol(SourceTypeSymbol type, string name, Location location, Accessibility accessibility,
+            /*PHPDocBlock phpdoc,*/ PhpPropertyKind kind, BoundExpression initializer = null,
+            ImmutableArray<AttributeData> customAttributes = default)
         {
             Contract.ThrowIfNull(type);
             Contract.ThrowIfNull(name);
@@ -158,7 +170,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             _fieldName = name;
             _fieldKind = kind;
             _accessibility = accessibility;
-            _phpDoc = phpdoc;
+            //_phpDoc = phpdoc;
             _initializer = initializer;
             _location = location;
             _customAttributes = customAttributes;
@@ -170,15 +182,19 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public override Symbol AssociatedSymbol => null;
 
-        public override Symbol ContainingSymbol => ((IPhpPropertySymbol)this).ContainingStaticsHolder ?? _containingType;
+        public override Symbol ContainingSymbol => null;
+        //((IPhpPropertySymbol) this).ContainingStaticsHolder ?? _containingType;
 
-        internal override PhpCompilation DeclaringCompilation => _containingType.DeclaringCompilation;
+        internal override PhpCompilation DeclaringCompilation => null; //_containingType.DeclaringCompilation;
 
         public override ImmutableArray<CustomModifier> CustomModifiers => ImmutableArray<CustomModifier>.Empty;
 
         public override Accessibility DeclaredAccessibility => _accessibility;
 
-        public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences { get { throw new NotImplementedException(); } }
+        public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
+        {
+            get { throw new NotImplementedException(); }
+        }
 
         public override bool IsVolatile => false;
 
@@ -207,24 +223,24 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             }
             else
             {
-                // initialize attribute data if necessary:
-                attrs
-                    .OfType<SourceCustomAttribute>()
-                    .ForEach(x => x.Bind(this, _containingType.ContainingFile));
+                // // initialize attribute data if necessary:
+                // attrs
+                //     .OfType<SourceCustomAttribute>()
+                //     .ForEach(x => x.Bind(this, _containingType.ContainingFile));
             }
 
-            // attributes from PHPDoc
-            if (_phpDoc != null)
-            {
-                var deprecated = _phpDoc.GetElement<PHPDocBlock.DeprecatedTag>();
-                if (deprecated != null)
-                {
-                    // [ObsoleteAttribute(message, false)]
-                    attrs = attrs.Add(DeclaringCompilation.CreateObsoleteAttribute(deprecated));
-                }
-
-                // ...
-            }
+            // // attributes from PHPDoc
+            // if (_phpDoc != null)
+            // {
+            //     var deprecated = _phpDoc.GetElement<PHPDocBlock.DeprecatedTag>();
+            //     if (deprecated != null)
+            //     {
+            //         // [ObsoleteAttribute(message, false)]
+            //         attrs = attrs.Add(DeclaringCompilation.CreateObsoleteAttribute(deprecated));
+            //     }
+            //
+            //     // ...
+            // }
 
 
             //
@@ -235,7 +251,9 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         internal override ConstantValue GetConstantValue(bool earlyDecodingWellKnownAttributes)
         {
-            return (_fieldKind == PhpPropertyKind.ClassConstant) ? Initializer?.ConstantValue.ToConstantValueOrNull() : null;
+            return (_fieldKind == PhpPropertyKind.ClassConstant)
+                ? Initializer?.ConstantValue.ToConstantValueOrNull()
+                : null;
         }
 
         internal override TypeSymbol GetFieldType(ConsList<FieldSymbol> fieldsBeingBound)
@@ -257,7 +275,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 {
                     var specialType = (cvalue.Value != null)
                         ? cvalue.ToConstantValueOrNull()?.SpecialType
-                        : SpecialType.System_Object;    // NULL
+                        : SpecialType.System_Object; // NULL
 
                     if (specialType.HasValue && specialType != SpecialType.None)
                     {
@@ -275,9 +293,10 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 var vartag = FindPhpDocVarTag();
                 if (vartag != null && vartag.TypeNamesArray.Length != 0)
                 {
-                    var dummyctx = TypeRefFactory.CreateTypeRefContext(_containingType);
-                    var tmask = PHPDoc.GetTypeMask(dummyctx, vartag.TypeNamesArray, NameUtils.GetNamingContext(_containingType.Syntax));
-                    return DeclaringCompilation.GetTypeFromTypeRef(dummyctx, tmask);
+                    // var dummyctx = TypeRefFactory.CreateTypeRefContext(_containingType);
+                    // var tmask = PHPDoc.GetTypeMask(dummyctx, vartag.TypeNamesArray,
+                    //     NameUtils.GetNamingContext(null));
+                    // return DeclaringCompilation.GetTypeFromTypeRef(dummyctx, tmask);
                 }
             }
 
@@ -293,47 +312,52 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         /// <summary>
         /// <c>readonly</c> applies to class constants that have to be evaluated at runtime.
         /// </summary>
-        public override bool IsReadOnly => _fieldKind == PhpPropertyKind.ClassConstant && GetConstantValue(false) == null;
+        public override bool IsReadOnly =>
+            _fieldKind == PhpPropertyKind.ClassConstant && GetConstantValue(false) == null;
 
         /// <summary>
         /// Whether the field is real CLR static field.
         /// </summary>
-        public override bool IsStatic => _fieldKind == PhpPropertyKind.AppStaticField || IsConst; // either field is CLR static field or constant (Literal field must be Static).
+        public override bool IsStatic =>
+            _fieldKind == PhpPropertyKind.AppStaticField ||
+            IsConst; // either field is CLR static field or constant (Literal field must be Static).
 
-        internal PHPDocBlock.TypeVarDescTag FindPhpDocVarTag()
-        {
-            if (_phpDoc != null)
-            {
-                foreach (var vartype in _phpDoc.Elements.OfType<PHPDocBlock.TypeVarDescTag>())
-                {
-                    if (string.IsNullOrEmpty(vartype.VariableName) || vartype.VariableName.Substring(1) == this.MetadataName)
-                    {
-                        return vartype;
-                    }
-                }
-            }
+        // internal PHPDocBlock.TypeVarDescTag FindPhpDocVarTag()
+        // {
+        //     if (_phpDoc != null)
+        //     {
+        //         foreach (var vartype in _phpDoc.Elements.OfType<PHPDocBlock.TypeVarDescTag>())
+        //         {
+        //             if (string.IsNullOrEmpty(vartype.VariableName) ||
+        //                 vartype.VariableName.Substring(1) == this.MetadataName)
+        //             {
+        //                 return vartype;
+        //             }
+        //         }
+        //     }
+        //
+        //     return null;
+        // }
 
-            return null;
-        }
-
-        public override string GetDocumentationCommentXml(CultureInfo preferredCulture = null, bool expandIncludes = false, CancellationToken cancellationToken = default(CancellationToken))
+        public override string GetDocumentationCommentXml(CultureInfo preferredCulture = null,
+            bool expandIncludes = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             var summary = string.Empty;
 
-            if (_phpDoc != null)
-            {
-                summary = _phpDoc.Summary;
-
-                if (string.IsNullOrWhiteSpace(summary))
-                {
-                    // try @var or @staticvar:
-                    var vartag = FindPhpDocVarTag();
-                    if (vartag != null)
-                    {
-                        summary = vartag.Description;
-                    }
-                }
-            }
+            // if (_phpDoc != null)
+            // {
+            //     summary = _phpDoc.Summary;
+            //
+            //     if (string.IsNullOrWhiteSpace(summary))
+            //     {
+            //         // try @var or @staticvar:
+            //         var vartag = FindPhpDocVarTag();
+            //         if (vartag != null)
+            //         {
+            //             summary = vartag.Description;
+            //         }
+            //     }
+            // }
 
             return summary;
         }

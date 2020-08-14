@@ -446,17 +446,17 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             return default;
         }
 
-        public override T VisitPseudoConstUse(BoundPseudoConst x)
-        {
-            return default;
-        }
-
-        public override T VisitPseudoClassConstUse(BoundPseudoClassConst x)
-        {
-            Accept(x.TargetType);
-
-            return default;
-        }
+        // public override T VisitPseudoConstUse(BoundPseudoConst x)
+        // {
+        //     return default;
+        // }
+        //
+        // public override T VisitPseudoClassConstUse(BoundPseudoClassConst x)
+        // {
+        //     Accept(x.TargetType);
+        //
+        //     return default;
+        // }
 
         public override T VisitIsEmpty(BoundIsEmptyEx x)
         {
@@ -567,10 +567,10 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             return default;
         }
 
-        public override T VisitTypeDeclaration(BoundTypeDeclStatement x)
-        {
-            return default;
-        }
+        // public override T VisitTypeDeclaration(BoundTypeDeclStatement x)
+        // {
+        //     return default;
+        // }
 
         public override T VisitGlobalStatement(BoundGlobalVariableStatement x)
         {

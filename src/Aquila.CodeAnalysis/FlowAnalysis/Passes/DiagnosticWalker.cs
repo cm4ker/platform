@@ -5,18 +5,19 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.Syntax.Ast;
 using Aquila.CodeAnalysis.Symbols;
-using Aquila.Language.Ast.Definitions.Functions;
+using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax;
+using Aquila.Syntax.Ast.Functions;
 using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
 using Peachpie.CodeAnalysis.Utilities;
 using Pchp.CodeAnalysis.Semantics.TypeRef;
 using Pchp.CodeAnalysis.Utilities;
-using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
-using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 
 namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
 {
@@ -27,7 +28,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
 
         private bool CallsParentCtor { get; set; }
 
-        Aquila.CodeAnalysis.Symbols.PhpCompilation DeclaringCompilation => _routine.DeclaringCompilation;
+        PhpCompilation DeclaringCompilation => _routine.DeclaringCompilation;
 
         TypeRefContext TypeCtx => _routine.TypeRefContext;
 

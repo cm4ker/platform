@@ -20,11 +20,19 @@ using Microsoft.CodeAnalysis.Symbols;
 using Pchp.CodeAnalysis.DocumentationComments;
 using Pchp.CodeAnalysis.Emit;
 using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.Anonymous;
+using Aquila.CodeAnalysis.Symbols.PE;
+using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.Syntax.Syntax;
+using Pchp.CodeAnalysis;
 using Pchp.CodeAnalysis.Utilities;
 using Roslyn.Utilities;
-using Symbol = Aquila.CodeAnalysis.Emitter.Model.Symbol;
+using SourceFieldSymbol = Aquila.CodeAnalysis.Symbols.SourceFieldSymbol;
+using SourceMethodSymbol = Aquila.CodeAnalysis.Symbols.SourceMethodSymbol;
+using SourceTypeSymbol = Aquila.CodeAnalysis.Symbols.SourceTypeSymbol;
 
-namespace Pchp.CodeAnalysis
+namespace Aquila.CodeAnalysis
 {
     public sealed partial class PhpCompilation : Compilation
     {
@@ -102,19 +110,19 @@ namespace Pchp.CodeAnalysis
         /// </summary>
         public IEnumerable<IPhpRoutineSymbol> UserDeclaredRoutines => this.SourceSymbolCollection.AllRoutines;
 
-        /// <summary>
-        /// Gets enumeration of user declared routines (global code, functions, methods and lambdas) in the specified file
-        /// identified by its syntax tree.
-        /// </summary>
-        public IEnumerable<IPhpRoutineSymbol> GetUserDeclaredRoutinesInFile(PhpSyntaxTree syntaxTree)
-        {
-            string relativePath = PhpFileUtilities.GetRelativePath(
-                PhpFileUtilities.NormalizeSlashes(syntaxTree.Source.FilePath),
-                PhpFileUtilities.NormalizeSlashes(_options.BaseDirectory));
-            var fileSymbol = _tables.GetFile(relativePath);
-
-            return fileSymbol?.GetAllRoutines() ?? ImmutableArray<SourceRoutineSymbol>.Empty;
-        }
+        // /// <summary>
+        // /// Gets enumeration of user declared routines (global code, functions, methods and lambdas) in the specified file
+        // /// identified by its syntax tree.
+        // /// </summary>
+        // public IEnumerable<IPhpRoutineSymbol> GetUserDeclaredRoutinesInFile(PhpSyntaxTree syntaxTree)
+        // {
+        //     string relativePath = PhpFileUtilities.GetRelativePath(
+        //         PhpFileUtilities.NormalizeSlashes(syntaxTree.Source.FilePath),
+        //         PhpFileUtilities.NormalizeSlashes(_options.BaseDirectory));
+        //     var fileSymbol = _tables.GetFile(relativePath);
+        //
+        //     return fileSymbol?.GetAllRoutines() ?? ImmutableArray<SourceRoutineSymbol>.Empty;
+        // }
 
         /// <summary>
         /// Gets enumeration of all user declared types (classes, interfaces and traits) in the compilation.
@@ -174,12 +182,12 @@ namespace Pchp.CodeAnalysis
         /// <summary>
         /// Create a duplicate of this compilation with different symbol instances.
         /// </summary>
-        public new Aquila.CodeAnalysis.Symbols.PhpCompilation Clone()
+        public new PhpCompilation Clone()
         {
             return Update(reuseReferenceManager: true);
         }
 
-        private Aquila.CodeAnalysis.Symbols.PhpCompilation Update(
+        private PhpCompilation Update(
             string assemblyName = null,
             PhpCompilationOptions options = null,
             IEnumerable<MetadataReference> references = null,
@@ -187,7 +195,7 @@ namespace Pchp.CodeAnalysis
             bool reuseReferenceManager = false,
             IEnumerable<PhpSyntaxTree> syntaxTrees = null)
         {
-            var compilation = new Aquila.CodeAnalysis.Symbols.PhpCompilation(
+            var compilation = new PhpCompilation(
                 assemblyName ?? this.AssemblyName,
                 options ?? _options,
                 references != null ? references.AsImmutable() : this.ExternalReferences,
@@ -204,14 +212,14 @@ namespace Pchp.CodeAnalysis
             return compilation;
         }
 
-        private Aquila.CodeAnalysis.Symbols.PhpCompilation WithPhpSyntaxTrees(IEnumerable<PhpSyntaxTree> syntaxTrees)
+        private PhpCompilation WithPhpSyntaxTrees(IEnumerable<PhpSyntaxTree> syntaxTrees)
         {
             return Update(
                 reuseReferenceManager: true,
                 syntaxTrees: syntaxTrees);
         }
 
-        public Aquila.CodeAnalysis.Symbols.PhpCompilation WithPhpOptions(PhpCompilationOptions options)
+        public PhpCompilation WithPhpOptions(PhpCompilationOptions options)
         {
             return Update(options: options);
         }
@@ -294,7 +302,7 @@ namespace Pchp.CodeAnalysis
             get { return SourceAssembly.StrongNameKeys; }
         }
 
-        public static Aquila.CodeAnalysis.Symbols.PhpCompilation Create(
+        public static PhpCompilation Create(
             string assemblyName,
             IEnumerable<PhpSyntaxTree> syntaxTrees = null,
             IEnumerable<MetadataReference> references = null,
@@ -303,7 +311,7 @@ namespace Pchp.CodeAnalysis
         {
             Debug.Assert(options != null);
 
-            var compilation = new Aquila.CodeAnalysis.Symbols.PhpCompilation(
+            var compilation = new PhpCompilation(
                 assemblyName,
                 options,
                 ValidateReferences<CompilationReference>(references),

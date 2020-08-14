@@ -1,14 +1,9 @@
-﻿using Devsense.PHP.Syntax.Ast;
-using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.Semantics;
-using Aquila.CodeAnalysis.Symbols;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using Microsoft.CodeAnalysis;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Errors;
+using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax;
 using Aquila.Syntax.Text;
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;

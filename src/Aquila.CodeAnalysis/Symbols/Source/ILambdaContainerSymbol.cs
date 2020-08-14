@@ -19,9 +19,9 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         /// </summary>
         IEnumerable<SourceLambdaSymbol> Lambdas { get; }
 
-        /// <summary>
-        /// Resolves lambda symbol for given syntax node.
-        /// </summary>
-        SourceLambdaSymbol ResolveLambdaSymbol(Devsense.PHP.Syntax.Ast.LambdaFunctionExpr expr);
+        // /// <summary>
+        // /// Resolves lambda symbol for given syntax node.
+        // /// </summary>
+        // SourceLambdaSymbol ResolveLambdaSymbol(LambdaFunctionExpr expr);
     }
 }

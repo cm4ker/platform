@@ -4,6 +4,8 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Threading;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
+using Aquila.Syntax;
+using Aquila.Syntax.Ast.Functions;
 using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis;
 using Pchp.CodeAnalysis.Semantics;
@@ -16,15 +18,15 @@ namespace Aquila.CodeAnalysis.Symbols.Source
     internal sealed class SourceParameterSymbol : ParameterSymbol
     {
         readonly SourceRoutineSymbol _routine;
-        readonly FormalParam _syntax;
+        readonly Parameter _syntax;
 
         /// <summary>
         /// Index of the source parameter, relative to the first source parameter.
         /// </summary>
         readonly int _relindex;
-        readonly PHPDocBlock.ParamTag _ptagOpt;
+        //readonly PHPDocBlock.ParamTag _ptagOpt;
 
-        internal PHPDocBlock.ParamTag PHPDocOpt => _ptagOpt;
+        //internal PHPDocBlock.ParamTag PHPDocOpt => _ptagOpt;
 
         TypeSymbol _lazyType;
 
@@ -32,6 +34,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         /// Optional. The parameter initializer expression i.e. bound <see cref="FormalParam.InitValue"/>.
         /// </summary>
         public override BoundExpression Initializer => _initializer;
+
         readonly BoundExpression _initializer;
 
         /// <summary>
@@ -47,11 +50,11 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 if (_lazyDefaultValueField == null && Initializer != null && ExplicitDefaultConstantValue == null)
                 {
                     TypeSymbol fldtype; // type of the field
-                    
+
                     if (Initializer is BoundArrayEx arr)
                     {
                         // special case: empty array
-                        if (arr.Items.Length == 0 && !_syntax.PassedByRef)
+                        if (arr.Items.Length == 0 && _syntax.PassMethod != PassMethod.ByReference)
                         {
                             // OPTIMIZATION: reference the singleton field directly, the called routine is responsible to perform copy if necessary
                             // parameter MUST NOT be `PassedByRef` https://github.com/peachpiecompiler/peachpie/issues/591
@@ -74,7 +77,9 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                     // The construction of the default value may require a Context, cannot be created as a static singletong
                     // Additionally; default values of REF parameter must be created every time from scratch! https://github.com/peachpiecompiler/peachpie/issues/591
                     if (Initializer.RequiresContext ||
-                        (_syntax.PassedByRef && fldtype.IsReferenceType && fldtype.SpecialType != SpecialType.System_String))  // we can cache the default value even for Refs if it is an immutable value
+                        (_syntax.PassMethod == PassMethod.ByReference && fldtype.IsReferenceType &&
+                         fldtype.SpecialType != SpecialType.System_String)
+                    ) // we can cache the default value even for Refs if it is an immutable value
                     {
                         // Func<Context, PhpValue>
                         fldtype = DeclaringCompilation.GetWellKnownType(WellKnownType.System_Func_T2).Construct(
@@ -103,12 +108,14 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                     //
                     Interlocked.CompareExchange(ref _lazyDefaultValueField, field, null);
                 }
+
                 return _lazyDefaultValueField;
             }
         }
+
         FieldSymbol _lazyDefaultValueField;
 
-        public SourceParameterSymbol(SourceRoutineSymbol routine, FormalParam syntax, int relindex, PHPDocBlock.ParamTag ptagOpt)
+        public SourceParameterSymbol(SourceRoutineSymbol routine, Parameter syntax, int relindex)
         {
             Contract.ThrowIfNull(routine);
             Contract.ThrowIfNull(syntax);
@@ -117,12 +124,13 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             _routine = routine;
             _syntax = syntax;
             _relindex = relindex;
-            _ptagOpt = ptagOpt;
-            _initializer = (syntax.InitValue != null)
-                ? new SemanticsBinder(DeclaringCompilation, routine.ContainingFile.SyntaxTree, locals: null, routine: null, self: routine.ContainingType as SourceTypeSymbol)
-                    .BindWholeExpression(syntax.InitValue, BoundAccess.Read)
-                    .SingleBoundElement()
-                : null;
+            // _ptagOpt = ptagOpt;
+            // _initializer = (syntax.InitValue != null)
+            //     ? new SemanticsBinder(DeclaringCompilation, routine.ContainingFile.SyntaxTree, locals: null,
+            //             routine: null, self: routine.ContainingType as SourceTypeSymbol)
+            //         .BindWholeExpression(syntax.InitValue, BoundAccess.Read)
+            //         .SingleBoundElement()
+            //     : null;
         }
 
         /// <summary>
@@ -138,16 +146,16 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public override NamedTypeSymbol ContainingType => _routine.ContainingType;
 
-        public override string Name => _syntax.Name.Name.Value;
+        public override string Name => _syntax.Identifier.Text;
 
         public override bool IsThis => false;
 
-        public FormalParam Syntax => _syntax;
+        public Parameter Syntax => _syntax;
 
         /// <summary>
         /// The parameter is a constructor property.
         /// </summary>
-        public bool IsConstructorProperty => _syntax.IsConstructorProperty;
+        //public bool IsConstructorProperty => _syntax.IsConstructorProperty;
 
         internal sealed override TypeSymbol Type
         {
@@ -162,31 +170,32 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             }
         }
 
-        /// <summary>
-        /// Gets value indicating that if the parameters type is a reference type,
-        /// it is not allowed to pass a null value.
-        /// </summary>
-        public override bool HasNotNull
-        {
-            get
-            {
-                // when providing type hint, only allow null if explicitly specified:
-                if (_syntax.TypeHint == null || _syntax.TypeHint is NullableTypeRef || DefaultsToNull)
-                {
-                    return false;
-                }
-
-                //
-                return true;
-            }
-        }
+        // /// <summary>
+        // /// Gets value indicating that if the parameters type is a reference type,
+        // /// it is not allowed to pass a null value.
+        // /// </summary>
+        // public override bool HasNotNull
+        // {
+        //     get
+        //     {
+        //         // when providing type hint, only allow null if explicitly specified:
+        //         if (_syntax.TypeHint == null || _syntax.TypeHint is NullableTypeRef || DefaultsToNull)
+        //         {
+        //             return false;
+        //         }
+        //
+        //         //
+        //         return true;
+        //     }
+        // }
 
         internal bool DefaultsToNull => _initializer != null && _initializer.ConstantValue.IsNull();
 
         /// <summary>
         /// Gets value indicating whether the parameter has been replaced with <see cref="SourceRoutineSymbol.VarargsParam"/>.
         /// </summary>
-        internal bool IsFake => (Routine.GetParamsParameter() != null && Routine.GetParamsParameter() != this && Ordinal >= Routine.GetParamsParameter().Ordinal);
+        internal bool IsFake => (Routine.GetParamsParameter() != null && Routine.GetParamsParameter() != this &&
+                                 Ordinal >= Routine.GetParamsParameter().Ordinal);
 
         TypeSymbol ResolveType()
         {
@@ -206,59 +215,66 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
             // determine parameter type from the signature:
 
-            // aliased parameter:
-            if (_syntax.IsOut || _syntax.PassedByRef)
-            {
-                if (_syntax.IsVariadic)
-                {
-                    // PhpAlias[]
-                    return ArrayTypeSymbol.CreateSZArray(this.ContainingAssembly, DeclaringCompilation.CoreTypes.PhpAlias);
-                }
-                else
-                {
-                    // PhpAlias
-                    return DeclaringCompilation.CoreTypes.PhpAlias;
-                }
-            }
+            // // aliased parameter:
+            // if (_syntax.IsOut || _syntax.PassedByRef)
+            // {
+            //     if (_syntax.IsVariadic)
+            //     {
+            //         // PhpAlias[]
+            //         return ArrayTypeSymbol.CreateSZArray(this.ContainingAssembly,
+            //             DeclaringCompilation.CoreTypes.PhpAlias);
+            //     }
+            //     else
+            //     {
+            //         // PhpAlias
+            //         return DeclaringCompilation.CoreTypes.PhpAlias;
+            //     }
+            // }
 
-            // 1. specified type hint
-            var typeHint = _syntax.TypeHint;
-            if (typeHint is ReservedTypeRef rtref)
-            {
-                // workaround for https://github.com/peachpiecompiler/peachpie/issues/281
-                // remove once it gets updated in parser
-                if (rtref.Type == ReservedTypeRef.ReservedType.self) return _routine.ContainingType; // self
-            }
-            var result = DeclaringCompilation.GetTypeFromTypeRef(typeHint, _routine.ContainingType as SourceTypeSymbol, nullable: DefaultsToNull);
+            // // 1. specified type hint
+            // var typeHint = _syntax.TypeHint;
+            // if (typeHint is ReservedTypeRef rtref)
+            // {
+            //     // workaround for https://github.com/peachpiecompiler/peachpie/issues/281
+            //     // remove once it gets updated in parser
+            //     if (rtref.Type == ReservedTypeRef.ReservedType.self) return _routine.ContainingType; // self
+            // }
 
-            // 2. optionally type specified in PHPDoc
-            if (result == null && _ptagOpt != null && _ptagOpt.TypeNamesArray.Length != 0
-                && (DeclaringCompilation.Options.PhpDocTypes & PhpDocTypes.ParameterTypes) != 0)
-            {
-                var typectx = _routine.TypeRefContext;
-                var tmask = Pchp.CodeAnalysis.FlowAnalysis.PHPDoc.GetTypeMask(typectx, _ptagOpt.TypeNamesArray, _routine.GetNamingContext());
-                if (!tmask.IsVoid && !tmask.IsAnyType)
-                {
-                    result = DeclaringCompilation.GetTypeFromTypeRef(typectx, tmask);
-                }
-            }
-
-            // 3 default:
-            if (result == null)
-            {
-                // TODO: use type from overriden method
-
-                result = DeclaringCompilation.CoreTypes.PhpValue;
-            }
-
-            // variadic (result[])
-            if (_syntax.IsVariadic)
-            {
-                result = ArrayTypeSymbol.CreateSZArray(this.ContainingAssembly, result);
-            }
-
+            // var result = DeclaringCompilation.GetTypeFromTypeRef(typeHint, _routine.ContainingType as SourceTypeSymbol,
+            //     nullable: DefaultsToNull);
             //
-            return result;
+            // // 2. optionally type specified in PHPDoc
+            // if (result == null && _ptagOpt != null && _ptagOpt.TypeNamesArray.Length != 0
+            //     && (DeclaringCompilation.Options.PhpDocTypes & PhpDocTypes.ParameterTypes) != 0)
+            // {
+            //     var typectx = _routine.TypeRefContext;
+            //     var tmask = Pchp.CodeAnalysis.FlowAnalysis.PHPDoc.GetTypeMask(typectx, _ptagOpt.TypeNamesArray,
+            //         _routine.GetNamingContext());
+            //     if (!tmask.IsVoid && !tmask.IsAnyType)
+            //     {
+            //         result = DeclaringCompilation.GetTypeFromTypeRef(typectx, tmask);
+            //     }
+            // }
+
+            // // 3 default:
+            // if (result == null)
+            // {
+            //     // TODO: use type from overriden method
+            //
+            //     result = DeclaringCompilation.CoreTypes.PhpValue;
+            // }
+            //
+            // // // variadic (result[])
+            // // if (_syntax.IsVariadic)
+            // // {
+            // //     result = ArrayTypeSymbol.CreateSZArray(this.ContainingAssembly, result);
+            // // }
+            //
+            // //
+            // return result;
+
+
+            throw new NotImplementedException();
         }
 
         public override RefKind RefKind
@@ -272,7 +288,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             }
         }
 
-        public override bool IsParams => _syntax.IsVariadic;
+        // public override bool IsParams => _syntax.IsVariadic;
 
         public override int Ordinal => _relindex + _routine.ImplicitParameters.Length;
 
@@ -285,19 +301,18 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         {
             get
             {
-                return ImmutableArray.Create(Location.Create(Routine.ContainingFile.SyntaxTree, _syntax.Name.Span.ToTextSpan()));
+                return ImmutableArray.Create(Location.Create(Routine.ContainingFile.SyntaxTree,
+                    _syntax.Identifier.Span.ToTextSpan()));
             }
         }
 
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
         }
 
-        internal override IEnumerable<AttributeData> GetCustomAttributesToEmit(CommonModuleCompilationState compilationState)
+        internal override IEnumerable<AttributeData> GetCustomAttributesToEmit(
+            CommonModuleCompilationState compilationState)
         {
             // [param]   
             if (IsParams)
@@ -321,7 +336,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             yield break;
         }
 
-        public override bool IsOptional => this.HasExplicitDefaultValue;
+        // public override bool IsOptional => this.HasExplicitDefaultValue;
 
         internal override ConstantValue ExplicitDefaultConstantValue
         {

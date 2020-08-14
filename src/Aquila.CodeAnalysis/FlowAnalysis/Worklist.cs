@@ -13,8 +13,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+ using Aquila.CodeAnalysis.Symbols.Php;
+ using Aquila.CodeAnalysis.Symbols.Synthesized;
 
-namespace Pchp.CodeAnalysis.FlowAnalysis
+ namespace Pchp.CodeAnalysis.FlowAnalysis
 {
     /// <summary>
     /// Queue of work items to do.

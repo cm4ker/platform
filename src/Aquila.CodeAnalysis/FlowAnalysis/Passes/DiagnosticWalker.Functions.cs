@@ -1,19 +1,10 @@
 ﻿﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+ using System.Collections.Immutable;
+ using System.Text.RegularExpressions;
+ using Aquila.CodeAnalysis;
  using Aquila.CodeAnalysis.Errors;
- using Devsense.PHP.Syntax.Ast;
-using Microsoft.CodeAnalysis.Text;
  using Pchp.CodeAnalysis.Semantics;
-using Pchp.CodeAnalysis.Semantics.Graph;
-using Peachpie.CodeAnalysis.Utilities;
-using PerlRegex = Peachpie.Library.RegularExpressions;
-
+ 
 namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
 {
     internal partial class DiagnosticWalker<T>
@@ -66,16 +57,16 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
         {
             if (patternExpression.ConstantValue.TryConvertToString(out var pattern))
             {
-                try
-                {
-                    var regex = new PerlRegex.Regex(pattern);
-                }
-                catch (PerlRegex.RegexParseException error)
-                {
-                    _diagnostics.Add(
-                        _routine, patternExpression.GetTextSpan(),
-                        ErrorCode.WRN_PCRE_Pattern_Error, error.Message, error.Offset.HasValue ? error.Offset.Value.ToString() : "unknown");
-                }
+                // try
+                // {
+                //     var regex = new PerlRegex.Regex(pattern);
+                // }
+                // catch (PerlRegex.RegexParseException error)
+                // {
+                //     _diagnostics.Add(
+                //         _routine, patternExpression.GetTextSpan(),
+                //         ErrorCode.WRN_PCRE_Pattern_Error, error.Message, error.Offset.HasValue ? error.Offset.Value.ToString() : "unknown");
+                // }
             }
         }
 
