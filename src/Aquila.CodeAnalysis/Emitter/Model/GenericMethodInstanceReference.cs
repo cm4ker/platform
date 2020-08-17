@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.CodeAnalysis.Emit;
 using Cci = Microsoft.Cci;
-using Pchp.CodeAnalysis.Symbols;
 using MethodSymbol = Aquila.CodeAnalysis.Symbols.MethodSymbol;
 
 namespace Pchp.CodeAnalysis.Emit

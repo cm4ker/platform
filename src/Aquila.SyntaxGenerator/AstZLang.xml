@@ -24,6 +24,7 @@
     <!-- #region Structure -->
     <Syntax Name="SourceUnit">
         <Arguments>
+            <Single Name="FilePath" Type="string" DenyChildrenFill="true"/>            
             <List Name="Usings" Type="UsingList"/>
             <List Name="Methods" Type="MethodList"/>
             <List Name="Fields" Type="FieldList"/>

@@ -1,11 +1,8 @@
-﻿using Microsoft.CodeAnalysis.Text;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.Emit;
 using System.Diagnostics;
 using Aquila.CodeAnalysis.Symbols;
 using Cci = Microsoft.Cci;
-using Pchp.CodeAnalysis.Symbols;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
 using NamedTypeSymbol = Aquila.CodeAnalysis.Symbols.NamedTypeSymbol;
 

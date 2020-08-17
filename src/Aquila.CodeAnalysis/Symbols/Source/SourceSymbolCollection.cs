@@ -119,7 +119,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         readonly Dictionary<SyntaxTree, int> _ordinalMap = new Dictionary<SyntaxTree, int>();
 
-        readonly SymbolsCache<QualifiedName, SourceTypeSymbol> _types;
+        //readonly SymbolsCache<QualifiedName, SourceTypeSymbol> _types;
         readonly SymbolsCache<QualifiedName, SourceFunctionSymbol> _functions;
 
         /// <summary>
@@ -329,10 +329,10 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             return _functions.Symbols.WhereReachable();
         }
 
-        public IEnumerable<SourceLambdaSymbol> GetLambdas()
-        {
-            return _files.Values.Cast<ILambdaContainerSymbol>().SelectMany(c => c.Lambdas);
-        }
+        // public IEnumerable<SourceLambdaSymbol> GetLambdas()
+        // {
+        //     return _files.Values.Cast<ILambdaContainerSymbol>().SelectMany(c => c.Lambdas);
+        // }
 
         /// <summary>
         /// Gets enumeration of all routines (global code, functions, lambdas and class methods) in source code.
@@ -391,23 +391,23 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             // return result;
         }
 
-        /// <summary>
-        /// Gets source declarations without versions.
-        /// </summary>
-        internal IEnumerable<SourceTypeSymbol> GetDeclaredTypes(QualifiedName name)
-        {
-            return _types.GetAll(name); //.WhereReachable();
-        }
-
-        /// <summary>
-        /// Gets source declarations without versions.
-        /// </summary>
-        internal IEnumerable<SourceTypeSymbol> GetDeclaredTypes() => _types.Symbols;
-
-        /// <summary>
-        /// Gets all source types and their versions.
-        /// </summary>
-        public IEnumerable<SourceTypeSymbol> GetTypes() =>
-            null; //GetDeclaredTypes().SelectMany(t => t.AllReachableVersions());
+        // /// <summary>
+        // /// Gets source declarations without versions.
+        // /// </summary>
+        // internal IEnumerable<SourceTypeSymbol> GetDeclaredTypes(QualifiedName name)
+        // {
+        //     return _types.GetAll(name); //.WhereReachable();
+        // }
+        //
+        // /// <summary>
+        // /// Gets source declarations without versions.
+        // /// </summary>
+        // internal IEnumerable<SourceTypeSymbol> GetDeclaredTypes() => _types.Symbols;
+        //
+        // /// <summary>
+        // /// Gets all source types and their versions.
+        // /// </summary>
+        // public IEnumerable<SourceTypeSymbol> GetTypes() =>
+        //     null; //GetDeclaredTypes().SelectMany(t => t.AllReachableVersions());
     }
 }

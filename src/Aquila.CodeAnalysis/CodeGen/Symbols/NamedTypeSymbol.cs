@@ -184,40 +184,40 @@ namespace Aquila.CodeAnalysis.Symbols
             {
                 var m = overrides[i];
 
-                if (m.IsUnresolvedAbstract && this is SourceTypeSymbol srct && !this.IsInterface)
-                {
-                    if (!this.IsAbstract)
-                    {
-                        // // Class '{0}' doesn't implement abstract method {1}::{2}()
-                        // diagnostics.Add(DiagnosticBagExtensions.ParserDiagnostic(srct.ContainingFile.SyntaxTree, srct.Syntax.HeadingSpan,
-                        //     Errors.AbstractMethodNotImplemented,
-                        //     srct.FullName.ToString(), ((IPhpTypeSymbol)m.Method.ContainingType).FullName.ToString(), m.RoutineName));
-                    }
-                    else if (m.ImplementsInterface /*&& this.IsAbstract*/)
-                    {
-                        m.ImplementsInterface = false;
-
-                        var method = m.Method;
-
-                        Debug.Assert(!method.IsStatic);
-                        Debug.Assert(method.DeclaredAccessibility != Accessibility.Private);
-                        Debug.Assert(method.ContainingType.IsInterface);
-
-                        // Template: abstract function {name}({parameters})
-                        var ghost = new SynthesizedMethodSymbol(this, method.RoutineName,
-                            isstatic: false, isvirtual: true, isabstract: true, isfinal: false,
-                            returnType: method.ReturnType,
-                            accessibility: method.DeclaredAccessibility);
-
-                        ghost.SetParameters(SynthesizedParameterSymbol.Create(ghost, method.Parameters));
-                        //module.SynthesizedManager.AddMethod(this, ghost); // will be added to synthesized manager by FinalizeMethodTable
-
-                        m.Method = ghost; // replace the interface method with synthesized abstract method
-
-                        // update overrides
-                        overrides[i] = m;
-                    }
-                }
+                // if (m.IsUnresolvedAbstract && this is SourceTypeSymbol srct && !this.IsInterface)
+                // {
+                //     if (!this.IsAbstract)
+                //     {
+                //         // // Class '{0}' doesn't implement abstract method {1}::{2}()
+                //         // diagnostics.Add(DiagnosticBagExtensions.ParserDiagnostic(srct.ContainingFile.SyntaxTree, srct.Syntax.HeadingSpan,
+                //         //     Errors.AbstractMethodNotImplemented,
+                //         //     srct.FullName.ToString(), ((IPhpTypeSymbol)m.Method.ContainingType).FullName.ToString(), m.RoutineName));
+                //     }
+                //     else if (m.ImplementsInterface /*&& this.IsAbstract*/)
+                //     {
+                //         m.ImplementsInterface = false;
+                //
+                //         var method = m.Method;
+                //
+                //         Debug.Assert(!method.IsStatic);
+                //         Debug.Assert(method.DeclaredAccessibility != Accessibility.Private);
+                //         Debug.Assert(method.ContainingType.IsInterface);
+                //
+                //         // Template: abstract function {name}({parameters})
+                //         var ghost = new SynthesizedMethodSymbol(this, method.RoutineName,
+                //             isstatic: false, isvirtual: true, isabstract: true, isfinal: false,
+                //             returnType: method.ReturnType,
+                //             accessibility: method.DeclaredAccessibility);
+                //
+                //         ghost.SetParameters(SynthesizedParameterSymbol.Create(ghost, method.Parameters));
+                //         //module.SynthesizedManager.AddMethod(this, ghost); // will be added to synthesized manager by FinalizeMethodTable
+                //
+                //         m.Method = ghost; // replace the interface method with synthesized abstract method
+                //
+                //         // update overrides
+                //         overrides[i] = m;
+                //     }
+                // }
             }
 
             // cache & return

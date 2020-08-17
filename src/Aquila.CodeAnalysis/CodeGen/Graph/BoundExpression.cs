@@ -3441,26 +3441,28 @@ namespace Pchp.CodeAnalysis.Semantics
     {
         internal override TypeSymbol Emit(CodeGenerator cg)
         {
-            if (this.BoundLambdaMethod == null)
-            {
-                throw new InvalidOperationException();
-            }
-
-            // Template: BuildClosure(ctx, BoundLambdaMethod.EnsureRoutineInfoField(), this, scope, statictype, [use1, use2, ...], [p1, p2, ...])
-
-            var idxfld = this.BoundLambdaMethod.EnsureRoutineInfoField(cg.Module);
-
-            cg.EmitLoadContext(); // Context
-            idxfld.EmitLoad(cg); // routine
-            EmitThis(cg); // $this
-            cg.EmitCallerTypeHandle(); // scope
-            EmitStaticType(cg); // statictype : PhpTypeInfo
-            EmitParametersArray(cg); // "parameters"
-            EmitUseArray(cg); // "static"
-
-            return cg.EmitCall(ILOpCode.Call,
-                cg.CoreMethods.Operators
-                    .BuildClosure_Context_IPhpCallable_Object_RuntimeTypeHandle_PhpTypeInfo_PhpArray_PhpArray);
+            throw new NotImplementedException();
+            
+            // if (this.BoundLambdaMethod == null)
+            // {
+            //     throw new InvalidOperationException();
+            // }
+            //
+            // // Template: BuildClosure(ctx, BoundLambdaMethod.EnsureRoutineInfoField(), this, scope, statictype, [use1, use2, ...], [p1, p2, ...])
+            //
+            // var idxfld = this.BoundLambdaMethod.EnsureRoutineInfoField(cg.Module);
+            //
+            // cg.EmitLoadContext(); // Context
+            // idxfld.EmitLoad(cg); // routine
+            // EmitThis(cg); // $this
+            // cg.EmitCallerTypeHandle(); // scope
+            // EmitStaticType(cg); // statictype : PhpTypeInfo
+            // EmitParametersArray(cg); // "parameters"
+            // EmitUseArray(cg); // "static"
+            //
+            // return cg.EmitCall(ILOpCode.Call,
+            //     cg.CoreMethods.Operators
+            //         .BuildClosure_Context_IPhpCallable_Object_RuntimeTypeHandle_PhpTypeInfo_PhpArray_PhpArray);
         }
 
         void EmitThis(CodeGenerator cg)

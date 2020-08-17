@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Reflection.Metadata;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
-using Pchp.CodeAnalysis.Symbols;
 using Cci = Microsoft.Cci;
 using FieldSymbol = Aquila.CodeAnalysis.Symbols.FieldSymbol;
 using MethodSymbol = Aquila.CodeAnalysis.Symbols.MethodSymbol;

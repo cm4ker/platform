@@ -99,8 +99,8 @@ namespace Aquila.CodeAnalysis.Symbols
             return s?.OriginalDefinition switch
             {
                 SourceFileSymbol file => file,
-                Source.SourceRoutineSymbol routine => routine.ContainingFile,
-                SourceTypeSymbol type => type.ContainingFile,
+                SourceRoutineSymbol routine => routine.ContainingFile,
+                // SourceTypeSymbol type => type.ContainingFile,
                 _ => s != null ? GetContainingFileSymbol(s.ContainingSymbol) : null,
             };
         }

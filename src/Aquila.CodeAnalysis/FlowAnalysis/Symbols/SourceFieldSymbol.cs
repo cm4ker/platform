@@ -11,7 +11,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// <summary>
         /// Field's <see cref="TypeRefContext"/> instance.
         /// </summary>
-        internal TypeRefContext EnsureTypeRefContext() => _typeCtx ?? (_typeCtx = TypeRefFactory.CreateTypeRefContext(_containingType));
+        internal TypeRefContext EnsureTypeRefContext() => _typeCtx; // ?? (_typeCtx = TypeRefFactory.CreateTypeRefContext(_containingType));
 
         TypeRefContext _typeCtx;
     }

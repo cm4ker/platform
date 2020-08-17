@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cci = Microsoft.Cci;
 
-namespace Pchp.CodeAnalysis.Symbols
+namespace Aquila.CodeAnalysis.Symbols
 {
     internal partial class CSharpCustomModifier : Cci.ICustomModifier
     {
@@ -18,7 +18,8 @@ namespace Pchp.CodeAnalysis.Symbols
 
         Cci.ITypeReference Cci.ICustomModifier.GetModifier(EmitContext context)
         {
-            return ((PEModuleBuilder)context.Module).Translate(this.Modifier, context.SyntaxNodeOpt, context.Diagnostics);
+            return ((PEModuleBuilder) context.Module).Translate(this.Modifier, context.SyntaxNodeOpt,
+                context.Diagnostics);
         }
     }
 }

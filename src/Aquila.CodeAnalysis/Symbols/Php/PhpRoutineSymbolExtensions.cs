@@ -51,35 +51,35 @@ namespace Aquila.CodeAnalysis.Symbols.Php
                 }
             }
 
-            // &
-            if (routine.SyntaxSignature.AliasReturn)
-            {
-                return compilation.CoreTypes.PhpAlias;
-            }
+            // // &
+            // if (routine.SyntaxSignature.AliasReturn)
+            // {
+            //     return compilation.CoreTypes.PhpAlias;
+            // }
 
             // : return type
-            if (routine.SyntaxReturnType != null)
-            {
-                return compilation.GetTypeFromTypeRef(routine.SyntaxReturnType, routine.ContainingType as Source.SourceTypeSymbol);
-            }
+            // if (routine.SyntaxReturnType != null)
+            // {
+            //     return compilation.GetTypeFromTypeRef(routine.SyntaxReturnType, routine.ContainingType as Source.SourceTypeSymbol);
+            // }
 
             // for non virtual methods:
             if (IsNotOverriding(routine))
             {
                 // /** @return */
                 var typeCtx = routine.TypeRefContext;
-                if (routine.PHPDocBlock != null && (compilation.Options.PhpDocTypes & PhpDocTypes.ReturnTypes) != 0)
-                {
-                    var returnTag = routine.PHPDocBlock.Returns;
-                    if (returnTag != null && returnTag.TypeNames.Length != 0)
-                    {
-                        var tmask = PHPDoc.GetTypeMask(typeCtx, returnTag.TypeNamesArray, routine.GetNamingContext());
-                        if (!tmask.IsVoid && !tmask.IsAnyType)
-                        {
-                            return compilation.GetTypeFromTypeRef(typeCtx, tmask);
-                        }
-                    }
-                }
+                // if (routine.PHPDocBlock != null && (compilation.Options.PhpDocTypes & PhpDocTypes.ReturnTypes) != 0)
+                // {
+                //     var returnTag = routine.PHPDocBlock.Returns;
+                //     if (returnTag != null && returnTag.TypeNames.Length != 0)
+                //     {
+                //         var tmask = PHPDoc.GetTypeMask(typeCtx, returnTag.TypeNamesArray, routine.GetNamingContext());
+                //         if (!tmask.IsVoid && !tmask.IsAnyType)
+                //         {
+                //             return compilation.GetTypeFromTypeRef(typeCtx, tmask);
+                //         }
+                //     }
+                // }
 
                 // determine from code flow
                 return compilation.GetTypeFromTypeRef(typeCtx, routine.ResultTypeMask);
@@ -111,7 +111,7 @@ namespace Aquila.CodeAnalysis.Symbols.Php
             else if (symbol is MethodSymbol)
             {
                 var m = (MethodSymbol)symbol;
-                var r = symbol as Source.SourceRoutineSymbol;
+                var r = symbol as SourceRoutineSymbol;
 
                 // if the method is generator use ConstructClrReturnType analysis for return type
                 // TODO: would not be necessary if GN_SGS got fixed (the routine could report the return type correctly itself)
@@ -143,15 +143,15 @@ namespace Aquila.CodeAnalysis.Symbols.Php
                     Debug.Assert(t.IsSZArray());
                     return ctx.GetArrayTypeMask(TypeRefFactory.CreateMask(ctx, ((ArrayTypeSymbol)t).ElementType));
                 }
-                else if (ps.Syntax.TypeHint.IsCallable())
-                {
-                    var callableMask = ctx.GetCallableTypeMask();
-                    callableMask.IsRef = ps.Syntax.PassedByRef;
-                    if (!ps.HasNotNull)
-                        callableMask |= ctx.GetNullTypeMask();
-
-                    return callableMask;
-                }
+                // else if (ps.Syntax.TypeHint.IsCallable())
+                // {
+                //     var callableMask = ctx.GetCallableTypeMask();
+                //     callableMask.IsRef = ps.Syntax.PassedByRef;
+                //     if (!ps.HasNotNull)
+                //         callableMask |= ctx.GetNullTypeMask();
+                //
+                //     return callableMask;
+                // }
 
                 // TODO: handle union types precisely, now we resolve them mostly as PhpValue which results in AnyType mask
             }
@@ -306,7 +306,7 @@ namespace Aquila.CodeAnalysis.Symbols.Php
                 return false;
             }
 
-            if (method.OriginalDefinition is Source.SourceRoutineSymbol sr)
+            if (method.OriginalDefinition is SourceRoutineSymbol sr)
             {
                 return sr.RequiresLateStaticBoundParam;
             }
@@ -321,7 +321,7 @@ namespace Aquila.CodeAnalysis.Symbols.Php
         internal static ParameterSymbol LateStaticParameter(this MethodSymbol method)
         {
             // in source routines, we can iterate just the implicit parameters and not populating the source parameters
-            var ps = method is Source.SourceRoutineSymbol sr ? sr.ImplicitParameters : method.Parameters;
+            var ps = method is SourceRoutineSymbol sr ? sr.ImplicitParameters : method.Parameters;
 
             foreach (var p in ps)
             {
@@ -355,11 +355,11 @@ namespace Aquila.CodeAnalysis.Symbols.Php
             var funcs = file.Functions.Cast<SourceRoutineSymbol>();
             var main = (SourceRoutineSymbol)file.MainMethod;
 
-            var types = file.ContainedTypes.SelectMany(t => t.AllReachableVersions());
-            var methods = types.SelectMany(f => f.GetMembers().OfType<SourceRoutineSymbol>());
-            var lambdas = ((ILambdaContainerSymbol)file).Lambdas;
+            //var types = file.ContainedTypes.SelectMany(t => t.AllReachableVersions());
+            //var methods = types.SelectMany(f => f.GetMembers().OfType<SourceRoutineSymbol>());
+            //var lambdas = ((ILambdaContainerSymbol)file).Lambdas;
 
-            return funcs.Concat(main).Concat(methods).Concat(lambdas);
+            return funcs.Concat(main); //.Concat(methods).Concat(lambdas);
         }
 
         // /// <summary>
@@ -387,49 +387,49 @@ namespace Aquila.CodeAnalysis.Symbols.Php
         {
             // CONSIDER: not for private/internal symbols ?
 
-            if (TryGetPHPDocBlock(symbol, out var phpdoc) && symbol.GetContainingFileSymbol() is Source.SourceFileSymbol file)
-            {
-                var phpdoctext = file.SyntaxTree.GetText().ToString(phpdoc.Span.ToTextSpan());
-
-                // cleanup the phpdoctext
-                // trim lines:
-                var result = new StringBuilder(phpdoctext.Length);
-
-                using (var reader = new StringReader(phpdoctext))
-                {
-                    for (; ; )
-                    {
-                        var line = reader.ReadLine();
-                        if (line != null)
-                        {
-                            if (result.Length != 0)
-                                result.Append("\n ");
-
-                            result.Append(line.Trim());
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-
-                ////
-                //var stream = new System.IO.StringWriter();
-                //using (var writer = new JsonWriter(stream))
-                //{
-                //    writer.WriteObjectStart();
-                //    writer.Write("doc", phpdoctext);
-                //    // TODO: location, return type, ...
-                //    writer.WriteObjectEnd();
-                //}
-
-                //return stream.ToString();
-
-                // create "smaller" json // CONSIDER: use some library that allows to skip whitespaces, newtonsoft or netcore 3.0
-                result.Replace("\\", "\\\\").Replace("\n", "\\n").Replace("\r", "").Replace("\"", "\\\"");  // naively escape
-                return $"{{\"doc\":\"{(result.ToString())}\"}}";
-            }
+            // if (TryGetPHPDocBlock(symbol, out var phpdoc) && symbol.GetContainingFileSymbol() is Source.SourceFileSymbol file)
+            // {
+            //     var phpdoctext = file.SyntaxTree.GetText().ToString(phpdoc.Span.ToTextSpan());
+            //
+            //     // cleanup the phpdoctext
+            //     // trim lines:
+            //     var result = new StringBuilder(phpdoctext.Length);
+            //
+            //     using (var reader = new StringReader(phpdoctext))
+            //     {
+            //         for (; ; )
+            //         {
+            //             var line = reader.ReadLine();
+            //             if (line != null)
+            //             {
+            //                 if (result.Length != 0)
+            //                     result.Append("\n ");
+            //
+            //                 result.Append(line.Trim());
+            //             }
+            //             else
+            //             {
+            //                 break;
+            //             }
+            //         }
+            //     }
+            //
+            //     ////
+            //     //var stream = new System.IO.StringWriter();
+            //     //using (var writer = new JsonWriter(stream))
+            //     //{
+            //     //    writer.WriteObjectStart();
+            //     //    writer.Write("doc", phpdoctext);
+            //     //    // TODO: location, return type, ...
+            //     //    writer.WriteObjectEnd();
+            //     //}
+            //
+            //     //return stream.ToString();
+            //
+            //     // create "smaller" json // CONSIDER: use some library that allows to skip whitespaces, newtonsoft or netcore 3.0
+            //     result.Replace("\\", "\\\\").Replace("\n", "\\n").Replace("\r", "").Replace("\"", "\\\"");  // naively escape
+            //     return $"{{\"doc\":\"{(result.ToString())}\"}}";
+            // }
 
             // no metadata
             return null;

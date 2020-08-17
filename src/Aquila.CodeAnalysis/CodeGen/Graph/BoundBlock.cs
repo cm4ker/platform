@@ -7,6 +7,8 @@ using System.Diagnostics;
  using Aquila.CodeAnalysis.Symbols;
 using Cci = Microsoft.Cci;
 using System.Collections.Immutable;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.Syntax.Text;
 using Microsoft.CodeAnalysis.Symbols;
 

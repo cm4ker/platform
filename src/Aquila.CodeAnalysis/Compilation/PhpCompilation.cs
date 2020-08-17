@@ -30,7 +30,6 @@ using Pchp.CodeAnalysis.Utilities;
 using Roslyn.Utilities;
 using SourceFieldSymbol = Aquila.CodeAnalysis.Symbols.SourceFieldSymbol;
 using SourceMethodSymbol = Aquila.CodeAnalysis.Symbols.SourceMethodSymbol;
-using SourceTypeSymbol = Aquila.CodeAnalysis.Symbols.SourceTypeSymbol;
 
 namespace Aquila.CodeAnalysis
 {
@@ -127,7 +126,7 @@ namespace Aquila.CodeAnalysis
         /// <summary>
         /// Gets enumeration of all user declared types (classes, interfaces and traits) in the compilation.
         /// </summary>
-        public IEnumerable<IPhpTypeSymbol> UserDeclaredTypes => this.SourceSymbolCollection.GetTypes();
+        // public IEnumerable<IPhpTypeSymbol> UserDeclaredTypes => this.SourceSymbolCollection.GetTypes();
 
         public IEnumerable<string> ConditionalOptions
         {
@@ -1081,12 +1080,12 @@ namespace Aquila.CodeAnalysis
                 var table = this.SourceSymbolCollection;
                 var symbols =
                     // global functions
-                    table.GetFunctions().OfType<SourceRoutineSymbol>()
-                        // classes, interfaces, traits
-                        .Concat<Aquila.CodeAnalysis.Symbols.Symbol>(table.GetDeclaredTypes())
-                        // type members - properties, constants
-                        .Concat<Aquila.CodeAnalysis.Symbols.Symbol>(table.GetDeclaredTypes().SelectMany(t =>
-                            t.GetMembers().Where(m => m is SourceRoutineSymbol || m is SourceFieldSymbol)));
+                    table.GetFunctions().OfType<SourceRoutineSymbol>();
+                        // // classes, interfaces, traits
+                        // .Concat<Aquila.CodeAnalysis.Symbols.Symbol>(table.GetDeclaredTypes())
+                        // // type members - properties, constants
+                        // .Concat<Aquila.CodeAnalysis.Symbols.Symbol>(table.GetDeclaredTypes().SelectMany(t =>
+                        //     t.GetMembers().Where(m => m is SourceRoutineSymbol || m is SourceFieldSymbol)));
 
                 var resources = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -1095,9 +1094,10 @@ namespace Aquila.CodeAnalysis
                     var metadata = symbol.GetSymbolMetadataResource();
                     if (!string.IsNullOrEmpty(metadata))
                     {
-                        var id = symbol is SourceTypeSymbol type
-                            ? type.GetFullName()
-                            : symbol.ContainingType.GetFullName() + "." + symbol.MetadataName;
+                        var id = //symbol is SourceTypeSymbol type
+                            //? type.GetFullName()
+                            //: 
+                            symbol.ContainingType.GetFullName() + "." + symbol.MetadataName;
 
                         resources[id] = metadata;
                     }

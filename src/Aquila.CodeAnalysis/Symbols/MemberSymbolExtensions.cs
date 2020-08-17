@@ -338,12 +338,12 @@ namespace Aquila.CodeAnalysis.Symbols
                 return false;
             }
 
-            var container = method.ContainingType as Source.SourceTypeSymbol;
-            if ((object)container == null)
-            {
-                // synthesized ctor not from source -> must be default
-                return true;
-            }
+            // var container = method.ContainingType as Source.SourceTypeSymbol;
+            // if ((object)container == null)
+            // {
+            //     // synthesized ctor not from source -> must be default
+            //     return true;
+            // }
 
             // if we are here we have a struct in source for which a parameterless ctor was not provided by the user.
             // So, are we ok with default behavior?

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Microsoft.CodeAnalysis.Emit;
 using Roslyn.Utilities;

@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using Aquila.Compiler.Utilities;
 using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis;
 using Roslyn.Utilities;
@@ -25,7 +26,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         /// Containing source routine.
         /// </summary>
         public IMethodSymbol DeclaringMethod => _routine;
-        readonly Source.SourceRoutineSymbol _routine;
+        readonly SourceRoutineSymbol _routine;
 
         public override NamedTypeSymbol ContainingType => base.ContainingType;
 
@@ -100,7 +101,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         }
         SynthesizedMethodSymbol _initMethod;
 
-        public SynthesizedStaticLocHolder(Source.SourceRoutineSymbol routine, string locName, TypeSymbol locType = null)
+        public SynthesizedStaticLocHolder(SourceRoutineSymbol routine, string locName, TypeSymbol locType = null)
         {
             Contract.ThrowIfNull(routine);
 

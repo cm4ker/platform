@@ -12,7 +12,9 @@ using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax;
+using Aquila.Syntax.Ast.Expressions;
 using Aquila.Syntax.Ast.Functions;
+using Aquila.Syntax.Errors;
 using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
 using Peachpie.CodeAnalysis.Utilities;
@@ -85,7 +87,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
                 HasBaseConstruct(_routine.ContainingType))
             {
                 // Missing calling parent::__construct
-                _diagnostics.Add(_routine, _routine.SyntaxSignature.Span.ToTextSpan(),
+                _diagnostics.Add(_routine, null, //_routine.SyntaxSignature.Span.ToTextSpan(),
                     ErrorCode.WRN_ParentCtorNotCalled, _routine.ContainingType.Name);
             }
 
@@ -128,32 +130,32 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
         private void CheckParams()
         {
             // Check the compatibility of type hints with PhpDoc, if both exist
-            if (_routine.PHPDocBlock != null)
-            {
-                for (int i = 0; i < _routine.SourceParameters.Length; i++)
-                {
-                    var param = _routine.SourceParameters[i];
-
-                    //// Consider only parameters passed by value, with both typehints and PHPDoc comments
-                    //if (!param.Syntax.IsOut && !param.Syntax.PassedByRef
-                    //    && param.Syntax.TypeHint != null
-                    //    && param.PHPDocOpt != null && param.PHPDocOpt.TypeNamesArray.Length != 0)
-                    //{
-                    //    var tmask = PHPDoc.GetTypeMask(TypeCtx, param.PHPDocOpt.TypeNamesArray, _routine.GetNamingContext());
-                    //    if (!tmask.IsVoid && !tmask.IsAnyType)
-                    //    {
-                    //        var hintType = param.Type;
-                    //        var docType = DeclaringCompilation.GetTypeFromTypeRef(TypeCtx, tmask);
-                    //        if (!docType.IsOfType(hintType))  // REVIEW: not correct, CLR type might result in PhpValue or anything else which is never "of type" specified in PHPDoc
-                    //        {
-                    //            // PHPDoc type is incompatible with type hint
-                    //            _diagnostics.Add(_routine, param.Syntax, ErrorCode.WRN_ParamPhpDocTypeHintIncompatible,
-                    //                param.PHPDocOpt.TypeNames, param.Name, param.Syntax.TypeHint);
-                    //        }
-                    //    }
-                    //}
-                }
-            }
+            // if (_routine.PHPDocBlock != null)
+            // {
+            //     for (int i = 0; i < _routine.SourceParameters.Length; i++)
+            //     {
+            //         var param = _routine.SourceParameters[i];
+            //
+            //         //// Consider only parameters passed by value, with both typehints and PHPDoc comments
+            //         //if (!param.Syntax.IsOut && !param.Syntax.PassedByRef
+            //         //    && param.Syntax.TypeHint != null
+            //         //    && param.PHPDocOpt != null && param.PHPDocOpt.TypeNamesArray.Length != 0)
+            //         //{
+            //         //    var tmask = PHPDoc.GetTypeMask(TypeCtx, param.PHPDocOpt.TypeNamesArray, _routine.GetNamingContext());
+            //         //    if (!tmask.IsVoid && !tmask.IsAnyType)
+            //         //    {
+            //         //        var hintType = param.Type;
+            //         //        var docType = DeclaringCompilation.GetTypeFromTypeRef(TypeCtx, tmask);
+            //         //        if (!docType.IsOfType(hintType))  // REVIEW: not correct, CLR type might result in PhpValue or anything else which is never "of type" specified in PHPDoc
+            //         //        {
+            //         //            // PHPDoc type is incompatible with type hint
+            //         //            _diagnostics.Add(_routine, param.Syntax, ErrorCode.WRN_ParamPhpDocTypeHintIncompatible,
+            //         //                param.PHPDocOpt.TypeNames, param.Name, param.Syntax.TypeHint);
+            //         //        }
+            //         //    }
+            //         //}
+            //     }
+            // }
 
             // check source parameters
             var srcparams = _routine.SourceParameters;
@@ -161,67 +163,67 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
             {
                 if (!CheckParameterDefaultValue(p))
                 {
-                    var expectedtype =
-                        (p.Syntax.TypeHint is NullableTypeRef nullable ? nullable.TargetType : p.Syntax.TypeHint)
-                        .ToString(); // do not show "?" in nullable types
-                    var valuetype = TypeCtx.ToString(p.Initializer.TypeRefMask);
-
-                    _diagnostics.Add(_routine, p.Syntax.InitValue, ErrorCode.ERR_DefaultParameterValueTypeMismatch,
-                        p.Name, expectedtype, valuetype);
+                    // var expectedtype =
+                    //     (p.Syntax.TypeHint is NullableTypeRef nullable ? nullable.TargetType : p.Syntax.TypeHint)
+                    //     .ToString(); // do not show "?" in nullable types
+                    // var valuetype = TypeCtx.ToString(p.Initializer.TypeRefMask);
+                    //
+                    // _diagnostics.Add(_routine, p.Syntax.InitValue, ErrorCode.ERR_DefaultParameterValueTypeMismatch,
+                    //     p.Name, expectedtype, valuetype);
                 }
             }
         }
 
         bool CheckParameterDefaultValue(SourceParameterSymbol p)
         {
-            var thint = p.Syntax.TypeHint;
-            if (thint != null)
-            {
-                // check type hint and default value
-                var defaultvalue = p.Initializer;
-                if (defaultvalue != null && !defaultvalue.TypeRefMask.IsAnyType && !defaultvalue.TypeRefMask.IsDefault)
-                {
-                    var valuetype = defaultvalue.TypeRefMask;
-
-                    if (TypeCtx.IsNull(valuetype))
-                    {
-                        // allow NULL anytime
-                        return true;
-                    }
-
-                    if (thint is NullableTypeRef nullable)
-                    {
-                        // unwrap nullable type hint
-                        thint = nullable.TargetType;
-                    }
-
-                    if (thint is PrimitiveTypeRef primitive)
-                    {
-                        switch (primitive.PrimitiveTypeName)
-                        {
-                            case PrimitiveTypeRef.PrimitiveType.@bool:
-                                return TypeCtx.IsBoolean(valuetype);
-
-                            case PrimitiveTypeRef.PrimitiveType.array:
-                                return TypeCtx.IsArray(valuetype);
-
-                            case PrimitiveTypeRef.PrimitiveType.@string:
-                                return TypeCtx.IsAString(valuetype);
-
-                            case PrimitiveTypeRef.PrimitiveType.@object:
-                                return false;
-
-                            case PrimitiveTypeRef.PrimitiveType.@float:
-                            case PrimitiveTypeRef.PrimitiveType.@int:
-                                return TypeCtx.IsNumber(valuetype);
-                        }
-                    }
-                    else if (thint is ClassTypeRef classtref)
-                    {
-                        return false; // cannot have default value other than NULL
-                    }
-                }
-            }
+            // var thint = p.Syntax.TypeHint;
+            // if (thint != null)
+            // {
+            //     // check type hint and default value
+            //     var defaultvalue = p.Initializer;
+            //     if (defaultvalue != null && !defaultvalue.TypeRefMask.IsAnyType && !defaultvalue.TypeRefMask.IsDefault)
+            //     {
+            //         var valuetype = defaultvalue.TypeRefMask;
+            //
+            //         if (TypeCtx.IsNull(valuetype))
+            //         {
+            //             // allow NULL anytime
+            //             return true;
+            //         }
+            //
+            //         if (thint is NullableTypeRef nullable)
+            //         {
+            //             // unwrap nullable type hint
+            //             thint = nullable.TargetType;
+            //         }
+            //
+            //         if (thint is PrimitiveTypeRef primitive)
+            //         {
+            //             switch (primitive.PrimitiveTypeName)
+            //             {
+            //                 case PrimitiveTypeRef.PrimitiveType.@bool:
+            //                     return TypeCtx.IsBoolean(valuetype);
+            //
+            //                 case PrimitiveTypeRef.PrimitiveType.array:
+            //                     return TypeCtx.IsArray(valuetype);
+            //
+            //                 case PrimitiveTypeRef.PrimitiveType.@string:
+            //                     return TypeCtx.IsAString(valuetype);
+            //
+            //                 case PrimitiveTypeRef.PrimitiveType.@object:
+            //                     return false;
+            //
+            //                 case PrimitiveTypeRef.PrimitiveType.@float:
+            //                 case PrimitiveTypeRef.PrimitiveType.@int:
+            //                     return TypeCtx.IsNumber(valuetype);
+            //             }
+            //         }
+            //         else if (thint is ClassTypeRef classtref)
+            //         {
+            //             return false; // cannot have default value other than NULL
+            //         }
+            //     }
+            // }
 
             // ok
             return true;
@@ -239,7 +241,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
                 var flags = labels[i].Flags;
                 if ((flags & ControlFlowGraph.LabelBlockFlags.Defined) == 0)
                 {
-                    Add(labels[i].LabelSpan, Devsense.PHP.Errors.Errors.UndefinedLabel, labels[i].Label);
+                    Add(labels[i].LabelSpan, Errors.UndefinedLabel, labels[i].Label);
                 }
 
                 if ((flags & ControlFlowGraph.LabelBlockFlags.Used) == 0)
@@ -249,14 +251,14 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
 
                 if ((flags & ControlFlowGraph.LabelBlockFlags.Redefined) != 0)
                 {
-                    Add(labels[i].LabelSpan, Devsense.PHP.Errors.Errors.LabelRedeclared, labels[i].Label);
+                    Add(labels[i].LabelSpan, Errors.LabelRedeclared, labels[i].Label);
                 }
             }
         }
 
         public override T VisitEval(BoundEvalEx x)
         {
-            _diagnostics.Add(_routine, new TextSpan(x.PhpSyntax.Span.Start, 4) /*'eval'*/,
+            _diagnostics.Add(_routine, null /*'eval'*/,
                 ErrorCode.INF_EvalDiscouraged);
 
             return base.VisitEval(x);
@@ -372,7 +374,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
                     if (type == DeclaringCompilation.CoreTypes.Closure)
                     {
                         // Instantiation of '{0}' is not allowed
-                        Add(x.TypeRef.PhpSyntax.Span, Devsense.PHP.Errors.Errors.ClosureInstantiated, type.Name);
+                        Add(x.TypeRef.PhpSyntax.Span, Errors.ClosureInstantiated, type.Name);
                     }
 
                     //
@@ -391,29 +393,29 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
         {
             if (_routine.Syntax is MethodDecl m)
             {
-                if (m.Name.Name.IsToStringName)
-                {
-                    // __tostring() allows only strings to be returned
-                    if (x.Returned == null || !IsAllowedToStringReturnType(x.Returned.TypeRefMask))
-                    {
-                        var span = (x.PhpSyntax != null ? x.PhpSyntax.Span : m.HeadingSpan)
-                            .ToTextSpan(); // span of return expression OR span of routine header
-                        _diagnostics.Add(_routine, span, ErrorCode.WRN_ToStringMustReturnString,
-                            _routine.ContainingType.PhpQualifiedName().ToString());
-                    }
-                }
+                // if (m.Identifier.Name.Name.IsToStringName)
+                // {
+                //     // __tostring() allows only strings to be returned
+                //     if (x.Returned == null || !IsAllowedToStringReturnType(x.Returned.TypeRefMask))
+                //     {
+                //         var span = (x.PhpSyntax != null ? x.PhpSyntax.Span : m.HeadingSpan)
+                //             .ToTextSpan(); // span of return expression OR span of routine header
+                //         _diagnostics.Add(_routine, span, ErrorCode.WRN_ToStringMustReturnString,
+                //             _routine.ContainingType.PhpQualifiedName().ToString());
+                //     }
+                // }
             }
 
             // "void" return type hint ?
-            if (_routine.SyntaxReturnType is Devsense.PHP.Syntax.Ast.PrimitiveTypeRef pt && pt.PrimitiveTypeName ==
-                Devsense.PHP.Syntax.Ast.PrimitiveTypeRef.PrimitiveType.@void)
-            {
-                if (x.Returned != null)
-                {
-                    // A void function must not return a value
-                    _diagnostics.Add(_routine, x.PhpSyntax, ErrorCode.ERR_VoidFunctionCannotReturnValue);
-                }
-            }
+            // if (_routine.SyntaxReturnType is PrimitiveTypeRef pt && pt.PrimitiveTypeName ==
+            //     Devsense.PHP.Syntax.Ast.PrimitiveTypeRef.PrimitiveType.@void)
+            // {
+            //     if (x.Returned != null)
+            //     {
+            //         // A void function must not return a value
+            //         _diagnostics.Add(_routine, x.PhpSyntax, ErrorCode.ERR_VoidFunctionCannotReturnValue);
+            //     }
+            // }
 
             //
             return base.VisitReturn(x);
@@ -480,8 +482,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
                     // it should get resolved
                     if (arg.Value is BoundConcatEx concat &&
                         concat.ArgumentsInSourceOrder.Length == 2 &&
-                        concat.ArgumentsInSourceOrder[0].Value is BoundPseudoConst pc &&
-                        pc.ConstType == PseudoConstUse.Types.Dir &&
+                        // concat.ArgumentsInSourceOrder[0].Value is BoundPseudoConst pc &&
+                        // pc.ConstType == PseudoConstUse.Types.Dir &&
                         concat.ArgumentsInSourceOrder[1].Value.ConstantValue.TryConvertToString(out var relativePath) &&
                         relativePath.Length != 0)
                     {
@@ -640,10 +642,10 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
                 prop.SetMethod == null)
             {
                 // read-only property written
-                _diagnostics.Add(_routine, GetMemberNameSpanForDiagnostic(x.PhpSyntax),
-                    ErrorCode.ERR_ReadOnlyPropertyWritten,
-                    prop.ContainingType.PhpQualifiedName().ToString(), // TOOD: _statics
-                    prop.Name);
+                // _diagnostics.Add(_routine, GetMemberNameSpanForDiagnostic(x.PhpSyntax),
+                //     ErrorCode.ERR_ReadOnlyPropertyWritten,
+                //     prop.ContainingType.PhpQualifiedName().ToString(), // TOOD: _statics
+                //     prop.Name);
             }
 
             //
@@ -668,7 +670,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
             CheckObsoleteSymbol(call.PhpSyntax, call.TargetMethod, isMemberCall: true);
 
             // remember there is call to `parent::__construct`
-            if (call.TypeRef is BoundReservedTypeRef rt && rt.ReservedType == ReservedTypeRef.ReservedType.parent &&
+            if ( //call.TypeRef is BoundReservedTypeRef rt && rt.ReservedType == ReservedTypeRef.ReservedType.parent &&
                 call.Name.IsDirect &&
                 call.Name.NameValue.Name.IsConstructName)
             {
@@ -679,7 +681,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
             if (call.TargetMethod.IsValidMethod() && call.TargetMethod.IsAbstract)
             {
                 // ERR
-                Add(call.PhpSyntax.Span, Devsense.PHP.Errors.Errors.AbstractMethodCalled,
+                Add(call.PhpSyntax.Span, Errors.AbstractMethodCalled,
                     call.TargetMethod.ContainingType.PhpName(), call.Name.NameValue.Name.Value);
             }
 
@@ -709,11 +711,11 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
 
         public override T VisitDeclareStatement(BoundDeclareStatement x)
         {
-            _diagnostics.Add(
-                _routine,
-                ((DeclareStmt) x.PhpSyntax).GetDeclareClauseSpan(),
-                ErrorCode.WRN_NotYetImplementedIgnored,
-                "Declare construct");
+            // _diagnostics.Add(
+            //     _routine,
+            //     ((DeclareStmt) x.PhpSyntax).GetDeclareClauseSpan(),
+            //     ErrorCode.WRN_NotYetImplementedIgnored,
+            //     "Declare construct");
 
             return base.VisitDeclareStatement(x);
         }
@@ -792,7 +794,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
                     {
                         if (x.Right.ConstantValue.IsZero())
                         {
-                            Add(x.Right.PhpSyntax.Span, Devsense.PHP.Errors.Warnings.DivisionByZero);
+                            Add(x.Right.PhpSyntax.Span, Warnings.DivisionByZero);
                         }
                     }
 
@@ -883,14 +885,16 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
 
         static TextSpan GetMemberNameSpanForDiagnostic(LangElement node)
         {
-            if (node is FunctionCall fnc)
-            {
-                return fnc.NameSpan.ToTextSpan();
-            }
-            else
-            {
-                return node.Span.ToTextSpan();
-            }
+            throw new NotImplementedException();
+
+            // if (node is CallEx fnc)
+            // {
+            //     return fnc.NameSpan.ToTextSpan();
+            // }
+            // else
+            // {
+            //     return node.Span.ToTextSpan();
+            // }
         }
 
         void CheckObsoleteSymbol(LangElement syntax, Aquila.CodeAnalysis.Symbols.Symbol target, bool isMemberCall)
@@ -898,8 +902,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
             var obsolete = target?.ObsoleteAttributeData;
             if (obsolete != null)
             {
-                _diagnostics.Add(_routine, GetMemberNameSpanForDiagnostic(syntax), ErrorCode.WRN_SymbolDeprecated,
-                    target.Kind.ToString(), GetMemberNameForDiagnostic(target, isMemberCall), obsolete.Message);
+                // _diagnostics.Add(_routine, GetMemberNameSpanForDiagnostic(syntax), ErrorCode.WRN_SymbolDeprecated,
+                //     target.Kind.ToString(), GetMemberNameForDiagnostic(target, isMemberCall), obsolete.Message);
             }
         }
 
@@ -908,12 +912,12 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
             if (x.Name.IsDirect &&
                 x.TargetMethod is ErrorMethodSymbol errmethod && errmethod.ErrorKind == ErrorMethodKind.Missing)
             {
-                var originalName = (x.PhpSyntax is DirectFcnCall fnc)
-                    ? fnc.FullName.OriginalName
-                    : x.Name.NameValue;
-
-                _diagnostics.Add(_routine, GetMemberNameSpanForDiagnostic(x.PhpSyntax),
-                    ErrorCode.WRN_UndefinedFunctionCall, originalName.ToString());
+                // var originalName = (x.PhpSyntax is DirectFcnCall fnc)
+                //     ? fnc.FullName.OriginalName
+                //     : x.Name.NameValue;
+                //
+                // _diagnostics.Add(_routine, GetMemberNameSpanForDiagnostic(x.PhpSyntax),
+                //     ErrorCode.WRN_UndefinedFunctionCall, originalName.ToString());
             }
         }
 
@@ -921,9 +925,9 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
         {
             if (x.TargetMethod is MissingMethodSymbol)
             {
-                var span = x.PhpSyntax is FunctionCall fnc ? fnc.NameSpan : x.PhpSyntax.Span;
-                _diagnostics.Add(_routine, span.ToTextSpan(), ErrorCode.WRN_UndefinedMethodCall, type.Name,
-                    name.NameValue.ToString());
+                // var span = x.PhpSyntax is CallEx fnc ? fnc.name : x.PhpSyntax.Span;
+                // _diagnostics.Add(_routine, span.ToTextSpan(), ErrorCode.WRN_UndefinedMethodCall, type.Name,
+                //     name.NameValue.ToString());
             }
         }
 
@@ -951,31 +955,31 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
                     return;
                 }
 
-                if (typeRef is BoundReservedTypeRef)
-                {
-                    // unresolved parent, self ?
-                }
-                else
-                {
-                    _diagnostics.Add(_routine, typeRef.PhpSyntax, ErrorCode.WRN_UndefinedType, typeRef.ToString());
-                }
+                // if (typeRef is BoundReservedTypeRef)
+                // {
+                //     // unresolved parent, self ?
+                // }
+                // else
+                // {
+                //     _diagnostics.Add(_routine, typeRef.PhpSyntax, ErrorCode.WRN_UndefinedType, typeRef.ToString());
+                // }
             }
 
-            // undefined "parent"
-            if (typeRef is BoundReservedTypeRef reservedType &&
-                reservedType.ReservedType == ReservedTypeRef.ReservedType.parent && typeRef.PhpSyntax != null)
-            {
-                var typeCtx = _routine.ContainingType as SourceTypeSymbol;
-                if ((typeCtx != null && typeCtx.IsTrait) || _routine.IsGlobalScope)
-                {
-                    // global code or trait -> resolved at run time
-                }
-                else if (typeCtx == null || typeCtx.Syntax.BaseClass == null)
-                {
-                    // in a global function or a class without parent -> error
-                    Add(typeRef.PhpSyntax.Span, Devsense.PHP.Errors.FatalErrors.ParentAccessedInParentlessClass);
-                }
-            }
+            // // undefined "parent"
+            // if (typeRef is BoundReservedTypeRef reservedType &&
+            //     reservedType.ReservedType == ReservedTypeRef.ReservedType.parent && typeRef.PhpSyntax != null)
+            // {
+            //     var typeCtx = _routine.ContainingType as SourceTypeSymbol;
+            //     if ((typeCtx != null && typeCtx.IsTrait) || _routine.IsGlobalScope)
+            //     {
+            //         // global code or trait -> resolved at run time
+            //     }
+            //     else if (typeCtx == null || typeCtx.Syntax.BaseClass == null)
+            //     {
+            //         // in a global function or a class without parent -> error
+            //         Add(typeRef.PhpSyntax.Span, Devsense.PHP.Errors.FatalErrors.ParentAccessedInParentlessClass);
+            //     }
+            // }
         }
 
         public override T VisitCFGTryCatchEdge(TryCatchEdge x)

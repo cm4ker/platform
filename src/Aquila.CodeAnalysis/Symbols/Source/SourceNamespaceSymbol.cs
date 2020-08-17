@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
+using Aquila.Compiler.Utilities;
 using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis.Symbols.Source
@@ -10,11 +11,11 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         readonly SourceModuleSymbol _sourceModule;
         readonly string _name;
 
-        public SourceNamespaceSymbol(SourceModuleSymbol module, NamespaceDecl ns)
-        {
-            _sourceModule = module;
-            _name = ns.QualifiedName.QualifiedName.ClrName();
-        }
+        // public SourceNamespaceSymbol(SourceModuleSymbol module, NamespaceDecl ns)
+        // {
+        //     _sourceModule = module;
+        //     _name = ns.QualifiedName.QualifiedName.ClrName();
+        // }
 
         internal override PhpCompilation DeclaringCompilation => _sourceModule.DeclaringCompilation;
 
@@ -134,7 +135,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public override ImmutableArray<NamedTypeSymbol> GetTypeMembers()
         {
-            return _sourceModule.SymbolCollection.GetTypes().Cast<NamedTypeSymbol>().AsImmutable();
+            return ImmutableArray<NamedTypeSymbol>.Empty;// _sourceModule.SymbolCollection.GetTypes().Cast<NamedTypeSymbol>().AsImmutable();
         }
 
         public override ImmutableArray<NamedTypeSymbol> GetTypeMembers(string name)

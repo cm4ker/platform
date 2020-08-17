@@ -211,13 +211,15 @@ namespace Aquila.CodeAnalysis
         /// </summary>
         public static int GetOffset(this PhpSyntaxTree tree, LinePosition linePosition)
         {
-            if (linePosition.Line < 0 || linePosition.Line > tree.Source.LineBreaks.Count)
-            {
-                return -1;
-            }
-
-            int lineStart = (linePosition.Line == 0) ? 0 : tree.Source.LineBreaks.EndOfLineBreak(linePosition.Line - 1);
-            return lineStart + linePosition.Character;
+            throw new NotImplementedException();
+            
+            // if (linePosition.Line < 0 || linePosition.Line > tree.Source.LineBreaks.Count)
+            // {
+            //     return -1;
+            // }
+            //
+            // int lineStart = (linePosition.Line == 0) ? 0 : tree.Source.LineBreaks.EndOfLineBreak(linePosition.Line - 1);
+            // return lineStart + linePosition.Character;
         }
 
         /// <summary>

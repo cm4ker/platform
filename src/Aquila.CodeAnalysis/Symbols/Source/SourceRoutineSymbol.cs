@@ -49,16 +49,16 @@ namespace Aquila.CodeAnalysis.Symbols
                     // create initial flow state
                     var state = StateBinder.CreateInitialState(this);
 
-                    // build control flow graph
-                    var cfg = new ControlFlowGraph(
-                        this.Statements,
-                        SemanticsBinder.Create(DeclaringCompilation, ContainingFile.SyntaxTree, LocalsTable,
-                            /*ContainingType as SourceTypeSymbol*/ null
-                        ));
-                    cfg.Start.FlowState = state;
-
+                    // // build control flow graph
+                    // var cfg = new ControlFlowGraph(
+                    //     this.Statements,
+                    //     SemanticsBinder.Create(DeclaringCompilation, ContainingFile.SyntaxTree, LocalsTable,
+                    //         /*ContainingType as SourceTypeSymbol*/ null
+                    //     ));
+                    // cfg.Start.FlowState = state;
                     //
-                    Interlocked.CompareExchange(ref _cfg, cfg, null);
+                    // //
+                    // Interlocked.CompareExchange(ref _cfg, cfg, null);
                 }
 
                 //

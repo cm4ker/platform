@@ -997,7 +997,7 @@
         {
             get
             {
-                return Constants.PhpLanguageName;
+                return Constants.AquilaLanguageName;
             }
         }
 

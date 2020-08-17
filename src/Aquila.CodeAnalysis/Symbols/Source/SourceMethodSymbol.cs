@@ -25,7 +25,7 @@ namespace Aquila.CodeAnalysis.Symbols
     /// </summary>
     internal partial class SourceMethodSymbol : SourceRoutineSymbol
     {
-        readonly SourceTypeSymbol _type;
+        //readonly SourceTypeSymbol _type;
 
         readonly MethodDecl /*!*/
             _syntax;
@@ -34,14 +34,14 @@ namespace Aquila.CodeAnalysis.Symbols
 
         MethodSymbol _lazyOverridenMethod;
 
-        public SourceMethodSymbol(SourceTypeSymbol /*!*/type, MethodDecl /*!*/syntax)
-        {
-            Contract.ThrowIfNull(type);
-            Contract.ThrowIfNull(syntax);
-
-            _type = type;
-            _syntax = syntax;
-        }
+        // public SourceMethodSymbol(SourceTypeSymbol /*!*/type, MethodDecl /*!*/syntax)
+        // {
+        //     Contract.ThrowIfNull(type);
+        //     Contract.ThrowIfNull(syntax);
+        //
+        //     _type = type;
+        //     _syntax = syntax;
+        // }
 
         internal override bool RequiresLateStaticBoundParam =>
             IsStatic && // `static` in instance method == typeof($this)
@@ -77,7 +77,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         internal override IList<Statement> Statements => _syntax.Block?.Statements.ToList();
 
-        protected override TypeRefContext CreateTypeRefContext() => TypeRefFactory.CreateTypeRefContext(_type);
+        protected override TypeRefContext CreateTypeRefContext() => null;//TypeRefFactory.CreateTypeRefContext(_type);
 
         public override void GetDiagnostics(DiagnosticBag diagnostic)
         {
@@ -349,24 +349,24 @@ namespace Aquila.CodeAnalysis.Symbols
         }
     }
 
-    /// <summary>
-    /// Represents a PHP trait method.
-    /// </summary>
-    internal class SourceTraitMethodSymbol : SourceMethodSymbol
-    {
-        public SourceTraitMethodSymbol(SourceTraitTypeSymbol type, MethodDecl syntax)
-            : base(type, syntax)
-        {
-        }
-
-        // abstract trait method must have an empty implementation
-        public override bool IsAbstract => false;
-
-        public override bool IsVirtual => false;
-        public override bool IsOverride => false;
-        internal override bool IsMetadataFinal => false; // final trait method must not be marked sealed in CIL
-
-        // abstract trait method must have an empty implementation
-        internal override IList<Statement> Statements => base.IsAbstract ? Array.Empty<Statement>() : base.Statements;
-    }
+    // /// <summary>
+    // /// Represents a PHP trait method.
+    // /// </summary>
+    // internal class SourceTraitMethodSymbol : SourceMethodSymbol
+    // {
+    //     public SourceTraitMethodSymbol(SourceTraitTypeSymbol type, MethodDecl syntax)
+    //         : base(type, syntax)
+    //     {
+    //     }
+    //
+    //     // abstract trait method must have an empty implementation
+    //     public override bool IsAbstract => false;
+    //
+    //     public override bool IsVirtual => false;
+    //     public override bool IsOverride => false;
+    //     internal override bool IsMetadataFinal => false; // final trait method must not be marked sealed in CIL
+    //
+    //     // abstract trait method must have an empty implementation
+    //     internal override IList<Statement> Statements => base.IsAbstract ? Array.Empty<Statement>() : base.Statements;
+    // }
 }

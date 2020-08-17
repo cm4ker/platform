@@ -19,6 +19,7 @@ using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax.Ast;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Operations;
+using Pchp.CodeAnalysis;
 using Pchp.CodeAnalysis.Semantics;
 
 namespace Aquila.CodeAnalysis
@@ -283,34 +284,34 @@ namespace Aquila.CodeAnalysis
 
         #region TypeSymbol From AST.TypeRef
 
-        /// <summary>
-        /// Binds <see cref="TypeRef"/> to a type symbol.
-        /// </summary>
-        /// <param name="tref">Type reference.</param>
-        /// <param name="selfHint">Optional.
-        /// Current type scope for better <paramref name="tref"/> resolution since <paramref name="tref"/> might be ambiguous</param>
-        /// <param name="nullable">Whether the resulting type must be able to contain NULL. Default is <c>false</c>.</param>
-        /// <returns>Resolved symbol.</returns>
-        internal TypeSymbol GetTypeFromTypeRef(TypeRef tref, SourceTypeSymbol selfHint = null,
-            bool nullable = false)
-        {
-            if (tref == null)
-            {
-                return null;
-            }
-
-            var t = this.TypeRefFactory.CreateFromTypeRef(tref, null, selfHint);
-
-            var symbol = t.ResolveRuntimeType(this);
-
-            if (t.IsNullable || nullable)
-            {
-                // TODO: for value types -> Nullable<T>
-                symbol = MergeNull(symbol);
-            }
-
-            return symbol;
-        }
+        // /// <summary>
+        // /// Binds <see cref="TypeRef"/> to a type symbol.
+        // /// </summary>
+        // /// <param name="tref">Type reference.</param>
+        // /// <param name="selfHint">Optional.
+        // /// Current type scope for better <paramref name="tref"/> resolution since <paramref name="tref"/> might be ambiguous</param>
+        // /// <param name="nullable">Whether the resulting type must be able to contain NULL. Default is <c>false</c>.</param>
+        // /// <returns>Resolved symbol.</returns>
+        // internal TypeSymbol GetTypeFromTypeRef(TypeRef tref, SourceTypeSymbol selfHint = null,
+        //     bool nullable = false)
+        // {
+        //     if (tref == null)
+        //     {
+        //         return null;
+        //     }
+        //
+        //     var t = this.TypeRefFactory.CreateFromTypeRef(tref, null, selfHint);
+        //
+        //     var symbol = t.ResolveRuntimeType(this);
+        //
+        //     if (t.IsNullable || nullable)
+        //     {
+        //         // TODO: for value types -> Nullable<T>
+        //         symbol = MergeNull(symbol);
+        //     }
+        //
+        //     return symbol;
+        // }
 
         #endregion
 

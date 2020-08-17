@@ -411,7 +411,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         /// <summary>
         /// Returns custom modifiers for the type argument that has been substituted for the type parameter. 
-        /// The modifiers correspond to the type argument at the same ordinal within the <see cref="Pchp.CodeAnalysis.Symbols.NamedTypeSymbol.TypeArgumentsNoUseSiteDiagnostics"/>
+        /// The modifiers correspond to the type argument at the same ordinal within the <see cref="NamedTypeSymbol.TypeArgumentsNoUseSiteDiagnostics"/>
         /// array.
         /// </summary>
         public abstract ImmutableArray<CustomModifier> GetTypeArgumentCustomModifiers(int ordinal);
@@ -463,7 +463,7 @@ namespace Aquila.CodeAnalysis.Symbols
         internal MethodSymbol ResolvePhpCtor(bool recursive = false)
         {
             // resolve __construct()
-            var ctor = GetMembersByPhpName(Devsense.PHP.Syntax.Name.SpecialMethodNames.Construct.Value).OfType<MethodSymbol>().FirstOrDefault();
+            var ctor = GetMembersByPhpName(Aquila.Syntax.Syntax.Name.SpecialMethodNames.Construct.Value).OfType<MethodSymbol>().FirstOrDefault();
 
             // resolve PHP$-like constructor (if the class is not namespaced)
             if (ctor == null && this.PhpQualifiedName().IsSimpleName)

@@ -731,16 +731,16 @@ namespace Aquila.CodeAnalysis.Symbols
             {
                 string unsuffixedName = this.Name;
 
-                if (this is SourceTypeSymbol srct)
-                {
-                    // We're using SourceTypeSymbol.MetadataName as Name (because changing the Name would cause too much refactoring for now);
-                    // In PHP we can have more classes with the same name in the same namespace,
-                    // so the compiler (SourceTypeSymbol) generates different MetadataName for it.
-                    unsuffixedName = srct.MetadataName;
-
-                    // remove suffix from metadata, wil be added by emitter
-                    unsuffixedName = MetadataHelpers.InferTypeArityAndUnmangleMetadataName(unsuffixedName, out _);
-                }
+                // if (this is SourceTypeSymbol srct)
+                // {
+                //     // We're using SourceTypeSymbol.MetadataName as Name (because changing the Name would cause too much refactoring for now);
+                //     // In PHP we can have more classes with the same name in the same namespace,
+                //     // so the compiler (SourceTypeSymbol) generates different MetadataName for it.
+                //     unsuffixedName = srct.MetadataName;
+                //
+                //     // remove suffix from metadata, wil be added by emitter
+                //     unsuffixedName = MetadataHelpers.InferTypeArityAndUnmangleMetadataName(unsuffixedName, out _);
+                // }
 
                 // CLR generally allows names with dots, however some APIs like IMetaDataImport
                 // can only return full type names combined with namespaces. 

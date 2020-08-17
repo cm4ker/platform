@@ -10,6 +10,8 @@ using System.Threading;
 using Aquila.CodeAnalysis.Symbols.Attributes;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
+using Aquila.Compiler.Utilities;
+using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
 using Pchp.CodeAnalysis.DocumentationComments;

@@ -50,7 +50,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         #endregion
 
-        readonly SourceTypeSymbol _containingType;
+        //readonly SourceTypeSymbol _containingType;
         readonly string _fieldName;
 
         readonly PhpPropertyKind _fieldKind;
@@ -159,22 +159,22 @@ namespace Aquila.CodeAnalysis.Symbols
 
         PropertySymbol _fieldAccessorProperty;
 
-        public SourceFieldSymbol(SourceTypeSymbol type, string name, Location location, Accessibility accessibility,
-            /*PHPDocBlock phpdoc,*/ PhpPropertyKind kind, BoundExpression initializer = null,
-            ImmutableArray<AttributeData> customAttributes = default)
-        {
-            Contract.ThrowIfNull(type);
-            Contract.ThrowIfNull(name);
-
-            _containingType = type;
-            _fieldName = name;
-            _fieldKind = kind;
-            _accessibility = accessibility;
-            //_phpDoc = phpdoc;
-            _initializer = initializer;
-            _location = location;
-            _customAttributes = customAttributes;
-        }
+        // public SourceFieldSymbol(SourceTypeSymbol type, string name, Location location, Accessibility accessibility,
+        //     /*PHPDocBlock phpdoc,*/ PhpPropertyKind kind, BoundExpression initializer = null,
+        //     ImmutableArray<AttributeData> customAttributes = default)
+        // {
+        //     Contract.ThrowIfNull(type);
+        //     Contract.ThrowIfNull(name);
+        //
+        //     //_containingType = type;
+        //     _fieldName = name;
+        //     _fieldKind = kind;
+        //     _accessibility = accessibility;
+        //     //_phpDoc = phpdoc;
+        //     _initializer = initializer;
+        //     _location = location;
+        //     _customAttributes = customAttributes;
+        // }
 
         #region FieldSymbol
 
@@ -290,14 +290,14 @@ namespace Aquila.CodeAnalysis.Symbols
             // PHPDoc @var type
             if ((DeclaringCompilation.Options.PhpDocTypes & PhpDocTypes.FieldTypes) != 0)
             {
-                var vartag = FindPhpDocVarTag();
-                if (vartag != null && vartag.TypeNamesArray.Length != 0)
-                {
-                    // var dummyctx = TypeRefFactory.CreateTypeRefContext(_containingType);
-                    // var tmask = PHPDoc.GetTypeMask(dummyctx, vartag.TypeNamesArray,
-                    //     NameUtils.GetNamingContext(null));
-                    // return DeclaringCompilation.GetTypeFromTypeRef(dummyctx, tmask);
-                }
+                // var vartag = FindPhpDocVarTag();
+                // if (vartag != null && vartag.TypeNamesArray.Length != 0)
+                // {
+                //     // var dummyctx = TypeRefFactory.CreateTypeRefContext(_containingType);
+                //     // var tmask = PHPDoc.GetTypeMask(dummyctx, vartag.TypeNamesArray,
+                //     //     NameUtils.GetNamingContext(null));
+                //     // return DeclaringCompilation.GetTypeFromTypeRef(dummyctx, tmask);
+                // }
             }
 
             // default

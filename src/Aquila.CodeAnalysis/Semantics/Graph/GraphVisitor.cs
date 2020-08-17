@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using Peachpie.CodeAnalysis.Utilities;
@@ -15,7 +15,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
         protected TResult Accept(BoundBlock x) => (x != null) ? x.Accept(this) : default;
 
         /// <summary>Visits given edge.</summary>
-        protected TResult Accept(Edge x) => (x != null) ? x.AcceptGraph(this) : default;
+        protected TResult Accept(Edge x) => (x != null) ? x.Accept(this) : default;
 
         #region ControlFlowGraph
 

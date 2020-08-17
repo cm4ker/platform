@@ -100,7 +100,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             Debug.Assert(!argument.Values.IsDefault);
             var values = argument.Values;
-            var arrayType = Emit.PEModuleBuilder.Translate((Aquila.CodeAnalysis.Symbols.ArrayTypeSymbol) argument.Type);
+            var arrayType = PEModuleBuilder.Translate((Aquila.CodeAnalysis.Symbols.ArrayTypeSymbol) argument.Type);
 
             if (values.Length == 0)
             {

@@ -13,7 +13,7 @@ namespace Aquila.CodeAnalysis.Symbols.Php
         /// <returns></returns>
         public static NamedTypeSymbol TryGetStaticsHolder(this INamedTypeSymbol t)
         {
-            if (t is Source.SourceTypeSymbol srct) return (NamedTypeSymbol)srct.StaticsContainer;
+            //if (t is Source.SourceTypeSymbol srct) return (NamedTypeSymbol)srct.StaticsContainer;
 
             // a nested class `_statics`:
             return (NamedTypeSymbol)t.GetTypeMembers(WellKnownPchpNames.StaticsHolderClassName).Where(IsStaticsContainer).SingleOrDefault();
@@ -179,28 +179,28 @@ namespace Aquila.CodeAnalysis.Symbols.Php
             return null;
         }
 
-        /// <summary>
-        /// Gets (PHP) type symbols that has to be declared in order to declare given <paramref name="type"/>.
-        /// </summary>
-        /// <param name="type">The type declaration which dependant symbols will be returned.</param>
-        public static IList<NamedTypeSymbol> GetDependentSourceTypeSymbols(this Source.SourceTypeSymbol type)
-        {
-            // TODO: traits
-
-            var btype = (type.BaseType != null && type.BaseType.IsPhpUserType()) ? type.BaseType : null;
-            var ifaces = type.Interfaces;
-
-            if (ifaces.Length == 0 && btype == null)
-            {
-                return Array.Empty<NamedTypeSymbol>();
-            }
-
-            var list = new List<NamedTypeSymbol>(1 + ifaces.Length);
-            if (btype != null) list.Add(btype);
-            if (ifaces.Length != 0) list.AddRange(ifaces.Where(x => x.IsPhpUserType()));
-
-            return list;
-        }
+        // /// <summary>
+        // /// Gets (PHP) type symbols that has to be declared in order to declare given <paramref name="type"/>.
+        // /// </summary>
+        // /// <param name="type">The type declaration which dependant symbols will be returned.</param>
+        // public static IList<NamedTypeSymbol> GetDependentSourceTypeSymbols(this Source.SourceTypeSymbol type)
+        // {
+        //     // TODO: traits
+        //
+        //     var btype = (type.BaseType != null && type.BaseType.IsPhpUserType()) ? type.BaseType : null;
+        //     var ifaces = type.Interfaces;
+        //
+        //     if (ifaces.Length == 0 && btype == null)
+        //     {
+        //         return Array.Empty<NamedTypeSymbol>();
+        //     }
+        //
+        //     var list = new List<NamedTypeSymbol>(1 + ifaces.Length);
+        //     if (btype != null) list.Add(btype);
+        //     if (ifaces.Length != 0) list.AddRange(ifaces.Where(x => x.IsPhpUserType()));
+        //
+        //     return list;
+        // }
 
         /// <summary>
         /// Gets type kind as string, e.g. "class", "interface", "trait", ..

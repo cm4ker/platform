@@ -291,17 +291,17 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// Contains type of current context (refers to <c>self</c>).
         /// Can be <c>null</c>.
         /// </summary>
-        internal NamedTypeSymbol SelfType => _selfType;
+        internal NamedTypeSymbol SelfType => null; //_selfType;
 
-        private readonly SourceTypeSymbol _selfType;
+        // private readonly SourceTypeSymbol _selfType;
 
         /// <summary>
         /// Type corresponding to <c>$this</c> variable.
         /// Can be <c>null</c> if <c>$this</c> is resolved in runtime.
         /// </summary>
-        internal NamedTypeSymbol ThisType => _thisType;
+        internal NamedTypeSymbol ThisType => null; //_thisType;
 
-        private readonly SourceTypeSymbol _thisType;
+        //private readonly SourceTypeSymbol _thisType;
 
         /// <summary>
         /// When resolved, contains type mask of <c>static</c> type.
@@ -312,18 +312,18 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
         #region Initialization
 
-        internal TypeRefContext(PhpCompilation compilation, SourceTypeSymbol selfType)
-            : this(compilation, selfType, thisType: selfType)
-        {
-        }
-
-        internal TypeRefContext(PhpCompilation compilation, SourceTypeSymbol selfType,
-            SourceTypeSymbol thisType)
-        {
-            _compilation = compilation ?? throw ExceptionUtilities.ArgumentNull(nameof(compilation));
-            _selfType = selfType;
-            _thisType = thisType;
-        }
+        // internal TypeRefContext(PhpCompilation compilation, SourceTypeSymbol selfType)
+        //     : this(compilation, selfType, thisType: selfType)
+        // {
+        // }
+        //
+        // internal TypeRefContext(PhpCompilation compilation, SourceTypeSymbol selfType,
+        //     SourceTypeSymbol thisType)
+        // {
+        //     _compilation = compilation ?? throw ExceptionUtilities.ArgumentNull(nameof(compilation));
+        //     _selfType = selfType;
+        //     _thisType = thisType;
+        // }
 
         /// <summary>
         /// Explicitly defines late static bind type (type of <c>static</c>).
@@ -719,15 +719,15 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         public TypeRefMask GetSelfTypeMask()
         {
             TypeRefMask result;
-
-            if (_selfType != null && !_selfType.IsTrait)
-            {
-                result = GetTypeMask(BoundTypeRefFactory.Create(_selfType), includesSubclasses: false);
-            }
-            else
-            {
+            //
+            // if (_selfType != null && !_selfType.IsTrait)
+            // {
+            //     result = GetTypeMask(BoundTypeRefFactory.Create(_selfType), includesSubclasses: false);
+            // }
+            // else
+            // {
                 result = GetSystemObjectTypeMask();
-            }
+            //}
 
             return result;
         }
@@ -737,14 +737,14 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// </summary>
         public TypeRefMask GetThisTypeMask()
         {
-            if (_thisType != null)
-            {
-                return GetTypeMask(BoundTypeRefFactory.Create(_thisType), includesSubclasses: !_thisType.IsSealed);
-            }
-            else
-            {
+            // if (_thisType != null)
+            // {
+            //     return GetTypeMask(BoundTypeRefFactory.Create(_thisType), includesSubclasses: !_thisType.IsSealed);
+            // }
+            // else
+            // {
                 return GetSystemObjectTypeMask();
-            }
+            // }
         }
 
         /// <summary>
@@ -752,14 +752,14 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// </summary>
         public TypeRefMask GetParentTypeMask()
         {
-            if (_selfType != null && _selfType.Syntax.BaseClass != null)
-            {
-                return GetTypeMask(BoundTypeRefFactory.Create(_selfType.BaseType), false);
-            }
-            else
-            {
+            // if (_selfType != null && _selfType.Syntax.BaseClass != null)
+            // {
+            //     return GetTypeMask(BoundTypeRefFactory.Create(_selfType.BaseType), false);
+            // }
+            // else
+            // {
                 return GetSystemObjectTypeMask();
-            }
+            // }
         }
 
         /// <summary>
@@ -888,7 +888,9 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 if (types.Count != 0)
                 {
                     types.Sort();
-                    return string.Join(PHPDocBlock.TypeVarDescTag.TypeNamesSeparator.ToString(), types.Distinct());
+                    return string.Join( "",
+                        //PHPDocBlock.TypeVarDescTag.TypeNamesSeparator.ToString(),
+                        types.Distinct());
                 }
             }
 

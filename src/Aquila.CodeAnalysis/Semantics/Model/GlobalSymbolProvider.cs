@@ -10,7 +10,6 @@ using Aquila.CodeAnalysis.Symbols.PE;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.Compiler.Utilities;
 using Aquila.Syntax.Syntax;
-using MoreLinq;
 using Roslyn.Utilities;
 using Pchp.CodeAnalysis.Utilities;
 

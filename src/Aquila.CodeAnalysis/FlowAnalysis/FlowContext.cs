@@ -56,7 +56,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
                 if (_typeCtx.SelfType != null)
                 {
-                    return ((SourceTypeSymbol) _typeCtx.SelfType).ContainingFile;
+                    //return ((SourceTypeSymbol) _typeCtx.SelfType).ContainingFile;
                 }
 
                 throw new InvalidOperationException();

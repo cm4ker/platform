@@ -101,7 +101,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override NamedTypeSymbol ContainingType => _file;
 
-        protected override TypeRefContext CreateTypeRefContext() => new TypeRefContext(DeclaringCompilation, null);
+        protected override TypeRefContext CreateTypeRefContext() => null;//new TypeRefContext(DeclaringCompilation, null);
 
         public override void GetDiagnostics(DiagnosticBag diagnostic)
         {

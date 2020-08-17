@@ -242,11 +242,17 @@ namespace Aquila.Syntax.Ast
 {
     public partial class SourceUnit : LangElement
     {
-        public SourceUnit(Span span, SyntaxKind syntaxKind, UsingList usings, MethodList methods, FieldList fields): base(span, syntaxKind)
+        public SourceUnit(Span span, SyntaxKind syntaxKind,  string  filePath, UsingList usings, MethodList methods, FieldList fields): base(span, syntaxKind)
         {
+            FilePath = filePath;
             this.Attach(0, (LangElement)usings);
             this.Attach(1, (LangElement)methods);
             this.Attach(2, (LangElement)fields);
+        }
+
+        public string FilePath
+        {
+            get;
         }
 
         public UsingList Usings

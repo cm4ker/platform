@@ -1,13 +1,9 @@
 ﻿﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Emit;
-using Pchp.CodeAnalysis.Symbols;
-using System;
+ using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
+ using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
  using Aquila.CodeAnalysis.Symbols.Source;
  using Cci = Microsoft.Cci;
 
@@ -57,15 +53,15 @@ namespace Aquila.CodeAnalysis.Symbols
 
         IEnumerable<Cci.ICustomAttribute> Cci.IReference.GetAttributes(EmitContext context)
         {
-            var attrs = GetCustomAttributesToEmit(((Emit.PEModuleBuilder)context.Module).CompilationState).Cast<Cci.ICustomAttribute>();
+            var attrs = GetCustomAttributesToEmit(((Pchp.CodeAnalysis.Emit.PEModuleBuilder)context.Module).CompilationState).Cast<Cci.ICustomAttribute>();
 
             // add [PhpMemberVisibilityAttribute( DeclaredAccessibility )] for non-public members emitted as public
             if ((DeclaredAccessibility == Accessibility.Private || DeclaredAccessibility == Accessibility.Protected) &&
-                Emit.PEModuleBuilder.MemberVisibility(this) == Cci.TypeMemberVisibility.Public)
+                Pchp.CodeAnalysis.Emit.PEModuleBuilder.MemberVisibility(this) == Cci.TypeMemberVisibility.Public)
             {
                 attrs = attrs.Concat(new[]
                 {
-                    (Cci.ICustomAttribute)((Emit.PEModuleBuilder)context.Module).Compilation.GetPhpMemberVisibilityAttribute(this, DeclaredAccessibility)
+                    (Cci.ICustomAttribute)((Pchp.CodeAnalysis.Emit.PEModuleBuilder)context.Module).Compilation.GetPhpMemberVisibilityAttribute(this, DeclaredAccessibility)
                 });
             }
 

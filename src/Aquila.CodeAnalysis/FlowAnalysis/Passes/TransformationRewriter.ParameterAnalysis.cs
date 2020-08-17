@@ -7,6 +7,7 @@ using Pchp.CodeAnalysis.Semantics;
 using Pchp.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Symbols;
  using Aquila.CodeAnalysis.Symbols.Source;
+ using Aquila.Syntax.Ast;
  using Pchp.CodeAnalysis.Utilities;
 using Peachpie.CodeAnalysis.Utilities;
 
@@ -194,7 +195,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
                 base.Visit(x, branch);
 
                 // Cloning causes calling __clone with arbitrary code
-                if (x.Operation == Devsense.PHP.Syntax.Ast.Operations.Clone)
+                if (x.Operation == Operations.Clone)
                 {
                     State = ParameterAnalysisState.Dirty;
                 }

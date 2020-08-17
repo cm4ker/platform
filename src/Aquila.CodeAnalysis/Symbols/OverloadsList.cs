@@ -39,7 +39,7 @@ namespace Aquila.CodeAnalysis.Symbols
             public VisibilityScope(NamedTypeSymbol self, SourceRoutineSymbol routine)
             {
                 Scope = self;
-                ScopeIsDynamic = self.IsTraitType() || routine is SourceLambdaSymbol || (routine?.IsGlobalScope == true);
+                ScopeIsDynamic = self.IsTraitType() || (routine?.IsGlobalScope == true);
             }
         }
 

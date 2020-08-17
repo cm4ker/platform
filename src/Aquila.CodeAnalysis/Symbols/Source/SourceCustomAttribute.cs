@@ -57,7 +57,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             {
                 // TODO: check the attribute can bi bound to symbol
 
-                var type = (NamedTypeSymbol) symbol.DeclaringCompilation.GetTypeFromTypeRef(_tref);
+                var type = (NamedTypeSymbol) null; //symbol.DeclaringCompilation.GetTypeFromTypeRef(_tref);
 
                 if (type.IsErrorTypeOrNull() || type.SpecialType == SpecialType.System_Object)
                 {
@@ -232,7 +232,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             if (element is TypeRef tref)
             {
                 var system_type = compilation.GetWellKnownType(WellKnownType.System_Type);
-                result = new TypedConstant(system_type, TypedConstantKind.Type, compilation.GetTypeFromTypeRef(tref));
+                result = new TypedConstant(system_type, TypedConstantKind.Type, null); //compilation.GetTypeFromTypeRef(tref));
                 return target == system_type;
             }
 

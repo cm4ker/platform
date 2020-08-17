@@ -90,19 +90,19 @@ namespace Pchp.CodeAnalysis
             }
         }
 
-        void WalkTypes(Action<SourceTypeSymbol> action, bool allowParallel = false)
-        {
-            var types = _compilation.SourceSymbolCollection.GetTypes();
-
-            if (ConcurrentBuild && allowParallel)
-            {
-                Parallel.ForEach(types, action);
-            }
-            else
-            {
-                types.ForEach(action);
-            }
-        }
+        // void WalkTypes(Action<SourceTypeSymbol> action, bool allowParallel = false)
+        // {
+        //     var types = _compilation.SourceSymbolCollection.GetTypes();
+        //
+        //     if (ConcurrentBuild && allowParallel)
+        //     {
+        //         Parallel.ForEach(types, action);
+        //     }
+        //     else
+        //     {
+        //         types.ForEach(action);
+        //     }
+        // }
 
         /// <summary>
         /// Enqueues routine's start block for analysis.
@@ -146,21 +146,21 @@ namespace Pchp.CodeAnalysis
             _worklist.Enqueue(dummy);
         }
 
-        /// <summary>
-        /// Enqueues initializers of a class fields and constants.
-        /// </summary>
-        void EnqueueFieldsInitializer(SourceTypeSymbol type)
-        {
-            type.GetDeclaredMembers().OfType<SourceFieldSymbol>().ForEach(f =>
-            {
-                if (f.Initializer != null)
-                {
-                    EnqueueExpression(
-                        f.Initializer,
-                        f.EnsureTypeRefContext());
-                }
-            });
-        }
+        // /// <summary>
+        // /// Enqueues initializers of a class fields and constants.
+        // /// </summary>
+        // void EnqueueFieldsInitializer(SourceTypeSymbol type)
+        // {
+        //     type.GetDeclaredMembers().OfType<SourceFieldSymbol>().ForEach(f =>
+        //     {
+        //         if (f.Initializer != null)
+        //         {
+        //             EnqueueExpression(
+        //                 f.Initializer,
+        //                 f.EnsureTypeRefContext());
+        //         }
+        //     });
+        // }
 
         internal void ReanalyzeMethods()
         {
@@ -211,11 +211,11 @@ namespace Pchp.CodeAnalysis
             }, allowParallel: ConcurrentBuild);
 
             // field initializers
-            WalkTypes(type =>
-            {
-                type.GetDeclaredMembers().OfType<SourceFieldSymbol>().ForEach(binder.Bind);
-
-            }, allowParallel: ConcurrentBuild);
+            // WalkTypes(type =>
+            // {
+            //     type.GetDeclaredMembers().OfType<SourceFieldSymbol>().ForEach(binder.Bind);
+            //
+            // }, allowParallel: ConcurrentBuild);
         }
 
         #region Nested class: LateStaticCallsLookup
@@ -347,13 +347,13 @@ namespace Pchp.CodeAnalysis
 
         private void DiagnoseTypes()
         {
-            this.WalkTypes(DiagnoseType, allowParallel: true);
+            //this.WalkTypes(DiagnoseType, allowParallel: true);
         }
 
-        private void DiagnoseType(SourceTypeSymbol type)
-        {
-            type.GetDiagnostics(_diagnostics);
-        }
+        // private void DiagnoseType(SourceTypeSymbol type)
+        // {
+        //     type.GetDiagnostics(_diagnostics);
+        // }
 
         bool TransformMethods(bool allowParallel)
         {
@@ -388,10 +388,10 @@ namespace Pchp.CodeAnalysis
 
             // ghost stubs, overrides
             WalkMethods(f => f.SynthesizeStubs(_moduleBuilder, _diagnostics));
-            WalkTypes(t => t.FinalizeMethodTable(_moduleBuilder, _diagnostics));
-
-            // bootstrap, __statics.Init, .ctor
-            WalkTypes(t => t.SynthesizeInit(_moduleBuilder, _diagnostics));
+            // WalkTypes(t => t.FinalizeMethodTable(_moduleBuilder, _diagnostics));
+            //
+            // // bootstrap, __statics.Init, .ctor
+            // WalkTypes(t => t.SynthesizeInit(_moduleBuilder, _diagnostics));
             WalkSourceFiles(f => f.SynthesizeInit(_moduleBuilder, _diagnostics));
 
             // realize .cctor if any
@@ -468,7 +468,7 @@ namespace Pchp.CodeAnalysis
                 //   a. construct CFG, bind AST to Operation
                 //   b. declare table of local variables
                 compiler.WalkMethods(compiler.EnqueueRoutine, allowParallel: true);
-                compiler.WalkTypes(compiler.EnqueueFieldsInitializer, allowParallel: true);
+                //compiler.WalkTypes(compiler.EnqueueFieldsInitializer, allowParallel: true);
             }
 
             // Repeat analysis and transformation until either the limit is met or there are no more changes

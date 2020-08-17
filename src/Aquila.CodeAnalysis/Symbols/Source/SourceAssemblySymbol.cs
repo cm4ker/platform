@@ -3,6 +3,8 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
+using Aquila.Compiler.Utilities;
+using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
 using Roslyn.Utilities;
@@ -409,7 +411,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public override NamedTypeSymbol GetTypeByMetadataName(string fullyQualifiedMetadataName)
         {
-            return SourceModule.SymbolCollection.GetType(NameUtils.MakeQualifiedName(fullyQualifiedMetadataName.Replace('.', Devsense.PHP.Syntax.QualifiedName.Separator), true));
+            return SourceModule.SymbolCollection.GetType(NameUtils.MakeQualifiedName(fullyQualifiedMetadataName.Replace('.', QualifiedName.Separator), true));
         }
 
         internal override ImmutableArray<AssemblySymbol> GetLinkedReferencedAssemblies()

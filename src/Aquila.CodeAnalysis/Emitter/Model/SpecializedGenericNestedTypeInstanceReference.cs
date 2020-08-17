@@ -4,8 +4,6 @@ using Microsoft.CodeAnalysis.PooledObjects;
 using System.Diagnostics;
 using Aquila.CodeAnalysis.Symbols;
 using Cci = Microsoft.Cci;
-using Pchp.CodeAnalysis.Symbols;
-using Microsoft.CodeAnalysis;
 using NamedTypeSymbol = Aquila.CodeAnalysis.Symbols.NamedTypeSymbol;
 
 namespace Pchp.CodeAnalysis.Emit

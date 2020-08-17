@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Aquila.Compiler.Utilities;
 using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis.Symbols.Synthesized

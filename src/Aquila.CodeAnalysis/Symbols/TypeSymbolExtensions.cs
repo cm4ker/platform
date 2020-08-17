@@ -58,14 +58,14 @@ namespace Aquila.CodeAnalysis.Symbols
         /// Gets value indicating the type is a PHP user type (declared in a PHP code).
         /// </summary>
         public static bool IsPhpUserType(this TypeSymbol/*!*/type) =>
-            type.OriginalDefinition is Source.SourceTypeSymbol ||  // either declared in source code
+            //type.OriginalDefinition is Source.SourceTypeSymbol ||  // either declared in source code
             (type.TryGetPhpTypeAttribute(out _, out var fname, out _) && fname != null); // or referenced with [PhpType("name", "path to original PHP file")]
 
         /// <summary>
         /// Gets value indicating the type is a PHP user type (declared in a PHP code).
         /// </summary>
         public static bool IsPhpType(this TypeSymbol/*!*/type) =>
-            type.OriginalDefinition is Source.SourceTypeSymbol ||  // either declared in source code
+           // type.OriginalDefinition is Source.SourceTypeSymbol ||  // either declared in source code
             (type.TryGetPhpTypeAttribute(out _, out _, out _)); // or having [PhpTypeAttribute]
 
         public static bool ImplementsInterface(this TypeSymbol subType, TypeSymbol superInterface/*, ref HashSet<DiagnosticInfo> useSiteDiagnostics*/)

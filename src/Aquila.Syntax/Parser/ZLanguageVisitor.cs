@@ -49,7 +49,7 @@ namespace Aquila.Syntax.Parser
             context.method_declaration().ForEach(x => VisitMethod_declaration(x));
             var methods = PopStack();
 
-            var cu = new SourceUnit(context.ToLineInfo(), SyntaxKind.CompilationUnit, usings,
+            var cu = new SourceUnit( context.ToLineInfo(), SyntaxKind.CompilationUnit, "UNKNOWN FILE PATH", usings,
                 methods.ToCollection<MethodList>(), FieldList.Empty);
 
             PopStack();

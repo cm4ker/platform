@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Diagnostics;
 using Microsoft.CodeAnalysis.Emit;
 using Cci = Microsoft.Cci;
-using Pchp.CodeAnalysis.Symbols;
-using Microsoft.CodeAnalysis;
 using MethodSymbol = Aquila.CodeAnalysis.Symbols.MethodSymbol;
 
 namespace Pchp.CodeAnalysis.Emit

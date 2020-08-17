@@ -128,91 +128,91 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>Create type reference refering to a variable containing <c>PhpTypeInfo</c> value.</summary>
         public static BoundTypeRef CreateFromPlace(IPlace place) => new BoundTypeRefFromPlace(place);
 
-        public BoundTypeRef CreateFromTypeRef(TypeRef tref, SemanticsBinder binder = null,
-            SourceTypeSymbol self = null, bool objectTypeInfoSemantic = false, int arity = -1)
-        {
-            // if (tref is Ast.PrimitiveTypeRef pt)
-            // {
-            //     switch (pt.PrimitiveTypeName)
-            //     {
-            //         case Ast.PrimitiveTypeRef.PrimitiveType.@int: return LongTypeRef;
-            //         case Ast.PrimitiveTypeRef.PrimitiveType.@float: return DoubleTypeRef;
-            //         case Ast.PrimitiveTypeRef.PrimitiveType.@string: return StringTypeRef;
-            //         case Ast.PrimitiveTypeRef.PrimitiveType.@bool: return BoolTypeRef;
-            //         case Ast.PrimitiveTypeRef.PrimitiveType.array: return ArrayTypeRef;
-            //         case Ast.PrimitiveTypeRef.PrimitiveType.callable: return CallableTypeRef;
-            //         case Ast.PrimitiveTypeRef.PrimitiveType.@void: return VoidTypeRef;
-            //         case Ast.PrimitiveTypeRef.PrimitiveType.iterable: return IterableTypeRef;
-            //         case Ast.PrimitiveTypeRef.PrimitiveType.@object: return ObjectTypeRef;
-            //         case Ast.PrimitiveTypeRef.PrimitiveType.mixed: return MixedTypeRef;
-            //         default: throw ExceptionUtilities.UnexpectedValue(pt.PrimitiveTypeName);
-            //     }
-            // }
-            // else if (tref is Ast.INamedTypeRef named)
-            // {
-            //     if (named.ClassName == NameUtils.SpecialNames.System_Object) return ObjectTypeRef;
-            //     //if (named.ClassName == NameUtils.SpecialNames.stdClass) return StdClassTypeRef;
-            //
-            //     if (named is Ast.TranslatedTypeRef tt && self != null &&
-            //         tt.OriginalType is Ast.ReservedTypeRef reserved)
-            //     {
-            //         // keep self,parent,static not translated - better in cases where the type is ambiguous
-            //         return CreateFromTypeRef(reserved, binder, self, objectTypeInfoSemantic);
-            //     }
-            //
-            //     return new BoundClassTypeRef(named.ClassName, binder?.Routine, self ?? binder?.Self, arity);
-            // }
-            // else if (tref is Ast.ReservedTypeRef reserved) return new BoundReservedTypeRef(reserved.Type, self);
-            // else if (tref is Ast.AnonymousTypeRef at)
-            //     return new BoundTypeRefFromSymbol(at.TypeDeclaration.GetProperty<SourceTypeSymbol>());
-            // else if (tref is Ast.MultipleTypeRef mt)
-            // {
-            //     return new BoundMultipleTypeRef(Create(mt.MultipleTypes, binder, self));
-            // }
-            // else if (tref is Ast.NullableTypeRef nullable)
-            // {
-            //     var t = CreateFromTypeRef(nullable.TargetType, binder, self, objectTypeInfoSemantic);
-            //     if (t.IsNullable != true)
-            //     {
-            //         if (t is BoundPrimitiveTypeRef bpt)
-            //         {
-            //             // do not change the cached singleton // https://github.com/peachpiecompiler/peachpie/issues/455
-            //             t = new BoundPrimitiveTypeRef(bpt.TypeCode);
-            //         }
-            //
-            //         t.IsNullable = true;
-            //     }
-            //
-            //     return t;
-            // }
-            // else if (tref is Ast.GenericTypeRef gt)
-            // {
-            //     return new BoundGenericClassTypeRef(
-            //         CreateFromTypeRef(gt.TargetType, binder, self, objectTypeInfoSemantic,
-            //             arity: gt.GenericParams.Count),
-            //         Create(gt.GenericParams, binder, self));
-            // }
-            // else if (tref is Ast.IndirectTypeRef it)
-            // {
-            //     return new BoundIndirectTypeRef(
-            //         binder.BindWholeExpression(it.ClassNameVar, BoundAccess.Read).SingleBoundElement(),
-            //         objectTypeInfoSemantic);
-            // }
-            // else
-            // {
-            //     throw ExceptionUtilities.UnexpectedValue(tref);
-            // }
+        // public BoundTypeRef CreateFromTypeRef(TypeRef tref, SemanticsBinder binder = null,
+        //     SourceTypeSymbol self = null, bool objectTypeInfoSemantic = false, int arity = -1)
+        // {
+        //     // if (tref is Ast.PrimitiveTypeRef pt)
+        //     // {
+        //     //     switch (pt.PrimitiveTypeName)
+        //     //     {
+        //     //         case Ast.PrimitiveTypeRef.PrimitiveType.@int: return LongTypeRef;
+        //     //         case Ast.PrimitiveTypeRef.PrimitiveType.@float: return DoubleTypeRef;
+        //     //         case Ast.PrimitiveTypeRef.PrimitiveType.@string: return StringTypeRef;
+        //     //         case Ast.PrimitiveTypeRef.PrimitiveType.@bool: return BoolTypeRef;
+        //     //         case Ast.PrimitiveTypeRef.PrimitiveType.array: return ArrayTypeRef;
+        //     //         case Ast.PrimitiveTypeRef.PrimitiveType.callable: return CallableTypeRef;
+        //     //         case Ast.PrimitiveTypeRef.PrimitiveType.@void: return VoidTypeRef;
+        //     //         case Ast.PrimitiveTypeRef.PrimitiveType.iterable: return IterableTypeRef;
+        //     //         case Ast.PrimitiveTypeRef.PrimitiveType.@object: return ObjectTypeRef;
+        //     //         case Ast.PrimitiveTypeRef.PrimitiveType.mixed: return MixedTypeRef;
+        //     //         default: throw ExceptionUtilities.UnexpectedValue(pt.PrimitiveTypeName);
+        //     //     }
+        //     // }
+        //     // else if (tref is Ast.INamedTypeRef named)
+        //     // {
+        //     //     if (named.ClassName == NameUtils.SpecialNames.System_Object) return ObjectTypeRef;
+        //     //     //if (named.ClassName == NameUtils.SpecialNames.stdClass) return StdClassTypeRef;
+        //     //
+        //     //     if (named is Ast.TranslatedTypeRef tt && self != null &&
+        //     //         tt.OriginalType is Ast.ReservedTypeRef reserved)
+        //     //     {
+        //     //         // keep self,parent,static not translated - better in cases where the type is ambiguous
+        //     //         return CreateFromTypeRef(reserved, binder, self, objectTypeInfoSemantic);
+        //     //     }
+        //     //
+        //     //     return new BoundClassTypeRef(named.ClassName, binder?.Routine, self ?? binder?.Self, arity);
+        //     // }
+        //     // else if (tref is Ast.ReservedTypeRef reserved) return new BoundReservedTypeRef(reserved.Type, self);
+        //     // else if (tref is Ast.AnonymousTypeRef at)
+        //     //     return new BoundTypeRefFromSymbol(at.TypeDeclaration.GetProperty<SourceTypeSymbol>());
+        //     // else if (tref is Ast.MultipleTypeRef mt)
+        //     // {
+        //     //     return new BoundMultipleTypeRef(Create(mt.MultipleTypes, binder, self));
+        //     // }
+        //     // else if (tref is Ast.NullableTypeRef nullable)
+        //     // {
+        //     //     var t = CreateFromTypeRef(nullable.TargetType, binder, self, objectTypeInfoSemantic);
+        //     //     if (t.IsNullable != true)
+        //     //     {
+        //     //         if (t is BoundPrimitiveTypeRef bpt)
+        //     //         {
+        //     //             // do not change the cached singleton // https://github.com/peachpiecompiler/peachpie/issues/455
+        //     //             t = new BoundPrimitiveTypeRef(bpt.TypeCode);
+        //     //         }
+        //     //
+        //     //         t.IsNullable = true;
+        //     //     }
+        //     //
+        //     //     return t;
+        //     // }
+        //     // else if (tref is Ast.GenericTypeRef gt)
+        //     // {
+        //     //     return new BoundGenericClassTypeRef(
+        //     //         CreateFromTypeRef(gt.TargetType, binder, self, objectTypeInfoSemantic,
+        //     //             arity: gt.GenericParams.Count),
+        //     //         Create(gt.GenericParams, binder, self));
+        //     // }
+        //     // else if (tref is Ast.IndirectTypeRef it)
+        //     // {
+        //     //     return new BoundIndirectTypeRef(
+        //     //         binder.BindWholeExpression(it.ClassNameVar, BoundAccess.Read).SingleBoundElement(),
+        //     //         objectTypeInfoSemantic);
+        //     // }
+        //     // else
+        //     // {
+        //     //     throw ExceptionUtilities.UnexpectedValue(tref);
+        //     // }
+        //
+        //     throw new NotImplementedException();
+        // }
 
-            throw new NotImplementedException();
-        }
-
-        ImmutableArray<BoundTypeRef> Create(IList<TypeRef> trefs, SemanticsBinder binder, SourceTypeSymbol self)
-        {
-            return trefs.SelectAsArray(t =>
-                CreateFromTypeRef(t, binder, self, objectTypeInfoSemantic: false).WithSyntax(t));
-        }
-
-        public static IBoundTypeRef Create(QualifiedName qname, SourceTypeSymbol self) =>
-            new BoundClassTypeRef(qname, null, self);
+        // ImmutableArray<BoundTypeRef> Create(IList<TypeRef> trefs, SemanticsBinder binder, SourceTypeSymbol self)
+        // {
+        //     return trefs.SelectAsArray(t =>
+        //         CreateFromTypeRef(t, binder, self, objectTypeInfoSemantic: false).WithSyntax(t));
+        // }
+        //
+        // public static IBoundTypeRef Create(QualifiedName qname, SourceTypeSymbol self) =>
+        //     new BoundClassTypeRef(qname, null, self);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.Syntax.Syntax;
 
 namespace Pchp.CodeAnalysis.FlowAnalysis

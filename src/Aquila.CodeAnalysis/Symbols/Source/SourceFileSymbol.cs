@@ -36,7 +36,7 @@ namespace Aquila.CodeAnalysis.Symbols
         readonly PhpSyntaxTree _syntaxTree;
 
         readonly SourceGlobalMethodSymbol _mainMethod;
-        readonly List<SourceTypeSymbol> _containedTypes = new List<SourceTypeSymbol>();
+        //readonly List<SourceTypeSymbol> _containedTypes = new List<SourceTypeSymbol>();
         readonly List<Symbol> _lazyMembers = new List<Symbol>();
 
         BaseAttributeData _lazyScriptAttribute;
@@ -50,7 +50,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// <summary>
         /// List of types declared within the file.
         /// </summary>
-        public List<SourceTypeSymbol> ContainedTypes => _containedTypes;
+        //public List<SourceTypeSymbol> ContainedTypes => _containedTypes;
 
         public PhpSyntaxTree SyntaxTree => _syntaxTree;
 
@@ -87,16 +87,16 @@ namespace Aquila.CodeAnalysis.Symbols
             _lazyMembers.Add(routine);
         }
 
-        void ILambdaContainerSymbol.AddLambda(SourceLambdaSymbol routine)
-        {
-            Contract.ThrowIfNull(routine);
-            _lazyMembers.Add(routine);
-        }
-
-        IEnumerable<SourceLambdaSymbol> ILambdaContainerSymbol.Lambdas
-        {
-            get { return _lazyMembers.OfType<SourceLambdaSymbol>(); }
-        }
+        // void ILambdaContainerSymbol.AddLambda(SourceLambdaSymbol routine)
+        // {
+        //     Contract.ThrowIfNull(routine);
+        //     _lazyMembers.Add(routine);
+        // }
+        //
+        // IEnumerable<SourceLambdaSymbol> ILambdaContainerSymbol.Lambdas
+        // {
+        //     get { return _lazyMembers.OfType<SourceLambdaSymbol>(); }
+        // }
 
         // SourceLambdaSymbol ILambdaContainerSymbol.ResolveLambdaSymbol(LambdaFunctionExpr expr)
         // {
@@ -157,24 +157,24 @@ namespace Aquila.CodeAnalysis.Symbols
             }
 
             // check class/interface duplicity:
-            var types = this.ContainedTypes;
-            if (types.Count > 1)
-            {
-                var set = new HashSet<QualifiedName>();
-                foreach (var t in types)
-                {
-                    if (t.Syntax.IsConditional)
-                    {
-                        continue;
-                    }
-
-                    if (!set.Add(t.FullName))
-                    {
-                        diagnostic.Add(DiagnosticBagExtensions.ParserDiagnostic(_syntaxTree, t.Syntax.HeadingSpan,
-                            FatalErrors.TypeRedeclared, t.FullName.ToString()));
-                    }
-                }
-            }
+            // var types = this.ContainedTypes;
+            // if (types.Count > 1)
+            // {
+            //     var set = new HashSet<QualifiedName>();
+            //     foreach (var t in types)
+            //     {
+            //         if (t.Syntax.IsConditional)
+            //         {
+            //             continue;
+            //         }
+            //
+            //         if (!set.Add(t.FullName))
+            //         {
+            //             diagnostic.Add(DiagnosticBagExtensions.ParserDiagnostic(_syntaxTree, t.Syntax.HeadingSpan,
+            //                 FatalErrors.TypeRedeclared, t.FullName.ToString()));
+            //         }
+            //     }
+            // }
         }
 
         protected string CreateRelativeFilePath(string fullPath)

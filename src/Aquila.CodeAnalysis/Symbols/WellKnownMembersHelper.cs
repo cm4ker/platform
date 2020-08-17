@@ -19,19 +19,19 @@ namespace Aquila.CodeAnalysis.Symbols
                 ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
         }
 
-        public static AttributeData CreateObsoleteAttribute(this PhpCompilation compilation, PHPDocBlock.DeprecatedTag deprecated)
-        {
-            if (deprecated == null)
-                throw new ArgumentNullException(nameof(deprecated));
-
-            // [ObsoleteAttribute(message, false)]
-            return new SynthesizedAttributeData(
-                (MethodSymbol)compilation.GetWellKnownTypeMember(WellKnownMember.System_ObsoleteAttribute__ctor),
-                    ImmutableArray.Create(
-                        compilation.CreateTypedConstant(deprecated.Version/*NOTE:Version contains the message*/),
-                        compilation.CreateTypedConstant(false/*isError*/)),
-                    ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
-        }
+        // public static AttributeData CreateObsoleteAttribute(this PhpCompilation compilation, PHPDocBlock.DeprecatedTag deprecated)
+        // {
+        //     if (deprecated == null)
+        //         throw new ArgumentNullException(nameof(deprecated));
+        //
+        //     // [ObsoleteAttribute(message, false)]
+        //     return new SynthesizedAttributeData(
+        //         (MethodSymbol)compilation.GetWellKnownTypeMember(WellKnownMember.System_ObsoleteAttribute__ctor),
+        //             ImmutableArray.Create(
+        //                 compilation.CreateTypedConstant(deprecated.Version/*NOTE:Version contains the message*/),
+        //                 compilation.CreateTypedConstant(false/*isError*/)),
+        //             ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
+        // }
 
         public static AttributeData CreateParamsAttribute(this PhpCompilation compilation)
         {

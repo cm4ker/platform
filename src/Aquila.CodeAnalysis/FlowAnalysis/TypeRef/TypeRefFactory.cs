@@ -55,18 +55,18 @@ namespace Pchp.CodeAnalysis
             }
         }
 
-        /// <summary>
-        /// Creates type context for a method within given type, determines naming, type context.
-        /// </summary>
-        public static TypeRefContext /*!*/ CreateTypeRefContext(SourceTypeSymbol /*!*/containingType)
-        {
-            Contract.ThrowIfNull(containingType);
-
-            throw new NotImplementedException();
-            // return new TypeRefContext(
-            //     containingType.DeclaringCompilation,
-            //     containingType, // scope
-            //     thisType: containingType.IsTrait ? null : containingType);
-        }
+        // /// <summary>
+        // /// Creates type context for a method within given type, determines naming, type context.
+        // /// </summary>
+        // public static TypeRefContext /*!*/ CreateTypeRefContext(SourceTypeSymbol /*!*/containingType)
+        // {
+        //     Contract.ThrowIfNull(containingType);
+        //
+        //     throw new NotImplementedException();
+        //     // return new TypeRefContext(
+        //     //     containingType.DeclaringCompilation,
+        //     //     containingType, // scope
+        //     //     thisType: containingType.IsTrait ? null : containingType);
+        // }
     }
 }

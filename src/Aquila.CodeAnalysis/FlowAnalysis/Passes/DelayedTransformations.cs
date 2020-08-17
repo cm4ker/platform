@@ -19,10 +19,10 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
         /// </summary>
         public ConcurrentBag<SourceRoutineSymbol> UnreachableRoutines { get; } = new ConcurrentBag<SourceRoutineSymbol>();
 
-        /// <summary>
-        /// Types with unreachable declarations.
-        /// </summary>
-        public ConcurrentBag<SourceTypeSymbol> UnreachableTypes { get; } = new ConcurrentBag<SourceTypeSymbol>();
+        // /// <summary>
+        // /// Types with unreachable declarations.
+        // /// </summary>
+        // public ConcurrentBag<SourceTypeSymbol> UnreachableTypes { get; } = new ConcurrentBag<SourceTypeSymbol>();
 
         /// <summary>
         /// Functions that were declared conditionally but analysis marked them as unconditional.
@@ -42,14 +42,14 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
                 }
             }
 
-            foreach (var type in UnreachableTypes)
-            {
-                if (!type.IsMarkedUnreachable)
-                {
-                    type.IsMarkedUnreachable = true;
-                    changed = true;
-                }
-            }
+            // foreach (var type in UnreachableTypes)
+            // {
+            //     if (!type.IsMarkedUnreachable)
+            //     {
+            //         type.IsMarkedUnreachable = true;
+            //         changed = true;
+            //     }
+            // }
 
             foreach (var f in FunctionsMarkedAsUnconditional)
             {

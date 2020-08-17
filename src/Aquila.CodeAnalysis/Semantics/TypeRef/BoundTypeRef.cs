@@ -375,10 +375,10 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
         public QualifiedName ClassName { get; }
 
         readonly SourceRoutineSymbol _routine;
-        readonly SourceTypeSymbol _self;
+        //readonly SourceTypeSymbol _self;
         readonly int _arity;
 
-        public BoundClassTypeRef(QualifiedName qname, SourceRoutineSymbol routine, SourceTypeSymbol self,
+        public BoundClassTypeRef(QualifiedName qname, SourceRoutineSymbol routine, object self,
             int arity = -1)
         {
             if (qname.IsReservedClassName)
@@ -388,7 +388,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
 
             ClassName = qname;
             _routine = routine;
-            _self = self;
+            //_self = self;
             _arity = arity;
         }
 
@@ -423,12 +423,12 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
 
             TypeSymbol type = null;
 
-            if (_self != null)
-            {
-                if (_self.FullName == ClassName) type = _self;
-                else if (_self.BaseType != null && _self.BaseType.PhpQualifiedName() == ClassName)
-                    type = _self.BaseType;
-            }
+            // if (_self != null)
+            // {
+            //     if (_self.FullName == ClassName) type = _self;
+            //     else if (_self.BaseType != null && _self.BaseType.PhpQualifiedName() == ClassName)
+            //         type = _self.BaseType;
+            // }
 
             if (type == null)
             {
@@ -439,7 +439,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
                         MetadataHelpers.ComposeAritySuffixedMetadataName(ClassName.ClrName(), _arity));
             }
 
-            var containingFile = _routine?.ContainingFile ?? _self?.ContainingFile;
+            var containingFile = _routine?.ContainingFile ;//?? _self?.ContainingFile;
 
             if (type is AmbiguousErrorTypeSymbol ambiguous && containingFile != null)
             {
@@ -449,9 +449,9 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
                 foreach (var x in ambiguous
                     .CandidateSymbols
                     .Cast<TypeSymbol>()
-                    .Where(t => !t.IsUnreachable)
-                    .Where(x => x is SourceTypeSymbol srct && !srct.Syntax.IsConditional &&
-                                srct.ContainingFile == containingFile))
+                    .Where(t => !t.IsUnreachable))
+                    //.Where(x => x is SourceTypeSymbol srct && !srct.Syntax.IsConditional &&
+                    //            srct.ContainingFile == containingFile))
                 {
                     if (best == null)
                     {

@@ -412,7 +412,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         /// <param name="method">Source method.</param>
         /// <param name="basemethod">Overriden method.</param>
-        public static bool CanBeOverride(Source.SourceMethodSymbol method, MethodSymbol basemethod)
+        public static bool CanBeOverride(SourceMethodSymbol method, MethodSymbol basemethod)
         {
             return IsAllowedCost(OverrideCost(method, basemethod));
         }

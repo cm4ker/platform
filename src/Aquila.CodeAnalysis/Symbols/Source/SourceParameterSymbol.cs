@@ -65,10 +65,10 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                         //   
                         fldtype = DeclaringCompilation.CoreTypes.PhpArray;
                     }
-                    else if (Initializer is BoundPseudoClassConst)
-                    {
-                        fldtype = DeclaringCompilation.GetSpecialType(SpecialType.System_String);
-                    }
+                    // else if (Initializer is BoundPseudoClassConst)
+                    // {
+                    //     fldtype = DeclaringCompilation.GetSpecialType(SpecialType.System_String);
+                    // }
                     else
                     {
                         fldtype = DeclaringCompilation.CoreTypes.PhpValue;

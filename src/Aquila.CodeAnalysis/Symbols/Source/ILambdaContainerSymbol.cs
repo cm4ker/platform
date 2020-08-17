@@ -8,16 +8,16 @@ namespace Aquila.CodeAnalysis.Symbols.Source
     /// </summary>
     internal interface ILambdaContainerSymbol
     {
-        /// <summary>
-        /// Adds declared lambda into this container.
-        /// </summary>
-        /// <param name="routine"></param>
-        void AddLambda(SourceLambdaSymbol routine);
-
-        /// <summary>
-        /// Gets lambda functions declared within this container.
-        /// </summary>
-        IEnumerable<SourceLambdaSymbol> Lambdas { get; }
+        // /// <summary>
+        // /// Adds declared lambda into this container.
+        // /// </summary>
+        // /// <param name="routine"></param>
+        // void AddLambda(SourceLambdaSymbol routine);
+        //
+        // /// <summary>
+        // /// Gets lambda functions declared within this container.
+        // /// </summary>
+        // IEnumerable<SourceLambdaSymbol> Lambdas { get; }
 
         // /// <summary>
         // /// Resolves lambda symbol for given syntax node.
