@@ -11,6 +11,7 @@ using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.Shared.Tree;
 using Aquila.Syntax;
 using Aquila.Syntax.Ast;
+using Aquila.Syntax.Ast.Functions;
 using Aquila.Syntax.Ast.Statements;
 using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis.FlowAnalysis;
@@ -88,7 +89,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         protected abstract TypeRefContext CreateTypeRefContext();
 
-        // internal abstract Signature SyntaxSignature { get; }
+        internal abstract IEnumerable<Parameter> SyntaxSignature { get; }
 
         /// <summary>
         /// Specified return type.
@@ -132,14 +133,16 @@ namespace Aquila.CodeAnalysis.Symbols
         protected virtual IEnumerable<ParameterSymbol> BuildImplicitParams()
         {
             var index = 0;
+            //
+            // if (IsStatic
+            // ) // instance methods have <ctx> in <this>.<ctx> field, see SourceNamedTypeSymbol._lazyContextField
+            // {
+            //     // Context <ctx>
+            //     yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.Context,
+            //         SpecialParameterSymbol.ContextName, index++);
+            // }
 
-            if (IsStatic
-            ) // instance methods have <ctx> in <this>.<ctx> field, see SourceNamedTypeSymbol._lazyContextField
-            {
-                // Context <ctx>
-                yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.Context,
-                    SpecialParameterSymbol.ContextName, index++);
-            }
+            yield break;
         }
 
         /// <summary>
@@ -222,25 +225,26 @@ namespace Aquila.CodeAnalysis.Symbols
             // }
         }
 
-        // /// <summary>
-        // /// Constructs routine source parameters.
-        // /// </summary>
-        // protected IEnumerable<SourceParameterSymbol> BuildSrcParams(IEnumerable<Parameter> formalparams, PHPDocBlock phpdocOpt = null)
-        // {
-        //     var pindex = 0; // zero-based relative index
-        //
-        //     foreach (var p in formalparams)
-        //     {
-        //         if (p == null)
-        //         {
-        //             continue;
-        //         }
-        //
-        //         var ptag = (phpdocOpt != null) ? PHPDoc.GetParamTag(phpdocOpt, pindex, p.Name.Name.Value) : null;
-        //
-        //         yield return new SourceParameterSymbol(this, p, relindex: pindex++, ptagOpt: ptag);
-        //     }
-        // }
+        /// <summary>
+        /// Constructs routine source parameters.
+        /// </summary>
+        protected IEnumerable<SourceParameterSymbol> BuildSrcParams(
+            IEnumerable<Parameter> formalparams /*, PHPDocBlock phpdocOpt = null*/)
+        {
+            var pindex = 0; // zero-based relative index
+
+            foreach (var p in formalparams)
+            {
+                if (p == null)
+                {
+                    continue;
+                }
+
+                //var ptag = (phpdocOpt != null) ? PHPDoc.GetParamTag(phpdocOpt, pindex, p.Name.Name.Value) : null;
+
+                yield return new SourceParameterSymbol(this, p, relindex: pindex++ /*, ptagOpt: ptag*/);
+            }
+        }
         //
         // protected virtual IEnumerable<SourceParameterSymbol> BuildSrcParams(Signature signature,
         //     PHPDocBlock phpdocOpt = null)
@@ -264,7 +268,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 {
                     // PhpTypeInfo <static>
                     var implicitParameters = currentImplicitParameters.Add(
-                        new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.PhpTypeInfo,
+                        new SpecialParameterSymbol(this, null,
                             SpecialParameterSymbol.StaticTypeName, currentImplicitParameters.Length));
                     ImmutableInterlocked.InterlockedCompareExchange(ref _implicitParameters, implicitParameters,
                         currentImplicitParameters);
@@ -281,8 +285,8 @@ namespace Aquila.CodeAnalysis.Symbols
             {
                 if (_srcParams == null)
                 {
-                    // var srcParams = BuildSrcParams(this.SyntaxSignature, this.PHPDocBlock).ToArray();
-                    // Interlocked.CompareExchange(ref _srcParams, srcParams, null);
+                    var srcParams = BuildSrcParams(this.SyntaxSignature).ToArray();
+                    Interlocked.CompareExchange(ref _srcParams, srcParams, null);
                 }
 
                 return _srcParams;
@@ -332,8 +336,7 @@ namespace Aquila.CodeAnalysis.Symbols
                         // create implicit [... params]
                         var implicitVarArg = new SynthesizedParameterSymbol( // IsImplicitlyDeclared, IsParams
                             this,
-                            ArrayTypeSymbol.CreateSZArray(this.ContainingAssembly,
-                                this.DeclaringCompilation.CoreTypes.PhpValue),
+                            ArrayTypeSymbol.CreateSZArray(this.ContainingAssembly, null),
                             0,
                             RefKind.None,
                             SpecialParameterSymbol.ParamsName, isParams: true);
@@ -458,7 +461,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 {
                     // if type hint is provided,
                     // only can be NULL if specified
-                    return true;// thint.IsNullable();
+                    return true; // thint.IsNullable();
                 }
             }
         }

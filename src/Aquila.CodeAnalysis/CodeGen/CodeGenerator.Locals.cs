@@ -100,7 +100,7 @@ namespace Pchp.CodeAnalysis.CodeGen
                     Debug.Assert(_cg.TemporalLocalsPlace != null);
                     _cg.TemporalLocalsPlace.EmitLoad(_cg.Builder);
                     _cg.EmitIntStringKey(_tempName);
-                    _cg.EmitPop(_cg.EmitCall(System.Reflection.Metadata.ILOpCode.Callvirt, _cg.CoreMethods.PhpArray.RemoveKey_IntStringKey));
+                    _cg.EmitPop(_cg.EmitCall(System.Reflection.Metadata.ILOpCode.Callvirt, null));
 
                     _tempName = null;
                 }
@@ -119,7 +119,7 @@ namespace Pchp.CodeAnalysis.CodeGen
                     Debug.Assert(_tempName != null);
                     _cg.TemporalLocalsPlace.EmitLoad(il);
                     _cg.EmitIntStringKey(_tempName);
-                    _cg.EmitConvert(_cg.EmitCall(System.Reflection.Metadata.ILOpCode.Callvirt, _cg.CoreMethods.PhpArray.GetItemValue_IntStringKey), 0, Type);
+                    _cg.EmitConvert(_cg.EmitCall(System.Reflection.Metadata.ILOpCode.Callvirt, null), 0, Type);
                 }
 
                 return Type;
@@ -149,8 +149,8 @@ namespace Pchp.CodeAnalysis.CodeGen
                     _cg.TemporalLocalsPlace.EmitLoad(_cg.Builder);
                     _cg.EmitIntStringKey(_tempName);
                     _cg.Builder.EmitLocalLoad(tmp);
-                    _cg.EmitConvert(Type, 0, _cg.CoreTypes.PhpValue);
-                    _cg.EmitCall(System.Reflection.Metadata.ILOpCode.Callvirt, _cg.CoreMethods.PhpArray.SetItemValue_IntStringKey_PhpValue);
+                    _cg.EmitConvert(Type, 0, null);
+                    _cg.EmitCall(System.Reflection.Metadata.ILOpCode.Callvirt, null);
                 }
             }
 

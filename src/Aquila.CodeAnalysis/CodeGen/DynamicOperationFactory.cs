@@ -216,7 +216,7 @@ namespace Pchp.CodeAnalysis.CodeGen
                     // construct the runtime chain if possible:
                     while (TryConstructRuntimeChainElement(expr, out var element))
                     {
-                        element.Next = runtimeChain ?? new RuntimeChainElement(_cg.CoreTypes.RuntimeChain_ChainEnd);
+                        element.Next = runtimeChain ?? new RuntimeChainElement(null);
                         if (element.Type.Arity == 1)
                         {
                             // construct Element<TNext> // TNext:typeof(element.Next)
@@ -244,7 +244,7 @@ namespace Pchp.CodeAnalysis.CodeGen
                         var place = varref.Place();
                         if (place != null)
                         {
-                            if (place.HasAddress && place.Type == _cg.CoreTypes.PhpValue)
+                            if (place.HasAddress && place.Type == null)
                             {
                                 place.EmitLoadAddress(_cg.Builder);
                                 t = place.Type;
@@ -379,7 +379,7 @@ namespace Pchp.CodeAnalysis.CodeGen
                     ((Microsoft.CodeAnalysis.Operations.IFieldReferenceOperation) fieldref).Field == null)
                 {
                     runtimeChainElement =
-                        new RuntimeChainElement(_cg.CoreTypes.RuntimeChain_Property_T, fieldref.Instance)
+                        new RuntimeChainElement(null, fieldref.Instance)
                         {
                             Fields = new List<KeyValuePair<string, BoundOperation>>(1)
                             {
@@ -394,7 +394,7 @@ namespace Pchp.CodeAnalysis.CodeGen
                     if (arritem.Index != null)
                     {
                         runtimeChainElement =
-                            new RuntimeChainElement(_cg.CoreTypes.RuntimeChain_ArrayItem_T, arritem.Array)
+                            new RuntimeChainElement(null, arritem.Array)
                             {
                                 Fields = new List<KeyValuePair<string, BoundOperation>>(1)
                                 {
@@ -405,7 +405,7 @@ namespace Pchp.CodeAnalysis.CodeGen
                     else
                     {
                         runtimeChainElement =
-                            new RuntimeChainElement(_cg.CoreTypes.RuntimeChain_ArrayNewItem_T, arritem.Array)
+                            new RuntimeChainElement(null, arritem.Array)
                             {
                             };
                     }
@@ -443,7 +443,7 @@ namespace Pchp.CodeAnalysis.CodeGen
                 var runtimectx = _cg.RuntimeCallerTypePlace;
                 if (runtimectx != null)
                 {
-                    return EmitWrapParam(_cg.CoreTypes.Dynamic_CallerTypeParam, runtimectx.EmitLoad(_cg.Builder));
+                    return EmitWrapParam(null, runtimectx.EmitLoad(_cg.Builder));
                 }
                 else
                 {
@@ -454,7 +454,7 @@ namespace Pchp.CodeAnalysis.CodeGen
             /// <summary>Template: new TargetTypeParam(PhpTypeInfo)</summary>
             public TypeSymbol EmitTargetTypeParam(IBoundTypeRef tref)
                 => tref != null
-                    ? EmitWrapParam(_cg.CoreTypes.Dynamic_TargetTypeParam, tref.EmitLoadTypeInfo(_cg, true))
+                    ? EmitWrapParam(null, tref.EmitLoadTypeInfo(_cg, true))
                     : null;
 
             /// <summary>Template: new LateStaticTypeParam(PhpTypeInfo)</summary>
@@ -466,7 +466,7 @@ namespace Pchp.CodeAnalysis.CodeGen
                     _cg.Routine.HasLateStaticBoundParam())
                 {
                     // pass current <static> to the callsite:
-                    return EmitWrapParam(_cg.CoreTypes.Dynamic_LateStaticTypeParam, _cg.EmitLoadStaticPhpTypeInfo());
+                    return EmitWrapParam(null, _cg.EmitLoadStaticPhpTypeInfo());
                 }
 
                 // not needed
@@ -489,11 +489,11 @@ namespace Pchp.CodeAnalysis.CodeGen
 
             /// <summary>Template: new NameParam{T}(STACK)</summary>
             public TypeSymbol EmitNameParam(TypeSymbol value)
-                => EmitWrapParam(_cg.CoreTypes.Dynamic_NameParam_T.Symbol.Construct(value), value);
+                => EmitWrapParam(null, value);
 
             /// <summary>Template: new UnpackingParam{T}(STACK)</summary>
             public TypeSymbol EmitUnpackingParam(TypeSymbol value)
-                => EmitWrapParam(_cg.CoreTypes.Dynamic_UnpackingParam_T.Symbol.Construct(value), value);
+                => EmitWrapParam(null, value);
         }
 
         readonly PhpCompilation _compilation;

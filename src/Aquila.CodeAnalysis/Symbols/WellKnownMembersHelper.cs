@@ -43,7 +43,7 @@ namespace Aquila.CodeAnalysis.Symbols
         public static AttributeData CreateNotNullAttribute(this PhpCompilation compilation)
         {
             return new SynthesizedAttributeData(
-                compilation.CoreMethods.Ctors.NotNullAttribute,
+                null,
                 ImmutableArray<TypedConstant>.Empty, ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
         }
 
@@ -90,7 +90,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
             // [DefaultValueAttribute(name) { ExplicitType = ... }]
             return new SynthesizedAttributeData(
-                compilation.CoreMethods.Ctors.DefaultValueAttribute_string,
+                null,
                 ImmutableArray.Create(compilation.CreateTypedConstant(field.Name)),
                 namedparameters);
         }

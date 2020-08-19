@@ -1,24 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Antlr4.Runtime;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.Syntax;
 using Aquila.Syntax.Ast;
-using Aquila.Syntax.Ast.Expressions;
 using Aquila.Syntax.Ast.Functions;
-using Aquila.Syntax.Ast.Statements;
+using Aquila.Syntax.Parser;
 using Aquila.Syntax.Syntax;
-using Aquila.Syntax.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Pchp.CodeAnalysis;
 using Pchp.CodeAnalysis.Utilities;
-using Peachpie.CodeAnalysis.Syntax;
 using Peachpie.CodeAnalysis.Utilities;
 using SyntaxToken = Microsoft.CodeAnalysis.SyntaxToken;
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
@@ -153,7 +148,7 @@ namespace Aquila.CodeAnalysis.Syntax
             // TODO: new parser implementation based on Roslyn
 
             // TODO: file.IsScript ? scriptParseOptions : parseOptions
-            SourceUnit unit = null; //  new SourceUnit(fname, sourceText,  sourceText.Encoding ?? Encoding.UTF8);
+            SourceUnit unit = (SourceUnit) ParserHelper.ParseSyntax(sourceText.ToString());
 
             var result = new PhpSyntaxTree(unit);
 
@@ -179,7 +174,7 @@ namespace Aquila.CodeAnalysis.Syntax
 
             // // result.Lambdas = factory.Lambdas.AsImmutableSafe();
             // // result.Types = factory.Types.AsImmutableSafe();
-            // result.Functions = factory.Functions.AsImmutableSafe();
+            result.Functions = unit.Methods.AsImmutableSafe();
             // // result.YieldNodes = factory.YieldNodes.AsImmutableSafe();
             //
             // if (factory.Root != null)
@@ -201,11 +196,11 @@ namespace Aquila.CodeAnalysis.Syntax
 
         public override Encoding Encoding => Encoding.UTF8;
 
-        public override string FilePath => throw new Exception();// _source.FilePath;
+        public override string FilePath =>  _source.FilePath;
 
         public override bool HasCompilationUnitRoot => true;
 
-        public override int Length => 0;//_source.SourceText.Length;
+        public override int Length => 0; //_source.SourceText.Length;
 
         protected override ParseOptions OptionsCore
         {
@@ -253,8 +248,8 @@ namespace Aquila.CodeAnalysis.Syntax
         public override FileLinePositionSpan GetLineSpan(TextSpan span,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            throw  new Exception();
-            
+            throw new Exception();
+
             // return new FileLinePositionSpan(_source.FilePath, _source.LinePosition(span.Start),
             //     _source.LinePosition(span.End));
         }
@@ -278,8 +273,7 @@ namespace Aquila.CodeAnalysis.Syntax
 
         public override SourceText GetText(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
-            //return _source.SourceText;
+            return SourceText.From("", Encoding.UTF8);//_source.SourceText;
         }
 
         public override bool HasHiddenRegions()

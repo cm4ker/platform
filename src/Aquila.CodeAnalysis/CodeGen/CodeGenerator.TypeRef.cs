@@ -89,9 +89,8 @@ namespace Pchp.CodeAnalysis.CodeGen
             Debug.Assert(type.IsValidType());
 
             return
-                type.IsReferenceType ||
-                type == CoreTypes.PhpValue ||
-                type == CoreTypes.PhpAlias;
+                type.IsReferenceType 
+                ;
         }
 
         /// <summary>
@@ -99,10 +98,7 @@ namespace Pchp.CodeAnalysis.CodeGen
         /// </summary>
         internal bool IsCopiable(TypeSymbol t)
         {
-            return
-                t == CoreTypes.PhpValue ||
-                t == CoreTypes.PhpString ||
-                t == CoreTypes.PhpArray;
+            return false;
         }
 
         /// <summary>

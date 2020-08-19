@@ -6,6 +6,7 @@ using System.Security.Cryptography.Xml;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Shared.Tree;
 using Aquila.Syntax.Ast;
+using Aquila.Syntax.Ast.Functions;
 using Aquila.Syntax.Ast.Statements;
 using Microsoft.CodeAnalysis;
 using Pchp.CodeAnalysis;
@@ -27,7 +28,7 @@ namespace Aquila.CodeAnalysis.Symbols
             _file = file;
         }
 
-        //internal override Signature SyntaxSignature => new Signature(false, Array.Empty<FormalParam>(), Span.Invalid);
+        internal override IEnumerable<Parameter> SyntaxSignature => ParameterList.Empty;
 
         internal override TypeRef SyntaxReturnType => null;
 
@@ -39,13 +40,13 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             int index = 0;
 
-            // Context <ctx>
-            yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.Context,
-                SpecialParameterSymbol.ContextName, index++);
-
-            // PhpArray <locals>
-            yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.PhpArray,
-                SpecialParameterSymbol.LocalsName, index++);
+            // // Context <ctx>
+            // yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.Context,
+            //     SpecialParameterSymbol.ContextName, index++);
+            //
+            // // PhpArray <locals>
+            // yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.PhpArray,
+            //     SpecialParameterSymbol.LocalsName, index++);
 
             // object @this
             yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.Object,

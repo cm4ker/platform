@@ -12,7 +12,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Creates new type context, flow context and flow state for the routine.
         /// </summary>
-        public static FlowState CreateInitialState(SourceRoutineSymbol/*!*/routine, FlowContext flowCtx = null)
+        public static FlowState CreateInitialState(SourceRoutineSymbol /*!*/routine, FlowContext flowCtx = null)
         {
             Contract.ThrowIfNull(routine);
 
@@ -49,7 +49,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Initializes <c>$this</c> variable, its type and initialized state.
         /// </summary>
-        private static void InitThisVar(FlowContext/*!*/ctx, FlowState/*!*/initialState)
+        private static void InitThisVar(FlowContext /*!*/ctx, FlowState /*!*/initialState)
         {
             var thisVarType = ctx.TypeRefContext.GetThisTypeMask();
             if (thisVarType.IsUninitialized)
@@ -60,7 +60,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             //
             var thisHandle = ctx.GetVarIndex(VariableName.ThisVariableName);
             initialState.SetLocalType(thisHandle, thisVarType); // set $this type
-            initialState.VisitLocal(thisHandle);                // mark as visited (used) to not report as unused
+            initialState.VisitLocal(thisHandle); // mark as visited (used) to not report as unused
         }
     }
 }

@@ -56,12 +56,12 @@ namespace Aquila.CodeAnalysis
 
         readonly CoreTypes _coreTypes;
 
-        /// <summary>
-        /// Well known methods associated with this compilation.
-        /// </summary>
-        internal CoreMethods CoreMethods => _coreMethods;
-
-        readonly CoreMethods _coreMethods;
+        // /// <summary>
+        // /// Well known methods associated with this compilation.
+        // /// </summary>
+        // internal CoreMethods CoreMethods => _coreMethods;
+        //
+        // readonly CoreMethods _coreMethods;
 
         #endregion
 
@@ -89,9 +89,9 @@ namespace Aquila.CodeAnalysis
             if (first == second)
                 return first;
 
-            if (first == CoreTypes.PhpValue || second == CoreTypes.PhpValue ||
-                first == CoreTypes.PhpAlias || second == CoreTypes.PhpAlias)
-                return CoreTypes.PhpValue;
+            // if (first == CoreTypes.PhpValue || second == CoreTypes.PhpValue ||
+            //     first == CoreTypes.PhpAlias || second == CoreTypes.PhpAlias)
+            //     return CoreTypes.PhpValue;
 
             // an integer (int | long)
             if (IsIntegerNumber(first) && IsIntegerNumber(second))
@@ -101,29 +101,31 @@ namespace Aquila.CodeAnalysis
             if (IsFloatNumber(first) && IsFloatNumber(second))
                 return CoreTypes.Double;
 
-            // a number (int | double)
-            if (IsNumber(first) && IsNumber(second))
-                return CoreTypes.PhpNumber;
+            // // a number (int | double)
+            // if (IsNumber(first) && IsNumber(second))
+            //     return CoreTypes.PhpNumber;
 
-            // a string types unification
-            if (IsAString(first) && IsAString(second))
-                return
-                    CoreTypes.PhpString; // a string builder; if both are system.string, system.string is returned earlier
+            // // a string types unification
+            // if (IsAString(first) && IsAString(second))
+            //     return
+            //         CoreTypes.PhpString; // a string builder; if both are system.string, system.string is returned earlier
 
             // TODO: simple array & PhpArray => PhpArray
 
-            if (!IsAString(first) && !IsAString(second) &&
-                !first.IsOfType(CoreTypes.PhpArray) && !second.IsOfType(CoreTypes.PhpArray))
-            {
-                // unify class types to the common one (lowest)
-                if (first.IsReferenceType && second.IsReferenceType)
-                {
-                    return FindCommonBase(first, second);
-                }
-            }
+            // if (!IsAString(first) && !IsAString(second) &&
+            //     !first.IsOfType(CoreTypes.PhpArray) && !second.IsOfType(CoreTypes.PhpArray))
+            // {
+            //     // unify class types to the common one (lowest)
+            //     if (first.IsReferenceType && second.IsReferenceType)
+            //     {
+            //         return FindCommonBase(first, second);
+            //     }
+            // }
+            //
+            // // most common PHP value type
+            // return CoreTypes.PhpValue;
 
-            // most common PHP value type
-            return CoreTypes.PhpValue;
+            return null;
         }
 
         internal TypeSymbol FindCommonBase(ImmutableArray<NamedTypeSymbol> types)
@@ -214,9 +216,9 @@ namespace Aquila.CodeAnalysis
                 return CoreTypes.Object;
             }
 
-            if (type.IsValueType || type.IsOfType(CoreTypes.IPhpArray))
+            if (type.IsValueType || type.IsOfType(null))
             {
-                return CoreTypes.PhpValue; // Nullable bool|long|double -> PhpValue
+                return null; // Nullable bool|long|double -> PhpValue
             }
 
             return type;
@@ -265,7 +267,7 @@ namespace Aquila.CodeAnalysis
                 IsIntegerNumber(type) ||
                 type.SpecialType == SpecialType.System_Double ||
                 type.SpecialType == SpecialType.System_Single ||
-                type == CoreTypes.PhpNumber;
+                type == null;
         }
 
         /// <summary>
@@ -277,41 +279,41 @@ namespace Aquila.CodeAnalysis
 
             return
                 type.SpecialType == SpecialType.System_String ||
-                type == CoreTypes.PhpString;
+                type == null;
         }
 
         #endregion
 
         #region TypeSymbol From AST.TypeRef
 
-        // /// <summary>
-        // /// Binds <see cref="TypeRef"/> to a type symbol.
-        // /// </summary>
-        // /// <param name="tref">Type reference.</param>
-        // /// <param name="selfHint">Optional.
-        // /// Current type scope for better <paramref name="tref"/> resolution since <paramref name="tref"/> might be ambiguous</param>
-        // /// <param name="nullable">Whether the resulting type must be able to contain NULL. Default is <c>false</c>.</param>
-        // /// <returns>Resolved symbol.</returns>
-        // internal TypeSymbol GetTypeFromTypeRef(TypeRef tref, SourceTypeSymbol selfHint = null,
-        //     bool nullable = false)
-        // {
-        //     if (tref == null)
-        //     {
-        //         return null;
-        //     }
-        //
-        //     var t = this.TypeRefFactory.CreateFromTypeRef(tref, null, selfHint);
-        //
-        //     var symbol = t.ResolveRuntimeType(this);
-        //
-        //     if (t.IsNullable || nullable)
-        //     {
-        //         // TODO: for value types -> Nullable<T>
-        //         symbol = MergeNull(symbol);
-        //     }
-        //
-        //     return symbol;
-        // }
+        /// <summary>
+        /// Binds <see cref="TypeRef"/> to a type symbol.
+        /// </summary>
+        /// <param name="tref">Type reference.</param>
+        /// <param name="selfHint">Optional.
+        /// Current type scope for better <paramref name="tref"/> resolution since <paramref name="tref"/> might be ambiguous</param>
+        /// <param name="nullable">Whether the resulting type must be able to contain NULL. Default is <c>false</c>.</param>
+        /// <returns>Resolved symbol.</returns>
+        internal TypeSymbol GetTypeFromTypeRef(TypeRef tref, object selfHint = null,
+            bool nullable = false)
+        {
+            if (tref == null)
+            {
+                return null;
+            }
+
+            var t = this.TypeRefFactory.CreateFromTypeRef(tref, null, selfHint);
+
+            var symbol = t.ResolveRuntimeType(this);
+
+            if (t.IsNullable || nullable)
+            {
+                // TODO: for value types -> Nullable<T>
+                symbol = MergeNull(symbol);
+            }
+
+            return symbol;
+        }
 
         #endregion
 
@@ -331,14 +333,14 @@ namespace Aquila.CodeAnalysis
 
                 if (!_lazyPhpMemberVisibilityAttribute.TryGetValue(accessibility, out AttributeData attr))
                 {
-                    // [PhpMemberVisibilityAttribute( {(int)DeclaredAccessibility} )]
-                    attr = new SynthesizedAttributeData(
-                        CoreTypes.PhpMemberVisibilityAttribute.Ctor(CoreTypes.Int32),
-                        ImmutableArray.Create(new TypedConstant(CoreTypes.Int32.Symbol, TypedConstantKind.Primitive,
-                            (int) accessibility)),
-                        ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
-
-                    _lazyPhpMemberVisibilityAttribute[accessibility] = attr;
+                    // // [PhpMemberVisibilityAttribute( {(int)DeclaredAccessibility} )]
+                    // attr = new SynthesizedAttributeData(
+                    //     CoreTypes.PhpMemberVisibilityAttribute.Ctor(CoreTypes.Int32),
+                    //     ImmutableArray.Create(new TypedConstant(CoreTypes.Int32.Symbol, TypedConstantKind.Primitive,
+                    //         (int) accessibility)),
+                    //     ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
+                    //
+                    // _lazyPhpMemberVisibilityAttribute[accessibility] = attr;
                 }
 
                 return attr;
@@ -663,7 +665,7 @@ namespace Aquila.CodeAnalysis
             if (typeMask.IsRef)
             {
                 return
-                    CoreTypes.PhpValue; // even we know the type, since there is an alias to the value, it can be anything
+                    null; // even we know the type, since there is an alias to the value, it can be anything
             }
 
             if (!typeMask.IsAnyType)
@@ -711,7 +713,7 @@ namespace Aquila.CodeAnalysis
             }
 
             // most common type
-            return CoreTypes.PhpValue;
+            return null;
         }
 
         /// <summary>

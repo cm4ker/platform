@@ -3,8 +3,8 @@ using Pchp.CodeAnalysis.CodeGen;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
- using System.Reflection.Metadata;
- using Aquila.CodeAnalysis.Symbols;
+using System.Reflection.Metadata;
+using Aquila.CodeAnalysis.Symbols;
 using Cci = Microsoft.Cci;
 using System.Collections.Immutable;
 using Aquila.CodeAnalysis;
@@ -39,7 +39,11 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             // TODO: blocks emit priority
 
             public static readonly EmitOrderComparer Instance = new EmitOrderComparer();
-            private EmitOrderComparer() { }
+
+            private EmitOrderComparer()
+            {
+            }
+
             public int Compare(BoundBlock x, BoundBlock y) => x.Ordinal - y.Ordinal;
         }
     }
@@ -67,7 +71,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             {
                 // <ctx>.OnInclude<TScript>()
                 cg.EmitLoadContext();
-                cg.EmitCall(ILOpCode.Callvirt, cg.CoreMethods.Context.OnInclude_TScript.Symbol.Construct(cg.Routine.ContainingType));
+                cg.EmitCall(ILOpCode.Callvirt, null);
             }
 
             //
@@ -80,8 +84,8 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
                 {
                     // <locals> = new PhpArray(HINTCOUNT)
                     cg.LocalsPlaceOpt.EmitStorePrepare(cg.Builder);
-                    cg.Builder.EmitIntConstant(locals.Count);    // HINTCOUNT
-                    cg.EmitCall(ILOpCode.Newobj, cg.CoreMethods.Ctors.PhpArray_int);
+                    cg.Builder.EmitIntConstant(locals.Count); // HINTCOUNT
+                    cg.EmitCall(ILOpCode.Newobj, null);
                     cg.LocalsPlaceOpt.EmitStore(cg.Builder);
                 }
             }
@@ -93,7 +97,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             }
 
             // emit dummy locals showing indirect (unoptimized) locals in debugger's Watch and Locals window
-            if (cg.HasUnoptimizedLocals && cg.EmitPdbSequencePoints && cg.IsDebug && cg.CoreTypes.IndirectLocal.Symbol != null)
+            if (cg.HasUnoptimizedLocals && cg.EmitPdbSequencePoints && cg.IsDebug)
             {
                 EmitIndirectLocalsDebugWatch(cg);
             }
@@ -102,7 +106,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             if ((cg.Routine.Flags & FlowAnalysis.RoutineFlags.UsesArgs) != 0)
             {
                 // <>args = cg.Emit_ArgsArray()
-                var arrtype = cg.Emit_ArgsArray(cg.CoreTypes.PhpValue);
+                var arrtype = cg.Emit_ArgsArray(null);
                 cg.FunctionArgsArray = cg.GetTemporaryLocal(arrtype);
                 cg.Builder.EmitLocalStore(cg.FunctionArgsArray);
             }
@@ -148,9 +152,10 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
 
                 // declare variable
                 var def = cg.Builder.LocalSlotManager.DeclareLocal(
-                        cg.CoreTypes.IndirectLocal.Symbol, loc.Symbol as ILocalSymbolInternal,
-                        loc.Name, SynthesizedLocalKind.UserDefined,
-                        Microsoft.CodeAnalysis.CodeGen.LocalDebugId.None, 0, LocalSlotConstraints.None, ImmutableArray<bool>.Empty, ImmutableArray<string>.Empty, false);
+                    null, loc.Symbol as ILocalSymbolInternal,
+                    loc.Name, SynthesizedLocalKind.UserDefined,
+                    Microsoft.CodeAnalysis.CodeGen.LocalDebugId.None, 0, LocalSlotConstraints.None,
+                    ImmutableArray<bool>.Empty, ImmutableArray<string>.Empty, false);
 
                 cg.Builder.AddLocalToScope(def);
 
@@ -170,7 +175,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
         {
             // local <state> = g._state that is switched on (can't switch on remote field)
             cg.EmitGeneratorInstance();
-            cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.GetGeneratorState_Generator);
+            cg.EmitCall(ILOpCode.Call, null);
 
             var stateLocal = cg.GeneratorStateLocal = cg.GetTemporaryLocal(cg.CoreTypes.Int32);
             cg.Builder.EmitLocalStore(stateLocal);
@@ -178,7 +183,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             // g._state = -1 : running
             cg.EmitGeneratorInstance();
             cg.Builder.EmitIntConstant(-1);
-            cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.SetGeneratorState_Generator_int);
+            cg.EmitCall(ILOpCode.Call, null);
 
             // create label for situation when state doesn't correspond to continuation: 0 -> didn't run to first yield
             var noContinuationLabel = new NamedLabel("noStateContinuation");
@@ -192,14 +197,16 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
                 Debug.Assert(yield.YieldIndex >= 1);
 
                 // yield statements inside "try" block are handled at beginning of try block itself (we cannot branch directly inside "try" from outside)
-                var target = (object)yield.ContainingTryScopes.First?.Value ?? yield;
+                var target = (object) yield.ContainingTryScopes.First?.Value ?? yield;
 
                 // case YieldIndex: goto target;
-                yieldExLabels.Add(new KeyValuePair<ConstantValue, object>(ConstantValue.Create(yield.YieldIndex), target));
+                yieldExLabels.Add(
+                    new KeyValuePair<ConstantValue, object>(ConstantValue.Create(yield.YieldIndex), target));
             }
 
             // emit switch table that based on g._state jumps to appropriate continuation label
-            cg.Builder.EmitIntegerSwitchJumpTable(yieldExLabels.ToArray(), noContinuationLabel, stateLocal, Cci.PrimitiveTypeCode.Int32);
+            cg.Builder.EmitIntegerSwitchJumpTable(yieldExLabels.ToArray(), noContinuationLabel, stateLocal,
+                Cci.PrimitiveTypeCode.Int32);
 
             cg.Builder.MarkLabel(noContinuationLabel);
         }
@@ -250,7 +257,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             // <rettmp> = <stack>;
             if (_rettmp != null)
             {
-                cg.EmitConvert(stack, 0, (TypeSymbol)_rettmp.Type);
+                cg.EmitConvert(stack, 0, (TypeSymbol) _rettmp.Type);
                 cg.Builder.EmitLocalStore(_rettmp);
             }
             else
@@ -263,7 +270,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             {
                 // state = 1;
                 // goto _finally;
-                cg.Builder.EmitIntConstant((int)CodeGenerator.ExtraFinallyState.Return); // 1: return
+                cg.Builder.EmitIntConstant((int) CodeGenerator.ExtraFinallyState.Return); // 1: return
                 cg.ExtraFinallyStateVariable.EmitStore();
                 cg.Builder.EmitBranch(ILOpCode.Br, cg.ExtraFinallyBlock);
                 return;
@@ -283,7 +290,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             // g._state = -2 (closed): got to the end of the generator method
             cg.EmitGeneratorInstance();
             cg.Builder.EmitIntConstant(-2);
-            cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.SetGeneratorState_Generator_int);
+            cg.EmitCall(ILOpCode.Call, null);
         }
 
         internal override void Emit(CodeGenerator cg)

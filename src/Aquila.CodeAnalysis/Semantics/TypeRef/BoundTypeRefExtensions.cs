@@ -31,7 +31,7 @@ namespace Pchp.CodeAnalysis.Semantics
             {
                 // Template: {LOAD PhpTypeInfo}.Name
                 tref.EmitLoadTypeInfo(cg, true);
-                cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.GetName_PhpTypeInfo.Getter)
+                cg.EmitCall(ILOpCode.Call, null)
                     .Expect(SpecialType.System_String);
             }
         }

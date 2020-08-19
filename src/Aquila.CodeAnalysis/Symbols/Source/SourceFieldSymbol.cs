@@ -301,7 +301,7 @@ namespace Aquila.CodeAnalysis.Symbols
             }
 
             // default
-            return DeclaringCompilation.CoreTypes.PhpValue;
+            return null;
         }
 
         /// <summary>

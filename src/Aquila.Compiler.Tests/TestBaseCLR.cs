@@ -3,31 +3,22 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using Aquila.Compiler.Cecil;
-using Aquila.Compiler.Contracts;
-using Aquila.Compiler.Dnlib;
-using Aquila.Compiler.Generation;
-using Aquila.Compiler.Parser;
-using Aquila.Compiler.Roslyn;
-using Aquila.Compiler.Roslyn.RoslynBackend;
-using Aquila.Compiler.Visitor;
-using Aquila.Core.Contracts;
-using Aquila.Language.Ast;
-using Aquila.Language.Ast.Definitions.Functions;
-using Aquila.QueryBuilder;
-using CompilationUnit = Aquila.Language.Ast.Definitions.CompilationUnit;
-using Member = Aquila.Language.Ast.Member;
-using Module = Aquila.Language.Ast.Definitions.Module;
+using System.Text;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Syntax;
+using Aquila.Syntax.Ast;
+using Aquila.Syntax.Parser;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Emit;
+using Microsoft.CodeAnalysis.Text;
+using Pchp.CodeAnalysis;
+using Peachpie.Library.Scripting;
 
 namespace Aquila.Compiler.Tests
 {
     public abstract class TestBaseCLR : IDisposable
     {
         private ZLanguageVisitor _zlv;
-
-        protected RoslynAssemblyPlatform Ap = new RoslynAssemblyPlatform();
-        //IAssemblyPlatform ap = new CecilAssemblyPlatform();
 
         public TestBaseCLR()
         {
@@ -60,96 +51,99 @@ namespace Aquila.Compiler.Tests
         {
         }
 
-        public void ImportRef()
-        {
-            var asm = Ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
-            var asmName = $"test.bll";
+        // public void ImportRef()
+        // {
+        //     var asm = Ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
+        //     var asmName = $"test.bll";
+        //
+        //     if (File.Exists(asmName))
+        //         File.Delete(asmName);
+        //
+        //     asm.Write(asmName);
+        // }
 
-            if (File.Exists(asmName))
-                File.Delete(asmName);
-
-            asm.Write(asmName);
-        }
+        static MetadataReference CreateMetadataReference(string path) => MetadataReference.CreateFromFile(path);
 
         public void Compile(string unit)
         {
-            var asm = Ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
+            var parser = ParserHelper.Parse(unit);
+            var point = (SourceUnit) _zlv.VisitEntryPoint(parser.entryPoint());
+            var tree = PhpSyntaxTree.ParseCode(SourceText.From(unit, Encoding.UTF8), PhpParseOptions.Default, PhpParseOptions.Default,
+                "");
 
-            var cunit = (CompilationUnit) unit.Parse(x => _zlv.VisitEntryPoint(x.entryPoint()));
+            var diagnostics = tree.Diagnostics;
 
-            Root r = new Root(null, new CompilationUnitList {cunit});
+            if (diagnostics.IsEmpty)
+            {
+                PhpCompilationFactory builder = new PhpCompilationFactory();
+                var compilation = (PhpCompilation) builder.CoreCompilation
+                    .WithAssemblyName("Test")
+                    .AddSyntaxTrees(tree);
 
-            AstScopeRegister.Apply(r);
+                compilation = compilation.WithPhpOptions(compilation.Options.WithConcurrentBuild(false));
+                
+                var emitOptions = new EmitOptions();
+                
+                var embeddedTexts = default(IEnumerable<EmbeddedText>);
 
-            var gp = new GeneratorParameters(r, asm, CompilationMode.Server,
-                SqlDatabaseType.SqlServer, null);
+                if (true)
+                {
+                    compilation = compilation.WithPhpOptions(compilation.Options
+                        .WithOptimizationLevel(OptimizationLevel.Debug).WithDebugPlusMode(true));
 
-            var gen = new Generator(gp);
+                    // if (options.IsSubmission)
+                    // {
+                    //     emitOptions = emitOptions.WithDebugInformationFormat(DebugInformationFormat.PortablePdb);
+                    //     embeddedTexts = new[] { EmbeddedText.FromSource(tree.FilePath, tree.GetText()) };
+                    // }
+                }
+                else
+                {
+                    compilation =
+                        compilation.WithPhpOptions(
+                            compilation.Options.WithOptimizationLevel(OptimizationLevel.Release));
+                }
 
-            gen.Build();
+                diagnostics = compilation.GetDeclarationDiagnostics();
 
-            var asmName = $"test.bll";
-            if (File.Exists(asmName))
-                File.Delete(asmName);
+                if (!diagnostics.IsEmpty)
+                {
+                    throw new Exception("Compilation error");
+                }
+                else
+                {
+                    var peStream = new MemoryStream();
+                    var pdbStream = true ? new MemoryStream() : null;
 
-            asm.Write(asmName);
+                    var result = compilation.Emit(peStream,
+                        pdbStream: pdbStream,
+                        options: emitOptions,
+                        embeddedTexts: embeddedTexts
+                    );
+
+                    if (result.Success)
+                    {
+                        if (pdbStream != null)
+                        {
+                            // DEBUG DUMP
+                            var fname = @"C:\test\" +
+                                        Path.GetFileNameWithoutExtension(tree.FilePath);
+                            File.WriteAllBytes(fname + ".dll", peStream.ToArray());
+                            File.WriteAllBytes(fname + ".pdb", pdbStream.ToArray());
+                        }
+                    }
+                    else
+                    {
+                        diagnostics = result.Diagnostics;
+                    }
+                }
+            }
         }
 
-        public object CompileAndRun(string funcScript)
+        public object CompileAndRun(string unit)
         {
-            var asm = Ap.CreateAssembly("Debug", Version.Parse("1.0.0.0"));
-
-            Method node = (Method) funcScript.Parse(x => _zlv.VisitMethodDeclaration(x.methodDeclaration()));
-
-            CompilationUnit cu = new CompilationUnit(null, null, new EntityList
-            {
-                new Module(null,
-                    new TypeBody(new List<Member> {node}, null), "Test")
-            }, new NamespaceDeclarationList());
-
-
-            Root r = new Root(null, new CompilationUnitList {cu});
-
-            AstScopeRegister.Apply(r);
-            // LoweringOptimizer.Apply(asm.TypeSystem, r);
-
-            var gp = new GeneratorParameters(r, asm, CompilationMode.Server,
-                SqlDatabaseType.SqlServer, null);
-
-            var gen = new Generator(gp);
-
-            gen.Build();
-
-            var asmName = $"test.bll";
-            if (File.Exists(asmName))
-                File.Delete(asmName);
-
-            try
-            {
-                var asmPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, asmName);
-                asm.Write(asmPath);
-                var result = ExecuteAndUnload(asmPath, node.Name, out var wr);
-
-                for (int i = 0; i < 8 && wr.IsAlive; i++)
-                {
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                }
-
-                if (wr.IsAlive)
-                {
-                    throw new Exception("Unload failed");
-                }
-
-
-                if (File.Exists(asmName))
-                    File.Delete(asmName);
-
-                return result;
-            }
-            finally
-            {
-            }
+            Compile(unit);
+            return null;
         }
 
         public void Dispose()

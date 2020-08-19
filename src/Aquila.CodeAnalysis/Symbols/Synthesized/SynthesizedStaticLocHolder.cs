@@ -40,7 +40,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         /// Type of local variable.
         /// <c>PhpAlias</c> by default.
         /// </summary>
-        public TypeSymbol ValueType => _locType ?? DeclaringCompilation.CoreTypes.PhpAlias;
+        public TypeSymbol ValueType => _locType ?? null;
         readonly TypeSymbol _locType;
 
         public override bool IsImplicitlyDeclared => true;
@@ -94,7 +94,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             // override IStaticInit.Init(Context)
 
             _initMethod = new SynthesizedMethodSymbol(this, "Init", false, true, tt.Void, Accessibility.Public);
-            _initMethod.SetParameters(new SynthesizedParameterSymbol(_initMethod, tt.Context, 0, RefKind.None, "ctx"));
+            _initMethod.SetParameters(new SynthesizedParameterSymbol(_initMethod, null, 0, RefKind.None, "ctx"));
 
             var body = Pchp.CodeAnalysis.CodeGen.MethodGenerator.GenerateMethodBody(module, _initMethod, builder, null, DiagnosticBag.GetInstance(), false);
             module.SetMethodBody(_initMethod, body);
@@ -203,7 +203,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         {
             if (_initMethod != null)
             {
-                return ImmutableArray.Create(DeclaringCompilation.CoreTypes.IStaticInit.Symbol);
+                return ImmutableArray.Create((NamedTypeSymbol)null);
             }
             else
             {

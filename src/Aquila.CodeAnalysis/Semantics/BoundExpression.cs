@@ -974,7 +974,8 @@ namespace Pchp.CodeAnalysis.Semantics
 
         ImmutableArray<BoundArgument> _usevars;
 
-        public IBlockOperation Body => null;//(BoundLambdaMethod != null) ? BoundLambdaMethod.ControlFlowGraph.Start : null;
+        public IBlockOperation Body =>
+            null; //(BoundLambdaMethod != null) ? BoundLambdaMethod.ControlFlowGraph.Start : null;
 
         public IMethodSymbol Signature => null; // BoundLambdaMethod;
 
@@ -984,7 +985,7 @@ namespace Pchp.CodeAnalysis.Semantics
         /// </summary>
         //internal SourceLambdaSymbol BoundLambdaMethod { get; set; }
 
-        IMethodSymbol IAnonymousFunctionOperation.Symbol => null;// BoundLambdaMethod;
+        IMethodSymbol IAnonymousFunctionOperation.Symbol => null; // BoundLambdaMethod;
 
         public override bool IsDeeplyCopied => false;
 
@@ -1432,7 +1433,7 @@ namespace Pchp.CodeAnalysis.Semantics
         internal BoundExpression Receiver { get; set; }
 
         internal BoundCallableConvert(BoundExpression operand, PhpCompilation compilation)
-            : base(operand, compilation.TypeRefFactory.Create(compilation.CoreTypes.IPhpCallable.Symbol))
+            : base(operand, compilation.TypeRefFactory.Create((NamedTypeSymbol) null))
         {
         }
     }

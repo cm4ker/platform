@@ -69,7 +69,7 @@ namespace Aquila.CodeAnalysis.Symbols
             if (_lazyRoutineInfoField == null)
             {
                 _lazyRoutineInfoField = module.SynthesizedManager
-                    .GetOrCreateSynthesizedField(_file, this.DeclaringCompilation.CoreTypes.RoutineInfo,
+                    .GetOrCreateSynthesizedField(_file, null,
                         "<>" + this.MetadataName,
                         accessibility: Accessibility.Internal,
                         isstatic: true,
@@ -87,7 +87,7 @@ namespace Aquila.CodeAnalysis.Symbols
             return fld.EmitLoad(cg, holder: null);
         }
 
-        // internal override Signature SyntaxSignature => _syntax.Signature;
+         internal override IEnumerable<Parameter> SyntaxSignature => _syntax.Parameters;
 
         internal override TypeRef SyntaxReturnType => _syntax.ReturnType;
 
@@ -101,7 +101,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override NamedTypeSymbol ContainingType => _file;
 
-        protected override TypeRefContext CreateTypeRefContext() => null;//new TypeRefContext(DeclaringCompilation, null);
+        protected override TypeRefContext CreateTypeRefContext() => new TypeRefContext(DeclaringCompilation, null);
 
         public override void GetDiagnostics(DiagnosticBag diagnostic)
         {

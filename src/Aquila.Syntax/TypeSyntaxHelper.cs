@@ -1,24 +1,21 @@
-using System;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Text;
 
-namespace Aquila.Compiler
+namespace Aquila.Syntax
 {
     public static class TypeSyntaxHelper
     {
         public static TypeRef Create(Span info, string typeName)
         {
-            throw new Exception();
-
-            // switch (typeName)
-            // {
-            //     case "int": return new PredefinedTypeSyntax(info, SyntaxKind.IntKeyword);
-            //     case "bool": return new PredefinedTypeSyntax(info, SyntaxKind.BoolKeyword);
-            //     case "string": return new PredefinedTypeSyntax(info, SyntaxKind.StringKeyword);
-            //     case "double": return new PredefinedTypeSyntax(info, SyntaxKind.DoubleKeyword);
-            //     case "void": return new PredefinedTypeSyntax(info, SyntaxKind.VoidKeyword);
-            //     default: return new NamedTypeSyntax(info, SyntaxKind.Type, typeName);
-            // }
+            switch (typeName)
+            {
+                case "int": return new PredefinedTypeRef(info, SyntaxKind.IntKeyword);
+                case "bool": return new PredefinedTypeRef(info, SyntaxKind.BoolKeyword);
+                case "string": return new PredefinedTypeRef(info, SyntaxKind.StringKeyword);
+                case "double": return new PredefinedTypeRef(info, SyntaxKind.DoubleKeyword);
+                case "void": return new PredefinedTypeRef(info, SyntaxKind.VoidKeyword);
+                default: return new NamedTypeRef(info, SyntaxKind.Type, typeName);
+            }
         }
     }
 }

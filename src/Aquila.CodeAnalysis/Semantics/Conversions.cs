@@ -53,7 +53,10 @@ namespace Aquila.CodeAnalysis.Semantics
 
         static CommonConversion IdentityConversion => new CommonConversion(true, true, false, false, true, null);
         static CommonConversion ReferenceConversion => new CommonConversion(true, false, false, true, true, null);
-        static CommonConversion ExplicitReferenceConversion => new CommonConversion(true, false, false, true, false, null);
+
+        static CommonConversion ExplicitReferenceConversion =>
+            new CommonConversion(true, false, false, true, false, null);
+
         static CommonConversion NoConversion => new CommonConversion(false, false, false, false, false, null);
         static CommonConversion ImplicitNumeric => new CommonConversion(true, false, true, false, true, null);
         static CommonConversion ExplicitNumeric => new CommonConversion(true, false, true, false, false, null);
@@ -88,7 +91,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
                     if (clfrom.size == 1) // bool
                     {
-                        cost += 128;    // bool -> {0|1} // only if there is nothing better!!!
+                        cost += 128; // bool -> {0|1} // only if there is nothing better!!!
                     }
 
                     // 
@@ -177,20 +180,23 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         // resolve operator method
-        public MethodSymbol ResolveOperator(TypeSymbol receiver, bool hasref, string[] opnames, TypeSymbol[] extensions, TypeSymbol operand = null, TypeSymbol target = null)
+        public MethodSymbol ResolveOperator(TypeSymbol receiver, bool hasref, string[] opnames, TypeSymbol[] extensions,
+            TypeSymbol operand = null, TypeSymbol target = null)
         {
             Debug.Assert(receiver != null);
             Debug.Assert(opnames != null && opnames.Length != 0);
 
             MethodSymbol candidate = null;
-            int candidatecost = int.MaxValue;   // candidate cost
-            int candidatecost_minor = 0;        // second cost
+            int candidatecost = int.MaxValue; // candidate cost
+            int candidatecost_minor = 0; // second cost
 
             for (int ext = -1; ext < extensions.Length; ext++)
             {
                 // TODO: go through interfaces
 
-                for (var container = ext < 0 ? receiver : extensions[ext]; container != null; container = container.IsStatic ? null : container.BaseType)
+                for (var container = ext < 0 ? receiver : extensions[ext];
+                    container != null;
+                    container = container.IsStatic ? null : container.BaseType)
                 {
                     if (container.SpecialType == SpecialType.System_ValueType) continue; //
 
@@ -201,7 +207,8 @@ namespace Aquila.CodeAnalysis.Semantics
                         {
                             if (members[m] is MethodSymbol method)
                             {
-                                if (ext >= 0 && !method.IsStatic) continue;    // only static methods allowed in extension containers
+                                if (ext >= 0 && !method.IsStatic)
+                                    continue; // only static methods allowed in extension containers
                                 if (method.DeclaredAccessibility != Accessibility.Public) continue;
                                 if (method.Arity != 0) continue; // CONSIDER
 
@@ -212,8 +219,9 @@ namespace Aquila.CodeAnalysis.Semantics
 
                                 if (target != null && method.ReturnType != target)
                                 {
-                                    var conv = ClassifyConversion(method.ReturnType, target, ConversionKind.Numeric | ConversionKind.Reference);
-                                    if (conv.Exists)    // TODO: chain the conversion, sum the cost
+                                    var conv = ClassifyConversion(method.ReturnType, target,
+                                        ConversionKind.Numeric | ConversionKind.Reference);
+                                    if (conv.Exists) // TODO: chain the conversion, sum the cost
                                     {
                                         cost += ConvCost(conv, method.ReturnType, target);
                                     }
@@ -238,8 +246,9 @@ namespace Aquila.CodeAnalysis.Semantics
                                     {
                                         if (isbyref) continue; // cannot convert addr
 
-                                        var conv = ClassifyConversion(receiver, pstype, ConversionKind.Numeric | ConversionKind.Reference);
-                                        if (conv.Exists)   // TODO: chain the conversion
+                                        var conv = ClassifyConversion(receiver, pstype,
+                                            ConversionKind.Numeric | ConversionKind.Reference);
+                                        if (conv.Exists) // TODO: chain the conversion
                                         {
                                             cost += ConvCost(conv, receiver, pstype);
                                         }
@@ -248,6 +257,7 @@ namespace Aquila.CodeAnalysis.Semantics
                                             continue;
                                         }
                                     }
+
                                     pconsumed++;
                                 }
 
@@ -264,8 +274,9 @@ namespace Aquila.CodeAnalysis.Semantics
                                     if (ps.Length <= pconsumed) continue;
                                     if (ps[pconsumed].Type != operand)
                                     {
-                                        var conv = ClassifyConversion(operand, ps[pconsumed].Type, ConversionKind.Implicit);
-                                        if (conv.Exists)    // TODO: chain the conversion
+                                        var conv = ClassifyConversion(operand, ps[pconsumed].Type,
+                                            ConversionKind.Implicit);
+                                        if (conv.Exists) // TODO: chain the conversion
                                         {
                                             cost += ConvCost(conv, operand, ps[pconsumed].Type);
                                         }
@@ -274,6 +285,7 @@ namespace Aquila.CodeAnalysis.Semantics
                                             continue;
                                         }
                                     }
+
                                     pconsumed++;
                                 }
 
@@ -281,7 +293,7 @@ namespace Aquila.CodeAnalysis.Semantics
                                 if (pconsumed < ps.Length && SpecialParameterSymbol.IsContextParameter(ps[pconsumed]))
                                 {
                                     pconsumed++;
-                                    cost_minor--;   // specialized operator - prefered
+                                    cost_minor--; // specialized operator - prefered
                                 }
 
                                 if (ps.Length != pconsumed) continue;
@@ -290,7 +302,7 @@ namespace Aquila.CodeAnalysis.Semantics
                                     container.IsValueType)
                                 {
                                     //cost++; // should be enabled
-                                    cost_minor++;   // implicit conversion
+                                    cost_minor++; // implicit conversion
                                 }
 
                                 //
@@ -316,40 +328,47 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             switch (target.SpecialType)
             {
-                case SpecialType.System_Char: return new[] { "AsChar", "ToChar" };
-                case SpecialType.System_Boolean: return new[] { WellKnownMemberNames.ImplicitConversionName, "AsBoolean", "ToBoolean" };
+                case SpecialType.System_Char: return new[] {"AsChar", "ToChar"};
+                case SpecialType.System_Boolean:
+                    return new[] {WellKnownMemberNames.ImplicitConversionName, "AsBoolean", "ToBoolean"};
                 case SpecialType.System_Byte:
                 case SpecialType.System_SByte:
-                case SpecialType.System_Int32: return new[] { WellKnownMemberNames.ImplicitConversionName, "AsInt", "ToInt", "ToLong" };
-                case SpecialType.System_Int64: return new[] { WellKnownMemberNames.ImplicitConversionName, "ToLong" };
+                case SpecialType.System_Int32:
+                    return new[] {WellKnownMemberNames.ImplicitConversionName, "AsInt", "ToInt", "ToLong"};
+                case SpecialType.System_Int64: return new[] {WellKnownMemberNames.ImplicitConversionName, "ToLong"};
                 case SpecialType.System_Single:
-                case SpecialType.System_Double: return new[] { WellKnownMemberNames.ImplicitConversionName, "AsDouble", "ToDouble" };
-                case SpecialType.System_Decimal: return new[] { WellKnownMemberNames.ImplicitConversionName, "ToDecimal" };
-                case SpecialType.System_String: return new[] { WellKnownMemberNames.ImplicitConversionName, "AsString", WellKnownMemberNames.ObjectToString };
-                case SpecialType.System_Object: return new[] { "AsObject" }; // implicit conversion to object is not possible
+                case SpecialType.System_Double:
+                    return new[] {WellKnownMemberNames.ImplicitConversionName, "AsDouble", "ToDouble"};
+                case SpecialType.System_Decimal:
+                    return new[] {WellKnownMemberNames.ImplicitConversionName, "ToDecimal"};
+                case SpecialType.System_String:
+                    return new[]
+                        {WellKnownMemberNames.ImplicitConversionName, "AsString", WellKnownMemberNames.ObjectToString};
+                case SpecialType.System_Object:
+                    return new[] {"AsObject"}; // implicit conversion to object is not possible
                 default:
 
                     // AsPhpArray
 
                     // ToNumber
-                    if (target == _compilation.CoreTypes.PhpNumber.Symbol) return new[] { WellKnownMemberNames.ImplicitConversionName, "ToNumber" };
+                    if (target == null) return new[] {WellKnownMemberNames.ImplicitConversionName, "ToNumber"};
 
                     // ToPhpString
-                    if (target == _compilation.CoreTypes.PhpString.Symbol) return new[] { WellKnownMemberNames.ImplicitConversionName, "ToPhpString" };
+                    if (target == null) return new[] {WellKnownMemberNames.ImplicitConversionName, "ToPhpString"};
 
                     // AsResource
                     // AsObject
                     // AsPhpValue
-                    if (target == _compilation.CoreTypes.PhpValue.Symbol) return new[] { WellKnownMemberNames.ImplicitConversionName };
+                    if (target == null) return new[] {WellKnownMemberNames.ImplicitConversionName};
 
                     // AsPhpAlias
-                    if (target == _compilation.CoreTypes.PhpAlias.Symbol) return new[] { WellKnownMemberNames.ImplicitConversionName, "AsPhpAlias" };
+                    if (target == null) return new[] {WellKnownMemberNames.ImplicitConversionName, "AsPhpAlias"};
 
                     // enum
                     if (target.IsEnumType()) return ImplicitConversionOpNames(target.GetEnumUnderlyingType());
 
                     //
-                    return new[] { WellKnownMemberNames.ImplicitConversionName };
+                    return new[] {WellKnownMemberNames.ImplicitConversionName};
             }
         }
 
@@ -357,33 +376,38 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             switch (target.SpecialType)
             {
-                case SpecialType.System_Boolean: return new[] { WellKnownMemberNames.ExplicitConversionName, "ToBoolean" };
-                case SpecialType.System_Int32: return new[] { WellKnownMemberNames.ExplicitConversionName, "ToInt", "ToLong" };
-                case SpecialType.System_Int64: return new[] { WellKnownMemberNames.ExplicitConversionName, "ToLong" };
-                case SpecialType.System_Double: return new[] { WellKnownMemberNames.ExplicitConversionName, "ToDouble" };
-                case SpecialType.System_String: return new[] { WellKnownMemberNames.ExplicitConversionName, WellKnownMemberNames.ObjectToString };
-                case SpecialType.System_Object: return new[] { "ToObject" };    // implicit conversion to object is not possible
+                case SpecialType.System_Boolean:
+                    return new[] {WellKnownMemberNames.ExplicitConversionName, "ToBoolean"};
+                case SpecialType.System_Int32:
+                    return new[] {WellKnownMemberNames.ExplicitConversionName, "ToInt", "ToLong"};
+                case SpecialType.System_Int64: return new[] {WellKnownMemberNames.ExplicitConversionName, "ToLong"};
+                case SpecialType.System_Double: return new[] {WellKnownMemberNames.ExplicitConversionName, "ToDouble"};
+                case SpecialType.System_String:
+                    return new[] {WellKnownMemberNames.ExplicitConversionName, WellKnownMemberNames.ObjectToString};
+                case SpecialType.System_Object:
+                    return new[] {"ToObject"}; // implicit conversion to object is not possible
                 default:
 
                     // AsPhpArray
-                    if (target == _compilation.CoreTypes.PhpArray.Symbol) return new[] { WellKnownMemberNames.ExplicitConversionName, "ToArray" };
+                    if (target == null) return new[] {WellKnownMemberNames.ExplicitConversionName, "ToArray"};
 
                     // ToNumber
-                    if (target == _compilation.CoreTypes.PhpNumber.Symbol) return new[] { WellKnownMemberNames.ExplicitConversionName, "ToNumber" };
+                    if (target == null) return new[] {WellKnownMemberNames.ExplicitConversionName, "ToNumber"};
 
                     // ToPhpString
-                    if (target == _compilation.CoreTypes.PhpString.Symbol) return new[] { WellKnownMemberNames.ExplicitConversionName, "ToPhpString" };
+                    if (target == null) return new[] {WellKnownMemberNames.ExplicitConversionName, "ToPhpString"};
 
                     // ToPhpValue
                     // ToPhpAlias
 
                     // ToBytes
-                    if (target.IsSZArray() && ((ArrayTypeSymbol)target).ElementType.SpecialType == SpecialType.System_Byte)
+                    if (target.IsSZArray() &&
+                        ((ArrayTypeSymbol) target).ElementType.SpecialType == SpecialType.System_Byte)
                     {
-                        return new[] { WellKnownMemberNames.ExplicitConversionName, "ToBytes" };
+                        return new[] {WellKnownMemberNames.ExplicitConversionName, "ToBytes"};
                     }
 
-                    return new[] { WellKnownMemberNames.ExplicitConversionName };
+                    return new[] {WellKnownMemberNames.ExplicitConversionName};
             }
         }
 
@@ -418,10 +442,10 @@ namespace Aquila.CodeAnalysis.Semantics
         MethodSymbol TryWellKnownImplicitConversion(TypeSymbol from, TypeSymbol to)
         {
             // Object -> PhpValue
-            if (to == _compilation.CoreTypes.PhpValue && from.IsReferenceType && !IsSpecialReferenceType(from))
+            if (to == null && from.IsReferenceType && !IsSpecialReferenceType(from))
             {
                 // expecting the object to be a class instance
-                return _compilation.CoreMethods.PhpValue.FromClass_Object;
+                return null;
             }
 
             //
@@ -454,7 +478,8 @@ namespace Aquila.CodeAnalysis.Semantics
                     }
                 }
 
-                if (to.SpecialType == SpecialType.System_Object && (from.IsInterfaceType() || (from.IsReferenceType && from.IsTypeParameter())))
+                if (to.SpecialType == SpecialType.System_Object &&
+                    (from.IsInterfaceType() || (from.IsReferenceType && from.IsTypeParameter())))
                 {
                     return ReferenceConversion;
                 }
@@ -473,7 +498,7 @@ namespace Aquila.CodeAnalysis.Semantics
             // strict:
             if ((kinds & ConversionKind.Strict) == ConversionKind.Strict)
             {
-                var op = ResolveOperator(from, false, ImplicitConversionOpNames(to), new[] { _compilation.CoreTypes.StrictConvert.Symbol }, target: to);
+                var op = ResolveOperator(from, false, ImplicitConversionOpNames(to), null, target: to);
                 if (op != null)
                 {
                     return new CommonConversion(true, false, false, false, true, op);
@@ -483,7 +508,8 @@ namespace Aquila.CodeAnalysis.Semantics
             // implicit
             if ((kinds & ConversionKind.Implicit) == ConversionKind.Implicit)
             {
-                var op = TryWellKnownImplicitConversion(from, to) ?? ResolveOperator(from, false, ImplicitConversionOpNames(to), new[] { to, _compilation.CoreTypes.Convert.Symbol }, target: to);
+                var op = TryWellKnownImplicitConversion(from, to) ??
+                         ResolveOperator(from, false, ImplicitConversionOpNames(to), null, target: to);
                 if (op != null)
                 {
                     return new CommonConversion(true, false, false, false, true, op);
@@ -493,7 +519,8 @@ namespace Aquila.CodeAnalysis.Semantics
             // explicit:
             if ((kinds & ConversionKind.Explicit) == ConversionKind.Explicit)
             {
-                var op = ResolveOperator(from, false, ExplicitConversionOpNames(to), new[] { to, _compilation.CoreTypes.Convert.Symbol }, target: to);
+                var op = ResolveOperator(from, false, ExplicitConversionOpNames(to),
+                    null, target: to);
                 if (op != null)
                 {
                     return new CommonConversion(true, false, false, false, false, op);

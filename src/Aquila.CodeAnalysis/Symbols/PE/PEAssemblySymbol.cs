@@ -87,7 +87,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
 
         public override bool IsCorLibrary => _specialAssembly == SpecialAssembly.CorLibrary;
 
-        public override bool IsPeachpieCorLibrary => _specialAssembly == SpecialAssembly.PeachpieCorLibrary;
+        //public override bool IsPeachpieCorLibrary => _specialAssembly == SpecialAssembly.PeachpieCorLibrary;
 
         internal override bool IsLinked => _isLinked;
 

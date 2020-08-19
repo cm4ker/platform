@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Aquila.Compiler;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Expressions;
 using Aquila.Syntax.Ast.Functions;
@@ -49,7 +48,7 @@ namespace Aquila.Syntax.Parser
             context.method_declaration().ForEach(x => VisitMethod_declaration(x));
             var methods = PopStack();
 
-            var cu = new SourceUnit( context.ToLineInfo(), SyntaxKind.CompilationUnit, "UNKNOWN FILE PATH", usings,
+            var cu = new SourceUnit(context.ToLineInfo(), SyntaxKind.CompilationUnit, "C:\\Users\\cmake\\source\\repos\\ZenPlatform\\src\\Aquila.Compiler.Tests\\bin\\Debug\\netcoreapp3.1\\test.aq", usings,
                 methods.ToCollection<MethodList>(), FieldList.Empty);
 
             PopStack();
@@ -608,6 +607,15 @@ namespace Aquila.Syntax.Parser
 
             Stack.Push(new ExpressionStmt(context.ToLineInfo(), SyntaxKind.ExpressionStatement,
                 Stack.PopExpression()));
+
+            return Stack.PeekNode();
+        }
+
+        public override LangElement VisitReturnStatement(ZSharpParser.ReturnStatementContext context)
+        {
+            base.VisitReturnStatement(context);
+
+            Stack.Push(new ReturnStmt(context.ToLineInfo(), SyntaxKind.ReturnStatement, Stack.PopExpression()));
 
             return Stack.PeekNode();
         }

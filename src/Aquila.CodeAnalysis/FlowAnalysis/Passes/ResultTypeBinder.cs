@@ -51,10 +51,10 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
 
             if (access.IsReadRef)
             {
-                if (type != DeclaringCompilation.CoreTypes.PhpAlias)    // keep PhpAlias as it is
-                {
-                    opName = "EnsureAlias";
-                }
+                // if (type != DeclaringCompilation.CoreTypes.PhpAlias)    // keep PhpAlias as it is
+                // {
+                //     opName = "EnsureAlias";
+                // }
             }
             else if (access.EnsureObject)
             {
@@ -66,11 +66,11 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
             else if (access.EnsureArray)
             {
                 // keep PhpArray, ArrayAccess, IPhpArray as it is   // TODO: only if it's safe (not NULL)
-                if (!type.IsOfType(DeclaringCompilation.CoreTypes.IPhpArray) &&
-                    !type.IsOfType(DeclaringCompilation.CoreTypes.ArrayAccess))
-                {
-                    opName = "EnsureArray";
-                }
+                // if (!type.IsOfType(DeclaringCompilation.CoreTypes.IPhpArray) &&
+                //     !type.IsOfType(DeclaringCompilation.CoreTypes.ArrayAccess))
+                // {
+                //     opName = "EnsureArray";
+                // }
             }
             else
             {
@@ -85,7 +85,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
             // resolve the operator
             if (opName != null)
             {
-                var op = DeclaringCompilation.Conversions.ResolveOperator(type, hasref, new[] { opName }, new[] { DeclaringCompilation.CoreTypes.Operators.Symbol });
+                var op = DeclaringCompilation.Conversions.ResolveOperator(type, hasref, new[] { opName }, null);
                 if (op != null)
                 {
                     expression.BoundConversion = new CommonConversion(true, false, false, false, true, op);

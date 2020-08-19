@@ -140,19 +140,20 @@ namespace Aquila.CodeAnalysis.Symbols
         public const string PhpMemberVisibilityAttributeName = "PhpMemberVisibilityAttribute";
 
         public readonly CoreType
-            Context, Operators, Convert, StrictConvert, Comparison, StrictComparison, PhpException,
-            ScriptAttribute, PhpTraitAttribute, PharAttribute, PhpTypeAttribute, PhpHiddenAttribute, PhpFieldsOnlyCtorAttribute, NotNullAttribute, DefaultValueAttribute, PhpMemberVisibilityAttribute, PhpStaticLocalAttribute,
-            ScriptDiedException,
-            IStaticInit, RoutineInfo, IndirectLocal,
-            BinderFactory, GetClassConstBinder, GetFieldBinder, SetFieldBinder, AccessMask,
-            Dynamic_NameParam_T, Dynamic_TargetTypeParam, Dynamic_LateStaticTypeParam, Dynamic_CallerTypeParam, Dynamic_UnpackingParam_T,
-            RuntimeChain_ChainEnd, RuntimeChain_Value_T, RuntimeChain_Property_T, RuntimeChain_ArrayItem_T, RuntimeChain_ArrayNewItem_T,
-            PhpTypeInfoExtension, PhpTypeInfo, CommonPhpArrayKeys,
-            PhpNumber, PhpValue, PhpAlias, PhpString, PhpArray, PhpResource, IPhpArray, IPhpEnumerable, IPhpCallable, IPhpConvertible, PhpString_Blob,
-            IntStringKey, PhpHashtable, ImportValueAttribute, DummyFieldsOnlyCtor,
+            // Context, Operators, Convert, StrictConvert, Comparison, StrictComparison, PhpException,
+            // ScriptAttribute, PhpTraitAttribute, PharAttribute, PhpTypeAttribute, PhpHiddenAttribute, PhpFieldsOnlyCtorAttribute, NotNullAttribute, DefaultValueAttribute, PhpMemberVisibilityAttribute, PhpStaticLocalAttribute,
+            // ScriptDiedException,
+            // IStaticInit, RoutineInfo, IndirectLocal,
+            // BinderFactory, GetClassConstBinder, GetFieldBinder, SetFieldBinder, AccessMask,
+            // Dynamic_NameParam_T, Dynamic_TargetTypeParam, Dynamic_LateStaticTypeParam, Dynamic_CallerTypeParam, Dynamic_UnpackingParam_T,
+            // RuntimeChain_ChainEnd, RuntimeChain_Value_T, RuntimeChain_Property_T, RuntimeChain_ArrayItem_T, RuntimeChain_ArrayNewItem_T,
+            // PhpTypeInfoExtension, PhpTypeInfo, CommonPhpArrayKeys,
+            // PhpNumber, PhpValue, PhpAlias, PhpString, PhpArray, PhpResource, IPhpArray, IPhpEnumerable, IPhpCallable, IPhpConvertible, PhpString_Blob,
+            // IntStringKey, PhpHashtable, ImportValueAttribute, DummyFieldsOnlyCtor,
             Void, Object, Byte, Int32, Long, Double, Boolean, String, Exception,
             RuntimeTypeHandle, RuntimeMethodHandle,
-            stdClass, ArrayAccess, Closure, Generator, Iterator, Traversable, GeneratorStateMachineDelegate, MainDelegate, IntPtr;
+            // stdClass, ArrayAccess, Closure, Generator, Iterator, Traversable, GeneratorStateMachineDelegate, MainDelegate, 
+            IntPtr;
 
         public CoreTypes(PhpCompilation compilation)
         {
@@ -172,73 +173,73 @@ namespace Aquila.CodeAnalysis.Symbols
             RuntimeTypeHandle = Create(SpecialType.System_RuntimeTypeHandle);
             RuntimeMethodHandle = Create(SpecialType.System_RuntimeMethodHandle);
 
-            PhpNumber = Create("PhpNumber");
-            PhpAlias = Create("PhpAlias");
-            PhpValue = Create("PhpValue");
-            PhpString = Create("PhpString");
-            PhpArray = Create("PhpArray");
-            PhpResource = Create("PhpResource");
-            IPhpArray = Create("IPhpArray");
-            IPhpEnumerable = Create("IPhpEnumerable");
-            IPhpCallable = Create("IPhpCallable");
-            IPhpConvertible = Create("IPhpConvertible");
-            PhpString_Blob = Create("PhpString+Blob");
-            IntStringKey = Create("IntStringKey");
-            PhpHashtable = Create("PhpHashtable");
-            ScriptDiedException = Create("ScriptDiedException");
-            Context = Create("Context");
-            Operators = Create("Operators");
-            Comparison = Create("Comparison");
-            StrictComparison = Create("StrictComparison");
-            Convert = Create("Convert");
-            StrictConvert = Create("StrictConvert");
-            PhpException = Create("PhpException");
-            ScriptAttribute = Create("ScriptAttribute");
-            PhpTraitAttribute = Create(PhpTraitAttributeName);
-            PharAttribute = Create("PharAttribute");
-            PhpTypeAttribute = Create("PhpTypeAttribute");
-            PhpHiddenAttribute = Create("PhpHiddenAttribute");
-            ImportValueAttribute = Create("ImportValueAttribute");
-            DummyFieldsOnlyCtor = Create("DummyFieldsOnlyCtor");
-            PhpFieldsOnlyCtorAttribute = Create(PhpFieldsOnlyCtorAttributeName);
-            NotNullAttribute = Create("NotNullAttribute");
-            DefaultValueAttribute = Create("DefaultValueAttribute");
-            PhpMemberVisibilityAttribute = Create(PhpMemberVisibilityAttributeName);
-            IStaticInit = Create("IStaticInit");
-            RoutineInfo = Create("Reflection.RoutineInfo");
-            IndirectLocal = Create("IndirectLocal");
-            stdClass = CreateFromFullName("stdClass");
-            ArrayAccess = CreateFromFullName("ArrayAccess");
-            Closure = CreateFromFullName("Closure");
-
-            BinderFactory = Create("Dynamic.BinderFactory");
-            GetClassConstBinder = Create("Dynamic.GetClassConstBinder");
-            GetFieldBinder = Create("Dynamic.GetFieldBinder");
-            SetFieldBinder = Create("Dynamic.SetFieldBinder");
-            AccessMask = CreateFromFullName("Pchp.CodeAnalysis.Semantics.AccessMask");
-
-            Dynamic_NameParam_T = Create("Dynamic.NameParam`1");
-            Dynamic_TargetTypeParam = Create("Dynamic.TargetTypeParam");
-            Dynamic_LateStaticTypeParam = Create("Dynamic.LateStaticTypeParam");
-            Dynamic_CallerTypeParam = Create("Dynamic.CallerTypeParam");
-            Dynamic_UnpackingParam_T = Create("Dynamic.UnpackingParam`1");
-
-            RuntimeChain_ChainEnd = Create("Dynamic.RuntimeChain.ChainEnd");
-            RuntimeChain_Value_T = Create("Dynamic.RuntimeChain.Value`1");
-            RuntimeChain_Property_T = Create("Dynamic.RuntimeChain.Property`1");
-            RuntimeChain_ArrayItem_T = Create("Dynamic.RuntimeChain.ArrayItem`1");
-            RuntimeChain_ArrayNewItem_T = Create("Dynamic.RuntimeChain.ArrayNewItem`1");
-
-            PhpTypeInfoExtension = Create("Reflection.PhpTypeInfoExtension");
-            PhpTypeInfo = Create("Reflection.PhpTypeInfo");
-            CommonPhpArrayKeys = Create("CommonPhpArrayKeys");
-
-            Iterator = CreateFromFullName("Iterator");
-            Traversable = CreateFromFullName("Traversable");
-            Generator = CreateFromFullName("Generator");
-            GeneratorStateMachineDelegate = CreateFromFullName("GeneratorStateMachineDelegate");
-
-            MainDelegate = Create("Context+MainDelegate");
+            // PhpNumber = Create("PhpNumber");
+            // PhpAlias = Create("PhpAlias");
+            // PhpValue = Create("PhpValue");
+            // PhpString = Create("PhpString");
+            // PhpArray = Create("PhpArray");
+            // PhpResource = Create("PhpResource");
+            // IPhpArray = Create("IPhpArray");
+            // IPhpEnumerable = Create("IPhpEnumerable");
+            // IPhpCallable = Create("IPhpCallable");
+            // IPhpConvertible = Create("IPhpConvertible");
+            // PhpString_Blob = Create("PhpString+Blob");
+            // IntStringKey = Create("IntStringKey");
+            // PhpHashtable = Create("PhpHashtable");
+            // ScriptDiedException = Create("ScriptDiedException");
+            // Context = Create("Context");
+            // Operators = Create("Operators");
+            // Comparison = Create("Comparison");
+            // StrictComparison = Create("StrictComparison");
+            // Convert = Create("Convert");
+            // StrictConvert = Create("StrictConvert");
+            // PhpException = Create("PhpException");
+            // ScriptAttribute = Create("ScriptAttribute");
+            // PhpTraitAttribute = Create(PhpTraitAttributeName);
+            // PharAttribute = Create("PharAttribute");
+            // PhpTypeAttribute = Create("PhpTypeAttribute");
+            // PhpHiddenAttribute = Create("PhpHiddenAttribute");
+            // ImportValueAttribute = Create("ImportValueAttribute");
+            // DummyFieldsOnlyCtor = Create("DummyFieldsOnlyCtor");
+            // PhpFieldsOnlyCtorAttribute = Create(PhpFieldsOnlyCtorAttributeName);
+            // NotNullAttribute = Create("NotNullAttribute");
+            // DefaultValueAttribute = Create("DefaultValueAttribute");
+            // PhpMemberVisibilityAttribute = Create(PhpMemberVisibilityAttributeName);
+            // IStaticInit = Create("IStaticInit");
+            // RoutineInfo = Create("Reflection.RoutineInfo");
+            // IndirectLocal = Create("IndirectLocal");
+            // stdClass = CreateFromFullName("stdClass");
+            // ArrayAccess = CreateFromFullName("ArrayAccess");
+            // Closure = CreateFromFullName("Closure");
+            //
+            // BinderFactory = Create("Dynamic.BinderFactory");
+            // GetClassConstBinder = Create("Dynamic.GetClassConstBinder");
+            // GetFieldBinder = Create("Dynamic.GetFieldBinder");
+            // SetFieldBinder = Create("Dynamic.SetFieldBinder");
+            // AccessMask = CreateFromFullName("Pchp.CodeAnalysis.Semantics.AccessMask");
+            //
+            // Dynamic_NameParam_T = Create("Dynamic.NameParam`1");
+            // Dynamic_TargetTypeParam = Create("Dynamic.TargetTypeParam");
+            // Dynamic_LateStaticTypeParam = Create("Dynamic.LateStaticTypeParam");
+            // Dynamic_CallerTypeParam = Create("Dynamic.CallerTypeParam");
+            // Dynamic_UnpackingParam_T = Create("Dynamic.UnpackingParam`1");
+            //
+            // RuntimeChain_ChainEnd = Create("Dynamic.RuntimeChain.ChainEnd");
+            // RuntimeChain_Value_T = Create("Dynamic.RuntimeChain.Value`1");
+            // RuntimeChain_Property_T = Create("Dynamic.RuntimeChain.Property`1");
+            // RuntimeChain_ArrayItem_T = Create("Dynamic.RuntimeChain.ArrayItem`1");
+            // RuntimeChain_ArrayNewItem_T = Create("Dynamic.RuntimeChain.ArrayNewItem`1");
+            //
+            // PhpTypeInfoExtension = Create("Reflection.PhpTypeInfoExtension");
+            // PhpTypeInfo = Create("Reflection.PhpTypeInfo");
+            // CommonPhpArrayKeys = Create("CommonPhpArrayKeys");
+            //
+            // Iterator = CreateFromFullName("Iterator");
+            // Traversable = CreateFromFullName("Traversable");
+            // Generator = CreateFromFullName("Generator");
+            // GeneratorStateMachineDelegate = CreateFromFullName("GeneratorStateMachineDelegate");
+            //
+            // MainDelegate = Create("Context+MainDelegate");
             IntPtr = CreateFromFullName("System.IntPtr");
         }
 

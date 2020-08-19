@@ -251,12 +251,12 @@ namespace Aquila.CodeAnalysis.Symbols
                     // , IsAutoloaded = true
                     namedproperties = ImmutableArray.Create(
                         new KeyValuePair<string, TypedConstant>(
-                            CoreMethods.ScriptAttribute_IsAutoloaded, DeclaringCompilation.CreateTypedConstant(true))
+                            null, DeclaringCompilation.CreateTypedConstant(true))
                     );
                 }
 
                 var scriptAttribute = new SynthesizedAttributeData(
-                    DeclaringCompilation.CoreMethods.Ctors.ScriptAttribute_string_long,
+                    null,
                     ImmutableArray.Create(
                         DeclaringCompilation.CreateTypedConstant(this.RelativeFilePath),
                         DeclaringCompilation.CreateTypedConstant(lastWriteTime.Ticks)),
@@ -430,7 +430,7 @@ namespace Aquila.CodeAnalysis.Symbols
             if (_lazyPharAttribute == null)
             {
                 var pharAttribute = new SynthesizedAttributeData(
-                    DeclaringCompilation.CoreMethods.Ctors.PharAttribute_string,
+                    null,
                     ImmutableArray.Create(DeclaringCompilation.CreateTypedConstant(PharName)),
                     ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
                 Interlocked.CompareExchange(ref _lazyPharAttribute, pharAttribute, null);

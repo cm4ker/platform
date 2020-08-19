@@ -1,6 +1,4 @@
-using System;
 using Xunit;
-using Aquila.Compiler.Contracts;
 
 namespace Aquila.Compiler.Tests
 {

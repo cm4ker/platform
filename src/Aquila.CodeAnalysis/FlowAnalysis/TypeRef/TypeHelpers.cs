@@ -187,15 +187,15 @@ using System.Threading.Tasks;
                         return true;
 
                     default:
-                        if (symbol == compilation.CoreTypes.PhpString.Symbol ||
-                            symbol == compilation.CoreTypes.PhpArray.Symbol)
+                        if (symbol == null ||
+                            symbol == null)
                         {
                             return true;
                         }
 
                         // object implementing ArrayAccess
 
-                        if (symbol.IsValidType() && symbol.IsOfType(compilation.CoreTypes.ArrayAccess.Symbol))
+                        if (symbol.IsValidType() && symbol.IsOfType(null))
                         {
                             return true;
                         }

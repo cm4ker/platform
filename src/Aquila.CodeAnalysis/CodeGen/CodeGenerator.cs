@@ -333,10 +333,10 @@ namespace Pchp.CodeAnalysis.CodeGen
         /// </summary>
         public CoreTypes CoreTypes => DeclaringCompilation.CoreTypes;
 
-        /// <summary>
-        /// Well known methods.
-        /// </summary>
-        public CoreMethods CoreMethods => DeclaringCompilation.CoreMethods;
+        // /// <summary>
+        // /// Well known methods.
+        // /// </summary>
+        // public CoreMethods CoreMethods => DeclaringCompilation.CoreMethods;
 
         /// <summary>
         /// Factory for dynamic and anonymous types.
@@ -494,7 +494,7 @@ namespace Pchp.CodeAnalysis.CodeGen
             else if ((routine.Flags & RoutineFlags.RequiresLocalsArray) != 0)
             {
                 // declare PhpArray <locals>
-                var symbol = new SynthesizedLocalSymbol(Routine, "<locals>", CoreTypes.PhpArray);
+                var symbol = new SynthesizedLocalSymbol(Routine, "<locals>", null);
                 var localsDef = this.Builder.LocalSlotManager.DeclareLocal((Cci.ITypeReference) symbol.Type, symbol,
                     symbol.Name, SynthesizedLocalKind.OptimizerTemp, LocalDebugId.None, 0, LocalSlotConstraints.None,
                     ImmutableArray<bool>.Empty, ImmutableArray<string>.Empty, false);

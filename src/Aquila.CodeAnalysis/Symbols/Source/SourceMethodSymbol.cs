@@ -67,7 +67,7 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        // internal override Signature SyntaxSignature => _syntax.Signature;
+        internal override IEnumerable<Parameter> SyntaxSignature => _syntax.Parameters;
 
         internal override TypeRef SyntaxReturnType => _syntax.ReturnType;
 
@@ -77,7 +77,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         internal override IList<Statement> Statements => _syntax.Block?.Statements.ToList();
 
-        protected override TypeRefContext CreateTypeRefContext() => null;//TypeRefFactory.CreateTypeRefContext(_type);
+        protected override TypeRefContext CreateTypeRefContext() => null; //TypeRefFactory.CreateTypeRefContext(_type);
 
         public override void GetDiagnostics(DiagnosticBag diagnostic)
         {
@@ -293,7 +293,7 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 // // magic methods:
-                // if (_syntax.Name.Name.Value.StartsWith("__", StringComparison.Ordinal))
+                // if (_syntax.ReturnType. Name.Name.Value.StartsWith("__", StringComparison.Ordinal)))
                 // {
                 //     if (_syntax.Name.Name.IsToStringName)   // __tostring() : string
                 //     {

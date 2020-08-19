@@ -76,7 +76,7 @@ namespace Aquila.CodeAnalysis.Symbols
         public static bool IsContextParameter(ParameterSymbol p)
             => p != null &&
                 p.DeclaringCompilation != null
-                ? p.Type == p.DeclaringCompilation.CoreTypes.Context.Symbol
+                ? p.Type == null
                 : p.Type != null
                     ? (p.Type.Name == "Context" && p.Type.ContainingAssembly.IsPeachpieCorLibrary)
                     : false;

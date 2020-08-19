@@ -59,14 +59,14 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
                 case PhpTypeCode.Long: return ct.Long.Symbol;
                 case PhpTypeCode.Double: return ct.Double.Symbol;
                 case PhpTypeCode.String: return ct.String.Symbol;
-                case PhpTypeCode.WritableString: return ct.PhpString.Symbol;
-                case PhpTypeCode.PhpArray: return ct.PhpArray.Symbol;
-                case PhpTypeCode.Resource: return ct.PhpResource.Symbol;
-                case PhpTypeCode.Object: return ct.Object.Symbol;
-                case PhpTypeCode.Null: return ct.Object.Symbol;
-                case PhpTypeCode.Iterable: return ct.PhpValue.Symbol; // array | Traversable
-                case PhpTypeCode.Callable: return ct.PhpValue.Symbol; // array | string | object
-                case PhpTypeCode.Mixed: return ct.PhpValue.Symbol; // mixed
+                // case PhpTypeCode.WritableString: return ct.PhpString.Symbol;
+                // case PhpTypeCode.PhpArray: return ct.PhpArray.Symbol;
+                // case PhpTypeCode.Resource: return ct.PhpResource.Symbol;
+                // case PhpTypeCode.Object: return ct.Object.Symbol;
+                // case PhpTypeCode.Null: return ct.Object.Symbol;
+                // case PhpTypeCode.Iterable: return ct.PhpValue.Symbol; // array | Traversable
+                // case PhpTypeCode.Callable: return ct.PhpValue.Symbol; // array | string | object
+                // case PhpTypeCode.Mixed: return ct.PhpValue.Symbol; // mixed
                 default:
                     throw ExceptionUtilities.UnexpectedValue(_type);
             }
@@ -294,7 +294,8 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
 
         public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
         {
-            return compilation.CoreTypes.PhpArray.Symbol;
+            throw new NotImplementedException();
+            //return compilation.CoreTypes.PhpArray.Symbol;
         }
 
         public override string ToString() => PhpTypeCode.PhpArray.ToString().ToLowerInvariant();
@@ -346,7 +347,8 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
 
         public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
         {
-            return compilation.CoreTypes.Closure.Symbol;
+            throw new NotImplementedException();
+            //return compilation.CoreTypes.Closure.Symbol;
         }
 
         public override IBoundTypeRef Transfer(TypeRefContext source, TypeRefContext target)
@@ -375,6 +377,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
         public QualifiedName ClassName { get; }
 
         readonly SourceRoutineSymbol _routine;
+
         //readonly SourceTypeSymbol _self;
         readonly int _arity;
 
@@ -408,9 +411,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
                 cg.Builder.EmitStringConstant(ClassName.ToString());
                 cg.Builder.EmitBoolConstant(true);
 
-                return cg.EmitCall(ILOpCode.Call, throwOnError
-                    ? cg.CoreMethods.Context.GetDeclaredTypeOrThrow_string_bool
-                    : cg.CoreMethods.Context.GetDeclaredType_string_bool);
+                return cg.EmitCall(ILOpCode.Call, null);
             }
         }
 
@@ -439,7 +440,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
                         MetadataHelpers.ComposeAritySuffixedMetadataName(ClassName.ClrName(), _arity));
             }
 
-            var containingFile = _routine?.ContainingFile ;//?? _self?.ContainingFile;
+            var containingFile = _routine?.ContainingFile; //?? _self?.ContainingFile;
 
             if (type is AmbiguousErrorTypeSymbol ambiguous && containingFile != null)
             {
@@ -447,9 +448,9 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
 
                 // choose the one declared in this file unconditionally
                 foreach (var x in ambiguous
-                    .CandidateSymbols
-                    .Cast<TypeSymbol>()
-                    .Where(t => !t.IsUnreachable))
+                        .CandidateSymbols
+                        .Cast<TypeSymbol>()
+                        .Where(t => !t.IsUnreachable))
                     //.Where(x => x is SourceTypeSymbol srct && !srct.Syntax.IsConditional &&
                     //            srct.ContainingFile == containingFile))
                 {
@@ -614,8 +615,8 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
                     // ERR
                 }
 
-                cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Dynamic.GetPhpTypeInfo_Object); // PhpTypeInfo
-                cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.GetName_PhpTypeInfo.Getter)
+                cg.EmitCall(ILOpCode.Call, null); // PhpTypeInfo
+                cg.EmitCall(ILOpCode.Call, null)
                     .Expect(SpecialType.System_String);
             }
             else
@@ -648,7 +649,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
                 // TODO: throwOnError
                 cg.EmitLoadContext();
                 cg.EmitConvertToPhpValue(_typeExpression);
-                return cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.TypeNameOrObjectToType_Context_PhpValue);
+                return cg.EmitCall(ILOpCode.Call, null);
             }
             else
             {
@@ -657,9 +658,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
                 this.EmitClassName(cg);
                 cg.Builder.EmitBoolConstant(true);
 
-                return cg.EmitCall(ILOpCode.Call, throwOnError
-                    ? cg.CoreMethods.Context.GetDeclaredTypeOrThrow_string_bool
-                    : cg.CoreMethods.Context.GetDeclaredType_string_bool);
+                return cg.EmitCall(ILOpCode.Call, null);
             }
         }
 
@@ -925,7 +924,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
         {
             return _place
                 .EmitLoad(cg.Builder)
-                .Expect(cg.CoreTypes.PhpTypeInfo);
+                .Expect(null);
         }
 
         public override bool Equals(IBoundTypeRef other) =>

@@ -77,7 +77,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             {
                 // [PhpHiddenAttribute]
                 builder.Add(new SynthesizedAttributeData(
-                    DeclaringCompilation.CoreMethods.Ctors.PhpHiddenAttribute,
+                    null,
                     ImmutableArray<TypedConstant>.Empty,
                     ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty));
             }
@@ -98,7 +98,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             {
                 // [PhpFieldsOnlyCtorAttribute]
                 builder.Add(new SynthesizedAttributeData(
-                    DeclaringCompilation.CoreMethods.Ctors.PhpFieldsOnlyCtorAttribute,
+                    null,
                     ImmutableArray<TypedConstant>.Empty,
                     ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty));
 

@@ -32,7 +32,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 cg.EmitLoadToken(method, null);
                 cg.Emit_NewArray(cg.CoreTypes.RuntimeMethodHandle, overloads, m => cg.EmitLoadToken(m, null));
 
-                return cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Reflection.CreateUserRoutine_string_RuntimeMethodHandle_RuntimeMethodHandleArr);
+                return cg.EmitCall(ILOpCode.Call, null);
             }
             else
             {
@@ -58,7 +58,7 @@ namespace Aquila.CodeAnalysis.Symbols
                     return methodInfoType;
                 });
 
-                return cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Reflection.CreateUserRoutine_String_MethodInfoArray);
+                return cg.EmitCall(ILOpCode.Call, null);
             }
         }
 
@@ -75,7 +75,7 @@ namespace Aquila.CodeAnalysis.Symbols
             // cache the instance of RoutineInfo
             var tmpfld = cg.Module.SynthesizedManager.GetOrCreateSynthesizedField(
                 cg.Module.ScriptType,
-                cg.CoreTypes.RoutineInfo,
+                null,
                 "<>" + name,
                 Accessibility.Internal,
                 isstatic: true,
@@ -96,7 +96,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
             //
             return tmpfld.Type
-                .Expect(cg.CoreTypes.RoutineInfo);
+                .Expect(null);
         }
     }
 }

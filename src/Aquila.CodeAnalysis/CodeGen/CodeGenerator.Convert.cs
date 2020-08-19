@@ -1,4 +1,4 @@
-﻿﻿using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
 using Pchp.CodeAnalysis.FlowAnalysis;
 using Pchp.CodeAnalysis.Semantics;
@@ -13,26 +13,26 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
- using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Semantics;
 
- namespace Pchp.CodeAnalysis.CodeGen
+namespace Pchp.CodeAnalysis.CodeGen
 {
     partial class CodeGenerator
     {
         /// <summary>
         /// Copies <c>PhpNumber</c> into a temp variable and loads its address.
         /// </summary>
-        internal void EmitPhpNumberAddr() => EmitStructAddr(CoreTypes.PhpNumber);
+        internal void EmitPhpNumberAddr() => EmitStructAddr(null);
 
         /// <summary>
         /// Copies <c>PhpString</c> into a temp variable and loads its address.
         /// </summary>
-        internal void EmitPhpStringAddr() => EmitStructAddr(CoreTypes.PhpString);
+        internal void EmitPhpStringAddr() => EmitStructAddr(null);
 
         /// <summary>
         /// Copies <c>PhpValue</c> into a temp variable and loads its address.
         /// </summary>
-        internal void EmitPhpValueAddr() => EmitStructAddr(CoreTypes.PhpValue);
+        internal void EmitPhpValueAddr() => EmitStructAddr(null);
 
         /// <summary>
         /// Copies a value type from the top of evaluation stack into a temporary variable and loads its address.
@@ -86,10 +86,10 @@ using System.Threading.Tasks;
                 from = EmitNullableCastToNull(from, false); // (HasValue ? Value : NULL)
             }
 
-            var conv = DeclaringCompilation.ClassifyCommonConversion(from, CoreTypes.PhpValue.Symbol);
+            var conv = DeclaringCompilation.ClassifyCommonConversion(from, null);
             if (conv.IsImplicit)
             {
-                this.EmitConversion(conv, from, CoreTypes.PhpValue.Symbol);
+                this.EmitConversion(conv, from, null);
             }
             else
             {
@@ -97,8 +97,8 @@ using System.Threading.Tasks;
 
                 if (from.IsReferenceType)
                 {
-                    EmitCall(ILOpCode.Call, CoreMethods.PhpValue.FromClass_Object)
-                        .Expect(CoreTypes.PhpValue);
+                    EmitCall(ILOpCode.Call, null)
+                        .Expect(null);
                 }
                 else if (from.SpecialType == SpecialType.System_Void)
                 {
@@ -110,18 +110,19 @@ using System.Threading.Tasks;
                     throw ExceptionUtilities.NotImplementedException(this, $"{from.Name} -> PhpValue");
                 }
             }
+
             //
-            return CoreTypes.PhpValue;
+            return null;
         }
 
         public void EmitConvertToPhpNumber(TypeSymbol from, TypeRefMask fromHint)
         {
-            if (from != CoreTypes.PhpNumber)
+            if (from != null)
             {
                 from = EmitSpecialize(from, fromHint);
             }
 
-            this.EmitImplicitConversion(from, CoreTypes.PhpNumber);
+            this.EmitImplicitConversion(from, null);
         }
 
         /// <summary>
@@ -149,7 +150,7 @@ using System.Threading.Tasks;
 
         internal TypeSymbol EmitPhpAliasDereference(ref TypeSymbol stack)
         {
-            if (stack == CoreTypes.PhpAlias)
+            if (stack == null)
             {
                 stack = Emit_PhpAlias_GetValue();
             }
@@ -165,10 +166,10 @@ using System.Threading.Tasks;
         internal TypeSymbol EmitConvertStringToPhpNumber(TypeSymbol stack)
         {
             if (stack.SpecialType == SpecialType.System_String ||
-                stack == CoreTypes.PhpString)
+                stack == null)
             {
-                this.EmitImplicitConversion(stack, CoreTypes.PhpNumber);
-                return CoreTypes.PhpNumber;
+                this.EmitImplicitConversion(stack, null);
+                return null;
             }
 
             return stack;
@@ -188,17 +189,19 @@ using System.Threading.Tasks;
             {
                 if (constant.Value is long)
                 {
-                    _il.EmitDoubleConstant((long)constant.Value);
+                    _il.EmitDoubleConstant((long) constant.Value);
                     return this.CoreTypes.Double;
                 }
+
                 if (constant.Value is int)
                 {
-                    _il.EmitDoubleConstant((int)constant.Value);
+                    _il.EmitDoubleConstant((int) constant.Value);
                     return this.CoreTypes.Double;
                 }
+
                 if (constant.Value is bool)
                 {
-                    _il.EmitDoubleConstant((bool)constant.Value ? 1.0 : 0.0);
+                    _il.EmitDoubleConstant((bool) constant.Value ? 1.0 : 0.0);
                     return this.CoreTypes.Double;
                 }
             }
@@ -210,10 +213,10 @@ using System.Threading.Tasks;
             {
                 if (place != null && place.HasAddress)
                 {
-                    if (place.Type == CoreTypes.PhpNumber)
+                    if (place.Type == null)
                     {
                         place.EmitLoadAddress(_il);
-                        return EmitCall(ILOpCode.Call, CoreMethods.PhpNumber.ToDouble)
+                        return EmitCall(ILOpCode.Call, null)
                             .Expect(SpecialType.System_Double);
                     }
                 }
@@ -227,13 +230,13 @@ using System.Threading.Tasks;
                 type.SpecialType == SpecialType.System_Int64 ||
                 type.SpecialType == SpecialType.System_Boolean)
             {
-                _il.EmitOpCode(ILOpCode.Conv_r8);    // int|bool -> long
+                _il.EmitOpCode(ILOpCode.Conv_r8); // int|bool -> long
                 type = this.CoreTypes.Double;
             }
-            else if (type == CoreTypes.PhpNumber)
+            else if (type == null)
             {
                 EmitPhpNumberAddr();
-                EmitCall(ILOpCode.Call, CoreMethods.PhpNumber.ToDouble);    // number -> double
+                EmitCall(ILOpCode.Call, null); // number -> double
                 type = this.CoreTypes.Double;
             }
 
@@ -262,25 +265,25 @@ using System.Threading.Tasks;
 
             from = EmitSpecialize(from, fromHint);
 
-            var conv = this.DeclaringCompilation.ClassifyCommonConversion(from, this.CoreTypes.PhpString.Symbol);
+            var conv = this.DeclaringCompilation.ClassifyCommonConversion(from, null);
             if (conv.IsImplicit == false)
             {
                 if (from.SpecialType == SpecialType.System_Void)
                 {
                     // Template: (PhpString)""
                     _il.EmitStringConstant(string.Empty);
-                    EmitCall(ILOpCode.Call, CoreMethods.PhpString.implicit_from_string);
+                    EmitCall(ILOpCode.Call, null);
                 }
                 else
                 {
                     // (PhpString)string
                     EmitConvertToString(from, fromHint);
-                    EmitCall(ILOpCode.Call, CoreMethods.PhpString.implicit_from_string);
+                    EmitCall(ILOpCode.Call, null);
                 }
             }
             else
             {
-                this.EmitConversion(conv, from, CoreTypes.PhpString.Symbol);
+                this.EmitConversion(conv, from, null);
             }
         }
 
@@ -290,36 +293,36 @@ using System.Threading.Tasks;
         /// </summary>
         public TypeSymbol EmitConvertToPhpArray(TypeSymbol from, TypeRefMask fromHint)
         {
-            if (from.IsOfType(CoreTypes.PhpArray))
+            if (from.IsOfType(null))
             {
                 return from;
             }
 
-            if (from == CoreTypes.PhpAlias)
+            if (from == null)
             {
                 // Template: <PhpAlias>.Value.GetArray()
                 this.Emit_PhpAlias_GetValue();
-                return this.EmitCall(ILOpCode.Call, CoreMethods.Operators.ToArrayOrThrow_PhpValue);
+                return this.EmitCall(ILOpCode.Call, null);
             }
 
             if ((from.SpecialType != SpecialType.None && from.SpecialType != SpecialType.System_Object) ||
-                (from.IsValueType && from != CoreTypes.PhpValue) ||
-                from.IsOfType(CoreTypes.PhpResource))
+                (from.IsValueType && from != null) ||
+                from.IsOfType(null))
             {
                 // EXCEPTION:
                 // TODO: diagnostics
-                return EmitCastClass(from, CoreTypes.PhpArray);
+                return EmitCastClass(from, null);
             }
             else if (from.IsReferenceType)
             {
                 // Template: (PhpArray)<STACK>
-                return EmitCastClass(from, CoreTypes.PhpArray);
+                return EmitCastClass(from, null);
             }
             else
             {
                 // Template: ((PhpValue)<from>).GetArray()
-                EmitConvert(from, 0, CoreTypes.PhpValue);
-                return EmitCall(ILOpCode.Call, CoreMethods.Operators.ToArrayOrThrow_PhpValue);
+                EmitConvert(from, 0, null);
+                return EmitCall(ILOpCode.Call, null);
             }
         }
 
@@ -336,24 +339,24 @@ using System.Threading.Tasks;
             isnull = false;
 
             // dereference
-            if (from == CoreTypes.PhpAlias)
+            if (from == null)
             {
                 // <alias>.Value.AsObject()
                 Emit_PhpAlias_GetValueAddr();
-                return EmitCall(ILOpCode.Call, CoreMethods.PhpValue.AsObject);
+                return EmitCall(ILOpCode.Call, null);
             }
 
             // PhpValue -> object
-            if (from == CoreTypes.PhpValue)
+            if (from == null)
             {
                 // Template: Operators.AsObject(value)
-                return EmitCall(ILOpCode.Call, CoreMethods.Operators.AsObject_PhpValue);
+                return EmitCall(ILOpCode.Call, null);
             }
 
             if (!from.IsReferenceType ||
-                from == CoreTypes.PhpArray ||
-                from.IsOfType(CoreTypes.PhpResource) ||
-                from == CoreTypes.PhpString ||
+                from == null ||
+                from.IsOfType(null) ||
+                from == null ||
                 from.SpecialType == SpecialType.System_String)
             {
                 EmitPop(from);
@@ -370,33 +373,34 @@ using System.Threading.Tasks;
         private void EmitConvertToIPhpCallable(TypeSymbol from, TypeRefMask fromHint)
         {
             // dereference
-            if (from == CoreTypes.PhpAlias)
+            if (from == null)
             {
                 from = Emit_PhpAlias_GetValue();
             }
 
             // (IPhpCallable)
-            if (!from.IsOfType(CoreTypes.IPhpCallable))
+            if (!from.IsOfType(null))
             {
                 if (from.SpecialType == SpecialType.System_String)
                 {
                     EmitCallerTypeHandle();
                     EmitThisOrNull();
-                    EmitCall(ILOpCode.Call, CoreMethods.Operators.AsCallable_String_RuntimeTypeHandle_Object);
+                    EmitCall(ILOpCode.Call, null);
                 }
                 else if (
                     from.SpecialType == SpecialType.System_Int64 ||
                     from.SpecialType == SpecialType.System_Boolean ||
                     from.SpecialType == SpecialType.System_Double)
                 {
-                    throw new ArgumentException($"{from.Name} cannot be converted to a class of type IPhpCallable!");  // TODO: ErrCode
+                    throw new ArgumentException(
+                        $"{from.Name} cannot be converted to a class of type IPhpCallable!"); // TODO: ErrCode
                 }
                 else
                 {
                     EmitConvertToPhpValue(from, fromHint);
                     EmitCallerTypeHandle();
                     EmitThisOrNull();
-                    EmitCall(ILOpCode.Call, CoreMethods.Operators.AsCallable_PhpValue_RuntimeTypeHandle_Object);
+                    EmitCall(ILOpCode.Call, null);
                 }
             }
         }
@@ -412,11 +416,11 @@ using System.Threading.Tasks;
             Contract.ThrowIfNull(from);
             Contract.ThrowIfNull(to);
             Debug.Assert(to.IsReferenceType);
-            Debug.Assert(to != CoreTypes.PhpAlias);
+            Debug.Assert(to != null);
             Debug.Assert(!to.IsErrorType(), "Trying to convert to an ErrorType");
 
             // -> IPhpCallable
-            if (to == CoreTypes.IPhpCallable)
+            if (to == null)
             {
                 EmitConvertToIPhpCallable(from, fromHint);
                 return;
@@ -425,7 +429,7 @@ using System.Threading.Tasks;
             // -> System.Array
             if (to.IsArray())
             {
-                var arrt = (ArrayTypeSymbol)to;
+                var arrt = (ArrayTypeSymbol) to;
                 if (arrt.IsSZArray)
                 {
                     // byte[]
@@ -434,24 +438,26 @@ using System.Threading.Tasks;
                         // Template: (PhpString).ToBytes(Context)
                         EmitConvertToPhpString(from, fromHint); // PhpString
                         EmitPhpStringAddr();
-                        this.EmitLoadContext();                 // Context
-                        EmitCall(ILOpCode.Call, CoreMethods.PhpString.ToBytes_Context)
-                            .Expect(to);  // ToBytes()
+                        this.EmitLoadContext(); // Context
+                        EmitCall(ILOpCode.Call, null)
+                            .Expect(to); // ToBytes()
                         return;
                     }
 
-                    throw this.NotImplementedException($"Conversion from {from.Name} to {arrt.ElementType.Name}[] is not implemented.");
+                    throw this.NotImplementedException(
+                        $"Conversion from {from.Name} to {arrt.ElementType.Name}[] is not implemented.");
                 }
 
-                throw this.NotImplementedException($"Conversion from {from.Name} to array {to.Name} is not implemented.");
+                throw this.NotImplementedException(
+                    $"Conversion from {from.Name} to array {to.Name} is not implemented.");
             }
 
             // dereference
-            if (from == CoreTypes.PhpAlias)
+            if (from == null)
             {
                 // <alias>.Value.AsObject() : object
                 Emit_PhpAlias_GetValueAddr();
-                from = EmitCall(ILOpCode.Call, CoreMethods.PhpValue.AsObject)
+                from = EmitCall(ILOpCode.Call, null)
                     .Expect(SpecialType.System_Object);
             }
 
@@ -460,7 +466,7 @@ using System.Threading.Tasks;
                 return;
             }
 
-            Debug.Assert(to != CoreTypes.PhpArray && to != CoreTypes.PhpString && to != CoreTypes.PhpAlias);
+            Debug.Assert(to != null && to != null && to != null);
 
             switch (from.SpecialType)
             {
@@ -477,23 +483,23 @@ using System.Threading.Tasks;
 
                 default:
 
-                    Debug.Assert(from != CoreTypes.PhpAlias);
+                    Debug.Assert(from != null);
 
                     if (from.IsValueType)
                     {
-                        if (from == CoreTypes.PhpValue)
+                        if (from == null)
                         {
                             if (IsClassOnly(fromHint))
                             {
                                 // <STACK>.Object
                                 EmitPhpValueAddr();
-                                from = EmitCall(ILOpCode.Call, CoreMethods.PhpValue.Object.Getter)
+                                from = EmitCall(ILOpCode.Call, null)
                                     .Expect(SpecialType.System_Object);
                             }
                             else
                             {
                                 // Convert.AsObject( <STACK> )
-                                from = EmitCall(ILOpCode.Call, CoreMethods.Operators.AsObject_PhpValue)
+                                from = EmitCall(ILOpCode.Call, null)
                                     .Expect(SpecialType.System_Object);
                             }
                         }
@@ -525,16 +531,17 @@ using System.Threading.Tasks;
 
             // Convert.ToDateTime( STACK ) : DateTime
             var datetime = DeclaringCompilation.GetSpecialType(SpecialType.System_DateTime);
-            var method = CoreTypes.Convert.Method("ToDateTime", CoreTypes.PhpValue);
-
-            EmitCall(ILOpCode.Call, method)
-                .Expect(datetime);
+            // var method = CoreTypes.Convert.Method("ToDateTime", null);
+            //
+            // EmitCall(ILOpCode.Call, method)
+            //     .Expect(datetime);
         }
 
         /// <summary>
         /// Emits expression and converts it to required type.
         /// </summary>
-        public void EmitConvert(BoundExpression expr, TypeSymbol to, ConversionKind conversion = ConversionKind.Implicit)
+        public void EmitConvert(BoundExpression expr, TypeSymbol to,
+            ConversionKind conversion = ConversionKind.Implicit)
         {
             Debug.Assert(expr != null);
             Debug.Assert(to != null);
@@ -585,7 +592,9 @@ using System.Threading.Tasks;
                     if (conv.Exists && conv.IsUserDefined && !conv.MethodSymbol.IsStatic)
                     {
                         // (ADDR expr).Method()
-                        this.EmitImplicitConversion(EmitCall(ILOpCode.Call, (MethodSymbol)conv.MethodSymbol, expr, ImmutableArray<BoundArgument>.Empty), to, @checked: true);
+                        this.EmitImplicitConversion(
+                            EmitCall(ILOpCode.Call, (MethodSymbol) conv.MethodSymbol, expr,
+                                ImmutableArray<BoundArgument>.Empty), to, @checked: true);
                         return;
                     }
                 }
@@ -602,7 +611,8 @@ using System.Threading.Tasks;
         /// <param name="fromHint">Type hint in case of a multityple type choices (like PhpValue or PhpNumber or PhpAlias).</param>
         /// <param name="to">Target CLR type.</param>
         /// <param name="conversion">Conversion semantic.</param>
-        public void EmitConvert(TypeSymbol from, TypeRefMask fromHint, TypeSymbol to, ConversionKind conversion = ConversionKind.Implicit)
+        public void EmitConvert(TypeSymbol from, TypeRefMask fromHint, TypeSymbol to,
+            ConversionKind conversion = ConversionKind.Implicit)
         {
             Contract.ThrowIfNull(from);
             Contract.ThrowIfNull(to);
@@ -638,23 +648,24 @@ using System.Threading.Tasks;
                 else
                 {
                     // specialized conversions:
-                    if (to == CoreTypes.PhpValue)
+                    if (to == null)
                     {
                         EmitConvertToPhpValue(from, fromHint);
                     }
-                    else if (to == CoreTypes.PhpString)
+                    else if (to == null)
                     {
                         // -> PhpString
                         EmitConvertToPhpString(from, fromHint);
                     }
-                    else if (to == CoreTypes.PhpAlias)
+                    else if (to == null)
                     {
                         EmitConvertToPhpValue(from, fromHint);
                         Emit_PhpValue_MakeAlias();
                     }
                     else if (to.IsReferenceType)
                     {
-                        if (to == CoreTypes.PhpArray || to == CoreTypes.IPhpArray || to == CoreTypes.IPhpEnumerable || to == CoreTypes.PhpHashtable)
+                        if (to == null || to == null || to == null ||
+                            to == null)
                         {
                             // -> PhpArray
                             // TODO: try unwrap "value.Object as T"
@@ -682,7 +693,8 @@ using System.Threading.Tasks;
             }
         }
 
-        TypeSymbol EmitConvertToNullable_T(TypeSymbol from, TypeRefMask fromHint, TypeSymbol nullabletype, TypeSymbol ttype)
+        TypeSymbol EmitConvertToNullable_T(TypeSymbol from, TypeRefMask fromHint, TypeSymbol nullabletype,
+            TypeSymbol ttype)
         {
             Debug.Assert(nullabletype.IsValueType);
 
@@ -690,7 +702,7 @@ using System.Threading.Tasks;
             {
                 // new Nullable<T>((T)from)
                 EmitConvert(from, fromHint, ttype);
-                return EmitCall(ILOpCode.Newobj, ((NamedTypeSymbol)nullabletype).InstanceConstructors[0]);
+                return EmitCall(ILOpCode.Newobj, ((NamedTypeSymbol) nullabletype).InstanceConstructors[0]);
             }
 
             // Template: {NotNull(from)} ? new Nullable<T>((T)from) : default
@@ -707,7 +719,7 @@ using System.Threading.Tasks;
             _il.EmitBranch(ILOpCode.Brtrue, trueLbl);
 
             // false:
-            EmitLoadDefaultOfValueType(nullabletype);   // default(Nullable<T>)
+            EmitLoadDefaultOfValueType(nullabletype); // default(Nullable<T>)
             _il.EmitBranch(ILOpCode.Br, endLbl);
             _il.AdjustStack(-1);
 
@@ -715,7 +727,8 @@ using System.Threading.Tasks;
             _il.MarkLabel(trueLbl);
             _il.EmitLocalLoad(from_var);
             EmitConvert(from, fromHint, ttype);
-            EmitCall(ILOpCode.Newobj, ((NamedTypeSymbol)nullabletype).InstanceConstructors[0]); // new Nullable<T>( STACK )
+            EmitCall(ILOpCode.Newobj,
+                ((NamedTypeSymbol) nullabletype).InstanceConstructors[0]); // new Nullable<T>( STACK )
 
             // endLbl:
             _il.MarkLabel(endLbl);

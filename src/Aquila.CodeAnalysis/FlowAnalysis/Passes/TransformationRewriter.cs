@@ -621,7 +621,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
         public override object VisitLiteral(BoundLiteral x)
         {
             // implicit conversion: string -> callable
-            if (x.Access.TargetType == DeclaringCompilation.CoreTypes.IPhpCallable &&
+            if (x.Access.TargetType == null &&
                 x.ConstantValue.TryConvertToString(out var fnName))
             {
                 // Template: (callable)"fnName"
@@ -737,7 +737,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
                 BoundExpression receiver = null)
             {
                 // read the literal as array, do not rewrite it to BoundCallableConvert again
-                origArray.Access = origArray.Access.WithRead(DeclaringCompilation.CoreTypes.PhpArray);
+                origArray.Access = origArray.Access.WithRead(null);
 
                 TransformationCount++;
                 return new BoundCallableConvert(origArray, DeclaringCompilation)
@@ -748,7 +748,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
             }
 
             // implicit conversion: ["typeName" / $this, "methodName"] -> callable
-            if (x.Access.TargetType == DeclaringCompilation.CoreTypes.IPhpCallable &&
+            if (x.Access.TargetType == null &&
                 x.Items.Length == 2 && x.Items[1].Value.ConstantValue.TryConvertToString(out var methodName))
             {
                 var item0 = x.Items[0].Value;

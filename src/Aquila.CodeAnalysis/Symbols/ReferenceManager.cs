@@ -231,8 +231,8 @@ namespace Aquila.CodeAnalysis
                             if (_lazyCorLibrary == null && symbol.IsCorLibrary)
                                 _lazyCorLibrary = symbol;
 
-                            if (_lazyPhpCorLibrary == null && symbol.IsPeachpieCorLibrary)
-                                _lazyPhpCorLibrary = symbol;
+                            // if (_lazyPhpCorLibrary == null && symbol.IsPeachpieCorLibrary)
+                            //     _lazyPhpCorLibrary = symbol;
 
                             // cache bound assembly symbol
                             _observedMetadata[symbol.Identity] = symbol;
@@ -277,19 +277,19 @@ namespace Aquila.CodeAnalysis
                     assemblies.AsImmutable(),
                     ImmutableArray<UnifiedAssembly<AssemblySymbol>>.Empty), assembly);
 
-                // set cor types for this compilation
-                if (_lazyPhpCorLibrary == null)
-                {
-                    _diagnostics.Add(Location.None, Errors.ErrorCode.ERR_MetadataFileNotFound, "Peachpie.Runtime.dll");
-                    throw new DllNotFoundException("Peachpie.Runtime not found");
-                }
+                // // set cor types for this compilation
+                // if (_lazyPhpCorLibrary == null)
+                // {
+                //     _diagnostics.Add(Location.None, Errors.ErrorCode.ERR_MetadataFileNotFound, "Peachpie.Runtime.dll");
+                //     throw new DllNotFoundException("Peachpie.Runtime not found");
+                // }
 
                 if (_lazyCorLibrary == null)
                 {
                     throw new DllNotFoundException("A corlib not found");
                 }
 
-                compilation.CoreTypes.Update(_lazyPhpCorLibrary);
+//                compilation.CoreTypes.Update(_lazyPhpCorLibrary);
                 compilation.CoreTypes.Update(_lazyCorLibrary);
 
                 //

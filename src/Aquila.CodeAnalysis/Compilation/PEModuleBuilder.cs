@@ -1,4 +1,4 @@
-﻿﻿using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
 using Pchp.CodeAnalysis.CodeGen;
 using Pchp.CodeAnalysis.Semantics.Model;
@@ -11,9 +11,9 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
- using Aquila.CodeAnalysis.Symbols.Synthesized;
+using Aquila.CodeAnalysis.Symbols.Synthesized;
 
- namespace Pchp.CodeAnalysis.Emit
+namespace Pchp.CodeAnalysis.Emit
 {
     partial class PEModuleBuilder
     {
@@ -33,15 +33,18 @@ using System.Threading.Tasks;
         internal void CreateEntryPoint(MethodSymbol method, DiagnosticBag diagnostic)
         {
             // "static int Main(string[] args)"
-            var realmethod = new SynthesizedMethodSymbol(this.ScriptType, "Main", true, false, _compilation.CoreTypes.Int32, Accessibility.Private);
-            realmethod.SetParameters(new SynthesizedParameterSymbol(realmethod, ArrayTypeSymbol.CreateSZArray(this.Compilation.SourceAssembly, this.Compilation.CoreTypes.String), 0, RefKind.None, "args"));
+            var realmethod = new SynthesizedMethodSymbol(this.ScriptType, "Main", true, false,
+                _compilation.CoreTypes.Int32, Accessibility.Private);
+            realmethod.SetParameters(new SynthesizedParameterSymbol(realmethod,
+                ArrayTypeSymbol.CreateSZArray(this.Compilation.SourceAssembly, this.Compilation.CoreTypes.String), 0,
+                RefKind.None, "args"));
 
             //
             var body = MethodGenerator.GenerateMethodBody(this, realmethod,
                 (il) =>
                 {
                     var types = this.Compilation.CoreTypes;
-                    var methods = this.Compilation.CoreMethods;
+                    //var methods = this.Compilation.CoreMethods;
                     var args_place = new ParamPlace(realmethod.Parameters[0]);
 
                     // int exitcode = 0;
@@ -50,57 +53,57 @@ using System.Threading.Tasks;
                     il.EmitLocalStore(exitcode_loc);
 
                     // create Context
-                    var ctx_loc = il.LocalSlotManager.AllocateSlot(types.Context.Symbol, LocalSlotConstraints.None);
+                    // var ctx_loc = il.LocalSlotManager.AllocateSlot(types.Context.Symbol, LocalSlotConstraints.None);
                     var ex_loc = il.LocalSlotManager.AllocateSlot(types.Exception.Symbol, LocalSlotConstraints.None);
-                    var onUnhandledException_method = types.Context.Symbol.LookupMember<MethodSymbol>("OnUnhandledException");
+                    //var onUnhandledException_method = types.Context.Symbol.LookupMember<MethodSymbol>("OnUnhandledException");
 
                     if (_compilation.Options.OutputKind == OutputKind.ConsoleApplication)
                     {
                         // CreateConsole(string mainscript, params string[] args)
-                        var create_method = types.Context.Symbol.LookupMember<MethodSymbol>("CreateConsole", m =>
-                        {
-                            return
-                                m.ParameterCount == 2 &&
-                                m.Parameters[0].Type == types.String &&     // string mainscript
-                                m.Parameters[1].Type == args_place.Type;    // params string[] args
-                        });
-                        Debug.Assert(create_method != null);
-                        
-                        il.EmitStringConstant(EntryPointScriptName(method));    // mainscript
-                        args_place.EmitLoad(il);                                // args
-
-                        il.EmitOpCode(ILOpCode.Call, +2);
-                        il.EmitToken(create_method, null, diagnostic);
+                        // var create_method = types.Context.Symbol.LookupMember<MethodSymbol>("CreateConsole", m =>
+                        // {
+                        //     return
+                        //         m.ParameterCount == 2 &&
+                        //         m.Parameters[0].Type == types.String &&     // string mainscript
+                        //         m.Parameters[1].Type == args_place.Type;    // params string[] args
+                        // });
+                        // Debug.Assert(create_method != null);
+                        //
+                        // il.EmitStringConstant(EntryPointScriptName(method));    // mainscript
+                        // args_place.EmitLoad(il);                                // args
+                        //
+                        // il.EmitOpCode(ILOpCode.Call, +2);
+                        // il.EmitToken(create_method, null, diagnostic);
                     }
                     else
                     {
                         // CreateEmpty(args)
-                        MethodSymbol create_method = types.Context.Symbol.LookupMember<MethodSymbol>("CreateEmpty");
-                        Debug.Assert(create_method != null);
-                        Debug.Assert(create_method.ParameterCount == 1);
-                        Debug.Assert(create_method.Parameters[0].Type == args_place.Type);
-                        args_place.EmitLoad(il);    // args
-                        il.EmitOpCode(ILOpCode.Call, +1);
-                        il.EmitToken(create_method, null, diagnostic);
+                        // MethodSymbol create_method = types.Context.Symbol.LookupMember<MethodSymbol>("CreateEmpty");
+                        // Debug.Assert(create_method != null);
+                        // Debug.Assert(create_method.ParameterCount == 1);
+                        // Debug.Assert(create_method.Parameters[0].Type == args_place.Type);
+                        // args_place.EmitLoad(il);    // args
+                        // il.EmitOpCode(ILOpCode.Call, +1);
+                        // il.EmitToken(create_method, null, diagnostic);
                     }
 
-                    il.EmitLocalStore(ctx_loc);
+                    // il.EmitLocalStore(ctx_loc);
 
                     // Template:
                     // try { Main(...); } catch (ScriptDiedException) { } catch (Exception) { ... } finally { ctx.Dispose(); }
 
-                    il.OpenLocalScope(ScopeType.TryCatchFinally);   // try { try ... } finally {}
+                    il.OpenLocalScope(ScopeType.TryCatchFinally); // try { try ... } finally {}
                     il.OpenLocalScope(ScopeType.Try);
                     {
                         // IL requires catches and finally block to be distinct try
 
-                        il.OpenLocalScope(ScopeType.TryCatchFinally);   // try {} catch (ScriptDiedException) {}
+                        il.OpenLocalScope(ScopeType.TryCatchFinally); // try {} catch (ScriptDiedException) {}
                         il.OpenLocalScope(ScopeType.Try);
                         {
                             // emit .call method;
                             if (method.HasThis)
                             {
-                                throw new NotImplementedException();    // TODO: create instance of ContainingType
+                                throw new NotImplementedException(); // TODO: create instance of ContainingType
                             }
 
                             // params
@@ -110,12 +113,12 @@ using System.Threading.Tasks;
                                 {
                                     case SpecialParameterSymbol.ContextName:
                                         // <ctx>
-                                        il.EmitLocalLoad(ctx_loc);
+                                        // il.EmitLocalLoad(ctx_loc);
                                         break;
                                     case SpecialParameterSymbol.LocalsName:
                                         // <ctx>.Globals
-                                        il.EmitLocalLoad(ctx_loc);
-                                        il.EmitCall(this, diagnostic, ILOpCode.Call, methods.Context.Globals.Getter)
+                                        // il.EmitLocalLoad(ctx_loc);
+                                        il.EmitCall(this, diagnostic, ILOpCode.Call, null)
                                             .Expect(p.Type);
                                         break;
                                     case SpecialParameterSymbol.ThisName:
@@ -124,7 +127,9 @@ using System.Threading.Tasks;
                                         break;
                                     case SpecialParameterSymbol.SelfName:
                                         // default(RuntimeTypeHandle)
-                                        var runtimetypehandle_loc = il.LocalSlotManager.AllocateSlot(types.RuntimeTypeHandle.Symbol, LocalSlotConstraints.None);
+                                        var runtimetypehandle_loc =
+                                            il.LocalSlotManager.AllocateSlot(types.RuntimeTypeHandle.Symbol,
+                                                LocalSlotConstraints.None);
                                         il.EmitValueDefault(this, diagnostic, runtimetypehandle_loc);
                                         il.LocalSlotManager.FreeSlot(runtimetypehandle_loc);
                                         break;
@@ -133,60 +138,61 @@ using System.Threading.Tasks;
                                 }
                             }
 
-                            if (il.EmitCall(this, diagnostic, ILOpCode.Call, method).SpecialType != SpecialType.System_Void)
+                            if (il.EmitCall(this, diagnostic, ILOpCode.Call, method).SpecialType !=
+                                SpecialType.System_Void)
                                 il.EmitOpCode(ILOpCode.Pop);
                         }
-                        il.CloseLocalScope();   // /Try
+                        il.CloseLocalScope(); // /Try
 
                         il.AdjustStack(1); // Account for exception on the stack.
-                        il.OpenLocalScope(ScopeType.Catch, types.ScriptDiedException.Symbol);
-                        {
-                            // exitcode = <exception>.ProcessStatus(ctx)
-                            il.EmitLocalLoad(ctx_loc);
-                            il.EmitCall(this, diagnostic, ILOpCode.Callvirt, types.ScriptDiedException.Symbol.LookupMember<MethodSymbol>("ProcessStatus"));
-                            il.EmitLocalStore(exitcode_loc);
-                        }
-                        il.CloseLocalScope();   // /Catch
-                        if (onUnhandledException_method != null) // only if runtime defines the method (backward compat.)
-                        {
-                            il.OpenLocalScope(ScopeType.Catch, types.Exception.Symbol);
-                            {
-                                // <ex_loc> = <stack>
-                                il.EmitLocalStore(ex_loc);
-
-                                // <ctx_loc>.OnUnhandledException( <ex_loc> ) : bool
-                                il.EmitLocalLoad(ctx_loc);
-                                il.EmitLocalLoad(ex_loc);
-                                il.EmitCall(this, diagnostic, ILOpCode.Callvirt, onUnhandledException_method)
-                                    .Expect(SpecialType.System_Boolean);
-
-                                // if ( !<bool> )
-                                // {
-                                var lbl_end = new object();
-                                il.EmitBranch(ILOpCode.Brtrue, lbl_end);
-
-                                // rethrow <ex_loc>;
-                                il.EmitLocalLoad(ex_loc);
-                                il.EmitThrow(true);
-
-                                // }
-                                il.MarkLabel(lbl_end);
-                            }
-                            il.CloseLocalScope();   // /Catch
-                        }
-                        il.CloseLocalScope();   // /TryCatch
+                        // il.OpenLocalScope(ScopeType.Catch, types.ScriptDiedException.Symbol);
+                        // {
+                        //     // exitcode = <exception>.ProcessStatus(ctx)
+                        //     il.EmitLocalLoad(ctx_loc);
+                        //     il.EmitCall(this, diagnostic, ILOpCode.Callvirt, types.ScriptDiedException.Symbol.LookupMember<MethodSymbol>("ProcessStatus"));
+                        //     il.EmitLocalStore(exitcode_loc);
+                        // }
+                        il.CloseLocalScope(); // /Catch
+                        // if (onUnhandledException_method != null) // only if runtime defines the method (backward compat.)
+                        // {
+                        //     il.OpenLocalScope(ScopeType.Catch, types.Exception.Symbol);
+                        //     {
+                        //         // <ex_loc> = <stack>
+                        //         il.EmitLocalStore(ex_loc);
+                        //
+                        //         // <ctx_loc>.OnUnhandledException( <ex_loc> ) : bool
+                        //         il.EmitLocalLoad(ctx_loc);
+                        //         il.EmitLocalLoad(ex_loc);
+                        //         il.EmitCall(this, diagnostic, ILOpCode.Callvirt, onUnhandledException_method)
+                        //             .Expect(SpecialType.System_Boolean);
+                        //
+                        //         // if ( !<bool> )
+                        //         // {
+                        //         var lbl_end = new object();
+                        //         il.EmitBranch(ILOpCode.Brtrue, lbl_end);
+                        //
+                        //         // rethrow <ex_loc>;
+                        //         il.EmitLocalLoad(ex_loc);
+                        //         il.EmitThrow(true);
+                        //
+                        //         // }
+                        //         il.MarkLabel(lbl_end);
+                        //     }
+                        //     il.CloseLocalScope();   // /Catch
+                        // }
+                        il.CloseLocalScope(); // /TryCatch
                     }
-                    il.CloseLocalScope();   // /Try
+                    il.CloseLocalScope(); // /Try
 
                     il.OpenLocalScope(ScopeType.Finally);
                     {
                         // ctx.Dispose
-                        il.EmitLocalLoad(ctx_loc);
+                        // il.EmitLocalLoad(ctx_loc);
                         il.EmitOpCode(ILOpCode.Call, -1);
-                        il.EmitToken(methods.Context.Dispose.Symbol, null, diagnostic);
+                        il.EmitToken(null, null, diagnostic);
                     }
-                    il.CloseLocalScope();   // /Finally
-                    il.CloseLocalScope();   // /TryCatch
+                    il.CloseLocalScope(); // /Finally
+                    il.CloseLocalScope(); // /TryCatch
 
                     // return ctx.ExitCode
                     il.EmitLocalLoad(exitcode_loc);
@@ -215,14 +221,15 @@ using System.Threading.Tasks;
             Debug.Assert(wrapper.IsStatic);
             Debug.Assert(main.IsStatic);
 
-            Debug.Assert(wrapper.ReturnType == _compilation.CoreTypes.PhpValue);
+            // Debug.Assert(wrapper.ReturnType == _compilation.CoreTypes.PhpValue);
             Debug.Assert(wrapper.ParameterCount == main.ParameterCount);
 
             //
             var body = MethodGenerator.GenerateMethodBody(this, wrapper,
                 (il) =>
                 {
-                    using (var cg = new CodeGenerator(il, this, diagnostic, this.Compilation.Options.OptimizationLevel, false, main.ContainingType, null, null))
+                    using (var cg = new CodeGenerator(il, this, diagnostic, this.Compilation.Options.OptimizationLevel,
+                        false, main.ContainingType, null, null))
                     {
                         // load arguments
                         foreach (var p in main.Parameters)

@@ -371,18 +371,18 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
                 else // class:
                 {
                     // cannot instantiate Closure
-                    if (type == DeclaringCompilation.CoreTypes.Closure)
-                    {
-                        // Instantiation of '{0}' is not allowed
-                        Add(x.TypeRef.PhpSyntax.Span, Errors.ClosureInstantiated, type.Name);
-                    }
-
+                    // if (type == DeclaringCompilation.CoreTypes.Closure)
+                    // {
+                    //     // Instantiation of '{0}' is not allowed
+                    //     Add(x.TypeRef.PhpSyntax.Span, Errors.ClosureInstantiated, type.Name);
+                    // }
                     //
-                    else if (type.IsAbstract)
-                    {
-                        // Cannot instantiate abstract class {0}
-                        CannotInstantiate(x, "abstract class", x.TypeRef);
-                    }
+                    // //
+                    // else if (type.IsAbstract)
+                    // {
+                    //     // Cannot instantiate abstract class {0}
+                    //     CannotInstantiate(x, "abstract class", x.TypeRef);
+                    // }
                 }
             }
 
@@ -840,15 +840,15 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
                         nonobjtype = target.ResultType.GetPhpTypeNameOrNull();
                         break;
                     default:
-                        if (target.ResultType == DeclaringCompilation.CoreTypes.PhpString ||
-                            target.ResultType == DeclaringCompilation.CoreTypes.PhpArray ||
-                            target.ResultType == DeclaringCompilation.CoreTypes.PhpNumber ||
-                            target.ResultType == DeclaringCompilation.CoreTypes.PhpResource ||
-                            target.ResultType == DeclaringCompilation.CoreTypes.IPhpArray ||
-                            target.ResultType == DeclaringCompilation.CoreTypes.IPhpCallable)
-                        {
-                            nonobjtype = target.ResultType.GetPhpTypeNameOrNull();
-                        }
+                        // if (target.ResultType == DeclaringCompilation.CoreTypes.PhpString ||
+                        //     target.ResultType == DeclaringCompilation.CoreTypes.PhpArray ||
+                        //     target.ResultType == DeclaringCompilation.CoreTypes.PhpNumber ||
+                        //     target.ResultType == DeclaringCompilation.CoreTypes.PhpResource ||
+                        //     target.ResultType == DeclaringCompilation.CoreTypes.IPhpArray ||
+                        //     target.ResultType == DeclaringCompilation.CoreTypes.IPhpCallable)
+                        // {
+                        //     nonobjtype = target.ResultType.GetPhpTypeNameOrNull();
+                        // }
 
                         break;
                 }

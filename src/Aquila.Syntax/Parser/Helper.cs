@@ -3,7 +3,7 @@ using Antlr4.Runtime;
 
 namespace Aquila.Syntax.Parser
 {
-    public static class ParseHelper
+    public static class ParserHelper
     {
         public static LangElement ParseSyntax(string text)
         {
@@ -23,7 +23,7 @@ namespace Aquila.Syntax.Parser
             return parser;
         }
 
-        private static ZSharpParser Parse(string text)
+        public static ZSharpParser Parse(string text)
         {
             using TextReader tr = new StringReader(text);
             return Parse(tr);

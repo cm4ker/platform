@@ -268,7 +268,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             // Template: catch (ScriptDiedException) { rethrow; }
             il.AdjustStack(1); // Account for exception on the stack.
 
-            il.OpenLocalScope(ScopeType.Catch, cg.CoreTypes.ScriptDiedException.Symbol);
+            il.OpenLocalScope(ScopeType.Catch, null);
             il.EmitThrow(true);
             il.CloseLocalScope();
         }
@@ -319,7 +319,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             {
                 // Template: filter(Operators.IsInstanceOf(<stack>, type))
                 tref.EmitLoadTypeInfo(cg, false);
-                cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.IsInstanceOf_Object_PhpTypeInfo)
+                cg.EmitCall(ILOpCode.Call, null)
                     .Expect(SpecialType.System_Boolean);
             }
             else
@@ -514,7 +514,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
         {
             if (_aliasedValueLoc != null)
             {
-                Debug.Assert((TypeSymbol) _aliasedValueLoc.Type == cg.CoreTypes.PhpAlias);
+                Debug.Assert((TypeSymbol) _aliasedValueLoc.Type == null);
                 // This is temporary workaround introducing a simple reference counting (https://github.com/peachpiecompiler/peachpie/issues/345)
                 // Note: it is not correct but it works in the way PHP developers thinks it works :)
 
@@ -525,7 +525,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
 
                 cg.Builder.EmitBranch(ILOpCode.Brfalse, lbl_end);
                 cg.Builder.EmitLocalLoad(_aliasedValueLoc);
-                cg.EmitPop(cg.EmitCall(ILOpCode.Call, cg.CoreMethods.PhpAlias.ReleaseRef));
+                cg.EmitPop(cg.EmitCall(ILOpCode.Call, null));
                 cg.Builder.MarkLabel(lbl_end);
             }
         }
@@ -578,13 +578,13 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
                 {
                     // .EnsureAlias()
                     cg.EmitPhpValueAddr();
-                    t = cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.EnsureAlias_PhpValueRef);
+                    t = cg.EmitCall(ILOpCode.Call, null);
                 }
                 else
                 {
                     // .GetValue()
                     cg.EmitPhpValueAddr();
-                    t = cg.EmitCall(ILOpCode.Call, cg.CoreMethods.PhpValue.GetValue);
+                    t = cg.EmitCall(ILOpCode.Call, null);
                 }
             }
 
@@ -600,7 +600,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
 
         internal void EmitPrepare(CodeGenerator cg)
         {
-            if (_currentValue != null && _aliasedValues && _currentValue.ReturnType == cg.CoreTypes.PhpAlias &&
+            if (_currentValue != null && _aliasedValues && _currentValue.ReturnType == null &&
                 cg.GeneratorStateMachineMethod == null)
             {
                 _aliasedValueLoc = cg.GetTemporaryLocal(_currentValue.ReturnType, immediateReturn: false);
@@ -815,9 +815,9 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             var getEnumeratorMethod =
                 enumereeType.LookupMember<MethodSymbol>(WellKnownMemberNames.GetEnumeratorMethodName);
 
-            TypeSymbol enumeratorType;
+            TypeSymbol enumeratorType = null;
 
-            if (enumereeType.IsOfType(cg.CoreTypes.PhpArray))
+            if (enumereeType.IsOfType(null))
             {
                 cg.Builder.EmitBoolConstant(_aliasedValues);
 
@@ -825,27 +825,28 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
 
                 // PhpArray.GetForeachEnumerator(bool)
                 enumeratorType =
-                    cg.EmitCall(ILOpCode.Callvirt,
-                        cg.CoreMethods.PhpArray.GetForeachEnumerator_Boolean); // TODO: IPhpArray
+                    cg.EmitCall(ILOpCode.Callvirt, null); // TODO: IPhpArray
             }
-            else if (enumereeType.IsOfType(cg.CoreTypes.IPhpEnumerable))
+            else if (enumereeType.IsOfType(null))
             {
-                var GetForeachEnumerator_Bool_RuntimeTypeHandle =
-                    cg.CoreTypes.IPhpEnumerable.Method("GetForeachEnumerator", cg.CoreTypes.Boolean,
-                        cg.CoreTypes.RuntimeTypeHandle);
+                // var GetForeachEnumerator_Bool_RuntimeTypeHandle =
+                //     cg.CoreTypes.Boolean.Method("GetForeachEnumerator", cg.CoreTypes.Boolean,
+                //         cg.CoreTypes.RuntimeTypeHandle);
+                //
+                // // enumeree.GetForeachEnumerator(bool aliasedValues, RuntimeTypeHandle caller)
+                // cg.Builder.EmitBoolConstant(_aliasedValues);
+                // cg.EmitCallerTypeHandle();
+                // enumeratorType = cg.EmitCall(ILOpCode.Callvirt, GetForeachEnumerator_Bool_RuntimeTypeHandle);
+            }
+            else if (enumereeType.IsOfType(null))
+            {
+                enumeratorType = null;
 
-                // enumeree.GetForeachEnumerator(bool aliasedValues, RuntimeTypeHandle caller)
-                cg.Builder.EmitBoolConstant(_aliasedValues);
-                cg.EmitCallerTypeHandle();
-                enumeratorType = cg.EmitCall(ILOpCode.Callvirt, GetForeachEnumerator_Bool_RuntimeTypeHandle);
-            }
-            else if (enumereeType.IsOfType(cg.CoreTypes.Iterator))
-            {
                 // use Iterator directly,
                 // do not allocate additional wrappers
-                enumeratorType =
-                    cg.CoreTypes
-                        .Iterator; // cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.GetForeachEnumerator_Iterator);
+                // enumeratorType =
+                //     cg.CoreTypes
+                //         .Iterator; // cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.GetForeachEnumerator_Iterator);
             }
             // TODO: IPhpArray
             else if (getEnumeratorMethod != null && getEnumeratorMethod.ParameterCount == 0 &&
@@ -861,16 +862,15 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
                 cg.EmitCallerTypeHandle();
 
                 // Operators.GetForeachEnumerator(PhpValue, bool, RuntimeTypeHandle)
-                enumeratorType = cg.EmitCall(ILOpCode.Call,
-                    cg.CoreMethods.Operators.GetForeachEnumerator_PhpValue_Bool_RuntimeTypeHandle);
+                enumeratorType = cg.EmitCall(ILOpCode.Call, null);
             }
 
             // store the enumerator:
-            _enumeratorLoc = cg.GetTemporaryLocal(enumeratorType, longlive: true, immediateReturn: false);
+            _enumeratorLoc = cg.GetTemporaryLocal(null, longlive: true, immediateReturn: false);
             _enumeratorLoc.EmitStore();
 
             //
-            if (enumeratorType == cg.CoreTypes.Iterator)
+            if (enumeratorType == null)
             {
                 // if iterator is null, goto end
                 _enumeratorLoc.EmitLoad(cg.Builder);

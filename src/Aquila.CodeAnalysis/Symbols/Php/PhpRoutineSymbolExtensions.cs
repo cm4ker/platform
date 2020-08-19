@@ -43,11 +43,11 @@ namespace Aquila.CodeAnalysis.Symbols.Php
                 // if non-virtual -> return Generator directly
                 if (IsNotOverriding(routine))
                 {
-                    return compilation.CoreTypes.Generator;
+                    return null;
                 }
                 else //can't be sure -> play safe with PhpValue
                 {
-                    return compilation.CoreTypes.PhpValue;
+                    return null;
                 }
             }
 
@@ -58,10 +58,10 @@ namespace Aquila.CodeAnalysis.Symbols.Php
             // }
 
             // : return type
-            // if (routine.SyntaxReturnType != null)
-            // {
-            //     return compilation.GetTypeFromTypeRef(routine.SyntaxReturnType, routine.ContainingType as Source.SourceTypeSymbol);
-            // }
+            if (routine.SyntaxReturnType != null)
+            {
+                return compilation.GetTypeFromTypeRef(routine.SyntaxReturnType, routine.ContainingType);
+            }
 
             // for non virtual methods:
             if (IsNotOverriding(routine))
@@ -90,7 +90,7 @@ namespace Aquila.CodeAnalysis.Symbols.Php
             }
 
             // any value by default
-            return compilation.CoreTypes.PhpValue;
+            return null;
         }
 
         /// <summary>

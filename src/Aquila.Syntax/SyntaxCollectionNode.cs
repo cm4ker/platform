@@ -6,7 +6,7 @@ using Aquila.Syntax.Text;
 
 namespace Aquila.Syntax
 {
-    public class SyntaxCollectionNode<T> : LangElement, IEnumerable<T> where T : LangElement
+    public class SyntaxCollectionNode<T> : LangElement, IList<T> where T : LangElement
     {
         public SyntaxCollectionNode(Span span) : base(span, SyntaxKind.Argument)
         {
@@ -25,6 +25,29 @@ namespace Aquila.Syntax
             base.Add(statement);
         }
 
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Contains(T item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            foreach (var element in this)
+            {
+                array[arrayIndex] = element;
+            }
+        }
+
+        public bool Remove(T item)
+        {
+            throw new NotImplementedException();
+        }
+
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
             throw new System.NotImplementedException();
@@ -35,9 +58,30 @@ namespace Aquila.Syntax
             throw new NotImplementedException();
         }
 
-        public T this[int index] => (T) Children[index];
+        public int IndexOf(T item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(int index, T item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveAt(int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T this[int index] 
+        {
+
+            get { return (T) Children[index];}
+            set { throw new NotImplementedException(); }
+        }
 
         public int Count => Children.Count;
+        public bool IsReadOnly { get; }
 
         // public List<T> ToList()
         // {

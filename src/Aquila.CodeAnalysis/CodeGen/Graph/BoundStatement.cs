@@ -67,7 +67,7 @@ namespace Pchp.CodeAnalysis.Semantics
                     cg.EmitGeneratorInstance();
                     var t = cg.Emit(this.Returned);
                     cg.EmitConvertToPhpValue(t, 0);
-                    cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.SetGeneratorReturnedValue_Generator_PhpValue);
+                    cg.EmitCall(ILOpCode.Call, null);
                 }
 
                 // g._state = -2 (closed): go to the end of the generator method
@@ -145,12 +145,12 @@ namespace Pchp.CodeAnalysis.Semantics
 
             // <ctx>.Globals : PhpArray
             cg.EmitLoadContext();
-            cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Context.Globals.Getter);
+            cg.EmitCall(ILOpCode.Call, null);
 
             // PhpArray.EnsureItemAlias( name ) : PhpAlias
             this.Variable.Name.EmitIntStringKey(cg);
-            var t = cg.EmitCall(ILOpCode.Call, cg.CoreMethods.PhpArray.EnsureItemAlias_IntStringKey)
-                .Expect(cg.CoreTypes.PhpAlias);
+            var t = cg.EmitCall(ILOpCode.Call, null)
+                .Expect(null);
 
             //
             local.EmitStore(cg, ref lhs, t, access);
@@ -170,7 +170,7 @@ namespace Pchp.CodeAnalysis.Semantics
             cg.Module.SynthesizedManager.AddNestedType(holder.ContainingType, holder);
 
             // Context.GetStatic<H>()
-            var getmethod = cg.CoreMethods.Context.GetStatic_T.Symbol.Construct(holder);
+            // var getmethod = cg.CoreMethods.Context.GetStatic_T.Symbol.Construct(holder);
 
             // Template: <local> = &Context.GetStatic<H>().value
             var local = this.Declaration
@@ -179,7 +179,7 @@ namespace Pchp.CodeAnalysis.Semantics
             var lhs = local.EmitStorePreamble(cg, access);
 
             cg.EmitLoadContext(); // <ctx>
-            cg.EmitCall(ILOpCode.Callvirt, getmethod); // .GetStatic<H>()
+            // cg.EmitCall(ILOpCode.Callvirt, getmethod); // .GetStatic<H>()
             cg.Builder.EmitOpCode(ILOpCode.Ldfld); // .value
             cg.EmitSymbolToken(holder.ValueField, null);
 
@@ -203,7 +203,7 @@ namespace Pchp.CodeAnalysis.Semantics
                 holder.EmitInit(module, (il) =>
                 {
                     var cg = new CodeGenerator(il, module, diagnostic, compilation.Options.OptimizationLevel, false,
-                        holder.ContainingType, new ArgPlace(compilation.CoreTypes.Context, 1), new ArgPlace(holder, 0),
+                        holder.ContainingType, new ArgPlace(null, 1), new ArgPlace(holder, 0),
                         routine: routine);
 
                     var valuePlace = new FieldPlace(cg.ThisPlaceOpt, holder.ValueField, module);
@@ -268,8 +268,8 @@ namespace Pchp.CodeAnalysis.Semantics
             cg.EmitLoadContext();
             cg.Builder.EmitStringConstant(Name.ToString());
             cg.EmitFieldAddress(idxfield);
-            cg.EmitConvert(Value, cg.CoreTypes.PhpValue);
-            cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.DeclareConstant_Context_string_int_PhpValue)
+            cg.EmitConvert(Value, null);
+            cg.EmitCall(ILOpCode.Call, null)
                 .Expect(SpecialType.System_Void);
         }
     }
@@ -311,27 +311,27 @@ namespace Pchp.CodeAnalysis.Semantics
 
             if (YieldedKey == null)
             {
-                cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.SetGeneratorCurrent_Generator_PhpValue)
+                cg.EmitCall(ILOpCode.Call, null)
                     .Expect(SpecialType.System_Void);
             }
             else
             {
                 cg.EmitConvertToPhpValue(cg.Emit(YieldedKey), YieldedKey.TypeRefMask);
 
-                var setcurrent = this.IsYieldFrom
-                    ? cg.CoreMethods.Operators
-                        .SetGeneratorCurrentFrom_Generator_PhpValue_PhpValue // does not update auto-incremented key
-                    : cg.CoreMethods.Operators
-                        .SetGeneratorCurrent_Generator_PhpValue_PhpValue; // updates Generator max key
-
-
-                cg.EmitCall(ILOpCode.Call, setcurrent).Expect(SpecialType.System_Void);
+                // var setcurrent = this.IsYieldFrom
+                //     ? cg.CoreMethods.Operators
+                //         .SetGeneratorCurrentFrom_Generator_PhpValue_PhpValue // does not update auto-incremented key
+                //     : cg.CoreMethods.Operators
+                //         .SetGeneratorCurrent_Generator_PhpValue_PhpValue; // updates Generator max key
+                //
+                //
+                // cg.EmitCall(ILOpCode.Call, setcurrent).Expect(SpecialType.System_Void);
             }
 
             //generator._state = yieldIndex
             cg.EmitGeneratorInstance();
             il.EmitIntConstant(YieldIndex);
-            cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.SetGeneratorState_Generator_int);
+            // cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.SetGeneratorState_Generator_int);
 
             // return & set continuation point just after that
             cg.EmitRet(cg.CoreTypes.Void, yielding: true); // il.EmitRet(true);
@@ -339,7 +339,7 @@ namespace Pchp.CodeAnalysis.Semantics
 
             // Operators.HandleGeneratorException(generator)
             cg.EmitGeneratorInstance();
-            cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.HandleGeneratorException_Generator);
+            // cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.HandleGeneratorException_Generator);
         }
     }
 

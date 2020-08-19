@@ -124,7 +124,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 var tsymbol = DeclaringCompilation.GetTypeFromTypeRef(_routine, _routine.ControlFlowGraph.GetLocalTypeMask(this.Name));
                 if (tsymbol.SpecialType == SpecialType.System_Void)
                 {
-                    tsymbol = DeclaringCompilation.CoreTypes.PhpValue;  // temporary workaround for uninitialized variables
+                    tsymbol = null;  // temporary workaround for uninitialized variables
                 }
                 Debug.Assert(tsymbol.IsValidType());
                 return tsymbol;

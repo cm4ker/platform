@@ -82,7 +82,7 @@ namespace Pchp.CodeAnalysis.CodeGen
                     var ctxPlace = //thisPlace != null && ghost.ContainingType is SourceTypeSymbol sourcetype
                         //? (sourcetype.ContextStore != null ? new FieldPlace(thisPlace, sourcetype.ContextStore, module) : null)
                         //: 
-                        (IPlace) new ArgPlace(module.Compilation.CoreTypes.Context, 0);
+                        (IPlace) new ArgPlace(null, 0);
 
                     // .callvirt
                     bool callvirt = ghost.ExplicitOverride != null &&

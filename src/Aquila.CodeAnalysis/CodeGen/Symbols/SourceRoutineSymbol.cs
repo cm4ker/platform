@@ -184,16 +184,16 @@ namespace Aquila.CodeAnalysis.Symbols
                         {
                             // private static PhpValue func(Context) => INITIALIZER()
                             func = new SynthesizedMethodSymbol(field.ContainingType, field.Name + "Func",
-                                isstatic: true, isvirtual: false, DeclaringCompilation.CoreTypes.PhpValue,
+                                isstatic: true, isvirtual: false, null,
                                 isfinal: true);
                             func.SetParameters(new SynthesizedParameterSymbol(func,
-                                DeclaringCompilation.CoreTypes.Context, 0, RefKind.None,
+                                null, 0, RefKind.None,
                                 name: SpecialParameterSymbol.ContextName));
 
                             //
                             module.SetMethodBody(func, MethodGenerator.GenerateMethodBody(module, func, il =>
                             {
-                                var ctxPlace = new ArgPlace(DeclaringCompilation.CoreTypes.Context, 0);
+                                var ctxPlace = new ArgPlace(null, 0);
                                 var cg = new CodeGenerator(il, module, diagnostics,
                                     module.Compilation.Options.OptimizationLevel, false, field.ContainingType, ctxPlace,
                                     null)
@@ -293,9 +293,9 @@ namespace Aquila.CodeAnalysis.Symbols
             cg.EmitLoadContext(); // ctx for generator
 
             // new PhpArray for generator's locals
-            cg.EmitCall(ILOpCode.Newobj, cg.CoreMethods.Ctors.PhpArray);
+            cg.EmitCall(ILOpCode.Newobj, null);
 
-            var generatorsLocals = cg.GetTemporaryLocal(cg.CoreTypes.PhpArray);
+            var generatorsLocals = cg.GetTemporaryLocal(null);
             cg.Builder.EmitLocalStore(generatorsLocals);
 
             // initialize parameters (set their _isOptimized and copy them to locals array)
@@ -304,24 +304,20 @@ namespace Aquila.CodeAnalysis.Symbols
             cg.ReturnTemporaryLocal(generatorsLocals);
 
             // new PhpArray for generator's synthesizedLocals
-            cg.EmitCall(ILOpCode.Newobj, cg.CoreMethods.Ctors.PhpArray);
+            cg.EmitCall(ILOpCode.Newobj, null);
 
             // new GeneratorStateMachineDelegate(<genSymbol>) delegate for generator
             cg.Builder.EmitNullConstant(); // null
             cg.EmitOpCode(ILOpCode.Ldftn); // method
             cg.EmitSymbolToken(genSymbol, null);
 
-            cg.EmitCall(ILOpCode.Newobj,
-                cg.CoreTypes.GeneratorStateMachineDelegate.Ctor(cg.CoreTypes.Object,
-                    cg.CoreTypes.IntPtr)); // GeneratorStateMachineDelegate(object @object, IntPtr method)
+            cg.EmitCall(ILOpCode.Newobj, null); // GeneratorStateMachineDelegate(object @object, IntPtr method)
 
             // handleof(this)
             cg.EmitLoadToken(this, null);
 
             // create generator object via Operators factory method
-            cg.EmitCall(ILOpCode.Call,
-                cg.CoreMethods.Operators
-                    .BuildGenerator_Context_PhpArray_PhpArray_GeneratorStateMachineDelegate_RuntimeMethodHandle);
+            cg.EmitCall(ILOpCode.Call, null);
 
             // .SetGeneratorThis( object ) : Generator
             // if (!this.IsStatic || (lambda != null && lambda.UseThis))
@@ -336,8 +332,8 @@ namespace Aquila.CodeAnalysis.Symbols
             if ((this.Flags & RoutineFlags.UsesLateStatic) != 0 && this.IsStatic)
             {
                 cg.EmitLoadStaticPhpTypeInfo();
-                cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.SetGeneratorLazyStatic_Generator_PhpTypeInfo)
-                    .Expect(cg.CoreTypes.Generator);
+                cg.EmitCall(ILOpCode.Call, null)
+                    .Expect(null);
             }
 
             // .SetGeneratorDynamicScope( scope ) : Generator
@@ -350,7 +346,7 @@ namespace Aquila.CodeAnalysis.Symbols
             // }
 
             // Convert to return type (Generator or PhpValue, depends on analysis)
-            cg.EmitConvert(cg.CoreTypes.Generator, 0, this.ReturnType);
+            cg.EmitConvert(null, 0, this.ReturnType);
             il.EmitRet(false);
 
             // Generate SM method. Must be generated after EmitInit of parameters (it sets their _isUnoptimized field).
@@ -450,12 +446,12 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         void SynthesizeMainMethodWrapper(PEModuleBuilder module, DiagnosticBag diagnostics)
         {
-            if (this.ReturnType != DeclaringCompilation.CoreTypes.PhpValue)
+            if (this.ReturnType != null)
             {
                 // PhpValue <Main>`0(parameters)
                 var wrapper = new SynthesizedMethodSymbol(
                     this.ContainingFile, WellKnownPchpNames.GlobalRoutineName + "`0", true, false,
-                    DeclaringCompilation.CoreTypes.PhpValue, Accessibility.Public);
+                    null, Accessibility.Public);
 
                 wrapper.SetParameters(this.Parameters.Select(p =>
                     new SynthesizedParameterSymbol(wrapper, p.Type, p.Ordinal, p.RefKind, p.Name)).ToArray());
@@ -551,7 +547,7 @@ namespace Aquila.CodeAnalysis.Symbols
                         m => cg.EmitLoadToken(m, null));
 
                     cctor.EmitCall(module, DiagnosticBag.GetInstance(), ILOpCode.Call,
-                        cg.CoreMethods.Reflection.CreateUserRoutine_string_RuntimeMethodHandle_RuntimeMethodHandleArr);
+                        null);
 
                     field.EmitStore(cctor);
                 }

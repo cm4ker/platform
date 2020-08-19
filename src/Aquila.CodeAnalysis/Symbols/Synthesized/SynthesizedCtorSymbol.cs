@@ -124,12 +124,12 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             int index = 0;
 
             // Context <ctx>
-            yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.Context, SpecialParameterSymbol.ContextName, index++);
+            yield return new SpecialParameterSymbol(this, null, SpecialParameterSymbol.ContextName, index++);
 
             if (IsInitFieldsOnly)
             {
                 // DummyFieldsOnlyCtor _
-                yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.DummyFieldsOnlyCtor, "_", index++);
+                yield return new SpecialParameterSymbol(this, null, "_", index++);
             }
 
             // same parameters as PHP constructor

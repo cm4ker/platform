@@ -1221,9 +1221,9 @@ namespace Aquila.Syntax.Ast
 
 namespace Aquila.Syntax.Ast.Statements
 {
-    public partial class Return : Statement
+    public partial class ReturnStmt : Statement
     {
-        public Return(Span span, SyntaxKind syntaxKind, Expression expression): base(span, syntaxKind)
+        public ReturnStmt(Span span, SyntaxKind syntaxKind, Expression expression): base(span, syntaxKind)
         {
             this.Attach(0, (LangElement)expression);
         }
@@ -1238,52 +1238,52 @@ namespace Aquila.Syntax.Ast.Statements
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            return visitor.VisitReturn(this);
+            return visitor.VisitReturnStmt(this);
         }
 
         public override void Accept(AstVisitorBase visitor)
         {
-            visitor.VisitReturn(this);
+            visitor.VisitReturnStmt(this);
         }
     }
 }
 
 namespace Aquila.Syntax.Ast.Statements
 {
-    public partial class Break : Statement
+    public partial class BreakStmt : Statement
     {
-        public Break(Span span, SyntaxKind syntaxKind): base(span, syntaxKind)
+        public BreakStmt(Span span, SyntaxKind syntaxKind): base(span, syntaxKind)
         {
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            return visitor.VisitBreak(this);
+            return visitor.VisitBreakStmt(this);
         }
 
         public override void Accept(AstVisitorBase visitor)
         {
-            visitor.VisitBreak(this);
+            visitor.VisitBreakStmt(this);
         }
     }
 }
 
 namespace Aquila.Syntax.Ast.Statements
 {
-    public partial class Continue : Statement
+    public partial class ContinueStmt : Statement
     {
-        public Continue(Span span, SyntaxKind syntaxKind): base(span, syntaxKind)
+        public ContinueStmt(Span span, SyntaxKind syntaxKind): base(span, syntaxKind)
         {
         }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
-            return visitor.VisitContinue(this);
+            return visitor.VisitContinueStmt(this);
         }
 
         public override void Accept(AstVisitorBase visitor)
         {
-            visitor.VisitContinue(this);
+            visitor.VisitContinueStmt(this);
         }
     }
 }
@@ -1856,17 +1856,17 @@ namespace Aquila.Syntax
             return DefaultVisit(arg);
         }
 
-        public virtual T VisitReturn(Return arg)
+        public virtual T VisitReturnStmt(ReturnStmt arg)
         {
             return DefaultVisit(arg);
         }
 
-        public virtual T VisitBreak(Break arg)
+        public virtual T VisitBreakStmt(BreakStmt arg)
         {
             return DefaultVisit(arg);
         }
 
-        public virtual T VisitContinue(Continue arg)
+        public virtual T VisitContinueStmt(ContinueStmt arg)
         {
             return DefaultVisit(arg);
         }
@@ -2099,17 +2099,17 @@ namespace Aquila.Syntax
             DefaultVisit(arg);
         }
 
-        public virtual void VisitReturn(Return arg)
+        public virtual void VisitReturnStmt(ReturnStmt arg)
         {
             DefaultVisit(arg);
         }
 
-        public virtual void VisitBreak(Break arg)
+        public virtual void VisitBreakStmt(BreakStmt arg)
         {
             DefaultVisit(arg);
         }
 
-        public virtual void VisitContinue(Continue arg)
+        public virtual void VisitContinueStmt(ContinueStmt arg)
         {
             DefaultVisit(arg);
         }

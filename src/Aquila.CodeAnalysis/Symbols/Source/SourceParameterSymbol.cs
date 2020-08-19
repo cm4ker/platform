@@ -59,11 +59,11 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                             // OPTIMIZATION: reference the singleton field directly, the called routine is responsible to perform copy if necessary
                             // parameter MUST NOT be `PassedByRef` https://github.com/peachpiecompiler/peachpie/issues/591
                             // PhpArray.Empty
-                            return DeclaringCompilation.CoreMethods.PhpArray.Empty;
+                            return null;
                         }
 
                         //   
-                        fldtype = DeclaringCompilation.CoreTypes.PhpArray;
+                        fldtype = null;
                     }
                     // else if (Initializer is BoundPseudoClassConst)
                     // {
@@ -71,7 +71,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                     // }
                     else
                     {
-                        fldtype = DeclaringCompilation.CoreTypes.PhpValue;
+                        fldtype = null;
                     }
 
                     // The construction of the default value may require a Context, cannot be created as a static singletong
@@ -83,8 +83,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                     {
                         // Func<Context, PhpValue>
                         fldtype = DeclaringCompilation.GetWellKnownType(WellKnownType.System_Func_T2).Construct(
-                            DeclaringCompilation.CoreTypes.Context,
-                            DeclaringCompilation.CoreTypes.PhpValue);
+                            null,
+                            null);
                     }
 
                     // determine the field container:
@@ -205,7 +205,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 if (_routine is SourceGlobalMethodSymbol)
                 {
                     // "AnyType" in case of $this in global scope
-                    return DeclaringCompilation.CoreTypes.PhpValue;
+                    return null;
                 }
 
                 return ContainingType;

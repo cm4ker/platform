@@ -341,23 +341,25 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         {
             get
             {
-                throw new NotImplementedException();
-                // var funcs = GetFunctions().Cast<SourceRoutineSymbol>();
+
+                 var funcs = GetFunctions().Cast<SourceRoutineSymbol>();
                 // var mains = _files.Values.Select(f => (SourceRoutineSymbol) f.MainMethod);
                 // var methods = GetTypes().SelectMany(f => f.GetMembers().OfType<SourceRoutineSymbol>());
                 // var lambdas = GetLambdas();
                 //
                 // //
-                // return funcs.Concat(mains).Concat(methods).Concat(lambdas);
+                 return funcs; //.Concat(mains).Concat(methods).Concat(lambdas);
             }
         }
 
         public NamedTypeSymbol GetType(QualifiedName name, Dictionary<QualifiedName, INamedTypeSymbol> resolved = null)
         {
-            throw new NotImplementedException();
-            // NamedTypeSymbol first = null;
-            // List<NamedTypeSymbol> alternatives = null;
-            //
+            //throw new NotImplementedException();
+            NamedTypeSymbol first = null;
+            List<NamedTypeSymbol> alternatives = null;
+
+            return new MissingMetadataTypeSymbol(name.ClrName(), 0, false);
+            
             // var types = _types.GetAll(name)
             //     .SelectMany(t => t.AllReachableVersions(resolved)); // get all types with {name} and their versions
             // foreach (var t in types)

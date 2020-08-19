@@ -243,15 +243,15 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="Return" Base="Statement" NS="Statements">
+    <Syntax Name="ReturnStmt" Base="Statement" NS="Statements">
         <Arguments>
             <Single Name="Expression" Type="Expression"/>
         </Arguments>
     </Syntax>
 
-    <Syntax Name="Break" Base="Statement" NS="Statements"/>
+    <Syntax Name="BreakStmt" Base="Statement" NS="Statements"/>
 
-    <Syntax Name="Continue" Base="Statement" NS="Statements"/>
+    <Syntax Name="ContinueStmt" Base="Statement" NS="Statements"/>
 
     <!-- #region Variable-->
 
