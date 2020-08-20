@@ -16,6 +16,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Lowering;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax.Syntax;
@@ -45,7 +46,8 @@ namespace Pchp.CodeAnalysis
 
         public bool ConcurrentBuild => _compilation.Options.ConcurrentBuild;
 
-        private SourceCompiler(PhpCompilation compilation, PEModuleBuilder moduleBuilder, bool emittingPdb, DiagnosticBag diagnostics, CancellationToken cancellationToken)
+        private SourceCompiler(PhpCompilation compilation, PEModuleBuilder moduleBuilder, bool emittingPdb,
+            DiagnosticBag diagnostics, CancellationToken cancellationToken)
         {
             Contract.ThrowIfNull(compilation);
             Contract.ThrowIfNull(diagnostics);
@@ -131,7 +133,7 @@ namespace Pchp.CodeAnalysis
         /// <summary>
         /// Enqueues the standalone expression for analysis.
         /// </summary>
-        void EnqueueExpression(BoundExpression expression, TypeRefContext/*!*/ctx)
+        void EnqueueExpression(BoundExpression expression, TypeRefContext /*!*/ctx)
         {
             Contract.ThrowIfNull(expression);
             Contract.ThrowIfNull(ctx);
@@ -207,7 +209,6 @@ namespace Pchp.CodeAnalysis
 
                 // parameter initializers
                 routine.SourceParameters.ForEach(binder.Bind);
-
             }, allowParallel: ConcurrentBuild);
 
             // field initializers
@@ -231,7 +232,7 @@ namespace Pchp.CodeAnalysis
             {
                 var visitor = new LateStaticCallsLookup();
                 visitor.Accept(block);
-                return (IList<MethodSymbol>)visitor._lazyStaticCalls ?? Array.Empty<MethodSymbol>();
+                return (IList<MethodSymbol>) visitor._lazyStaticCalls ?? Array.Empty<MethodSymbol>();
             }
 
             public override bool VisitStaticFunctionCall(BoundStaticFunctionCall x)
@@ -267,7 +268,8 @@ namespace Pchp.CodeAnalysis
             // collect self:: or parent:: static calls
             this.WalkMethods(routine =>
             {
-                if (routine is SourceMethodSymbol caller && caller.IsStatic && (caller.Flags & RoutineFlags.UsesLateStatic) == 0)
+                if (routine is SourceMethodSymbol caller && caller.IsStatic &&
+                    (caller.Flags & RoutineFlags.UsesLateStatic) == 0)
                 {
                     var cfg = caller.ControlFlowGraph;
                     if (cfg == null)
@@ -310,7 +312,6 @@ namespace Pchp.CodeAnalysis
                         Interlocked.Increment(ref forwarded);
                     }
                 });
-
             } while (forwarded != 0);
         }
 
@@ -405,11 +406,12 @@ namespace Pchp.CodeAnalysis
         {
             Contract.ThrowIfNull(routine);
 
-            if (routine.ControlFlowGraph != null)   // non-abstract method
+            if (routine.ControlFlowGraph != null) // non-abstract method
             {
                 Debug.Assert(routine.ControlFlowGraph.Start.FlowState != null);
 
-                var body = MethodGenerator.GenerateMethodBody(_moduleBuilder, routine, 0, null, _diagnostics, _emittingPdb);
+                var body = MethodGenerator.GenerateMethodBody(_moduleBuilder, routine, 0, null, _diagnostics,
+                    _emittingPdb);
                 _moduleBuilder.SetMethodBody(routine, body);
             }
         }
@@ -422,12 +424,40 @@ namespace Pchp.CodeAnalysis
                 if (entryPoint != null && !(entryPoint is ErrorMethodSymbol))
                 {
                     // wrap call to entryPoint within real <Script>.EntryPointSymbol
-                    _moduleBuilder.CreateEntryPoint((MethodSymbol)entryPoint, _diagnostics);
+                    _moduleBuilder.CreateEntryPoint((MethodSymbol) entryPoint, _diagnostics);
 
                     //
                     Debug.Assert(_moduleBuilder.ScriptType.EntryPointSymbol != null);
                     _moduleBuilder.SetPEEntryPoint(_moduleBuilder.ScriptType.EntryPointSymbol, _diagnostics);
                 }
+            }
+        }
+
+        bool MakeLoweringTransformMethods(bool allowParallel)
+        {
+            bool anyTransforms = false;
+            this.WalkMethods(m =>
+                {
+                    // Cannot be simplified due to multithreading ('=' is atomic unlike '|=')
+                    if (LocalRewriter.TryTransform(m))
+                        anyTransforms = true;
+                },
+                allowParallel: allowParallel);
+
+            return anyTransforms;
+        }
+
+
+        public void LoweringMethods()
+        {
+            if (MakeLoweringTransformMethods(ConcurrentBuild))
+            {
+                WalkMethods(m =>
+                    {
+                        m.ControlFlowGraph?.FlowContext?.InvalidateAnalysis();
+                        EnqueueRoutine(m);
+                    },
+                    allowParallel: true);
             }
         }
 
@@ -455,9 +485,11 @@ namespace Pchp.CodeAnalysis
             return true;
         }
 
-        public static IEnumerable<Diagnostic> BindAndAnalyze(PhpCompilation compilation, CancellationToken cancellationToken)
+        public static IEnumerable<Diagnostic> BindAndAnalyze(PhpCompilation compilation,
+            CancellationToken cancellationToken)
         {
-            var manager = compilation.GetBoundReferenceManager();   // ensure the references are resolved! (binds ReferenceManager)
+            var manager =
+                compilation.GetBoundReferenceManager(); // ensure the references are resolved! (binds ReferenceManager)
 
             var diagnostics = new DiagnosticBag();
             var compiler = new SourceCompiler(compilation, null, true, diagnostics, cancellationToken);
@@ -495,11 +527,17 @@ namespace Pchp.CodeAnalysis
                     compiler.ForwardLateStaticBindings();
                 }
 
-                // 5. Transform Semantic Trees for Runtime Optimization
+                using (compilation.StartMetric("lowering"))
+                {
+                    //5. Lowering methods
+                    compiler.LoweringMethods();
+                }
+
+                // 6. Transform Semantic Trees for Runtime Optimization
             } while (
-                transformation++ < compiler.MaxTransformCount   // limit number of lowering cycles
-                && !cancellationToken.IsCancellationRequested   // user canceled ?
-                && compiler.RewriteMethods());  // try lower the semantics
+                transformation++ < compiler.MaxTransformCount // limit number of lowering cycles
+                && !cancellationToken.IsCancellationRequested // user canceled ?
+                && compiler.RewriteMethods()); // try lower the semantics
 
             // Track the number of actually performed transformations
             compilation.TrackMetric("transformations", transformation - 1);
@@ -535,7 +573,8 @@ namespace Pchp.CodeAnalysis
                 diagnostics.AddRange(declarationDiagnostics);
 
                 // cancel the operation if there are errors
-                if (hasDeclarationErrors |= declarationDiagnostics.HasAnyErrors() || cancellationToken.IsCancellationRequested)
+                if (hasDeclarationErrors |=
+                    declarationDiagnostics.HasAnyErrors() || cancellationToken.IsCancellationRequested)
                 {
                     return;
                 }

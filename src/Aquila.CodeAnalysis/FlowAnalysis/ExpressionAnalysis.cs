@@ -19,7 +19,6 @@ using Aquila.Syntax.Ast;
 using Aquila.Syntax.Syntax;
 
 
-
 namespace Pchp.CodeAnalysis.FlowAnalysis
 {
     /// <summary>
@@ -37,8 +36,10 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets model for symbols resolution.
         /// </summary>
-        internal ISymbolProvider/*!*/Model => _model;
-        readonly ISymbolProvider/*!*/_model;
+        internal ISymbolProvider /*!*/ Model => _model;
+
+        readonly ISymbolProvider /*!*/
+            _model;
 
         /// <summary>
         /// Reference to corresponding source routine.
@@ -92,9 +93,10 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         {
             if (expr.ConstantValue.HasValue)
             {
-                if (expr.ConstantValue.Value is long) return ((long)expr.ConstantValue.Value) == value;
-                if (expr.ConstantValue.Value is int) return ((int)expr.ConstantValue.Value) == value;
+                if (expr.ConstantValue.Value is long) return ((long) expr.ConstantValue.Value) == value;
+                if (expr.ConstantValue.Value is int) return ((int) expr.ConstantValue.Value) == value;
             }
+
             return false;
         }
 
@@ -133,8 +135,11 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         {
             if (x != null)
             {
-                if (x is BoundVariableRef v) return v.Name.IsDirect ? v : TryGetExpressionChainRoot(v.Name.NameExpression);
-                if (x is BoundFieldRef f) return TryGetExpressionChainRoot(f.Instance ?? (f.ContainingType as BoundIndirectTypeRef)?.TypeExpression);
+                if (x is BoundVariableRef v)
+                    return v.Name.IsDirect ? v : TryGetExpressionChainRoot(v.Name.NameExpression);
+                if (x is BoundFieldRef f)
+                    return TryGetExpressionChainRoot(f.Instance ??
+                                                     (f.ContainingType as BoundIndirectTypeRef)?.TypeExpression);
                 if (x is BoundInstanceFunctionCall m) return TryGetExpressionChainRoot(m.Instance);
                 if (x is BoundArrayItemEx a) return TryGetExpressionChainRoot(a.Array);
             }
@@ -145,7 +150,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets current visibility scope.
         /// </summary>
-        protected OverloadsList.VisibilityScope VisibilityScope => new OverloadsList.VisibilityScope(TypeCtx.SelfType, Routine);
+        protected OverloadsList.VisibilityScope VisibilityScope =>
+            new OverloadsList.VisibilityScope(TypeCtx.SelfType, Routine);
 
         protected void PingSubscribers(ExitBlock exit)
         {
@@ -311,7 +317,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 Accept(x.Variable);
 
                 //
-                x.Variable.ResultType = (TypeSymbol)x.TypeRef.Type;
+                x.Variable.ResultType = (TypeSymbol) x.TypeRef.Type;
             }
 
 
@@ -344,7 +350,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 State.SetLessThanLongMax(local, isInt && intVal < long.MaxValue);
                 State.SetGreaterThanLongMin(local, isInt && intVal > long.MinValue);
 
-                State.SetLocalType(local, ((IPhpExpression)v.InitialValue).TypeRefMask | oldtype);
+                State.SetLocalType(local, ((IPhpExpression) v.InitialValue).TypeRefMask | oldtype);
             }
             else
             {
@@ -359,7 +365,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
         public override T VisitGlobalStatement(BoundGlobalVariableStatement x)
         {
-            base.VisitGlobalStatement(x);   // Accept(x.Variable)
+            base.VisitGlobalStatement(x); // Accept(x.Variable)
 
             return default;
         }
@@ -434,7 +440,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             Debug.Assert(x.Value.Access.IsRead);
 
             // Target X Value
-            var tmp = new BoundBinaryEx(x.Target.WithAccess(BoundAccess.Read), x.Value, AstUtils.CompoundOpToBinaryOp(x.Operation));
+            var tmp = new BoundBinaryEx(x.Target.WithAccess(BoundAccess.Read), x.Value,
+                AstUtils.CompoundOpToBinaryOp(x.Operation));
             Visit(tmp, ConditionBranch.AnyResult);
 
             // Target =
@@ -511,7 +518,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 return;
             }
 
-            var previoustype = State.GetLocalType(local);       // type of the variable in the previous state
+            var previoustype = State.GetLocalType(local); // type of the variable in the previous state
 
             // remember the initial state of variable at this point
             x.BeforeTypeRef = previoustype;
@@ -519,7 +526,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             // bind variable place
             if (x.Variable == null)
             {
-                x.Variable = (x is BoundTemporalVariableRef)     // synthesized variable constructed by semantic binder
+                x.Variable = (x is BoundTemporalVariableRef) // synthesized variable constructed by semantic binder
                     ? Routine.LocalsTable.BindTemporalVariable(local.Name)
                     : Routine.LocalsTable.BindLocalVariable(local.Name, x.PhpSyntax.Span.ToTextSpan());
             }
@@ -539,7 +546,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
                     if (vartype.IsSingleType == false || Routine.IsGlobalScope)
                     {
-                        vartype = TypeCtx.GetThisTypeMask(); // : System.Object or exact type, with subclasses if applicable
+                        vartype = TypeCtx
+                            .GetThisTypeMask(); // : System.Object or exact type, with subclasses if applicable
                     }
                 }
                 else if (vartype.IsVoid || Routine.IsGlobalScope)
@@ -554,7 +562,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                     {
                         // in global code, treat the variable as initialized always:
                         State.SetVarInitialized(local);
-                        vartype.IsRef = true;   // variable might be a reference
+                        vartype.IsRef = true; // variable might be a reference
                     }
                 }
                 else
@@ -574,10 +582,12 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                         State.MarkLocalByRef(local);
                         vartype.IsRef = true;
                     }
+
                     if (x.Access.EnsureObject && !TypeCtx.IsObject(vartype))
                     {
                         vartype |= TypeCtx.GetSystemObjectTypeMask();
                     }
+
                     if (x.Access.EnsureArray)
                     {
                         if (!TypeHelpers.HasArrayAccess(vartype, TypeCtx, DeclaringCompilation))
@@ -620,7 +630,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             {
                 var vartype = x.Access.WriteMask;
 
-                if (x.Access.IsWriteRef || previoustype.IsRef)    // keep the ref flag of local
+                if (x.Access.IsWriteRef || previoustype.IsRef) // keep the ref flag of local
                 {
                     vartype.IsRef = true;
                     State.MarkLocalByRef(local);
@@ -629,7 +639,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 {
                     // // we can't be sure about the type
                     vartype = TypeRefMask.AnyType; // anything, not ref
-                                                   //vartype.IsRef = false;  // the variable won't be a reference from this point
+                    //vartype.IsRef = false;  // the variable won't be a reference from this point
                 }
 
                 //
@@ -687,7 +697,6 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
                 if (x.Access.IsUnset)
                 {
-
                 }
             }
 
@@ -704,14 +713,14 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             Visit(x.Target, BoundAccess.Read);
             Visit(x.Value, BoundAccess.Read);
 
-            Debug.Assert(IsNumberOnly(x.Value));    // 1L
+            Debug.Assert(IsNumberOnly(x.Value)); // 1L
 
             TypeRefMask resulttype;
-            TypeRefMask sourcetype = x.Target.TypeRefMask;  // type of target before operation
+            TypeRefMask sourcetype = x.Target.TypeRefMask; // type of target before operation
 
             VariableHandle lazyVarHandle = default;
-            bool lessThanLongMax = false;               // whether the variable's value is less than the max long value
-            bool greaterThanLongMin = false;            // or greater than the min long value
+            bool lessThanLongMax = false; // whether the variable's value is less than the max long value
+            bool greaterThanLongMin = false; // or greater than the min long value
 
             if (IsDoubleOnly(x.Target))
             {
@@ -744,7 +753,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             Visit(x.Target, BoundAccess.Write.WithWrite(resulttype));
 
             //
-            x.Target.Access = x.Target.Access.WithRead();   // put read access back to the target
+            x.Target.Access = x.Target.Access.WithRead(); // put read access back to the target
             x.TypeRefMask = x.IsPostfix ? sourcetype : resulttype;
 
             // We expect that an incrementation doesn't change the property of being less than the max long value,
@@ -769,7 +778,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
         #region Visit BinaryEx
 
-        private void VisitShortCircuitOp(BoundExpression lExpr, BoundExpression rExpr, bool isAndOp, ConditionBranch branch)
+        private void VisitShortCircuitOp(BoundExpression lExpr, BoundExpression rExpr, bool isAndOp,
+            ConditionBranch branch)
         {
             // Each operand has to be evaluated in various states and then the state merged.
             // Simulates short-circuit evaluation in runtime:
@@ -910,9 +920,15 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
                 switch (op)
                 {
-                    case Operations.BitOr: result = xval | yval; break;
-                    case Operations.BitAnd: result = xval & yval; break;
-                    case Operations.BitXor: result = xval ^ yval; break;
+                    case Operations.BitOr:
+                        result = xval | yval;
+                        break;
+                    case Operations.BitAnd:
+                        result = xval & yval;
+                        break;
+                    case Operations.BitXor:
+                        result = xval ^ yval;
+                        break;
                     default:
                         throw new ArgumentException(nameof(op));
                 }
@@ -920,7 +936,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 //
                 if (result >= int.MinValue && result <= int.MaxValue)
                 {
-                    return (int)result;
+                    return (int) result;
                 }
                 else
                 {
@@ -956,10 +972,16 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                     return TypeCtx.GetDoubleTypeMask();
 
                 // long + long => long
-                if (State.IsLessThanLongMax(TryGetVariableHandle(left)) && IsLongConstant(right, 1)) // LONG + 1, where LONG < long.MaxValue
+                if (State.IsLessThanLongMax(TryGetVariableHandle(left)) && IsLongConstant(right, 1)
+                ) // LONG + 1, where LONG < long.MaxValue
                     return TypeCtx.GetLongTypeMask();
 
                 return TypeCtx.GetNumberTypeMask();
+            }
+
+            if (TypeCtx.IsAString(lValType))
+            {
+                return TypeCtx.GetStringTypeMask();
             }
 
             if ((!lValType.IsRef && !lValType.IsAnyType && !TypeCtx.IsArray(lValType)) ||
@@ -974,7 +996,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
             //
             if (or.IsAnyType || TypeCtx.IsNumber(or) || type == 0) // !this.TypeRefContext.IsArray(lValType & rValType))
-                type |= TypeCtx.GetNumberTypeMask();    // anytype or an operand is number or operands are not a number nor both are not array
+                type |= TypeCtx
+                    .GetNumberTypeMask(); // anytype or an operand is number or operands are not a number nor both are not array
 
             if (or.IsAnyType)
                 type |= TypeCtx.GetArrayTypeMask();
@@ -988,9 +1011,11 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// </summary>
         TypeRefMask GetMinusOperationType(BoundExpression left, BoundExpression right)
         {
-            if (IsDoubleOnly(left.TypeRefMask) || IsDoubleOnly(right.TypeRefMask)) // some operand is double and nothing else
+            if (IsDoubleOnly(left.TypeRefMask) || IsDoubleOnly(right.TypeRefMask)
+            ) // some operand is double and nothing else
                 return TypeCtx.GetDoubleTypeMask(); // double if we are sure about operands
-            else if (State.IsGreaterThanLongMin(TryGetVariableHandle(left)) && IsLongConstant(right, 1)) // LONG -1, where LONG > long.MinValue
+            else if (State.IsGreaterThanLongMin(TryGetVariableHandle(left)) && IsLongConstant(right, 1)
+            ) // LONG -1, where LONG > long.MinValue
                 return TypeCtx.GetLongTypeMask();
             else
                 return TypeCtx.GetNumberTypeMask();
@@ -1027,7 +1052,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 case Operations.Mul:
                 case Operations.Pow:
 
-                    if (IsDoubleOnly(x.Left.TypeRefMask) || IsDoubleOnly(x.Right.TypeRefMask)) // some operand is double and nothing else
+                    if (IsDoubleOnly(x.Left.TypeRefMask) || IsDoubleOnly(x.Right.TypeRefMask)
+                    ) // some operand is double and nothing else
                         return TypeCtx.GetDoubleTypeMask(); // double if we are sure about operands
                     else
                         return TypeCtx.GetNumberTypeMask();
@@ -1057,7 +1083,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 case Operations.BitXor:
 
                     x.ConstantValue = ResolveBitOperation(x.Left.ConstantValue, x.Right.ConstantValue, x.Operation);
-                    return GetBitOperationType(x.Left.TypeRefMask, x.Right.TypeRefMask);    // int or string
+                    return GetBitOperationType(x.Left.TypeRefMask, x.Right.TypeRefMask); // int or string
 
                 #endregion
 
@@ -1070,7 +1096,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
                     if (x.Left.IsConstant() && x.Right.IsConstant())
                     {
-                        x.ConstantValue = ResolveComparison(x.Operation, x.Left.ConstantValue.Value, x.Right.ConstantValue.Value);
+                        x.ConstantValue = ResolveComparison(x.Operation, x.Left.ConstantValue.Value,
+                            x.Right.ConstantValue.Value);
                     }
 
                     if (branch != ConditionBranch.AnyResult)
@@ -1102,20 +1129,23 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
                     if (x.Left.IsConstant() && x.Right.IsConstant())
                     {
-                        x.ConstantValue = ResolveComparison(x.Operation, x.Left.ConstantValue.Value, x.Right.ConstantValue.Value);
+                        x.ConstantValue = ResolveComparison(x.Operation, x.Left.ConstantValue.Value,
+                            x.Right.ConstantValue.Value);
                     }
 
                     // comparison with long value
                     if (branch == ConditionBranch.ToTrue && IsLongOnly(x.Right))
                     {
                         if (x.Operation == Operations.LessThan ||
-                            (x.Operation == Operations.LessThanOrEqual && x.Right.ConstantValue.IsInteger(out long rightVal) && rightVal < long.MaxValue))
+                            (x.Operation == Operations.LessThanOrEqual &&
+                             x.Right.ConstantValue.IsInteger(out long rightVal) && rightVal < long.MaxValue))
                         {
                             // $x < Long.Max
                             State.SetLessThanLongMax(TryGetVariableHandle(x.Left), true);
                         }
                         else if (x.Operation == Operations.GreaterThan ||
-                            (x.Operation == Operations.GreaterThanOrEqual && x.Right.ConstantValue.IsInteger(out long rightVal2) && rightVal2 > long.MinValue))
+                                 (x.Operation == Operations.GreaterThanOrEqual &&
+                                  x.Right.ConstantValue.IsInteger(out long rightVal2) && rightVal2 > long.MinValue))
                         {
                             // $x > Long.Min
                             State.SetGreaterThanLongMin(TryGetVariableHandle(x.Left), true);
@@ -1129,7 +1159,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 case Operations.Concat:
                     return TypeCtx.GetWritableStringTypeMask();
 
-                case Operations.Coalesce:   // Left ?? Right
+                case Operations.Coalesce: // Left ?? Right
                     return x.Left.TypeRefMask | x.Right.TypeRefMask;
 
                 case Operations.Spaceship:
@@ -1158,15 +1188,14 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 switch (op)
                 {
                     case Operations.ShiftLeft:
-                        return (left << (int)right).AsOptional();
+                        return (left << (int) right).AsOptional();
 
                     case Operations.ShiftRight:
-                        return (left >> (int)right).AsOptional();
+                        return (left >> (int) right).AsOptional();
 
                     default:
                         Debug.Fail("unexpected");
                         break;
-
                 }
             }
 
@@ -1188,7 +1217,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
             if (value.IsNull() && refExpr is BoundVariableRef varRef)
             {
-                bool isStrict = (cmpExpr.Operation == Operations.Identical || cmpExpr.Operation == Operations.NotIdentical);
+                bool isStrict = (cmpExpr.Operation == Operations.Identical ||
+                                 cmpExpr.Operation == Operations.NotIdentical);
                 bool isPositive = (cmpExpr.Operation == Operations.Equal || cmpExpr.Operation == Operations.Identical);
 
                 // We cannot say much about the type of $x in the true branch of ($x == null) and the false branch of ($x != null),
@@ -1223,7 +1253,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             {
                 // Always returns false if checked for strict equality and the operands are of different types (and vice versa for strict non-eq)
                 bool isPositive = (cmpExpr.Operation == Operations.Equal || cmpExpr.Operation == Operations.Identical);
-                bool canBeSameType = Routine.TypeRefContext.CanBeSameType(cmpExpr.Left.TypeRefMask, cmpExpr.Right.TypeRefMask);
+                bool canBeSameType =
+                    Routine.TypeRefContext.CanBeSameType(cmpExpr.Left.TypeRefMask, cmpExpr.Right.TypeRefMask);
                 cmpExpr.ConstantValue = !canBeSameType ? (!isPositive).AsOptional() : default;
             }
         }
@@ -1267,26 +1298,27 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                         }
                         else if (x.Operand.ConstantValue.Value is int i)
                         {
-                            x.ConstantValue = new Optional<object>(~(long)i);
+                            x.ConstantValue = new Optional<object>(~(long) i);
                         }
                     }
 
-                    return TypeCtx.GetLongTypeMask();   // TODO: or byte[]
+                    return TypeCtx.GetLongTypeMask(); // TODO: or byte[]
 
                 case Operations.Clone:
                     // result is always object, not aliased
                     return TypeCtx.GetObjectsFromMask(x.Operand.TypeRefMask).IsVoid
-                        ? TypeCtx.GetSystemObjectTypeMask()                     // "object"
-                        : TypeCtx.GetObjectsFromMask(x.Operand.TypeRefMask);    // (object)T
+                        ? TypeCtx.GetSystemObjectTypeMask() // "object"
+                        : TypeCtx.GetObjectsFromMask(x.Operand.TypeRefMask); // (object)T
 
                 case Operations.LogicNegation:
+                {
+                    if (x.Operand.ConstantValue.TryConvertToBool(out bool constBool))
                     {
-                        if (x.Operand.ConstantValue.TryConvertToBool(out bool constBool))
-                        {
-                            x.ConstantValue = ConstantValueExtensions.AsOptional(!constBool);
-                        }
-                        return TypeCtx.GetBooleanTypeMask();
+                        x.ConstantValue = ConstantValueExtensions.AsOptional(!constBool);
                     }
+
+                    return TypeCtx.GetBooleanTypeMask();
+                }
 
                 case Operations.Minus:
                     var cvalue = ResolveUnaryMinus(x.Operand.ConstantValue.ToConstantValueOrNull());
@@ -1301,11 +1333,12 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                         {
                             return TypeCtx.GetDoubleTypeMask(); // double in case operand is double
                         }
-                        return TypeCtx.GetNumberTypeMask();     // TODO: long in case operand is not a number
+
+                        return TypeCtx.GetNumberTypeMask(); // TODO: long in case operand is not a number
                     }
 
                 case Operations.UnsetCast:
-                    return TypeCtx.GetNullTypeMask();   // null
+                    return TypeCtx.GetNullTypeMask(); // null
 
                 case Operations.Plus:
                     if (IsNumberOnly(x.Operand.TypeRefMask))
@@ -1331,13 +1364,13 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
                     case SpecialType.System_Int32:
                         return value.Int32Value != int.MinValue
-                            ? ConstantValue.Create(-value.Int32Value)   // (- Int32.MinValue) overflows to int64
-                            : ConstantValue.Create(-(long)value.Int32Value);
+                            ? ConstantValue.Create(-value.Int32Value) // (- Int32.MinValue) overflows to int64
+                            : ConstantValue.Create(-(long) value.Int32Value);
 
                     case SpecialType.System_Int64:
-                        return (value.Int64Value != long.MinValue)  // (- Int64.MinValue) overflows to double
+                        return (value.Int64Value != long.MinValue) // (- Int64.MinValue) overflows to double
                             ? ConstantValue.Create(-value.Int64Value)
-                            : ConstantValue.Create(-(double)value.Int64Value);
+                            : ConstantValue.Create(-(double) value.Int64Value);
                     default:
                         break;
                 }
@@ -1365,6 +1398,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                         {
                             x.ConstantValue = ConstantValueExtensions.AsOptional(constBool);
                         }
+
                         break;
 
                     case PhpTypeCode.Long:
@@ -1372,6 +1406,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                         {
                             x.ConstantValue = new Optional<object>(l);
                         }
+
                         break;
 
                     case PhpTypeCode.Double:
@@ -1383,15 +1418,17 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                         {
                             x.ConstantValue = new Optional<object>(str);
                         }
+
                         break;
 
                     case PhpTypeCode.Object:
                         if (IsClassOnly(x.Operand.TypeRefMask))
                         {
                             // it is object already, keep its specific type
-                            x.TypeRefMask = x.Operand.TypeRefMask;   // (object)<object>
+                            x.TypeRefMask = x.Operand.TypeRefMask; // (object)<object>
                             return default;
                         }
+
                         break;
                 }
             }
@@ -1467,11 +1504,11 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                     // does not depend on the branch
                     if (!currenttype.IsRef && !currenttype.IsAnyType)
                     {
-                        if (positivetype.IsVoid)    // always false
+                        if (positivetype.IsVoid) // always false
                         {
                             x.ConstantValue = ConstantValueExtensions.AsOptional(false);
                         }
-                        else if (positivetype == currenttype)   // not void nor null
+                        else if (positivetype == currenttype) // not void nor null
                         {
                             x.ConstantValue = ConstantValueExtensions.AsOptional(true);
                         }
@@ -1558,7 +1595,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             Debug.Assert(!(tref is BoundMultipleTypeRef));
 
             // resolve type symbol
-            tref.ResolvedType = (TypeSymbol)tref.ResolveTypeSymbol(DeclaringCompilation);
+            tref.ResolvedType = (TypeSymbol) tref.ResolveTypeSymbol(DeclaringCompilation);
 
             return default;
         }
@@ -1616,7 +1653,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             {
                 if (givenarg.Value is BoundReferenceExpression refexpr)
                 {
-                    if (TypeCtx.IsArray(expected.Type) && !givenarg.Value.Access.EnsureArray)   // [PhpRw]PhpArray
+                    if (TypeCtx.IsArray(expected.Type) && !givenarg.Value.Access.EnsureArray) // [PhpRw]PhpArray
                     {
                         SemanticsBinder.BindEnsureArrayAccess(givenarg.Value as BoundReferenceExpression);
                         Worklist.Enqueue(CurrentBlock);
@@ -1625,7 +1662,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             }
 
             // bind ref parameters to variables:
-            if (expected.IsAlias || expected.IsByRef)  // => args[i] must be a variable
+            if (expected.IsAlias || expected.IsByRef) // => args[i] must be a variable
             {
                 if (givenarg.Value is BoundReferenceExpression refexpr)
                 {
@@ -1677,7 +1714,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 var localType = State.GetLocalType(local);
                 var paramTypeNonNull = TypeCtx.WithoutNull(expected.Type);
                 if (localType.IsAnyType && !localType.IsRef &&
-                    (TypeCtx.IsObjectOnly(paramTypeNonNull) || TypeCtx.IsArrayOnly(paramTypeNonNull)))    // E.g. support ?MyClass but not callable
+                    (TypeCtx.IsObjectOnly(paramTypeNonNull) || TypeCtx.IsArrayOnly(paramTypeNonNull))
+                ) // E.g. support ?MyClass but not callable
                 {
                     Debug.Assert(!expected.Type.IsRef);
                     State.SetLocalType(local, expected.Type);
@@ -1685,7 +1723,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             }
         }
 
-        TypeRefMask BindValidRoutineCall(BoundRoutineCall call, MethodSymbol method, ImmutableArray<BoundArgument> args, bool maybeoverload)
+        TypeRefMask BindValidRoutineCall(BoundRoutineCall call, MethodSymbol method, ImmutableArray<BoundArgument> args,
+            bool maybeoverload)
         {
             // analyze TargetMethod with x.Arguments
             // require method result type if access != none
@@ -1708,7 +1747,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
                 if ((rflags & RoutineFlags.UsesLocals) != 0
                     //&& (x is BoundGlobalFunctionCall gf && gf.Name.NameValue.Name.Value == "extract") // "compact" does not change locals // CONSIDER // TODO
-                    )
+                )
                 {
                     // function may change/add local variables
                     State.SetAllUnknown(true);
@@ -1718,7 +1757,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             // process arguments
             if (!BindParams(method.GetExpectedArguments(this.TypeCtx), args) && maybeoverload)
             {
-                call.TargetMethod = null; // nullify the target method -> call dynamically, arguments cannot be bound at compile time
+                call.TargetMethod =
+                    null; // nullify the target method -> call dynamically, arguments cannot be bound at compile time
             }
 
             //
@@ -1768,7 +1808,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 // get the return type from all the ambiguities:
                 if (!maybeOverload && x.Access.IsRead)
                 {
-                    var r = (TypeRefMask)0;
+                    var r = (TypeRefMask) 0;
                     foreach (var m in ambiguity.Ambiguities)
                     {
                         if (Worklist.EnqueueRoutine(m, CurrentBlock, x))
@@ -1801,7 +1841,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             // TODO: handle unpacking
             Debug.Assert(x.ArgumentsInSourceOrder.Length == 0 || !x.ArgumentsInSourceOrder[0].IsUnpacking);
 
-            x.TypeRefMask = 0;  // returns void
+            x.TypeRefMask = 0; // returns void
             x.ResultType = DeclaringCompilation.GetSpecialType(SpecialType.System_Void);
 
             return default;
@@ -1811,7 +1851,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         {
             VisitRoutineCall(x);
 
-            x.TypeRefMask = 0;  // returns void
+            x.TypeRefMask = 0; // returns void
             x.ResultType = DeclaringCompilation.GetSpecialType(SpecialType.System_Void);
 
             //
@@ -1829,7 +1869,11 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             for (int i = 0; i < args.Length; i++)
             {
                 var targ = args[i].Value.TypeRefMask;
-                mustBePhpString |= targ.IsRef || targ.IsAnyType || this.TypeCtx.IsWritableString(targ) /*|| this.TypeCtx.IsObject(targ) //object are always converted to UTF16 String// */;
+                mustBePhpString |=
+                    targ.IsRef || targ.IsAnyType ||
+                    this.TypeCtx
+                        .IsWritableString(
+                            targ) /*|| this.TypeCtx.IsObject(targ) //object are always converted to UTF16 String// */;
             }
 
             x.TypeRefMask = mustBePhpString ? TypeCtx.GetWritableStringTypeMask() : TypeCtx.GetStringTypeMask();
@@ -1853,10 +1897,10 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
             if (x.Name.IsDirect)
             {
-                var symbol = (MethodSymbol)DeclaringCompilation.ResolveFunction(x.Name.NameValue, Routine);
+                var symbol = (MethodSymbol) DeclaringCompilation.ResolveFunction(x.Name.NameValue, Routine);
                 if (symbol.IsMissingMethod() && x.NameOpt.HasValue)
                 {
-                    symbol = (MethodSymbol)DeclaringCompilation.ResolveFunction(x.NameOpt.Value, Routine);
+                    symbol = (MethodSymbol) DeclaringCompilation.ResolveFunction(x.NameOpt.Value, Routine);
                 }
 
                 var overloads = symbol is AmbiguousMethodSymbol ambiguous && ambiguous.IsOverloadable
@@ -1867,7 +1911,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
                 // symbol might be ErrorSymbol
 
-                x.TargetMethod = overloads.Resolve(this.TypeCtx, x.ArgumentsInSourceOrder, VisibilityScope, OverloadsList.InvocationKindFlags.StaticCall);
+                x.TargetMethod = overloads.Resolve(this.TypeCtx, x.ArgumentsInSourceOrder, VisibilityScope,
+                    OverloadsList.InvocationKindFlags.StaticCall);
             }
 
             BindRoutineCall(x);
@@ -1888,11 +1933,15 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 var resolvedtype = x.Instance.ResultType;
                 if (resolvedtype == null)
                 {
-                    var typeref = TypeCtx.GetObjectTypes(TypeCtx.WithoutNull(x.Instance.TypeRefMask));    // ignore NULL, causes runtime exception anyway
+                    var typeref =
+                        TypeCtx.GetObjectTypes(
+                            TypeCtx.WithoutNull(x.Instance
+                                .TypeRefMask)); // ignore NULL, causes runtime exception anyway
                     if (typeref.IsSingle)
                     {
-                        resolvedtype = (TypeSymbol)typeref.FirstOrDefault().ResolveTypeSymbol(DeclaringCompilation);
+                        resolvedtype = (TypeSymbol) typeref.FirstOrDefault().ResolveTypeSymbol(DeclaringCompilation);
                     }
+
                     // else: a common base?
                 }
 
@@ -1902,10 +1951,12 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
                     candidates = Construct(candidates, x);
 
-                    x.TargetMethod = new OverloadsList(candidates).Resolve(this.TypeCtx, x.ArgumentsInSourceOrder, VisibilityScope, OverloadsList.InvocationKindFlags.InstanceCall);
+                    x.TargetMethod = new OverloadsList(candidates).Resolve(this.TypeCtx, x.ArgumentsInSourceOrder,
+                        VisibilityScope, OverloadsList.InvocationKindFlags.InstanceCall);
 
                     //
-                    if (x.TargetMethod.IsValidMethod() && x.TargetMethod.IsStatic && x.Instance.TypeRefMask.IncludesSubclasses)
+                    if (x.TargetMethod.IsValidMethod() && x.TargetMethod.IsStatic &&
+                        x.Instance.TypeRefMask.IncludesSubclasses)
                     {
                         // static method invoked on an instance object,
                         // must be postponed to runtime since the type may change
@@ -1930,7 +1981,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
             VisitRoutineCall(x);
 
-            var type = (TypeSymbol)x.TypeRef.Type;
+            var type = (TypeSymbol) x.TypeRef.Type;
 
             if (x.Name.NameExpression != null)
             {
@@ -1951,10 +2002,13 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                     flags |= OverloadsList.InvocationKindFlags.InstanceCall;
                 }
 
-                var method = new OverloadsList(candidates).Resolve(this.TypeCtx, x.ArgumentsInSourceOrder, VisibilityScope, flags);
+                var method =
+                    new OverloadsList(candidates).Resolve(this.TypeCtx, x.ArgumentsInSourceOrder, VisibilityScope,
+                        flags);
 
                 // method is missing or inaccessible:
-                if (method is ErrorMethodSymbol errmethod && (errmethod.ErrorKind == ErrorMethodKind.Inaccessible || errmethod.ErrorKind == ErrorMethodKind.Missing))
+                if (method is ErrorMethodSymbol errmethod && (errmethod.ErrorKind == ErrorMethodKind.Inaccessible ||
+                                                              errmethod.ErrorKind == ErrorMethodKind.Missing))
                 {
                     // NOTE: magic methods __call or __callStatic are called in both cases - the target method is inaccessible or missing
 
@@ -1965,7 +2019,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                     if (Routine != null && !Routine.IsStatic)
                     {
                         // there is $this variable:
-                        if (TypeCtx.ThisType == null || TypeCtx.ThisType.IsOfType(type) || type.IsOfType(TypeCtx.ThisType))
+                        if (TypeCtx.ThisType == null || TypeCtx.ThisType.IsOfType(type) ||
+                            type.IsOfType(TypeCtx.ThisType))
                         {
                             // try to use __call() first:
                             call = type.LookupMethods(Name.SpecialMethodNames.Call.Value);
@@ -2027,7 +2082,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             }
             else
             {
-                var types = bound.TypeArguments.Select(t => (TypeSymbol)t.Type).AsImmutable();
+                var types = bound.TypeArguments.Select(t => (TypeSymbol) t.Type).AsImmutable();
                 var result = new List<MethodSymbol>();
 
                 for (int i = 0; i < methods.Length; i++)
@@ -2037,24 +2092,26 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                         result.Add(methods[i].Construct(types));
                     }
                 }
+
                 return result.ToArray();
             }
         }
 
         public override T VisitNew(BoundNewEx x)
         {
-            Accept(x.TypeRef);      // resolve target type
+            Accept(x.TypeRef); // resolve target type
 
-            VisitRoutineCall(x);    // analyse arguments
+            VisitRoutineCall(x); // analyse arguments
 
             // resolve .ctor method:
-            var type = (NamedTypeSymbol)x.TypeRef.Type;
+            var type = (NamedTypeSymbol) x.TypeRef.Type;
             if (type.IsValidType())
             {
                 var candidates = type.InstanceConstructors.ToArray();
 
                 //
-                x.TargetMethod = new OverloadsList(candidates).Resolve(this.TypeCtx, x.ArgumentsInSourceOrder, VisibilityScope, OverloadsList.InvocationKindFlags.New);
+                x.TargetMethod = new OverloadsList(candidates).Resolve(this.TypeCtx, x.ArgumentsInSourceOrder,
+                    VisibilityScope, OverloadsList.InvocationKindFlags.New);
                 x.ResultType = type;
             }
 
@@ -2083,7 +2140,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             if (targetExpr.ConstantValue.TryConvertToString(out var path))
             {
                 // include (path)
-                x.TargetMethod = (MethodSymbol)_model.ResolveFile(path)?.MainMethod;
+                x.TargetMethod = (MethodSymbol) _model.ResolveFile(path)?.MainMethod;
             }
             else if (targetExpr is BoundConcatEx concat) // common case
             {
@@ -2097,8 +2154,9 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                     // create project relative path
                     // not starting with a directory separator!
                     path = Routine.ContainingFile.DirectoryRelativePath + path;
-                    if (path.Length != 0 && PathUtilities.IsAnyDirectorySeparator(path[0])) path = path.Substring(1);   // make nicer when we have a helper method for that
-                    x.TargetMethod = (MethodSymbol)_model.ResolveFile(path)?.MainMethod;
+                    if (path.Length != 0 && PathUtilities.IsAnyDirectorySeparator(path[0]))
+                        path = path.Substring(1); // make nicer when we have a helper method for that
+                    x.TargetMethod = (MethodSymbol) _model.ResolveFile(path)?.MainMethod;
                 }
             }
 
@@ -2143,7 +2201,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             Accept(x.ContainingType);
             Accept(x.FieldName);
 
-            if (x.IsInstanceField)  // {Instance}->FieldName
+            if (x.IsInstanceField) // {Instance}->FieldName
             {
                 Debug.Assert(x.Instance != null);
                 Debug.Assert(x.Instance.Access.IsRead);
@@ -2152,10 +2210,14 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 var resolvedtype = x.Instance.ResultType as NamedTypeSymbol;
                 if (resolvedtype == null)
                 {
-                    var typerefs = TypeCtx.GetObjectTypes(TypeCtx.WithoutNull(x.Instance.TypeRefMask));   // ignore NULL, would cause runtime exception in read access, will be ensured to non-null in write access
+                    var typerefs =
+                        TypeCtx.GetObjectTypes(
+                            TypeCtx.WithoutNull(x.Instance
+                                .TypeRefMask)); // ignore NULL, would cause runtime exception in read access, will be ensured to non-null in write access
                     if (typerefs.IsSingle)
                     {
-                        resolvedtype = (NamedTypeSymbol)typerefs.FirstOrDefault().ResolveTypeSymbol(DeclaringCompilation);
+                        resolvedtype =
+                            (NamedTypeSymbol) typerefs.FirstOrDefault().ResolveTypeSymbol(DeclaringCompilation);
                     }
                 }
 
@@ -2169,7 +2231,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                         {
                             if (member is FieldSymbol)
                             {
-                                var field = (FieldSymbol)member;
+                                var field = (FieldSymbol) member;
                                 var srcf = field as SourceFieldSymbol;
                                 var overridenf = srcf?.OverridenDefinition;
 
@@ -2179,13 +2241,16 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                                 if (overridenf == null || overridenf.IsAccessible(this.TypeCtx.SelfType))
                                 {
                                     x.BoundReference = new FieldReference(x.Instance, overridenf ?? field);
-                                    x.TypeRefMask = TypeRefFactory.CreateMask(TypeCtx, field.Type).WithIsRef(field.Type.CanBePhpAlias());
+                                    x.TypeRefMask = TypeRefFactory.CreateMask(TypeCtx, field.Type)
+                                        .WithIsRef(field.Type.CanBePhpAlias());
                                     x.ResultType = field.Type;
                                     return default;
                                 }
-                                else if (srcf != null && srcf.FieldAccessorProperty != null && srcf.FieldAccessorProperty.IsAccessible(TypeCtx.SelfType))
+                                else if (srcf != null && srcf.FieldAccessorProperty != null &&
+                                         srcf.FieldAccessorProperty.IsAccessible(TypeCtx.SelfType))
                                 {
-                                    member = srcf.FieldAccessorProperty; // use the wrapping property that is accessible from current context
+                                    member = srcf
+                                        .FieldAccessorProperty; // use the wrapping property that is accessible from current context
                                     // -> continue
                                 }
                                 else
@@ -2197,7 +2262,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
                             if (member is PropertySymbol)
                             {
-                                var prop = (PropertySymbol)member;
+                                var prop = (PropertySymbol) member;
                                 x.BoundReference = new PropertyReference(x.Instance, prop);
                                 x.TypeRefMask = TypeRefFactory.CreateMask(TypeCtx, prop.Type);
                                 x.ResultType = prop.Type;
@@ -2227,9 +2292,9 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             }
 
             // static fields or constants
-            if (x.IsStaticField || x.IsClassConstant)    // {ClassName}::${StaticFieldName}, {ClassName}::{ConstantName}
+            if (x.IsStaticField || x.IsClassConstant) // {ClassName}::${StaticFieldName}, {ClassName}::{ConstantName}
             {
-                var containingType = (NamedTypeSymbol)x.ContainingType.Type;
+                var containingType = (NamedTypeSymbol) x.ContainingType.Type;
 
                 if (x.IsClassConstant)
                 {
@@ -2240,7 +2305,9 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 if (containingType.IsValidType() && x.FieldName.IsDirect)
                 {
                     var fldname = x.FieldName.NameValue.Value;
-                    var field = x.IsStaticField ? containingType.ResolveStaticField(fldname) : containingType.ResolveClassConstant(fldname);
+                    var field = x.IsStaticField
+                        ? containingType.ResolveStaticField(fldname)
+                        : containingType.ResolveClassConstant(fldname);
                     if (field != null)
                     {
                         // TODO: visibility -> ErrCode
@@ -2255,7 +2322,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                             // real.NET static member (CLR static fields) or
                             // the field may be contained in special __statics container (fields & constants)
                             x.BoundReference = new FieldReference(null, field);
-                            x.TypeRefMask = TypeRefFactory.CreateMask(TypeCtx, field.Type).WithIsRef(field.Type.CanBePhpAlias());
+                            x.TypeRefMask = TypeRefFactory.CreateMask(TypeCtx, field.Type)
+                                .WithIsRef(field.Type.CanBePhpAlias());
                         }
 
                         x.ResultType = field.Type;
@@ -2268,7 +2336,8 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                         if (prop != null && prop.IsStatic)
                         {
                             x.BoundReference = new PropertyReference(null, prop);
-                            x.TypeRefMask = TypeRefFactory.CreateMask(TypeCtx, prop.Type).WithIsRef(prop.Type.CanBePhpAlias());
+                            x.TypeRefMask = TypeRefFactory.CreateMask(TypeCtx, prop.Type)
+                                .WithIsRef(prop.Type.CanBePhpAlias());
                             return default;
                         }
                     }
@@ -2278,7 +2347,9 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
                 // indirect field access:
                 // indirect field access with known class name:
-                x.BoundReference = new IndirectProperty(x); // ~ dynamic // new BoundIndirectStFieldPlace((BoundTypeRef)x.ContainingType, x.FieldName, x);
+                x.BoundReference =
+                    new IndirectProperty(
+                        x); // ~ dynamic // new BoundIndirectStFieldPlace((BoundTypeRef)x.ContainingType, x.FieldName, x);
                 x.TypeRefMask = TypeRefMask.AnyType.WithRefFlag;
             }
 
@@ -2430,7 +2501,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             var elementtype = this.TypeCtx.GetElementType(x.Access.WriteMask);
             Debug.Assert(!elementtype.IsVoid);
 
-            foreach (var v in x.Items)   // list() may contain NULL implying ignored variable
+            foreach (var v in x.Items) // list() may contain NULL implying ignored variable
             {
                 if (v.Value != null)
                 {
@@ -2581,7 +2652,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             // TODO: check constant name
 
             // bind to app-wide constant if possible
-            var symbol = (Aquila.CodeAnalysis.Symbols.Symbol)_model.ResolveConstant(x.Name.ToString());
+            var symbol = (Aquila.CodeAnalysis.Symbols.Symbol) _model.ResolveConstant(x.Name.ToString());
             var field = symbol as FieldSymbol;
 
             if (!BindConstantValue(x, field))
@@ -2598,7 +2669,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 }
                 else
                 {
-                    x.TypeRefMask = TypeRefMask.AnyType;    // only scalars ?
+                    x.TypeRefMask = TypeRefMask.AnyType; // only scalars ?
                 }
             }
 
@@ -2607,7 +2678,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
         public override T VisitConditional(BoundConditionalEx x)
         {
-            BoundExpression positiveExpr;    // positive expression (if evaluated to true, FalseExpr is not evaluated)
+            BoundExpression positiveExpr; // positive expression (if evaluated to true, FalseExpr is not evaluated)
             FlowState positiveState; // state after successful positive branch
 
             if (x.IfTrue != null && x.IfTrue != x.Condition)
@@ -2680,7 +2751,9 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
             else
             {
                 // remember "void" type explicitly
-                var voidMask = State.TypeRefContext.GetTypeMask(BoundTypeRefFactory.VoidTypeRef, false); // NOTE: or remember the routine may return Void
+                var voidMask =
+                    State.TypeRefContext.GetTypeMask(BoundTypeRefFactory.VoidTypeRef,
+                        false); // NOTE: or remember the routine may return Void
                 State.FlowThroughReturn(voidMask);
             }
 

@@ -70,7 +70,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
             _compilation = compilation;
             _syntaxTree = syntaxTree;
-            _mainMethod = new SourceGlobalMethodSymbol(this);
+            //_mainMethod = new SourceGlobalMethodSymbol(this);
         }
 
         /// <summary>
@@ -254,17 +254,20 @@ namespace Aquila.CodeAnalysis.Symbols
                             null, DeclaringCompilation.CreateTypedConstant(true))
                     );
                 }
-
-                var scriptAttribute = new SynthesizedAttributeData(
-                    null,
-                    ImmutableArray.Create(
-                        DeclaringCompilation.CreateTypedConstant(this.RelativeFilePath),
-                        DeclaringCompilation.CreateTypedConstant(lastWriteTime.Ticks)),
-                    namedproperties);
-                Interlocked.CompareExchange(ref _lazyScriptAttribute, scriptAttribute, null);
+                //
+                // var scriptAttribute = new SynthesizedAttributeData(
+                //     null,
+                //     ImmutableArray.Create(
+                //         DeclaringCompilation.CreateTypedConstant(this.RelativeFilePath),
+                //         DeclaringCompilation.CreateTypedConstant(lastWriteTime.Ticks)),
+                //     namedproperties);
+                // Interlocked.CompareExchange(ref _lazyScriptAttribute, scriptAttribute, null);
             }
 
             //
+            
+            return ImmutableArray<AttributeData>.Empty;
+            ;
             return ImmutableArray.Create<AttributeData>(_lazyScriptAttribute);
         }
 
@@ -333,7 +336,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             var builder = ImmutableArray.CreateBuilder<Symbol>(1 + _lazyMembers.Count);
 
-            builder.Add(_mainMethod);
+            //builder.Add(_mainMethod);
             builder.AddRange(_lazyMembers);
 
             return builder.ToImmutable();

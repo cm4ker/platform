@@ -237,7 +237,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             //ByRefReturnErrorTypeSymbol byRefType = this.ReturnType as ByRefReturnErrorTypeSymbol;
             return ((PEModuleBuilder)context.Module).Translate(
-                this.ReturnType, // (object)byRefType == null ? this.ReturnType : byRefType.ReferencedType,
+                this.ReturnType ?? (TypeSymbol)context.Module.CommonCompilation.GetSpecialType(SpecialType.System_Void), // (object)byRefType == null ? this.ReturnType : byRefType.ReferencedType,
                 syntaxNodeOpt: context.SyntaxNodeOpt,
                 diagnostics: context.Diagnostics);
         }

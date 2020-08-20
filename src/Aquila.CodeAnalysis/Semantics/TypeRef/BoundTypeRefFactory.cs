@@ -139,6 +139,7 @@ namespace Aquila.CodeAnalysis.Semantics
                     case SyntaxKind.IntKeyword: return LongTypeRef;
                     case SyntaxKind.VoidKeyword: return VoidTypeRef;
                     case SyntaxKind.ObjectKeyword: return ObjectTypeRef;
+                    case SyntaxKind.StringKeyword: return StringTypeRef;
                     
                     default: throw ExceptionUtilities.UnexpectedValue(pt.Kind);
                 }

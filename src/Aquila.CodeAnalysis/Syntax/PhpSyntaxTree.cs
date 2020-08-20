@@ -196,7 +196,7 @@ namespace Aquila.CodeAnalysis.Syntax
 
         public override Encoding Encoding => Encoding.UTF8;
 
-        public override string FilePath =>  _source.FilePath;
+        public override string FilePath => _source.FilePath;
 
         public override bool HasCompilationUnitRoot => true;
 
@@ -248,10 +248,8 @@ namespace Aquila.CodeAnalysis.Syntax
         public override FileLinePositionSpan GetLineSpan(TextSpan span,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            throw new Exception();
-
-            // return new FileLinePositionSpan(_source.FilePath, _source.LinePosition(span.Start),
-            //     _source.LinePosition(span.End));
+            return new FileLinePositionSpan(_source.FilePath, new LinePosition(0,0), new LinePosition(0,0)); 
+                //_source.LinePosition(span.Start), _source.LinePosition(span.End));
         }
 
         public override Location GetLocation(TextSpan span)
@@ -273,7 +271,7 @@ namespace Aquila.CodeAnalysis.Syntax
 
         public override SourceText GetText(CancellationToken cancellationToken = default)
         {
-            return SourceText.From("", Encoding.UTF8);//_source.SourceText;
+            return SourceText.From("", Encoding.UTF8); //_source.SourceText;
         }
 
         public override bool HasHiddenRegions()

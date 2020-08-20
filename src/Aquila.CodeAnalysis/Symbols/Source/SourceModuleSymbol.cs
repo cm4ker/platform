@@ -98,71 +98,71 @@ namespace Aquila.CodeAnalysis.Symbols
 
         IEnumerable<AttributeData> CreateAttributesToEmit()
         {
-            // [ImportPhpType( ... )]
-            var ctor = (MethodSymbol)ImmutableArrayExtensions.Single<IMethodSymbol>(DeclaringCompilation.GetTypeByMetadataName("Pchp.Core.ImportPhpTypeAttribute").InstanceConstructors);
-            foreach (var t in DeclaringCompilation.GlobalSemantics.GetReferencedTypes())
-            {
-                yield return new SynthesizedAttributeData(
-                    ctor,
-                    ImmutableArray.Create(DeclaringCompilation.CreateTypedConstant(
-                        t.IsTraitType() ? t.ConstructedFrom.ConstructUnboundGenericType() : t)),
-                    ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
-            }
-
-            // [ImportPhpFunctions( ... )]
-            ctor = (MethodSymbol)ImmutableArrayExtensions.Single<IMethodSymbol>(DeclaringCompilation.GetTypeByMetadataName("Pchp.Core.ImportPhpFunctionsAttribute").InstanceConstructors);
-            var tcontainers = DeclaringCompilation.GlobalSemantics.ExtensionContainers.Where(x => !x.IsPhpSourceFile());
-            foreach (var t in tcontainers)
-            {
-                // only if contains functions
-                if (t.GetMembers().OfType<MethodSymbol>().Any(DeclaringCompilation.GlobalSemantics.IsFunction))
-                {
-                    yield return new SynthesizedAttributeData(
-                        ctor,
-                        ImmutableArray.Create(DeclaringCompilation.CreateTypedConstant(t)),
-                        ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
-                }
-            }
-
-            // [ImportPhpConstants( ... )]
-            ctor = (MethodSymbol)ImmutableArrayExtensions.Single<IMethodSymbol>(DeclaringCompilation.GetTypeByMetadataName("Pchp.Core.ImportPhpConstantsAttribute").InstanceConstructors);
-            //tcontainers = DeclaringCompilation.GlobalSemantics.ExtensionContainers.Where(x => !x.IsPhpSourceFile());
-            foreach (var t in tcontainers)
-            {
-                // only if contains constants
-                if (t.GetMembers().Any(DeclaringCompilation.GlobalSemantics.IsGlobalConstant))
-                {
-                    yield return new SynthesizedAttributeData(
-                        ctor,
-                        ImmutableArray.Create(DeclaringCompilation.CreateTypedConstant(t)),
-                        ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
-                }
-            }
-
-            // [ExportPhpScript]
-
-            // [PhpPackageReference( ... )]
-            ctor = (MethodSymbol)ImmutableArrayExtensions.Single<IMethodSymbol>(DeclaringCompilation.GetTypeByMetadataName("Pchp.Core.PhpPackageReferenceAttribute").InstanceConstructors);
-            foreach (var a in DeclaringCompilation.GlobalSemantics.ReferencedPhpPackageReferences)
-            {
-                var scriptType = a.GetTypeByMetadataName(WellKnownPchpNames.DefaultScriptClassName); // <Script> for PHP libraries
-                if (scriptType.IsErrorTypeOrNull())
-                {
-                    // pick any type as a refernce for C# extension libraries
-                    var alltypes = a.PrimaryModule.GlobalNamespace.GetTypeMembers();
-                    scriptType =
-                        alltypes.FirstOrDefault(x => x.DeclaredAccessibility == Accessibility.Public) ??
-                        alltypes.FirstOrDefault(x => x.DeclaredAccessibility == Accessibility.Internal);
-                }
-
-                if (scriptType.IsValidType())
-                {
-                    yield return new SynthesizedAttributeData(
-                        ctor,
-                        ImmutableArray.Create(DeclaringCompilation.CreateTypedConstant(scriptType)),
-                        ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
-                }
-            }
+            // // [ImportPhpType( ... )]
+            // var ctor = (MethodSymbol)ImmutableArrayExtensions.Single<IMethodSymbol>(DeclaringCompilation.GetTypeByMetadataName("Pchp.Core.ImportPhpTypeAttribute").InstanceConstructors);
+            // foreach (var t in DeclaringCompilation.GlobalSemantics.GetReferencedTypes())
+            // {
+            //     yield return new SynthesizedAttributeData(
+            //         ctor,
+            //         ImmutableArray.Create(DeclaringCompilation.CreateTypedConstant(
+            //             t.IsTraitType() ? t.ConstructedFrom.ConstructUnboundGenericType() : t)),
+            //         ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
+            // }
+            //
+            // // [ImportPhpFunctions( ... )]
+            // ctor = (MethodSymbol)ImmutableArrayExtensions.Single<IMethodSymbol>(DeclaringCompilation.GetTypeByMetadataName("Pchp.Core.ImportPhpFunctionsAttribute").InstanceConstructors);
+            // var tcontainers = DeclaringCompilation.GlobalSemantics.ExtensionContainers.Where(x => !x.IsPhpSourceFile());
+            // foreach (var t in tcontainers)
+            // {
+            //     // only if contains functions
+            //     if (t.GetMembers().OfType<MethodSymbol>().Any(DeclaringCompilation.GlobalSemantics.IsFunction))
+            //     {
+            //         yield return new SynthesizedAttributeData(
+            //             ctor,
+            //             ImmutableArray.Create(DeclaringCompilation.CreateTypedConstant(t)),
+            //             ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
+            //     }
+            // }
+            //
+            // // [ImportPhpConstants( ... )]
+            // ctor = (MethodSymbol)ImmutableArrayExtensions.Single<IMethodSymbol>(DeclaringCompilation.GetTypeByMetadataName("Pchp.Core.ImportPhpConstantsAttribute").InstanceConstructors);
+            // //tcontainers = DeclaringCompilation.GlobalSemantics.ExtensionContainers.Where(x => !x.IsPhpSourceFile());
+            // foreach (var t in tcontainers)
+            // {
+            //     // only if contains constants
+            //     if (t.GetMembers().Any(DeclaringCompilation.GlobalSemantics.IsGlobalConstant))
+            //     {
+            //         yield return new SynthesizedAttributeData(
+            //             ctor,
+            //             ImmutableArray.Create(DeclaringCompilation.CreateTypedConstant(t)),
+            //             ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
+            //     }
+            // }
+            //
+            // // [ExportPhpScript]
+            //
+            // // [PhpPackageReference( ... )]
+            // ctor = (MethodSymbol)ImmutableArrayExtensions.Single<IMethodSymbol>(DeclaringCompilation.GetTypeByMetadataName("Pchp.Core.PhpPackageReferenceAttribute").InstanceConstructors);
+            // foreach (var a in DeclaringCompilation.GlobalSemantics.ReferencedPhpPackageReferences)
+            // {
+            //     var scriptType = a.GetTypeByMetadataName(WellKnownPchpNames.DefaultScriptClassName); // <Script> for PHP libraries
+            //     if (scriptType.IsErrorTypeOrNull())
+            //     {
+            //         // pick any type as a refernce for C# extension libraries
+            //         var alltypes = a.PrimaryModule.GlobalNamespace.GetTypeMembers();
+            //         scriptType =
+            //             alltypes.FirstOrDefault(x => x.DeclaredAccessibility == Accessibility.Public) ??
+            //             alltypes.FirstOrDefault(x => x.DeclaredAccessibility == Accessibility.Internal);
+            //     }
+            //
+            //     if (scriptType.IsValidType())
+            //     {
+            //         yield return new SynthesizedAttributeData(
+            //             ctor,
+            //             ImmutableArray.Create(DeclaringCompilation.CreateTypedConstant(scriptType)),
+            //             ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
+            //     }
+            // }
 
             //
             yield break;

@@ -56,12 +56,12 @@ namespace Aquila.CodeAnalysis
 
         readonly CoreTypes _coreTypes;
 
-        // /// <summary>
-        // /// Well known methods associated with this compilation.
-        // /// </summary>
-        // internal CoreMethods CoreMethods => _coreMethods;
-        //
-        // readonly CoreMethods _coreMethods;
+        /// <summary>
+        /// Well known methods associated with this compilation.
+        /// </summary>
+        internal CoreMethods CoreMethods => _coreMethods;
+
+        readonly CoreMethods _coreMethods;
 
         #endregion
 

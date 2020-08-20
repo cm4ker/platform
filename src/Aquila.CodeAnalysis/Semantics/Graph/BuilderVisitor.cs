@@ -773,44 +773,44 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
         //     _current = NewDeadBlock();  // any statement inside this block would be unreachable unless it is LabelStmt
         // }
 
-        // public override void VisitJumpStmt(JumpStmt x)
-        // {
-        //     if (x.Type == JumpStmt.Types.Return)
-        //     {
-        //         _returnCounter++;
-        //
-        //         //
-        //         Add(x);
-        //         Connect(_current, this.Exit);
-        //     }
-        //     else if (x.Type == JumpStmt.Types.Break || x.Type == JumpStmt.Types.Continue)
-        //     {
-        //         int level = (x.Expression is LongIntLiteral)
-        //             ? (int)((LongIntLiteral)x.Expression).Value
-        //             : 1;
-        //
-        //         var brk = GetBreakScope(level);
-        //         var target = (x.Type == JumpStmt.Types.Break) ? brk.BreakTarget : brk.ContinueTarget;
-        //         if (target != null)
-        //         {
-        //             Connect(_current, target);
-        //
-        //             _current.NextEdge.PhpSyntax = x;
-        //         }
-        //         else
-        //         {
-        //             // fatal error in PHP:
-        //             _binder.Diagnostics.Add(_binder.Routine, x, ErrorCode.ERR_NeedsLoopOrSwitch, x.Type.ToString().ToLowerInvariant());
-        //             Connect(_current, this.GetExceptionBlock());    // unreachable, wouldn't compile
-        //         }
-        //     }
-        //     else
-        //     {
-        //         throw Peachpie.CodeAnalysis.Utilities.ExceptionUtilities.UnexpectedValue(x.Type);
-        //     }
-        //
-        //     _current = NewDeadBlock();  // anything after these statements is unreachable
-        // }
+        public override void VisitReturnStmt(ReturnStmt x)
+        {
+            // if (x.Type == JumpStmt.Types.Return)
+            // {
+            _returnCounter++;
+
+            //
+            Add(x);
+            Connect(_current, this.Exit);
+            // }
+            // else if (x.Type == JumpStmt.Types.Break || x.Type == JumpStmt.Types.Continue)
+            // {
+            //     int level = (x.Expression is LongIntLiteral)
+            //         ? (int)((LongIntLiteral)x.Expression).Value
+            //         : 1;
+            //
+            //     var brk = GetBreakScope(level);
+            //     var target = (x.Type == JumpStmt.Types.Break) ? brk.BreakTarget : brk.ContinueTarget;
+            //     if (target != null)
+            //     {
+            //         Connect(_current, target);
+            //
+            //         _current.NextEdge.PhpSyntax = x;
+            //     }
+            //     else
+            //     {
+            //         // fatal error in PHP:
+            //         _binder.Diagnostics.Add(_binder.Routine, x, ErrorCode.ERR_NeedsLoopOrSwitch, x.Type.ToString().ToLowerInvariant());
+            //         Connect(_current, this.GetExceptionBlock());    // unreachable, wouldn't compile
+            //     }
+            // }
+            // else
+            // {
+            //     throw Peachpie.CodeAnalysis.Utilities.ExceptionUtilities.UnexpectedValue(x.Type);
+            // }
+
+            _current = NewDeadBlock(); // anything after these statements is unreachable
+        }
 
         public override void VisitIfStmt(IfStmt x)
         {

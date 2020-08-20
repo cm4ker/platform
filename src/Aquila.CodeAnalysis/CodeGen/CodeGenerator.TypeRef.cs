@@ -32,6 +32,14 @@ namespace Pchp.CodeAnalysis.CodeGen
         {
             return tmask.IsSingleType && !tmask.IsRef && this.TypeRefContext.IsLong(tmask);
         }
+        
+        /// <summary>
+        /// Gets value indicating the given type represents a string and nothing else.
+        /// </summary>
+        internal bool IsStringOnly(TypeRefMask tmask)
+        {
+            return tmask.IsSingleType && !tmask.IsRef && this.TypeRefContext.IsAString(tmask);
+        }
 
         /// <summary>The given type represents only an integer, long or double.</summary>
         internal bool IsNumberOnly(TypeRefMask tmask)

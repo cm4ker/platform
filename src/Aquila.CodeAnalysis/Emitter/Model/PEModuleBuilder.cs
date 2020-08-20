@@ -183,37 +183,37 @@ namespace Pchp.CodeAnalysis.Emit
             //yield return targetfr;
 
             // [assembly: PhpExtension(new string[0])]
-            if (_phpextensionAttribute == null)
-            {
-                var phpextensionAttributeCtor = this.Compilation.PhpCorLibrary
-                    .GetTypeByMetadataName(CoreTypes.PhpExtensionAttributeFullName).InstanceConstructors.First();
-                _phpextensionAttribute = new SynthesizedAttributeData(phpextensionAttributeCtor,
-                    ImmutableArray.Create(new TypedConstant(
-                        Compilation.CreateArrayTypeSymbol(Compilation.CoreTypes.String.Symbol),
-                        ImmutableArray<TypedConstant>.Empty)), // string[] { }
-                    ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
-            }
-
-            yield return _phpextensionAttribute;
+            // if (_phpextensionAttribute == null)
+            // {
+            //     var phpextensionAttributeCtor = this.Compilation.PhpCorLibrary
+            //         .GetTypeByMetadataName(CoreTypes.PhpExtensionAttributeFullName).InstanceConstructors.First();
+            //     _phpextensionAttribute = new SynthesizedAttributeData(phpextensionAttributeCtor,
+            //         ImmutableArray.Create(new TypedConstant(
+            //             Compilation.CreateArrayTypeSymbol(Compilation.CoreTypes.String.Symbol),
+            //             ImmutableArray<TypedConstant>.Empty)), // string[] { }
+            //         ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
+            // }
+            //
+            // yield return _phpextensionAttribute;
 
             // [assembly: TargetPhpLanguage(LanguageVersion : "7.0", ShortOpenTag : false)]
-            if (_targetphpversionAttribute == null)
-            {
-                var targetphpversionAttribute =
-                    this.Compilation.PhpCorLibrary.GetTypeByMetadataName(CoreTypes.TargetPhpLanguageAttributeFullName);
-                if (targetphpversionAttribute.IsErrorTypeOrNull() == false)
-                {
-                    var parseOptions = this.Compilation.Options.ParseOptions ?? PhpParseOptions.Default;
-                    var targetphpversionAttributeCtor = this.Compilation.PhpCorLibrary
-                        .GetTypeByMetadataName(CoreTypes.TargetPhpLanguageAttributeFullName).InstanceConstructors
-                        .First();
-                    _targetphpversionAttribute = new SynthesizedAttributeData(targetphpversionAttributeCtor,
-                        ImmutableArray.Create(
-                            Compilation.CreateTypedConstant(parseOptions.LanguageVersion?.ToString(2)),
-                            Compilation.CreateTypedConstant(parseOptions.AllowShortOpenTags)),
-                        ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
-                }
-            }
+            // if (_targetphpversionAttribute == null)
+            // {
+            //     var targetphpversionAttribute =
+            //         this.Compilation.PhpCorLibrary.GetTypeByMetadataName(CoreTypes.TargetPhpLanguageAttributeFullName);
+            //     if (targetphpversionAttribute.IsErrorTypeOrNull() == false)
+            //     {
+            //         var parseOptions = this.Compilation.Options.ParseOptions ?? PhpParseOptions.Default;
+            //         var targetphpversionAttributeCtor = this.Compilation.PhpCorLibrary
+            //             .GetTypeByMetadataName(CoreTypes.TargetPhpLanguageAttributeFullName).InstanceConstructors
+            //             .First();
+            //         _targetphpversionAttribute = new SynthesizedAttributeData(targetphpversionAttributeCtor,
+            //             ImmutableArray.Create(
+            //                 Compilation.CreateTypedConstant(parseOptions.LanguageVersion?.ToString(2)),
+            //                 Compilation.CreateTypedConstant(parseOptions.AllowShortOpenTags)),
+            //             ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
+            //     }
+            // }
 
             if (_targetphpversionAttribute != null)
             {
@@ -362,17 +362,17 @@ namespace Pchp.CodeAnalysis.Emit
 
         void EmitAddScriptReference(ILBuilder il)
         {
-            // Context.DllLoader<TScript>
-            var tDllLoader_T = this.Compilation.GetTypeByMetadataName(CoreTypes.Context_DllLoader_T);
-            var tDllLoader = tDllLoader_T.Construct(this.ScriptType);
-
-            // .AddScriptReference()
-            var addmethod = (MethodSymbol) tDllLoader.GetMembers("AddScriptReference").Single();
-
-            // .call Context.DllLoader<TScript>.Bootstrap()
-            il
-                .EmitCall(this, DiagnosticBag.GetInstance(), System.Reflection.Metadata.ILOpCode.Call, addmethod)
-                .Expect(SpecialType.System_Void);
+            // // Context.DllLoader<TScript>
+            // var tDllLoader_T = this.Compilation.GetTypeByMetadataName(CoreTypes.Context_DllLoader_T);
+            // var tDllLoader = tDllLoader_T.Construct(this.ScriptType);
+            //
+            // // .AddScriptReference()
+            // var addmethod = (MethodSymbol) tDllLoader.GetMembers("AddScriptReference").Single();
+            //
+            // // .call Context.DllLoader<TScript>.Bootstrap()
+            // il
+            //     .EmitCall(this, DiagnosticBag.GetInstance(), System.Reflection.Metadata.ILOpCode.Call, addmethod)
+            //     .Expect(SpecialType.System_Void);
         }
 
         #endregion
@@ -411,8 +411,8 @@ namespace Pchp.CodeAnalysis.Emit
             DiagnosticBag diagnostics)
         {
             // Cannot be retrieved from GetCoreLibraryReferenceToEmit, because it can return only one reference
-            Debug.Assert(_compilation.PhpCorLibrary != null);
-            yield return Translate(_compilation.PhpCorLibrary, diagnostics);
+            // Debug.Assert(_compilation.PhpCorLibrary != null);
+            // yield return Translate(_compilation.PhpCorLibrary, diagnostics);
 
             ImmutableArray<ModuleSymbol> modules = SourceModule.ContainingAssembly.Modules;
 

@@ -48,13 +48,16 @@ namespace Aquila.CodeAnalysis.Symbols
             // yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.PhpArray,
             //     SpecialParameterSymbol.LocalsName, index++);
 
-            // object @this
-            yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.Object,
-                SpecialParameterSymbol.ThisName, index++);
-
-            // RuntimeTypeHandle <self>
-            yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.RuntimeTypeHandle,
-                SpecialParameterSymbol.SelfName, index++);
+            // // object @this
+            // yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.Object,
+            //     SpecialParameterSymbol.ThisName, index++);
+            //
+            // // RuntimeTypeHandle <self>
+            // yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.RuntimeTypeHandle,
+            //     SpecialParameterSymbol.SelfName, index++);
+            
+            yield break;
+            
         }
 
         // protected override IEnumerable<SourceParameterSymbol> BuildSrcParams(Signature signature, PHPDocBlock phpdocOpt = null)

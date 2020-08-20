@@ -49,6 +49,7 @@ namespace Pchp.CodeAnalysis.Semantics
                 #region Arithmetic Operations
 
                 case Operations.Add:
+                    
                     returned_type = (cg.IsLongOnly(this.TypeRefMask))
                         ? cg.CoreTypes.Long.Symbol
                         : this.Access.TargetType;
@@ -226,6 +227,8 @@ namespace Pchp.CodeAnalysis.Semantics
         {
             var il = cg.Builder;
 
+            
+            
             xtype = cg.EmitConvertStringToPhpNumber(
                 cg.EmitConvertIntToLong(xtype)); // int|bool -> long, string -> number
             cg.EmitPhpAliasDereference(ref xtype); // alias -> value
@@ -1822,16 +1825,16 @@ namespace Pchp.CodeAnalysis.Semantics
 
                     if (ytype.SpecialType == SpecialType.System_Int64)
                     {
-                        // i8 * i8 : number
-                        return cg.EmitCall(ILOpCode.Call, null)
-                            .Expect(null);
+                        // i8 * i8 : i8
+                        il.EmitOpCode(ILOpCode.Mul);
+                        return xtype;
                     }
 
                     if (ytype.SpecialType == SpecialType.System_Double)
                     {
                         // i8 * r8 : r8
-                        return cg.EmitCall(ILOpCode.Call, null)
-                            .Expect(SpecialType.System_Double);
+                        il.EmitOpCode(ILOpCode.Mul);
+                        return ytype;
                     }
 
                     if (ytype == null)

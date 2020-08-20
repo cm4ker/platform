@@ -8,7 +8,7 @@ public static class Helper
 {
     public static Span ToLineInfo(this ParserRuleContext context)
     {
-        return new Span(context.start.StartIndex, context.start.StopIndex - context.start.StartIndex);
+        return new Span(context.start.StartIndex, context.stop.StopIndex+1 - context.start.StartIndex);
     }
 
     public static Span ToLineInfo(this IToken context)

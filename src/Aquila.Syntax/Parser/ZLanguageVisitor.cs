@@ -484,7 +484,7 @@ namespace Aquila.Syntax.Parser
 
                 if (context.PLUS() != null) opType = Operations.Add;
                 if (context.MINUS() != null) opType = Operations.Sub;
-
+                
                 var result = new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression, opType,
                     Stack.PopExpression(),
                     Stack.PopExpression());

@@ -164,7 +164,7 @@ namespace Aquila.CodeAnalysis
 
             _options = options;
             _coreTypes = new CoreTypes(this);
-            //_coreMethods = new CoreMethods(_coreTypes);
+            _coreMethods = new CoreMethods(_coreTypes);
             _anonymousTypeManager = new AnonymousTypeManager(this);
 
             this.Conversions = new Semantics.Conversions(this);

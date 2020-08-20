@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.CodeAnalysis.Semantics;
@@ -145,43 +146,43 @@ namespace Pchp.CodeAnalysis.Semantics
 
         #region Construction
 
-        // /// <summary>
-        // /// Creates <see cref="SemanticsBinder"/> for given routine (passed with <paramref name="locals"/>).
-        // /// </summary>
-        // /// <param name="file">Containing file.</param>
-        // /// <param name="locals">Table of local variables within routine.</param>
-        // /// <param name="self">Current self context.</param>
-        // /// <param name="compilation">Declaring compilation.</param>
-        // public static SemanticsBinder Create(PhpCompilation compilation, SyntaxTree file, LocalsTable locals,
-        //     SourceTypeSymbol self = null)
-        // {
-        //     Debug.Assert(locals != null);
-        //
-        //     var routine = locals.Routine;
-        //     Debug.Assert(routine != null);
-        //
-        //     // // try to get yields from current routine
-        //     // routine.Syntax.Properties.TryGetProperty(
-        //     //     out ImmutableArray<IYieldLikeEx> yields); // routine binder sets this property
-        //
-        //     var isGeneratorMethod = false; //!yields.IsDefaultOrEmpty;
-        //
-        //     //
-        //     return (isGeneratorMethod)
-        //         ? new GeneratorSemanticsBinder(compilation, ImmutableArray<IYieldLikeEx>.Empty, locals, routine, self)
-        //         : new SemanticsBinder(compilation, file, locals, routine, self);
-        // }
-        //
-        // public SemanticsBinder(PhpCompilation compilation, SyntaxTree file, LocalsTable locals = null,
-        //     SourceRoutineSymbol routine = null, SourceTypeSymbol self = null)
-        // {
-        //     DeclaringCompilation = compilation;
-        //
-        //     ContainingFile = file;
-        //     _locals = locals;
-        //     _routine = routine;
-        //     Self = self;
-        // }
+        /// <summary>
+        /// Creates <see cref="SemanticsBinder"/> for given routine (passed with <paramref name="locals"/>).
+        /// </summary>
+        /// <param name="file">Containing file.</param>
+        /// <param name="locals">Table of local variables within routine.</param>
+        /// <param name="self">Current self context.</param>
+        /// <param name="compilation">Declaring compilation.</param>
+        public static SemanticsBinder Create(PhpCompilation compilation, SyntaxTree file, LocalsTable locals,
+            object self = null)
+        {
+            Debug.Assert(locals != null);
+        
+            var routine = locals.Routine;
+            Debug.Assert(routine != null);
+        
+            // // try to get yields from current routine
+            // routine.Syntax.Properties.TryGetProperty(
+            //     out ImmutableArray<IYieldLikeEx> yields); // routine binder sets this property
+        
+            var isGeneratorMethod = false; //!yields.IsDefaultOrEmpty;
+        
+            //
+            return (isGeneratorMethod)
+                ? new GeneratorSemanticsBinder(compilation, ImmutableArray<IYieldLikeEx>.Empty, locals, routine, self)
+                : new SemanticsBinder(compilation, file, locals, routine, self);
+        }
+        
+        public SemanticsBinder(PhpCompilation compilation, SyntaxTree file, LocalsTable locals = null,
+            SourceRoutineSymbol routine = null, object self = null)
+        {
+            DeclaringCompilation = compilation;
+        
+            ContainingFile = file;
+            _locals = locals;
+            _routine = routine;
+            //Self = self;
+        }
 
         /// <summary>
         /// Provides binder with CFG builder.
@@ -326,8 +327,8 @@ namespace Pchp.CodeAnalysis.Semantics
 
             // TODO: return back bounds
             // if (stmt is EchoStmt echoStm) return BindEcho(echoStm, BindArguments(echoStm.Parameters));
-            // if (stmt is ExpressionStmt exprStm) return new BoundExpressionStatement(BindExpression(exprStm.Expression, BoundAccess.None));
-            // if (stmt is JumpStmt jmpStm) return BindJumpStmt(jmpStm);
+             if (stmt is ExpressionStmt exprStm) return new BoundExpressionStatement(BindExpression(exprStm.Expression, BoundAccess.None));
+             if (stmt is ReturnStmt jmpStm) return BindReturnStmt(jmpStm);
             // if (stmt is FunctionDecl) return new BoundFunctionDeclStatement(stmt.GetProperty<SourceFunctionSymbol>());
             // if (stmt is TypeDecl) return new BoundTypeDeclStatement(stmt.GetProperty<SourceTypeSymbol>());
             // if (stmt is GlobalStmt glStmt) return BindGlobalStmt(glStmt);
@@ -429,32 +430,26 @@ namespace Pchp.CodeAnalysis.Semantics
         //     }
         // }
 
-        // protected BoundStatement BindJumpStmt(JumpStmt stmt)
-        // {
-        //     Debug.Assert(Routine != null);
-        //
-        //     if (stmt.Type != JumpStmt.Types.Return)
-        //     {
-        //         throw ExceptionUtilities.Unreachable;
-        //     }
-        //
-        //     BoundExpression expr = null;
-        //
-        //     if (stmt.Expression != null)
-        //     {
-        //         var isByRef = Routine.SyntaxSignature.AliasReturn;
-        //         expr = BindExpression(stmt.Expression, isByRef ? BoundAccess.ReadRef : BoundAccess.Read);
-        //
-        //         if (!isByRef)
-        //         {
-        //             // copy returned value
-        //             expr = BindCopyValue(expr);
-        //         }
-        //     }
-        //
-        //     //
-        //     return new BoundReturnStatement(expr);
-        // }
+        protected BoundStatement BindReturnStmt(ReturnStmt stmt)
+        {
+            Debug.Assert(Routine != null);
+                
+            BoundExpression expr = null;
+        
+            if (stmt.Expression != null)
+            {
+                expr = BindExpression(stmt.Expression,  BoundAccess.Read);
+        
+                // if (!isByRef)
+                // {
+                //     // copy returned value
+                //     expr = BindCopyValue(expr);
+                // }
+            }
+        
+            //
+            return new BoundReturnStatement(expr);
+        }
 
         protected BoundExpression BindCopyValue(BoundExpression expr)
         {
@@ -1464,31 +1459,31 @@ namespace Pchp.CodeAnalysis.Semantics
 
         #region Construction
 
-        // public GeneratorSemanticsBinder(PhpCompilation compilation, ImmutableArray<IYieldLikeEx> yields,
-        //     LocalsTable locals, SourceRoutineSymbol routine, SourceTypeSymbol self)
-        //     : base(compilation, routine.ContainingFile.SyntaxTree, locals, routine, self)
-        // {
-        //     Debug.Assert(Routine != null);
-        //
-        //     // TODO: move this to SourceRoutineSymbol ctor?
-        //     Routine.Flags |= RoutineFlags.IsGenerator;
-        //
-        //     // save all parents of all yieldLikeEx in current routine -> will need to realocate all expressions on path and in its children
-        //     //  - the ones to the left from yieldLikeEx<>root path need to get moved in statements before yieldLikeEx
-        //     //  - the ones on the path could be left alone but if we prepend the ones on the right we must also move the ones on the path as they should get executed before the right ones
-        //     //  - the ones to the right could be left alone but it's easier to move them as well; need to go after yieldLikeStatement
-        //     foreach (var yieldLikeEx in yields)
-        //     {
-        //         Debug.Assert(yieldLikeEx is LangElement);
-        //         var parent = (LangElement) ((LangElement) yieldLikeEx).Parent;
-        //         // add all parents until reaching the top of current statement tree
-        //         while (!(parent is MethodDecl || parent is Statement))
-        //         {
-        //             _yieldsToStatementRootPath.Add(parent);
-        //             parent = (LangElement) parent.Parent;
-        //         }
-        //     }
-        // }
+        public GeneratorSemanticsBinder(PhpCompilation compilation, ImmutableArray<IYieldLikeEx> yields,
+            LocalsTable locals, SourceRoutineSymbol routine, object self)
+            : base(compilation, routine.ContainingFile.SyntaxTree, locals, routine, self)
+        {
+            Debug.Assert(Routine != null);
+        
+            // TODO: move this to SourceRoutineSymbol ctor?
+            Routine.Flags |= RoutineFlags.IsGenerator;
+        
+            // save all parents of all yieldLikeEx in current routine -> will need to realocate all expressions on path and in its children
+            //  - the ones to the left from yieldLikeEx<>root path need to get moved in statements before yieldLikeEx
+            //  - the ones on the path could be left alone but if we prepend the ones on the right we must also move the ones on the path as they should get executed before the right ones
+            //  - the ones to the right could be left alone but it's easier to move them as well; need to go after yieldLikeStatement
+            foreach (var yieldLikeEx in yields)
+            {
+                Debug.Assert(yieldLikeEx is LangElement);
+                var parent = (LangElement) ((LangElement) yieldLikeEx).Parent;
+                // add all parents until reaching the top of current statement tree
+                while (!(parent is MethodDecl || parent is Statement))
+                {
+                    _yieldsToStatementRootPath.Add(parent);
+                    parent = (LangElement) parent.Parent;
+                }
+            }
+        }
 
         public override void SetupBuilder(Func<BoundBlock> newBlockFunc)
         {

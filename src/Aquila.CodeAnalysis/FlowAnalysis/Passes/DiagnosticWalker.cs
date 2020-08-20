@@ -661,7 +661,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
 
         public override T VisitStaticFunctionCall(BoundStaticFunctionCall call)
         {
-            CheckMissusedPrimitiveType(call.TypeRef);
+            //CheckMissusedPrimitiveType(call.TypeRef);
 
             CheckUndefinedMethodCall(call, call.TypeRef.ResolveTypeSymbol(DeclaringCompilation) as TypeSymbol,
                 call.Name);
@@ -925,9 +925,12 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
         {
             if (x.TargetMethod is MissingMethodSymbol)
             {
-                // var span = x.PhpSyntax is CallEx fnc ? fnc.name : x.PhpSyntax.Span;
-                // _diagnostics.Add(_routine, span.ToTextSpan(), ErrorCode.WRN_UndefinedMethodCall, type.Name,
-                //     name.NameValue.ToString());
+                if (x.PhpSyntax == null)
+                    throw new Exception("Internal compiler error");
+
+                var span = x.PhpSyntax is CallEx fnc ? fnc.Span : x.PhpSyntax.Span;
+                _diagnostics.Add(_routine, span.ToTextSpan(), ErrorCode.WRN_UndefinedMethodCall, type.Name,
+                    name.NameValue.ToString());
             }
         }
 

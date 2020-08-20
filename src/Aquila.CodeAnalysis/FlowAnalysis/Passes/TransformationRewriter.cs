@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Aquila.CodeAnalysis;
@@ -12,6 +13,8 @@ using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Syntax;
+using Microsoft.CodeAnalysis.Operations;
+using MoreLinq.Extensions;
 using Peachpie.CodeAnalysis.Utilities;
 
 
@@ -398,7 +401,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
                         x.Access);
                 }
             }
-
+            
             //
             return base.VisitBinaryExpression(x);
         }
