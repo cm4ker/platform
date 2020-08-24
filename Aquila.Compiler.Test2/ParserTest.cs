@@ -25,6 +25,32 @@ namespace Aquila.Compiler.Test2
         }
 
         [Fact]
+        public void CallExpressionTest()
+        {
+            var parser = Parse("SimpleCall()");
+            var result = _v.VisitExpression(parser.expression());
+            Assert.IsAssignableFrom<CallEx>(result);
+
+            parser = Parse("SimpleCall(a, b, c)");
+            result = _v.VisitExpression(parser.expression());
+
+            var call = Assert.IsAssignableFrom<CallEx>(result);
+            Assert.Equal(3, call.Arguments.Count);
+        }
+        
+        
+        [Fact]
+        public void MemberAccessTest()
+        {
+            var parser = Parse("A.B");
+            var result = _v.VisitExpression(parser.expression());
+            var ma = Assert.IsAssignableFrom<MemberAccessEx>(result);
+            Assert.Equal("B", ma.Identifier.Text);
+            var lookup = Assert.IsAssignableFrom<NameEx>(ma.Expression);
+            Assert.Equal("A", lookup.Identifier.Text);
+        }
+
+        [Fact]
         public void BinaryExpressionTest()
         {
             var parser = Parse("10 + 1");
@@ -78,7 +104,7 @@ namespace Aquila.Compiler.Test2
         [Fact]
         public void MethodDeclarationTest()
         {
-            var parser = Parse("public void A() {}");
+            var parser = Parse("void A() {}");
             var result = _v.Visit(parser.method_declaration());
             var expr = Assert.IsAssignableFrom<MethodDecl>(result);
         }
@@ -86,7 +112,7 @@ namespace Aquila.Compiler.Test2
         [Fact]
         public void CompilationUnitTest()
         {
-            var parser = Parse("public void A() {} public void b() {}");
+            var parser = Parse("void A() {} void b() {}");
             var result = _v.Visit(parser.entryPoint());
             var expr = Assert.IsAssignableFrom<SourceUnit>(result);
             Assert.Equal(2, expr.Methods.Count);

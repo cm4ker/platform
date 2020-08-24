@@ -249,7 +249,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             return default;
         }
 
-        public override T VisitStaticFunctionCall(BoundStaticFunctionCall x)
+        public override T VisitStaticFunctionCall(BoundCall x)
         {
             Accept(x.TypeRef);
             Accept(x.Name);

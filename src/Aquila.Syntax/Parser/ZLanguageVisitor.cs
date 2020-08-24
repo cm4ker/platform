@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Expressions;
@@ -35,20 +38,22 @@ namespace Aquila.Syntax.Parser
 
         public override LangElement VisitEntryPoint(ZSharpParser.EntryPointContext context)
         {
-            PushStack();
-
-            var usings = new UsingList();
-
-            foreach (var atd in context.usingSection())
-            {
-                usings.Add((UsingBase) Visit(atd));
-            }
-
+            //PushStack();
+            //
+            // var usings = new UsingList();
+            //
+            // foreach (var atd in context.usingSection())
+            // {
+            //     usings.Add((UsingBase) Visit(atd));
+            // }
+            //
             PushStack();
             context.method_declaration().ForEach(x => VisitMethod_declaration(x));
             var methods = PopStack();
 
-            var cu = new SourceUnit(context.ToLineInfo(), SyntaxKind.CompilationUnit, "C:\\Users\\cmake\\source\\repos\\ZenPlatform\\src\\Aquila.Compiler.Tests\\bin\\Debug\\netcoreapp3.1\\test.aq", usings,
+            var cu = new SourceUnit(context.ToLineInfo(), SyntaxKind.CompilationUnit,
+                "C:\\Users\\cmake\\source\\repos\\ZenPlatform\\src\\Aquila.Compiler.Tests\\bin\\Debug\\netcoreapp3.1\\test.aq",
+                UsingList.Empty,
                 methods.ToCollection<MethodList>(), FieldList.Empty);
 
             PopStack();
@@ -56,12 +61,12 @@ namespace Aquila.Syntax.Parser
             return cu;
         }
 
-        public override LangElement VisitAliasingTypeDefinition(ZSharpParser.AliasingTypeDefinitionContext context)
-        {
-            return new UsingAliasDecl(context.ToLineInfo(), SyntaxKind.BadToken,
-                context.typeName().GetText(),
-                context.alias.GetText());
-        }
+        // public override LangElement VisitAliasingTypeDefinition(ZSharpParser.AliasingTypeDefinitionContext context)
+        // {
+        //     return new UsingAliasDecl(context.ToLineInfo(), SyntaxKind.BadToken,
+        //         context.typeName().GetText(),
+        //         context.alias.GetText());
+        // }
 
         public override LangElement VisitUsingDefinition(ZSharpParser.UsingDefinitionContext context)
         {
@@ -70,85 +75,66 @@ namespace Aquila.Syntax.Parser
                 context.@namespace().GetText());
         }
 
-        public override LangElement VisitFieldDeclaration(ZSharpParser.FieldDeclarationContext context)
+        // public override LangElement VisitFieldDeclaration(ZSharpParser.FieldDeclarationContext context)
+        // {
+        //     base.VisitFieldDeclaration(context);
+        //     FieldDecl f = new FieldDecl(context.ToLineInfo(), SyntaxKind.FieldDeclaration,
+        //         Stack.PopIdentifier(),
+        //         Stack.PopType());
+        //     Stack.PeekCollection().Add(f);
+        //     return f;
+        // }
+
+        // public override LangElement VisitAttributes(ZSharpParser.AttributesContext context)
+        // {
+        //     Stack.Push(new AnnotationList());
+        //     base.VisitAttributes(context);
+        //
+        //     return null;
+        // }
+        //
+        // public override LangElement VisitAttribute(ZSharpParser.AttributeContext context)
+        // {
+        //     base.VisitAttribute(context);
+        //
+        //     ArgumentList ac = null;
+        //
+        //     if (context.argument_list() != null)
+        //         ac = (ArgumentList) Stack.Pop();
+        //
+        //     var result =
+        //         new Annotation(context.ToLineInfo(), SyntaxKind.Attribute, ac, null);
+        //     Stack.PeekType<AnnotationList>().Add(result);
+        //
+        //     return result;
+        // }
+
+        public override LangElement VisitReturn_type(ZSharpParser.Return_typeContext context)
         {
-            base.VisitFieldDeclaration(context);
-            FieldDecl f = new FieldDecl(context.ToLineInfo(), SyntaxKind.FieldDeclaration,
-                Stack.PopIdentifier(),
-                Stack.PopType());
-            Stack.PeekCollection().Add(f);
-            return f;
+            base.VisitReturn_type(context);
+
+            if (context.VOID() != null)
+                Stack.Push(TypeSyntaxHelper.CreateVoid(context.ToLineInfo()));
+
+            return Stack.PeekNode();
         }
 
-        public override LangElement VisitAttributes(ZSharpParser.AttributesContext context)
-        {
-            Stack.Push(new AnnotationList());
-            base.VisitAttributes(context);
-
-            return null;
-        }
-
-        public override LangElement VisitAttribute(ZSharpParser.AttributeContext context)
-        {
-            base.VisitAttribute(context);
-
-            ArgumentList ac = null;
-
-            if (context.argument_list() != null)
-                ac = (ArgumentList) Stack.Pop();
-
-            var result =
-                new Annotation(context.ToLineInfo(), SyntaxKind.Attribute, ac, null);
-            Stack.PeekType<AnnotationList>().Add(result);
-
-            return result;
-        }
-
-        public override LangElement VisitName(ZSharpParser.NameContext context)
-        {
-            Stack.Push(new NameEx(context.ToLineInfo(), SyntaxKind.NameExpression, Operations.DirectVarUse,
-                context.IDENTIFIER().Identifier()));
-            return null;
-        }
-
-        public override LangElement VisitStructureType(ZSharpParser.StructureTypeContext context)
+        public override LangElement VisitType_(ZSharpParser.Type_Context context)
         {
             var result = TypeSyntaxHelper.Create(context.ToLineInfo(), context.GetText());
             Stack.Push(result);
             return result;
         }
 
-        // public override SyntaxNode VisitPrimitiveType(ZSharpParser.PrimitiveTypeContext context)
+        // public override LangElement VisitArrayType(ZSharpParser.ArrayTypeContext context)
         // {
-        //     TypeNodeKind t = TypeNodeKind.Unknown;
+        //     base.VisitArrayType(context);
         //
-        //     if (context.STRING() != null) t = TypeNodeKind.String;
-        //     else if (context.INT() != null) t = TypeNodeKind.Int;
-        //     else if (context.UID() != null) t = TypeNodeKind.Uid;
-        //     else if (context.OBJECT() != null) t = TypeNodeKind.Object;
-        //     else if (context.BOOL() != null) t = TypeNodeKind.Boolean;
-        //     else if (context.DOUBLE() != null) t = TypeNodeKind.Double;
-        //     else if (context.CHAR() != null) t = TypeNodeKind.Char;
-        //     else if (context.VOID() != null) t = TypeNodeKind.Void;
-        //
-        //     if (t == TypeNodeKind.Unknown)
-        //         throw new Exception("Unknown primitive type");
-        //     var result = new PrimitiveTypeSyntax(context.ToLineInfo(), t);
+        //     var result = new ArrayType(context.ToLineInfo(), SyntaxKind.ArrayType, Stack.PopType());
         //
         //     Stack.Push(result);
-        //
         //     return result;
         // }
-
-        public override LangElement VisitArrayType(ZSharpParser.ArrayTypeContext context)
-        {
-            base.VisitArrayType(context);
-
-            var result = new ArrayType(context.ToLineInfo(), SyntaxKind.ArrayType, Stack.PopType());
-
-            Stack.Push(result);
-            return result;
-        }
 
         public override LangElement VisitLiteral(ZSharpParser.LiteralContext context)
         {
@@ -257,17 +243,17 @@ namespace Aquila.Syntax.Parser
             return Stack.PeekNode();
         }
 
-        public override LangElement VisitCastExpression(ZSharpParser.CastExpressionContext context)
-        {
-            base.VisitCastExpression(context);
-
-            var result = new CastEx(context.ToLineInfo(), SyntaxKind.CastExpression,
-                Operations.ObjectCast, Stack.PopExpression(), Stack.PopType());
-
-            Stack.Push(result);
-
-            return result;
-        }
+        // public override LangElement VisitCastExpression(ZSharpParser.CastExpressionContext context)
+        // {
+        //     base.VisitCastExpression(context);
+        //
+        //     var result = new CastEx(context.ToLineInfo(), SyntaxKind.CastExpression,
+        //         Operations.ObjectCast, Stack.PopExpression(), Stack.PopType());
+        //
+        //     Stack.Push(result);
+        //
+        //     return result;
+        // }
 
         public override LangElement VisitMethod_declaration(ZSharpParser.Method_declarationContext context)
         {
@@ -294,10 +280,10 @@ namespace Aquila.Syntax.Parser
 
             var funcName = context.IDENTIFIER().Identifier();
 
-            if (context.attributes() != null)
-            {
-                ac = (AnnotationList) Stack.Pop();
-            }
+            // if (context.attributes() != null)
+            // {
+            //     ac = (AnnotationList) Stack.Pop();
+            // }
 
             Stack.Push(new MethodDecl(context.ToLineInfo(), SyntaxKind.MethodDeclaration, body, pc, //gpc,
                 ac,
@@ -340,47 +326,49 @@ namespace Aquila.Syntax.Parser
 
         public override LangElement VisitArgument_list(ZSharpParser.Argument_listContext context)
         {
-            Stack.Push(new ArgumentList());
-
+            PushStack();
             base.VisitArgument_list(context);
+            var args = PopStack().ToCollection<ArgumentList>();
+            Stack.Push(args);
 
-            return null;
+            return Stack.PeekNode();
         }
 
         public override LangElement VisitArgument(ZSharpParser.ArgumentContext context)
         {
             base.VisitArgument(context);
+
             var passMethod = context.REF() != null ? PassMethod.ByReference : PassMethod.ByValue;
             var result = new Argument(context.ToLineInfo(), SyntaxKind.Argument, Stack.PopExpression(),
                 passMethod);
 
-            Stack.PeekType<ArgumentList>().Add(result);
-            return result;
+            Stack.Push(result);
+
+            return Stack.PeekNode();
         }
 
         public override LangElement VisitExpression(ZSharpParser.ExpressionContext context)
         {
             base.VisitExpression(context);
-
-            return Stack.Peek() as LangElement;
+            return Stack.PeekNode();
         }
 
-        public override LangElement VisitExpressionPostfix(ZSharpParser.ExpressionPostfixContext context)
+        // public override LangElement VisitExpressionPostfix(ZSharpParser.ExpressionPostfixContext context)
+        // {
+        //     base.VisitExpressionPostfix(context);
+        //
+        //     if (context.indexerExpression != null)
+        //         Stack.Push(new IndexerEx(context.ToLineInfo(), SyntaxKind.IndexerExpression,
+        //             Operations.Indexer,
+        //             Stack.PopExpression(),
+        //             Stack.PopExpression()));
+        //
+        //     return null;
+        // }
+
+        public override LangElement VisitUnary_expression(ZSharpParser.Unary_expressionContext context)
         {
-            base.VisitExpressionPostfix(context);
-
-            if (context.indexerExpression != null)
-                Stack.Push(new IndexerEx(context.ToLineInfo(), SyntaxKind.IndexerExpression,
-                    Operations.Indexer,
-                    Stack.PopExpression(),
-                    Stack.PopExpression()));
-
-            return null;
-        }
-
-        public override LangElement VisitExpression_unary(ZSharpParser.Expression_unaryContext context)
-        {
-            base.VisitExpression_unary(context);
+            base.VisitUnary_expression(context);
 
             var li = context.ToLineInfo();
 
@@ -391,16 +379,15 @@ namespace Aquila.Syntax.Parser
             if (context.BANG() != null)
                 Stack.Push(new UnaryEx(li, SyntaxKind.BangToken, Operations.LogicNegation, Stack.PopExpression()));
 
-
             return Stack.PeekNode();
         }
 
-        public override LangElement VisitExpression_multiplicative(
-            ZSharpParser.Expression_multiplicativeContext context)
+        public override LangElement VisitMultiplicative_expression(
+            ZSharpParser.Multiplicative_expressionContext context)
         {
-            base.VisitExpression_multiplicative(context);
+            base.VisitMultiplicative_expression(context);
 
-            if (context.expression_multiplicative() != null)
+            if (context.range_expression().Length > 1)
             {
                 Operations opType;
 
@@ -417,14 +404,13 @@ namespace Aquila.Syntax.Parser
             return null;
         }
 
-        public override LangElement VisitExpression_equality(ZSharpParser.Expression_equalityContext context)
+        public override LangElement VisitEquality_expression(ZSharpParser.Equality_expressionContext context)
         {
-            base.VisitExpression_equality(context);
+            base.VisitEquality_expression(context);
 
-            if (context.expression_equality() != null)
+            if (context.relational_expression().Length > 1)
             {
                 Operations opType;
-
 
                 if (context.OP_EQ() != null) opType = Operations.Equal;
                 else if (context.OP_NE() != null) opType = Operations.NotEqual;
@@ -437,26 +423,11 @@ namespace Aquila.Syntax.Parser
             return null;
         }
 
-        public override LangElement VisitSql_literal(ZSharpParser.Sql_literalContext context)
+        public override LangElement VisitRelational_expression(ZSharpParser.Relational_expressionContext context)
         {
-            // var text = context.GetText();
-            // text = Regex.Unescape(text ?? throw new NullReferenceException());
-            // text = text.Substring(2, text.Length - 3);
-            //
-            // var result = new Literal(context.ToLineInfo(), text,
-            //     new PrimitiveTypeSyntax(null, TypeNodeKind.String), true);
-            // Stack.Push(result);
-            //
-            // return base.VisitSql_literal(context);
+            base.VisitRelational_expression(context);
 
-            return null;
-        }
-
-        public override LangElement VisitExpression_relational(ZSharpParser.Expression_relationalContext context)
-        {
-            base.VisitExpression_relational(context);
-
-            if (context.expression_relational() != null)
+            if (context.shift_expression().Length > 1)
             {
                 Operations opType = Operations.Unknown;
 
@@ -470,21 +441,20 @@ namespace Aquila.Syntax.Parser
                     Stack.PopExpression()));
             }
 
-
             return null;
         }
 
-        public override LangElement VisitExpression_additive(ZSharpParser.Expression_additiveContext context)
+        public override LangElement VisitAdditive_expression(ZSharpParser.Additive_expressionContext context)
         {
-            base.VisitExpression_additive(context);
+            base.VisitAdditive_expression(context);
 
-            if (context.expression_additive() != null)
+            if (context.multiplicative_expression().Length > 1)
             {
                 Operations opType = Operations.Unknown;
 
-                if (context.PLUS() != null) opType = Operations.Add;
-                if (context.MINUS() != null) opType = Operations.Sub;
-                
+                if (context.PLUS().Any()) opType = Operations.Add;
+                else if (context.MINUS().Any()) opType = Operations.Sub;
+
                 var result = new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression, opType,
                     Stack.PopExpression(),
                     Stack.PopExpression());
@@ -496,29 +466,53 @@ namespace Aquila.Syntax.Parser
             return null;
         }
 
-        public override LangElement VisitExpression_binary(ZSharpParser.Expression_binaryContext context)
+        public override LangElement VisitConditional_or_expression(
+            ZSharpParser.Conditional_or_expressionContext context)
         {
-            base.VisitExpression_binary(context);
+            base.VisitConditional_or_expression(context);
 
-            if (context.expression_binary() != null)
-            {
-                Operations opType = Operations.Unknown;
-
-                if (context.OP_AND() != null)
-                    opType = Operations.And;
-                if (context.OP_OR() != null)
-                    opType = Operations.Or;
-
-                if (opType == Operations.Unknown)
-                    throw new Exception("this should never happen");
-
+            if (context.OP_OR()?.Any() ?? false)
                 Stack.Push(
-                    new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression, opType,
+                    new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression, Operations.Or,
                         Stack.PopExpression(),
                         Stack.PopExpression()));
-            }
 
-            return null;
+            return Stack.PeekNode();
+        }
+
+
+        public override LangElement VisitConditional_and_expression(
+            ZSharpParser.Conditional_and_expressionContext context)
+        {
+            base.VisitConditional_and_expression(context);
+
+            if (context.OP_AND()?.Any() ?? false)
+                Stack.Push(
+                    new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression, Operations.And,
+                        Stack.PopExpression(),
+                        Stack.PopExpression()));
+
+            return Stack.PeekNode();
+        }
+
+        public override LangElement VisitMethod_invocation(ZSharpParser.Method_invocationContext context)
+        {
+            base.VisitMethod_invocation(context);
+
+            Stack.Push(new CallEx(context.ToLineInfo(), SyntaxKind.CallExpression, Operations.Call,
+                Stack.Pop<ArgumentList>(), Stack.PopExpression()));
+
+            return Stack.PeekNode();
+        }
+
+        public override LangElement VisitMember_access(ZSharpParser.Member_accessContext context)
+        {
+            base.VisitMember_access(context);
+            
+            Stack.Push(new MemberAccessEx(context.ToLineInfo(), SyntaxKind.MemberAccessExpression,
+                Operations.MemberAccess, Stack.PopIdentifier(), Stack.PopExpression()));
+
+            return Stack.PeekNode();
         }
 
         public override LangElement VisitAssignment(ZSharpParser.AssignmentContext context)
@@ -536,21 +530,6 @@ namespace Aquila.Syntax.Parser
             // base.VisitThrowStatement(context);
             //
             // var result = new Throw(context.ToLineInfo(), Stack.PopExpression());
-            // Stack.Push(result);
-            //
-            // return result;
-
-            return null;
-        }
-
-        public override LangElement VisitNewExpression(ZSharpParser.NewExpressionContext context)
-        {
-            // base.VisitNewExpression(context);
-            //
-            // var ns = context.@namespace()?.GetText();
-            //
-            // var result = new New(context.ToLineInfo(), ns, Stack.Pop<Call>());
-            //
             // Stack.Push(result);
             //
             // return result;
@@ -618,13 +597,6 @@ namespace Aquila.Syntax.Parser
             Stack.Push(new ReturnStmt(context.ToLineInfo(), SyntaxKind.ReturnStatement, Stack.PopExpression()));
 
             return Stack.PeekNode();
-        }
-
-        public override LangElement VisitGlobalVar(ZSharpParser.GlobalVarContext context)
-        {
-            // base.VisitGlobalVar(context);
-            // Stack.Push(new GlobalVar(context.ToLineInfo(), Stack.PopExpression()));
-            return null;
         }
     }
 }

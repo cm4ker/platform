@@ -933,6 +933,44 @@ namespace Aquila.Syntax.Ast.Expressions
 
 namespace Aquila.Syntax.Ast.Expressions
 {
+    public partial class MemberAccessEx : Expression
+    {
+        public MemberAccessEx(Span span, SyntaxKind syntaxKind, Operations operation, IdentifierToken identifier, Expression expression): base(span, syntaxKind, operation)
+        {
+            this.Attach(0, (LangElement)identifier);
+            this.Attach(1, (LangElement)expression);
+        }
+
+        public IdentifierToken Identifier
+        {
+            get
+            {
+                return (IdentifierToken)this.Children[0];
+            }
+        }
+
+        public Expression Expression
+        {
+            get
+            {
+                return (Expression)this.Children[1];
+            }
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitMemberAccessEx(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitMemberAccessEx(this);
+        }
+    }
+}
+
+namespace Aquila.Syntax.Ast.Expressions
+{
     public partial class CallEx : Expression
     {
         public CallEx(Span span, SyntaxKind syntaxKind, Operations operation, ArgumentList arguments, Expression expression): base(span, syntaxKind, operation)
@@ -1816,6 +1854,11 @@ namespace Aquila.Syntax
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitMemberAccessEx(MemberAccessEx arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitCallEx(CallEx arg)
         {
             return DefaultVisit(arg);
@@ -2055,6 +2098,11 @@ namespace Aquila.Syntax
         }
 
         public virtual void VisitAssignEx(AssignEx arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitMemberAccessEx(MemberAccessEx arg)
         {
             DefaultVisit(arg);
         }

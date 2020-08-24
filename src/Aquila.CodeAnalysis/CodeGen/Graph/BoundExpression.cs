@@ -49,7 +49,7 @@ namespace Pchp.CodeAnalysis.Semantics
                 #region Arithmetic Operations
 
                 case Operations.Add:
-                    
+
                     returned_type = (cg.IsLongOnly(this.TypeRefMask))
                         ? cg.CoreTypes.Long.Symbol
                         : this.Access.TargetType;
@@ -227,8 +227,7 @@ namespace Pchp.CodeAnalysis.Semantics
         {
             var il = cg.Builder;
 
-            
-            
+
             xtype = cg.EmitConvertStringToPhpNumber(
                 cg.EmitConvertIntToLong(xtype)); // int|bool -> long, string -> number
             cg.EmitPhpAliasDereference(ref xtype); // alias -> value
@@ -792,14 +791,17 @@ namespace Pchp.CodeAnalysis.Semantics
                     {
                         // long & long
                         cg.EmitConvert(right, cg.CoreTypes.Long);
-                        return cg.EmitCall(ILOpCode.Call, null);
+                        cg.EmitOpCode(ILOpCode.Mul);
                     }
                     else
                     {
                         // long % value
-                        cg.EmitConvert(right, null);
-                        return cg.EmitCall(ILOpCode.Call, null);
+                        //cg.EmitConvert(right, null);
+                        //cg.EmitCall(ILOpCode.Call, ILOpCode.Mod);
+                        throw new NotSupportedException("TODO: Implement mod operator");
                     }
+
+                    return xtype;
 
                 default:
 
@@ -3061,7 +3063,7 @@ namespace Pchp.CodeAnalysis.Semantics
         }
     }
 
-    partial class BoundStaticFunctionCall
+    partial class BoundCall
     {
         protected override bool CallsiteRequiresCallerContext => true;
         protected override string CallsiteName => _name.IsDirect ? _name.NameValue.ToString() : null;
@@ -3102,6 +3104,10 @@ namespace Pchp.CodeAnalysis.Semantics
                 cg.EmitExpectTypeDeclared(_typeRef.ResolvedType);
             }
         }
+    }
+
+    partial class BoundMemberGroup
+    {
     }
 
     partial class BoundNewEx

@@ -42,7 +42,7 @@ namespace Pchp.CodeAnalysis.Semantics
 
         public virtual TResult VisitInstanceFunctionCall(BoundInstanceFunctionCall x) => VisitRoutineCall(x);
 
-        public virtual TResult VisitStaticFunctionCall(BoundStaticFunctionCall x) => VisitRoutineCall(x);
+        public virtual TResult VisitStaticFunctionCall(BoundCall x) => VisitRoutineCall(x);
 
         public virtual TResult VisitEcho(BoundEcho x) => VisitRoutineCall(x);
 

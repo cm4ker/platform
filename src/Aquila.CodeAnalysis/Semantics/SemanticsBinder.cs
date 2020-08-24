@@ -7,6 +7,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Cryptography.X509Certificates;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.CodeAnalysis.Semantics;
@@ -18,9 +19,11 @@ using Aquila.Syntax.Ast.Expressions;
 using Aquila.Syntax.Ast.Functions;
 using Aquila.Syntax.Ast.Statements;
 using Aquila.Syntax.Errors;
+using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
 using Pchp.CodeAnalysis.Semantics.Graph;
 using Pchp.CodeAnalysis.FlowAnalysis;
+using Pchp.CodeAnalysis.Semantics.TypeRef;
 
 namespace Pchp.CodeAnalysis.Semantics
 {
@@ -157,27 +160,27 @@ namespace Pchp.CodeAnalysis.Semantics
             object self = null)
         {
             Debug.Assert(locals != null);
-        
+
             var routine = locals.Routine;
             Debug.Assert(routine != null);
-        
+
             // // try to get yields from current routine
             // routine.Syntax.Properties.TryGetProperty(
             //     out ImmutableArray<IYieldLikeEx> yields); // routine binder sets this property
-        
+
             var isGeneratorMethod = false; //!yields.IsDefaultOrEmpty;
-        
+
             //
             return (isGeneratorMethod)
                 ? new GeneratorSemanticsBinder(compilation, ImmutableArray<IYieldLikeEx>.Empty, locals, routine, self)
                 : new SemanticsBinder(compilation, file, locals, routine, self);
         }
-        
+
         public SemanticsBinder(PhpCompilation compilation, SyntaxTree file, LocalsTable locals = null,
             SourceRoutineSymbol routine = null, object self = null)
         {
             DeclaringCompilation = compilation;
-        
+
             ContainingFile = file;
             _locals = locals;
             _routine = routine;
@@ -327,8 +330,9 @@ namespace Pchp.CodeAnalysis.Semantics
 
             // TODO: return back bounds
             // if (stmt is EchoStmt echoStm) return BindEcho(echoStm, BindArguments(echoStm.Parameters));
-             if (stmt is ExpressionStmt exprStm) return new BoundExpressionStatement(BindExpression(exprStm.Expression, BoundAccess.None));
-             if (stmt is ReturnStmt jmpStm) return BindReturnStmt(jmpStm);
+            if (stmt is ExpressionStmt exprStm)
+                return new BoundExpressionStatement(BindExpression(exprStm.Expression, BoundAccess.None));
+            if (stmt is ReturnStmt jmpStm) return BindReturnStmt(jmpStm);
             // if (stmt is FunctionDecl) return new BoundFunctionDeclStatement(stmt.GetProperty<SourceFunctionSymbol>());
             // if (stmt is TypeDecl) return new BoundTypeDeclStatement(stmt.GetProperty<SourceTypeSymbol>());
             // if (stmt is GlobalStmt glStmt) return BindGlobalStmt(glStmt);
@@ -433,20 +437,20 @@ namespace Pchp.CodeAnalysis.Semantics
         protected BoundStatement BindReturnStmt(ReturnStmt stmt)
         {
             Debug.Assert(Routine != null);
-                
+
             BoundExpression expr = null;
-        
+
             if (stmt.Expression != null)
             {
-                expr = BindExpression(stmt.Expression,  BoundAccess.Read);
-        
+                expr = BindExpression(stmt.Expression, BoundAccess.Read);
+
                 // if (!isByRef)
                 // {
                 //     // copy returned value
                 //     expr = BindCopyValue(expr);
                 // }
             }
-        
+
             //
             return new BoundReturnStatement(expr);
         }
@@ -489,7 +493,7 @@ namespace Pchp.CodeAnalysis.Semantics
             Debug.Assert(expr != null);
 
             if (expr is LiteralEx) return BindLiteral((LiteralEx) expr).WithAccess(access);
-            // if (expr is ConstantUse) return BindConstUse((ConstantUse) expr).WithAccess(access);
+            if (expr is NameEx ne) return BindSimpleVarUse(ne, access);
             // if (expr is VarLikeConstructUse)
             // {
             //     if (expr is SimpleVarUse) return BindSimpleVarUse((SimpleVarUse) expr, access);
@@ -504,6 +508,8 @@ namespace Pchp.CodeAnalysis.Semantics
             if (expr is AssignEx aex) return BindAssignEx(aex, access);
             if (expr is UnaryEx) return BindUnaryEx((UnaryEx) expr, access).WithAccess(access);
             if (expr is IncDecEx) return BindIncDec((IncDecEx) expr).WithAccess(access);
+            if (expr is CallEx) return BindCallEx((CallEx) expr).WithAccess(access);
+            if (expr is MemberAccessEx mae) return BindMemberAccessEx(mae).WithAccess(access);
             // if (expr is ConditionalEx) return BindConditionalEx((ConditionalEx) expr, access).WithAccess(access);
             // if (expr is ConcatEx) return BindConcatEx((ConcatEx) expr).WithAccess(access);
             // if (expr is IncludingEx) return BindIncludeEx((IncludingEx) expr).WithAccess(access);
@@ -524,6 +530,71 @@ namespace Pchp.CodeAnalysis.Semantics
             Diagnostics.Add(GetLocation(expr), ErrorCode.ERR_NotYetImplemented,
                 $"Expression of type '{expr.GetType().Name}'");
             return new BoundLiteral(null);
+        }
+
+        private BoundRoutineName BindRoutineName(NameEx name)
+        {
+            return new BoundRoutineName(QualifiedName.Parse(name.Identifier.Text, true));
+        }
+
+
+        private BoundExpression BindMemberAccessEx(MemberAccessEx expr)
+        {
+            return null;
+        }
+
+        private BoundExpression BindCallEx(CallEx expr)
+        {
+            BoundExpression result;
+            var builder = new List<BoundArgument>(expr.Arguments.Count);
+
+
+            foreach (var arg in expr.Arguments)
+            {
+                builder.Add(BindArgument(arg.Expression));
+            }
+
+            switch (expr.Expression.Kind)
+            {
+                case SyntaxKind.NameExpression:
+                    //1st try get method name from this routine
+                    var name = ((NameEx) expr.Expression).Identifier.Text;
+
+                    //2nd try to load method with this name
+                    var members = this._routine.ContainingType.GetMembers(name);
+
+                    if (members.Length == 0)
+                    {
+                        Diagnostics.Add(GetLocation(expr.Expression), ErrorCode.ERR_InvalidFunctionName);
+                    }
+                    else if (members.Length > 1)
+                    {
+                        // select overload
+                    }
+                    else
+                    {
+                        var member = members[0];
+                        //result = new BoundCall(new BoundTypeRefFromSymbol(this._routine.ContainingType), );
+                    }
+
+
+                    //process local instance method or local static method 
+                    // M()
+                    result = new BoundCall(new BoundTypeRefFromSymbol(this._routine.ContainingType),
+                        BindRoutineName(expr.Expression as NameEx),
+                        null, builder.ToImmutableArray());
+                    break;
+                case SyntaxKind.MemberAccessExpression:
+                    // A.M();
+                    var boundLeft = BindExpression(expr.Expression);
+                    result = null;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+
+            return result;
         }
 
         // protected virtual BoundYieldEx BindYieldEx(YieldEx expr, BoundAccess access)
@@ -870,7 +941,7 @@ namespace Pchp.CodeAnalysis.Semantics
         public IBoundTypeRef BindTypeRef(Aquila.Syntax.Ast.TypeRef tref, bool objectTypeInfoSemantic = false)
         {
             throw new NotImplementedException();
-            
+
             // var type = BoundTypeRefFactory.CreateFromTypeRef(tref, this, this.Self, objectTypeInfoSemantic)
             //     .WithSyntax(tref);
             //
@@ -1041,12 +1112,9 @@ namespace Pchp.CodeAnalysis.Semantics
 
         protected BoundVariableName BindVariableName(NameEx nameEx)
         {
-            //var dexpr = varuse as DirectVarUse;
-            // var iexpr = varuse as IndirectVarUse;
-
             Debug.Assert(nameEx != null);
 
-            return new BoundVariableName(nameEx.Identifier.Text);
+            return new BoundVariableName(nameEx.Identifier.Text).WithSyntax(nameEx);
         }
 
         protected BoundExpression BindSimpleVarUse(NameEx expr, BoundAccess access)
@@ -1060,7 +1128,7 @@ namespace Pchp.CodeAnalysis.Semantics
                     // cannot use variables in field initializer or parameter initializer
                     Diagnostics.Add(GetLocation(expr), ErrorCode.ERR_InvalidConstantExpression);
                 }
-
+                
                 if (varname.IsDirect)
                 {
                     if (varname.NameValue.IsThisVariableName)
@@ -1156,7 +1224,8 @@ namespace Pchp.CodeAnalysis.Semantics
             switch (expr.Operation)
             {
                 case Operations.Concat: // Left . Right
-                    return BindConcatEx(new[] {expr.Left, expr.Right});
+                    throw new NotSupportedException(
+                        "Concat operation not supported"); //return BindConcatEx(new[] {expr.Left, expr.Right});
 
                 case Operations.Coalesce:
                     laccess = BoundAccess.Read.WithQuiet(); // Template: A ?? B; // read A quietly
@@ -1464,10 +1533,10 @@ namespace Pchp.CodeAnalysis.Semantics
             : base(compilation, routine.ContainingFile.SyntaxTree, locals, routine, self)
         {
             Debug.Assert(Routine != null);
-        
+
             // TODO: move this to SourceRoutineSymbol ctor?
             Routine.Flags |= RoutineFlags.IsGenerator;
-        
+
             // save all parents of all yieldLikeEx in current routine -> will need to realocate all expressions on path and in its children
             //  - the ones to the left from yieldLikeEx<>root path need to get moved in statements before yieldLikeEx
             //  - the ones on the path could be left alone but if we prepend the ones on the right we must also move the ones on the path as they should get executed before the right ones

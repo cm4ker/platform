@@ -14,6 +14,7 @@ using Aquila.Syntax.Syntax;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Peachpie.CodeAnalysis.Utilities;
+using Expression = Aquila.Syntax.Ast.Expression;
 
 namespace Pchp.CodeAnalysis.Semantics
 {
@@ -441,7 +442,9 @@ namespace Pchp.CodeAnalysis.Semantics
         /// </summary>
         internal MethodSymbol TargetMethod { get; set; }
 
-        public virtual bool IsVirtual => false;
+        public virtual bool IsVirtual => TargetMethod.IsVirtual;
+
+        public virtual bool IsStatic => TargetMethod.IsStatic;
 
         public override OperationKind Kind => OperationKind.Invocation;
 
@@ -654,25 +657,27 @@ namespace Pchp.CodeAnalysis.Semantics
             visitor.VisitInstanceFunctionCall(this);
     }
 
-    public partial class BoundStaticFunctionCall : BoundRoutineCall
+    public partial class BoundCall : BoundRoutineCall
     {
         public IBoundTypeRef TypeRef => _typeRef;
         readonly BoundTypeRef _typeRef;
 
-        public override BoundExpression Instance => null;
+        public override BoundExpression Instance => _instance;
+        readonly BoundExpression _instance;
 
         public BoundRoutineName Name => _name;
         readonly BoundRoutineName _name;
 
-        public BoundStaticFunctionCall(IBoundTypeRef typeRef, BoundRoutineName name,
+        public BoundCall(IBoundTypeRef typeRef, BoundRoutineName name, BoundExpression instance,
             ImmutableArray<BoundArgument> arguments)
             : base(arguments)
         {
             _typeRef = (BoundTypeRef) typeRef;
             _name = name;
+            instance = instance;
         }
 
-        public BoundStaticFunctionCall Update(IBoundTypeRef typeRef, BoundRoutineName name,
+        public BoundCall Update(IBoundTypeRef typeRef, BoundRoutineName name, BoundExpression instance,
             ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments)
         {
             if (typeRef == _typeRef && name == _name && arguments == ArgumentsInSourceOrder &&
@@ -682,7 +687,7 @@ namespace Pchp.CodeAnalysis.Semantics
             }
             else
             {
-                return new BoundStaticFunctionCall(typeRef, name, arguments)
+                return new BoundCall(typeRef, name, instance, arguments)
                     {TypeArguments = typeArguments}.WithContext(this);
             }
         }

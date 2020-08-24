@@ -84,13 +84,7 @@ namespace Aquila.Syntax.Ast
         AssignCoalesce,
 
         // constants, variables, fields, items:
-        GlobalConstUse,
-        ClassConstUse,
-        PseudoConstUse,
-        DirectVarUse,
-        IndirectVarUse,
-        DirectStaticFieldUse,
-        IndirectStaticFieldUse,
+        MemberAccess,
         Indexer,
 
         // literals:
@@ -104,11 +98,8 @@ namespace Aquila.Syntax.Ast
         BinaryStringLiteral,
 
         // routine calls:
-        DirectCall,
-        IndirectCall,
-        DirectStaticCall,
-        IndirectStaticCall,
-
+        Call,
+        
         // instances:
         New,
         Array,

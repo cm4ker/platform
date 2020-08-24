@@ -353,11 +353,11 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
                 VisitImmutableArray(x.TypeArguments));
         }
 
-        public override object VisitStaticFunctionCall(BoundStaticFunctionCall x)
+        public override object VisitStaticFunctionCall(BoundCall x)
         {
             return x.Update(
                 (BoundTypeRef)Accept(x.TypeRef),
-                (BoundRoutineName)Accept(x.Name),
+                (BoundRoutineName)Accept(x.Name), null, 
                 VisitImmutableArray(x.ArgumentsInSourceOrder),
                 VisitImmutableArray(x.TypeArguments));
         }

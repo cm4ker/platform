@@ -344,10 +344,10 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override ImmutableArray<Symbol> GetMembers(string name)
         {
-            if (name == _mainMethod.Name)
-            {
-                return ImmutableArray.Create<Symbol>(_mainMethod);
-            }
+            // if (name == _mainMethod.Name)
+            // {
+            //     return ImmutableArray.Create<Symbol>(_mainMethod);
+            // }
 
             return _lazyMembers
                 .Where(x => x.Name == name)

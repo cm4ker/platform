@@ -550,7 +550,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
                     (x is BoundNewEx)
                         ? "new " + x.TargetMethod.ContainingType.PhpQualifiedName().ToString()
                         : GetMemberNameForDiagnostic(x.TargetMethod,
-                            (x.Instance != null || x is BoundStaticFunctionCall));
+                            (x.Instance != null || x is BoundCall));
 
                 //
                 if (x.ArgumentsInSourceOrder.Length < expectsmin)
@@ -659,7 +659,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
             return base.VisitCFGCatchBlock(x);
         }
 
-        public override T VisitStaticFunctionCall(BoundStaticFunctionCall call)
+        public override T VisitStaticFunctionCall(BoundCall call)
         {
             //CheckMissusedPrimitiveType(call.TypeRef);
 

@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Expressions;
 using Aquila.Syntax.Ast.Statements;
@@ -27,6 +29,17 @@ namespace Aquila.Syntax
         public T Pop<T>()
         {
             return (T) internalStack.Pop();
+        }
+
+        public T TryPop<T>(Func<T> onError)
+        {
+            if (internalStack.Count == 0)
+                if (onError != null)
+                    return onError();
+                else
+                    return default;
+
+            return Pop<T>();
         }
 
         public List<T> PopList<T>()
@@ -67,11 +80,9 @@ namespace Aquila.Syntax
 
         public LangElement PeekNode()
         {
-            return internalStack.Peek() as LangElement;
-        }
+            if (internalStack.Count == 0)
+                return default;
 
-        public LangElement PeekAst()
-        {
             return internalStack.Peek() as LangElement;
         }
 
@@ -117,7 +128,7 @@ namespace Aquila.Syntax
             return (TypeRef) internalStack.Pop();
         }
 
-        
+
         public BlockStmt PopInstructionsBody()
         {
             return (BlockStmt) internalStack.Pop();
@@ -125,7 +136,11 @@ namespace Aquila.Syntax
 
         public Expression PopExpression()
         {
-            return (Expression) internalStack.Pop();
+            var item = internalStack.Pop();
+            if (item is IdentifierToken e)
+                return new NameEx(e.Span, SyntaxKind.NameExpression, Operations.Empty, e);
+
+            return (Expression) item;
         }
 
         public T PeekType<T>()

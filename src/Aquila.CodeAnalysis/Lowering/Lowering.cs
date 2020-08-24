@@ -48,8 +48,8 @@ namespace Aquila.CodeAnalysis.Lowering
             if (typeCtx.IsAString(x.Left.TypeRefMask) && typeCtx.IsAString(x.Right.TypeRefMask))
             {
                 
-                return new BoundStaticFunctionCall(BoundTypeRefFactory.StringTypeRef,
-                        new BoundRoutineName(new QualifiedName(new Name(nameof(string.Concat)))), new[]
+                return new BoundCall(BoundTypeRefFactory.StringTypeRef,
+                        new BoundRoutineName(new QualifiedName(new Name(nameof(string.Concat)))),  null, new[]
                         {
                             BoundArgument.Create(x.Left), BoundArgument.Create(x.Right)
                         }.ToImmutableArray())

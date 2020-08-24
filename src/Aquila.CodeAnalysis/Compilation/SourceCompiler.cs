@@ -235,7 +235,7 @@ namespace Pchp.CodeAnalysis
                 return (IList<MethodSymbol>) visitor._lazyStaticCalls ?? Array.Empty<MethodSymbol>();
             }
 
-            public override bool VisitStaticFunctionCall(BoundStaticFunctionCall x)
+            public override bool VisitStaticFunctionCall(BoundCall x)
             {
                 if (x.TypeRef.IsSelf() || x.TypeRef.IsParent())
                 {
