@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
-using Pchp.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Semantics;
 
 namespace Aquila.CodeAnalysis.Symbols.Synthesized
 {

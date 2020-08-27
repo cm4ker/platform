@@ -3,8 +3,8 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.Emit;
-using Pchp.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Emit;
+using Aquila.CodeAnalysis.Semantics;
 using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols

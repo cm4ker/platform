@@ -1,7 +1,7 @@
 ﻿using Aquila.Syntax.Syntax;
 using Peachpie.CodeAnalysis.Utilities;
 
-namespace Pchp.CodeAnalysis.FlowAnalysis
+namespace Aquila.CodeAnalysis.FlowAnalysis
 {
     /// <summary>
     /// Used by analysis of routine in case we know additional information about called context.

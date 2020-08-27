@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.Emit;
 using Cci = Microsoft.Cci;
 using FieldSymbol = Aquila.CodeAnalysis.Symbols.FieldSymbol;
 
-namespace Pchp.CodeAnalysis.Emit
+namespace Aquila.CodeAnalysis.Emit
 {
     /// <summary>
     /// Represents a reference to a field of a generic type instantiation.

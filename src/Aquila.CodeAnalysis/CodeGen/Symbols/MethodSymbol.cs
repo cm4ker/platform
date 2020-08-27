@@ -6,8 +6,8 @@ using System.Reflection.Metadata;
 using System.Text;
  using Aquila.Compiler.Utilities;
  using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.CodeGen;
-using Pchp.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.CodeGen;
+using Aquila.CodeAnalysis.Semantics;
 
 namespace Aquila.CodeAnalysis.Symbols
 {

@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.Emit;
 using Cci = Microsoft.Cci;
 using MethodSymbol = Aquila.CodeAnalysis.Symbols.MethodSymbol;
 
-namespace Pchp.CodeAnalysis.Emit
+namespace Aquila.CodeAnalysis.Emit
 {
     internal abstract class MethodReference : TypeMemberReference, Cci.IMethodReference
     {

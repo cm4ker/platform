@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Collections.Immutable;
 using System.Net.Mime;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Syntax;
 using Aquila.Shared.Tree;
 using Aquila.Syntax;

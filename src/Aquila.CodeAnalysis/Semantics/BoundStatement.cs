@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.Syntax;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis.Text;
@@ -11,21 +12,20 @@ using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.Syntax.Ast.Functions;
-using Pchp.CodeAnalysis.Semantics.Graph;
 using Peachpie.CodeAnalysis.Utilities;
 
-namespace Pchp.CodeAnalysis.Semantics
+namespace Aquila.CodeAnalysis.Semantics
 {
     /// <summary>
     /// Base class representing a statement semantic.
     /// </summary>
-    public abstract partial class BoundStatement : BoundOperation, IPhpStatement
+    public abstract partial class BoundStatement : BoundOperation, IAquilaStatement
     {
         public virtual bool IsInvalid => false;
 
         public LangElement PhpSyntax { get; set; }
 
-        public abstract TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor);
+        public abstract TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor);
     }
 
     public sealed partial class BoundEmptyStatement : BoundStatement, IEmptyOperation
@@ -62,9 +62,9 @@ namespace Pchp.CodeAnalysis.Semantics
             => visitor.VisitEmpty(this, argument);
 
         /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="PhpOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
+        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
         /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) =>
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
             visitor.VisitEmptyStatement(this);
     }
 
@@ -111,9 +111,9 @@ namespace Pchp.CodeAnalysis.Semantics
             => visitor.VisitExpressionStatement(this, argument);
 
         /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="PhpOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
+        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
         /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) =>
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
             visitor.VisitExpressionStatement(this);
     }
 
@@ -153,9 +153,9 @@ namespace Pchp.CodeAnalysis.Semantics
             => visitor.VisitReturn(this, argument);
 
         /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="PhpOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
+        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
         /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) => visitor.VisitReturn(this);
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitReturn(this);
     }
 
     /// <summary>
@@ -198,9 +198,9 @@ namespace Pchp.CodeAnalysis.Semantics
             => visitor.VisitInvalid(this, argument);
 
         /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="PhpOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
+        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
         /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) =>
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
             visitor.VisitFunctionDeclaration(this);
     }
 
@@ -294,9 +294,9 @@ namespace Pchp.CodeAnalysis.Semantics
             => visitor.VisitVariableDeclaration(this, argument);
 
         /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="PhpOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
+        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
         /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) =>
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
             visitor.VisitGlobalStatement(this);
     }
 
@@ -335,9 +335,9 @@ namespace Pchp.CodeAnalysis.Semantics
             => visitor.DefaultVisit(this, argument);
 
         /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="PhpOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
+        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
         /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) =>
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
             visitor.VisitGlobalConstDecl(this);
     }
 
@@ -410,9 +410,9 @@ namespace Pchp.CodeAnalysis.Semantics
             => visitor.VisitVariableDeclaration(this, argument);
 
         /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="PhpOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
+        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
         /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) =>
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
             visitor.VisitStaticStatement(this);
     }
 
@@ -450,9 +450,9 @@ namespace Pchp.CodeAnalysis.Semantics
             => visitor.DefaultVisit(this, argument);
 
         /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="PhpOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
+        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
         /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) => visitor.VisitUnset(this);
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitUnset(this);
     }
 
     /// <summary>
@@ -510,9 +510,9 @@ namespace Pchp.CodeAnalysis.Semantics
         }
 
         /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="PhpOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
+        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
         /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor)
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
             => visitor.VisitYieldStatement(this);
 
         public override void Accept(OperationVisitor visitor)
@@ -539,9 +539,9 @@ namespace Pchp.CodeAnalysis.Semantics
             => visitor.DefaultVisit(this, argument);
 
         /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="PhpOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
+        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
         /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) =>
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
             visitor.VisitDeclareStatement(this);
     }
 }

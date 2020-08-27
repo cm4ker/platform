@@ -4,7 +4,7 @@ using Aquila.CodeAnalysis.Syntax;
 using Aquila.Syntax.Errors;
 using Aquila.Syntax.Text;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis;
+using Aquila.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis.Errors
 {

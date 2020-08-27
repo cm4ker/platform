@@ -11,7 +11,7 @@ using Aquila.CodeAnalysis.Symbols.Attributes;
 using Microsoft.Cci;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
-using Pchp.CodeAnalysis.DocumentationComments;
+using Aquila.CodeAnalysis.DocumentationComments;
 using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols.PE

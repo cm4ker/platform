@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.Emit;
 using Cci = Microsoft.Cci;
 using MethodSymbol = Aquila.CodeAnalysis.Symbols.MethodSymbol;
 
-namespace Pchp.CodeAnalysis.Emit
+namespace Aquila.CodeAnalysis.Emit
 {
     /// <summary>
     /// Represents a generic method of a generic type instantiation, closed over type parameters.

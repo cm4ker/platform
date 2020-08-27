@@ -8,12 +8,12 @@ using System.Diagnostics;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Symbols.PE;
 using Aquila.CodeAnalysis.Symbols.Php;
+using Aquila.CodeAnalysis.Utilities;
 using Aquila.Compiler.Utilities;
 using Aquila.Syntax.Syntax;
 using Roslyn.Utilities;
-using Pchp.CodeAnalysis.Utilities;
 
-namespace Pchp.CodeAnalysis.Semantics.Model
+namespace Aquila.CodeAnalysis.Semantics.Model
 {
     internal class GlobalSymbolProvider : ISymbolProvider
     {

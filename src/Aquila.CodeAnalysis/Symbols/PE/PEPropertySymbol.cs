@@ -8,7 +8,7 @@ using System.Threading;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
-using Pchp.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Semantics;
 
 namespace Aquila.CodeAnalysis.Symbols.PE
 {

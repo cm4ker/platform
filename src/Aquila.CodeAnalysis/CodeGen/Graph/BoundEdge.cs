@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
 using Microsoft.CodeAnalysis.PooledObjects;
-using Pchp.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Symbols;
 using System;
 using System.Collections.Generic;
@@ -12,8 +11,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
+using Aquila.CodeAnalysis.CodeGen;
 
-namespace Pchp.CodeAnalysis.Semantics.Graph
+namespace Aquila.CodeAnalysis.Semantics.Graph
 {
     partial class Edge : IGenerator
     {

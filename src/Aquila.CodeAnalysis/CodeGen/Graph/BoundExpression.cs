@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
 using Microsoft.CodeAnalysis.Operations;
-using Pchp.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Symbols;
 using Peachpie.CodeAnalysis.Utilities;
 using System;
@@ -10,11 +9,12 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata;
+using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Syntax;
 
-namespace Pchp.CodeAnalysis.Semantics
+namespace Aquila.CodeAnalysis.Semantics
 {
     partial class BoundExpression
     {
@@ -3104,10 +3104,6 @@ namespace Pchp.CodeAnalysis.Semantics
                 cg.EmitExpectTypeDeclared(_typeRef.ResolvedType);
             }
         }
-    }
-
-    partial class BoundMemberGroup
-    {
     }
 
     partial class BoundNewEx

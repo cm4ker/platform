@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Pchp.CodeAnalysis.Semantics.Graph;
+using Aquila.CodeAnalysis.Semantics.Graph;
 
-namespace Pchp.CodeAnalysis
+namespace Aquila.CodeAnalysis
 {
     internal static class GraphExtensions
     {

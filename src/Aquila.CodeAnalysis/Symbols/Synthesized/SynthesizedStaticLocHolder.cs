@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using Aquila.Compiler.Utilities;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis;
+using Aquila.CodeAnalysis;
 using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols.Synthesized
@@ -71,7 +71,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         }
         SynthesizedFieldSymbol _valueField;
 
-        public void EmitCtor(Pchp.CodeAnalysis.Emit.PEModuleBuilder module, Action<Microsoft.CodeAnalysis.CodeGen.ILBuilder> builder)
+        public void EmitCtor(Aquila.CodeAnalysis.Emit.PEModuleBuilder module, Action<Microsoft.CodeAnalysis.CodeGen.ILBuilder> builder)
         {
             Debug.Assert(_ctor == null);
 
@@ -80,12 +80,12 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             _ctor = new SynthesizedCtorSymbol(this);
             _ctor.SetParameters();// empty params (default ctor)
             
-            var body = Pchp.CodeAnalysis.CodeGen.MethodGenerator.GenerateMethodBody(module, _ctor, builder, null, DiagnosticBag.GetInstance(), false);
+            var body = Aquila.CodeAnalysis.CodeGen.MethodGenerator.GenerateMethodBody(module, _ctor, builder, null, DiagnosticBag.GetInstance(), false);
             module.SetMethodBody(_ctor, body);
         }
         SynthesizedCtorSymbol _ctor;
 
-        public void EmitInit(Pchp.CodeAnalysis.Emit.PEModuleBuilder module, Action<Microsoft.CodeAnalysis.CodeGen.ILBuilder> builder)
+        public void EmitInit(Aquila.CodeAnalysis.Emit.PEModuleBuilder module, Action<Microsoft.CodeAnalysis.CodeGen.ILBuilder> builder)
         {
             Debug.Assert(_initMethod == null);
 
@@ -96,7 +96,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             _initMethod = new SynthesizedMethodSymbol(this, "Init", false, true, tt.Void, Accessibility.Public);
             _initMethod.SetParameters(new SynthesizedParameterSymbol(_initMethod, null, 0, RefKind.None, "ctx"));
 
-            var body = Pchp.CodeAnalysis.CodeGen.MethodGenerator.GenerateMethodBody(module, _initMethod, builder, null, DiagnosticBag.GetInstance(), false);
+            var body = Aquila.CodeAnalysis.CodeGen.MethodGenerator.GenerateMethodBody(module, _initMethod, builder, null, DiagnosticBag.GetInstance(), false);
             module.SetMethodBody(_initMethod, body);
         }
         SynthesizedMethodSymbol _initMethod;

@@ -218,9 +218,9 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
 
         private ConcurrentBag<NamedTypeSymbol> _lazySynthesizedTypes;
 
-        public SynthesizedTypeSymbol SynthesizeType(string name, Accessibility accessibility = Accessibility.Internal)
+        public SynthesizedStaticTypeSymbol SynthesizeType(string name, Accessibility accessibility = Accessibility.Internal)
         {
-            var type = new SynthesizedTypeSymbol(Compilation, name, null, accessibility);
+            var type = new SynthesizedStaticTypeSymbol(Compilation, name, null, accessibility);
 
             if (_lazySynthesizedTypes == null)
             {

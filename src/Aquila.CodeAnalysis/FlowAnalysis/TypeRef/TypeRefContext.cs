@@ -4,15 +4,14 @@ using System.Diagnostics;
 using System.Linq;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Semantics;
-using Pchp.CodeAnalysis.Semantics;
-using Pchp.CodeAnalysis.Semantics.TypeRef;
+using Aquila.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.Syntax.Syntax;
 using Peachpie.CodeAnalysis.Utilities;
 
 
-namespace Pchp.CodeAnalysis.FlowAnalysis
+namespace Aquila.CodeAnalysis.FlowAnalysis
 {
     /// <summary>
     /// Context of <see cref="TypeRefMask"/> and <see cref="IBoundTypeRef"/> instances.
@@ -294,7 +293,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// </summary>
         internal NamedTypeSymbol SelfType => _selfType;
 
-        private readonly SynthesizedTypeSymbol _selfType;
+        private readonly SynthesizedStaticTypeSymbol _selfType;
 
         /// <summary>
         /// Type corresponding to <c>$this</c> variable.
@@ -302,7 +301,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
         /// </summary>
         internal NamedTypeSymbol ThisType => _thisType;
 
-        private readonly SynthesizedTypeSymbol _thisType;
+        private readonly SynthesizedStaticTypeSymbol _thisType;
 
         /// <summary>
         /// When resolved, contains type mask of <c>static</c> type.
@@ -313,13 +312,13 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
 
         #region Initialization
 
-        internal TypeRefContext(PhpCompilation compilation, SynthesizedTypeSymbol selfType)
+        internal TypeRefContext(PhpCompilation compilation, SynthesizedStaticTypeSymbol selfType)
             : this(compilation, selfType, thisType: selfType)
         {
         }
         
-        internal TypeRefContext(PhpCompilation compilation, SynthesizedTypeSymbol selfType,
-            SynthesizedTypeSymbol thisType)
+        internal TypeRefContext(PhpCompilation compilation, SynthesizedStaticTypeSymbol selfType,
+            SynthesizedStaticTypeSymbol thisType)
         {
             _compilation = compilation ?? throw ExceptionUtilities.ArgumentNull(nameof(compilation));
             _selfType = selfType;

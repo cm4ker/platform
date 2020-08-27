@@ -12,7 +12,6 @@ using Aquila.Syntax.Parser;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
-using Pchp.CodeAnalysis;
 using Peachpie.Library.Scripting;
 
 namespace Aquila.Compiler.Tests

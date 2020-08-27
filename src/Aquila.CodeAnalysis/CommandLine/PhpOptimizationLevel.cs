@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.CodeAnalysis;
 
-namespace Pchp.CodeAnalysis
+namespace Aquila.CodeAnalysis
 {
     /// <summary>
     /// Level of optimization.

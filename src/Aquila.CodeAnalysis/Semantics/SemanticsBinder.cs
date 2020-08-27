@@ -10,7 +10,9 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography.X509Certificates;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Errors;
+using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Compiler.Utilities;
 using Aquila.Syntax;
@@ -21,17 +23,15 @@ using Aquila.Syntax.Ast.Statements;
 using Aquila.Syntax.Errors;
 using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
-using Pchp.CodeAnalysis.Semantics.Graph;
-using Pchp.CodeAnalysis.FlowAnalysis;
-using Pchp.CodeAnalysis.Semantics.TypeRef;
+using Aquila.CodeAnalysis.Semantics.TypeRef;
 
-namespace Pchp.CodeAnalysis.Semantics
+namespace Aquila.CodeAnalysis.Semantics
 {
     /// <summary>
     /// Holds currently bound item and optionally the first and the last BoundBlock containing all the statements that are supposed to go before the BoundElement. 
     /// </summary>
     /// <typeparam name="T">Either <c>BoundExpression</c> or <c>BoundStatement</c>.</typeparam>
-    public struct BoundItemsBag<T> : IEquatable<BoundItemsBag<T>> where T : class, IPhpOperation
+    public struct BoundItemsBag<T> : IEquatable<BoundItemsBag<T>> where T : class, IAquilaOperation
     {
         public BoundBlock PreBoundBlockFirst { get; private set; }
         public BoundBlock PreBoundBlockLast { get; private set; }
@@ -537,10 +537,52 @@ namespace Pchp.CodeAnalysis.Semantics
             return new BoundRoutineName(QualifiedName.Parse(name.Identifier.Text, true));
         }
 
-
-        private BoundExpression BindMemberAccessEx(MemberAccessEx expr)
+        private BoundExpression BindName(NameEx expr)
         {
             return null;
+        }
+
+        private BoundExpression BindMemberAccessEx(MemberAccessEx expr, bool invoke)
+        {
+            var boundLeft = BindExpression(expr.Expression);
+
+            var leftType = boundLeft.Type;
+
+            var members = leftType.GetMembers(expr.Identifier.Text);
+            foreach (var member in members)
+            {
+                if (invoke)
+                {
+                    if (member is MethodSymbol ms)
+                    {
+                        
+                        
+                        var method = new BoundMethod(ms, leftType);
+                    }
+                }
+                else
+                {
+                    if (member is PropertySymbol ps)
+                    {
+                        throw new Exception("Can't bound property: not implemented");
+                    }
+                }
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private BoundExpression BindMethodGroup(Expression expr, bool invoked)
+        {
+            switch (expr.Kind)
+            {
+                case SyntaxKind.NameExpression:
+                    return BindName((NameEx) expr);
+                case SyntaxKind.MemberAccessExpression:
+                    return BindMemberAccessEx((MemberAccessEx) expr, invoked);
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         private BoundExpression BindCallEx(CallEx expr)
@@ -554,47 +596,7 @@ namespace Pchp.CodeAnalysis.Semantics
                 builder.Add(BindArgument(arg.Expression));
             }
 
-            switch (expr.Expression.Kind)
-            {
-                case SyntaxKind.NameExpression:
-                    //1st try get method name from this routine
-                    var name = ((NameEx) expr.Expression).Identifier.Text;
-
-                    //2nd try to load method with this name
-                    var members = this._routine.ContainingType.GetMembers(name);
-
-                    if (members.Length == 0)
-                    {
-                        Diagnostics.Add(GetLocation(expr.Expression), ErrorCode.ERR_InvalidFunctionName);
-                    }
-                    else if (members.Length > 1)
-                    {
-                        // select overload
-                    }
-                    else
-                    {
-                        var member = members[0];
-                        //result = new BoundCall(new BoundTypeRefFromSymbol(this._routine.ContainingType), );
-                    }
-
-
-                    //process local instance method or local static method 
-                    // M()
-                    result = new BoundCall(new BoundTypeRefFromSymbol(this._routine.ContainingType),
-                        BindRoutineName(expr.Expression as NameEx),
-                        null, builder.ToImmutableArray());
-                    break;
-                case SyntaxKind.MemberAccessExpression:
-                    // A.M();
-                    var boundLeft = BindExpression(expr.Expression);
-                    result = null;
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-
-            return result;
+            return BindMethodGroup(expr.Expression, true);
         }
 
         // protected virtual BoundYieldEx BindYieldEx(YieldEx expr, BoundAccess access)
@@ -1128,7 +1130,7 @@ namespace Pchp.CodeAnalysis.Semantics
                     // cannot use variables in field initializer or parameter initializer
                     Diagnostics.Add(GetLocation(expr), ErrorCode.ERR_InvalidConstantExpression);
                 }
-                
+
                 if (varname.IsDirect)
                 {
                     if (varname.NameValue.IsThisVariableName)

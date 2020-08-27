@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using Aquila.CodeAnalysis;
 
-namespace Pchp.CodeAnalysis.Utilities
+namespace Aquila.CodeAnalysis.Utilities
 {
     internal static class CompilationTrackerExtension
     {

@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Immutable;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.CodeGen;
+using Aquila.CodeAnalysis.FlowAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
-using Pchp.CodeAnalysis.CodeGen;
-using Pchp.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.Syntax;
 
-namespace Pchp.CodeAnalysis.Semantics
+namespace Aquila.CodeAnalysis.Semantics
 {
     /// <summary>
     /// Provides a type reference and binding to <see cref="ITypeSymbol"/>.
     /// </summary>
-    public interface IBoundTypeRef : IEquatable<IBoundTypeRef>, IPhpOperation
+    public interface IBoundTypeRef : IEquatable<IBoundTypeRef>, IAquilaOperation
     {
         /// <summary>
         /// Gets value indicting that the type allows a <c>NULL</c> reference.
@@ -128,6 +128,6 @@ namespace Pchp.CodeAnalysis.Semantics
         public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
             TArgument argument) => visitor.DefaultVisit(this, argument);
 
-        public virtual TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) => visitor.VisitTypeRef(this);
+        public virtual TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitTypeRef(this);
     }
 }

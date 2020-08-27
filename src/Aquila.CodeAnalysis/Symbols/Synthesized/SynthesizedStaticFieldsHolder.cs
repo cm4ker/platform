@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis;
+using Aquila.CodeAnalysis;
 using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols.Synthesized

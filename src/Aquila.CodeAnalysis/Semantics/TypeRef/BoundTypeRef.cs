@@ -4,16 +4,16 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.CodeGen;
+using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.Compiler.Utilities;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.CodeGen;
-using Pchp.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax.Syntax;
 using Peachpie.CodeAnalysis.Utilities;
 
-namespace Pchp.CodeAnalysis.Semantics.TypeRef
+namespace Aquila.CodeAnalysis.Semantics.TypeRef
 {
     #region BoundPrimitiveTypeRef
 
@@ -714,7 +714,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
 
         public override string ToString() => "{?}";
 
-        public override TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) =>
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
             visitor.VisitIndirectTypeRef(this);
     }
 
@@ -782,7 +782,7 @@ namespace Pchp.CodeAnalysis.Semantics.TypeRef
             return result;
         }
 
-        public override TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) =>
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
             visitor.VisitMultipleTypeRef(this);
 
         public BoundMultipleTypeRef Update(ImmutableArray<BoundTypeRef> trefs)

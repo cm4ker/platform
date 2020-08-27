@@ -6,7 +6,7 @@ using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Pchp.CodeAnalysis.Semantics
+namespace Aquila.CodeAnalysis.Semantics
 {
     /// <summary>
     /// Table of local variables used within routine.

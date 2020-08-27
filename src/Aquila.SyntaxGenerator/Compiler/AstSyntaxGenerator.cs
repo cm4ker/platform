@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Aquila.SyntaxGenerator.Compiler
 {
-    public static class ComilerSyntaxGenerator
+    public static class AstSyntaxGenerator
     {
         private static SyntaxToken publicToken = SyntaxFactory.Token(SyntaxKind.PublicKeyword);
         private static SyntaxToken partialToken = SyntaxFactory.Token(SyntaxKind.PartialKeyword);

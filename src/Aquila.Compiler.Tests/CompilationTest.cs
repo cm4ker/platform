@@ -7,7 +7,7 @@ namespace Aquila.Compiler.Tests
         [Fact]
         public void SimpleExpression()
         {
-            var script = "int CustomProc() { return 2 + 2 * 2; }";
+            var script = "int CustomProc() { return 1 + 2 * 3; }";
 
             var result = (int) this.CompileAndRun(script);
 

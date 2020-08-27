@@ -8,7 +8,7 @@ using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax.Syntax;
 
 
-namespace Pchp.CodeAnalysis.Semantics
+namespace Aquila.CodeAnalysis.Semantics
 {
     #region BoundVariable
 

@@ -9,8 +9,8 @@ using Aquila.Compiler.Utilities;
 using Aquila.Syntax;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis;
-using Pchp.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Utilities;
 using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols.Source
@@ -126,7 +126,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         /// Class holding app-static constants defined in compile-time.
         /// <code>static class &lt;constants&gt; { ... }</code>
         /// </summary>
-        internal SynthesizedTypeSymbol DefinedConstantsContainer { get; }
+        internal SynthesizedStaticTypeSymbol DefinedConstantsContainer { get; }
 
         /// <summary>
         /// First script added to the collection.
@@ -153,7 +153,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 _compilation.Options.Defines);
         }
 
-        void PopulateDefinedConstants(SynthesizedTypeSymbol container, ImmutableDictionary<string, string> defines)
+        void PopulateDefinedConstants(SynthesizedStaticTypeSymbol container, ImmutableDictionary<string, string> defines)
         {
             if (defines == null || defines.IsEmpty)
             {

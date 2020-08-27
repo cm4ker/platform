@@ -1,9 +1,9 @@
-﻿using Pchp.CodeAnalysis.Semantics.Graph;
-using System;
+﻿using System;
 using System.Diagnostics;
-using Pchp.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Semantics.Graph;
 
-namespace Pchp.CodeAnalysis.FlowAnalysis
+namespace Aquila.CodeAnalysis.FlowAnalysis
 {
     public abstract class AnalysisWalker<TState, TResult> : GraphWalker<TResult>
     {

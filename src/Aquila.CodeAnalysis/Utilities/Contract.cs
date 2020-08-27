@@ -4,9 +4,9 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Pchp.CodeAnalysis.Semantics.Graph;
+using Aquila.CodeAnalysis.Semantics.Graph;
 
-namespace Pchp.CodeAnalysis
+namespace Aquila.CodeAnalysis
 {
     internal static class Contract
     {

@@ -10,10 +10,10 @@ using Aquila.Syntax.Ast.Functions;
 using Aquila.Syntax.Ast.Statements;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.CodeGen;
-using Pchp.CodeAnalysis.FlowAnalysis;
-using Contract = Pchp.CodeAnalysis.Contract;
-using Pchp.CodeAnalysis;
+using Aquila.CodeAnalysis.CodeGen;
+using Aquila.CodeAnalysis.FlowAnalysis;
+using Contract = Aquila.CodeAnalysis.Contract;
+using Aquila.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis.Symbols
 {
@@ -64,7 +64,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// A field representing the function info at runtime of type <c>RoutineInfo</c>.
         /// Lazily associated with index by runtime.
         /// </summary>
-        internal FieldSymbol EnsureRoutineInfoField(Pchp.CodeAnalysis.Emit.PEModuleBuilder module)
+        internal FieldSymbol EnsureRoutineInfoField(Aquila.CodeAnalysis.Emit.PEModuleBuilder module)
         {
             if (_lazyRoutineInfoField == null)
             {

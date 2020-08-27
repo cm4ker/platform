@@ -9,8 +9,8 @@ using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Functions;
 using Aquila.Syntax.Ast.Statements;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis;
-using Pchp.CodeAnalysis.FlowAnalysis;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.FlowAnalysis;
 
 namespace Aquila.CodeAnalysis.Symbols
 {

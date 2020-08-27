@@ -1,9 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
-using Pchp.CodeAnalysis.Semantics;
 using System;
 using System.Diagnostics;
 using System.Reflection.Metadata;
+using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Cci = Microsoft.Cci;
@@ -13,7 +13,7 @@ using ParameterSymbol = Aquila.CodeAnalysis.Symbols.ParameterSymbol;
 using PropertySymbol = Aquila.CodeAnalysis.Symbols.PropertySymbol;
 using SourceFieldSymbol = Aquila.CodeAnalysis.Symbols.SourceFieldSymbol;
 
-namespace Pchp.CodeAnalysis.CodeGen
+namespace Aquila.CodeAnalysis.CodeGen
 {
     #region IPlace
 

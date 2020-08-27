@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Aquila.Syntax;
 using Aquila.Syntax.Syntax;
-using Pchp.CodeAnalysis;
+using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
 

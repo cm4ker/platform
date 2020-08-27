@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.Emit;
+using Aquila.CodeAnalysis.Emit;
 using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols.PE
@@ -43,7 +43,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
 
         TypeSymbol IPhpPropertySymbol.DeclaringType => _containingType.IsStaticsContainer() ? _containingType.ContainingType : _containingType;
 
-        void IPhpPropertySymbol.EmitInit(Pchp.CodeAnalysis.CodeGen.CodeGenerator cg) { throw new NotSupportedException(); } // not needed
+        void IPhpPropertySymbol.EmitInit(Aquila.CodeAnalysis.CodeGen.CodeGenerator cg) { throw new NotSupportedException(); } // not needed
 
         #endregion
 

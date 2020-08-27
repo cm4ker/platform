@@ -8,7 +8,7 @@ using Aquila.Syntax;
 using Aquila.Syntax.Text;
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 
-namespace Pchp.CodeAnalysis
+namespace Aquila.CodeAnalysis
 {
     internal static class DiagnosticBagExtensions
     {

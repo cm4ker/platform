@@ -5,8 +5,8 @@ using System.Linq;
 using System.Reflection;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.Semantics;
-using Pchp.CodeAnalysis.Semantics.Graph;
+using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Semantics.Graph;
 
 namespace Aquila.CodeAnalysis.Symbols
 {

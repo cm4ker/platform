@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Aquila.CodeAnalysis.Errors;
+using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.Syntax;
-using Pchp.CodeAnalysis.Semantics.Graph;
 
 
-namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
+namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 {
     internal partial class DiagnosticWalker<T>
     {

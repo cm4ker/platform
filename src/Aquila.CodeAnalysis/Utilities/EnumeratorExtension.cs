@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Pchp.CodeAnalysis
+namespace Aquila.CodeAnalysis
 {
     internal static class EnumeratorExtension
     {

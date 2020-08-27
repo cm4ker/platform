@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using Aquila.Syntax.Ast.Statements;
 using Aquila.Syntax.Text;
 
-namespace Pchp.CodeAnalysis.Semantics.Graph
+namespace Aquila.CodeAnalysis.Semantics.Graph
 {
     /// <summary>
     /// Represents statements control flow graph.

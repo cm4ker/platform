@@ -13,7 +13,7 @@ using Aquila.Syntax.Ast.Statements;
 using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
 
-namespace Pchp.CodeAnalysis.Semantics.Graph
+namespace Aquila.CodeAnalysis.Semantics.Graph
 {
     /// <summary>
     /// Visitor implementation that constructs the graph.
@@ -240,13 +240,13 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             _current.Add(stmtBag.BoundElement);
         }
 
-        private void ConnectBoundItemsBagBlocksToCurrentBlock<T>(BoundItemsBag<T> bag) where T : class, IPhpOperation
+        private void ConnectBoundItemsBagBlocksToCurrentBlock<T>(BoundItemsBag<T> bag) where T : class, IAquilaOperation
         {
             _current = ConnectBoundItemsBagBlocks(bag, _current);
         }
 
         private BoundBlock ConnectBoundItemsBagBlocks<T>(BoundItemsBag<T> bag, BoundBlock block)
-            where T : class, IPhpOperation
+            where T : class, IAquilaOperation
         {
             if (bag.IsOnlyBoundElement)
             {

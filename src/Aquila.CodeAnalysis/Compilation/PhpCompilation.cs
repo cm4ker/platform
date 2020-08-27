@@ -17,16 +17,15 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.PooledObjects;
 using Microsoft.CodeAnalysis.Symbols;
-using Pchp.CodeAnalysis.DocumentationComments;
-using Pchp.CodeAnalysis.Emit;
+using Aquila.CodeAnalysis.DocumentationComments;
+using Aquila.CodeAnalysis.Emit;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Anonymous;
 using Aquila.CodeAnalysis.Symbols.PE;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax.Syntax;
-using Pchp.CodeAnalysis;
-using Pchp.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.Utilities;
 using Roslyn.Utilities;
 using SourceFieldSymbol = Aquila.CodeAnalysis.Symbols.SourceFieldSymbol;
 using SourceMethodSymbol = Aquila.CodeAnalysis.Symbols.SourceMethodSymbol;
@@ -176,6 +175,7 @@ namespace Aquila.CodeAnalysis
                     referenceManager?.ObservedMetadata, options.SdkDirectory);
 
             _tables = new SourceSymbolCollection(this);
+            
         }
 
         /// <summary>

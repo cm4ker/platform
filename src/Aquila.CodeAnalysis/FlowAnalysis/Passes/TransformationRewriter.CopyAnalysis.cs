@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using Pchp.CodeAnalysis.Semantics;
-using Pchp.CodeAnalysis.Semantics.Graph;
-using Aquila.CodeAnalysis.Symbols;
+ using Aquila.CodeAnalysis.Semantics;
+ using Aquila.CodeAnalysis.Semantics.Graph;
+ using Aquila.CodeAnalysis.Symbols;
  using Aquila.CodeAnalysis.Symbols.Source;
- using Pchp.CodeAnalysis.Utilities;
-using Peachpie.CodeAnalysis.Utilities;
+ using Aquila.CodeAnalysis.Utilities;
+ using Peachpie.CodeAnalysis.Utilities;
 
-namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
+namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 {
     partial class TransformationRewriter
     {

@@ -1,8 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
-using Pchp.CodeAnalysis.Emit;
-using Pchp.CodeAnalysis.FlowAnalysis;
-using Pchp.CodeAnalysis.Semantics;
 using Peachpie.CodeAnalysis.Utilities;
 using System;
 using System.Collections.Generic;
@@ -11,7 +8,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Emit;
 using Aquila.CodeAnalysis.Errors;
+using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Attributes;
@@ -24,7 +23,7 @@ using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
 
 
-namespace Pchp.CodeAnalysis.CodeGen
+namespace Aquila.CodeAnalysis.CodeGen
 {
     partial class CodeGenerator
     {

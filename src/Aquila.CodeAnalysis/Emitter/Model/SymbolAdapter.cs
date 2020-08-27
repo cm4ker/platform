@@ -53,15 +53,15 @@ namespace Aquila.CodeAnalysis.Symbols
 
         IEnumerable<Cci.ICustomAttribute> Cci.IReference.GetAttributes(EmitContext context)
         {
-            var attrs = GetCustomAttributesToEmit(((Pchp.CodeAnalysis.Emit.PEModuleBuilder)context.Module).CompilationState).Cast<Cci.ICustomAttribute>();
+            var attrs = GetCustomAttributesToEmit(((Aquila.CodeAnalysis.Emit.PEModuleBuilder)context.Module).CompilationState).Cast<Cci.ICustomAttribute>();
 
             // add [PhpMemberVisibilityAttribute( DeclaredAccessibility )] for non-public members emitted as public
             if ((DeclaredAccessibility == Accessibility.Private || DeclaredAccessibility == Accessibility.Protected) &&
-                Pchp.CodeAnalysis.Emit.PEModuleBuilder.MemberVisibility(this) == Cci.TypeMemberVisibility.Public)
+                Aquila.CodeAnalysis.Emit.PEModuleBuilder.MemberVisibility(this) == Cci.TypeMemberVisibility.Public)
             {
                 attrs = attrs.Concat(new[]
                 {
-                    (Cci.ICustomAttribute)((Pchp.CodeAnalysis.Emit.PEModuleBuilder)context.Module).Compilation.GetPhpMemberVisibilityAttribute(this, DeclaredAccessibility)
+                    (Cci.ICustomAttribute)((Aquila.CodeAnalysis.Emit.PEModuleBuilder)context.Module).Compilation.GetPhpMemberVisibilityAttribute(this, DeclaredAccessibility)
                 });
             }
 

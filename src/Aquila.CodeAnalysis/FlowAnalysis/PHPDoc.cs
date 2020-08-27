@@ -6,7 +6,7 @@ using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Compiler.Utilities;
 using Aquila.Syntax.Syntax;
 
-namespace Pchp.CodeAnalysis.FlowAnalysis
+namespace Aquila.CodeAnalysis.FlowAnalysis
 {
     /// <summary>
     /// Helpers class for resolving PHPDoc types.

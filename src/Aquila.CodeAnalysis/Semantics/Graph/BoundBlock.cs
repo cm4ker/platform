@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
 
-namespace Pchp.CodeAnalysis.Semantics.Graph
+namespace Aquila.CodeAnalysis.Semantics.Graph
 {
     /// <summary>
     /// Represents control flow block.
@@ -160,7 +160,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
 
         SyntaxNode IOperation.Syntax => null;
 
-        public override TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) =>
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
             visitor.VisitBlockStatement(this);
 
         public override void Accept(OperationVisitor visitor) => visitor.VisitBlock(this);

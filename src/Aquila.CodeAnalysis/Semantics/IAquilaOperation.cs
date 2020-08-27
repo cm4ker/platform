@@ -1,11 +1,11 @@
-﻿using Pchp.CodeAnalysis.FlowAnalysis;
+﻿using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.Syntax;
 using Microsoft.CodeAnalysis;
 using Peachpie.CodeAnalysis.Utilities;
 
-namespace Pchp.CodeAnalysis.Semantics
+namespace Aquila.CodeAnalysis.Semantics
 {
-    public interface IPhpOperation : IOperation
+    public interface IAquilaOperation : IOperation
     {
         /// <summary>
         /// Corresponding syntax node.
@@ -16,15 +16,15 @@ namespace Pchp.CodeAnalysis.Semantics
         /// Visitor with return value implementation.
         /// </summary>
         /// <typeparam name="TResult">Result type of the <paramref name="visitor"/>, <see cref="VoidStruct"/> if none.</typeparam>
-        /// <param name="visitor">A reference to <see cref="PhpOperationVisitor{TResult}"/> instance.</param>
+        /// <param name="visitor">A reference to <see cref="AquilaOperationVisitor{TResult}"/> instance.</param>
         /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor);
+        TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor);
     }
 
     /// <summary>
     /// Abstract PHP expression semantic.
     /// </summary>
-    public interface IPhpExpression : IPhpOperation
+    public interface IAquilaExpression : IAquilaOperation
     {
         /// <summary>
         /// Analysed type information.
@@ -51,7 +51,7 @@ namespace Pchp.CodeAnalysis.Semantics
         bool IsDeeplyCopied { get; }
     }
 
-    public interface IPhpStatement : IPhpOperation
+    public interface IAquilaStatement : IAquilaOperation
     {
     }
 }

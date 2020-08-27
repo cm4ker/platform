@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Reflection.Metadata;
 using System.Text;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.CodeGen;
+using Aquila.CodeAnalysis.Semantics.TypeRef;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.CodeGen;
-using Pchp.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Symbols;
 using MoreLinq.Extensions;
 
-namespace Pchp.CodeAnalysis.Semantics
+namespace Aquila.CodeAnalysis.Semantics
 {
     internal static class BoundTypeRefExtensions
     {

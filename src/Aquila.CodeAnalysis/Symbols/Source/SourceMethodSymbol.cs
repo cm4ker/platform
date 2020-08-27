@@ -12,11 +12,11 @@ using Aquila.Syntax.Ast.Functions;
 using Aquila.Syntax.Ast.Statements;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.FlowAnalysis;
-using Pchp.CodeAnalysis.Semantics.Graph;
-using Contract = Pchp.CodeAnalysis.Contract;
-using DiagnosticBagExtensions = Pchp.CodeAnalysis.DiagnosticBagExtensions;
-using TypeRefFactory = Pchp.CodeAnalysis.TypeRefFactory;
+using Aquila.CodeAnalysis.FlowAnalysis;
+using Aquila.CodeAnalysis.Semantics.Graph;
+using Contract = Aquila.CodeAnalysis.Contract;
+using DiagnosticBagExtensions = Aquila.CodeAnalysis.DiagnosticBagExtensions;
+using TypeRefFactory = Aquila.CodeAnalysis.TypeRefFactory;
 
 namespace Aquila.CodeAnalysis.Symbols
 {

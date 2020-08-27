@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.CodeGen;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,11 +7,12 @@ using Aquila.CodeAnalysis.Symbols;
 using Cci = Microsoft.Cci;
 using System.Collections.Immutable;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.Syntax.Text;
 using Microsoft.CodeAnalysis.Symbols;
 
-namespace Pchp.CodeAnalysis.Semantics.Graph
+namespace Aquila.CodeAnalysis.Semantics.Graph
 {
     partial class BoundBlock : IGenerator
     {

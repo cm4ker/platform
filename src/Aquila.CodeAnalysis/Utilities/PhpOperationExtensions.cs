@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Aquila.Syntax.Ast;
 
-namespace Pchp.CodeAnalysis.Semantics
+namespace Aquila.CodeAnalysis.Semantics
 {
     public static class PhpOperationExtensions
     {

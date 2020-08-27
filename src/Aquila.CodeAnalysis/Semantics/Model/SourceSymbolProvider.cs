@@ -5,7 +5,7 @@ using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
 
-namespace Pchp.CodeAnalysis.Semantics.Model
+namespace Aquila.CodeAnalysis.Semantics.Model
 {
     internal sealed class SourceSymbolProvider : ISymbolProvider
     {

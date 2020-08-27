@@ -5,10 +5,9 @@ using System.Diagnostics;
 using System.Linq;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.Compiler.Utilities;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.Semantics;
-using Pchp.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax.Ast;
@@ -18,7 +17,7 @@ using MoreLinq.Extensions;
 using Peachpie.CodeAnalysis.Utilities;
 
 
-namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
+namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 {
     internal partial class TransformationRewriter : GraphRewriter
     {

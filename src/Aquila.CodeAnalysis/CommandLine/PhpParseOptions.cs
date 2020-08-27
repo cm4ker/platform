@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Aquila.CodeAnalysis;
 
-namespace Pchp.CodeAnalysis
+namespace Aquila.CodeAnalysis
 {
     /// <summary>
     /// This class stores several source parsing related options and offers access to their values.

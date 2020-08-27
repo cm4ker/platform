@@ -6,7 +6,7 @@ using Cci = Microsoft.Cci;
 using Microsoft.CodeAnalysis.PooledObjects;
 using NamedTypeSymbol = Aquila.CodeAnalysis.Symbols.NamedTypeSymbol;
 
-namespace Pchp.CodeAnalysis.Emit
+namespace Aquila.CodeAnalysis.Emit
 {
     /// <summary>
     /// Represents a reference to a generic type instantiation.

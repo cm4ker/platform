@@ -9,9 +9,9 @@ using Microsoft.Cci;
 using Roslyn.Utilities;
 using EmitContext = Microsoft.CodeAnalysis.Emit.EmitContext;
 using TypeDefinitionHandle = System.Reflection.Metadata.TypeDefinitionHandle;
-using Pchp.CodeAnalysis.Emit;
+using Aquila.CodeAnalysis.Emit;
 
-namespace Pchp.CodeAnalysis.Emit
+namespace Aquila.CodeAnalysis.Emit
 {
     /// <summary>
     /// Special type &lt;Module&gt;.

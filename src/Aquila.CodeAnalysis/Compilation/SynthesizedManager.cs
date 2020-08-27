@@ -13,7 +13,7 @@ using System.Threading.Tasks;
  using Cci = Microsoft.Cci;
  
 
- namespace Pchp.CodeAnalysis.Emit
+ namespace Aquila.CodeAnalysis.Emit
 {
     /// <summary>
     /// Manages synthesized symbols in the module builder.

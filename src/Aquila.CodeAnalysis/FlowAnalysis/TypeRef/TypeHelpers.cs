@@ -1,8 +1,6 @@
 ﻿﻿using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.FlowAnalysis;
-using Pchp.CodeAnalysis.Semantics;
-using Pchp.CodeAnalysis.Semantics.TypeRef;
-using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.FlowAnalysis;
+ using Aquila.CodeAnalysis.Symbols;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,8 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
  using Aquila.CodeAnalysis;
+ using Aquila.CodeAnalysis.Semantics;
+ using Aquila.CodeAnalysis.Semantics.TypeRef;
 
- namespace Pchp.CodeAnalysis.FlowAnalysis
+ namespace Aquila.CodeAnalysis.FlowAnalysis
 {
     /// <summary>
     /// Provides helper methods for working with types.

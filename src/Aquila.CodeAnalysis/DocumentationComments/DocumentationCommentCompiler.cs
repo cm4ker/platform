@@ -11,7 +11,7 @@ using Aquila.Compiler.Utilities;
 using Aquila.Syntax.Syntax;
 using SourceFieldSymbol = Aquila.CodeAnalysis.Symbols.SourceFieldSymbol;
 
-namespace Pchp.CodeAnalysis.DocumentationComments
+namespace Aquila.CodeAnalysis.DocumentationComments
 {
     internal class DocumentationCommentCompiler
     {

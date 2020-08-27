@@ -1,7 +1,7 @@
 ﻿using Cci = Microsoft.Cci;
 using MethodSymbol = Aquila.CodeAnalysis.Symbols.MethodSymbol;
 
-namespace Pchp.CodeAnalysis.Emit
+namespace Aquila.CodeAnalysis.Emit
 {
     /// <summary>
     /// Represents a method of a generic type instantiation.

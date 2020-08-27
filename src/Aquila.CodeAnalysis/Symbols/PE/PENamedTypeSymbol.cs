@@ -14,7 +14,7 @@ using Aquila.Compiler.Utilities;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
-using Pchp.CodeAnalysis.DocumentationComments;
+using Aquila.CodeAnalysis.DocumentationComments;
 using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols.PE

@@ -2,7 +2,7 @@
 using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.Syntax.Syntax;
 
-namespace Pchp.CodeAnalysis.FlowAnalysis
+namespace Aquila.CodeAnalysis.FlowAnalysis
 {
     /// <summary>
     /// Binds flow state to a routine.

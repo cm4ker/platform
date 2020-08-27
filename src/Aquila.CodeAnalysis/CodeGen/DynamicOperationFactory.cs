@@ -1,8 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
-using Pchp.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols;
-using Pchp.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -12,10 +11,11 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
 
-namespace Pchp.CodeAnalysis.CodeGen
+namespace Aquila.CodeAnalysis.CodeGen
 {
     internal class DynamicOperationFactory
     {

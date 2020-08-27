@@ -8,9 +8,9 @@ using Aquila.CodeAnalysis.Symbols;
 using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using Pchp.CodeAnalysis.Semantics;
+ using Aquila.CodeAnalysis.Semantics;
 
-namespace Pchp.CodeAnalysis.CodeGen
+ namespace Aquila.CodeAnalysis.CodeGen
 {
     partial class CodeGenerator
     {

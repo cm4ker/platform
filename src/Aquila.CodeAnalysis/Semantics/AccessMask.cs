@@ -1,6 +1,6 @@
 ﻿﻿using System;
 
-namespace Pchp.CodeAnalysis.Semantics
+namespace Aquila.CodeAnalysis.Semantics
 {
     [Flags]
     public enum AccessMask

@@ -10,7 +10,7 @@ using Roslyn.Utilities;
 using Microsoft.CodeAnalysis;
 using Cci = Microsoft.Cci;
 
-namespace Pchp.CodeAnalysis.Emit
+namespace Aquila.CodeAnalysis.Emit
 {
     internal sealed class PEAssemblyBuilder : PEModuleBuilder, Cci.IAssemblyReference
     {

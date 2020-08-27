@@ -4,15 +4,13 @@ using System.Diagnostics;
 using System.Text;
  using Aquila.CodeAnalysis;
  using Aquila.CodeAnalysis.Semantics;
+ using Aquila.CodeAnalysis.Semantics.Graph;
  using Microsoft.CodeAnalysis.Operations;
-using Pchp.CodeAnalysis;
-using Pchp.CodeAnalysis.Semantics;
-using Pchp.CodeAnalysis.Semantics.Graph;
-using Aquila.CodeAnalysis.Symbols;
+ using Aquila.CodeAnalysis.Symbols;
  using Aquila.CodeAnalysis.Symbols.Source;
  using Peachpie.CodeAnalysis.Utilities;
 
-namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
+namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 {
     /// <summary>
     /// Walks all expressions and resolves their access, operator method, and result CLR type.

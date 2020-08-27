@@ -2,8 +2,7 @@ using System.Collections.Immutable;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.Syntax.Syntax;
-using Pchp.CodeAnalysis.Semantics;
-using Pchp.CodeAnalysis.Semantics.Graph;
+using Aquila.CodeAnalysis.Semantics.Graph;
 
 namespace Aquila.CodeAnalysis.Lowering
 {

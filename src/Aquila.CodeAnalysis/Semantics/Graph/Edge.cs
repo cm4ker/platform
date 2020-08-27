@@ -4,12 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using Aquila.Shared.Tree;
 using Aquila.Syntax;
-using Pchp.CodeAnalysis;
-using Pchp.CodeAnalysis.Semantics;
-using Pchp.CodeAnalysis.Semantics.Graph;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Semantics.Graph;
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 
-namespace Pchp.CodeAnalysis.Semantics.Graph
+namespace Aquila.CodeAnalysis.Semantics.Graph
 {
     /// <summary>
     /// Represents an edge to other blocks.

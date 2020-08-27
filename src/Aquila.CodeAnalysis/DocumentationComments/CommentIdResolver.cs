@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
  
 
- namespace Pchp.CodeAnalysis.DocumentationComments
+ namespace Aquila.CodeAnalysis.DocumentationComments
 {
     internal static class CommentIdResolver
     {

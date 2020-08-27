@@ -1,4 +1,4 @@
-﻿using Pchp.CodeAnalysis.Semantics;
+﻿using Aquila.CodeAnalysis.Semantics;
 
 namespace Aquila.CodeAnalysis.Symbols.Php
 {

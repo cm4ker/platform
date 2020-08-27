@@ -8,7 +8,7 @@ using System.Threading.Tasks;
  using Aquila.CodeAnalysis.Symbols.PE;
 
 
- namespace Pchp.CodeAnalysis.DocumentationComments
+ namespace Aquila.CodeAnalysis.DocumentationComments
 {
     internal static class PEDocumentationCommentUtils
     {

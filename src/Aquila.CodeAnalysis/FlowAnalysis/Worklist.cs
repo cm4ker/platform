@@ -1,10 +1,7 @@
 ﻿﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
-using Pchp.CodeAnalysis.Semantics;
-using Pchp.CodeAnalysis.Semantics.Graph;
-using Aquila.CodeAnalysis.Symbols;
-using Pchp.CodeAnalysis.Utilities;
-using Peachpie.CodeAnalysis.FlowAnalysis.Graph;
+ using Aquila.CodeAnalysis.Symbols;
+ using Peachpie.CodeAnalysis.FlowAnalysis.Graph;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -13,10 +10,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+ using Aquila.CodeAnalysis.Semantics;
+ using Aquila.CodeAnalysis.Semantics.Graph;
  using Aquila.CodeAnalysis.Symbols.Php;
  using Aquila.CodeAnalysis.Symbols.Synthesized;
+ using Aquila.CodeAnalysis.Utilities;
 
- namespace Pchp.CodeAnalysis.FlowAnalysis
+ namespace Aquila.CodeAnalysis.FlowAnalysis
 {
     /// <summary>
     /// Queue of work items to do.

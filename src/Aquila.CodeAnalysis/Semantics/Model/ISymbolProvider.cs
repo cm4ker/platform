@@ -5,7 +5,7 @@ using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.Syntax.Syntax;
 
-namespace Pchp.CodeAnalysis.Semantics
+namespace Aquila.CodeAnalysis.Semantics
 {
     /// <summary>
     /// Represents PHP semantics.

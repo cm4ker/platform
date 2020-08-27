@@ -13,6 +13,9 @@
         <Content Include="AstZLang.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Include="BoundTree.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
         <Content Include="Qlang.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>

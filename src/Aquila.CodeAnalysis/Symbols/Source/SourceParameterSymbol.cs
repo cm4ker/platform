@@ -7,8 +7,8 @@ using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.Syntax;
 using Aquila.Syntax.Ast.Functions;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis;
-using Pchp.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Semantics;
 
 namespace Aquila.CodeAnalysis.Symbols.Source
 {

@@ -4,12 +4,12 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Pchp.CodeAnalysis.FlowAnalysis;
+using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Peachpie.CodeAnalysis.Utilities;
 
-namespace Pchp.CodeAnalysis.Semantics.Graph
+namespace Aquila.CodeAnalysis.Semantics.Graph
 {
     /// <summary>
     /// Enables to transform a <see cref="ControlFlowGraph"/> in a straightforward manner.

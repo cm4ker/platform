@@ -8,9 +8,9 @@ using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.Compiler.Utilities;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis;
-using Pchp.CodeAnalysis.FlowAnalysis;
-using Pchp.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.FlowAnalysis;
+using Aquila.CodeAnalysis.Semantics;
 using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols

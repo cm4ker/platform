@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Pchp.CodeAnalysis;
-using Pchp.CodeAnalysis.CodeGen;
-using Pchp.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.CodeGen;
+using Aquila.CodeAnalysis.Semantics;
 using Microsoft.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Symbols;
 using System.Diagnostics;
@@ -22,7 +22,7 @@ namespace Peachpie.CodeAnalysis.Utilities
         /// Gets <see cref="System.NotImplementedException"/> with aproximate location of the error.
         /// </summary>
         public static NotImplementedException NotImplementedException(this CodeGenerator cg, string message = null,
-            IPhpOperation op = null)
+            IAquilaOperation op = null)
         {
             return NotImplementedException(cg.Builder, message, op: op, routine: cg.Routine,
                 debugroutine: cg.DebugRoutine);
@@ -32,7 +32,7 @@ namespace Peachpie.CodeAnalysis.Utilities
         /// Gets <see cref="System.NotImplementedException"/> with aproximate location of the error.
         /// </summary>
         public static NotImplementedException NotImplementedException(ILBuilder il, string message = null,
-            IPhpOperation op = null, SourceRoutineSymbol routine = null, MethodSymbol debugroutine = null)
+            IAquilaOperation op = null, SourceRoutineSymbol routine = null, MethodSymbol debugroutine = null)
         {
             string location = null;
 

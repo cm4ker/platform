@@ -1,16 +1,18 @@
 ﻿using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.Semantics;
-using Pchp.CodeAnalysis.Semantics.Graph;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Errors;
+using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Semantics.Graph;
+using Aquila.CodeAnalysis.Semantics.TypeRef;
 using Aquila.Syntax.Ast;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.CodeAnalysis.Utilities;
 using Aquila.Syntax;
 using Aquila.Syntax.Ast.Expressions;
 using Aquila.Syntax.Ast.Functions;
@@ -18,10 +20,8 @@ using Aquila.Syntax.Errors;
 using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
 using Peachpie.CodeAnalysis.Utilities;
-using Pchp.CodeAnalysis.Semantics.TypeRef;
-using Pchp.CodeAnalysis.Utilities;
 
-namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
+namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 {
     internal partial class DiagnosticWalker<T> : GraphExplorer<T>
     {
@@ -48,7 +48,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
             _diagnostics.Add(DiagnosticBagExtensions.ParserDiagnostic(_routine, span, err, args));
         }
 
-        void CannotInstantiate(IPhpOperation op, string kind, IBoundTypeRef t)
+        void CannotInstantiate(IAquilaOperation op, string kind, IBoundTypeRef t)
         {
             _diagnostics.Add(_routine, op.PhpSyntax, ErrorCode.ERR_CannotInstantiateType, kind, t.Type);
         }
@@ -241,7 +241,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
                 var flags = labels[i].Flags;
                 if ((flags & ControlFlowGraph.LabelBlockFlags.Defined) == 0)
                 {
-                    Add(labels[i].LabelSpan, Errors.UndefinedLabel, labels[i].Label);
+                    Add(labels[i].LabelSpan, Aquila.Syntax.Errors.Errors.UndefinedLabel, labels[i].Label);
                 }
 
                 if ((flags & ControlFlowGraph.LabelBlockFlags.Used) == 0)
@@ -251,7 +251,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
 
                 if ((flags & ControlFlowGraph.LabelBlockFlags.Redefined) != 0)
                 {
-                    Add(labels[i].LabelSpan, Errors.LabelRedeclared, labels[i].Label);
+                    Add(labels[i].LabelSpan, Aquila.Syntax.Errors.Errors.LabelRedeclared, labels[i].Label);
                 }
             }
         }
@@ -681,7 +681,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
             if (call.TargetMethod.IsValidMethod() && call.TargetMethod.IsAbstract)
             {
                 // ERR
-                Add(call.PhpSyntax.Span, Errors.AbstractMethodCalled,
+                Add(call.PhpSyntax.Span, Aquila.Syntax.Errors.Errors.AbstractMethodCalled,
                     call.TargetMethod.ContainingType.PhpName(), call.Name.NameValue.Name.Value);
             }
 

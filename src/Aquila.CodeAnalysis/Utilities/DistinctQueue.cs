@@ -5,10 +5,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Pchp.CodeAnalysis.Semantics.Graph;
+using Aquila.CodeAnalysis.Semantics.Graph;
 using Peachpie.CodeAnalysis.Utilities;
 
-namespace Pchp.CodeAnalysis.Utilities
+namespace Aquila.CodeAnalysis.Utilities
 {
     /// <summary>
     /// Represents priority queue where items are enqueued just once and queue can be accessed in parallel.

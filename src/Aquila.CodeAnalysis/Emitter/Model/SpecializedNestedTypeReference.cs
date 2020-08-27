@@ -2,7 +2,7 @@
 using Cci = Microsoft.Cci;
 using NamedTypeSymbol = Aquila.CodeAnalysis.Symbols.NamedTypeSymbol;
 
-namespace Pchp.CodeAnalysis.Emit
+namespace Aquila.CodeAnalysis.Emit
 {
     /// <summary>
     /// Represents a reference to a type nested in an instantiation of a generic type.

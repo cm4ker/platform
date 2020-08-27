@@ -1,7 +1,7 @@
-﻿using Aquila.Syntax.Syntax;
-using Pchp.CodeAnalysis.FlowAnalysis;
+﻿using Aquila.CodeAnalysis.FlowAnalysis;
+using Aquila.Syntax.Syntax;
 
-namespace Pchp.CodeAnalysis.Semantics.Graph
+namespace Aquila.CodeAnalysis.Semantics.Graph
 {
     partial class ControlFlowGraph
     {

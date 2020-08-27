@@ -1,6 +1,6 @@
 ﻿using Aquila.Syntax;
 
-namespace Pchp.CodeAnalysis.Semantics
+namespace Aquila.CodeAnalysis.Semantics
 {
     static class ExpressionsExtension
     {
@@ -12,7 +12,7 @@ namespace Pchp.CodeAnalysis.Semantics
 
         public static T WithAccess<T>(this T expr, BoundExpression other) where T : BoundExpression => WithAccess(expr, other.Access);
 
-        public static T WithSyntax<T>(this T expr, LangElement syntax) where T : IPhpOperation
+        public static T WithSyntax<T>(this T expr, LangElement syntax) where T : IAquilaOperation
         {
             expr.PhpSyntax = syntax;
             return expr;

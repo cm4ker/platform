@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using Peachpie.CodeAnalysis.Utilities;
 
-namespace Pchp.CodeAnalysis.Semantics.Graph
+namespace Aquila.CodeAnalysis.Semantics.Graph
 {
     /// <summary>
     /// Base visitor for control flow graphs.
     /// </summary>
     /// <typeparam name="TResult">Return type of all the Visit operations, use <see cref="VoidStruct"/> if none.</typeparam>
-    public abstract class GraphVisitor<TResult> : PhpOperationVisitor<TResult>
+    public abstract class GraphVisitor<TResult> : AquilaOperationVisitor<TResult>
     {
         /// <summary>Visits given block.</summary>
         protected TResult Accept(BoundBlock x) => (x != null) ? x.Accept(this) : default;

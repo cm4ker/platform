@@ -13,9 +13,10 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
     /// Synthesized non-generic static class.
     /// class { ... }
     /// </summary>
-    class SynthesizedTypeSymbol : NamedTypeSymbol
+    class SynthesizedStaticTypeSymbol : NamedTypeSymbol
     {
         readonly PhpCompilation _compilation;
+        private NamedTypeSymbol _baseType;
         readonly NamedTypeSymbol _containingType;
 
         ConcurrentBag<Symbol> _lazyMembers;
@@ -30,9 +31,13 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             _lazyMembers.Add(symbol);
         }
 
-        public SynthesizedTypeSymbol(PhpCompilation compilation, string name, NamedTypeSymbol containingType = null, Accessibility accessibility = Accessibility.Internal)
+        public SynthesizedStaticTypeSymbol(PhpCompilation compilation, string name,
+            NamedTypeSymbol containingType = null, Accessibility accessibility = Accessibility.Internal)
         {
             _compilation = compilation;
+            _baseType = _compilation.CoreTypes.Object;
+            ;
+
             _containingType = containingType;
 
             this.Name = name ?? throw new ArgumentNullException(nameof(name));
@@ -43,9 +48,10 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         internal override bool HasTypeArgumentsCustomModifiers => false;
 
-        public override ImmutableArray<CustomModifier> GetTypeArgumentCustomModifiers(int ordinal) => GetEmptyTypeArgumentCustomModifiers(ordinal);
+        public override ImmutableArray<CustomModifier> GetTypeArgumentCustomModifiers(int ordinal) =>
+            GetEmptyTypeArgumentCustomModifiers(ordinal);
 
-        public override Symbol ContainingSymbol => (Symbol)_containingType ?? _compilation.SourceModule;
+        public override Symbol ContainingSymbol => (Symbol) _containingType ?? _compilation.SourceModule;
 
         internal override IModuleSymbol ContainingModule => _compilation.SourceModule;
 
@@ -53,10 +59,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
         }
 
         public override bool IsAbstract => false;
@@ -71,7 +74,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         public override string NamespaceName => string.Empty;
 
-        public override NamedTypeSymbol BaseType => _compilation.CoreTypes.Object;
+        public override NamedTypeSymbol BaseType => _baseType;
 
         public override TypeKind TypeKind => TypeKind.Class;
 
@@ -91,23 +94,32 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         internal override bool ShouldAddWinRTMembers => false;
 
-        public override ImmutableArray<Symbol> GetMembers() => _lazyMembers != null ? _lazyMembers.AsImmutable() : ImmutableArray<Symbol>.Empty;
+        public override ImmutableArray<Symbol> GetMembers() =>
+            _lazyMembers != null ? _lazyMembers.AsImmutable() : ImmutableArray<Symbol>.Empty;
 
-        public override ImmutableArray<Symbol> GetMembers(string name) => _lazyMembers != null ? _lazyMembers.Where(s => s.Name == name).AsImmutable() : ImmutableArray<Symbol>.Empty;
+        public override ImmutableArray<Symbol> GetMembers(string name) => _lazyMembers != null
+            ? _lazyMembers.Where(s => s.Name == name).AsImmutable()
+            : ImmutableArray<Symbol>.Empty;
 
         public override ImmutableArray<Symbol> GetMembersByPhpName(string name) => _lazyMembers != null
-            ? _lazyMembers.Where(s => string.Equals(s.PhpName(), name, StringComparison.InvariantCultureIgnoreCase)).AsImmutable()
+            ? _lazyMembers.Where(s => string.Equals(s.PhpName(), name, StringComparison.InvariantCultureIgnoreCase))
+                .AsImmutable()
             : ImmutableArray<Symbol>.Empty;
 
         public override ImmutableArray<NamedTypeSymbol> GetTypeMembers() => ImmutableArray<NamedTypeSymbol>.Empty;
 
-        public override ImmutableArray<NamedTypeSymbol> GetTypeMembers(string name) => ImmutableArray<NamedTypeSymbol>.Empty;
+        public override ImmutableArray<NamedTypeSymbol> GetTypeMembers(string name) =>
+            ImmutableArray<NamedTypeSymbol>.Empty;
 
-        internal override ImmutableArray<NamedTypeSymbol> GetDeclaredInterfaces(ConsList<Symbol> basesBeingResolved) => ImmutableArray<NamedTypeSymbol>.Empty;
+        internal override ImmutableArray<NamedTypeSymbol> GetDeclaredInterfaces(ConsList<Symbol> basesBeingResolved) =>
+            ImmutableArray<NamedTypeSymbol>.Empty;
 
-        internal override IEnumerable<IFieldSymbol> GetFieldsToEmit() => _lazyMembers != null ? _lazyMembers.OfType<IFieldSymbol>().AsImmutable() : ImmutableArray<IFieldSymbol>.Empty;
+        internal override IEnumerable<IFieldSymbol> GetFieldsToEmit() => _lazyMembers != null
+            ? _lazyMembers.OfType<IFieldSymbol>().AsImmutable()
+            : ImmutableArray<IFieldSymbol>.Empty;
 
-        internal override ImmutableArray<NamedTypeSymbol> GetInterfacesToEmit() => ImmutableArray<NamedTypeSymbol>.Empty;
+        internal override ImmutableArray<NamedTypeSymbol> GetInterfacesToEmit() =>
+            ImmutableArray<NamedTypeSymbol>.Empty;
 
         public override ImmutableArray<MethodSymbol> StaticConstructors => ImmutableArray<MethodSymbol>.Empty;
     }

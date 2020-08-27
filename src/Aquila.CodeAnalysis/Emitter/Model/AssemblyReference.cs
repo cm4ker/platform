@@ -7,7 +7,7 @@ using System.Diagnostics;
 using Aquila.CodeAnalysis.Symbols;
 using Cci = Microsoft.Cci;
 
-namespace Pchp.CodeAnalysis.Emitter
+namespace Aquila.CodeAnalysis.Emitter
 {
     internal sealed class AssemblyReference : Cci.IAssemblyReference
     {

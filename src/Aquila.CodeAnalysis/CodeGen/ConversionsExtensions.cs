@@ -9,9 +9,8 @@ using System.Diagnostics;
  using Aquila.CodeAnalysis.Semantics;
  using Microsoft.CodeAnalysis;
 using Peachpie.CodeAnalysis.Utilities;
-using Pchp.CodeAnalysis.Semantics;
 
-namespace Pchp.CodeAnalysis.CodeGen
+ namespace Aquila.CodeAnalysis.CodeGen
 {
     static class ConversionsExtensions
     {

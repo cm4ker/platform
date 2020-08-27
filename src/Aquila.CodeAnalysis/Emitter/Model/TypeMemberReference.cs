@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.Emit;
 using Roslyn.Utilities;
 using Cci = Microsoft.Cci;
 
-namespace Pchp.CodeAnalysis.Emit
+namespace Aquila.CodeAnalysis.Emit
 {
     internal abstract class TypeMemberReference : Cci.ITypeMemberReference
     {

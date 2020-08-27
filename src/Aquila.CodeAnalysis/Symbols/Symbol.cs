@@ -583,7 +583,7 @@
         /// </summary>
         public virtual string GetDocumentationCommentId()
         {
-            return Pchp.CodeAnalysis.DocumentationComments.CommentIdResolver.GetId(this);
+            return Aquila.CodeAnalysis.DocumentationComments.CommentIdResolver.GetId(this);
         }
 
         /// <summary>

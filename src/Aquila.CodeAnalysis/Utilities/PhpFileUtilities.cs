@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Pchp.CodeAnalysis.Utilities
+namespace Aquila.CodeAnalysis.Utilities
 {
     internal static class PhpFileUtilities
     {

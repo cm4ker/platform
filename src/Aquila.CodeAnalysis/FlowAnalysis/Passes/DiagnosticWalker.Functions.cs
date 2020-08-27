@@ -3,9 +3,9 @@
  using System.Text.RegularExpressions;
  using Aquila.CodeAnalysis;
  using Aquila.CodeAnalysis.Errors;
- using Pchp.CodeAnalysis.Semantics;
- 
-namespace Pchp.CodeAnalysis.FlowAnalysis.Passes
+ using Aquila.CodeAnalysis.Semantics;
+
+ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 {
     internal partial class DiagnosticWalker<T>
     {

@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Aquila.CodeAnalysis.Symbols.Attributes;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Semantics;
 using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols

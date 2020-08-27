@@ -9,7 +9,7 @@ using System.Collections.Immutable;
  using Aquila.CodeAnalysis;
  using Roslyn.Utilities;
 
-namespace Pchp.CodeAnalysis
+namespace Aquila.CodeAnalysis
 {
     /// <summary>
     /// Options for getting type information from correspodning PHPDoc comments.

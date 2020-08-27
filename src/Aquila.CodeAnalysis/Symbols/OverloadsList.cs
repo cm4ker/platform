@@ -4,8 +4,8 @@ using System.Collections.Immutable;
 using System.Linq;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.FlowAnalysis;
-using Pchp.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.FlowAnalysis;
+using Aquila.CodeAnalysis.Semantics;
 using Peachpie.CodeAnalysis.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols

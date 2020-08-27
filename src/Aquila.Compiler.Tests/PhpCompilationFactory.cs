@@ -7,9 +7,8 @@ using System.Threading;
  using Aquila.CodeAnalysis;
  using Aquila.CodeAnalysis.Syntax;
  using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis;
 
-namespace Peachpie.Library.Scripting
+ namespace Peachpie.Library.Scripting
 {
 #if NETSTANDARD
 

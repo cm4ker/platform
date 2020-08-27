@@ -8,7 +8,7 @@ using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Compiler.Utilities;
 using Aquila.Syntax.Syntax;
 
-namespace Pchp.CodeAnalysis.FlowAnalysis
+namespace Aquila.CodeAnalysis.FlowAnalysis
 {
     /// <summary>
     /// Manages context of local variables, their merged type and return value type.

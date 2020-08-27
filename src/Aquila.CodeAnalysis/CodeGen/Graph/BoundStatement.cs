@@ -1,16 +1,16 @@
 ﻿using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Symbols;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
 
-namespace Pchp.CodeAnalysis.Semantics
+namespace Aquila.CodeAnalysis.Semantics
 {
     partial class BoundStatement : IGenerator
     {

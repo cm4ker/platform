@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Semantics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
-using Pchp.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.CodeAnalysis.Symbols.Source;
@@ -17,7 +17,7 @@ using Cci = Microsoft.Cci;
 using SourceFieldSymbol = Aquila.CodeAnalysis.Symbols.SourceFieldSymbol;
 
 
-namespace Pchp.CodeAnalysis.Semantics
+namespace Aquila.CodeAnalysis.Semantics
 {
     #region LhsStack
 

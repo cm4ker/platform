@@ -1,7 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.Semantics;
-using Pchp.CodeAnalysis.Semantics.Graph;
-using Pchp.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Symbols;
 using Roslyn.Utilities;
 using System;
@@ -11,6 +8,8 @@ using System.Diagnostics;
 using System.Linq;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Semantics.Graph;
+using Aquila.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Symbols.PE;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.CodeAnalysis.Symbols.Source;
@@ -19,7 +18,7 @@ using Aquila.Syntax.Ast;
 using Aquila.Syntax.Syntax;
 
 
-namespace Pchp.CodeAnalysis.FlowAnalysis
+namespace Aquila.CodeAnalysis.FlowAnalysis
 {
     /// <summary>
     /// Visits single expressions and project transformations to flow state.
@@ -350,7 +349,7 @@ namespace Pchp.CodeAnalysis.FlowAnalysis
                 State.SetLessThanLongMax(local, isInt && intVal < long.MaxValue);
                 State.SetGreaterThanLongMin(local, isInt && intVal > long.MinValue);
 
-                State.SetLocalType(local, ((IPhpExpression) v.InitialValue).TypeRefMask | oldtype);
+                State.SetLocalType(local, ((IAquilaExpression) v.InitialValue).TypeRefMask | oldtype);
             }
             else
             {

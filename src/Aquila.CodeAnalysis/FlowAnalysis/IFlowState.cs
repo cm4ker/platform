@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Aquila.Syntax.Syntax;
 
-namespace Pchp.CodeAnalysis.FlowAnalysis
+namespace Aquila.CodeAnalysis.FlowAnalysis
 {
     public interface IFlowState<T> : IEquatable<IFlowState<T>>
     {

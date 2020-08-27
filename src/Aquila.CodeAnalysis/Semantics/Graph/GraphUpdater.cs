@@ -4,10 +4,10 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Pchp.CodeAnalysis.Semantics.TypeRef;
-using Peachpie.CodeAnalysis.Utilities;
+ using Aquila.CodeAnalysis.Semantics.TypeRef;
+ using Peachpie.CodeAnalysis.Utilities;
 
-namespace Pchp.CodeAnalysis.Semantics.Graph
+namespace Aquila.CodeAnalysis.Semantics.Graph
 {
     /// <summary>
     /// Helper class for <see cref="ControlFlowGraph"/> update. Calls Update on each block, edge, statement
@@ -18,7 +18,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
     {
         #region Helper methods
 
-        protected List<T> VisitList<T>(List<T> list) where T : BoundOperation, IPhpOperation
+        protected List<T> VisitList<T>(List<T> list) where T : BoundOperation, IAquilaOperation
         {
             if (list == null || list.Count == 0)
             {
@@ -44,7 +44,7 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
             return alternate ?? list;
         }
 
-        protected ImmutableArray<T> VisitImmutableArray<T>(ImmutableArray<T> arr) where T : class, IPhpOperation
+        protected ImmutableArray<T> VisitImmutableArray<T>(ImmutableArray<T> arr) where T : class, IAquilaOperation
         {
             if (arr.IsDefaultOrEmpty)
             {
@@ -97,8 +97,8 @@ namespace Pchp.CodeAnalysis.Semantics.Graph
         }
 
         protected ImmutableArray<KeyValuePair<T1, T2>> VisitImmutableArrayPairs<T1, T2>(ImmutableArray<KeyValuePair<T1, T2>> arr)
-            where T1 : BoundOperation, IPhpOperation
-            where T2 : BoundOperation, IPhpOperation
+            where T1 : BoundOperation, IAquilaOperation
+            where T2 : BoundOperation, IAquilaOperation
         {
             if (arr.IsDefaultOrEmpty)
             {

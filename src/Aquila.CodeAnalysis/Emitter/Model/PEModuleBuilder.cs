@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Emitter;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Attributes;
 using Aquila.CodeAnalysis.Symbols.PE;
@@ -18,12 +19,11 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
 using Cci = Microsoft.Cci;
 using Microsoft.CodeAnalysis.Emit.NoPia;
-using Pchp.CodeAnalysis.Emitter;
-using Pchp.CodeAnalysis.Utilities;
-using Pchp.CodeAnalysis.CodeGen;
+using Aquila.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.CodeGen;
 
 
-namespace Pchp.CodeAnalysis.Emit
+namespace Aquila.CodeAnalysis.Emit
 {
     internal abstract partial class PEModuleBuilder : CommonPEModuleBuilder, ITokenDeferral
     {

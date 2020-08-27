@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Aquila.Syntax.Syntax;
 
-namespace Pchp.CodeAnalysis.Utilities
+namespace Aquila.CodeAnalysis.Utilities
 {
     /// <summary>
     /// Name of a member (method, property, field) within a type.

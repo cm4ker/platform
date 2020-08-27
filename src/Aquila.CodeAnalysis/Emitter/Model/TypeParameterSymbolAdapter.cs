@@ -6,7 +6,7 @@ using System.Diagnostics;
 using Microsoft.CodeAnalysis.Emit;
 using Cci = Microsoft.Cci;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis.Emit;
+using Aquila.CodeAnalysis.Emit;
 
 namespace Aquila.CodeAnalysis.Symbols
 {

@@ -7,7 +7,7 @@ using Roslyn.Utilities;
 using Cci = Microsoft.Cci;
 using NamedTypeSymbol = Aquila.CodeAnalysis.Symbols.NamedTypeSymbol;
 
-namespace Pchp.CodeAnalysis.Emit
+namespace Aquila.CodeAnalysis.Emit
 {
     internal abstract class NamedTypeReference : Cci.INamedTypeReference
     {

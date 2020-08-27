@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Peachpie.CodeAnalysis.Utilities;
 
-namespace Pchp.CodeAnalysis.Semantics.Graph
+namespace Aquila.CodeAnalysis.Semantics.Graph
 {
     /// <summary>
     /// Visitor used to traverse CFG and all its operations with infinite recursion prevention.

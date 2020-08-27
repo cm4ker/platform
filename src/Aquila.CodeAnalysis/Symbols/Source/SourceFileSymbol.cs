@@ -14,8 +14,8 @@ using Aquila.Syntax.Ast.Functions;
 using Aquila.Syntax.Errors;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
-using Pchp.CodeAnalysis;
-using Pchp.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Utilities;
 using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols

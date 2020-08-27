@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using Aquila.Syntax.Syntax;
 
-namespace Pchp.CodeAnalysis.FlowAnalysis
+namespace Aquila.CodeAnalysis.FlowAnalysis
 {
     internal class FlowState : IFlowState<FlowState>
     {

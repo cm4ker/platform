@@ -4,19 +4,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using Peachpie.CodeAnalysis.Utilities;
-using Pchp.CodeAnalysis.Semantics.TypeRef;
+ using Aquila.CodeAnalysis.Semantics.TypeRef;
+ using Peachpie.CodeAnalysis.Utilities;
 
-namespace Pchp.CodeAnalysis.Semantics
+ namespace Aquila.CodeAnalysis.Semantics
 {
     /// <summary>
     /// Base visitor for PHP operations.
     /// </summary>
     /// <typeparam name="TResult">Return type of all the Visit operations, use <see cref="VoidStruct"/> if none.</typeparam>
-    public abstract class PhpOperationVisitor<TResult>
+    public abstract class AquilaOperationVisitor<TResult>
     {
         /// <summary>Visits given operation.</summary>
-        protected TResult Accept(IPhpOperation x) => (x != null) ? x.Accept(this) : default;
+        protected TResult Accept(IAquilaOperation x) => (x != null) ? x.Accept(this) : default;
 
         #region Expressions
 

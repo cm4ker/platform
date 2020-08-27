@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
-using Pchp.CodeAnalysis.CodeGen;
-using Pchp.CodeAnalysis.Semantics.Model;
+using Aquila.CodeAnalysis.Semantics.Model;
 using Aquila.CodeAnalysis.Symbols;
 using Peachpie.CodeAnalysis.Utilities;
 using System;
@@ -11,9 +10,10 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
 
-namespace Pchp.CodeAnalysis.Emit
+namespace Aquila.CodeAnalysis.Emit
 {
     partial class PEModuleBuilder
     {
