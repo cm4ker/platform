@@ -39,7 +39,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (Expression.IsConstant() == false)
             {
-                cg.EmitSequencePoint(this.PhpSyntax);
+                cg.EmitSequencePoint(this.AquilaSyntax);
                 cg.EmitPop(Expression.Emit(cg));
 
                 //
@@ -56,7 +56,7 @@ namespace Aquila.CodeAnalysis.Semantics
         internal override void Emit(CodeGenerator cg)
         {
             cg.Builder.AssertStackEmpty();
-            cg.EmitSequencePoint(this.PhpSyntax);
+            cg.EmitSequencePoint(this.AquilaSyntax);
 
             // if generator method -> return via storing the value in generator
             if (cg.Routine.IsGeneratorMethod())
@@ -135,7 +135,7 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         internal override void Emit(CodeGenerator cg)
         {
-            cg.EmitSequencePoint(this.PhpSyntax);
+            cg.EmitSequencePoint(this.AquilaSyntax);
 
             // Template: <local> = $GLOBALS.EnsureItemAlias("name")
 
@@ -163,7 +163,7 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         internal override void Emit(CodeGenerator cg)
         {
-            cg.EmitSequencePoint(this.PhpSyntax);
+            cg.EmitSequencePoint(this.AquilaSyntax);
 
             // synthesize the holder class H { PhpAlias value }
             var holder = _holderClass;
@@ -271,27 +271,6 @@ namespace Aquila.CodeAnalysis.Semantics
             cg.EmitConvert(Value, null);
             cg.EmitCall(ILOpCode.Call, null)
                 .Expect(SpecialType.System_Void);
-        }
-    }
-
-    partial class BoundUnset
-    {
-        internal override void Emit(CodeGenerator cg)
-        {
-            cg.EmitSequencePoint(this.PhpSyntax);
-            EmitUnset(cg, Variable);
-        }
-
-        static void EmitUnset(CodeGenerator cg, BoundReferenceExpression expr)
-        {
-            if (!expr.Access.IsUnset)
-                throw new ArgumentException();
-
-            var place = expr.BindPlace(cg);
-            Debug.Assert(place != null);
-
-            var lhs = place.EmitStorePreamble(cg, BoundAccess.Unset);
-            place.EmitStore(cg, ref lhs, null, BoundAccess.Unset); // null type -> no value
         }
     }
 

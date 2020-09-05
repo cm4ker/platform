@@ -118,7 +118,7 @@ using System.Diagnostics;
 
         #region Statements
 
-        public virtual TResult VisitUnset(BoundUnset x) => DefaultVisitOperation(x);
+        //public virtual TResult VisitUnset(BoundUnset x) => DefaultVisitOperation(x);
 
         public virtual TResult VisitEmptyStatement(BoundEmptyStatement x) => DefaultVisitOperation(x);
 

@@ -29,9 +29,9 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
     {
         internal override void Generate(CodeGenerator cg)
         {
-            if (cg.IsDebug && this.PhpSyntax != null)
+            if (cg.IsDebug && this.AquilaSyntax != null)
             {
-                cg.EmitSequencePoint(this.PhpSyntax);
+                cg.EmitSequencePoint(this.AquilaSyntax);
             }
 
             cg.Scope.ContinueWith(NextBlock);
@@ -59,7 +59,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             if (TrueTarget == FalseTarget)
             {
                 // condition always results in the same code flow
-                cg.EmitSequencePoint(this.Condition.PhpSyntax);
+                cg.EmitSequencePoint(this.Condition.AquilaSyntax);
                 cg.EmitPop(cg.Emit(this.Condition));
             }
             else if (IsLoop) // perf
@@ -75,7 +75,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 cg.EmitHiddenSequencePoint();
                 cg.Builder.MarkLabel(condition);
 
-                cg.EmitSequencePoint(this.Condition.PhpSyntax);
+                cg.EmitSequencePoint(this.Condition.AquilaSyntax);
                 cg.EmitConvert(condition, cg.CoreTypes.Boolean);
 
                 cg.Builder.EmitBranch(isnegation ? ILOpCode.Brfalse : ILOpCode.Brtrue, TrueTarget);
@@ -83,7 +83,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             else
             {
                 // if (Condition)
-                cg.EmitSequencePoint(this.Condition.PhpSyntax);
+                cg.EmitSequencePoint(this.Condition.AquilaSyntax);
                 cg.EmitConvert(condition, cg.CoreTypes.Boolean);
 
                 cg.Builder.EmitBranch(isnegation ? ILOpCode.Brtrue : ILOpCode.Brfalse, FalseTarget);
@@ -424,7 +424,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             // STACK : extype
             if (catchBlock.Variable != null)
             {
-                cg.EmitSequencePoint(catchBlock.Variable.PhpSyntax);
+                cg.EmitSequencePoint(catchBlock.Variable.AquilaSyntax);
 
                 // <tmp> = <ex>
                 var tmploc = cg.GetTemporaryLocal(extype);
@@ -656,12 +656,12 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             {
                 // PhpArray enumerator or Iterator
 
-                cg.EmitSequencePoint(valueVar.PhpSyntax);
+                cg.EmitSequencePoint(valueVar.AquilaSyntax);
                 valueVar.BindPlace(cg).EmitStore(cg, () => EmitGetCurrentHelper(cg), valueVar.TargetAccess());
 
                 if (keyVar != null)
                 {
-                    cg.EmitSequencePoint(keyVar.PhpSyntax);
+                    cg.EmitSequencePoint(keyVar.AquilaSyntax);
                     keyVar.BindPlace(cg).EmitStore(cg,
                         () => VariableReferenceExtensions.EmitLoadValue(cg, _currentKey, _enumeratorLoc),
                         keyVar.TargetAccess());
@@ -702,13 +702,13 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                     };
 
                     // value = tmp.Item2;
-                    cg.EmitSequencePoint(valueVar.PhpSyntax);
+                    cg.EmitSequencePoint(valueVar.AquilaSyntax);
                     valueVar.BindPlace(cg).EmitStore(cg, valueplace, valueVar.TargetAccess());
 
                     // key = tmp.Item1;
                     if (keyVar != null)
                     {
-                        cg.EmitSequencePoint(keyVar.PhpSyntax);
+                        cg.EmitSequencePoint(keyVar.AquilaSyntax);
                         keyVar.BindPlace(cg).EmitStore(cg, keyplace, keyVar.TargetAccess());
                     }
 
@@ -718,14 +718,14 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 // just a value
                 else
                 {
-                    cg.EmitSequencePoint(valueVar.PhpSyntax);
+                    cg.EmitSequencePoint(valueVar.AquilaSyntax);
                     valueVar.BindPlace(cg).EmitStore(cg, () => EmitGetCurrentHelper(cg), valueVar.TargetAccess());
 
                     if (keyVar != null)
                     {
                         Debug.Assert(_synthesizedIndexLoc != null);
 
-                        cg.EmitSequencePoint(keyVar.PhpSyntax);
+                        cg.EmitSequencePoint(keyVar.AquilaSyntax);
 
                         // key = LOAD KeyVariable
                         keyVar.BindPlace(cg).EmitStore(cg, () => _synthesizedIndexLoc.EmitLoad(cg.Builder),
@@ -807,7 +807,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             // b) enumerator = Operators.GetEnumerator(enumeree)
             // ) ...
 
-            cg.EmitSequencePoint(this.Enumeree.PhpSyntax);
+            cg.EmitSequencePoint(this.Enumeree.AquilaSyntax);
 
             var enumereeType = cg.Emit(this.Enumeree);
             Debug.Assert(enumereeType.SpecialType != SpecialType.System_Void);
@@ -1045,7 +1045,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 if (allIntConst)
                 {
                     switch_type = cg.CoreTypes.Int32;
-                    cg.EmitSequencePoint(this.SwitchValue.PhpSyntax);
+                    cg.EmitSequencePoint(this.SwitchValue.AquilaSyntax);
                     cg.EmitConvert(this.SwitchValue, switch_type);
                     switch_loc = cg.GetTemporaryLocal(switch_type);
                     cg.Builder.EmitLocalStore(switch_loc);
@@ -1063,7 +1063,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                     // legacy jump table
                     // IF (case_i) GOTO label_i;
 
-                    cg.EmitSequencePoint(this.SwitchValue.PhpSyntax);
+                    cg.EmitSequencePoint(this.SwitchValue.AquilaSyntax);
                     switch_type = cg.Emit(this.SwitchValue);
                     switch_loc = cg.GetTemporaryLocal(switch_type);
                     cg.Builder.EmitLocalStore(switch_loc);
@@ -1095,7 +1095,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
                         // <CaseValue>:
                         var caseValue = caseValueBag.BoundElement;
-                        cg.EmitSequencePoint(caseValue.PhpSyntax);
+                        cg.EmitSequencePoint(caseValue.AquilaSyntax);
 
                         // if (<switch_loc> == c.CaseValue) goto this_block;
                         cg.Builder.EmitLocalLoad(switch_loc);

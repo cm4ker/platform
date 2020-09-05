@@ -527,7 +527,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             {
                 x.Variable = (x is BoundTemporalVariableRef) // synthesized variable constructed by semantic binder
                     ? Routine.LocalsTable.BindTemporalVariable(local.Name)
-                    : Routine.LocalsTable.BindLocalVariable(local.Name, x.PhpSyntax.Span.ToTextSpan());
+                    : Routine.LocalsTable.BindLocalVariable(local.Name, x.AquilaSyntax.Span.ToTextSpan());
             }
 
             //
@@ -2484,13 +2484,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         {
             Accept(x.Operand);
             x.TypeRefMask = TypeCtx.GetBooleanTypeMask();
-
-            return default;
-        }
-
-        public override T VisitUnset(BoundUnset x)
-        {
-            base.VisitUnset(x);
 
             return default;
         }

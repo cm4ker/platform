@@ -111,7 +111,7 @@ namespace Aquila.CodeAnalysis.Semantics
         public override int GetHashCode() => base.GetHashCode();
 
         public override OperationKind Kind => OperationKind.None;
-        public LangElement PhpSyntax { get; set; }
+        public LangElement AquilaSyntax { get; set; }
 
         /// <summary>
         /// Lazily set type symbol if resolved.

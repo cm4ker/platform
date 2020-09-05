@@ -263,8 +263,8 @@ namespace Aquila.CodeAnalysis
         /// </summary>
         public static Microsoft.CodeAnalysis.Text.TextSpan GetTextSpan(this BoundExpression expression)
         {
-            return expression != null && expression.PhpSyntax != null
-                ? expression.PhpSyntax.Span.ToTextSpan()
+            return expression != null && expression.AquilaSyntax != null
+                ? expression.AquilaSyntax.Span.ToTextSpan()
                 : default;
         }
 

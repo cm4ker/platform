@@ -579,11 +579,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #region Statements
 
-        public override object VisitUnset(BoundUnset x)
-        {
-            return x.Update((BoundReferenceExpression)Accept(x.Variable));
-        }
-
         public override object VisitEmptyStatement(BoundEmptyStatement x)
         {
             return x;

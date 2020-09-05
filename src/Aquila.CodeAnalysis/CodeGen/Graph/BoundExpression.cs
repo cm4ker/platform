@@ -3560,7 +3560,7 @@ namespace Aquila.CodeAnalysis.Semantics
             // get location of evaluated code
             var filepath = cg.ContainingFile.RelativeFilePath;
             int line = 0, col = 0;
-            var unit = this.PhpSyntax.FirstParent<SourceUnit>(); //ContainingSourceUnit;
+            var unit = this.AquilaSyntax.FirstParent<SourceUnit>(); //ContainingSourceUnit;
             //unit.GetLineColumnFromPosition(this.CodeExpression.PhpSyntax.Span.Start, out line, out col);
 
             // Template: Operators.Eval(ctx, locals, @this, self, code, currentpath, line, column)

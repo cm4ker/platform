@@ -14,18 +14,18 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public static T WithSyntax<T>(this T expr, LangElement syntax) where T : IAquilaOperation
         {
-            expr.PhpSyntax = syntax;
+            expr.AquilaSyntax = syntax;
             return expr;
         }
 
         /// <summary>
-        /// Copies semantic information (<see cref="BoundExpression.Access"/>, <see cref="BoundExpression.PhpSyntax"/>) from another expression.
+        /// Copies semantic information (<see cref="BoundExpression.Access"/>, <see cref="BoundExpression.AquilaSyntax"/>) from another expression.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         public static T WithContext<T>(this T expr, BoundExpression other) where T : BoundExpression
         {
             expr.Access = other.Access;
-            expr.PhpSyntax = other.PhpSyntax;
+            expr.AquilaSyntax = other.AquilaSyntax;
 
             // expr.TypeRefMask has to be set by the type analysis
             // expr.ConstantValue the same

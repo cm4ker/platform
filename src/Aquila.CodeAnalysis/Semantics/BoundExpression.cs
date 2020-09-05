@@ -276,7 +276,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// </summary>
         internal TypeSymbol ResultType { get; set; }
 
-        public LangElement PhpSyntax { get; set; }
+        public LangElement AquilaSyntax { get; set; }
 
         /// <summary>
         /// Lazily resolved type of the expression result.
@@ -330,7 +330,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public SyntaxNode Syntax => null;
 
-        public LangElement PhpSyntax { get; set; }
+        public LangElement AquilaSyntax { get; set; }
 
         IOperation IArgumentOperation.Value => Value;
 
@@ -507,7 +507,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public override OperationKind Kind => OperationKind.None;
 
-        public LangElement PhpSyntax { get; set; }
+        public LangElement AquilaSyntax { get; set; }
 
         public BoundRoutineName(QualifiedName name)
             : this(name, null)
@@ -1750,7 +1750,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public override OperationKind Kind => OperationKind.None;
 
-        public LangElement PhpSyntax { get; set; }
+        public LangElement AquilaSyntax { get; set; }
 
         public BoundVariableName(VariableName name)
             : this(name, null)

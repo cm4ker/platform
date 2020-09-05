@@ -583,7 +583,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             }
             else
             {
-                return new BoundIndirectTypeRef(typeExpression, ObjectTypeInfoSemantic).WithSyntax(PhpSyntax);
+                return new BoundIndirectTypeRef(typeExpression, ObjectTypeInfoSemantic).WithSyntax(AquilaSyntax);
             }
         }
 
@@ -793,7 +793,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             }
             else
             {
-                return new BoundMultipleTypeRef(trefs).WithSyntax(PhpSyntax);
+                return new BoundMultipleTypeRef(trefs).WithSyntax(AquilaSyntax);
             }
         }
     }

@@ -23,7 +23,7 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         public virtual bool IsInvalid => false;
 
-        public LangElement PhpSyntax { get; set; }
+        public LangElement AquilaSyntax { get; set; }
 
         public abstract TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor);
     }
@@ -165,7 +165,7 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         public override OperationKind Kind => OperationKind.LocalFunction;
 
-        internal MethodDecl FunctionDecl => (MethodDecl) PhpSyntax;
+        internal MethodDecl FunctionDecl => (MethodDecl) AquilaSyntax;
 
         internal SourceFunctionSymbol Function => _function;
         readonly SourceFunctionSymbol _function;
@@ -175,7 +175,7 @@ namespace Aquila.CodeAnalysis.Semantics
             Contract.ThrowIfNull(function);
 
             _function = function;
-            this.PhpSyntax = (MethodDecl) function.Syntax;
+            this.AquilaSyntax = (MethodDecl) function.Syntax;
         }
 
         internal BoundFunctionDeclStatement Update(SourceFunctionSymbol function)
@@ -203,55 +203,6 @@ namespace Aquila.CodeAnalysis.Semantics
         public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
             visitor.VisitFunctionDeclaration(this);
     }
-
-    // /// <summary>
-    // /// Conditionally declared class.
-    // /// </summary>
-    // public sealed partial class BoundTypeDeclStatement : BoundStatement, IInvalidOperation
-    // {
-    //     public override OperationKind Kind => OperationKind.LocalFunction;
-    //
-    //     internal TypeDecl TypeDecl => (TypeDecl) PhpSyntax;
-    //
-    //     internal Symbols.SourceTypeSymbol DeclaredType => _type;
-    //     readonly Symbols.SourceTypeSymbol _type;
-    //
-    //     internal BoundTypeDeclStatement(Symbols.SourceTypeSymbol type)
-    //     {
-    //         Contract.ThrowIfNull(type);
-    //
-    //
-    //         _type = type;
-    //         this.PhpSyntax = type.Syntax;
-    //
-    //         type.PostponedDeclaration();
-    //     }
-    //
-    //     internal BoundTypeDeclStatement Update(SourceTypeSymbol type)
-    //     {
-    //         if (type == _type)
-    //         {
-    //             return this;
-    //         }
-    //         else
-    //         {
-    //             return new BoundTypeDeclStatement(type);
-    //         }
-    //     }
-    //
-    //     public override void Accept(OperationVisitor visitor)
-    //         => visitor.VisitInvalid(this);
-    //
-    //     public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
-    //         TArgument argument)
-    //         => visitor.VisitInvalid(this, argument);
-    //
-    //     /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-    //     /// <param name="visitor">A reference to a <see cref="PhpOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-    //     /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-    //     public override TResult Accept<TResult>(PhpOperationVisitor<TResult> visitor) =>
-    //         visitor.VisitTypeDeclaration(this);
-    // }
 
     public sealed partial class BoundGlobalVariableStatement : BoundStatement, IVariableDeclarationOperation
     {
@@ -416,45 +367,6 @@ namespace Aquila.CodeAnalysis.Semantics
             visitor.VisitStaticStatement(this);
     }
 
-    public partial class BoundUnset : BoundStatement
-    {
-        public override OperationKind Kind => OperationKind.None;
-
-        /// <summary>
-        /// Reference to be unset.
-        /// </summary>
-        public BoundReferenceExpression Variable { get; set; }
-
-        public BoundUnset(BoundReferenceExpression variable)
-        {
-            this.Variable = variable;
-        }
-
-        public BoundUnset Update(BoundReferenceExpression variable)
-        {
-            if (variable == Variable)
-            {
-                return this;
-            }
-            else
-            {
-                return new BoundUnset(variable);
-            }
-        }
-
-        public override void Accept(OperationVisitor visitor)
-            => visitor.DefaultVisit(this);
-
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
-            TArgument argument)
-            => visitor.DefaultVisit(this, argument);
-
-        /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-        /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitUnset(this);
-    }
-
     /// <summary>
     /// Represents yield return and continuation.
     /// </summary>
@@ -523,6 +435,9 @@ namespace Aquila.CodeAnalysis.Semantics
             => visitor.VisitReturn(this, argument);
     }
 
+    /// <summary>
+    /// Represents declare statement
+    /// </summary>
     public sealed partial class BoundDeclareStatement : BoundStatement
     {
         public override OperationKind Kind => OperationKind.None;

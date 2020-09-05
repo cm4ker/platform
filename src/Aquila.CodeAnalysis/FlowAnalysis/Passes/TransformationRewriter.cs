@@ -446,7 +446,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 var newTrg =
                     new BoundVariableRef(trg.Name)
                         .WithAccess(trg.Access.WithRead())
-                        .WithSyntax(trg.PhpSyntax);
+                        .WithSyntax(trg.AquilaSyntax);
 
                 // A = A +/- 1; => ++A; / --A;
                 if ((binOp.Operation == Operations.Add || binOp.Operation == Operations.Sub)

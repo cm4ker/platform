@@ -524,13 +524,6 @@ using System.Threading.Tasks;
 
         #region Statements
 
-        public override T VisitUnset(BoundUnset x)
-        {
-            Accept(x.Variable);
-
-            return default;
-        }
-
         public override T VisitEmptyStatement(BoundEmptyStatement x)
         {
             return default;

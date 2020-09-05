@@ -39,6 +39,9 @@ namespace Aquila.SyntaxGenerator.BoundTree
         [XmlAttribute]
         public bool IsAbstract { get; set; }
 
+
+        [XmlAttribute] public string Interface { get; set; }
+
         /// <summary>
         /// Indicate that the syntax has scope
         /// </summary>

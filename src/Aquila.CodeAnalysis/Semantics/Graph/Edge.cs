@@ -19,7 +19,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// Associated syntax node.
         /// </summary>
-        internal LangElement PhpSyntax { get; set; }
+        internal LangElement AquilaSyntax { get; set; }
 
         /// <summary>
         /// Target blocks.

@@ -509,7 +509,7 @@ namespace Aquila.CodeAnalysis.Semantics
             if (expr is UnaryEx) return BindUnaryEx((UnaryEx) expr, access).WithAccess(access);
             if (expr is IncDecEx) return BindIncDec((IncDecEx) expr).WithAccess(access);
             if (expr is CallEx) return BindCallEx((CallEx) expr).WithAccess(access);
-            if (expr is MemberAccessEx mae) return BindMemberAccessEx(mae).WithAccess(access);
+            if (expr is MemberAccessEx mae) return BindMemberAccessEx(mae, false).WithAccess(access);
             // if (expr is ConditionalEx) return BindConditionalEx((ConditionalEx) expr, access).WithAccess(access);
             // if (expr is ConcatEx) return BindConcatEx((ConcatEx) expr).WithAccess(access);
             // if (expr is IncludingEx) return BindIncludeEx((IncludingEx) expr).WithAccess(access);
@@ -555,8 +555,6 @@ namespace Aquila.CodeAnalysis.Semantics
                 {
                     if (member is MethodSymbol ms)
                     {
-                        
-                        
                         var method = new BoundMethod(ms, leftType);
                     }
                 }

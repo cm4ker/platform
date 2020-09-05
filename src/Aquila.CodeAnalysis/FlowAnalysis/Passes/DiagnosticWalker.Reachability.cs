@@ -73,8 +73,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 
         private static LangElement PickFirstSyntaxNode(BoundBlock block)
         {
-            var syntax = block.Statements.FirstOrDefault(st => st.PhpSyntax != null)
-                ?.PhpSyntax;
+            var syntax = block.Statements.FirstOrDefault(st => st.AquilaSyntax != null)
+                ?.AquilaSyntax;
             if (syntax != null)
             {
                 return syntax;
@@ -84,19 +84,19 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             switch (block.NextEdge)
             {
                 case ForeachEnumereeEdge edge:
-                    return edge.Enumeree.PhpSyntax;
+                    return edge.Enumeree.AquilaSyntax;
 
                 case SimpleEdge edge:
-                    return edge.PhpSyntax;
+                    return edge.AquilaSyntax;
 
                 case ConditionalEdge edge:
-                    return edge.Condition.PhpSyntax;
+                    return edge.Condition.AquilaSyntax;
 
                 case TryCatchEdge edge:
                     return PickFirstSyntaxNode(edge.BodyBlock);
 
                 case SwitchEdge edge:
-                    return edge.SwitchValue.PhpSyntax;
+                    return edge.SwitchValue.AquilaSyntax;
 
                 default:
                     return null;

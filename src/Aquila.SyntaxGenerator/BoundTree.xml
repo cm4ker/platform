@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <Config>
-    <Syntax Name="SomeName" />
+    <Syntax Name="BoundStatement" IsAbstract="true" NS="PrivateNS">
+    </Syntax>
+
+    <Syntax Name="BoundEmptyStatement" IsAbstract="true" NS="PrivateNS" Base="BoundStatement">
+    </Syntax>
 </Config>

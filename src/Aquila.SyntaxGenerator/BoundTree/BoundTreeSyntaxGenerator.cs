@@ -17,9 +17,10 @@ namespace Aquila.SyntaxGenerator.BoundTree
         private static SyntaxToken partialToken = SyntaxFactory.Token(SyntaxKind.PartialKeyword);
         private static SyntaxToken staticToken = SyntaxFactory.Token(SyntaxKind.StaticKeyword);
 
-        private static string ns_root = "Pchp.CodeAnalysis.Semantics";
+        private static string ns_root = "Aquila.CodeAnalysis.Semantics";
         private static string VisitorClassName = "AquilaOperationVisitor";
         private static string MSVisitorClassName = "OperationVisitor";
+        private static string AquilaVisitorClassName = "AquilaOperationVisitor";
         private static string NameBase = "BoundOperation";
 
         private static ClassDeclarationSyntax astTreeBaseCls = SyntaxFactory.ClassDeclaration($"{VisitorClassName}<T>")
@@ -52,6 +53,7 @@ namespace Aquila.SyntaxGenerator.BoundTree
                 sb.AppendLine("using System;");
                 sb.AppendLine("using System.Collections;");
                 sb.AppendLine("using System.Collections.Generic;");
+                //sb.AppendLine("using Aquila.CodeAnalysis.Semantics;");
                 sb.AppendLine("using Microsoft.CodeAnalysis;");
                 sb.AppendLine("using Microsoft.CodeAnalysis.Operations;");
 
@@ -94,11 +96,42 @@ namespace Aquila.SyntaxGenerator.BoundTree
             sb.AppendLine("}");
         }
 
+        private static void GetVisitorMethodAquila(StringBuilder sb, CompilerSyntax syntax)
+        {
+            sb.AppendLine(
+                $"public virtual TResult Accept<TResult>({AquilaVisitorClassName}<TResult> visitor){{");
+            sb.AppendLine($"return default;");
+            sb.AppendLine("}");
+        }
+
+
         private static void GenerateClass(StringBuilder sb, CompilerSyntax syntax, List<CompilerSyntax> baseList)
         {
-            sb.AppendLine($"public partial class {syntax.Name} : {syntax.Base ?? NameBase}");
+            sb.AppendLine(
+                $"public {(syntax.IsAbstract ? "abstract" : "")} partial class {syntax.Name} : {syntax.Base ?? NameBase} {(!string.IsNullOrEmpty(syntax.Interface) ? $", {syntax.Interface}" : "")}");
             sb.AppendLine("{");
 
+
+            sb.AppendLine($"public {syntax.Name}(");
+
+            foreach (var arg in syntax.Arguments)
+            {
+                sb.Append($"{arg.Type} {arg.Name.ToCamelCase()}");
+            }
+
+            sb.Append("){");
+
+            foreach (var arg in syntax.Arguments)
+            {
+                sb.Append($"{arg.Name} = {arg.Name.ToCamelCase()};");
+            }
+
+            sb.Append("}");
+
+            foreach (var arg in syntax.Arguments)
+            {
+                sb.AppendLine($"public {arg.Type} {arg.Name} {{get;}}");
+            }
 
             sb.AppendLine("public override OperationKind Kind { get; }");
 
@@ -107,7 +140,7 @@ namespace Aquila.SyntaxGenerator.BoundTree
             sb.AppendLine("partial void AcceptImpl(OperationVisitor visitor);");
             GetVisitorMethod(sb, syntax);
             GetVisitorMethod2(sb, syntax);
-
+            GetVisitorMethodAquila(sb, syntax);
 
             sb.AppendLine("}");
         }

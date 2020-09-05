@@ -39,7 +39,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             if (tref.IsPrimitiveType)
             {
                 // error: use of primitive type {0} is misused // primitive type does not make any sense in this context
-                _diagnostics.Add(_routine, tref.PhpSyntax, ErrorCode.ERR_PrimitiveTypeNameMisused, tref);
+                _diagnostics.Add(_routine, tref.AquilaSyntax, ErrorCode.ERR_PrimitiveTypeNameMisused, tref);
             }
         }
 
@@ -50,7 +50,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 
         void CannotInstantiate(IAquilaOperation op, string kind, IBoundTypeRef t)
         {
-            _diagnostics.Add(_routine, op.PhpSyntax, ErrorCode.ERR_CannotInstantiateType, kind, t.Type);
+            _diagnostics.Add(_routine, op.AquilaSyntax, ErrorCode.ERR_CannotInstantiateType, kind, t.Type);
         }
 
         public static void Analyse(DiagnosticBag diagnostics, SourceRoutineSymbol routine)
@@ -269,7 +269,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             if (x.Access.IsNone)
             {
                 // The expression is not being read. Did you mean to assign it somewhere?
-                _diagnostics.Add(_routine, x.PhpSyntax, ErrorCode.WRN_ExpressionNotRead);
+                _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_ExpressionNotRead);
             }
 
             // Check valid types and uniqueness of the keys
@@ -294,7 +294,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                     if (!valid)
                     {
                         string keyTypeStr = TypeCtx.ToString(keyTypeMask);
-                        _diagnostics.Add(_routine, item.Key.PhpSyntax, ErrorCode.WRN_InvalidArrayKeyType, keyTypeStr);
+                        _diagnostics.Add(_routine, item.Key.AquilaSyntax, ErrorCode.WRN_InvalidArrayKeyType, keyTypeStr);
                     }
                 }
 
@@ -308,7 +308,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                         // Duplicate array key: '{0}'
                         _diagnostics.Add(
                             _routine,
-                            item.Key.PhpSyntax ?? item.Value.PhpSyntax,
+                            item.Key.AquilaSyntax ?? item.Value.AquilaSyntax,
                             ErrorCode.WRN_DuplicateArrayKey,
                             keyConst.Item1 ?? keyConst.Item2.ToString());
                     }
@@ -339,7 +339,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                     if (IsLetterCasingMismatch(refName, symbolName))
                     {
                         // Wrong class name case
-                        _diagnostics.Add(_routine, typeRef.PhpSyntax, ErrorCode.INF_TypeNameCaseMismatch, refName,
+                        _diagnostics.Add(_routine, typeRef.AquilaSyntax, ErrorCode.INF_TypeNameCaseMismatch, refName,
                             symbolName);
                     }
                 }
@@ -436,10 +436,10 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             // Template: <x> = <x>
             if (x.Target is BoundVariableRef lvar && lvar.Variable is LocalVariableReference lloc &&
                 x.Value is BoundVariableRef rvar && rvar.Variable is LocalVariableReference rloc &&
-                lloc.BoundName == rloc.BoundName && x.PhpSyntax != null)
+                lloc.BoundName == rloc.BoundName && x.AquilaSyntax != null)
             {
                 // Assignment made to same variable
-                _diagnostics.Add(_routine, x.PhpSyntax, ErrorCode.WRN_AssigningSameVariable);
+                _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_AssigningSameVariable);
             }
 
             // Following is commented since it does not have any effect on the compiler and the type check also needs to be improved.
@@ -499,7 +499,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                                 relativePath = relativePath.Substring(1); // trim leading slash
                             }
 
-                            _diagnostics.Add(_routine, concat.PhpSyntax ?? x.PhpSyntax, ErrorCode.WRN_CannotIncludeFile,
+                            _diagnostics.Add(_routine, concat.AquilaSyntax ?? x.AquilaSyntax, ErrorCode.WRN_CannotIncludeFile,
                                 relativePath);
                         }
                     }
@@ -555,12 +555,12 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 //
                 if (x.ArgumentsInSourceOrder.Length < expectsmin)
                 {
-                    _diagnostics.Add(_routine, x.PhpSyntax, ErrorCode.WRN_MissingArguments, routineName, expectsmin,
+                    _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_MissingArguments, routineName, expectsmin,
                         x.ArgumentsInSourceOrder.Length);
                 }
                 else if (x.ArgumentsInSourceOrder.Length > expectsmax)
                 {
-                    _diagnostics.Add(_routine, x.PhpSyntax, ErrorCode.WRN_TooManyArguments, routineName, expectsmax,
+                    _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_TooManyArguments, routineName, expectsmax,
                         x.ArgumentsInSourceOrder.Length);
                 }
             }
@@ -594,7 +594,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             // calling indirectly:
             if (x.Name.IsDirect)
             {
-                CheckObsoleteSymbol(x.PhpSyntax, x.TargetMethod, isMemberCall: false);
+                CheckObsoleteSymbol(x.AquilaSyntax, x.TargetMethod, isMemberCall: false);
                 CheckGlobalFunctionCall(x);
             }
             else
@@ -603,7 +603,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 // check whether expression can be used as a function callback (must be callable - string, array, object ...)
                 if (!TypeHelpers.IsCallable(TypeCtx, x.Name.NameExpression.TypeRefMask))
                 {
-                    _diagnostics.Add(_routine, x.PhpSyntax, ErrorCode.ERR_InvalidFunctionName,
+                    _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.ERR_InvalidFunctionName,
                         TypeCtx.ToString(x.Name.NameExpression.TypeRefMask));
                 }
             }
@@ -622,7 +622,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             CheckMethodCallTargetInstance(call.Instance, call.Name.NameValue.Name.Value);
 
             // check deprecated
-            CheckObsoleteSymbol(call.PhpSyntax, call.TargetMethod, isMemberCall: true);
+            CheckObsoleteSymbol(call.AquilaSyntax, call.TargetMethod, isMemberCall: true);
 
             //
             return base.VisitInstanceFunctionCall(call);
@@ -667,7 +667,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 call.Name);
 
             // check deprecated
-            CheckObsoleteSymbol(call.PhpSyntax, call.TargetMethod, isMemberCall: true);
+            CheckObsoleteSymbol(call.AquilaSyntax, call.TargetMethod, isMemberCall: true);
 
             // remember there is call to `parent::__construct`
             if ( //call.TypeRef is BoundReservedTypeRef rt && rt.ReservedType == ReservedTypeRef.ReservedType.parent &&
@@ -681,7 +681,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             if (call.TargetMethod.IsValidMethod() && call.TargetMethod.IsAbstract)
             {
                 // ERR
-                Add(call.PhpSyntax.Span, Aquila.Syntax.Errors.Errors.AbstractMethodCalled,
+                Add(call.AquilaSyntax.Span, Aquila.Syntax.Errors.Errors.AbstractMethodCalled,
                     call.TargetMethod.ContainingType.PhpName(), call.Name.NameValue.Name.Value);
             }
 
@@ -733,25 +733,25 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 if (args[0].Value.ConstantValue.EqualsOptional(false.AsOptional()))
                 {
                     // always failing
-                    _diagnostics.Add(_routine, x.PhpSyntax, ErrorCode.WRN_AssertAlwaysFail);
+                    _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_AssertAlwaysFail);
                 }
 
                 if (TypeCtx.IsAString(args[0].Value.TypeRefMask))
                 {
                     // deprecated and not supported
-                    _diagnostics.Add(_routine, args[0].Value.PhpSyntax, ErrorCode.WRN_StringAssertionDeprecated);
+                    _diagnostics.Add(_routine, args[0].Value.AquilaSyntax, ErrorCode.WRN_StringAssertionDeprecated);
                 }
 
                 if (args.Length > 2)
                 {
                     // too many args
-                    _diagnostics.Add(_routine, x.PhpSyntax, ErrorCode.WRN_TooManyArguments, "assert", 2, args.Length);
+                    _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_TooManyArguments, "assert", 2, args.Length);
                 }
             }
             else
             {
                 // assert() expects at least 1 parameter, 0 given
-                _diagnostics.Add(_routine, x.PhpSyntax, ErrorCode.WRN_MissingArguments, "assert", 1, 0);
+                _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_MissingArguments, "assert", 1, 0);
             }
 
             return default;
@@ -771,7 +771,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                         !operandTypeMask.IsRef &&
                         !TypeCtx.IsObjectOnly(operandTypeMask))
                     {
-                        _diagnostics.Add(_routine, x.PhpSyntax, ErrorCode.WRN_CloneNonObject,
+                        _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_CloneNonObject,
                             TypeCtx.ToString(operandTypeMask));
                     }
 
@@ -794,7 +794,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                     {
                         if (x.Right.ConstantValue.IsZero())
                         {
-                            Add(x.Right.PhpSyntax.Span, Warnings.DivisionByZero);
+                            Add(x.Right.AquilaSyntax.Span, Warnings.DivisionByZero);
                         }
                     }
 
@@ -808,11 +808,11 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
         {
             base.VisitConversion(x);
 
-            if (!x.IsImplicit && x.PhpSyntax != null &&
+            if (!x.IsImplicit && x.AquilaSyntax != null &&
                 x.Operand.TypeRefMask.IsSingleType &&
                 x.TargetType == TypeCtx.GetTypes(x.Operand.TypeRefMask).FirstOrDefault())
             {
-                _diagnostics.Add(_routine, x.PhpSyntax, ErrorCode.INF_RedundantCast);
+                _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.INF_RedundantCast);
             }
 
             return default;
@@ -865,7 +865,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             //
             if (nonobjtype != null)
             {
-                _diagnostics.Add(_routine, target.PhpSyntax, ErrorCode.ERR_MethodCalledOnNonObject, methodName ?? "{}",
+                _diagnostics.Add(_routine, target.AquilaSyntax, ErrorCode.ERR_MethodCalledOnNonObject, methodName ?? "{}",
                     nonobjtype);
             }
         }
@@ -925,10 +925,10 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
         {
             if (x.TargetMethod is MissingMethodSymbol)
             {
-                if (x.PhpSyntax == null)
+                if (x.AquilaSyntax == null)
                     throw new Exception("Internal compiler error");
 
-                var span = x.PhpSyntax is CallEx fnc ? fnc.Span : x.PhpSyntax.Span;
+                var span = x.AquilaSyntax is CallEx fnc ? fnc.Span : x.AquilaSyntax.Span;
                 _diagnostics.Add(_routine, span.ToTextSpan(), ErrorCode.WRN_UndefinedMethodCall, type.Name,
                     name.NameValue.ToString());
             }
@@ -936,9 +936,9 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 
         private void CheckUninitializedVariableUse(BoundVariableRef x)
         {
-            if (x.MaybeUninitialized && !x.Access.IsQuiet && x.PhpSyntax != null)
+            if (x.MaybeUninitialized && !x.Access.IsQuiet && x.AquilaSyntax != null)
             {
-                _diagnostics.Add(_routine, x.PhpSyntax, ErrorCode.WRN_UninitializedVariableUse,
+                _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_UninitializedVariableUse,
                     x.Name.NameValue.ToString());
             }
         }
@@ -1008,7 +1008,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 ) // Using !All causes too many false positives (due to explode(..) etc.)
                 {
                     // Using non-iterable type for enumeree
-                    _diagnostics.Add(_routine, x.Enumeree.PhpSyntax, ErrorCode.WRN_ForeachNonIterable,
+                    _diagnostics.Add(_routine, x.Enumeree.AquilaSyntax, ErrorCode.WRN_ForeachNonIterable,
                         TypeCtx.ToString(enumereeTypeMask));
                 }
             }

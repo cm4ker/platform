@@ -36,7 +36,7 @@ namespace Peachpie.CodeAnalysis.Utilities
         {
             string location = null;
 
-            var syntax = op?.PhpSyntax;
+            var syntax = op?.AquilaSyntax;
             if (syntax != null)
             {
                 // get location from AST

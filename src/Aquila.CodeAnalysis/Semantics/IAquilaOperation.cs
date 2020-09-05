@@ -10,7 +10,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// Corresponding syntax node.
         /// </summary>
-        LangElement PhpSyntax { get; set; }
+        LangElement AquilaSyntax { get; set; }
 
         /// <summary>
         /// Visitor with return value implementation.

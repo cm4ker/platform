@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using Aquila.Compiler.Utilities;
 using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis.CodeGen;
@@ -9,9 +7,6 @@ using Aquila.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.Syntax;
 using Aquila.Syntax.Ast;
-using Aquila.Syntax.Syntax;
-using Aquila.CodeAnalysis;
-using Aquila.CodeAnalysis.Semantics;
 using Roslyn.Utilities;
 
 
@@ -129,7 +124,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>Create type reference refering to a variable containing <c>PhpTypeInfo</c> value.</summary>
         public static BoundTypeRef CreateFromPlace(IPlace place) => new BoundTypeRefFromPlace(place);
 
-        public BoundTypeRef CreateFromTypeRef(TypeRef tref, SemanticsBinder binder = null,
+        public BoundTypeRef CreateFromTypeRef(Aquila.Syntax.Ast.TypeRef tref, SemanticsBinder binder = null,
             object self = null, bool objectTypeInfoSemantic = false, int arity = -1)
         {
             if (tref is PredefinedTypeRef pt)
@@ -140,7 +135,7 @@ namespace Aquila.CodeAnalysis.Semantics
                     case SyntaxKind.VoidKeyword: return VoidTypeRef;
                     case SyntaxKind.ObjectKeyword: return ObjectTypeRef;
                     case SyntaxKind.StringKeyword: return StringTypeRef;
-                    
+
                     default: throw ExceptionUtilities.UnexpectedValue(pt.Kind);
                 }
             }
@@ -198,7 +193,7 @@ namespace Aquila.CodeAnalysis.Semantics
             // {
             //     throw ExceptionUtilities.UnexpectedValue(tref);
             // }
-        
+
             throw new NotImplementedException();
         }
 
