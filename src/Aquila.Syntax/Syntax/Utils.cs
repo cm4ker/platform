@@ -183,12 +183,12 @@ namespace Aquila.Syntax.Syntax
             return result.ToString();
         }
 
-        public static string/*!*/ AddCSlashes(string/*!*/ str)
+        public static string  AddCSlashes(string  str)
         {
             return AddCSlashes(str, true, true, true);
         }
 
-        public static string/*!*/ AddCSlashes(string/*!*/ str, bool singleQuotes, bool doubleQuotes)
+        public static string  AddCSlashes(string  str, bool singleQuotes, bool doubleQuotes)
         {
             return AddCSlashes(str, singleQuotes, doubleQuotes, true);
         }
@@ -202,7 +202,7 @@ namespace Aquila.Syntax.Syntax
         /// <param name="nul">Whether to slash '\0' character.</param>
         /// <returns>The slashed string.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="str"/> is a <B>null</B> reference.</exception>
-        public static string/*!*/ AddCSlashes(string/*!*/ str, bool singleQuotes, bool doubleQuotes, bool nul)
+        public static string  AddCSlashes(string  str, bool singleQuotes, bool doubleQuotes, bool nul)
         {
             if (str == null) throw new ArgumentNullException("str");
 
@@ -235,7 +235,7 @@ namespace Aquila.Syntax.Syntax
         /// <param name="toEscape">Characters to be escaped</param>
         /// <param name="escape">Escape character</param>
         /// <returns>Escaped string.</returns>
-        public static string/*!*/ EscapeStringCustom(string/*!*/str, char[]/*!*/toEscape, char escape)
+        public static string  EscapeStringCustom(string str, char[] toEscape, char escape)
         {
             if (str == null) throw new ArgumentNullException("str");
             if (toEscape == null) throw new ArgumentNullException("toEscape");
@@ -263,7 +263,7 @@ namespace Aquila.Syntax.Syntax
         /// String where slashes are striped away.
         /// Slashed characters with special meaning ("\0") are replaced with their special value.
         /// </returns>
-        public static string/*!*/ StripCSlashes(string/*!*/ str)
+        public static string  StripCSlashes(string  str)
         {
             if (str == null) throw new ArgumentNullException("str");
             if (str == "") return "";
@@ -300,7 +300,7 @@ namespace Aquila.Syntax.Syntax
         /// <param name="str">The string to add slashes in.</param>
         /// <returns>The slashed string.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="str"/> is a <B>null</B> reference.</exception>
-        public static string/*!*/ AddDbSlashes(string/*!*/ str)
+        public static string  AddDbSlashes(string  str)
         {
             if (str == null) throw new ArgumentNullException("str");
 
@@ -325,7 +325,7 @@ namespace Aquila.Syntax.Syntax
         /// </summary>
         /// <param name="str">String.</param>
         /// <returns>String with replaced characters.</returns>
-        public static string/*!*/ StripDbSlashes(string/*!*/ str)
+        public static string  StripDbSlashes(string  str)
         {
             if (str == null) throw new ArgumentNullException("str");
 
@@ -485,17 +485,17 @@ namespace Aquila.Syntax.Syntax
             return result;
         }
 
-        //internal static void StringBuilderAppend(PHP.Syntax.PhpStringBuilder/*!*/ dst, StringBuilder/*!*/ src, int startIndex, int length, Text.Span span)
+        //internal static void StringBuilderAppend(PHP.Syntax.PhpStringBuilder  dst, StringBuilder  src, int startIndex, int length, Text.Span span)
         //{
         //    dst.Append(src.ToString(startIndex, length), span);
         //}
 
-        public static bool IsAsciiString(string/*!*/ str)
+        public static bool IsAsciiString(string  str)
         {
             return IsAsciiString(str, 0, str.Length);
         }
 
-        public static bool IsAsciiString(string/*!*/ str, int start, int length)
+        public static bool IsAsciiString(string  str, int start, int length)
         {
             if (str == null)
                 throw new ArgumentNullException("str");
@@ -520,7 +520,7 @@ namespace Aquila.Syntax.Syntax
         /// <param name="group">Group.</param>
         /// <param name="category">Category.</param>
         /// <returns>Length of the parsed property code (0 to 2).</returns>
-        public static int ParseUnicodeDesignation(string/*!*/ str, int pos, out UnicodeCategoryGroup group,
+        public static int ParseUnicodeDesignation(string  str, int pos, out UnicodeCategoryGroup group,
           out UnicodeCategory category)
         {
             if (str == null)
@@ -638,7 +638,7 @@ namespace Aquila.Syntax.Syntax
             return 0;
         }
 
-        internal static bool IsWhitespace(string/*!*/ str)
+        internal static bool IsWhitespace(string  str)
         {
             for (int i = 0; i < str.Length; i++)
             {
@@ -767,7 +767,7 @@ namespace Aquila.Syntax.Syntax
         {
             public abstract char this[int index] { get; }
             public abstract int Length { get; }
-            public abstract object/*!*/ Value { get; }
+            public abstract object  Value { get; }
 
             public virtual bool HasBuilder { get { return false; } }
 
@@ -840,7 +840,7 @@ namespace Aquila.Syntax.Syntax
 
         public sealed class BytesWrapper : UniformWrapper
         {
-            private byte[]/*!*/ bytes;
+            private byte[]  bytes;
 
             public override object Value
             {
@@ -859,7 +859,7 @@ namespace Aquila.Syntax.Syntax
 
             public override bool HasBuilder { get { return true; } }
 
-            public BytesWrapper(byte[]/*!*/ bytes)
+            public BytesWrapper(byte[]  bytes)
             {
                 Debug.Assert(bytes != null);
                 this.bytes = bytes;
@@ -902,7 +902,7 @@ namespace Aquila.Syntax.Syntax
 
         public sealed class CharsWrapper : UniformWrapper
         {
-            private char[]/*!*/ chars;
+            private char[]  chars;
 
             public override object Value
             {
@@ -913,7 +913,7 @@ namespace Aquila.Syntax.Syntax
 
             public override int Length { get { return chars.Length; } }
 
-            public CharsWrapper(char[]/*!*/ chars)
+            public CharsWrapper(char[]  chars)
             {
                 Debug.Assert(chars != null);
                 this.chars = chars;
@@ -922,7 +922,7 @@ namespace Aquila.Syntax.Syntax
 
         public sealed class StringWrapper : UniformWrapper
         {
-            private string/*!*/ str;
+            private string  str;
 
             public override char this[int index] { get { return str[index]; } }
 
@@ -978,7 +978,7 @@ namespace Aquila.Syntax.Syntax
 
         public sealed class StringBuilderWrapper : UniformWrapper
         {
-            private StringBuilder/*!*/ builder;
+            private StringBuilder  builder;
 
             public override char this[int index] { get { return builder[index]; } }
 
@@ -998,7 +998,7 @@ namespace Aquila.Syntax.Syntax
 
         #endregion
 
-        internal static string ToClsCompliantIdentifier(string/*!*/ name)
+        internal static string ToClsCompliantIdentifier(string  name)
         {
             if (String.IsNullOrEmpty(name))
                 throw new ArgumentNullException("name");
@@ -1049,7 +1049,7 @@ namespace Aquila.Syntax.Syntax
         /// </summary>
         /// <param name="str">String</param>
         /// <returns>Last character of string or -1 if empty</returns>
-        public static int LastCharacter(this string/*!*/ str)
+        public static int LastCharacter(this string  str)
         {
             return str.Length == 0 ? -1 : str[str.Length - 1];
         }
@@ -1078,7 +1078,7 @@ namespace Aquila.Syntax.Syntax
         /// <param name="length">Amount of characters to replace.</param>
         /// <param name="replacement">Replacement.</param>
         /// <returns>Reference to <paramref name="str"/>.</returns>
-        public static StringBuilder/*!*/Replace(this StringBuilder/*!*/str, int startIndex, int length, string replacement)
+        public static StringBuilder Replace(this StringBuilder str, int startIndex, int length, string replacement)
         {
             if (string.IsNullOrEmpty(replacement))
             {
@@ -1116,7 +1116,7 @@ namespace Aquila.Syntax.Syntax
         /// <returns>Whether the collection contains <paramref name="str"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is a <B>null</B> reference.</exception>
         /// <exception cref="InvalidCastException"><paramref name="collection"/> contains a non-string.</exception>
-        public static bool ContainsString(IEnumerable/*!*/ collection, string str, bool ignoreCase)
+        public static bool ContainsString(IEnumerable  collection, string str, bool ignoreCase)
         {
             if (collection == null)
                 throw new ArgumentNullException("collection");
@@ -1142,7 +1142,7 @@ namespace Aquila.Syntax.Syntax
             return result;
         }
 
-        public static int IncrementValue<TKey>(Dictionary<TKey, int>/*!*/ dictionary, TKey key, int amount)
+        public static int IncrementValue<TKey>(Dictionary<TKey, int>  dictionary, TKey key, int amount)
         {
             int value = 0;
             dictionary.TryGetValue(key, out value);
@@ -1248,7 +1248,7 @@ namespace Aquila.Syntax.Syntax
         /// <param name="item">Item to search for.</param>
         /// <param name="comparer">Comparer to be used.</param>
         /// <returns>The zero-based index of the first occurrence of <paramref name="item" /> within the entire <paramref name="list"/>, if found; otherwise, –1.</returns>
-        public static int IndexOf<T>(this IList<T>/*!*/list, T item, IEqualityComparer<T>/*!*/comparer)
+        public static int IndexOf<T>(this IList<T> list, T item, IEqualityComparer<T> comparer)
         {
             Debug.Assert(list != null);
             Debug.Assert(comparer != null);
@@ -1266,7 +1266,7 @@ namespace Aquila.Syntax.Syntax
         /// <typeparam name="T">Type of list items.</typeparam>
         /// <param name="list">LIst to remove from.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="list"/> has no items.</exception>
-        public static void RemoveLast<T>(this IList<T>/*!*/list)
+        public static void RemoveLast<T>(this IList<T> list)
         {
             list.RemoveAt(list.Count - 1);
         }
@@ -1277,7 +1277,7 @@ namespace Aquila.Syntax.Syntax
         /// <typeparam name="T">Type of the list elements.</typeparam>
         /// <param name="list">List.</param>
         /// <returns>Last element of given list.</returns>
-        public static T Last<T>(this IList<T>/*!*/list)
+        public static T Last<T>(this IList<T> list)
         {
             return list[list.Count - 1];
         }
@@ -1293,7 +1293,7 @@ namespace Aquila.Syntax.Syntax
         /// <summary>
         /// Copies entries into new array, or gets empty array if the collection is empty.
         /// </summary>
-        public static T[]/*!*/AsArray<T>(this IEnumerable<T> enumerable)
+        public static T[] AsArray<T>(this IEnumerable<T> enumerable)
         {
             if (enumerable is IList<T> list)
             {
@@ -1325,7 +1325,7 @@ namespace Aquila.Syntax.Syntax
         /// <summary>
         /// Copies entries into new array, or gets empty array if the collection is empty.
         /// </summary>
-        public static T[]/*!*/AsArray<T>(this IList<T> list)
+        public static T[] AsArray<T>(this IList<T> list)
         {
             T[] result = list as T[];
 
@@ -1408,7 +1408,7 @@ namespace Aquila.Syntax.Syntax
         /// <summary>
         /// Singleton instance of empty array of <typeparamref name="T"/>.
         /// </summary>
-        public static T[]/*!*/Instance
+        public static T[] Instance
         {
             get
             {
@@ -1636,7 +1636,7 @@ namespace Aquila.Syntax.Syntax
         /// <param name="x">The first array of <typeparamref name="T"/> to be concatenated.</param>
         /// <param name="y">The second array of <typeparamref name="T"/> to be concatenated.</param>
         /// <returns>The concatenation of <paramref name="x"/> and <paramref name="y"/>.</returns>
-        public static T[]/*!*/ Concat<T>(T[]/*!*/ x, T[]/*!*/ y)
+        public static T[]  Concat<T>(T[]  x, T[]  y)
         {
             if (x == null) throw new ArgumentNullException("x");
             if (y == null) throw new ArgumentNullException("y");
@@ -1655,7 +1655,7 @@ namespace Aquila.Syntax.Syntax
         /// <param name="x">The array of <typeparamref name="T"/> to be concatenated.</param>
         /// <param name="y">The element of <typeparamref name="T"/> to be appended.</param>
         /// <returns>The concatenation of <paramref name="x"/> and <paramref name="y"/>.</returns>
-        public static T[]/*!*/ Concat<T>(T[] x, T y)
+        public static T[]  Concat<T>(T[] x, T y)
         {
             if (x == null || x.Length == 0)
                 return new T[] { y };
@@ -1675,7 +1675,7 @@ namespace Aquila.Syntax.Syntax
         /// <summary>
         /// Concats array of <typeparamref name="T"/> with single <typeparamref name="T"/> element.
         /// </summary>
-        public static T[]/*!*/Concat<T>(T x, T[] y)
+        public static T[] Concat<T>(T x, T[] y)
         {
             T[] result;
 
@@ -1699,7 +1699,7 @@ namespace Aquila.Syntax.Syntax
         /// <param name="x">The first array of bytes to be concatenated.</param>
         /// <param name="y">The second array of bytes to be concatenated.</param>
         /// <returns>The concatenation of <paramref name="x"/> and <paramref name="y"/>.</returns>
-        public static byte[]/*!*/ Concat(byte[]/*!*/ x, byte[]/*!*/ y)
+        public static byte[]  Concat(byte[]  x, byte[]  y)
         {
             if (x == null) throw new ArgumentNullException("x");
             if (y == null) throw new ArgumentNullException("y");
@@ -1712,7 +1712,7 @@ namespace Aquila.Syntax.Syntax
             return result;
         }
 
-        internal static T[]/*!*/ Filter<T>(T[]/*!*/ srcArray, T[]/*!*/ dstArray, T removedValue)
+        internal static T[]  Filter<T>(T[]  srcArray, T[]  dstArray, T removedValue)
             where T : class
         {
             int j = 0;
@@ -1725,7 +1725,7 @@ namespace Aquila.Syntax.Syntax
             return dstArray;
         }
 
-        internal static int IndexOfNull<T>(ref T[]/*!*/ array, int start)
+        internal static int IndexOfNull<T>(ref T[]  array, int start)
             where T : class
         {
             while (start < array.Length && array[start] != null) start++;
@@ -1736,7 +1736,7 @@ namespace Aquila.Syntax.Syntax
             return start;
         }
 
-        public static string/*!*/ ToList<T>(IEnumerable<T> enumerable, Action<StringBuilder, T>/*!*/ appendItem)
+        public static string  ToList<T>(IEnumerable<T> enumerable, Action<StringBuilder, T>  appendItem)
         {
             if (appendItem == null)
                 throw new ArgumentNullException("appendItem");
@@ -1763,7 +1763,7 @@ namespace Aquila.Syntax.Syntax
         /// <param name="args">Array of objects.</param>
         /// <param name="predicate">Condition.</param>
         /// <returns>Amount of elements.</returns>
-        public static int TakeWhileCount(object[]/*!*/args, Predicate<object> predicate)
+        public static int TakeWhileCount(object[] args, Predicate<object> predicate)
         {
             Debug.Assert(args != null);
 
@@ -1782,7 +1782,7 @@ namespace Aquila.Syntax.Syntax
         /// <typeparam name="T">Type of single items in the list.</typeparam>
         /// <param name="items">Items to check for duplicities.</param>
         /// <returns>New list of unique items. Cannot return null.</returns>
-        public static ICollection<T>/*!*/Unique<T>(IList<T> items)
+        public static ICollection<T> Unique<T>(IList<T> items)
         {
             if (items == null || items.Count == 0)
                 return EmptyArray<T>.Instance;
@@ -1796,7 +1796,7 @@ namespace Aquila.Syntax.Syntax
         /// <typeparam name="T">Type of array element.</typeparam>
         /// <param name="items">Array of elements.</param>
         /// <returns>Unique array of element. Cannot be null.</returns>
-        public static T[]/*!*/EnsureUnique<T>(T[] items)
+        public static T[] EnsureUnique<T>(T[] items)
         {
             if (items == null) return EmptyArray<T>.Instance;
             if (items.Length == 0) return items;

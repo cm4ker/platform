@@ -14,12 +14,12 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets flow context.
         /// </summary>
-        public FlowContext /*!*/ FlowContext { get; }
+        public FlowContext   FlowContext { get; }
 
         /// <summary>
         /// Gets type context.
         /// </summary>
-        public TypeRefContext /*!*/ TypeRefContext => FlowContext.TypeRefContext;
+        public TypeRefContext   TypeRefContext => FlowContext.TypeRefContext;
 
         /// <summary>
         /// Source routine.
@@ -30,7 +30,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Types of variables in this state.
         /// </summary>
-        TypeRefMask[] /*!*/
+        TypeRefMask[]  
             _varsType;
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Initial locals state for the Start block.
         /// </summary>
-        internal FlowState(FlowContext /*!*/flowCtx)
+        internal FlowState(FlowContext  flowCtx)
         {
             Contract.ThrowIfNull(flowCtx);
 
@@ -108,7 +108,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Copy constructor.
         /// </summary>
-        public FlowState(FlowState /*!*/other)
+        public FlowState(FlowState  other)
             : this(other.FlowContext, other._varsType)
         {
             // clone internal state
@@ -131,7 +131,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Copy constructor.
         /// </summary>
-        private FlowState(FlowContext /*!*/flowCtx, TypeRefMask[] /*!*/varsType)
+        private FlowState(FlowContext  flowCtx, TypeRefMask[]  varsType)
         {
             Contract.ThrowIfNull(flowCtx);
             Contract.ThrowIfNull(varsType);
@@ -196,7 +196,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets variable handle use for other variable operations.
         /// </summary>
-        public VariableHandle /*!*/ GetLocalHandle(VariableName varname)
+        public VariableHandle   GetLocalHandle(VariableName varname)
         {
             return FlowContext.GetVarIndex(varname);
         }

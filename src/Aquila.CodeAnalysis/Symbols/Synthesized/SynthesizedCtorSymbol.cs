@@ -7,7 +7,7 @@ using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Microsoft.Cci;
 using Microsoft.CodeAnalysis;
-using Peachpie.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols.Synthesized
 {
@@ -15,7 +15,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
     internal class SynthesizedCtorSymbol : SynthesizedMethodSymbol
     {
-        public SynthesizedCtorSymbol(NamedTypeSymbol/*!*/container)
+        public SynthesizedCtorSymbol(NamedTypeSymbol container)
             : base(container, WellKnownMemberNames.InstanceConstructorName, false, false, container.DeclaringCompilation.CoreTypes.Void)
         {
             Debug.Assert(!container.IsStatic);

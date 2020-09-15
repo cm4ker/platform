@@ -29,7 +29,7 @@ using System.Diagnostics;
         /// short-lived temporary local. If <paramref name="immediateReturn"/> is <c>false</c>, return the local
         /// to the pool of locals available for reuse by calling <see cref="ReturnTemporaryLocal(LocalDefinition)"/>.
         /// </remarks>
-        public LocalDefinition/*!*/ GetTemporaryLocal(TypeSymbol/*!*/ type, bool immediateReturn = false)
+        public LocalDefinition  GetTemporaryLocal(TypeSymbol  type, bool immediateReturn = false)
         {
             Debug.Assert(type.SpecialType != SpecialType.System_Void, "Variable cannot be of type 'void'!");
 
@@ -48,7 +48,7 @@ using System.Diagnostics;
         /// pool of locals available for reuse.
         /// </summary>
         /// <param name="definition">The <see cref="LocalDefinition"/> to return to the pool.</param>
-        public void ReturnTemporaryLocal(LocalDefinition/*!*/ definition)
+        public void ReturnTemporaryLocal(LocalDefinition  definition)
         {
             _il.LocalSlotManager.FreeSlot(definition);
         }
@@ -185,7 +185,7 @@ using System.Diagnostics;
         /// <param name="type">Type of the variable.</param>
         /// <param name="longlive">Whether the variable has to be retained out of current statement. In some cases, this causes the temporary variable not being represented as local on stack.</param>
         /// <param name="immediateReturn">Whether the temporary variable is released immediatelly.</param>
-        public TemporaryLocalDefinition GetTemporaryLocal(TypeSymbol/*!*/type, bool longlive, bool immediateReturn)
+        public TemporaryLocalDefinition GetTemporaryLocal(TypeSymbol type, bool longlive, bool immediateReturn)
         {
             if (longlive && !immediateReturn && this.TemporalLocalsPlace != null)
             {

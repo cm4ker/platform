@@ -18,7 +18,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Well-known PHP type names used in PHPDoc.
         /// </summary>
-        private static readonly Dictionary<string, TypeMaskGetter>/*!*/_knownTypes = new Dictionary<string, TypeMaskGetter>(StringComparer.OrdinalIgnoreCase)
+        private static readonly Dictionary<string, TypeMaskGetter> _knownTypes = new Dictionary<string, TypeMaskGetter>(StringComparer.OrdinalIgnoreCase)
         {
             { "int", ctx => ctx.GetLongTypeMask()},
             { "integer", ctx => ctx.GetLongTypeMask()},
@@ -53,7 +53,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets type mask of known PHPDoc type name or <c>0</c> if such type is now known.
         /// </summary>
-        public static TypeRefMask GetKnownTypeMask(TypeRefContext/*!*/typeCtx, string tname)
+        public static TypeRefMask GetKnownTypeMask(TypeRefContext typeCtx, string tname)
         {
             Contract.ThrowIfNull(typeCtx);
             if (!string.IsNullOrEmpty(tname))
@@ -71,7 +71,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets type mask representing given type name.
         /// </summary>
-        public static TypeRefMask GetTypeMask(TypeRefContext/*!*/typeCtx, string tname, NamingContext naming, bool fullyQualified = false)
+        public static TypeRefMask GetTypeMask(TypeRefContext typeCtx, string tname, NamingContext naming, bool fullyQualified = false)
         {
             if (!string.IsNullOrEmpty(tname))
             {
@@ -136,7 +136,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets type mask representing given type name.
         /// </summary>
-        public static TypeRefMask GetTypeMask(TypeRefContext/*!*/typeCtx, string[] tnames, NamingContext naming, bool fullyQualified = false)
+        public static TypeRefMask GetTypeMask(TypeRefContext typeCtx, string[] tnames, NamingContext naming, bool fullyQualified = false)
         {
             TypeRefMask result = 0;
 
@@ -149,7 +149,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets type mask at target ctype context representing given type names from given routine.
         /// </summary>
-        public static TypeRefMask GetTypeMask(TypeRefContext/*!*/targetCtx, SourceRoutineSymbol/*!*/routine, string[] tnames, bool fullyQualified = false)
+        public static TypeRefMask GetTypeMask(TypeRefContext targetCtx, SourceRoutineSymbol routine, string[] tnames, bool fullyQualified = false)
         {
             Contract.ThrowIfNull(targetCtx);
             Contract.ThrowIfNull(routine);
@@ -160,7 +160,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets type mask at target type context representing given type names from given routine.
         /// </summary>
-        public static TypeRefMask GetTypeMask(TypeRefContext/*!*/targetCtx, TypeRefContext/*!*/ctx, string[] tnames, NamingContext naming, bool fullyQualified = false)
+        public static TypeRefMask GetTypeMask(TypeRefContext targetCtx, TypeRefContext ctx, string[] tnames, NamingContext naming, bool fullyQualified = false)
         {
             Contract.ThrowIfNull(targetCtx);
             Contract.ThrowIfNull(ctx);

@@ -349,7 +349,7 @@ namespace Aquila.CodeAnalysis
         {
             if (predicate == null)
             {
-                throw Peachpie.CodeAnalysis.Utilities.ExceptionUtilities.ArgumentNull(nameof(predicate));
+                throw CodeAnalysis.Utilities.ExceptionUtilities.ArgumentNull(nameof(predicate));
             }
 
             if (filter == SymbolFilter.None)
@@ -525,7 +525,7 @@ namespace Aquila.CodeAnalysis
         {
             if (predicate == null)
             {
-                throw Peachpie.CodeAnalysis.Utilities.ExceptionUtilities.ArgumentNull(nameof(predicate));
+                throw CodeAnalysis.Utilities.ExceptionUtilities.ArgumentNull(nameof(predicate));
             }
 
             if (filter == SymbolFilter.None)
@@ -733,7 +733,7 @@ namespace Aquila.CodeAnalysis
         {
             if (oldTree == null)
             {
-                throw Peachpie.CodeAnalysis.Utilities.ExceptionUtilities.ArgumentNull(nameof(oldTree));
+                throw CodeAnalysis.Utilities.ExceptionUtilities.ArgumentNull(nameof(oldTree));
             }
 
             if (newTree == null)

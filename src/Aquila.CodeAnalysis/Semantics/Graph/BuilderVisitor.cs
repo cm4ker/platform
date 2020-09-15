@@ -20,10 +20,10 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
     /// </summary>
     internal sealed class BuilderVisitor : AstWalker
     {
-        readonly SemanticsBinder /*!*/
+        readonly SemanticsBinder
             _binder;
 
-        private BoundBlock /*!*/
+        private BoundBlock
             _current;
 
         private Dictionary<string, ControlFlowGraph.LabelBlockState> _labels;
@@ -42,9 +42,9 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public List<BoundStatement> _declarations;
 
-        public BoundBlock /*!*/ Start { get; private set; }
+        public BoundBlock Start { get; private set; }
 
-        public BoundBlock /*!*/ Exit { get; private set; }
+        public BoundBlock Exit { get; private set; }
         //public BoundBlock Exception { get; private set; }
 
         /// <summary>
@@ -63,12 +63,12 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// Blocks we know nothing is pointing to (right after jump, throw, etc.).
         /// </summary>
-        public ImmutableArray<BoundBlock> /*!*/ DeadBlocks
+        public ImmutableArray<BoundBlock> DeadBlocks
         {
             get { return _deadBlocks.ToImmutableArray(); }
         }
 
-        private readonly List<BoundBlock> /*!*/
+        private readonly List<BoundBlock>
             _deadBlocks = new List<BoundBlock>();
 
         #region LocalScope
@@ -115,10 +115,10 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// </summary>
         private struct BreakTargetScope
         {
-            public readonly BoundBlock /*!*/
+            public readonly BoundBlock
                 BreakTarget;
 
-            public readonly BoundBlock /*!*/
+            public readonly BoundBlock
                 ContinueTarget;
 
             public BreakTargetScope(BoundBlock breakBlock, BoundBlock continueBlock)
@@ -183,7 +183,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #region Construction
 
-        private BuilderVisitor(IList<Statement> /*!*/statements, SemanticsBinder /*!*/binder)
+        private BuilderVisitor(IList<Statement> statements, SemanticsBinder binder)
         {
             Contract.ThrowIfNull(statements);
             Contract.ThrowIfNull(binder);
@@ -212,7 +212,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             Debug.Assert(_breakTargets == null || _breakTargets.Count == 0);
         }
 
-        public static BuilderVisitor /*!*/ Build(IList<Statement> /*!*/statements, SemanticsBinder /*!*/binder)
+        public static BuilderVisitor Build(IList<Statement> statements, SemanticsBinder binder)
         {
             return new BuilderVisitor(statements, binder);
         }
@@ -221,7 +221,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #region Helper Methods
 
-        private BoundBlock /*!*/ GetExceptionBlock()
+        private BoundBlock GetExceptionBlock()
         {
             //if (this.Exception == null)
             //    this.Exception = new ExitBlock();
@@ -284,7 +284,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             _current.Add(new BoundReturnStatement(expression));
         }
 
-        private BoundBlock /*!*/ NewBlock()
+        private BoundBlock NewBlock()
         {
             return WithNewOrdinal(new BoundBlock());
         }
@@ -293,7 +293,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// Creates block we know nothing is pointing to.
         /// Such block will be analysed later whether it is empty or whether it contains some statements (which will be reported as unreachable).
         /// </summary>
-        private BoundBlock /*!*/ NewDeadBlock()
+        private BoundBlock NewDeadBlock()
         {
             var block = new BoundBlock();
             block.Ordinal = -1; // unreachable
@@ -301,12 +301,12 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             return block;
         }
 
-        // private CatchBlock/*!*/NewBlock(CatchItem item)
+        // private CatchBlock NewBlock(CatchItem item)
         // {
         //     return WithNewOrdinal(new CatchBlock(_binder.BindTypeRef(item.TargetType), _binder.BindCatchVariable(item)) { PhpSyntax = item });
         // }
 
-        // private CaseBlock/*!*/NewBlock(SwitchItem item)
+        // private CaseBlock NewBlock(SwitchItem item)
         // {
         //     BoundItemsBag<BoundExpression> caseValueBag = item is CaseItem caseItem
         //         ? _binder.BindWholeExpression(caseItem.CaseVal, BoundAccess.Read)
@@ -315,7 +315,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         //     return WithNewOrdinal(new CaseBlock(caseValueBag) { PhpSyntax = item });
         // }
 
-        private BoundBlock /*!*/ Connect(BoundBlock /*!*/source, BoundBlock /*!*/ifTarget, BoundBlock /*!*/elseTarget,
+        private BoundBlock Connect(BoundBlock source, BoundBlock ifTarget, BoundBlock elseTarget,
             Expression condition, bool isloop = false)
         {
             if (condition != null)
@@ -338,19 +338,19 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             }
         }
 
-        private BoundBlock /*!*/ Connect(BoundBlock /*!*/source, BoundBlock /*!*/target)
+        private BoundBlock Connect(BoundBlock source, BoundBlock target)
         {
             new SimpleEdge(source, target);
             return target;
         }
 
-        private BoundBlock /*!*/ Leave(BoundBlock /*!*/source, BoundBlock /*!*/target)
+        private BoundBlock Leave(BoundBlock source, BoundBlock target)
         {
             new LeaveEdge(source, target);
             return target;
         }
 
-        private ControlFlowGraph.LabelBlockState /*!*/ GetLabelBlock(string label)
+        private ControlFlowGraph.LabelBlockState GetLabelBlock(string label)
         {
             if (_labels == null)
                 _labels =
@@ -669,7 +669,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         // }
 
         private void BuildForLoop(IList<Expression> initExpr, IList<Expression> condExpr, IList<Expression> actionExpr,
-            Statement /*!*/bodyStmt)
+            Statement bodyStmt)
         {
             var end = NewBlock();
 
@@ -722,7 +722,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             _current = WithNewOrdinal(end);
         }
 
-        private void BuildDoLoop(Expression condExpr, Statement /*!*/bodyStmt)
+        private void BuildDoLoop(Expression condExpr, Statement bodyStmt)
         {
             var end = NewBlock();
 
@@ -757,7 +757,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         // public override void VisitGotoStmt(GotoStmt x)
         // {
-        //     var/*!*/label = GetLabelBlock(x.LabelName.Name.Value);
+        //     var label = GetLabelBlock(x.LabelName.Name.Value);
         //     label.Flags |= ControlFlowGraph.LabelBlockFlags.Used;   // label is used
         //
         //     if (!label.LabelSpan.IsValid)
@@ -849,7 +849,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         // public override void VisitLabelStmt(LabelStmt x)
         // {
-        //     var /*!*/
+        //     var  
         //         label = GetLabelBlock(x.Name.Name.Value);
         //     if ((label.Flags & ControlFlowGraph.LabelBlockFlags.Defined) != 0)
         //     {

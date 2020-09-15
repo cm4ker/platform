@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Peachpie.CodeAnalysis.Utilities
+namespace Aquila.CodeAnalysis.Utilities
 {
     /// <summary>
     /// A general structure to record bit information about indexed entities in flow analysis.

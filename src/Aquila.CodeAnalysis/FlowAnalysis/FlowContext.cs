@@ -31,7 +31,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// </summary>
         public TypeRefContext TypeRefContext => _typeCtx;
 
-        readonly TypeRefContext /*!*/
+        readonly TypeRefContext  
             _typeCtx;
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Map of variables name and their index.
         /// </summary>
-        readonly Dictionary<VariableName, int> /*!*/
+        readonly Dictionary<VariableName, int>  
             _varsIndex;
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// </summary>
         internal TypeRefMask[] VarsType => _varsType;
 
-        TypeRefMask[] /*!*/
+        TypeRefMask[]  
             _varsType = EmptyArray<TypeRefMask>.Instance;
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         #region Construction
 
-        internal FlowContext(TypeRefContext /*!*/typeCtx, SourceRoutineSymbol routine)
+        internal FlowContext(TypeRefContext  typeCtx, SourceRoutineSymbol routine)
         {
             Contract.ThrowIfNull(typeCtx);
 

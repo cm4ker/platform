@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-namespace Peachpie.CodeAnalysis.Utilities
+namespace Aquila.CodeAnalysis.Utilities
 {
     /// <summary>
     /// PriorityQueue provides a stack-like interface, except that objects

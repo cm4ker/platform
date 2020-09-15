@@ -1,5 +1,5 @@
 ﻿using Aquila.Syntax.Syntax;
-using Peachpie.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.Utilities;
 
 namespace Aquila.CodeAnalysis.FlowAnalysis
 {
@@ -107,7 +107,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <param name="ctx">Target type context.</param>
         /// <param name="index">Index of parameter.</param>
         /// <returns>Type mask of the parameter or <c>void</c>.</returns>
-        public TypeRefMask GetParamType(TypeRefContext/*!*/ctx, int index)
+        public TypeRefMask GetParamType(TypeRefContext ctx, int index)
         {
             if (ctx == null) throw ExceptionUtilities.ArgumentNull(nameof(ctx));
 
@@ -123,7 +123,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// </summary>
         /// <param name="ctx">Target type context.</param>
         /// <returns>TYpe mask of <c>static</c> in given context or <c>void</c>.</returns>
-        public TypeRefMask GetLateStaticBindType(TypeRefContext/*!*/ctx)
+        public TypeRefMask GetLateStaticBindType(TypeRefContext ctx)
         {
             if (ctx == null) throw ExceptionUtilities.ArgumentNull("ctx");
 

@@ -83,7 +83,7 @@ namespace Aquila.Syntax.Text
         /// <param name="lineBreaks">Information about line breaks in the document. Cannot be <c>null</c>.</param>
         /// <param name="line">Line number.</param>
         /// <returns><see cref="Span"/> of line specified by parameter <paramref name="line"/> within the document <paramref name="lineBreaks"/>.</returns>
-        public static Span GetLineSpan(this ILineBreaks/*!*/lineBreaks, int line)
+        public static Span GetLineSpan(this ILineBreaks lineBreaks, int line)
         {
             if (lineBreaks == null)
                 throw new ArgumentNullException("lineBreaks");

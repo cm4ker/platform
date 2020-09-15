@@ -27,14 +27,14 @@ namespace Aquila.CodeAnalysis.Symbols
     {
         //readonly SourceTypeSymbol _type;
 
-        readonly MethodDecl /*!*/
+        readonly MethodDecl  
             _syntax;
 
         Microsoft.CodeAnalysis.Text.TextSpan NameSpan => _syntax.Identifier.Span.ToTextSpan();
 
         MethodSymbol _lazyOverridenMethod;
 
-        // public SourceMethodSymbol(SourceTypeSymbol /*!*/type, MethodDecl /*!*/syntax)
+        // public SourceMethodSymbol(SourceTypeSymbol  type, MethodDecl  syntax)
         // {
         //     Contract.ThrowIfNull(type);
         //     Contract.ThrowIfNull(syntax);

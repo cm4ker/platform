@@ -9,12 +9,12 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Creates copy of this state.
         /// </summary>
-        T/*!*/Clone();
+        T Clone();
 
         /// <summary>
         /// Creates new state as a merge of this one and the other.
         /// </summary>
-        T/*!*/Merge(T/*!*/other);
+        T Merge(T other);
 
         #region Local Variable Handling
 

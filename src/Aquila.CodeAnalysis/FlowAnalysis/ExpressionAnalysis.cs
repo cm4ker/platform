@@ -35,9 +35,9 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets model for symbols resolution.
         /// </summary>
-        internal ISymbolProvider /*!*/ Model => _model;
+        internal ISymbolProvider   Model => _model;
 
-        readonly ISymbolProvider /*!*/
+        readonly ISymbolProvider  
             _model;
 
         /// <summary>
@@ -1392,7 +1392,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             {
                 switch (pt.TypeCode)
                 {
-                    case PhpTypeCode.Boolean:
+                    case AquilaTypeCode.Boolean:
                         if (x.Operand.ConstantValue.TryConvertToBool(out bool constBool))
                         {
                             x.ConstantValue = ConstantValueExtensions.AsOptional(constBool);
@@ -1400,7 +1400,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
                         break;
 
-                    case PhpTypeCode.Long:
+                    case AquilaTypeCode.Long:
                         if (x.Operand.ConstantValue.TryConvertToLong(out long l))
                         {
                             x.ConstantValue = new Optional<object>(l);
@@ -1408,11 +1408,11 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
                         break;
 
-                    case PhpTypeCode.Double:
+                    case AquilaTypeCode.Double:
                         break;
 
-                    case PhpTypeCode.String:
-                    case PhpTypeCode.WritableString:
+                    case AquilaTypeCode.String:
+                    case AquilaTypeCode.WritableString:
                         if (x.Operand.ConstantValue.TryConvertToString(out string str))
                         {
                             x.ConstantValue = new Optional<object>(str);
@@ -1420,7 +1420,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
                         break;
 
-                    case PhpTypeCode.Object:
+                    case AquilaTypeCode.Object:
                         if (IsClassOnly(x.Operand.TypeRefMask))
                         {
                             // it is object already, keep its specific type

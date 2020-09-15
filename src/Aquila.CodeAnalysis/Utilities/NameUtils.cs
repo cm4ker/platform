@@ -155,7 +155,7 @@ namespace Aquila.Compiler.Utilities
         // /// <summary>
         // /// Create naming context in context of given type declaration.
         // /// </summary>
-        // public static NamingContext GetNamingContext(TypeDecl /*!*/type)
+        // public static NamingContext GetNamingContext(TypeDecl  type)
         // {
         //     Contract.ThrowIfNull(type);
         //

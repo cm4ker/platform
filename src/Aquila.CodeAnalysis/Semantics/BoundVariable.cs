@@ -25,7 +25,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// Associated symbol, local or parameter.
         /// </summary>
-        internal abstract Aquila.CodeAnalysis.Symbols.Symbol Symbol { get; }
+        internal abstract Symbol Symbol { get; }
 
         /// <summary>
         /// Name of the variable.

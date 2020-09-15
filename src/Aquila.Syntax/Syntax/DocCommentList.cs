@@ -51,7 +51,7 @@
 //         /// <summary>
 //         /// Inserts DOC block into the list.
 //         /// </summary>
-//         public void AppendBlock(PHPDocBlock/*!*/phpDoc, int endPosition)
+//         public void AppendBlock(PHPDocBlock phpDoc, int endPosition)
 //         {
 //             Debug.Assert(phpDoc != null);
 //             Debug.Assert(endPosition >= phpDoc.Span.End);
@@ -144,7 +144,7 @@
 //         /// <param name="extent">Span of code block containing <paramref name="stmts"/>.</param>
 //         /// <param name="stmts">List of statements to be merged with overlapping DOC comments.</param>
 //         /// <param name="factory">Factory used to create PHPDoc statements.</param>
-//         public void Merge(Text.Span extent, IList<LangElement>/*!*/stmts, INodesFactory<LangElement, Span> factory)
+//         public void Merge(Text.Span extent, IList<LangElement> stmts, INodesFactory<LangElement, Span> factory)
 //         {
 //             Debug.Assert(extent.IsValid);
 //             Debug.Assert(stmts != null);
@@ -215,7 +215,7 @@
 //         /// <summary>
 //         /// Binary search.
 //         /// </summary>
-//         private static int FindIndex(List<DocInfo>/*!*/list, int position)
+//         private static int FindIndex(List<DocInfo> list, int position)
 //         {
 //             int a = 0, b = list.Count - 1;
 //             while (a <= b)
@@ -237,7 +237,7 @@
 //         /// <summary>
 //         /// Gets lowest index of DOC comment that intersects given span. Returns count of items if nothing was found.
 //         /// </summary>
-//         private static int FindFirstIn(List<DocInfo>/*!*/list, Span span)
+//         private static int FindFirstIn(List<DocInfo> list, Span span)
 //         {
 //             Debug.Assert(span.IsValid);
 //             Debug.Assert(list != null);

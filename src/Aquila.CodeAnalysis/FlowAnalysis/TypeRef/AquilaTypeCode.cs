@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Aquila.CodeAnalysis.FlowAnalysis
 {
     /// <summary>
-    /// Compatible PHP type codes.
+    /// Compatible Aquila type codes.
     /// </summary>
-    public enum PhpTypeCode
+    public enum AquilaTypeCode
     {
         /// <summary>
         /// An invalid value, <c>void</c>.

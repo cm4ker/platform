@@ -8,7 +8,7 @@ using System.Reflection.Metadata;
 using System.Diagnostics;
  using Aquila.CodeAnalysis.Semantics;
  using Microsoft.CodeAnalysis;
-using Peachpie.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.Utilities;
 
  namespace Aquila.CodeAnalysis.CodeGen
 {

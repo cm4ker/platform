@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Aquila.CodeAnalysis.Semantics.Graph;
-using Peachpie.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.Utilities;
 
 namespace Aquila.CodeAnalysis.Utilities
 {

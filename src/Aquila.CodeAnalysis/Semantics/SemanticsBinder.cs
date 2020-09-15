@@ -98,10 +98,10 @@ namespace Aquila.CodeAnalysis.Semantics
         /// </summary>
         protected readonly LocalsTable _locals;
 
-        // /// <summary>
-        // /// Optional. Self type context.
-        // /// </summary>
-        // public SourceTypeSymbol Self { get; }
+        /// <summary>
+        /// Optional. Self type context.
+        /// </summary>
+        public TypeSymbol Self { get; }
 
         /// <summary>
         /// Containing file symbol.
@@ -184,7 +184,7 @@ namespace Aquila.CodeAnalysis.Semantics
             ContainingFile = file;
             _locals = locals;
             _routine = routine;
-            //Self = self;
+            Self = (TypeSymbol) self;
         }
 
         /// <summary>

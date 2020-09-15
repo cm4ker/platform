@@ -23,8 +23,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// </summary>
         internal string DebugDisplay => $"{FlowState?.Routine?.RoutineName}: {DebugName} #{Ordinal}";
 
-        readonly List<BoundStatement> /*!*/
-            _statements;
+        readonly List<BoundStatement> _statements;
 
         Edge _next;
 
@@ -42,7 +41,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// Gets statements contained in this block.
         /// </summary>
-        public List<BoundStatement> /*!!*/ Statements => _statements;
+        public List<BoundStatement> Statements => _statements;
 
         /// <summary>
         /// Gets edge pointing out of this block.
@@ -79,8 +78,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         {
             Debug.Assert(statements != null);
             _statements = statements;
-
-            //CompilerLogSource.Log.Count("TotalBoundBlocks");
         }
 
         internal BoundBlock Update(List<BoundStatement> statements, Edge nextEdge)
@@ -115,7 +112,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// Traverses empty blocks to their non-empty successor. Skips duplicities.
         /// </summary>
-        internal static List<BoundBlock> /*!*/ SkipEmpty(IEnumerable<BoundBlock> /*!*/blocks)
+        internal static List<BoundBlock>   SkipEmpty(IEnumerable<BoundBlock>  blocks)
         {
             Contract.ThrowIfNull(blocks);
 
@@ -154,6 +151,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         ImmutableArray<IOperation> IBlockOperation.Operations => _statements.Cast<IOperation>().AsImmutable();
 
         ImmutableArray<ILocalSymbol> IBlockOperation.Locals => Locals;
+
         protected virtual ImmutableArray<ILocalSymbol> Locals => ImmutableArray<ILocalSymbol>.Empty;
 
         public override OperationKind Kind => OperationKind.Block;

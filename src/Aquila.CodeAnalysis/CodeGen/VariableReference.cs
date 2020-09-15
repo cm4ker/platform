@@ -12,7 +12,7 @@ using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax.Syntax;
-using Peachpie.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.Utilities;
 using Cci = Microsoft.Cci;
 using SourceFieldSymbol = Aquila.CodeAnalysis.Symbols.SourceFieldSymbol;
 
@@ -383,7 +383,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// NOTICE: temporary API, will be replaced with operators.
         /// </summary>
-        public static TypeSymbol EmitLoadValue(this IVariableReference /*!*/reference, CodeGenerator /*!*/cg,
+        public static TypeSymbol EmitLoadValue(this IVariableReference  reference, CodeGenerator  cg,
             BoundAccess access)
         {
             Debug.Assert(reference != null);
@@ -1300,7 +1300,7 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         new VariableName Name => BoundName.NameValue;
 
-        PropertySymbol /*!*/ ResolveSuperglobalProperty(PhpCompilation compilation)
+        PropertySymbol   ResolveSuperglobalProperty(PhpCompilation compilation)
         {
             // PropertySymbol prop;
             //
@@ -1414,7 +1414,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
-        public FieldReference(BoundExpression receiver, FieldSymbol /*!*/field)
+        public FieldReference(BoundExpression receiver, FieldSymbol  field)
         {
             this.Receiver = receiver;
             this.Symbol = field ?? throw ExceptionUtilities.ArgumentNull(nameof(field));
@@ -1521,7 +1521,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
-        public PropertyReference(BoundExpression receiver, PropertySymbol /*!*/prop)
+        public PropertyReference(BoundExpression receiver, PropertySymbol  prop)
         {
             this.Receiver = receiver;
             this.Symbol = prop ?? throw ExceptionUtilities.ArgumentNull(nameof(prop));

@@ -7,6 +7,7 @@ using Aquila.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.Syntax;
 using Aquila.Syntax.Ast;
+using Aquila.Syntax.Syntax;
 using Roslyn.Utilities;
 
 
@@ -16,53 +17,53 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         #region Primitive Types
 
-        internal readonly BoundPrimitiveTypeRef /*!*/
-            VoidTypeRef = new BoundPrimitiveTypeRef(PhpTypeCode.Void);
+        internal readonly BoundPrimitiveTypeRef  
+            VoidTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Void);
 
-        internal readonly BoundPrimitiveTypeRef /*!*/
-            NullTypeRef = new BoundPrimitiveTypeRef(PhpTypeCode.Null);
+        internal readonly BoundPrimitiveTypeRef  
+            NullTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Null);
 
-        internal readonly BoundPrimitiveTypeRef /*!*/
-            BoolTypeRef = new BoundPrimitiveTypeRef(PhpTypeCode.Boolean);
+        internal readonly BoundPrimitiveTypeRef  
+            BoolTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Boolean);
 
-        internal readonly BoundPrimitiveTypeRef /*!*/
-            LongTypeRef = new BoundPrimitiveTypeRef(PhpTypeCode.Long);
+        internal readonly BoundPrimitiveTypeRef  
+            LongTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Long);
 
-        internal readonly BoundPrimitiveTypeRef /*!*/
-            DoubleTypeRef = new BoundPrimitiveTypeRef(PhpTypeCode.Double);
+        internal readonly BoundPrimitiveTypeRef  
+            DoubleTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Double);
 
-        internal readonly BoundPrimitiveTypeRef /*!*/
-            StringTypeRef = new BoundPrimitiveTypeRef(PhpTypeCode.String);
+        internal readonly BoundPrimitiveTypeRef  
+            StringTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.String);
 
-        internal readonly BoundPrimitiveTypeRef /*!*/
-            ObjectTypeRef = new BoundPrimitiveTypeRef(PhpTypeCode.Object);
+        internal readonly BoundPrimitiveTypeRef  
+            ObjectTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Object);
 
-        internal readonly BoundPrimitiveTypeRef /*!*/
-            WritableStringRef = new BoundPrimitiveTypeRef(PhpTypeCode.WritableString);
+        internal readonly BoundPrimitiveTypeRef  
+            WritableStringRef = new BoundPrimitiveTypeRef(AquilaTypeCode.WritableString);
 
-        internal readonly BoundPrimitiveTypeRef /*!*/
-            ArrayTypeRef = new BoundPrimitiveTypeRef(PhpTypeCode.PhpArray);
+        internal readonly BoundPrimitiveTypeRef  
+            ArrayTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.PhpArray);
 
-        internal readonly BoundPrimitiveTypeRef /*!*/
-            IterableTypeRef = new BoundPrimitiveTypeRef(PhpTypeCode.Iterable);
+        internal readonly BoundPrimitiveTypeRef  
+            IterableTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Iterable);
 
-        internal readonly BoundPrimitiveTypeRef /*!*/
-            CallableTypeRef = new BoundPrimitiveTypeRef(PhpTypeCode.Callable);
+        internal readonly BoundPrimitiveTypeRef  
+            CallableTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Callable);
 
-        internal readonly BoundPrimitiveTypeRef /*!*/
-            ResourceTypeRef = new BoundPrimitiveTypeRef(PhpTypeCode.Resource);
+        internal readonly BoundPrimitiveTypeRef  
+            ResourceTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Resource);
 
-        internal readonly BoundPrimitiveTypeRef /*!*/
-            MixedTypeRef = new BoundPrimitiveTypeRef(PhpTypeCode.Mixed);
+        internal readonly BoundPrimitiveTypeRef  
+            MixedTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Mixed);
 
         #endregion
 
         #region Special Types
 
-        internal readonly BoundClassTypeRef /*!*/
+        internal readonly BoundClassTypeRef  
             TraversableTypeRef = new BoundClassTypeRef(NameUtils.SpecialNames.Traversable, null, null);
 
-        internal readonly BoundClassTypeRef /*!*/
+        internal readonly BoundClassTypeRef  
             ClosureTypeRef = new BoundClassTypeRef(NameUtils.SpecialNames.Closure, null, null);
 
         #endregion
@@ -139,20 +140,21 @@ namespace Aquila.CodeAnalysis.Semantics
                     default: throw ExceptionUtilities.UnexpectedValue(pt.Kind);
                 }
             }
-            // else if (tref is Ast.INamedTypeRef named)
-            // {
-            //     if (named.ClassName == NameUtils.SpecialNames.System_Object) return ObjectTypeRef;
-            //     //if (named.ClassName == NameUtils.SpecialNames.stdClass) return StdClassTypeRef;
-            //
-            //     if (named is Ast.TranslatedTypeRef tt && self != null &&
-            //         tt.OriginalType is Ast.ReservedTypeRef reserved)
-            //     {
-            //         // keep self,parent,static not translated - better in cases where the type is ambiguous
-            //         return CreateFromTypeRef(reserved, binder, self, objectTypeInfoSemantic);
-            //     }
-            //
-            //     return new BoundClassTypeRef(named.ClassName, binder?.Routine, self ?? binder?.Self, arity);
-            // }
+            else if (tref is NamedTypeRef named)
+            {
+                var qName = new QualifiedName(new Name(named.Value));
+
+                if (qName == NameUtils.SpecialNames.System_Object) return ObjectTypeRef;
+
+                // if (named is Ast.TranslatedTypeRef tt && self != null &&
+                //     tt.OriginalType is Ast.ReservedTypeRef reserved)
+                // {
+                //     // keep self,parent,static not translated - better in cases where the type is ambiguous
+                //     return CreateFromTypeRef(reserved, binder, self, objectTypeInfoSemantic);
+                // }
+
+                return new BoundClassTypeRef(qName, binder?.Routine, self ?? binder?.Self, arity);
+            }
             // else if (tref is Ast.ReservedTypeRef reserved) return new BoundReservedTypeRef(reserved.Type, self);
             // else if (tref is Ast.AnonymousTypeRef at)
             //     return new BoundTypeRefFromSymbol(at.TypeDeclaration.GetProperty<SourceTypeSymbol>());

@@ -1,13 +1,13 @@
-﻿﻿using Microsoft.CodeAnalysis.Operations;
+﻿using Microsoft.CodeAnalysis.Operations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics;
- using Aquila.CodeAnalysis.Semantics.TypeRef;
- using Peachpie.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.Semantics.TypeRef;
+using Aquila.CodeAnalysis.Utilities;
 
- namespace Aquila.CodeAnalysis.Semantics
+namespace Aquila.CodeAnalysis.Semantics
 {
     /// <summary>
     /// Base visitor for PHP operations.
@@ -141,5 +141,20 @@ using System.Diagnostics;
         public virtual TResult VisitDeclareStatement(BoundDeclareStatement x) => DefaultVisitOperation(x);
 
         #endregion
+    }
+}
+
+
+namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+{
+    public partial class AquilaOperationVisitor<TResult>
+    {
+        /// <summary>Visits given operation.</summary>
+        protected TResult Accept(IAquilaOperation x) => (x != null) ? x.Accept(this) : default;
+        
+        public TResult VisitDefault(BoundOperation x)
+        {
+            return default;
+        }
     }
 }

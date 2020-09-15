@@ -14,7 +14,7 @@ using Aquila.CodeAnalysis.Syntax;
 using Aquila.Compiler.Utilities;
 using Aquila.Syntax.Ast;
 
-namespace Peachpie.CodeAnalysis.Utilities
+namespace Aquila.CodeAnalysis.Utilities
 {
     static class ExceptionUtilities
     {

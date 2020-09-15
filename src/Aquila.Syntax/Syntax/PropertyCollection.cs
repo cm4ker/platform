@@ -130,7 +130,7 @@ namespace Aquila.Syntax.Syntax
         /// Enumerates items in this collection.
         /// </summary>
         /// <returns>Enumerable object of the collection. Cannot be <c>null</c>.</returns>
-        IEnumerable<KeyValuePair<object, object>>/*!*/Enumerable
+        IEnumerable<KeyValuePair<object, object>> Enumerable
         {
             get
             {
@@ -481,7 +481,7 @@ namespace Aquila.Syntax.Syntax
             return count;
         }
 
-        private static Hashtable/*!*/ToHashtable(DictionaryNode/*!*/node)
+        private static Hashtable ToHashtable(DictionaryNode node)
         {
             var hashtable = new Hashtable(13);
 
@@ -492,7 +492,7 @@ namespace Aquila.Syntax.Syntax
 
             return hashtable;
         }
-        private static DictionaryNode ToList(Hashtable/*!*/hashtable)
+        private static DictionaryNode ToList(Hashtable hashtable)
         {
             DictionaryNode list = null;
             foreach (var p in hashtable)
@@ -604,7 +604,7 @@ namespace Aquila.Syntax.Syntax
         /// <summary>
         /// Gets value from collection. If value is not set yet, it is created using provided factory.
         /// </summary>
-        public T GetOrCreateProperty<T>(Func<T>/*!*/factory)
+        public T GetOrCreateProperty<T>(Func<T> factory)
         {
             T value;
             if (this.TryGetProperty<T>(out value) == false)

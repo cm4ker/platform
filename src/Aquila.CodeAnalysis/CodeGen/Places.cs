@@ -447,9 +447,9 @@ namespace Aquila.CodeAnalysis.CodeGen
 
     //    public bool HasAddress => true;
 
-    //    PropertySymbol/*!*/ValueProperty => _localPlace.TypeOpt.LookupMember<PropertySymbol>("Value");
+    //    PropertySymbol ValueProperty => _localPlace.TypeOpt.LookupMember<PropertySymbol>("Value");
 
-    //    PropertySymbol/*!*/ValueRefProperty => _localPlace.TypeOpt.LookupMember<PropertySymbol>("ValueRef");
+    //    PropertySymbol ValueRefProperty => _localPlace.TypeOpt.LookupMember<PropertySymbol>("ValueRef");
 
     //    public TypeSymbol EmitLoad(ILBuilder il)
     //    {

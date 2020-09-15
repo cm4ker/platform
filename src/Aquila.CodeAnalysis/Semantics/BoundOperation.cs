@@ -40,5 +40,8 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public abstract TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
             TArgument argument);
+
+        public virtual TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+            => throw new NotImplementedException();
     }
 }

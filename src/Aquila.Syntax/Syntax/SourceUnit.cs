@@ -36,8 +36,8 @@
 //         /// Source file containing the unit. For evals, it can be even a non-php source file.
 //         /// Used for emitting debug information and error reporting.
 //         /// </summary>
-//         public string/*!*/ FilePath { get { return _filePath; } }
-//         readonly string/*!*/ _filePath;
+//         public string  FilePath { get { return _filePath; } }
+//         readonly string  _filePath;
 //
 //         public GlobalCode Ast { get { return (GlobalCode)ast; } }
 //         protected AstNode ast;
@@ -51,7 +51,7 @@
 //         /// Gets line breaks for this source unit.
 //         /// </summary>
 //         /// <remarks>Line breaks are used to resolve line and column number from given position.</remarks>
-//         public ILineBreaks/*!*/LineBreaks { get { return (ILineBreaks)this; } }
+//         public ILineBreaks LineBreaks { get { return (ILineBreaks)this; } }
 //
 //         /// <summary>
 //         /// Line breaks managed internally.
@@ -61,7 +61,7 @@
 //         /// <summary>
 //         /// Naming context defining aliases.
 //         /// </summary>
-//         public NamingContext/*!*/ Naming
+//         public NamingContext  Naming
 //         {
 //             get { return this._naming; }
 //             internal set
@@ -70,22 +70,22 @@
 //                 this._naming = value;
 //             }
 //         }
-//         private NamingContext/*!*/_naming;
+//         private NamingContext _naming;
 //
 //         /// <summary>
 //         /// Current namespace (in case we are compiling through eval from within namespace).
 //         /// </summary>
 //         public QualifiedName? CurrentNamespace { get { return this._naming.CurrentNamespace; } }
 //         
-//         public List<QualifiedName>/*!*/ImportedNamespaces { get { return importedNamespaces; } }
-//         private readonly List<QualifiedName>/*!*/importedNamespaces = new List<QualifiedName>();
+//         public List<QualifiedName> ImportedNamespaces { get { return importedNamespaces; } }
+//         private readonly List<QualifiedName> importedNamespaces = new List<QualifiedName>();
 //         public bool HasImportedNamespaces { get { return this.importedNamespaces != null && this.importedNamespaces.Count != 0; } }
 //
 //         /// <summary>
 //         /// Encoding of the file or the containing file.
 //         /// </summary>
-//         public Encoding/*!*/ Encoding { get { return _encoding; } }
-//         protected readonly Encoding/*!*/ _encoding;
+//         public Encoding  Encoding { get { return _encoding; } }
+//         protected readonly Encoding  _encoding;
 //
 //         /// <summary>
 //         /// Gets value indicating whether we are in pure mode.
@@ -101,7 +101,7 @@
 //
 //         #region Construction
 //
-//         public SourceUnit(string/*!*/ filePath, Encoding/*!*/ encoding, ILineBreaks/*!*/lineBreaks)
+//         public SourceUnit(string  filePath, Encoding  encoding, ILineBreaks lineBreaks)
 //         {
 //             Debug.Assert(filePath != null && encoding != null);
 //             Debug.Assert(lineBreaks != null);
@@ -226,15 +226,15 @@
 //     {
 //         #region Fields & Properties
 //
-//         public string/*!*/ Code { get { return code; } }
-//         private readonly string/*!*/ code;
+//         public string  Code { get { return code; } }
+//         private readonly string  code;
 //
 //         /// <summary>
 //         /// Initial state of source code parser. Used by <see cref="Parse"/>.
 //         /// </summary>
 //         private readonly Lexer.LexicalStates initialState;
 //
-//         public Lexer.LexicalStates/*!*/ InitialState { get { return initialState; } }
+//         public Lexer.LexicalStates  InitialState { get { return initialState; } }
 //
 //         readonly LanguageFeatures features;
 //
@@ -242,8 +242,8 @@
 //
 //         #region SourceUnit
 //
-//         public CodeSourceUnit(string/*!*/ code, string/*!*/ filePath,
-//             Encoding/*!*/ encoding,
+//         public CodeSourceUnit(string  code, string  filePath,
+//             Encoding  encoding,
 //             Lexer.LexicalStates initialState = Lexer.LexicalStates.INITIAL,
 //             LanguageFeatures features = LanguageFeatures.Basic)
 //             : base(filePath, encoding, Text.LineBreaks.Create(code))
@@ -299,7 +299,7 @@
 //         /// Optional. Initial parser state.
 //         /// This allows e.g. to parse PHP code without encapsulating the code into opening and closing tags.</param>
 //         /// <returns>New <see cref="CodeSourceUnit"/> object.</returns>
-//         public static SourceUnit/*!*/ParseCode(string code, string filePath,
+//         public static SourceUnit ParseCode(string code, string filePath,
 //             INodesFactory<LangElement, Span> factory = null,
 //             Errors.IErrorSink<Span> errors = null,
 //             Errors.IErrorRecovery recovery = null,

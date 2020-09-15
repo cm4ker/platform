@@ -6,7 +6,7 @@ using Aquila.CodeAnalysis.Symbols.Php;
 using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Semantics;
-using Peachpie.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols
 {
@@ -85,7 +85,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// - <see cref="AmbiguousMethodSymbol"/>
         /// - <see cref="InaccessibleMethodSymbol"/>
         /// </returns>
-        public MethodSymbol/*!*/Resolve(TypeRefContext typeCtx, ImmutableArray<BoundArgument> args, VisibilityScope scope, InvocationKindFlags flags)
+        public MethodSymbol Resolve(TypeRefContext typeCtx, ImmutableArray<BoundArgument> args, VisibilityScope scope, InvocationKindFlags flags)
         {
             if (_single != null)
             {

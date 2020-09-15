@@ -6,7 +6,7 @@ using Aquila.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Peachpie.CodeAnalysis.Syntax
+namespace Aquila.CodeAnalysis.Syntax
 {
     /// <summary>
     /// this is a basic do-nothing implementation of a syntax reference

@@ -74,7 +74,7 @@
 //             /// <summary>
 //             /// Tag elements initialized using reflection.
 //             /// </summary>
-//             private static readonly Dictionary<string, Func<string, string, Element>>/*!!*/s_elementFactories;
+//             private static readonly Dictionary<string, Func<string, string, Element>>s_elementFactories;
 //
 //             static Element()
 //             {
@@ -127,7 +127,7 @@
 //                 // ...
 //             }
 //
-//             private static Func<string, string, Element>/*!*/CreateElementFactory(TypeInfo/*!*/elementType)
+//             private static Func<string, string, Element> CreateElementFactory(TypeInfo elementType)
 //             {
 //                 Debug.Assert(elementType != null && typeof(Element).GetTypeInfo().IsAssignableFrom(elementType));
 //
@@ -171,7 +171,7 @@
 //                 return tagname;
 //             }
 //
-//             private static KeyValuePair<string, Func<string, string, Element>> FindTagInfo(ReadOnlySpan<char>/*!*/line)
+//             private static KeyValuePair<string, Func<string, string, Element>> FindTagInfo(ReadOnlySpan<char> line)
 //             {
 //                 Debug.Assert(line.Length != 0);
 //                 Debug.Assert(line[0] == PHPDocTagChar);
@@ -204,7 +204,7 @@
 //             /// <param name="lineIndex">Index of the line within PHPDoc token.</param>
 //             /// <param name="lineOffset">Gets count of characters of which <paramref name="line"/> was moved.</param>
 //             /// <returns>If the line can be parsed, method returns <c>true</c>.</returns>
-//             internal static bool TryParseLine(ref ReadOnlySpan<char>/*!*/line, out Element next, int lineIndex, out int lineOffset)
+//             internal static bool TryParseLine(ref ReadOnlySpan<char> line, out Element next, int lineIndex, out int lineOffset)
 //             {
 //                 next = null;
 //                 lineOffset = 0;
@@ -287,13 +287,13 @@
 //             /// </summary>
 //             /// <param name="line">Line to parse. Line is trimmed and does not start with '*'. Cannot be <c>null</c> reference.</param>
 //             /// <param name="next">Next element to continue parsing with.</param>
-//             internal abstract void ParseLine(ReadOnlySpan<char>/*!*/line, out Element next);
+//             internal abstract void ParseLine(ReadOnlySpan<char> line, out Element next);
 //
 //             /// <summary>
 //             /// Reads tag at the beginning of line and tries to create corresponding <see cref="Element"/> instance.
 //             /// </summary>
 //             /// <param name="line">PHPDoc comment line. Assuming the line starts with a PHPDoc tag. Otherwise, or if tag is not recognized, <c>null</c> is returned..</param>
-//             private static Element CreateElement(ReadOnlySpan<char>/*!*/line)
+//             private static Element CreateElement(ReadOnlySpan<char> line)
 //             {
 //                 Debug.Assert(line != null);
 //
@@ -344,7 +344,7 @@
 //
 //             }
 //
-//             internal override void ParseLine(ReadOnlySpan<char>/*!*/line, out Element next)
+//             internal override void ParseLine(ReadOnlySpan<char> line, out Element next)
 //             {
 //                 next = null;
 //
@@ -484,7 +484,7 @@
 //                 }
 //             }
 //
-//             public AccessTag(string/*!*/line)
+//             public AccessTag(string line)
 //             {
 //                 if (line.StartsWith(Name1))
 //                 {
@@ -534,7 +534,7 @@
 //         {
 //             protected readonly string text;
 //
-//             internal SingleLineTag(string/*!*/tagName, string/*!*/line)
+//             internal SingleLineTag(string tagName, string line)
 //             {
 //                 Debug.Assert(line.StartsWith(tagName));
 //
@@ -571,7 +571,7 @@
 //             /// </summary>
 //             public string Author { get { return text; } }
 //
-//             public AuthorTag(string/*!*/line)
+//             public AuthorTag(string line)
 //                 : base(Name, line)
 //             {
 //
@@ -595,7 +595,7 @@
 //             /// </summary>
 //             public string Copyright { get { return text; } }
 //
-//             public CopyrightTag(string/*!*/line)
+//             public CopyrightTag(string line)
 //                 : base(Name, line)
 //             {
 //
@@ -620,7 +620,7 @@
 //             /// </summary>
 //             public string Version { get { return text; } }
 //
-//             public DeprecatedTag(string tagName, string/*!*/line)
+//             public DeprecatedTag(string tagName, string line)
 //                 : base(tagName, line)
 //             {
 //
@@ -653,7 +653,7 @@
 //             /// </summary>
 //             public string Example { get { return text; } }
 //
-//             public ExampleTag(string/*!*/line)
+//             public ExampleTag(string line)
 //                 : base(Name, line)
 //             {
 //
@@ -678,7 +678,7 @@
 //             /// </summary>
 //             public string Exception { get { return this.TypeNames; } }
 //
-//             public ExceptionTag(string tagName, string/*!*/line)
+//             public ExceptionTag(string tagName, string line)
 //                 : base(tagName, line, false)
 //             {
 //
@@ -735,13 +735,13 @@
 //             /// <summary>
 //             /// Array of type names. Cannot be <c>null</c>. Can be an empty array.
 //             /// </summary>
-//             public string[]/*!!*/TypeNamesArray { get { return _typeNames; } }
-//             private readonly string[]/*!!*/_typeNames;
+//             public string[]TypeNamesArray { get { return _typeNames; } }
+//             private readonly string[]_typeNames;
 //
 //             /// <summary>
 //             /// Array of type names span within the source code.
 //             /// </summary>
-//             public Span[]/*!*/TypeNameSpans
+//             public Span[] TypeNameSpans
 //             {
 //                 get
 //                 {
@@ -756,7 +756,7 @@
 //                     return spans;
 //                 }
 //             }
-//             private readonly int[]/*!!*/_typeNamesPos;
+//             private readonly int[]_typeNamesPos;
 //
 //             /// <summary>
 //             /// Optional. Variable name, starts with '$'.
@@ -788,7 +788,7 @@
 //             /// </summary>
 //             public string Description { get; private set; }
 //
-//             protected TypeVarDescTag(string/*!*/tagName, string/*!*/line, bool allowVariableName)
+//             protected TypeVarDescTag(string tagName, string line, bool allowVariableName)
 //             {
 //                 Debug.Assert(line.StartsWith(tagName));
 //
@@ -820,7 +820,7 @@
 //
 //             #region Helpers
 //
-//             private static ReadOnlySpan<char> NextWord(string/*!*/text, ref int index)
+//             private static ReadOnlySpan<char> NextWord(string text, ref int index)
 //             {
 //                 // skip whitespaces:
 //                 while (index < text.Length && char.IsWhiteSpace(text[index]))
@@ -846,7 +846,7 @@
 //             /// <param name="typenames">Resulting type name(s) separated by <c>|</c>.</param>
 //             /// <param name="typenamesPos">Type names span or invalid span.</param>
 //             /// <returns>Whether the type name was parsed.</returns>
-//             internal static bool TryReadTypeName(string/*!*/text, ref int index, out string[] typenames, out int[] typenamesPos)
+//             internal static bool TryReadTypeName(string text, ref int index, out string[] typenames, out int[] typenamesPos)
 //             {
 //                 // [type]
 //
@@ -911,7 +911,7 @@
 //             /// <param name="variableName">Result variable name.</param>
 //             /// <param name="variableNameOffset">Variable name start index within text.</param>
 //             /// <returns>Whether the variable name was parsed.</returns>
-//             private static bool TryReadVariableName(string/*!*/text, ref int index, out string variableName, out int variableNameOffset)
+//             private static bool TryReadVariableName(string text, ref int index, out string variableName, out int variableNameOffset)
 //             {
 //                 var wordend = index;
 //                 var word = NextWord(text, ref wordend);
@@ -997,7 +997,7 @@
 //         {
 //             public const string Name = "@global";
 //
-//             public GlobalTag(string/*!*/line)
+//             public GlobalTag(string line)
 //                 : base(Name, line, true)
 //             {
 //             }
@@ -1038,7 +1038,7 @@
 //             /// </summary>
 //             public string Text { get; private set; }
 //
-//             public TextTag(string/*!*/tagName, string/*!*/line)
+//             public TextTag(string tagName, string line)
 //             {
 //                 Debug.Assert(line.StartsWith(tagName));
 //                 int index = tagName.Length;
@@ -1083,7 +1083,7 @@
 //             /// </summary>
 //             public string TagName { get; private set; }
 //
-//             internal UnknownTextTag(string tagName, string/*!*/line)
+//             internal UnknownTextTag(string tagName, string line)
 //                 : base(tagName, line)
 //             {
 //                 this.TagName = tagName;
@@ -1102,7 +1102,7 @@
 //         {
 //             public const string Name = "@internal";
 //
-//             public InternalTag(string/*!*/line)
+//             public InternalTag(string line)
 //                 : base(Name, line)
 //             {
 //             }
@@ -1125,7 +1125,7 @@
 //         //    /// </summary>
 //         //    public string Url { get { return this.text; } }
 //
-//         //    public LinkTag(string/*!*/line)
+//         //    public LinkTag(string line)
 //         //        :base(Name, line)
 //         //    {
 //
@@ -1144,7 +1144,7 @@
 //             /// </summary>
 //             public string VariableName { get { return string.IsNullOrEmpty(this.text) ? string.Empty : ((this.text[0] == '$') ? this.text : ('$' + this.text)); } }
 //
-//             public NameTag(string/*!*/line)
+//             public NameTag(string line)
 //                 : base(Name, line)
 //             {
 //
@@ -1176,7 +1176,7 @@
 //             /// </summary>
 //             public string PackageName { get { return this.text; } }
 //
-//             public PackageTag(string/*!*/line)
+//             public PackageTag(string line)
 //                 : base(Name, line)
 //             {
 //
@@ -1195,7 +1195,7 @@
 //             /// </summary>
 //             public string SubPackageName { get { return this.text; } }
 //
-//             public SubPackageTag(string/*!*/line)
+//             public SubPackageTag(string line)
 //                 : base(Name, line)
 //             {
 //
@@ -1210,7 +1210,7 @@
 //         {
 //             public const string Name = "@param";
 //
-//             public ParamTag(string/*!*/line)
+//             public ParamTag(string line)
 //                 : base(Name, line, true)
 //             {
 //             }
@@ -1247,7 +1247,7 @@
 //         {
 //             public const string Name = "@return";
 //
-//             public ReturnTag(string/*!*/line)
+//             public ReturnTag(string line)
 //                 : base(Name, line, false)
 //             {
 //             }
@@ -1270,7 +1270,7 @@
 //             /// </summary>
 //             public string ElementName { get { return this.text; } }
 //
-//             public SeeTag(string/*!*/line)
+//             public SeeTag(string line)
 //                 : base(Name, line)
 //             {
 //
@@ -1289,7 +1289,7 @@
 //             /// </summary>
 //             public string Version { get { return this.text; } }
 //
-//             public SinceTag(string/*!*/line)
+//             public SinceTag(string line)
 //                 : base(Name, line)
 //             {
 //
@@ -1316,7 +1316,7 @@
 //         {
 //             public const string Name = "@staticvar";
 //
-//             public StaticVarTag(string/*!*/line)
+//             public StaticVarTag(string line)
 //                 : base(Name, line, false)
 //             {
 //
@@ -1335,7 +1335,7 @@
 //         {
 //             public const string Name = "@todo";
 //
-//             public TodoTag(string/*!*/line)
+//             public TodoTag(string line)
 //                 : base(Name, line)
 //             {
 //             }
@@ -1353,7 +1353,7 @@
 //         {
 //             public const string Name = "@link";
 //
-//             public LinkTag(string/*!*/line)
+//             public LinkTag(string line)
 //                 : base(Name, line)
 //             {
 //             }
@@ -1371,7 +1371,7 @@
 //         {
 //             public const string Name = "@license";
 //
-//             public LicenseTag(string/*!*/line)
+//             public LicenseTag(string line)
 //                 : base(Name, line)
 //             {
 //             }
@@ -1386,7 +1386,7 @@
 //         {
 //             public const string Name = "@var";
 //
-//             public VarTag(string/*!*/line)
+//             public VarTag(string line)
 //                 : base(Name, line, true)
 //             {
 //             }
@@ -1401,7 +1401,7 @@
 //         {
 //             public const string Name = "@mixin";
 //
-//             public MixinTag(string/*!*/line)
+//             public MixinTag(string line)
 //                 : base(Name, line, false)
 //             {
 //             }
@@ -1416,7 +1416,7 @@
 //             public const string Name2 = "@property-read";
 //             public const string Name3 = "@property-write";
 //
-//             public PropertyTag(string tagName, string/*!*/line)
+//             public PropertyTag(string tagName, string line)
 //                 : base(tagName, line, true)
 //             {
 //             }
@@ -1452,13 +1452,13 @@
 //             /// <summary>
 //             /// Array of type names. Cannot be <c>null</c>. Can be an empty array.
 //             /// </summary>
-//             public string[]/*!!*/TypeNamesArray { get { return _typeNames; } }
-//             private readonly string[]/*!*/_typeNames;
+//             public string[]TypeNamesArray { get { return _typeNames; } }
+//             private readonly string[] _typeNames;
 //
 //             /// <summary>
 //             /// Array of type names span within the source code.
 //             /// </summary>
-//             public Span[]/*!*/TypeNameSpans
+//             public Span[] TypeNameSpans
 //             {
 //                 get
 //                 {
@@ -1473,12 +1473,12 @@
 //                     return spans;
 //                 }
 //             }
-//             private readonly int[]/*!*/_typeNamesPos;
+//             private readonly int[] _typeNamesPos;
 //
 //             /// <summary>
 //             /// Array of method parameters;
 //             /// </summary>
-//             public readonly FormalParam[]/*!*/Parameters;
+//             public readonly FormalParam[] Parameters;
 //
 //             /// <summary>
 //             /// Method name.
@@ -1514,7 +1514,7 @@
 //             /// </summary>
 //             public string Description { get; private set; }
 //
-//             public MethodTag(string/*!*/tagName, string/*!*/line)
+//             public MethodTag(string tagName, string line)
 //             {
 //                 Debug.Assert(line.StartsWith(tagName));
 //
@@ -1622,7 +1622,7 @@
 //             /// </summary>
 //             /// <param name="paramDecl"></param>
 //             /// <returns></returns>
-//             private static FormalParam/*!*/ParseParam(string/*!*/paramDecl)
+//             private static FormalParam ParseParam(string paramDecl)
 //             {
 //                 Debug.Assert(!string.IsNullOrEmpty(paramDecl));
 //
@@ -1751,7 +1751,7 @@
 //
 //             #region Helpers
 //
-//             private static ReadOnlySpan<char> NextWord(string/*!*/text, ref int index)
+//             private static ReadOnlySpan<char> NextWord(string text, ref int index)
 //             {
 //                 // skip whitespaces:
 //                 while (index < text.Length && char.IsWhiteSpace(text[index]))
@@ -1809,7 +1809,7 @@
 //
 //             public string Version { get { return this.text; } }
 //
-//             public VersionTag(string/*!*/line)
+//             public VersionTag(string line)
 //                 : base(Name, line)
 //             {
 //             }
@@ -1824,7 +1824,7 @@
 //         {
 //             public const string Name = "@test";
 //
-//             public TestTag(string/*!*/line)
+//             public TestTag(string line)
 //                 : base()
 //             {
 //             }
@@ -1841,7 +1841,7 @@
 //
 //             public string Group { get { return this.text; } }
 //
-//             public GroupTag(string/*!*/line)
+//             public GroupTag(string line)
 //                 : base(Name, line)
 //             {
 //             }
@@ -1871,7 +1871,7 @@
 //         /// Elements within the PHPDoc block. Some elements may be ignored due to missing information.
 //         /// Cannot be <c>null</c> reference.
 //         /// </summary>
-//         public Element[]/*!*/Elements
+//         public Element[] Elements
 //         {
 //             get
 //             {
@@ -1910,17 +1910,17 @@
 //         /// </summary>
 //         /// <param name="doccomment">Content of the PHPDoc token.</param>
 //         /// <param name="offset">Start position of <paramref name="doccomment"/> within the source code.</param>
-//         private static Element[]/*!*/ParseNoLock(string/*!*/doccomment, int offset)
+//         private static Element[] ParseNoLock(string doccomment, int offset)
 //         {
 //             Debug.Assert(doccomment != null);
 //
 //             // initialize line endings information
-//             var/*!*/lineBreaks = LineBreaks.Create(doccomment);
+//             var lineBreaks = LineBreaks.Create(doccomment);
 //
 //             //
 //             var result = new List<Element>();
 //
-//             Element/*!*/current = new ShortDescriptionElement();
+//             Element current = new ShortDescriptionElement();
 //             current.Span = Span.Invalid;
 //
 //             for (int lineIndex = 0; lineIndex < lineBreaks.LinesCount; lineIndex++)
@@ -2140,7 +2140,7 @@
 //         /// <summary>
 //         /// Gets <see cref="PHPDocBlock"/> associated with <paramref name="properties"/>.
 //         /// </summary>
-//         public static PHPDocBlock GetPHPDoc(this IPropertyCollection/*!*/properties)
+//         public static PHPDocBlock GetPHPDoc(this IPropertyCollection properties)
 //         {
 //             return properties.GetProperty<PHPDocBlock>();
 //         }
@@ -2148,7 +2148,7 @@
 //         /// <summary>
 //         /// Sets <see cref="PHPDocBlock"/> to <paramref name="properties"/>.
 //         /// </summary>
-//         public static void SetPHPDoc(this IPropertyCollection/*!*/properties, PHPDocBlock phpdoc)
+//         public static void SetPHPDoc(this IPropertyCollection properties, PHPDocBlock phpdoc)
 //         {
 //             if (phpdoc != null)
 //             {

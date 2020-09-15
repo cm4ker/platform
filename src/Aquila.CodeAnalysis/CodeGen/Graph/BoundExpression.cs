@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.CodeGen;
 using Microsoft.CodeAnalysis.Operations;
 using Aquila.CodeAnalysis.Symbols;
-using Peachpie.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -2622,7 +2622,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// Emits conversion to <c>IPhpArray</c>.
         /// Emits empty array on top of stack if object cannot be used as array.
         /// </summary>
-        static TypeSymbol /*!*/ EmitListAccess(CodeGenerator cg, TypeSymbol valueType)
+        static TypeSymbol   EmitListAccess(CodeGenerator cg, TypeSymbol valueType)
         {
             Debug.Assert(valueType != null);
 
@@ -3750,7 +3750,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// </summary>
         class SearchForTargetVisitor : Graph.GraphWalker<VoidStruct>
         {
-            readonly BoundReferenceExpression /*!*/
+            readonly BoundReferenceExpression  
                 _target;
 
             public bool Found { get; private set; }

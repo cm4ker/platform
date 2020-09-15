@@ -12,7 +12,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Creates new type context, flow context and flow state for the routine.
         /// </summary>
-        public static FlowState CreateInitialState(SourceRoutineSymbol /*!*/routine, FlowContext flowCtx = null)
+        public static FlowState CreateInitialState(SourceRoutineSymbol  routine, FlowContext flowCtx = null)
         {
             Contract.ThrowIfNull(routine);
 
@@ -49,7 +49,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Initializes <c>$this</c> variable, its type and initialized state.
         /// </summary>
-        private static void InitThisVar(FlowContext /*!*/ctx, FlowState /*!*/initialState)
+        private static void InitThisVar(FlowContext  ctx, FlowState  initialState)
         {
             var thisVarType = ctx.TypeRefContext.GetThisTypeMask();
             if (thisVarType.IsUninitialized)

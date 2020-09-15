@@ -245,7 +245,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// Gets the list of extension names specified in given <c>PhpExtensionAttribute</c>.
         /// </summary>
         /// <returns>Enumeration of extensin names. Never returns <c>null</c>.</returns>
-        public static IEnumerable<string> /*!!*/ PhpExtensionAttributeValues(this AttributeData phpextensionattribute)
+        public static IEnumerable<string>  PhpExtensionAttributeValues(this AttributeData phpextensionattribute)
         {
             if (phpextensionattribute != null)
             {

@@ -53,7 +53,7 @@ namespace Aquila.CodeAnalysis
         /// <summary>
         /// Calls given action for each element in given enumerable.
         /// </summary>
-        public static void ForEach<T>(this IEnumerable<T>/*!*/enumerable, Action<T>/*!*/func)
+        public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> func)
         {
             Contract.ThrowIfNull(enumerable);
             Contract.ThrowIfNull(func);
@@ -67,7 +67,7 @@ namespace Aquila.CodeAnalysis
         /// <summary>
         /// Calls given action for each element in given array.
         /// </summary>
-        public static void ForEach<T>(this T[]/*!*/array, Action<T>/*!*/func)
+        public static void ForEach<T>(this T[] array, Action<T> func)
         {
             Contract.ThrowIfNull(array);
             Contract.ThrowIfNull(func);
@@ -81,7 +81,7 @@ namespace Aquila.CodeAnalysis
         /// <summary>
         /// Calls given action for each element in given array.
         /// </summary>
-        public static void ForEach<T>(this T[]/*!*/array, Action<int, T>/*!*/func)
+        public static void ForEach<T>(this T[] array, Action<int, T> func)
         {
             Contract.ThrowIfNull(array);
             Contract.ThrowIfNull(func);
@@ -100,7 +100,7 @@ namespace Aquila.CodeAnalysis
         /// <param name="arr2">Second array.</param>
         /// <param name="mixer">Mixing function.</param>
         /// <returns>Mixed array.</returns>
-        public static T[]/*!*/MergeArrays<T>(T[]/*!*/arr1, T[]/*!*/arr2, Func<T, T, T>/*!*/mixer)
+        public static T[] MergeArrays<T>(T[] arr1, T[] arr2, Func<T, T, T> mixer)
         {
             Contract.ThrowIfNull(arr1);
             Contract.ThrowIfNull(arr2);
@@ -134,7 +134,7 @@ namespace Aquila.CodeAnalysis
         /// Checks entries in given arrays for equality.
         /// If arrays are of a different size, default(T) is used for comparison.
         /// </summary>
-        public static bool EqualEntries<T>(T[]/*!*/arr1, T[]/*!*/arr2)// where T : IEquatable<T>
+        public static bool EqualEntries<T>(T[] arr1, T[] arr2)// where T : IEquatable<T>
         {
             Contract.ThrowIfNull(arr1);
             Contract.ThrowIfNull(arr2);

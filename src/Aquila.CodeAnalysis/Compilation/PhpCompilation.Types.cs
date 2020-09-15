@@ -39,7 +39,7 @@ namespace Aquila.CodeAnalysis
         /// </summary>
         private Aquila.CodeAnalysis.Symbols.Symbol[] _lazyWellKnownTypeMembers;
 
-        internal Conversions /*!*/ Conversions { get; }
+        internal Conversions   Conversions { get; }
 
         /// <summary>
         /// Gets factory object for constructing <see cref="BoundTypeRef"/>.
@@ -718,7 +718,7 @@ namespace Aquila.CodeAnalysis
         /// <summary>
         /// Resolves <see cref="INamedTypeSymbol"/> best fitting given type mask.
         /// </summary>
-        internal TypeSymbol GetTypeFromTypeRef(SourceRoutineSymbol /*!*/routine, TypeRefMask typeMask)
+        internal TypeSymbol GetTypeFromTypeRef(SourceRoutineSymbol  routine, TypeRefMask typeMask)
         {
             Debug.Assert(routine != null);
             return this.GetTypeFromTypeRef(routine.TypeRefContext, typeMask);

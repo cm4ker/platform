@@ -29,7 +29,7 @@ namespace Aquila.Syntax.Syntax
         /// <summary>
         /// Currently used encoding.
         /// </summary>
-        private readonly Encoding/*!*/encoding;
+        private readonly Encoding encoding;
 
         private byte[] BytesBuffer
         {
@@ -160,7 +160,7 @@ namespace Aquila.Syntax.Syntax
         /// <param name="encoding"></param>
         /// <param name="binary"></param>
         /// <param name="maxLength"></param>
-        public PhpStringBuilder(Encoding/*!*/encoding, bool binary, int maxLength)
+        public PhpStringBuilder(Encoding encoding, bool binary, int maxLength)
         {
             Debug.Assert(encoding != null);
             Debug.Assert(maxLength != 0);
@@ -174,7 +174,7 @@ namespace Aquila.Syntax.Syntax
             _unicodeBuilder = new StringBuilder(maxLength, int.MaxValue);
         }
 
-        public PhpStringBuilder(Encoding/*!*/encoding, string/*!*/value, Span span)
+        public PhpStringBuilder(Encoding encoding, string value, Span span)
             : this(encoding, false, value.Length)
         {
             Append(value, span);

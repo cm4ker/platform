@@ -38,7 +38,7 @@ using System.Threading.Tasks;
         ///// Gets <c>true</c>, if <paramref name="totype"/> is equal to or is a base type of <paramref name="fromtype"/>.
         ///// Gets <c>False</c> for <c>void</c> type masks.
         ///// </remarks>
-        //public static bool IsAssignableFrom(this TypeRefMask totype, TypeRefMask fromtype, TypeRefContext/*!*/ctx, ISemanticModel/*!*/model)
+        //public static bool IsAssignableFrom(this TypeRefMask totype, TypeRefMask fromtype, TypeRefContext ctx, ISemanticModel model)
         //{
         //    Debug.Assert(ctx != null);
         //    Debug.Assert(model != null);
@@ -74,7 +74,7 @@ using System.Threading.Tasks;
         ///// <summary>
         ///// Determines whether there is an implicit conversion from one type to another.
         ///// </summary>
-        //private static bool IsImplicitConversion(TypeRefMask fromtype, TypeRefMask totype, TypeRefContext/*!*/ctx, ISemanticModel/*!*/model)
+        //private static bool IsImplicitConversion(TypeRefMask fromtype, TypeRefMask totype, TypeRefContext ctx, ISemanticModel model)
         //{
         //    // TODO: optimize bit operations
 
@@ -117,7 +117,7 @@ using System.Threading.Tasks;
         ///// <summary>
         ///// Determines whether given type can be converted to string without warning.
         ///// </summary>
-        //internal static bool IsConversionToString(TypeRefMask fromtype, TypeRefContext/*!*/ctx, ISemanticModel/*!*/model)
+        //internal static bool IsConversionToString(TypeRefMask fromtype, TypeRefContext ctx, ISemanticModel model)
         //{
         //    // primitive -> string
         //    if (ctx.IsPrimitiveType(fromtype))
@@ -134,7 +134,7 @@ using System.Threading.Tasks;
         /// <summary>
         /// Checks whether given type may be callable.
         /// </summary>
-        internal static bool IsCallable(TypeRefContext/*!*/ctx, TypeRefMask type)
+        internal static bool IsCallable(TypeRefContext ctx, TypeRefMask type)
         {
             if (type.IsAnyType || type.IsRef ||
                 ctx.IsLambda(type) || ctx.IsAString(type) || ctx.IsArray(type) || ctx.IsObject(type))
@@ -166,7 +166,7 @@ using System.Threading.Tasks;
         /// <param name="ctx">Type context.</param>
         /// <param name="compilation">Type provider.</param>
         /// <returns>True iff <c>[]</c> operator is allowed.</returns>
-        internal static bool HasArrayAccess(TypeRefMask type, TypeRefContext/*!*/ctx, PhpCompilation/*!*/compilation)
+        internal static bool HasArrayAccess(TypeRefMask type, TypeRefContext ctx, PhpCompilation compilation)
         {
             // quick check:
             if (type.IsAnyType || type.IsVoid || type.IsRef)
@@ -212,7 +212,7 @@ using System.Threading.Tasks;
         /// Checks the given type mask represents <c>void</c>.
         /// It may be zero mask (no types) or specifically "void" primitive type.
         /// </summary>
-        internal static bool IsVoid(this TypeRefMask type, TypeRefContext/*!*/ctx)
+        internal static bool IsVoid(this TypeRefMask type, TypeRefContext ctx)
         {
             if (type.IsVoid)
             {
@@ -221,7 +221,7 @@ using System.Threading.Tasks;
 
             if (type.IsSingleType &&
                 ctx.GetTypes(type).FirstOrDefault() is BoundPrimitiveTypeRef primitive &&
-                primitive.TypeCode == PhpTypeCode.Void)
+                primitive.TypeCode == AquilaTypeCode.Void)
             {
                 return true;
             }
@@ -237,7 +237,7 @@ using System.Threading.Tasks;
         ///// <param name="ctx">Type context.</param>
         ///// <param name="model">Type graph.</param>
         ///// <returns>True iff <paramref name="type"/> is allowed as <c>foreach</c> enumerator.</returns>
-        //internal static bool IsTraversable(TypeRefMask type, TypeRefContext/*!*/ctx, ISemanticModel/*!*/model)
+        //internal static bool IsTraversable(TypeRefMask type, TypeRefContext ctx, ISemanticModel model)
         //{
         //    //
         //    if (type.IsAnyType || type.IsVoid || ctx.IsArray(type))

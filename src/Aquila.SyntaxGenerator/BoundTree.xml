@@ -1,9 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <Config>
-    <Syntax Name="BoundStatement" IsAbstract="true" NS="PrivateNS">
+    <!-- region Statement -->
+    <Syntax Name="Statement" IsAbstract="true" NS="PrivateNS"/>
+
+    <Syntax Name="EmptyStmt" NS="PrivateNS" Base="Statement">
+        <Arguments>
+            <Single Name="Span" Type="TextSpan" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="Block" NS="PrivateNS" Base="Statement">
+        <Arguments>
+            <Single Name="Statements" Type="List&lt;BoundStatement&gt;" IsUpdatable="true"/>
+            <Single Name="NextEdge" Type="Edge" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="DeclareStmt" NS="PrivateNS" Base="Statement"/>
+    <Syntax Name="ExpressionStmt" NS="PrivateNS" Base="Statement">
+        <Arguments>
+            <Single Name="Expression" Type="BoundExpression" IsUpdatable="true"/>
+        </Arguments>
     </Syntax>
 
-    <Syntax Name="BoundEmptyStatement" IsAbstract="true" NS="PrivateNS" Base="BoundStatement">
+    <Syntax Name="MethodDeclStmt" NS="PrivateNS" Base="Statement">
+        <Arguments>
+            <Single Name="Method" Type="SourceFunctionSymbol" IsUpdatable="true"/>
+        </Arguments>
     </Syntax>
+
+
+    <Syntax Name="GlobalConstDeclStmt" NS="PrivateNS" Base="Statement"/>
+    <Syntax Name="ReturnStmt" NS="PrivateNS" Base="Statement">
+        <Arguments>
+            <Single Name="Returned" Type="BoundExpression" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="StaticVarStmt" NS="PrivateNS" Base="Statement"/>
+    <Syntax Name="YieldStmt" NS="PrivateNS" Base="Statement"/>
+    <!-- endregion -->
+
+    <!-- region Expression -->
+    <Syntax Name="Expression" IsAbstract="true" NS="PrivateNS"/>
+
+    <Syntax Name="ArrayEx" NS="PrivateNS" Base="Expression"/>
+    <Syntax Name="ArrayInit" NS="PrivateNS" Base="Expression"/>
+    <Syntax Name="AssignEx" NS="PrivateNS" Base="Expression"/>
+
+    <Syntax Name="UnaryEx" NS="PrivateNS" Base="Expression">
+        <Arguments>
+            <Single Name="Operand" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="Operation" Type="Operations" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="BinaryEx" NS="PrivateNS" Base="Expression">
+        <Arguments>
+            <Single Name="Left" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="Right" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="Operation" Type="Operations" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="ConditionalEx" NS="PrivateNS" Base="Expression"/>
+    <Syntax Name="ConversionEx" NS="PrivateNS" Base="Expression">
+        <Arguments>
+            <Single Name="Operand" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="TargetType" Type="BoundTypeRef" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="Literal" NS="PrivateNS" Base="Expression">
+        <Arguments>
+            <Single Name="Value" Type="object" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="Method" NS="PrivateNS" Base="Expression"/>
+    <Syntax Name="CallEx" NS="PrivateNS" Base="Expression"/>
+    <Syntax Name="ThrowEx" NS="PrivateNS" Base="Expression"/>
+    <!-- endregion -->
+
+    <!-- region Argument -->
+    <Syntax Name="Argument" IsAbstract="true" NS="PrivateNS">
+        <Arguments>
+            <Single Name="Value" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="ArgumentKind" Type="ArgumentKind" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+    <!-- endregion -->
+
+    <!-- region RoutineName -->
+    <Syntax Name="RoutineName" IsAbstract="true" NS="PrivateNS">
+        <Arguments>
+            <Single Name="name" Type="QualifiedName" IsUpdatable="true"/>
+            <Single Name="nameExpr" Type="BoundExpression" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+    <!-- endregion -->
+
+    <!-- region TypeRef -->
+    <Syntax Name="TypeRef" IsAbstract="true" NS="PrivateNS"/>
+
+    <Syntax Name="ArrayTypeRef" NS="PrivateNS" Base="TypeRef">
+        <Arguments>
+            <Single Name="ElementType" Type="TypeRefMask"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="ClassTypeRef" NS="PrivateNS" Base="TypeRef">
+        <Arguments>
+            <Single Name="QName" Type="QualifiedName"/>
+            <Single Name="Routine" Type="SourceRoutineSymbol"/>
+            <Single Name="Arity" Type="int"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="GenericClassTypeRef" NS="PrivateNS" Base="TypeRef"/>
+
+    <Syntax Name="PrimitiveTypeRef" NS="PrivateNS" Base="TypeRef">
+        <Arguments>
+            <Single Name="Type" Type="AquilaTypeCode"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="TypeRefFromSymbol" NS="PrivateNS" Base="TypeRef">
+        <Arguments>
+            <Single Name="Symbol" Type="ITypeSymbol"/>
+        </Arguments>
+    </Syntax>
+    <!-- endregion -->
+
+    <!-- region Variable -->
+    <Syntax Name="Variable" IsAbstract="true" NS="PrivateNS">
+        <Arguments>
+            <Single Name="VariableKind" Type="VariableKind"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="IndirectLocal" NS="PrivateNS" Base="Variable">
+        <Arguments>
+            <Single Name="Symbol" Type="ParameterSymbol"/>
+            <Single PassBaseConst="VariableKind.LocalVariable" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+    
+    <Syntax Name="Local" NS="PrivateNS" Base="Variable">
+        <Arguments>
+            <Single Name="Symbol" Type="SourceLocalSymbol" />
+            <Single Name="VariableKind" Type="VariableKind" PassBase="true" OnlyArgument="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="Parameter" NS="PrivateNS" Base="Variable">
+        <Arguments>
+            <Single Name="Symbol" Type="ParameterSymbol"/>
+            <Single PassBaseConst="VariableKind.Parameter" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="ThisParameter" NS="PrivateNS" Base="Variable">
+        <Arguments>
+            <Single Name="Routine" Type="SourceRoutineSymbol"/>
+            <Single PassBaseConst="VariableKind.ThisParameter" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+    <!-- endregion -->
+
+    <!-- region VariableName -->
+    <Syntax Name="VariableName" IsAbstract="true" NS="PrivateNS">
+        <Arguments>
+            <Single Name="NameValue" Type="VariableName"/>
+            <Single Name="NameExpression" Type="BoundExpression"/>
+        </Arguments>
+    </Syntax>
+    <!-- endregion -->
+
 </Config>

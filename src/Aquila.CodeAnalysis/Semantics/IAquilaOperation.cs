@@ -1,7 +1,7 @@
 ﻿using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.Syntax;
 using Microsoft.CodeAnalysis;
-using Peachpie.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.Utilities;
 
 namespace Aquila.CodeAnalysis.Semantics
 {

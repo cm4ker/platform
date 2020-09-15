@@ -12,7 +12,7 @@ using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.Syntax.Ast.Functions;
-using Peachpie.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.Utilities;
 
 namespace Aquila.CodeAnalysis.Semantics
 {
@@ -25,7 +25,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public LangElement AquilaSyntax { get; set; }
 
-        public abstract TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor);
+        //public abstract TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor);
     }
 
     public sealed partial class BoundEmptyStatement : BoundStatement, IEmptyOperation
@@ -85,7 +85,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public override OperationKind Kind => OperationKind.ExpressionStatement;
 
-        public BoundExpressionStatement(BoundExpression /*!*/expression)
+        public BoundExpressionStatement(BoundExpression  expression)
         {
             Debug.Assert(expression != null);
             this.Expression = expression;

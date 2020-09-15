@@ -58,7 +58,7 @@ namespace Aquila.CodeAnalysis
         // /// <summary>
         // /// Creates type context for a method within given type, determines naming, type context.
         // /// </summary>
-        // public static TypeRefContext /*!*/ CreateTypeRefContext(SourceTypeSymbol /*!*/containingType)
+        // public static TypeRefContext   CreateTypeRefContext(SourceTypeSymbol  containingType)
         // {
         //     Contract.ThrowIfNull(containingType);
         //

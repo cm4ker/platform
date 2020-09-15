@@ -8,6 +8,8 @@ namespace Aquila.SyntaxGenerator.BoundTree
 
         [XmlAttribute] public string Type { get; set; }
 
+        [XmlAttribute] public bool IsUpdatable { get; set; }
+
         [XmlAttribute] public bool DenyChildrenFill { get; set; }
 
         [XmlAttribute] public bool PassBase { get; set; }
@@ -15,5 +17,6 @@ namespace Aquila.SyntaxGenerator.BoundTree
         [XmlAttribute] public bool OnlyArgument { get; set; }
 
         [XmlAttribute] public bool ImplicitPassInChildren { get; set; }
+        
     }
 }

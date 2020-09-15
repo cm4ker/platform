@@ -168,7 +168,7 @@ namespace Aquila.CodeAnalysis.CodeGen
                 _arguments.Add(t);
             }
 
-            public TypeSymbol EmitTargetInstance(Func<CodeGenerator, TypeSymbol> /*!*/emitter)
+            public TypeSymbol EmitTargetInstance(Func<CodeGenerator, TypeSymbol>  emitter)
             {
                 return EmitTargetInstance(emitter(_cg));
             }
@@ -346,7 +346,7 @@ namespace Aquila.CodeAnalysis.CodeGen
                                 else if (pair.Value is BoundVariableName nameexpr)
                                     cg.EmitConvert(nameexpr.EmitVariableName(cg), 0, valuefield.Type);
                                 else
-                                    throw Peachpie.CodeAnalysis.Utilities.ExceptionUtilities
+                                    throw CodeAnalysis.Utilities.ExceptionUtilities
                                         .UnexpectedValue(pair.Value);
                                 valuefield.EmitStore(cg.Builder);
                             }

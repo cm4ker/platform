@@ -19,7 +19,6 @@ using Aquila.Syntax.Ast.Functions;
 using Aquila.Syntax.Errors;
 using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
-using Peachpie.CodeAnalysis.Utilities;
 
 namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 {

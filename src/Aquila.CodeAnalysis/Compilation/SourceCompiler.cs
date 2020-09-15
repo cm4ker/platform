@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Utilities;
-using Peachpie.CodeAnalysis.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -133,7 +132,7 @@ namespace Aquila.CodeAnalysis
         /// <summary>
         /// Enqueues the standalone expression for analysis.
         /// </summary>
-        void EnqueueExpression(BoundExpression expression, TypeRefContext /*!*/ctx)
+        void EnqueueExpression(BoundExpression expression, TypeRefContext  ctx)
         {
             Contract.ThrowIfNull(expression);
             Contract.ThrowIfNull(ctx);

@@ -533,7 +533,7 @@
 //         IFieldSymbol _lazyContextField; // protected Pchp.Core.Context <ctx>;
 //         IFieldSymbol _lazyRuntimeFieldsField; // internal Pchp.Core.PhpArray <runtimeFields>;
 //
-//         Synthesized.SynthesizedStaticFieldsHolder /*!*/
+//         Synthesized.SynthesizedStaticFieldsHolder  
 //             _staticsContainer; // class __statics { ... }
 //
 //         /// <summary>
@@ -953,7 +953,7 @@
 //         /// Gets type signature of the type [BaseType or NULL, Interface1, ..., InterfaceN, Trait1, ..., TraitN]
 //         /// </summary>
 //         private static IEnumerable<TypeRefSymbol> ResolveTypeSignature(SourceTypeSymbol type,
-//             Dictionary<QualifiedName, INamedTypeSymbol> /*!*/resolved, PhpCompilation compilation)
+//             Dictionary<QualifiedName, INamedTypeSymbol>  resolved, PhpCompilation compilation)
 //         {
 //             Debug.Assert(!resolved.ContainsKey(type.FullName));
 //             resolved[type.FullName] = null; // recursion check

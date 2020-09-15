@@ -59,7 +59,7 @@ using System.Threading.Tasks;
         /// <summary>
         /// Gets or initializes static constructor symbol.
         /// </summary>
-        public MethodSymbol/*!*/EnsureStaticCtor(Cci.ITypeDefinition container)
+        public MethodSymbol EnsureStaticCtor(Cci.ITypeDefinition container)
         {
             Contract.ThrowIfNull(container);
 
@@ -92,7 +92,7 @@ using System.Threading.Tasks;
         /// <summary>
         /// Creates synthesized field.
         /// </summary>
-        public SynthesizedFieldSymbol/*!*/GetOrCreateSynthesizedField(NamedTypeSymbol container, TypeSymbol type, string name, Accessibility accessibility, bool isstatic, bool @readonly, bool autoincrement = false)
+        public SynthesizedFieldSymbol GetOrCreateSynthesizedField(NamedTypeSymbol container, TypeSymbol type, string name, Accessibility accessibility, bool isstatic, bool @readonly, bool autoincrement = false)
         {
             SynthesizedFieldSymbol field = null;
 
@@ -192,7 +192,7 @@ using System.Threading.Tasks;
         /// <summary>
         /// Gets or creates internal static int field as index holder for a global constant.
         /// </summary>
-        public SynthesizedFieldSymbol/*!*/GetGlobalConstantIndexField(string cname)
+        public SynthesizedFieldSymbol GetGlobalConstantIndexField(string cname)
         {
             return GetOrCreateSynthesizedField(
                     _module.ScriptType,

@@ -8,7 +8,7 @@ using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
 
-namespace Peachpie.CodeAnalysis.FlowAnalysis.Graph
+namespace Aquila.CodeAnalysis.FlowAnalysis.Graph
 {
     struct CallSite
     {

@@ -8,7 +8,7 @@ using Aquila.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.Syntax.Syntax;
-using Peachpie.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.Utilities;
 
 
 namespace Aquila.CodeAnalysis.FlowAnalysis
@@ -98,12 +98,12 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             ///// <summary>
             ///// Gets array of qualified names of enumerated types.
             ///// </summary>
-            //public QualifiedName[]/*!!*/SelectQualifiedNames() => Select(TypeHelpers.s_tref_qualifiedName);
+            //public QualifiedName[]SelectQualifiedNames() => Select(TypeHelpers.s_tref_qualifiedName);
 
             /// <summary>
             /// Creates array and selects items into it.
             /// </summary>
-            public TResult[] /*!!*/ Select<TResult>(Func<IBoundTypeRef, TResult> selector)
+            public TResult[]  Select<TResult>(Func<IBoundTypeRef, TResult> selector)
             {
                 var count = this.Count;
                 if (count == 0)
@@ -170,7 +170,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             /// <summary>
             /// Determines whether all elements of a sequence satisfy a condition.
             /// </summary>
-            public bool All(Func<IBoundTypeRef, bool> /*!*/predicate)
+            public bool All(Func<IBoundTypeRef, bool>  predicate)
             {
                 if (!IsEmpty)
                 {
@@ -279,7 +279,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// List of types occuring in the context.
         /// </summary>
-        private readonly List<IBoundTypeRef> /*!*/
+        private readonly List<IBoundTypeRef>  
             _typeRefs = new List<IBoundTypeRef>();
 
         /// <summary>Corresponding compilation object. Cannot be <c>null</c>.</summary>
@@ -343,7 +343,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// </summary>
         /// <param name="typeRef">Type reference to be in the context.</param>
         /// <returns>Index of the type within the context. Can return <c>-1</c> if there is too many types in the context already.</returns>
-        public int AddToContext(IBoundTypeRef /*!*/typeRef)
+        public int AddToContext(IBoundTypeRef  typeRef)
         {
             Contract.ThrowIfNull(typeRef);
 
@@ -356,7 +356,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return index;
         }
 
-        private int AddToContextNoCheck(IBoundTypeRef /*!*/typeRef)
+        private int AddToContextNoCheck(IBoundTypeRef  typeRef)
         {
             Contract.ThrowIfNull(typeRef);
             Debug.Assert(_typeRefs.IndexOf(typeRef) == -1);
@@ -375,7 +375,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// </summary>
         /// <param name="typeRef">Type.</param>
         /// <param name="index">Type index.</param>
-        private void UpdateMasks(IBoundTypeRef /*!*/typeRef, int index)
+        private void UpdateMasks(IBoundTypeRef  typeRef, int index)
         {
             Debug.Assert(index >= 0 && index < TypeRefMask.IndicesCount);
 
@@ -389,22 +389,22 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             {
                 switch (pt.TypeCode)
                 {
-                    case PhpTypeCode.Boolean:
+                    case AquilaTypeCode.Boolean:
                         _isBoolMask = mask;
                         break;
-                    case PhpTypeCode.Long:
+                    case AquilaTypeCode.Long:
                         _isLongMask = mask;
                         break;
-                    case PhpTypeCode.Double:
+                    case AquilaTypeCode.Double:
                         _isDoubleMask = mask;
                         break;
-                    case PhpTypeCode.String:
+                    case AquilaTypeCode.String:
                         _isStringMask = mask;
                         break;
-                    case PhpTypeCode.Null:
+                    case AquilaTypeCode.Null:
                         _isNullMask = mask;
                         break;
-                    case PhpTypeCode.WritableString:
+                    case AquilaTypeCode.WritableString:
                         _isWritableStringMask = mask;
                         break;
                 }
@@ -415,7 +415,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// Adds properly types from another context.
         /// </summary>
         /// <param name="other">Another type context which types will be added to this one.</param>
-        internal void AddToContext(TypeRefContext /*!*/other)
+        internal void AddToContext(TypeRefContext  other)
         {
             Contract.ThrowIfNull(other);
 
@@ -431,7 +431,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <param name="context">Context of <paramref name="mask"/>.</param>
         /// <param name="mask">Type mask representing types in <paramref name="context"/>.</param>
         /// <returns>Returns type mask in this context representing <paramref name="mask"/> as <paramref name="context"/>.</returns>
-        public TypeRefMask AddToContext(TypeRefContext /*!*/context, TypeRefMask mask)
+        public TypeRefMask AddToContext(TypeRefContext  context, TypeRefMask mask)
         {
             Contract.ThrowIfNull(context);
 
@@ -466,7 +466,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets enumeration of types matching given masks.
         /// </summary>
-        private TypeRefEnumerable /*!!*/ GetTypes(TypeRefMask typemask, ulong bitmask)
+        private TypeRefEnumerable  GetTypes(TypeRefMask typemask, ulong bitmask)
         {
             var mask = typemask.Mask & bitmask & ~TypeRefMask.FlagsMask;
             if (mask == 0ul || typemask.IsAnyType)
@@ -479,7 +479,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             }
         }
 
-        private TypeRefMask GetPrimitiveTypeRefMask(IBoundTypeRef /*!*/typeref)
+        private TypeRefMask GetPrimitiveTypeRefMask(IBoundTypeRef  typeref)
         {
             Debug.Assert(typeref.IsPrimitiveType);
 
@@ -491,7 +491,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Does not lookup existing types whether there is typeref already.
         /// </summary>
-        private TypeRefMask GetPrimitiveTypeRefMaskNoCheck(IBoundTypeRef /*!*/typeref)
+        private TypeRefMask GetPrimitiveTypeRefMaskNoCheck(IBoundTypeRef  typeref)
         {
             Debug.Assert(typeref.IsPrimitiveType);
 
@@ -513,7 +513,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Helper method that builds <see cref="TypeRefMask"/> for given type in this context.
         /// </summary>
-        public TypeRefMask GetTypeMask(IBoundTypeRef /*!*/typeref, bool includesSubclasses)
+        public TypeRefMask GetTypeMask(IBoundTypeRef  typeref, bool includesSubclasses)
         {
             var index = AddToContext(typeref);
             var mask = TypeRefMask.CreateFromTypeIndex(index);
@@ -812,7 +812,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets enumeration of all types in the context.
         /// </summary>
-        public IList<IBoundTypeRef> /*!*/ Types
+        public IList<IBoundTypeRef>   Types
         {
             get { return _typeRefs; }
         }
@@ -820,7 +820,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets types referenced by given type mask.
         /// </summary>
-        public TypeRefEnumerable /*!*/ GetTypes(TypeRefMask mask)
+        public TypeRefEnumerable   GetTypes(TypeRefMask mask)
         {
             return GetTypes(mask, TypeRefMask.AnyTypeMask);
         }
@@ -828,7 +828,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets types of type <c>object</c> (classes, interfaces, traits) referenced by given type mask.
         /// </summary>
-        public TypeRefEnumerable /*!*/ GetObjectTypes(TypeRefMask mask)
+        public TypeRefEnumerable   GetObjectTypes(TypeRefMask mask)
         {
             return mask.IsAnyType
                 ? default
@@ -900,7 +900,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets index of the given type within the context. Returns <c>-1</c> if such type is not present.
         /// </summary>
-        int GetTypeIndex(IBoundTypeRef /*!*/typeref)
+        int GetTypeIndex(IBoundTypeRef  typeref)
         {
             return _typeRefs.IndexOf(typeref);
         }

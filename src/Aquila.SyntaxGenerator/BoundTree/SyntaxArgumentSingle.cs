@@ -9,5 +9,8 @@ namespace Aquila.SyntaxGenerator.BoundTree
         /// </summary>
         [XmlAttribute]
         public string Default { get; set; }
+
+        [XmlAttribute]
+        public string PassBaseConst { get; set; }
     }
 }

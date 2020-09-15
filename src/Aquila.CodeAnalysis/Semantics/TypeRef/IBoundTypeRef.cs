@@ -65,7 +65,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// Transfers this type reference to the target type context.
         /// The method may return <c>this</c> instance, it cannot return <c>null</c>.
         /// </summary>
-        IBoundTypeRef /*!*/ Transfer(TypeRefContext /*!*/source, TypeRefContext /*!*/target);
+        IBoundTypeRef   Transfer(TypeRefContext  source, TypeRefContext  target);
 
         /// <summary>
         /// Resolve <see cref="ITypeSymbol"/> if possible.
@@ -128,6 +128,6 @@ namespace Aquila.CodeAnalysis.Semantics
         public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
             TArgument argument) => visitor.DefaultVisit(this, argument);
 
-        public virtual TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitTypeRef(this);
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitTypeRef(this);
     }
 }

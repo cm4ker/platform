@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax.Syntax;
-using Peachpie.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.Utilities;
 
 namespace Aquila.CodeAnalysis.Semantics.TypeRef
 {
@@ -20,27 +20,27 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
     [DebuggerDisplay("BoundPrimitiveTypeRef ({_type})")]
     sealed class BoundPrimitiveTypeRef : BoundTypeRef
     {
-        public PhpTypeCode TypeCode => _type;
-        readonly PhpTypeCode _type;
+        public AquilaTypeCode TypeCode => _type;
+        readonly AquilaTypeCode _type;
 
-        public BoundPrimitiveTypeRef(PhpTypeCode type)
+        public BoundPrimitiveTypeRef(AquilaTypeCode type)
         {
             _type = type;
 
             //
-            IsNullable = type == PhpTypeCode.Null || type == PhpTypeCode.Mixed;
+            IsNullable = type == AquilaTypeCode.Null || type == AquilaTypeCode.Mixed;
         }
 
         /// <summary>
         /// Gets value indicating the type is <c>long</c> or <c>double</c>.
         /// </summary>
-        public bool IsNumber => _type == PhpTypeCode.Long || _type == PhpTypeCode.Double;
+        public bool IsNumber => _type == AquilaTypeCode.Long || _type == AquilaTypeCode.Double;
 
-        public override bool IsObject => _type == PhpTypeCode.Object;
+        public override bool IsObject => _type == AquilaTypeCode.Object;
 
-        public override bool IsArray => _type == PhpTypeCode.PhpArray;
+        public override bool IsArray => _type == AquilaTypeCode.PhpArray;
 
-        public override bool IsPrimitiveType => _type != PhpTypeCode.Object;
+        public override bool IsPrimitiveType => _type != AquilaTypeCode.Object;
 
         public override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
         {
@@ -54,11 +54,11 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
 
             switch (_type)
             {
-                case PhpTypeCode.Void: return ct.Void.Symbol;
-                case PhpTypeCode.Boolean: return ct.Boolean.Symbol;
-                case PhpTypeCode.Long: return ct.Long.Symbol;
-                case PhpTypeCode.Double: return ct.Double.Symbol;
-                case PhpTypeCode.String: return ct.String.Symbol;
+                case AquilaTypeCode.Void: return ct.Void.Symbol;
+                case AquilaTypeCode.Boolean: return ct.Boolean.Symbol;
+                case AquilaTypeCode.Long: return ct.Long.Symbol;
+                case AquilaTypeCode.Double: return ct.Double.Symbol;
+                case AquilaTypeCode.String: return ct.String.Symbol;
                 // case PhpTypeCode.WritableString: return ct.PhpString.Symbol;
                 // case PhpTypeCode.PhpArray: return ct.PhpArray.Symbol;
                 // case PhpTypeCode.Resource: return ct.PhpResource.Symbol;
@@ -78,41 +78,41 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
 
             switch (_type)
             {
-                case PhpTypeCode.Void:
+                case AquilaTypeCode.Void:
                     result = 0;
                     break;
-                case PhpTypeCode.Boolean:
+                case AquilaTypeCode.Boolean:
                     result = ctx.GetBooleanTypeMask();
                     break;
-                case PhpTypeCode.Long:
+                case AquilaTypeCode.Long:
                     result = ctx.GetLongTypeMask();
                     break;
-                case PhpTypeCode.Double:
+                case AquilaTypeCode.Double:
                     result = ctx.GetDoubleTypeMask();
                     break;
-                case PhpTypeCode.String:
+                case AquilaTypeCode.String:
                     result = ctx.GetStringTypeMask();
                     break;
-                case PhpTypeCode.WritableString:
+                case AquilaTypeCode.WritableString:
                     result = ctx.GetWritableStringTypeMask();
                     break;
-                case PhpTypeCode.PhpArray:
+                case AquilaTypeCode.PhpArray:
                     result = ctx.GetArrayTypeMask();
                     break;
-                case PhpTypeCode.Resource:
+                case AquilaTypeCode.Resource:
                     result = ctx.GetResourceTypeMask();
                     break;
-                case PhpTypeCode.Object:
+                case AquilaTypeCode.Object:
                     result = ctx.GetSystemObjectTypeMask();
                     break;
-                case PhpTypeCode.Null: return ctx.GetNullTypeMask();
-                case PhpTypeCode.Iterable:
+                case AquilaTypeCode.Null: return ctx.GetNullTypeMask();
+                case AquilaTypeCode.Iterable:
                     result = ctx.GetArrayTypeMask() | ctx.GetTypeMask(ctx.BoundTypeRefFactory.TraversableTypeRef, true);
                     break; // array | Traversable
-                case PhpTypeCode.Callable:
+                case AquilaTypeCode.Callable:
                     result = ctx.GetArrayTypeMask() | ctx.GetStringTypeMask() | ctx.GetSystemObjectTypeMask();
                     break; // array | string | object
-                case PhpTypeCode.Mixed:
+                case AquilaTypeCode.Mixed:
                     result = TypeRefMask.AnyType;
                     break;
                 default:
@@ -131,11 +131,11 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         {
             switch (_type)
             {
-                case PhpTypeCode.Void: return "void"; // report "void" instead of "undefined"
-                case PhpTypeCode.Long: return "integer";
-                case PhpTypeCode.String:
-                case PhpTypeCode.WritableString: return "string";
-                case PhpTypeCode.PhpArray: return "array";
+                case AquilaTypeCode.Void: return "void"; // report "void" instead of "undefined"
+                case AquilaTypeCode.Long: return "integer";
+                case AquilaTypeCode.String:
+                case AquilaTypeCode.WritableString: return "string";
+                case AquilaTypeCode.PhpArray: return "array";
                 default:
                     return _type.ToString().ToLowerInvariant();
             }
@@ -298,7 +298,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             //return compilation.CoreTypes.PhpArray.Symbol;
         }
 
-        public override string ToString() => PhpTypeCode.PhpArray.ToString().ToLowerInvariant();
+        public override string ToString() => AquilaTypeCode.PhpArray.ToString().ToLowerInvariant();
 
         public override IBoundTypeRef Transfer(TypeRefContext source, TypeRefContext target)
         {
@@ -699,7 +699,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             if (source == target) return this;
 
             // it is "an" object within another routine:
-            return new BoundPrimitiveTypeRef(PhpTypeCode.Object) {IsNullable = false};
+            return new BoundPrimitiveTypeRef(AquilaTypeCode.Object) {IsNullable = false};
         }
 
         public override TypeRefMask GetTypeRefMask(TypeRefContext ctx)
@@ -746,7 +746,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             for (int i = 1; i < TypeRefs.Length; i++)
             {
                 var tref = TypeRefs[i];
-                if (tref is BoundPrimitiveTypeRef pt && pt.TypeCode == PhpTypeCode.Null)
+                if (tref is BoundPrimitiveTypeRef pt && pt.TypeCode == AquilaTypeCode.Null)
                 {
                     Debug.Assert(IsNullable);
                     continue;

@@ -14,7 +14,7 @@ using Aquila.Syntax.Ast;
 using Aquila.Syntax.Syntax;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
-using Peachpie.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.Utilities;
 using Expression = Aquila.Syntax.Ast.Expression;
 
 namespace Aquila.CodeAnalysis.Semantics
@@ -304,7 +304,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         protected sealed override Optional<object> ConstantValueHlp => ConstantValue;
 
-        public abstract TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor);
+        //public abstract TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor);
     }
 
     #endregion
@@ -387,9 +387,10 @@ namespace Aquila.CodeAnalysis.Semantics
             TArgument argument)
             => visitor.VisitArgument(this, argument);
 
-        public TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitArgument(this);
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitArgument(this);
 
-        TResult IAquilaOperation.Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitArgument(this);
+        TResult IAquilaOperation.Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
+            visitor.VisitArgument(this);
     }
 
     /// <summary>
@@ -538,7 +539,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
-        public TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
             => visitor.VisitRoutineName(this);
 
         public override void Accept(OperationVisitor visitor)
@@ -1165,7 +1166,8 @@ namespace Aquila.CodeAnalysis.Semantics
         public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
             TArgument argument) => visitor.DefaultVisit(this, argument);
 
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitCopyValue(this);
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
+            visitor.VisitCopyValue(this);
 
         internal BoundCopyValue Update(BoundExpression expression)
         {
@@ -1417,7 +1419,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public override bool RequiresContext => Operand.RequiresContext ||
                                                 (TargetType is TypeRef.BoundPrimitiveTypeRef pt &&
-                                                 pt.TypeCode == PhpTypeCode.String);
+                                                 pt.TypeCode == AquilaTypeCode.String);
 
         public CommonConversion Conversion { get; set; }
 
@@ -1452,7 +1454,8 @@ namespace Aquila.CodeAnalysis.Semantics
         public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
             TArgument argument) => visitor.VisitConversion(this, argument);
 
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitConversion(this);
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
+            visitor.VisitConversion(this);
     }
 
     /// <summary>
@@ -1582,7 +1585,8 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
         /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
         /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitConditional(this);
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
+            visitor.VisitConditional(this);
     }
 
     #endregion
@@ -1793,7 +1797,7 @@ namespace Aquila.CodeAnalysis.Semantics
             TArgument argument)
             => visitor.DefaultVisit(this, argument);
 
-        public TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
             => visitor.VisitVariableName(this);
     }
 
@@ -1856,7 +1860,8 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
         /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
         /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitVariableRef(this);
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
+            visitor.VisitVariableRef(this);
     }
 
     /// <summary>
@@ -2229,7 +2234,8 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
         /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
         /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitArrayItem(this);
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
+            visitor.VisitArrayItem(this);
     }
 
     #region BoundArrayItemOrdEx
@@ -2329,7 +2335,8 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
         /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
         /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitInstanceOf(this);
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
+            visitor.VisitInstanceOf(this);
     }
 
     #endregion

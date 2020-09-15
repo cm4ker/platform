@@ -44,11 +44,11 @@ namespace Aquila.Syntax.Syntax
     [DebuggerNonUserCode]
     public struct Name : IEquatable<Name>, IEquatable<string>
     {
-        public string/*!*/ Value
+        public string  Value
         {
             get { return value; }
         }
-        private readonly string/*!*/ value;
+        private readonly string  value;
         private readonly int hashCode;
 
         #region Special Names
@@ -200,7 +200,7 @@ namespace Aquila.Syntax.Syntax
         /// Creates a name. 
         /// </summary>
         /// <param name="value">The name shouldn't be <B>null</B>.</param>
-        public Name(string/*!*/ value)
+        public Name(string  value)
         {
             Debug.Assert(value != null);
             this.value = value;
@@ -221,7 +221,7 @@ namespace Aquila.Syntax.Syntax
         /// <param name="className">Will contain the class name fragment if the <paramref name="value"/> is in a form of <c>CLASS::MEMBER</c>. Otherwise <c>null</c>.</param>
         /// <param name="memberName">Will contain the member name fragment if the <paramref name="value"/> is in a form of <c>CLASS::MEMBER</c>. Otherwise it contains original <paramref name="value"/>.</param>
         /// <returns>True iff the <paramref name="value"/> is in a form of <c>CLASS::MEMBER</c>.</returns>
-        public static bool IsClassMemberSyntax(string/*!*/value, out string className, out string memberName)
+        public static bool IsClassMemberSyntax(string value, out string className, out string memberName)
         {
             Debug.Assert(value != null);
             //Debug.Assert(QualifiedName.Separator.ToString() == ":::" && !value.Contains(QualifiedName.Separator.ToString())); // be aware of deprecated namespace syntax
@@ -313,8 +313,8 @@ namespace Aquila.Syntax.Syntax
     [DebuggerNonUserCode]
     public struct VariableName : IEquatable<VariableName>, IEquatable<string>
     {
-        public string/*!*/ Value { get { return value; } set { this.value = value; } }
-        private string/*!*/ value;
+        public string  Value { get { return value; } set { this.value = value; } }
+        private string  value;
 
         #region Special Names
 
@@ -390,7 +390,7 @@ namespace Aquila.Syntax.Syntax
 		/// Creates a name. 
 		/// </summary>
 		/// <param name="value">The name, cannot be <B>null</B> nor empty.</param>
-		public VariableName(string/*!*/ value)
+		public VariableName(string  value)
         {
             Debug.Assert(value != null);
             // TODO (missing from Mono): this.value = value.Normalize();
@@ -576,8 +576,8 @@ namespace Aquila.Syntax.Syntax
         /// <summary>
 		/// The outer most namespace is the first in the array.
 		/// </summary>
-		public Name[]/*!*/ Namespaces { get { return namespaces; } set { namespaces = value; } }
-        private Name[]/*!*/ namespaces;
+		public Name[]  Namespaces { get { return namespaces; } set { namespaces = value; } }
+        private Name[]  namespaces;
 
         /// <summary>
         /// Base name. Contains the empty string for namespaces.
@@ -598,7 +598,7 @@ namespace Aquila.Syntax.Syntax
         ///// <summary>
         ///// Creates a qualified name with or w/o a base name. 
         ///// </summary>
-        //internal QualifiedName(string/*!*/ qualifiedName, bool hasBaseName)
+        //internal QualifiedName(string  qualifiedName, bool hasBaseName)
         //{
         //    Debug.Assert(qualifiedName != null);
         //    QualifiedName qn = Parse(qualifiedName, 0, qualifiedName.Length, hasBaseName);
@@ -607,7 +607,7 @@ namespace Aquila.Syntax.Syntax
         //    this.isFullyQualifiedName = qn.IsFullyQualifiedName;
         //}
 
-        internal QualifiedName(IList<string>/*!*/ names, bool hasBaseName, bool fullyQualified)
+        internal QualifiedName(IList<string>  names, bool hasBaseName, bool fullyQualified)
         {
             Debug.Assert(names != null && names.Count > 0);
 
@@ -635,12 +635,12 @@ namespace Aquila.Syntax.Syntax
         {
         }
 
-        public QualifiedName(Name name, Name[]/*!*/ namespaces)
+        public QualifiedName(Name name, Name[]  namespaces)
             : this(name, namespaces, false)
         {
         }
 
-        public QualifiedName(Name name, Name[]/*!*/ namespaces, bool fullyQualified)
+        public QualifiedName(Name name, Name[]  namespaces, bool fullyQualified)
         {
             if (namespaces == null)
                 throw new ArgumentNullException("namespaces");
@@ -816,7 +816,7 @@ namespace Aquila.Syntax.Syntax
         /// Convert namespaces + name into list of strings.
         /// </summary>
         /// <returns>String List of namespaces (additionaly with <see cref="Name"/> component if it is not empty).</returns>
-        internal List<string>/*!*/ToStringList()
+        internal List<string> ToStringList()
         {
             List<string> list = new List<string>(this.Namespaces.Select(x => x.Value));
 
@@ -994,15 +994,15 @@ namespace Aquila.Syntax.Syntax
         /// <summary>
         /// Array of <see cref="GenericQualifiedName"/> or <see cref="QualifiedName"/>.
         /// </summary>
-        public object[]/*!!*/ GenericParams { get { return genericParams; } }
-        private object[]/*!!*/ genericParams;
+        public object[] GenericParams { get { return genericParams; } }
+        private object[] genericParams;
 
         /// <summary>
         /// Gets value indicating whether the name has generic type parameters.
         /// </summary>
         public bool IsGeneric { get { return genericParams != null && genericParams.Length != 0; } }
 
-        public GenericQualifiedName(QualifiedName qualifiedName, object[]/*!!*/ genericParams)
+        public GenericQualifiedName(QualifiedName qualifiedName, object[] genericParams)
         {
             Debug.Assert(genericParams != null);
             Debug.Assert(genericParams.All(obj => obj == null || obj is QualifiedName || obj is GenericQualifiedName));

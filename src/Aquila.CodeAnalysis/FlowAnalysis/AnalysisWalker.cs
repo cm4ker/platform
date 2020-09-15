@@ -78,7 +78,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <param name="state">Locals state in which we are entering the target.</param>
         /// <param name="target">Target block.</param>
         /// <remarks>Only for traversing into blocks within the same routine (same type context).</remarks>
-        private void TraverseToBlock(object edgeLabel, TState /*!*/state, BoundBlock /*!*/target)
+        private void TraverseToBlock(object edgeLabel, TState  state, BoundBlock  target)
         {
             if (!IsStateInitialized(state))
                 throw new ArgumentException(nameof(state)); // state should be already set by previous block
@@ -114,7 +114,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// Called to initialize <see cref="VisitCFGBlock"/> call.
         /// Sets <see cref="State"/> to known initial block state.
         /// </summary>
-        protected virtual void VisitCFGBlockInit(BoundBlock /*!*/x)
+        protected virtual void VisitCFGBlockInit(BoundBlock  x)
         {
             var state = GetState(x);
 
@@ -269,7 +269,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// </summary>
         /// <param name="varuse"></param>
         /// <returns>Derivate type of iterated values.</returns>
-        protected virtual TypeRefMask HandleTraversableUse(BoundExpression /*!*/varuse)
+        protected virtual TypeRefMask HandleTraversableUse(BoundExpression  varuse)
         {
             return TypeRefMask.AnyType;
         }

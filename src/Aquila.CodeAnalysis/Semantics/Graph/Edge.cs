@@ -24,7 +24,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// Target blocks.
         /// </summary>
-        public abstract IEnumerable<BoundBlock> /*!!*/ Targets { get; }
+        public abstract IEnumerable<BoundBlock> Targets { get; }
 
         /// <summary>
         /// The block after the edge. Can be a <c>null</c> reference.
@@ -66,7 +66,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// </summary>
         public virtual ImmutableArray<CaseBlock> CaseBlocks => ImmutableArray<CaseBlock>.Empty;
 
-        internal Edge(BoundBlock /*!*/source)
+        internal Edge(BoundBlock source)
         {
             Contract.ThrowIfNull(source);
         }
@@ -75,7 +75,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         {
         }
 
-        protected void Connect(BoundBlock /*!*/source)
+        protected void Connect(BoundBlock source)
         {
             source.NextEdge = this;
         }
@@ -190,12 +190,12 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// Target true block.
         /// </summary>
-        public BoundBlock /*!*/ TrueTarget => _true;
+        public BoundBlock TrueTarget => _true;
 
         /// <summary>
         /// Target false block.
         /// </summary>
-        public BoundBlock /*!*/ FalseTarget => _false;
+        public BoundBlock FalseTarget => _false;
 
         internal ConditionalEdge(BoundBlock source, BoundBlock @true, BoundBlock @false, BoundExpression cond)
             : base(source)
@@ -363,7 +363,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         public bool AreValuesAliased => _aliasedValues;
         readonly bool _aliasedValues;
 
-        internal ForeachEnumereeEdge(BoundBlock /*!*/source, BoundBlock /*!*/target, BoundExpression /*!*/enumeree,
+        internal ForeachEnumereeEdge(BoundBlock source, BoundBlock target, BoundExpression enumeree,
             bool aliasedValues)
             : base(source, target)
         {
@@ -372,7 +372,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             _aliasedValues = aliasedValues;
         }
 
-        internal ForeachEnumereeEdge(BoundBlock /*!*/target, BoundExpression /*!*/enumeree, bool aliasedValues)
+        internal ForeachEnumereeEdge(BoundBlock target, BoundExpression enumeree, bool aliasedValues)
             : base(target)
         {
             Contract.ThrowIfNull(enumeree);
@@ -437,9 +437,9 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// </summary>
         public BoundReferenceExpression ValueVariable { get; }
 
-        internal ForeachMoveNextEdge(BoundBlock /*!*/source, BoundBlock /*!*/body, BoundBlock /*!*/end,
-            ForeachEnumereeEdge /*!*/enumereeEdge, BoundReferenceExpression keyVar,
-            BoundReferenceExpression /*!*/valueVar, TextSpan moveSpan)
+        internal ForeachMoveNextEdge(BoundBlock source, BoundBlock body, BoundBlock end,
+            ForeachEnumereeEdge enumereeEdge, BoundReferenceExpression keyVar,
+            BoundReferenceExpression valueVar, TextSpan moveSpan)
             : base(source)
         {
             Contract.ThrowIfNull(body);
@@ -457,8 +457,8 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             Connect(source);
         }
 
-        internal ForeachMoveNextEdge(BoundBlock /*!*/body, BoundBlock /*!*/end, ForeachEnumereeEdge /*!*/enumereeEdge,
-            BoundReferenceExpression keyVar, BoundReferenceExpression /*!*/valueVar, TextSpan moveSpan)
+        internal ForeachMoveNextEdge(BoundBlock body, BoundBlock end, ForeachEnumereeEdge enumereeEdge,
+            BoundReferenceExpression keyVar, BoundReferenceExpression valueVar, TextSpan moveSpan)
         {
             Contract.ThrowIfNull(body);
             Contract.ThrowIfNull(end);
@@ -473,7 +473,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         }
 
         public ForeachMoveNextEdge Update(BoundBlock body, BoundBlock end, ForeachEnumereeEdge enumereeEdge,
-            BoundReferenceExpression keyVar, BoundReferenceExpression /*!*/valueVar, TextSpan moveSpan)
+            BoundReferenceExpression keyVar, BoundReferenceExpression valueVar, TextSpan moveSpan)
         {
             if (body == BodyBlock && end == _end && enumereeEdge == EnumereeEdge && keyVar == KeyVariable &&
                 valueVar == ValueVariable && moveSpan == MoveNextSpan)

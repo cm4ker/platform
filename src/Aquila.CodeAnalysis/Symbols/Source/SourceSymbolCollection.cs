@@ -136,7 +136,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public IDictionary<SyntaxTree, int> OrdinalMap => _ordinalMap;
 
-        public SourceSymbolCollection(PhpCompilation /*!*/compilation)
+        public SourceSymbolCollection(PhpCompilation  compilation)
         {
             Contract.ThrowIfNull(compilation);
             _compilation = compilation;

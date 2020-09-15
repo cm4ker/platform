@@ -10,7 +10,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
     internal class SynthesizedFinalizeSymbol : SynthesizedMethodSymbol
     {
-        public SynthesizedFinalizeSymbol(NamedTypeSymbol/*!*/container)
+        public SynthesizedFinalizeSymbol(NamedTypeSymbol container)
             : base(container, WellKnownMemberNames.DestructorName, false, true, container.DeclaringCompilation.CoreTypes.Void, phphidden: true)
         {
             Debug.Assert(!container.IsStatic);

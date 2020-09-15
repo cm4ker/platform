@@ -8,7 +8,7 @@ using System.Text;
  using Microsoft.CodeAnalysis.Operations;
  using Aquila.CodeAnalysis.Symbols;
  using Aquila.CodeAnalysis.Symbols.Source;
- using Peachpie.CodeAnalysis.Utilities;
+ using Aquila.CodeAnalysis.Utilities;
 
 namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 {
@@ -17,7 +17,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
     /// </summary>
     internal class ResultTypeBinder : GraphExplorer<TypeSymbol>
     {
-        public PhpCompilation/*!*/DeclaringCompilation { get; }
+        public PhpCompilation DeclaringCompilation { get; }
 
         #region Initialization
 

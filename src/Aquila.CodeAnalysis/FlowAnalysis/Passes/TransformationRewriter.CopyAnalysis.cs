@@ -7,9 +7,8 @@ using System.Text;
  using Aquila.CodeAnalysis.Symbols;
  using Aquila.CodeAnalysis.Symbols.Source;
  using Aquila.CodeAnalysis.Utilities;
- using Peachpie.CodeAnalysis.Utilities;
 
-namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
+ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 {
     partial class TransformationRewriter
     {

@@ -15,7 +15,7 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         #region Fields & Properties
 
-        readonly Dictionary<VariableName, LocalVariableReference> /*!*/
+        readonly Dictionary<VariableName, LocalVariableReference>  
             _dict = new Dictionary<VariableName, LocalVariableReference>();
 
         /// <summary>

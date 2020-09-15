@@ -553,13 +553,13 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             {
                 switch (pt.TypeCode)
                 {
-                    case PhpTypeCode.Boolean:
-                    case PhpTypeCode.Long:
-                    case PhpTypeCode.Double:
-                    case PhpTypeCode.String:
-                    case PhpTypeCode.WritableString:
-                    case PhpTypeCode.Null:
-                    case PhpTypeCode.Mixed:
+                    case AquilaTypeCode.Boolean:
+                    case AquilaTypeCode.Long:
+                    case AquilaTypeCode.Double:
+                    case AquilaTypeCode.String:
+                    case AquilaTypeCode.WritableString:
+                    case AquilaTypeCode.Null:
+                    case AquilaTypeCode.Mixed:
                         return true;
                 }
             }

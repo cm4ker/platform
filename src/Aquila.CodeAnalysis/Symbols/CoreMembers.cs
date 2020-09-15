@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis;
-using Peachpie.CodeAnalysis.Utilities;
+using Aquila.CodeAnalysis.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols
 {
@@ -60,7 +60,7 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        protected abstract T ResolveSymbol(NamedTypeSymbol /*!*/declaringType);
+        protected abstract T ResolveSymbol(NamedTypeSymbol  declaringType);
     }
 
     /// <summary>
@@ -82,7 +82,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// <summary>
         /// Resolves <see cref="MethodSymbol"/> of this descriptor.
         /// </summary>
-        protected override MethodSymbol ResolveSymbol(NamedTypeSymbol /*!*/declaringType)
+        protected override MethodSymbol ResolveSymbol(NamedTypeSymbol  declaringType)
         {
             return declaringType.GetMembers(MemberName).OfType<MethodSymbol>().First(MatchesSignature);
         }

@@ -125,18 +125,18 @@ namespace Aquila.Syntax.Text
             _textLength = textLength;
         }
 
-        public static LineBreaks/*!*/Create(string text)
+        public static LineBreaks Create(string text)
         {
             return Create(text, CalculateLineEnds(text));
         }
 
-        public static LineBreaks/*!*/Create(string text, List<int>/*!*/lineEnds)
+        public static LineBreaks Create(string text, List<int> lineEnds)
         {
             if (text == null) throw new ArgumentNullException();
             return Create(text.Length, lineEnds);
         }
 
-        internal static LineBreaks/*!*/Create(int textLength, List<int>/*!*/lineEnds)
+        internal static LineBreaks Create(int textLength, List<int> lineEnds)
         {
             if (textLength < 0) throw new ArgumentException();
             if (lineEnds == null) throw new ArgumentNullException();
@@ -161,7 +161,7 @@ namespace Aquila.Syntax.Text
         /// </summary>
         /// <param name="text">Document text.</param>
         /// <returns>List of line ends position.</returns>
-        private static List<int>/*!*/CalculateLineEnds(string text)
+        private static List<int> CalculateLineEnds(string text)
         {
             List<int> list = new List<int>();
             if (text != null)
@@ -194,7 +194,7 @@ namespace Aquila.Syntax.Text
     /// </summary>
     internal sealed class ShortLineBreaks : LineBreaks
     {
-        private readonly ushort[]/*!*/_lineEnds;
+        private readonly ushort[] _lineEnds;
 
         public ShortLineBreaks(int textLength, List<int> lineEnds)
             :base(textLength)
@@ -232,7 +232,7 @@ namespace Aquila.Syntax.Text
     /// </summary>
     internal sealed class IntLineBreaks : LineBreaks
     {
-        private readonly int[]/*!*/_lineEnds;
+        private readonly int[] _lineEnds;
 
         public IntLineBreaks(int textLength, List<int> lineEnds)
             : base(textLength)
@@ -268,7 +268,7 @@ namespace Aquila.Syntax.Text
     /// </summary>
     internal sealed class ExpandableLineBreaks : LineBreaks
     {
-        private readonly List<int>/*!*/_lineEnds = new List<int>();
+        private readonly List<int> _lineEnds = new List<int>();
 
         public ExpandableLineBreaks()
             : base(0)
@@ -309,7 +309,7 @@ namespace Aquila.Syntax.Text
             _textLength += length;
         }
 
-        public LineBreaks/*!*/Finalize()
+        public LineBreaks Finalize()
         {
             return LineBreaks.Create(_textLength, _lineEnds);
         }
@@ -326,7 +326,7 @@ namespace Aquila.Syntax.Text
     //internal sealed class VirtualLineBreaks : ILineBreaks
     //{
     //    private readonly int lineShift, columnShift;
-    //    private LineBreaks/*!*/lineBreaks;
+    //    private LineBreaks lineBreaks;
     //    private ExpandableLineBreaks ExpandableLineBreaks { get { return (ExpandableLineBreaks)lineBreaks; } }
 
     //    public VirtualLineBreaks(LineBreaks lineBreaks, int lineShift, int columnShift)
