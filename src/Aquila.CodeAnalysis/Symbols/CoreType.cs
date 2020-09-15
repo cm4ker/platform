@@ -87,7 +87,7 @@ namespace Aquila.CodeAnalysis.Symbols
     /// </summary>
     class CoreTypes
     {
-        readonly PhpCompilation _compilation;
+        readonly AquilaCompilation _compilation;
 
         /// <summary>
         /// Root namespace for Peachpie Runtime types.
@@ -155,7 +155,7 @@ namespace Aquila.CodeAnalysis.Symbols
             // stdClass, ArrayAccess, Closure, Generator, Iterator, Traversable, GeneratorStateMachineDelegate, MainDelegate, 
             IntPtr;
 
-        public CoreTypes(PhpCompilation compilation)
+        public CoreTypes(AquilaCompilation compilation)
         {
             Contract.ThrowIfNull(compilation);
             _compilation = compilation;

@@ -79,7 +79,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
 
         internal PEModuleSymbol PrimaryModule => (PEModuleSymbol)_modules[0];
 
-        internal override PhpCompilation DeclaringCompilation => null;
+        internal override AquilaCompilation DeclaringCompilation => null;
 
         public override AssemblyMetadata GetMetadata() => _assembly.GetNonDisposableMetadata();
 

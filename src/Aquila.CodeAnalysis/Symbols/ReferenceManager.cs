@@ -12,7 +12,7 @@ using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis
 {
-    partial class PhpCompilation
+    partial class AquilaCompilation
     {
         internal class
             ReferenceManager : CommonReferenceManager // TODO: inherit the generic version with all the Binding & resolving stuff
@@ -187,7 +187,7 @@ namespace Aquila.CodeAnalysis
                 }
             }
 
-            internal SourceAssemblySymbol CreateSourceAssemblyForCompilation(PhpCompilation compilation)
+            internal SourceAssemblySymbol CreateSourceAssemblyForCompilation(AquilaCompilation compilation)
             {
                 if (compilation._lazyAssemblySymbol != null)
                 {

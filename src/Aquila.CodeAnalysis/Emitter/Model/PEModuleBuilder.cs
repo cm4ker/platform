@@ -28,7 +28,7 @@ namespace Aquila.CodeAnalysis.Emit
     internal abstract partial class PEModuleBuilder : CommonPEModuleBuilder, ITokenDeferral
     {
         private readonly SourceModuleSymbol _sourceModule;
-        private readonly PhpCompilation _compilation;
+        private readonly AquilaCompilation _compilation;
 
         private readonly EmitOptions _emitOptions;
         //private readonly Cci.ModulePropertiesForSerialization _serializationProperties;
@@ -70,7 +70,7 @@ namespace Aquila.CodeAnalysis.Emit
             new ConcurrentDictionary<Cci.ITypeDefinition, ILBuilder>(ReferenceEqualityComparer.Instance);
 
         protected PEModuleBuilder(
-            PhpCompilation compilation,
+            AquilaCompilation compilation,
             SourceModuleSymbol sourceModule,
             Cci.ModulePropertiesForSerialization serializationProperties,
             IEnumerable<ResourceDescription> manifestResources,
@@ -379,7 +379,7 @@ namespace Aquila.CodeAnalysis.Emit
 
         internal override Compilation CommonCompilation => _compilation;
 
-        internal PhpCompilation Compilation => _compilation;
+        internal AquilaCompilation Compilation => _compilation;
 
         internal override CommonEmbeddedTypesManager CommonEmbeddedTypesManagerOpt
         {

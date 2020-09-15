@@ -8,7 +8,7 @@ namespace Aquila.CodeAnalysis.Symbols
 {
     static class WellKnownMembersHelper
     {
-        public static AttributeData CreateCompilerGeneratedAttribute(this PhpCompilation compilation)
+        public static AttributeData CreateCompilerGeneratedAttribute(this AquilaCompilation compilation)
         {
             // [CompilerGenerated]
             var compilergenerated = (MethodSymbol)compilation.GetWellKnownTypeMember(WellKnownMember.System_Runtime_CompilerServices_CompilerGeneratedAttribute__ctor);
@@ -33,14 +33,14 @@ namespace Aquila.CodeAnalysis.Symbols
         //             ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
         // }
 
-        public static AttributeData CreateParamsAttribute(this PhpCompilation compilation)
+        public static AttributeData CreateParamsAttribute(this AquilaCompilation compilation)
         {
             return new SynthesizedAttributeData(
                 (MethodSymbol)compilation.GetWellKnownTypeMember(WellKnownMember.System_ParamArrayAttribute__ctor),
                 ImmutableArray<TypedConstant>.Empty, ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
         }
 
-        public static AttributeData CreateNotNullAttribute(this PhpCompilation compilation)
+        public static AttributeData CreateNotNullAttribute(this AquilaCompilation compilation)
         {
             return new SynthesizedAttributeData(
                 null,
@@ -75,7 +75,7 @@ namespace Aquila.CodeAnalysis.Symbols
         //        ImmutableArray<TypedConstant>.Empty, namedparameters);
         //}
 
-        public static AttributeData CreateDefaultValueAttribute(this PhpCompilation compilation, TypeSymbol containingType, FieldSymbol field)
+        public static AttributeData CreateDefaultValueAttribute(this AquilaCompilation compilation, TypeSymbol containingType, FieldSymbol field)
         {
             var namedparameters = ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty;
 

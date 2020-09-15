@@ -28,7 +28,7 @@ namespace Aquila.CodeAnalysis.Symbols
             return type.TypeParameters.IsEmpty ? type : type.Construct(typeArguments, unbound: false);
         }
 
-        public static bool IsPhpHidden(this Symbol s, PhpCompilation compilation = null)
+        public static bool IsPhpHidden(this Symbol s, AquilaCompilation compilation = null)
         {
             if (s is MethodSymbol m)
             {

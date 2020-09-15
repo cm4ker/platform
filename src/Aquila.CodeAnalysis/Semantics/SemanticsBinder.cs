@@ -119,9 +119,9 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// Found yield statements (needed for ControlFlowGraph)
         /// </summary>
-        public virtual ImmutableArray<BoundYieldStatement> Yields
+        public virtual ImmutableArray<BoundYieldStmt> Yields
         {
-            get => ImmutableArray<BoundYieldStatement>.Empty;
+            get => ImmutableArray<BoundYieldStmt>.Empty;
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// Compilation.
         /// </summary>
-        internal PhpCompilation DeclaringCompilation { get; }
+        internal AquilaCompilation DeclaringCompilation { get; }
 
         /// <summary>Gets <see cref="BoundTypeRefFactory"/> instance.</summary>
         internal BoundTypeRefFactory BoundTypeRefFactory => DeclaringCompilation.TypeRefFactory;
@@ -156,7 +156,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <param name="locals">Table of local variables within routine.</param>
         /// <param name="self">Current self context.</param>
         /// <param name="compilation">Declaring compilation.</param>
-        public static SemanticsBinder Create(PhpCompilation compilation, SyntaxTree file, LocalsTable locals,
+        public static SemanticsBinder Create(AquilaCompilation compilation, SyntaxTree file, LocalsTable locals,
             object self = null)
         {
             Debug.Assert(locals != null);
@@ -176,7 +176,7 @@ namespace Aquila.CodeAnalysis.Semantics
                 : new SemanticsBinder(compilation, file, locals, routine, self);
         }
 
-        public SemanticsBinder(PhpCompilation compilation, SyntaxTree file, LocalsTable locals = null,
+        public SemanticsBinder(AquilaCompilation compilation, SyntaxTree file, LocalsTable locals = null,
             SourceRoutineSymbol routine = null, object self = null)
         {
             DeclaringCompilation = compilation;
@@ -331,7 +331,7 @@ namespace Aquila.CodeAnalysis.Semantics
             // TODO: return back bounds
             // if (stmt is EchoStmt echoStm) return BindEcho(echoStm, BindArguments(echoStm.Parameters));
             if (stmt is ExpressionStmt exprStm)
-                return new BoundExpressionStatement(BindExpression(exprStm.Expression, BoundAccess.None));
+                return new BoundExpressionStmt(BindExpression(exprStm.Expression, BoundAccess.None));
             if (stmt is ReturnStmt jmpStm) return BindReturnStmt(jmpStm);
             // if (stmt is FunctionDecl) return new BoundFunctionDeclStatement(stmt.GetProperty<SourceFunctionSymbol>());
             // if (stmt is TypeDecl) return new BoundTypeDeclStatement(stmt.GetProperty<SourceTypeSymbol>());
@@ -344,7 +344,7 @@ namespace Aquila.CodeAnalysis.Semantics
             //
             Diagnostics.Add(GetLocation(stmt), ErrorCode.ERR_NotYetImplemented,
                 $"Statement of type '{stmt.GetType().Name}'");
-            return new BoundEmptyStatement(stmt.Span.ToTextSpan());
+            return new BoundEmptyStmt(stmt.Span.ToTextSpan());
         }
 
         // BoundStatement BindEcho(EchoStmt stmt, ImmutableArray<BoundArgument> args)
@@ -452,7 +452,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
 
             //
-            return new BoundReturnStatement(expr);
+            return new BoundReturnStmt(expr);
         }
 
         protected BoundExpression BindCopyValue(BoundExpression expr)
@@ -518,7 +518,7 @@ namespace Aquila.CodeAnalysis.Semantics
             // if (expr is IssetEx) return BindIsSet((IssetEx) expr).WithAccess(access);
             // if (expr is ExitEx) return BindExitEx((ExitEx) expr).WithAccess(access);
             if (expr is ThrowEx throwEx)
-                return new BoundThrowExpression(BindExpression(throwEx.Expression, BoundAccess.Read));
+                return new BoundThrowEx(BindExpression(throwEx.Expression, BoundAccess.Read));
             // if (expr is EmptyEx) return BindIsEmptyEx((EmptyEx) expr).WithAccess(access);
             // if (expr is LambdaFunctionExpr) return BindLambda((LambdaFunctionExpr) expr).WithAccess(access);
             // if (expr is EvalEx) return BindEval((EvalEx) expr).WithAccess(access);
@@ -1383,7 +1383,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public BoundStatement BindEmptyStmt(Span span)
         {
-            return new BoundEmptyStatement(span.ToTextSpan());
+            return new BoundEmptyStmt(span.ToTextSpan());
         }
 
         protected static BoundExpression BindLiteral(LiteralEx expr)
@@ -1454,14 +1454,14 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// Found yield statements (needed for ControlFlowGraph)
         /// </summary>
-        public override ImmutableArray<BoundYieldStatement> Yields
+        public override ImmutableArray<BoundYieldStmt> Yields
         {
             get => _yields.ToImmutableArray();
         }
 
         public override int StatesCount => _yields.Count;
 
-        readonly List<BoundYieldStatement> _yields = new List<BoundYieldStatement>();
+        readonly List<BoundYieldStmt> _yields = new List<BoundYieldStmt>();
 
         readonly HashSet<LangElement> _yieldsToStatementRootPath = new HashSet<LangElement>();
         int _rewriterVariableIndex = 0;
@@ -1479,11 +1479,11 @@ namespace Aquila.CodeAnalysis.Semantics
 
         private IEnumerable<TryCatchEdge> _tryScopes;
 
-        BoundYieldStatement NewYieldStatement(BoundExpression valueExpression, BoundExpression keyExpression,
+        BoundYieldStmt NewYieldStatement(BoundExpression valueExpression, BoundExpression keyExpression,
             LangElement syntax = null,
             bool isYieldFrom = false)
         {
-            var yieldStmt = new BoundYieldStatement(_yields.Count + 1, valueExpression, keyExpression, _tryScopes)
+            var yieldStmt = new BoundYieldStmt(_yields.Count + 1, valueExpression, keyExpression, _tryScopes)
                 {
                     IsYieldFrom = isYieldFrom,
                 }
@@ -1528,7 +1528,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         #region Construction
 
-        public GeneratorSemanticsBinder(PhpCompilation compilation, ImmutableArray<IYieldLikeEx> yields,
+        public GeneratorSemanticsBinder(AquilaCompilation compilation, ImmutableArray<IYieldLikeEx> yields,
             LocalsTable locals, SourceRoutineSymbol routine, object self)
             : base(compilation, routine.ContainingFile.SyntaxTree, locals, routine, self)
         {
@@ -1852,7 +1852,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
             var assignVarTouple = CreateAndAssignSynthesizedVariable(boundExpr, access, GetTempVariableName());
 
-            CurrentPreBoundBlock.Add(new BoundExpressionStatement(assignVarTouple.Assignment)); // assigment
+            CurrentPreBoundBlock.Add(new BoundExpressionStmt(assignVarTouple.Assignment)); // assigment
             return assignVarTouple.BoundExpr; // temp variable ref
         }
 

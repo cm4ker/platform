@@ -23,7 +23,7 @@ using Aquila.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis
 {
-    partial class PhpCompilation
+    partial class AquilaCompilation
     {
         private readonly WellKnownMembersSignatureComparer _wellKnownMemberSignatureComparer;
 
@@ -1069,9 +1069,9 @@ namespace Aquila.CodeAnalysis
 
         private class WellKnownMembersSignatureComparer : SpecialMembersSignatureComparer
         {
-            private readonly PhpCompilation _compilation;
+            private readonly AquilaCompilation _compilation;
 
-            public WellKnownMembersSignatureComparer(PhpCompilation compilation)
+            public WellKnownMembersSignatureComparer(AquilaCompilation compilation)
             {
                 _compilation = compilation;
             }

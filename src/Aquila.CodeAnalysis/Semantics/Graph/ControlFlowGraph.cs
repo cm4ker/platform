@@ -113,12 +113,12 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// Array of yield statements within routine. Can be <c>null</c>.
         /// </summary>
-        public ImmutableArray<BoundYieldStatement> Yields
+        public ImmutableArray<BoundYieldStmt> Yields
         {
             get => _yields;
         }
 
-        readonly ImmutableArray<BoundYieldStatement> _yields;
+        readonly ImmutableArray<BoundYieldStmt> _yields;
 
         /// <summary>
         /// List of blocks that are unreachable syntactically (statements after JumpStmt etc.).
@@ -145,7 +145,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         {
         }
 
-        private ControlFlowGraph(BuilderVisitor  builder, ImmutableArray<BoundYieldStatement> yields)
+        private ControlFlowGraph(BuilderVisitor  builder, ImmutableArray<BoundYieldStmt> yields)
             : this(builder.Start, builder.Exit, builder.Declarations, /*builder.Exception*/null, builder.Labels, yields,
                 builder.DeadBlocks)
         {
@@ -153,7 +153,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         private ControlFlowGraph(BoundBlock  start, BoundBlock  exit,
             IEnumerable<BoundStatement>  declarations, BoundBlock exception, ImmutableArray<LabelBlockState> labels,
-            ImmutableArray<BoundYieldStatement> yields, ImmutableArray<BoundBlock> unreachable)
+            ImmutableArray<BoundYieldStmt> yields, ImmutableArray<BoundBlock> unreachable)
         {
             Contract.ThrowIfNull(start);
             Contract.ThrowIfNull(exit);
@@ -169,7 +169,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         }
 
         internal ControlFlowGraph Update(BoundBlock start, BoundBlock exit, ImmutableArray<LabelBlockState> labels,
-            ImmutableArray<BoundYieldStatement> yields, ImmutableArray<BoundBlock> unreachable)
+            ImmutableArray<BoundYieldStmt> yields, ImmutableArray<BoundBlock> unreachable)
         {
             if (start == _start && exit == _exit && labels == _labels && yields == _yields &&
                 unreachable == _unreachable)

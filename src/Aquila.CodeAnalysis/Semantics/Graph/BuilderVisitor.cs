@@ -281,7 +281,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             }
 
             // return <expression>;
-            _current.Add(new BoundReturnStatement(expression));
+            _current.Add(new BoundReturnStmt(expression));
         }
 
         private BoundBlock NewBlock()

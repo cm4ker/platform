@@ -185,7 +185,7 @@ namespace Aquila.CodeAnalysis.Symbols
         public override Symbol ContainingSymbol => null;
         //((IPhpPropertySymbol) this).ContainingStaticsHolder ?? _containingType;
 
-        internal override PhpCompilation DeclaringCompilation => null; //_containingType.DeclaringCompilation;
+        internal override AquilaCompilation DeclaringCompilation => null; //_containingType.DeclaringCompilation;
 
         public override ImmutableArray<CustomModifier> CustomModifiers => ImmutableArray<CustomModifier>.Empty;
 

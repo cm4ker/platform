@@ -84,9 +84,9 @@ using System.Threading;
             return set.Select(ass => ass.Location);
         }
 
-        PhpCompilation CreateDefaultCompilation()
+        AquilaCompilation CreateDefaultCompilation()
         {
-            return PhpCompilation.Create("project",
+            return AquilaCompilation.Create("project",
                 references: MetadataReferences().Select(CreateMetadataReference),
                 syntaxTrees: Array.Empty<PhpSyntaxTree>(),
                 options: new PhpCompilationOptions(
@@ -95,7 +95,7 @@ using System.Threading;
                     sdkDirectory: null));
         }
 
-        public PhpCompilation CoreCompilation
+        public AquilaCompilation CoreCompilation
         {
             get
             {
@@ -121,7 +121,7 @@ using System.Threading;
             }
         }
 
-        PhpCompilation _compilation;
+        AquilaCompilation _compilation;
         IAssemblySymbol _assemblytmp;
 
         /// <summary>

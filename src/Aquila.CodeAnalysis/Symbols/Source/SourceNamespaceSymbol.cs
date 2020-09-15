@@ -17,9 +17,9 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         //     _name = ns.QualifiedName.QualifiedName.ClrName();
         // }
 
-        internal override PhpCompilation DeclaringCompilation => _sourceModule.DeclaringCompilation;
+        internal override AquilaCompilation DeclaringCompilation => _sourceModule.DeclaringCompilation;
 
-        public override PhpCompilation ContainingCompilation => _sourceModule.DeclaringCompilation;
+        public override AquilaCompilation ContainingCompilation => _sourceModule.DeclaringCompilation;
 
         public override void Accept(SymbolVisitor visitor) => visitor.VisitNamespace(this);
 
@@ -84,9 +84,9 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             _sourceModule = module;
         }
 
-        internal override PhpCompilation DeclaringCompilation => _sourceModule.DeclaringCompilation;
+        internal override AquilaCompilation DeclaringCompilation => _sourceModule.DeclaringCompilation;
 
-        public override PhpCompilation ContainingCompilation => _sourceModule.DeclaringCompilation;
+        public override AquilaCompilation ContainingCompilation => _sourceModule.DeclaringCompilation;
 
         public override void Accept(SymbolVisitor visitor) => visitor.VisitNamespace(this);
 

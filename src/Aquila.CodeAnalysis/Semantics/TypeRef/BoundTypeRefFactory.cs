@@ -72,7 +72,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// Initializes new instance of <see cref="BoundTypeRefFactory"/>.
         /// </summary>
         /// <param name="compilation">Bound compilation.</param>
-        public BoundTypeRefFactory(PhpCompilation compilation)
+        public BoundTypeRefFactory(AquilaCompilation compilation)
         {
             // TBD
         }

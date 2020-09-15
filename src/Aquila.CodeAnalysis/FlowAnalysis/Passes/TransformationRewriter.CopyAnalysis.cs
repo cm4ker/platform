@@ -334,7 +334,7 @@ using System.Text;
                 return default;
             }
 
-            public override VoidStruct VisitReturn(BoundReturnStatement x)
+            public override VoidStruct VisitReturn(BoundReturnStmt x)
             {
                 if (x.Returned is BoundCopyValue copy && copy.Expression is BoundVariableRef varRef &&
                     !varRef.TypeRefMask.IsRef && // BoundCopyValue is used to dereference the alias

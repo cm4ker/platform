@@ -17,7 +17,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// Gets declaring compilation.
         /// </summary>
-        PhpCompilation Compilation { get; }
+        AquilaCompilation Compilation { get; }
 
         /// <summary>
         /// Gets a file by its path relative to current context.

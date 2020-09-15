@@ -46,7 +46,7 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        internal override PhpCompilation DeclaringCompilation => _sourceAssembly.DeclaringCompilation;
+        internal override AquilaCompilation DeclaringCompilation => _sourceAssembly.DeclaringCompilation;
 
         /// <summary>
         /// Lookup a top level type referenced from metadata, names should be

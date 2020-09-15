@@ -15,13 +15,8 @@ namespace Aquila.CodeAnalysis.Semantics
     /// <summary>
     /// Represents a variable within routine.
     /// </summary>
-    public abstract partial class BoundVariable : BoundOperation
+    public partial class BoundVariable : BoundOperation
     {
-        /// <summary>
-        /// Variable kind.
-        /// </summary>
-        public VariableKind VariableKind { get; set; }
-
         /// <summary>
         /// Associated symbol, local or parameter.
         /// </summary>
@@ -35,11 +30,6 @@ namespace Aquila.CodeAnalysis.Semantics
         public bool IsInvalid => false;
 
         public SyntaxNode Syntax => null;
-
-        protected BoundVariable(VariableKind kind)
-        {
-            this.VariableKind = kind;
-        }
     }
 
     #endregion
@@ -48,42 +38,33 @@ namespace Aquila.CodeAnalysis.Semantics
 
     public partial class BoundLocal : BoundVariable, IVariableDeclaratorOperation
     {
-        private SourceLocalSymbol _symbol;
-
-        internal BoundLocal(SourceLocalSymbol symbol, VariableKind kind = VariableKind.LocalVariable)
-            : base(kind)
-        {
-            Debug.Assert(kind == VariableKind.LocalVariable || kind == VariableKind.LocalTemporalVariable);
-            _symbol = symbol;
-        }
-
         IVariableInitializerOperation IVariableDeclaratorOperation.Initializer => null;
 
         ILocalSymbol IVariableDeclaratorOperation.Symbol => _symbol;
 
         ImmutableArray<IOperation> IVariableDeclaratorOperation.IgnoredArguments => ImmutableArray<IOperation>.Empty;
 
-        internal override Aquila.CodeAnalysis.Symbols.Symbol Symbol => _symbol;
 
-        public override OperationKind Kind => OperationKind.VariableDeclaration;
+        partial void AcceptImpl(OperationVisitor visitor)
+        {
+            visitor.VisitVariableDeclarator(this);
+        }
 
-        public override void Accept(OperationVisitor visitor)
-            => visitor.VisitVariableDeclarator(this);
-
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
-            TArgument argument)
-            => visitor.VisitVariableDeclarator(this, argument);
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result)
+        {
+            result = visitor.VisitVariableDeclarator(this, argument);
+        }
     }
 
     #endregion
 
     #region BoundIndirectLocal
 
-    public partial class BoundIndirectLocal : BoundVariable, IVariableDeclaratorOperation
+    public partial class BoundIndirectLocal : IVariableDeclaratorOperation
     {
         public override OperationKind Kind => OperationKind.VariableDeclaration;
 
-        internal override Aquila.CodeAnalysis.Symbols.Symbol Symbol => null;
+        internal override Symbol Symbol => null;
 
         IVariableInitializerOperation IVariableDeclaratorOperation.Initializer => null;
 
@@ -93,57 +74,40 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public override string Name => null;
 
-        public BoundExpression NameExpression => _nameExpr;
-        readonly BoundExpression _nameExpr;
-
-        public BoundIndirectLocal(BoundExpression nameExpr)
-            : base(VariableKind.LocalVariable)
+        partial void AcceptImpl(OperationVisitor visitor)
         {
-            _nameExpr = nameExpr;
+            visitor.VisitVariableDeclarator(this);
         }
 
-        public override void Accept(OperationVisitor visitor)
-            => visitor.VisitVariableDeclarator(this);
-
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
-            TArgument argument)
-            => visitor.VisitVariableDeclarator(this, argument);
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result)
+        {
+            result = visitor.VisitVariableDeclarator(this, argument);
+        }
     }
 
     #endregion
 
     #region BoundParameter
 
-    public partial class BoundParameter : BoundVariable, IParameterInitializerOperation
+    internal partial class BoundParameter : BoundVariable, IParameterInitializerOperation
     {
-        private BoundExpression _initializer;
-        private ParameterSymbol _symbol;
-
-        internal BoundParameter(ParameterSymbol symbol, BoundExpression initializer)
-            : base(VariableKind.Parameter)
-        {
-            _symbol = symbol;
-            _initializer = initializer;
-        }
-
-        internal ParameterSymbol Parameter => _symbol;
-
-        IParameterSymbol IParameterInitializerOperation.Parameter => _symbol;
+        IParameterSymbol IParameterInitializerOperation.Parameter => _parameterSymbol;
 
         ImmutableArray<ILocalSymbol> ISymbolInitializerOperation.Locals => ImmutableArray<ILocalSymbol>.Empty;
 
         public IOperation Value => _initializer;
 
-        internal override Aquila.CodeAnalysis.Symbols.Symbol Symbol => _symbol;
+        internal override Symbol Symbol => _parameterSymbol;
 
-        public override OperationKind Kind => OperationKind.ParameterInitializer;
+        partial void AcceptImpl(OperationVisitor visitor)
+        {
+            visitor.VisitParameterInitializer(this);
+        }
 
-        public override void Accept(OperationVisitor visitor)
-            => visitor.VisitParameterInitializer(this);
-
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
-            TArgument argument)
-            => visitor.VisitParameterInitializer(this, argument);
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result)
+        {
+            result = visitor.VisitParameterInitializer(this, argument);
+        }
     }
 
     #endregion
@@ -155,16 +119,6 @@ namespace Aquila.CodeAnalysis.Semantics
     /// </summary>
     public partial class BoundThisParameter : BoundVariable
     {
-        readonly SourceRoutineSymbol _routine;
-
-        internal BoundThisParameter(SourceRoutineSymbol routine)
-            : base(VariableKind.ThisParameter)
-        {
-            _routine = routine;
-        }
-
-        public override OperationKind Kind => OperationKind.None;
-
         public override string Name => VariableName.ThisVariableName.Value;
 
         internal override Aquila.CodeAnalysis.Symbols.Symbol Symbol => null;

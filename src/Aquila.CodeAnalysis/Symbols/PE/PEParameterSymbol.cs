@@ -856,6 +856,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             }
         }
 
-        internal override PhpCompilation DeclaringCompilation => null;
+        internal override AquilaCompilation DeclaringCompilation => null;
     }
 }

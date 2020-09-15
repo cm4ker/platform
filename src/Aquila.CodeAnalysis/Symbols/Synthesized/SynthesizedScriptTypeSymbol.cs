@@ -12,7 +12,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
     /// </summary>
     class SynthesizedScriptTypeSymbol : NamedTypeSymbol
     {
-        readonly PhpCompilation _compilation;
+        readonly AquilaCompilation _compilation;
 
         /// <summary>
         /// Optional. Real assembly entry point method.
@@ -24,7 +24,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         /// </summary>
         private List<Symbol> _lazyMembers = new List<Symbol>();
 
-        public SynthesizedScriptTypeSymbol(PhpCompilation compilation)
+        public SynthesizedScriptTypeSymbol(AquilaCompilation compilation)
         {
             _compilation = compilation;
         }

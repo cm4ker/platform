@@ -221,7 +221,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             return false;
         }
 
-        static bool TryBindTypedConstant(TypeSymbol target, LangElement element, PhpCompilation compilation,
+        static bool TryBindTypedConstant(TypeSymbol target, LangElement element, AquilaCompilation compilation,
             out TypedConstant result)
         {
             if (element is LiteralEx lit)
@@ -277,7 +277,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             return false;
         }
 
-        bool TryResolveCtor(NamedTypeSymbol type, PhpCompilation compilation, out MethodSymbol ctor,
+        bool TryResolveCtor(NamedTypeSymbol type, AquilaCompilation compilation, out MethodSymbol ctor,
             out ImmutableArray<TypedConstant> args)
         {
             if (type.IsValidType())

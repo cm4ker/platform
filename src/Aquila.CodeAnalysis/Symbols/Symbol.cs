@@ -131,7 +131,7 @@
         /// 
         /// Remarks, not "ContainingCompilation" because it isn't transitive.
         /// </remarks>
-        internal virtual PhpCompilation DeclaringCompilation
+        internal virtual AquilaCompilation DeclaringCompilation
         {
             get
             {
@@ -529,7 +529,7 @@
         //    return this.ContainingModule.DefaultMarshallingCharSet;
         //}
 
-        internal bool IsFromCompilation(PhpCompilation compilation)
+        internal bool IsFromCompilation(AquilaCompilation compilation)
         {
             Debug.Assert(compilation != null);
             return compilation == this.DeclaringCompilation;

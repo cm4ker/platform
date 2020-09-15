@@ -14,7 +14,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
     internal sealed class SourceAssemblySymbol : NonMissingAssemblySymbol, ISourceAssemblySymbolInternal
     {
         readonly string _simpleName;
-        readonly PhpCompilation _compilation;
+        readonly AquilaCompilation _compilation;
 
         /// <summary>
         /// A list of modules the assembly consists of. 
@@ -38,7 +38,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         private StrongNameKeys _lazyStrongNameKeys;
 
         public SourceAssemblySymbol(
-            PhpCompilation compilation,
+            AquilaCompilation compilation,
             string assemblySimpleName,
             string moduleName)
         {
@@ -86,7 +86,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             }
         }
 
-        internal override PhpCompilation DeclaringCompilation => _compilation;
+        internal override AquilaCompilation DeclaringCompilation => _compilation;
 
         public override INamespaceSymbol GlobalNamespace
         {

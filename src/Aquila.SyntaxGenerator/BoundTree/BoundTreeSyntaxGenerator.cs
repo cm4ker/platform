@@ -56,7 +56,7 @@ namespace Aquila.SyntaxGenerator.BoundTree
                 sb.AppendLine("using System.Collections;");
                 sb.AppendLine("using System.Collections.Generic;");
                 sb.AppendLine("using Aquila.CodeAnalysis.FlowAnalysis;");
-
+                sb.AppendLine("using System.Collections.Immutable;");
                 sb.AppendLine("using Aquila.Syntax.Text;");
                 sb.AppendLine("using Aquila.CodeAnalysis.Semantics.Graph;");
                 sb.AppendLine("using Aquila.CodeAnalysis.Symbols;");
@@ -92,7 +92,7 @@ namespace Aquila.SyntaxGenerator.BoundTree
 
         private static void GenerateVisitor(StringBuilder sb, List<CompilerSyntax> syntaxes)
         {
-            sb.AppendLine("namespace Aquila.CodeAnalysis.Semantics.PrivateNS {");
+            sb.AppendLine("namespace Aquila.CodeAnalysis.Semantics {");
             sb.AppendLine("public abstract partial class AquilaOperationVisitor<TResult>{");
 
             foreach (var syntax in syntaxes)
@@ -197,7 +197,7 @@ namespace Aquila.SyntaxGenerator.BoundTree
         private static void GenerateClass(StringBuilder sb, CompilerSyntax syntax, List<CompilerSyntax> baseList)
         {
             sb.AppendLine(
-                $"internal {(syntax.IsAbstract ? "abstract" : "")} partial class {Suffix}{syntax.Name} : {Suffix}{syntax.Base ?? NameBase} {(!string.IsNullOrEmpty(syntax.Interface) ? $", {syntax.Interface}" : "")}");
+                $"{(syntax.IsAbstract ? "abstract" : "")} partial class {Suffix}{syntax.Name} : {Suffix}{syntax.Base ?? NameBase} {(!string.IsNullOrEmpty(syntax.Interface) ? $", {syntax.Interface}" : "")}");
             sb.AppendLine("{");
 
             //private fields
@@ -223,6 +223,10 @@ namespace Aquila.SyntaxGenerator.BoundTree
 
                 sb.Append($"{arg.Type} {arg.Name.ToCamelCase()}");
 
+                //default value
+                if (arg is SyntaxArgumentSingle sas && !string.IsNullOrEmpty(sas.Default))
+                    sb.Append($" = {sas.Default}");
+                
                 isMoreThanOne = true;
             }
 
@@ -265,9 +269,31 @@ namespace Aquila.SyntaxGenerator.BoundTree
                 if (!arg.OnlyArgument)
                     sb.Append($"_{arg.Name.ToCamelCase()} = {arg.Name.ToCamelCase()};");
             }
+            
+            //call OnCreateImpl
+            sb.AppendLine("OnCreateImpl(");
+            
+            isMoreThanOne = false;
+            foreach (var arg in syntax.Arguments)
+            {
+                if (arg is SyntaxArgumentSingle s && !string.IsNullOrEmpty(s.PassBaseConst))
+                    continue;
+
+                if (isMoreThanOne)
+                    sb.Append(",");
+
+                sb.Append($"{arg.Name.ToCamelCase()}");
+
+                
+                isMoreThanOne = true;
+            }
+            sb.Append(");");
 
             sb.Append("}");
 
+            //partial OnCreate()
+            GenerateOnCreatePartialMethod(sb, syntax);
+            
             foreach (var arg in syntax.Arguments)
             {
                 if (arg is SyntaxArgumentSingle s && !string.IsNullOrEmpty(s.PassBaseConst))
@@ -277,7 +303,8 @@ namespace Aquila.SyntaxGenerator.BoundTree
                     sb.AppendLine($"public {arg.Type} {arg.Name} {{get {{ return _{arg.Name.ToCamelCase()};}}}}");
             }
 
-            sb.AppendLine("public override OperationKind Kind { get; }");
+            if (!string.IsNullOrEmpty(syntax.OperationKind))
+                sb.AppendLine($"public override OperationKind Kind => OperationKind.{syntax.OperationKind};");
 
             sb.AppendLine(
                 "partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);");
@@ -290,6 +317,27 @@ namespace Aquila.SyntaxGenerator.BoundTree
                 UpdateMethod(sb, syntax);
 
             sb.AppendLine("}");
+        }
+
+        private static void GenerateOnCreatePartialMethod(StringBuilder sb, CompilerSyntax syntax)
+        {
+            sb.AppendLine("partial void OnCreateImpl(");
+            
+            bool isMoreThanOne = false;
+            foreach (var arg in syntax.Arguments)
+            {
+                if (arg is SyntaxArgumentSingle s && !string.IsNullOrEmpty(s.PassBaseConst))
+                    continue;
+
+                if (isMoreThanOne)
+                    sb.Append(",");
+
+                sb.Append($"{arg.Type} {arg.Name.ToCamelCase()}");
+
+                isMoreThanOne = true;
+            }
+
+            sb.Append(");");
         }
     }
 }

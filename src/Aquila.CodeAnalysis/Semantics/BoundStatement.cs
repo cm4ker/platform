@@ -24,184 +24,63 @@ namespace Aquila.CodeAnalysis.Semantics
         public virtual bool IsInvalid => false;
 
         public LangElement AquilaSyntax { get; set; }
-
-        //public abstract TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor);
     }
 
-    public sealed partial class BoundEmptyStatement : BoundStatement, IEmptyOperation
+    public sealed partial class BoundEmptyStmt : BoundStatement, IEmptyOperation
     {
-        public override OperationKind Kind => OperationKind.Empty;
-
-        /// <summary>
-        /// Explicit text span used to generate sequence point.
-        /// </summary>
-        readonly TextSpan _span;
-
-        public BoundEmptyStatement(TextSpan span = default(TextSpan))
-        {
-            _span = span;
-        }
-
-        public BoundEmptyStatement Update(TextSpan span)
-        {
-            if (span == _span)
-            {
-                return this;
-            }
-            else
-            {
-                return new BoundEmptyStatement(span);
-            }
-        }
-
-        public override void Accept(OperationVisitor visitor)
-            => visitor.VisitEmpty(this);
-
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
-            TArgument argument)
-            => visitor.VisitEmpty(this, argument);
-
-        /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-        /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
-            visitor.VisitEmptyStatement(this);
     }
 
     /// <summary>
     /// Represents an expression statement.
     /// </summary>
-    public sealed partial class BoundExpressionStatement : BoundStatement, IExpressionStatementOperation
+    public sealed partial class BoundExpressionStmt : BoundStatement, IExpressionStatementOperation
     {
         /// <summary>
         /// Expression of the statement.
         /// </summary>
         IOperation IExpressionStatementOperation.Operation => Expression;
 
-        /// <summary>
-        /// Expression of the statement.
-        /// </summary>
-        public BoundExpression Expression { get; internal set; }
+        partial void AcceptImpl(OperationVisitor visitor) => visitor.VisitExpressionStatement(this);
 
-        public override OperationKind Kind => OperationKind.ExpressionStatement;
-
-        public BoundExpressionStatement(BoundExpression  expression)
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result)
         {
-            Debug.Assert(expression != null);
-            this.Expression = expression;
+            result = visitor.VisitExpressionStatement(this, argument);
         }
-
-        public BoundExpressionStatement Update(BoundExpression expression)
-        {
-            if (expression == Expression)
-            {
-                return this;
-            }
-            else
-            {
-                return new BoundExpressionStatement(expression);
-            }
-        }
-
-        public override void Accept(OperationVisitor visitor)
-            => visitor.VisitExpressionStatement(this);
-
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
-            TArgument argument)
-            => visitor.VisitExpressionStatement(this, argument);
-
-        /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-        /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
-            visitor.VisitExpressionStatement(this);
     }
 
     /// <summary>
     /// return <c>optional</c>;
     /// </summary>
-    public sealed partial class BoundReturnStatement : BoundStatement, IReturnOperation
+    public sealed partial class BoundReturnStmt : BoundStatement, IReturnOperation
     {
-        public override OperationKind Kind => OperationKind.Return;
-
         IOperation IReturnOperation.ReturnedValue => Returned;
 
-        public BoundExpression Returned { get; internal set; }
+        partial void AcceptImpl(OperationVisitor visitor) => visitor.VisitReturn(this);
 
-        public BoundReturnStatement(BoundExpression returned)
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result)
         {
-            this.Returned = returned;
+            result = visitor.VisitReturn(this, argument);
         }
-
-        public BoundReturnStatement Update(BoundExpression returned)
-        {
-            if (returned == Returned)
-            {
-                return this;
-            }
-            else
-            {
-                return new BoundReturnStatement(returned);
-            }
-        }
-
-        public override void Accept(OperationVisitor visitor)
-            => visitor.VisitReturn(this);
-
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
-            TArgument argument)
-            => visitor.VisitReturn(this, argument);
-
-        /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-        /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitReturn(this);
     }
 
     /// <summary>
     /// Conditionally declared functions.
     /// </summary>
-    public sealed partial class BoundFunctionDeclStatement : BoundStatement, IInvalidOperation
+    public sealed partial class BoundMethodDeclStmt : IInvalidOperation
     {
-        public override OperationKind Kind => OperationKind.LocalFunction;
-
         internal MethodDecl FunctionDecl => (MethodDecl) AquilaSyntax;
 
-        internal SourceFunctionSymbol Function => _function;
-        readonly SourceFunctionSymbol _function;
-
-        internal BoundFunctionDeclStatement(SourceFunctionSymbol function)
+        partial void OnCreateImpl(SourceFunctionSymbol method)
         {
-            Contract.ThrowIfNull(function);
-
-            _function = function;
-            this.AquilaSyntax = (MethodDecl) function.Syntax;
+            this.AquilaSyntax = (MethodDecl) method.Syntax;
         }
 
-        internal BoundFunctionDeclStatement Update(SourceFunctionSymbol function)
+        partial void AcceptImpl(OperationVisitor visitor) => visitor.VisitInvalid(this);
+
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result)
         {
-            if (function == _function)
-            {
-                return this;
-            }
-            else
-            {
-                return new BoundFunctionDeclStatement(function);
-            }
+            result = visitor.VisitInvalid(this, argument);
         }
-
-        public override void Accept(OperationVisitor visitor)
-            => visitor.VisitInvalid(this);
-
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
-            TArgument argument)
-            => visitor.VisitInvalid(this, argument);
-
-        /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-        /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
-            visitor.VisitFunctionDeclaration(this);
     }
 
     public sealed partial class BoundGlobalVariableStatement : BoundStatement, IVariableDeclarationOperation
@@ -251,48 +130,15 @@ namespace Aquila.CodeAnalysis.Semantics
             visitor.VisitGlobalStatement(this);
     }
 
-    public sealed partial class BoundGlobalConstDeclStatement : BoundStatement
+    public sealed partial class BoundGlobalConstDeclStmt
     {
-        public override OperationKind Kind => OperationKind.VariableDeclaration;
-
-        public QualifiedName Name { get; private set; }
-        public BoundExpression Value { get; internal set; }
-
-        public BoundGlobalConstDeclStatement(QualifiedName name, BoundExpression value)
+        partial void OnCreateImpl(QualifiedName name, BoundExpression value)
         {
             Debug.Assert(value.Access.IsRead);
-
-            this.Name = name;
-            this.Value = value;
         }
-
-        public BoundGlobalConstDeclStatement Update(QualifiedName name, BoundExpression value)
-        {
-            if (name == Name && value == Value)
-            {
-                return this;
-            }
-            else
-            {
-                return new BoundGlobalConstDeclStatement(name, value);
-            }
-        }
-
-        public override void Accept(OperationVisitor visitor)
-            => visitor.DefaultVisit(this);
-
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
-            TArgument argument)
-            => visitor.DefaultVisit(this, argument);
-
-        /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-        /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
-            visitor.VisitGlobalConstDecl(this);
     }
 
-    public sealed partial class BoundStaticVariableStatement : BoundStatement, IVariableDeclarationOperation
+    public sealed partial class BoundStaticVarStmt : IVariableDeclarationOperation
     {
         internal struct StaticVarDecl : IEquatable<StaticVarDecl>
         {
@@ -335,13 +181,13 @@ namespace Aquila.CodeAnalysis.Semantics
 
         readonly SynthesizedStaticLocHolder _holderClass;
 
-        internal BoundStaticVariableStatement(StaticVarDecl variable, SynthesizedStaticLocHolder holder)
+        internal BoundStaticVarStmt(StaticVarDecl variable, SynthesizedStaticLocHolder holder)
         {
             _variable = variable;
             _holderClass = holder ?? throw ExceptionUtilities.ArgumentNull(nameof(holder));
         }
 
-        internal BoundStaticVariableStatement Update(StaticVarDecl variable)
+        internal BoundStaticVarStmt Update(StaticVarDecl variable)
         {
             if (variable == _variable)
             {
@@ -349,31 +195,23 @@ namespace Aquila.CodeAnalysis.Semantics
             }
             else
             {
-                return new BoundStaticVariableStatement(variable, _holderClass);
+                return new BoundStaticVarStmt(variable, _holderClass);
             }
         }
 
-        public override void Accept(OperationVisitor visitor)
-            => visitor.VisitVariableDeclaration(this);
+        partial void AcceptImpl(OperationVisitor visitor) => visitor.VisitVariableDeclaration(this);
 
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
-            TArgument argument)
-            => visitor.VisitVariableDeclaration(this, argument);
-
-        /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-        /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
-            visitor.VisitStaticStatement(this);
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result)
+        {
+            result = visitor.VisitVariableDeclaration(this, argument);
+        }
     }
 
     /// <summary>
     /// Represents yield return and continuation.
     /// </summary>
-    public partial class BoundYieldStatement : BoundStatement, IReturnOperation
+    public partial class BoundYieldStmt : IReturnOperation
     {
-        public override OperationKind Kind => OperationKind.YieldReturn;
-
         public BoundExpression YieldedValue { get; internal set; }
         public BoundExpression YieldedKey { get; internal set; }
 
@@ -397,7 +235,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// </summary>
         public LinkedList<TryCatchEdge> ContainingTryScopes { get; private set; } = new LinkedList<TryCatchEdge>();
 
-        public BoundYieldStatement(int index, BoundExpression valueExpression, BoundExpression keyExpression,
+        public BoundYieldStmt(int index, BoundExpression valueExpression, BoundExpression keyExpression,
             IEnumerable<TryCatchEdge> tryScopes = null)
         {
             Debug.Assert(index > 0);
@@ -409,7 +247,7 @@ namespace Aquila.CodeAnalysis.Semantics
             tryScopes?.ForEach(ts => ContainingTryScopes.AddLast(ts));
         }
 
-        public BoundYieldStatement Update(int index, BoundExpression valueExpression, BoundExpression keyExpression)
+        public BoundYieldStmt Update(int index, BoundExpression valueExpression, BoundExpression keyExpression)
         {
             if (index == YieldIndex && valueExpression == YieldedValue && keyExpression == YieldedKey)
             {
@@ -417,46 +255,22 @@ namespace Aquila.CodeAnalysis.Semantics
             }
             else
             {
-                return new BoundYieldStatement(index, valueExpression, keyExpression, ContainingTryScopes);
+                return new BoundYieldStmt(index, valueExpression, keyExpression, ContainingTryScopes);
             }
         }
 
-        /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-        /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
-            => visitor.VisitYieldStatement(this);
+        partial void AcceptImpl(OperationVisitor visitor) => visitor.VisitReturn(this);
 
-        public override void Accept(OperationVisitor visitor)
-            => visitor.VisitReturn(this);
-
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
-            TArgument argument)
-            => visitor.VisitReturn(this, argument);
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result)
+        {
+            result = visitor.VisitReturn(this, argument);
+        }
     }
 
     /// <summary>
     /// Represents declare statement
     /// </summary>
-    public sealed partial class BoundDeclareStatement : BoundStatement
+    public sealed partial class BoundDeclareStmt : BoundStatement
     {
-        public override OperationKind Kind => OperationKind.None;
-
-        public BoundDeclareStatement()
-        {
-        }
-
-        public override void Accept(OperationVisitor visitor)
-            => visitor.DefaultVisit(this);
-
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
-            TArgument argument)
-            => visitor.DefaultVisit(this, argument);
-
-        /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-        /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
-            visitor.VisitDeclareStatement(this);
     }
 }

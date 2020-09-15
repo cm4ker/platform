@@ -52,7 +52,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// <summary>
         /// The containing compilation for compilation namespaces.
         /// </summary>
-        public virtual PhpCompilation ContainingCompilation
+        public virtual AquilaCompilation ContainingCompilation
         {
             get
             {

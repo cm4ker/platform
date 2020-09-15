@@ -166,7 +166,7 @@ using System.Threading.Tasks;
         /// <param name="ctx">Type context.</param>
         /// <param name="compilation">Type provider.</param>
         /// <returns>True iff <c>[]</c> operator is allowed.</returns>
-        internal static bool HasArrayAccess(TypeRefMask type, TypeRefContext ctx, PhpCompilation compilation)
+        internal static bool HasArrayAccess(TypeRefMask type, TypeRefContext ctx, AquilaCompilation compilation)
         {
             // quick check:
             if (type.IsAnyType || type.IsVoid || type.IsRef)

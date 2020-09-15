@@ -29,7 +29,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 
         private bool CallsParentCtor { get; set; }
 
-        PhpCompilation DeclaringCompilation => _routine.DeclaringCompilation;
+        AquilaCompilation DeclaringCompilation => _routine.DeclaringCompilation;
 
         TypeRefContext TypeCtx => _routine.TypeRefContext;
 
@@ -388,7 +388,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return base.VisitNew(x);
         }
 
-        public override T VisitReturn(BoundReturnStatement x)
+        public override T VisitReturn(BoundReturnStmt x)
         {
             if (_routine.Syntax is MethodDecl m)
             {
@@ -708,7 +708,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return default;
         }
 
-        public override T VisitDeclareStatement(BoundDeclareStatement x)
+        public override T VisitDeclareStatement(BoundDeclareStmt x)
         {
             // _diagnostics.Add(
             //     _routine,
@@ -989,7 +989,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return base.VisitCFGTryCatchEdge(x);
         }
 
-        public override T VisitStaticStatement(BoundStaticVariableStatement x)
+        public override T VisitStaticStatement(BoundStaticVarStmt x)
         {
             return base.VisitStaticStatement(x);
         }

@@ -205,27 +205,27 @@ namespace Aquila.CodeAnalysis.Symbols
             return constant.Value.ToString();
         }
 
-        public static TypedConstant CreateTypedConstant(this PhpCompilation compilation, ITypeSymbol typereference)
+        public static TypedConstant CreateTypedConstant(this AquilaCompilation compilation, ITypeSymbol typereference)
         {
             return new TypedConstant(compilation.GetWellKnownType(WellKnownType.System_Type), TypedConstantKind.Type, typereference);
         }
 
-        public static TypedConstant CreateTypedConstant(this PhpCompilation compilation, string value)
+        public static TypedConstant CreateTypedConstant(this AquilaCompilation compilation, string value)
         {
             return new TypedConstant(compilation.GetSpecialType(SpecialType.System_String), TypedConstantKind.Primitive, value);
         }
 
-        public static TypedConstant CreateTypedConstant(this PhpCompilation compilation, byte value)
+        public static TypedConstant CreateTypedConstant(this AquilaCompilation compilation, byte value)
         {
             return new TypedConstant(compilation.GetSpecialType(SpecialType.System_Byte), TypedConstantKind.Primitive, value);
         }
 
-        public static TypedConstant CreateTypedConstant(this PhpCompilation compilation, bool value)
+        public static TypedConstant CreateTypedConstant(this AquilaCompilation compilation, bool value)
         {
             return new TypedConstant(compilation.GetSpecialType(SpecialType.System_Boolean), TypedConstantKind.Primitive, value);
         }
 
-        public static TypedConstant CreateTypedConstant(this PhpCompilation compilation, long value)
+        public static TypedConstant CreateTypedConstant(this AquilaCompilation compilation, long value)
         {
             return new TypedConstant(compilation.GetSpecialType(SpecialType.System_Int64), TypedConstantKind.Primitive, value);
         }

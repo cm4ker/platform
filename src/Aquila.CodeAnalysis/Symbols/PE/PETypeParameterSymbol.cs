@@ -358,7 +358,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             return this.ContainingAssembly.GetSpecialType(SpecialType.System_Object);
         }
 
-        internal sealed override PhpCompilation DeclaringCompilation // perf, not correctness
+        internal sealed override AquilaCompilation DeclaringCompilation // perf, not correctness
         {
             get { return null; }
         }

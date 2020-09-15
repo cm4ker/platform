@@ -496,7 +496,7 @@ namespace Aquila.CodeAnalysis.CodeGen
                 => EmitWrapParam(null, value);
         }
 
-        readonly PhpCompilation _compilation;
+        readonly AquilaCompilation _compilation;
         readonly NamedTypeSymbol _container;
         readonly CodeGenerator _cg;
 

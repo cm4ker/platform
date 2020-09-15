@@ -293,7 +293,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
                 if (!type.IsErrorType())
                 {
-                    result = PhpCompilation.GetRuntimeMember(type, ref descriptor, PhpCompilation.SpecialMembersSignatureComparer.Instance, null);
+                    result = AquilaCompilation.GetRuntimeMember(type, ref descriptor, AquilaCompilation.SpecialMembersSignatureComparer.Instance, null);
                 }
 
                 Interlocked.CompareExchange(ref _lazySpecialTypeMembers[(int)member], result, ErrorTypeSymbol.UnknownResultType);

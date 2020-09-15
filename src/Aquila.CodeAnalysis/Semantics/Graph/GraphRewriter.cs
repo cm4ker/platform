@@ -99,26 +99,26 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         {
             private readonly GraphRewriter _rewriter;
 
-            public List<BoundYieldStatement> Yields { get; private set; }
+            public List<BoundYieldStmt> Yields { get; private set; }
 
             public UnreachableProcessor(GraphRewriter rewriter, int exploredColor) : base(exploredColor)
             {
                 _rewriter = rewriter;
             }
 
-            public override VoidStruct VisitYieldStatement(BoundYieldStatement boundYieldStatement)
+            public override VoidStruct VisitYieldStatement(BoundYieldStmt boundYieldStmt)
             {
                 if (Yields == null)
                 {
-                    Yields = new List<BoundYieldStatement>();
+                    Yields = new List<BoundYieldStmt>();
                 }
 
-                Yields.Add(boundYieldStatement);
+                Yields.Add(boundYieldStmt);
 
-                return base.VisitYieldStatement(boundYieldStatement);
+                return base.VisitYieldStatement(boundYieldStmt);
             }
 
-            public override VoidStruct VisitFunctionDeclaration(BoundFunctionDeclStatement x)
+            public override VoidStruct VisitFunctionDeclaration(BoundMethodDeclStmt x)
             {
                 _rewriter.OnUnreachableRoutineFound(x.Function);
 

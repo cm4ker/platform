@@ -644,7 +644,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             }
         }
 
-        internal sealed override PhpCompilation DeclaringCompilation // perf, not correctness
+        internal sealed override AquilaCompilation DeclaringCompilation // perf, not correctness
         {
             get { return null; }
         }

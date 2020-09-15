@@ -50,7 +50,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// </summary>
         internal TypeRefContext TypeCtx => State.TypeRefContext;
 
-        protected PhpCompilation DeclaringCompilation => _model.Compilation;
+        protected AquilaCompilation DeclaringCompilation => _model.Compilation;
 
         protected BoundTypeRefFactory BoundTypeRefFactory => DeclaringCompilation.TypeRefFactory;
 
@@ -330,7 +330,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         #region Declaration Statements
 
-        public override T VisitStaticStatement(BoundStaticVariableStatement x)
+        public override T VisitStaticStatement(BoundStaticVarStmt x)
         {
             var v = x.Declaration;
             var local = State.GetLocalHandle(new VariableName(v.Name));
@@ -2453,7 +2453,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         #region VisitYield
 
-        public override T VisitYieldStatement(BoundYieldStatement x)
+        public override T VisitYieldStatement(BoundYieldStmt x)
         {
             base.VisitYieldStatement(x);
 
@@ -2728,12 +2728,12 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return default;
         }
 
-        public override T VisitExpressionStatement(BoundExpressionStatement x)
+        public override T VisitExpressionStatement(BoundExpressionStmt x)
         {
             return base.VisitExpressionStatement(x);
         }
 
-        public override T VisitReturn(BoundReturnStatement x)
+        public override T VisitReturn(BoundReturnStmt x)
         {
             if (x.Returned != null)
             {

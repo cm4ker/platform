@@ -29,7 +29,7 @@ namespace Aquila.CodeAnalysis
     /// </summary>
     internal class SourceCompiler
     {
-        readonly PhpCompilation _compilation;
+        readonly AquilaCompilation _compilation;
         readonly PEModuleBuilder _moduleBuilder;
         readonly bool _emittingPdb;
         readonly DiagnosticBag _diagnostics;
@@ -45,7 +45,7 @@ namespace Aquila.CodeAnalysis
 
         public bool ConcurrentBuild => _compilation.Options.ConcurrentBuild;
 
-        private SourceCompiler(PhpCompilation compilation, PEModuleBuilder moduleBuilder, bool emittingPdb,
+        private SourceCompiler(AquilaCompilation compilation, PEModuleBuilder moduleBuilder, bool emittingPdb,
             DiagnosticBag diagnostics, CancellationToken cancellationToken)
         {
             Contract.ThrowIfNull(compilation);
@@ -142,7 +142,7 @@ namespace Aquila.CodeAnalysis
                 FlowState = new FlowState(new FlowContext(ctx, null)),
             };
 
-            dummy.Add(new BoundExpressionStatement(expression));
+            dummy.Add(new BoundExpressionStmt(expression));
 
             _worklist.Enqueue(dummy);
         }
@@ -484,7 +484,7 @@ namespace Aquila.CodeAnalysis
             return true;
         }
 
-        public static IEnumerable<Diagnostic> BindAndAnalyze(PhpCompilation compilation,
+        public static IEnumerable<Diagnostic> BindAndAnalyze(AquilaCompilation compilation,
             CancellationToken cancellationToken)
         {
             var manager =
@@ -554,7 +554,7 @@ namespace Aquila.CodeAnalysis
         }
 
         public static void CompileSources(
-            PhpCompilation compilation,
+            AquilaCompilation compilation,
             PEModuleBuilder moduleBuilder,
             bool emittingPdb,
             bool hasDeclarationErrors,

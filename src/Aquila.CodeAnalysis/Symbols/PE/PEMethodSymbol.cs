@@ -294,7 +294,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
 
         public override ImmutableArray<Location> Locations { get { throw new NotImplementedException(); } } // _containingType.ContainingPEModule.MetadataLocation.Cast<MetadataLocation, Location>();
 
-        internal override PhpCompilation DeclaringCompilation => null;
+        internal override AquilaCompilation DeclaringCompilation => null;
 
         public override string Name => _name;
 

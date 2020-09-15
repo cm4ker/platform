@@ -15,7 +15,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
     /// </summary>
     class SynthesizedInstanceTypeSymbol : NamedTypeSymbol
     {
-        readonly PhpCompilation _compilation;
+        readonly AquilaCompilation _compilation;
         private NamedTypeSymbol _baseType;
         readonly NamedTypeSymbol _containingType;
 
@@ -31,7 +31,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             _lazyMembers.Add(symbol);
         }
 
-        public SynthesizedInstanceTypeSymbol(PhpCompilation compilation, string name, NamedTypeSymbol baseType = null,
+        public SynthesizedInstanceTypeSymbol(AquilaCompilation compilation, string name, NamedTypeSymbol baseType = null,
             NamedTypeSymbol containingType = null, Accessibility accessibility = Accessibility.Internal)
         {
             _compilation = compilation;

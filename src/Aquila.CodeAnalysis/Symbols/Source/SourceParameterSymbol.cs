@@ -140,7 +140,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public override Symbol ContainingSymbol => _routine;
 
-        internal override PhpCompilation DeclaringCompilation => _routine.DeclaringCompilation;
+        internal override AquilaCompilation DeclaringCompilation => _routine.DeclaringCompilation;
 
         internal override IModuleSymbol ContainingModule => _routine.ContainingModule;
 

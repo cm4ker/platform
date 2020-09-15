@@ -68,7 +68,7 @@ namespace Aquila.CodeAnalysis.Utilities
             { }
         }
 
-        public static void TrackOnCompleted(this PhpCompilation c)
+        public static void TrackOnCompleted(this AquilaCompilation c)
         {
             if (!c.EventSources.IsDefaultOrEmpty)
             {
@@ -76,7 +76,7 @@ namespace Aquila.CodeAnalysis.Utilities
             }
         }
 
-        public static void TrackException(this PhpCompilation c, Exception ex)
+        public static void TrackException(this AquilaCompilation c, Exception ex)
         {
             if (ex is AggregateException aex && aex.InnerExceptions != null)
             {
@@ -99,17 +99,17 @@ namespace Aquila.CodeAnalysis.Utilities
             }
         }
 
-        public static void TrackMetric(this PhpCompilation c, string name, double value)
+        public static void TrackMetric(this AquilaCompilation c, string name, double value)
         {
             TrackMetric(c.EventSources, name, value);
         }
 
-        public static void TrackEvent(this PhpCompilation c, string name)
+        public static void TrackEvent(this AquilaCompilation c, string name)
         {
             c.EventSources.ForEach(o => o.OnNext(name));
         }
 
-        public static TimeSpanMetric StartMetric(this PhpCompilation c, string name)
+        public static TimeSpanMetric StartMetric(this AquilaCompilation c, string name)
         {
             return StartMetric(c.EventSources, name);
         }

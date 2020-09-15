@@ -1300,7 +1300,7 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         new VariableName Name => BoundName.NameValue;
 
-        PropertySymbol   ResolveSuperglobalProperty(PhpCompilation compilation)
+        PropertySymbol   ResolveSuperglobalProperty(AquilaCompilation compilation)
         {
             // PropertySymbol prop;
             //

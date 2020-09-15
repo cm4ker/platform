@@ -107,9 +107,9 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         /// <summary>
         /// Gets reference to containing compilation object.
         /// </summary>
-        public PhpCompilation Compilation => _compilation;
+        public AquilaCompilation Compilation => _compilation;
 
-        readonly PhpCompilation _compilation;
+        readonly AquilaCompilation _compilation;
 
         /// <summary>
         /// Set of files.
@@ -136,7 +136,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public IDictionary<SyntaxTree, int> OrdinalMap => _ordinalMap;
 
-        public SourceSymbolCollection(PhpCompilation  compilation)
+        public SourceSymbolCollection(AquilaCompilation  compilation)
         {
             Contract.ThrowIfNull(compilation);
             _compilation = compilation;

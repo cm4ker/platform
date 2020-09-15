@@ -25,7 +25,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
         private readonly SourceRoutineSymbol _routine;
         private readonly HashSet<BoundCopyValue> _unnecessaryCopies; // Possibly null if all are necessary
 
-        protected PhpCompilation DeclaringCompilation => _routine.DeclaringCompilation;
+        protected AquilaCompilation DeclaringCompilation => _routine.DeclaringCompilation;
         protected BoundTypeRefFactory BoundTypeRefFactory => DeclaringCompilation.TypeRefFactory;
 
         public int TransformationCount { get; private set; }
@@ -661,7 +661,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return base.VisitLiteral(x);
         }
 
-        public override object VisitFunctionDeclaration(BoundFunctionDeclStatement x)
+        public override object VisitFunctionDeclaration(BoundMethodDeclStmt x)
         {
             if (x.Function.IsConditional && !IsConditional && _routine.IsGlobalScope)
             {
@@ -692,10 +692,10 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return base.VisitIsEmpty(x);
         }
 
-        public override object VisitExpressionStatement(BoundExpressionStatement x)
+        public override object VisitExpressionStatement(BoundExpressionStmt x)
         {
             // Transform the original expression first
-            x = (BoundExpressionStatement) base.VisitExpressionStatement(x);
+            x = (BoundExpressionStmt) base.VisitExpressionStatement(x);
 
             // Transform functions which can be turned only to statements (i.e. not to expressions)
             if (_routine.IsGlobalScope && x.Expression is BoundGlobalFunctionCall call && call.Name.IsDirect)
@@ -708,7 +708,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 {
                     // define("CONST", "value") -> const \CONST = value
                     TransformationCount++;
-                    return new BoundGlobalConstDeclStatement(NameUtils.MakeQualifiedName(constName, true),
+                    return new BoundGlobalConstDeclStmt(NameUtils.MakeQualifiedName(constName, true),
                         args[1].Value);
                 }
             }

@@ -19,7 +19,7 @@ namespace Aquila.CodeAnalysis.Semantics.Model
     {
         #region Fields
 
-        readonly PhpCompilation _compilation;
+        readonly AquilaCompilation _compilation;
         readonly ISymbolProvider _next;
 
         ImmutableArray<NamedTypeSymbol> _lazyExtensionContainers;
@@ -36,14 +36,14 @@ namespace Aquila.CodeAnalysis.Semantics.Model
 
         #endregion
 
-        public GlobalSymbolProvider(PhpCompilation compilation)
+        public GlobalSymbolProvider(AquilaCompilation compilation)
         {
             _compilation = compilation ?? throw new ArgumentNullException(nameof(compilation));
             _next = new SourceSymbolProvider(compilation.SourceSymbolCollection);
         }
 
         static IEnumerable<PEAssemblySymbol> GetExtensionLibraries(
-            PhpCompilation compilation)
+            AquilaCompilation compilation)
             => compilation
                 .GetBoundReferenceManager()
                 .ExplicitReferencesSymbols
@@ -62,7 +62,7 @@ namespace Aquila.CodeAnalysis.Semantics.Model
         }
 
         static IEnumerable<NamedTypeSymbol> ResolveExtensionContainers(
-            PhpCompilation compilation)
+            AquilaCompilation compilation)
         {
             var libraries = GetExtensionLibraries(compilation).SelectMany(r => r.ExtensionContainers);
             var synthesized = compilation.SourceSymbolCollection.DefinedConstantsContainer;
@@ -261,7 +261,7 @@ namespace Aquila.CodeAnalysis.Semantics.Model
         /// <summary>
         /// Gets declaring compilation.
         /// </summary>
-        public PhpCompilation Compilation => _compilation;
+        public AquilaCompilation Compilation => _compilation;
 
         public INamedTypeSymbol ResolveType(QualifiedName name,
             Dictionary<QualifiedName, INamedTypeSymbol> resolved = null)

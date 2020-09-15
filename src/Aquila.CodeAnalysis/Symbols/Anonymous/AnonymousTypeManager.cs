@@ -14,7 +14,7 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
 {
     internal sealed class AnonymousTypeManager : CommonAnonymousTypeManager
     {
-        internal AnonymousTypeManager(PhpCompilation compilation)
+        internal AnonymousTypeManager(AquilaCompilation compilation)
         {
             Debug.Assert(compilation != null);
             this.Compilation = compilation;
@@ -23,7 +23,7 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
         /// <summary> 
         /// Current compilation.
         /// </summary>
-        public PhpCompilation Compilation { get; }
+        public AquilaCompilation Compilation { get; }
 
         /// <summary>
         /// Returns all templates owned by this type manager

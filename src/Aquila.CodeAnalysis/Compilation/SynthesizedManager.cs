@@ -22,7 +22,7 @@ using System.Threading.Tasks;
     {
         readonly PEModuleBuilder _module;
 
-        public PhpCompilation DeclaringCompilation => _module.Compilation;
+        public AquilaCompilation DeclaringCompilation => _module.Compilation;
 
         readonly ConcurrentDictionary<Cci.ITypeDefinition, List<Aquila.CodeAnalysis.Symbols.Symbol>> _membersByType = new ConcurrentDictionary<Cci.ITypeDefinition, List<Aquila.CodeAnalysis.Symbols.Symbol>>();
 

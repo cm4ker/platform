@@ -32,7 +32,7 @@ namespace Aquila.CodeAnalysis.Symbols
     /// }</remarks>
     partial class SourceFileSymbol : NamedTypeSymbol, ILambdaContainerSymbol, IPhpScriptTypeSymbol
     {
-        readonly PhpCompilation _compilation;
+        readonly AquilaCompilation _compilation;
         readonly PhpSyntaxTree _syntaxTree;
 
         readonly SourceGlobalMethodSymbol _mainMethod;
@@ -56,14 +56,14 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public SourceModuleSymbol SourceModule => _compilation.SourceModule;
 
-        public static SourceFileSymbol Create(PhpCompilation compilation, PhpSyntaxTree syntaxTree)
+        public static SourceFileSymbol Create(AquilaCompilation compilation, PhpSyntaxTree syntaxTree)
         {
             return syntaxTree.IsPharEntry
                 ? new SourcePharEntrySymbol(compilation, syntaxTree)
                 : new SourceFileSymbol(compilation, syntaxTree);
         }
 
-        protected SourceFileSymbol(PhpCompilation compilation, PhpSyntaxTree syntaxTree)
+        protected SourceFileSymbol(AquilaCompilation compilation, PhpSyntaxTree syntaxTree)
         {
             Contract.ThrowIfNull(compilation);
             Contract.ThrowIfNull(syntaxTree);
@@ -287,7 +287,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         internal override IModuleSymbol ContainingModule => _compilation.SourceModule;
 
-        internal override PhpCompilation DeclaringCompilation => _compilation;
+        internal override AquilaCompilation DeclaringCompilation => _compilation;
 
         public override Accessibility DeclaredAccessibility => Accessibility.Public;
 
@@ -388,7 +388,7 @@ namespace Aquila.CodeAnalysis.Symbols
     {
         SynthesizedAttributeData _lazyPharAttribute;
 
-        public SourcePharEntrySymbol(PhpCompilation compilation, PhpSyntaxTree syntaxTree)
+        public SourcePharEntrySymbol(AquilaCompilation compilation, PhpSyntaxTree syntaxTree)
             : base(compilation, syntaxTree)
         {
             Debug.Assert(syntaxTree.PharStubFile != null);

@@ -512,7 +512,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             return x;
         }
 
-        public override object VisitGlobalConstDecl(BoundGlobalConstDeclStatement x)
+        public override object VisitGlobalConstDecl(BoundGlobalConstDeclStmt x)
         {
             return x.Update(
                 x.Name,
@@ -579,7 +579,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #region Statements
 
-        public override object VisitEmptyStatement(BoundEmptyStatement x)
+        public override object VisitEmptyStatement(BoundEmptyStmt x)
         {
             return x;
         }
@@ -593,22 +593,22 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 x.NextEdge);
         }
 
-        public override object VisitExpressionStatement(BoundExpressionStatement x)
+        public override object VisitExpressionStatement(BoundExpressionStmt x)
         {
             return x.Update((BoundExpression)Accept(x.Expression));
         }
 
-        public override object VisitReturn(BoundReturnStatement x)
+        public override object VisitReturn(BoundReturnStmt x)
         {
             return x.Update((BoundExpression)Accept(x.Returned));
         }
 
-        public override object VisitThrow(BoundThrowExpression x)
+        public override object VisitThrow(BoundThrowEx x)
         {
             return x.Update(x.Thrown);
         }
 
-        public override object VisitFunctionDeclaration(BoundFunctionDeclStatement x)
+        public override object VisitFunctionDeclaration(BoundMethodDeclStmt x)
         {
             return x;
         }
@@ -623,12 +623,12 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             return x.Update((BoundVariableRef)Accept(x.Variable));
         }
 
-        public override object VisitStaticStatement(BoundStaticVariableStatement x)
+        public override object VisitStaticStatement(BoundStaticVarStmt x)
         {
             return x;
         }
 
-        public override object VisitYieldStatement(BoundYieldStatement x)
+        public override object VisitYieldStatement(BoundYieldStmt x)
         {
             return x.Update(
                 x.YieldIndex,
@@ -636,7 +636,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 (BoundExpression)Accept(x.YieldedKey));
         }
 
-        public override object VisitDeclareStatement(BoundDeclareStatement x)
+        public override object VisitDeclareStatement(BoundDeclareStmt x)
         {
             return x;
         }

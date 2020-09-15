@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Aquila.CodeAnalysis.FlowAnalysis;
+using System.Collections.Immutable;
 using Aquila.Syntax.Text;
 using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Symbols;
@@ -10,19 +11,16 @@ using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal abstract partial class BoundStatement : BoundOperation
+    abstract partial class BoundStatement : BoundOperation
     {
         public BoundStatement()
         {
+            OnCreateImpl();
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
+        partial void OnCreateImpl();
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -44,17 +42,19 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundEmptyStmt : BoundStatement
+    partial class BoundEmptyStmt : BoundStatement
     {
-        private TextSpan _span;
-        public BoundEmptyStmt(TextSpan span)
+        private Microsoft.CodeAnalysis.Text.TextSpan _span;
+        public BoundEmptyStmt(Microsoft.CodeAnalysis.Text.TextSpan span)
         {
             _span = span;
+            OnCreateImpl(span);
         }
 
-        public TextSpan Span
+        partial void OnCreateImpl(Microsoft.CodeAnalysis.Text.TextSpan span);
+        public Microsoft.CodeAnalysis.Text.TextSpan Span
         {
             get
             {
@@ -62,11 +62,7 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
             }
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
+        public override OperationKind Kind => OperationKind.Empty;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -86,7 +82,7 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
             return visitor.VisitEmptyStmt(this);
         }
 
-        public BoundEmptyStmt Update(TextSpan span)
+        public BoundEmptyStmt Update(Microsoft.CodeAnalysis.Text.TextSpan span)
         {
             if (_span == span)
                 return this;
@@ -95,18 +91,20 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics.Graph
 {
-    internal partial class BoundBlock : BoundStatement
+    partial class BoundBlock : BoundStatement
     {
         private List<BoundStatement> _statements;
         private Edge _nextEdge;
-        public BoundBlock(List<BoundStatement> statements, Edge nextEdge)
+        public BoundBlock(List<BoundStatement> statements, Edge nextEdge = null)
         {
             _statements = statements;
             _nextEdge = nextEdge;
+            OnCreateImpl(statements, nextEdge);
         }
 
+        partial void OnCreateImpl(List<BoundStatement> statements, Edge nextEdge);
         public List<BoundStatement> Statements
         {
             get
@@ -123,11 +121,7 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
             }
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
+        public override OperationKind Kind => OperationKind.Block;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -156,19 +150,17 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundDeclareStmt : BoundStatement
+    partial class BoundDeclareStmt : BoundStatement
     {
         public BoundDeclareStmt()
         {
+            OnCreateImpl();
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
+        partial void OnCreateImpl();
+        public override OperationKind Kind => OperationKind.None;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -190,16 +182,18 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundExpressionStmt : BoundStatement
+    partial class BoundExpressionStmt : BoundStatement
     {
         private BoundExpression _expression;
         public BoundExpressionStmt(BoundExpression expression)
         {
             _expression = expression;
+            OnCreateImpl(expression);
         }
 
+        partial void OnCreateImpl(BoundExpression expression);
         public BoundExpression Expression
         {
             get
@@ -208,11 +202,7 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
             }
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
+        public override OperationKind Kind => OperationKind.ExpressionStatement;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -241,16 +231,18 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundMethodDeclStmt : BoundStatement
+    partial class BoundMethodDeclStmt : BoundStatement
     {
         private SourceFunctionSymbol _method;
         public BoundMethodDeclStmt(SourceFunctionSymbol method)
         {
             _method = method;
+            OnCreateImpl(method);
         }
 
+        partial void OnCreateImpl(SourceFunctionSymbol method);
         public SourceFunctionSymbol Method
         {
             get
@@ -259,11 +251,7 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
             }
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
+        public override OperationKind Kind => OperationKind.LocalFunction;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -292,19 +280,37 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundGlobalConstDeclStmt : BoundStatement
+    partial class BoundGlobalConstDeclStmt : BoundStatement
     {
-        public BoundGlobalConstDeclStmt()
+        private QualifiedName _name;
+        private BoundExpression _value;
+        public BoundGlobalConstDeclStmt(QualifiedName name, BoundExpression value)
         {
+            _name = name;
+            _value = value;
+            OnCreateImpl(name, value);
         }
 
-        public override OperationKind Kind
+        partial void OnCreateImpl(QualifiedName name, BoundExpression value);
+        public QualifiedName Name
         {
-            get;
+            get
+            {
+                return _name;
+            }
         }
 
+        public BoundExpression Value
+        {
+            get
+            {
+                return _value;
+            }
+        }
+
+        public override OperationKind Kind => OperationKind.VariableDeclaration;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -323,19 +329,28 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
         {
             return visitor.VisitGlobalConstDeclStmt(this);
         }
+
+        public BoundGlobalConstDeclStmt Update(QualifiedName name, BoundExpression value)
+        {
+            if (_name == name && _value == value)
+                return this;
+            return new BoundGlobalConstDeclStmt(name, value);
+        }
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundReturnStmt : BoundStatement
+    partial class BoundReturnStmt : BoundStatement
     {
         private BoundExpression _returned;
         public BoundReturnStmt(BoundExpression returned)
         {
             _returned = returned;
+            OnCreateImpl(returned);
         }
 
+        partial void OnCreateImpl(BoundExpression returned);
         public BoundExpression Returned
         {
             get
@@ -344,11 +359,7 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
             }
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
+        public override OperationKind Kind => OperationKind.Return;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -377,19 +388,16 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundStaticVarStmt : BoundStatement
+    partial class BoundStaticVarStmt : BoundStatement
     {
         public BoundStaticVarStmt()
         {
+            OnCreateImpl();
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
+        partial void OnCreateImpl();
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -411,19 +419,17 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundYieldStmt : BoundStatement
+    partial class BoundYieldStmt : BoundStatement
     {
         public BoundYieldStmt()
         {
+            OnCreateImpl();
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
+        partial void OnCreateImpl();
+        public override OperationKind Kind => OperationKind.YieldReturn;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -445,19 +451,16 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal abstract partial class BoundExpression : BoundOperation
+    abstract partial class BoundExpression : BoundOperation
     {
         public BoundExpression()
         {
+            OnCreateImpl();
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
+        partial void OnCreateImpl();
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -479,19 +482,27 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundArrayEx : BoundExpression
+    partial class BoundArrayEx : BoundExpression
     {
-        public BoundArrayEx()
+        private ImmutableArray<KeyValuePair<BoundExpression, BoundExpression>> _items;
+        public BoundArrayEx(ImmutableArray<KeyValuePair<BoundExpression, BoundExpression>> items)
         {
+            _items = items;
+            OnCreateImpl(items);
         }
 
-        public override OperationKind Kind
+        partial void OnCreateImpl(ImmutableArray<KeyValuePair<BoundExpression, BoundExpression>> items);
+        public ImmutableArray<KeyValuePair<BoundExpression, BoundExpression>> Items
         {
-            get;
+            get
+            {
+                return _items;
+            }
         }
 
+        public override OperationKind Kind => OperationKind.ArrayCreation;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -510,22 +521,26 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
         {
             return visitor.VisitArrayEx(this);
         }
+
+        public BoundArrayEx Update(ImmutableArray<KeyValuePair<BoundExpression, BoundExpression>> items)
+        {
+            if (_items == items)
+                return this;
+            return new BoundArrayEx(items);
+        }
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundArrayInit : BoundExpression
+    partial class BoundArrayInit : BoundExpression
     {
         public BoundArrayInit()
         {
+            OnCreateImpl();
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
+        partial void OnCreateImpl();
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -547,17 +562,34 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundAssignEx : BoundExpression
+    partial class BoundAssignEx : BoundExpression
     {
-        public BoundAssignEx()
+        private BoundReferenceExpression _target;
+        private BoundExpression _value;
+        public BoundAssignEx(BoundReferenceExpression target, BoundExpression value)
         {
+            _target = target;
+            _value = value;
+            OnCreateImpl(target, value);
         }
 
-        public override OperationKind Kind
+        partial void OnCreateImpl(BoundReferenceExpression target, BoundExpression value);
+        public BoundReferenceExpression Target
         {
-            get;
+            get
+            {
+                return _target;
+            }
+        }
+
+        public BoundExpression Value
+        {
+            get
+            {
+                return _value;
+            }
         }
 
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
@@ -578,12 +610,19 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
         {
             return visitor.VisitAssignEx(this);
         }
+
+        public BoundAssignEx Update(BoundReferenceExpression target, BoundExpression value)
+        {
+            if (_target == target && _value == value)
+                return this;
+            return new BoundAssignEx(target, value);
+        }
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundUnaryEx : BoundExpression
+    partial class BoundUnaryEx : BoundExpression
     {
         private BoundExpression _operand;
         private Operations _operation;
@@ -591,8 +630,10 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
         {
             _operand = operand;
             _operation = operation;
+            OnCreateImpl(operand, operation);
         }
 
+        partial void OnCreateImpl(BoundExpression operand, Operations operation);
         public BoundExpression Operand
         {
             get
@@ -609,11 +650,7 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
             }
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
+        public override OperationKind Kind => OperationKind.UnaryOperator;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -642,9 +679,9 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundBinaryEx : BoundExpression
+    partial class BoundBinaryEx : BoundExpression
     {
         private BoundExpression _left;
         private BoundExpression _right;
@@ -654,8 +691,10 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
             _left = left;
             _right = right;
             _operation = operation;
+            OnCreateImpl(left, right, operation);
         }
 
+        partial void OnCreateImpl(BoundExpression left, BoundExpression right, Operations operation);
         public BoundExpression Left
         {
             get
@@ -680,11 +719,7 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
             }
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
+        public override OperationKind Kind => OperationKind.BinaryOperator;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -713,17 +748,44 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundConditionalEx : BoundExpression
+    partial class BoundConditionalEx : BoundExpression
     {
-        public BoundConditionalEx()
+        private BoundExpression _condition;
+        private BoundExpression _ifTrue;
+        private BoundExpression _ifFalse;
+        public BoundConditionalEx(BoundExpression condition, BoundExpression ifTrue, BoundExpression ifFalse)
         {
+            _condition = condition;
+            _ifTrue = ifTrue;
+            _ifFalse = ifFalse;
+            OnCreateImpl(condition, ifTrue, ifFalse);
         }
 
-        public override OperationKind Kind
+        partial void OnCreateImpl(BoundExpression condition, BoundExpression ifTrue, BoundExpression ifFalse);
+        public BoundExpression Condition
         {
-            get;
+            get
+            {
+                return _condition;
+            }
+        }
+
+        public BoundExpression IfTrue
+        {
+            get
+            {
+                return _ifTrue;
+            }
+        }
+
+        public BoundExpression IfFalse
+        {
+            get
+            {
+                return _ifFalse;
+            }
         }
 
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
@@ -744,12 +806,19 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
         {
             return visitor.VisitConditionalEx(this);
         }
+
+        public BoundConditionalEx Update(BoundExpression condition, BoundExpression ifTrue, BoundExpression ifFalse)
+        {
+            if (_condition == condition && _ifTrue == ifTrue && _ifFalse == ifFalse)
+                return this;
+            return new BoundConditionalEx(condition, ifTrue, ifFalse);
+        }
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundConversionEx : BoundExpression
+    partial class BoundConversionEx : BoundExpression
     {
         private BoundExpression _operand;
         private BoundTypeRef _targetType;
@@ -757,8 +826,10 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
         {
             _operand = operand;
             _targetType = targetType;
+            OnCreateImpl(operand, targetType);
         }
 
+        partial void OnCreateImpl(BoundExpression operand, BoundTypeRef targetType);
         public BoundExpression Operand
         {
             get
@@ -773,11 +844,6 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
             {
                 return _targetType;
             }
-        }
-
-        public override OperationKind Kind
-        {
-            get;
         }
 
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
@@ -808,27 +874,24 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundLiteral : BoundExpression
+    partial class BoundLiteral : BoundExpression
     {
         private object _value;
         public BoundLiteral(object value)
         {
             _value = value;
+            OnCreateImpl(value);
         }
 
+        partial void OnCreateImpl(object value);
         public object Value
         {
             get
             {
                 return _value;
             }
-        }
-
-        public override OperationKind Kind
-        {
-            get;
         }
 
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
@@ -859,19 +922,16 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundMethod : BoundExpression
+    partial class BoundMethod : BoundExpression
     {
         public BoundMethod()
         {
+            OnCreateImpl();
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
+        partial void OnCreateImpl();
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -893,19 +953,17 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundCallEx : BoundExpression
+    partial class BoundCallEx : BoundExpression
     {
         public BoundCallEx()
         {
+            OnCreateImpl();
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
+        partial void OnCreateImpl();
+        public override OperationKind Kind => OperationKind.None;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -927,19 +985,27 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundThrowEx : BoundExpression
+    partial class BoundThrowEx : BoundExpression
     {
-        public BoundThrowEx()
+        private BoundExpression _thrown;
+        public BoundThrowEx(BoundExpression thrown)
         {
+            _thrown = thrown;
+            OnCreateImpl(thrown);
         }
 
-        public override OperationKind Kind
+        partial void OnCreateImpl(BoundExpression thrown);
+        public BoundExpression Thrown
         {
-            get;
+            get
+            {
+                return _thrown;
+            }
         }
 
+        public override OperationKind Kind => OperationKind.Throw;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -958,12 +1024,19 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
         {
             return visitor.VisitThrowEx(this);
         }
+
+        public BoundThrowEx Update(BoundExpression thrown)
+        {
+            if (_thrown == thrown)
+                return this;
+            return new BoundThrowEx(thrown);
+        }
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal abstract partial class BoundArgument : BoundOperation
+    partial class BoundArgument : BoundOperation
     {
         private BoundExpression _value;
         private ArgumentKind _argumentKind;
@@ -971,8 +1044,10 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
         {
             _value = value;
             _argumentKind = argumentKind;
+            OnCreateImpl(value, argumentKind);
         }
 
+        partial void OnCreateImpl(BoundExpression value, ArgumentKind argumentKind);
         public BoundExpression Value
         {
             get
@@ -987,11 +1062,6 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
             {
                 return _argumentKind;
             }
-        }
-
-        public override OperationKind Kind
-        {
-            get;
         }
 
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
@@ -1012,12 +1082,19 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
         {
             return visitor.VisitArgument(this);
         }
+
+        public BoundArgument Update(BoundExpression value, ArgumentKind argumentKind)
+        {
+            if (_value == value && _argumentKind == argumentKind)
+                return this;
+            return new BoundArgument(value, argumentKind);
+        }
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal abstract partial class BoundRoutineName : BoundOperation
+    partial class BoundRoutineName : BoundOperation
     {
         private QualifiedName _name;
         private BoundExpression _nameExpr;
@@ -1025,8 +1102,10 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
         {
             _name = name;
             _nameExpr = nameExpr;
+            OnCreateImpl(name, nameExpr);
         }
 
+        partial void OnCreateImpl(QualifiedName name, BoundExpression nameExpr);
         public QualifiedName name
         {
             get
@@ -1041,11 +1120,6 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
             {
                 return _nameExpr;
             }
-        }
-
-        public override OperationKind Kind
-        {
-            get;
         }
 
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
@@ -1066,22 +1140,26 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
         {
             return visitor.VisitRoutineName(this);
         }
+
+        public BoundRoutineName Update(QualifiedName name, BoundExpression nameExpr)
+        {
+            if (_name == name && _nameExpr == nameExpr)
+                return this;
+            return new BoundRoutineName(name, nameExpr);
+        }
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal abstract partial class BoundTypeRef : BoundOperation
+    abstract partial class BoundTypeRef : BoundOperation
     {
         public BoundTypeRef()
         {
+            OnCreateImpl();
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
+        partial void OnCreateImpl();
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1103,27 +1181,24 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics.TypeRef
 {
-    internal partial class BoundArrayTypeRef : BoundTypeRef
+    partial class BoundArrayTypeRef : BoundTypeRef
     {
         private TypeRefMask _elementType;
         public BoundArrayTypeRef(TypeRefMask elementType)
         {
             _elementType = elementType;
+            OnCreateImpl(elementType);
         }
 
+        partial void OnCreateImpl(TypeRefMask elementType);
         public TypeRefMask ElementType
         {
             get
             {
                 return _elementType;
             }
-        }
-
-        public override OperationKind Kind
-        {
-            get;
         }
 
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
@@ -1147,9 +1222,9 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics.TypeRef
 {
-    internal partial class BoundClassTypeRef : BoundTypeRef
+    partial class BoundClassTypeRef : BoundTypeRef
     {
         private QualifiedName _qName;
         private SourceRoutineSymbol _routine;
@@ -1159,8 +1234,10 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
             _qName = qName;
             _routine = routine;
             _arity = arity;
+            OnCreateImpl(qName, routine, arity);
         }
 
+        partial void OnCreateImpl(QualifiedName qName, SourceRoutineSymbol routine, int arity);
         public QualifiedName QName
         {
             get
@@ -1185,11 +1262,6 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
             }
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1211,19 +1283,16 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics.TypeRef
 {
-    internal partial class BoundGenericClassTypeRef : BoundTypeRef
+    partial class BoundGenericClassTypeRef : BoundTypeRef
     {
         public BoundGenericClassTypeRef()
         {
+            OnCreateImpl();
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
+        partial void OnCreateImpl();
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1245,27 +1314,24 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics.TypeRef
 {
-    internal partial class BoundPrimitiveTypeRef : BoundTypeRef
+    partial class BoundPrimitiveTypeRef : BoundTypeRef
     {
         private AquilaTypeCode _type;
         public BoundPrimitiveTypeRef(AquilaTypeCode type)
         {
             _type = type;
+            OnCreateImpl(type);
         }
 
+        partial void OnCreateImpl(AquilaTypeCode type);
         public AquilaTypeCode Type
         {
             get
             {
                 return _type;
             }
-        }
-
-        public override OperationKind Kind
-        {
-            get;
         }
 
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
@@ -1289,27 +1355,24 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics.TypeRef
 {
-    internal partial class BoundTypeRefFromSymbol : BoundTypeRef
+    partial class BoundTypeRefFromSymbol : BoundTypeRef
     {
         private ITypeSymbol _symbol;
         public BoundTypeRefFromSymbol(ITypeSymbol symbol)
         {
             _symbol = symbol;
+            OnCreateImpl(symbol);
         }
 
+        partial void OnCreateImpl(ITypeSymbol symbol);
         public ITypeSymbol Symbol
         {
             get
             {
                 return _symbol;
             }
-        }
-
-        public override OperationKind Kind
-        {
-            get;
         }
 
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
@@ -1333,27 +1396,24 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal abstract partial class BoundVariable : BoundOperation
+    abstract partial class BoundVariable : BoundOperation
     {
         private VariableKind _variableKind;
         public BoundVariable(VariableKind variableKind)
         {
             _variableKind = variableKind;
+            OnCreateImpl(variableKind);
         }
 
+        partial void OnCreateImpl(VariableKind variableKind);
         public VariableKind VariableKind
         {
             get
             {
                 return _variableKind;
             }
-        }
-
-        public override OperationKind Kind
-        {
-            get;
         }
 
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
@@ -1377,27 +1437,24 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundIndirectLocal : BoundVariable
+    partial class BoundIndirectLocal : BoundVariable
     {
-        private ParameterSymbol _symbol;
-        public BoundIndirectLocal(ParameterSymbol symbol): base(VariableKind.LocalVariable)
+        private BoundExpression _nameExpr;
+        public BoundIndirectLocal(BoundExpression nameExpr): base(VariableKind.LocalVariable)
         {
-            _symbol = symbol;
+            _nameExpr = nameExpr;
+            OnCreateImpl(nameExpr);
         }
 
-        public ParameterSymbol Symbol
+        partial void OnCreateImpl(BoundExpression nameExpr);
+        public BoundExpression NameExpr
         {
             get
             {
-                return _symbol;
+                return _nameExpr;
             }
-        }
-
-        public override OperationKind Kind
-        {
-            get;
         }
 
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
@@ -1421,17 +1478,19 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundLocal : BoundVariable
+    partial class BoundLocal : BoundVariable
     {
         private SourceLocalSymbol _symbol;
         private VariableKind _variableKind;
-        public BoundLocal(SourceLocalSymbol symbol, VariableKind variableKind): base(variableKind)
+        public BoundLocal(SourceLocalSymbol symbol, VariableKind variableKind = Symbols.VariableKind.LocalVariable): base(variableKind)
         {
             _symbol = symbol;
+            OnCreateImpl(symbol, variableKind);
         }
 
+        partial void OnCreateImpl(SourceLocalSymbol symbol, VariableKind variableKind);
         public SourceLocalSymbol Symbol
         {
             get
@@ -1440,11 +1499,7 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
             }
         }
 
-        public override OperationKind Kind
-        {
-            get;
-        }
-
+        public override OperationKind Kind => OperationKind.VariableDeclaration;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1466,29 +1521,37 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundParameter : BoundVariable
+    partial class BoundParameter : BoundVariable
     {
-        private ParameterSymbol _symbol;
-        public BoundParameter(ParameterSymbol symbol): base(VariableKind.Parameter)
+        private ParameterSymbol _parameterSymbol;
+        private BoundExpression _initializer;
+        public BoundParameter(ParameterSymbol parameterSymbol, BoundExpression initializer): base(VariableKind.Parameter)
         {
-            _symbol = symbol;
+            _parameterSymbol = parameterSymbol;
+            _initializer = initializer;
+            OnCreateImpl(parameterSymbol, initializer);
         }
 
-        public ParameterSymbol Symbol
+        partial void OnCreateImpl(ParameterSymbol parameterSymbol, BoundExpression initializer);
+        public ParameterSymbol ParameterSymbol
         {
             get
             {
-                return _symbol;
+                return _parameterSymbol;
             }
         }
 
-        public override OperationKind Kind
+        public BoundExpression Initializer
         {
-            get;
+            get
+            {
+                return _initializer;
+            }
         }
 
+        public override OperationKind Kind => OperationKind.ParameterInitializer;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1510,27 +1573,24 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal partial class BoundThisParameter : BoundVariable
+    partial class BoundThisParameter : BoundVariable
     {
         private SourceRoutineSymbol _routine;
         public BoundThisParameter(SourceRoutineSymbol routine): base(VariableKind.ThisParameter)
         {
             _routine = routine;
+            OnCreateImpl(routine);
         }
 
+        partial void OnCreateImpl(SourceRoutineSymbol routine);
         public SourceRoutineSymbol Routine
         {
             get
             {
                 return _routine;
             }
-        }
-
-        public override OperationKind Kind
-        {
-            get;
         }
 
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
@@ -1554,9 +1614,9 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
-    internal abstract partial class BoundVariableName : BoundOperation
+    abstract partial class BoundVariableName : BoundOperation
     {
         private VariableName _nameValue;
         private BoundExpression _nameExpression;
@@ -1564,8 +1624,10 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
         {
             _nameValue = nameValue;
             _nameExpression = nameExpression;
+            OnCreateImpl(nameValue, nameExpression);
         }
 
+        partial void OnCreateImpl(VariableName nameValue, BoundExpression nameExpression);
         public VariableName NameValue
         {
             get
@@ -1580,11 +1642,6 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
             {
                 return _nameExpression;
             }
-        }
-
-        public override OperationKind Kind
-        {
-            get;
         }
 
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
@@ -1608,7 +1665,7 @@ namespace Aquila.CodeAnalysis.Semantics.PrivateNS
     }
 }
 
-namespace Aquila.CodeAnalysis.Semantics.PrivateNS
+namespace Aquila.CodeAnalysis.Semantics
 {
     public abstract partial class AquilaOperationVisitor<TResult>
     {

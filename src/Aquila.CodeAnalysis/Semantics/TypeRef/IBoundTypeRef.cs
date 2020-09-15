@@ -65,19 +65,19 @@ namespace Aquila.CodeAnalysis.Semantics
         /// Transfers this type reference to the target type context.
         /// The method may return <c>this</c> instance, it cannot return <c>null</c>.
         /// </summary>
-        IBoundTypeRef   Transfer(TypeRefContext  source, TypeRefContext  target);
+        IBoundTypeRef Transfer(TypeRefContext source, TypeRefContext target);
 
         /// <summary>
         /// Resolve <see cref="ITypeSymbol"/> if possible.
         /// Can be <c>null</c>.
         /// </summary>
-        ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation);
+        ITypeSymbol ResolveTypeSymbol(AquilaCompilation compilation);
     }
 
     /// <summary>
     /// Common <see cref="IBoundTypeRef"/> implementation.
     /// </summary>
-    internal abstract class BoundTypeRef : BoundOperation, IBoundTypeRef
+    internal abstract partial class BoundTypeRef : IBoundTypeRef
     {
         public virtual bool IsNullable { get; set; }
         public virtual bool IsObject => false;
@@ -88,8 +88,8 @@ namespace Aquila.CodeAnalysis.Semantics
         public virtual TypeRefMask ElementType => TypeRefMask.AnyType;
         public virtual ImmutableArray<IBoundTypeRef> TypeArguments => ImmutableArray<IBoundTypeRef>.Empty;
 
-        public abstract ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false);
-        public abstract ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation);
+        internal abstract ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false);
+        public abstract ITypeSymbol ResolveTypeSymbol(AquilaCompilation compilation);
 
         /// <summary>
         /// Gets type mask of the type reference in given context.
@@ -116,18 +116,22 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// Lazily set type symbol if resolved.
         /// </summary>
-        public TypeSymbol ResolvedType { get; set; }
+        internal TypeSymbol ResolvedType { get; set; }
 
         /// <summary>
         /// Alias to <see cref="ResolvedType"/>.
         /// </summary>
         public override ITypeSymbol Type => ResolvedType;
 
-        public override void Accept(OperationVisitor visitor) => visitor.DefaultVisit(this);
 
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
-            TArgument argument) => visitor.DefaultVisit(this, argument);
+        partial void AcceptImpl(OperationVisitor visitor)
+        {
+            visitor.DefaultVisit(this);
+        }
 
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitTypeRef(this);
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result)
+        {
+            result = visitor.DefaultVisit(this, argument);
+        }
     }
 }

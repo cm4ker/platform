@@ -11,7 +11,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
     /// Represents control flow block.
     /// </summary>
     [DebuggerDisplay("{DebugDisplay}")]
-    public partial class BoundBlock : BoundStatement, IBlockOperation
+    public partial class BoundBlock : IBlockOperation
     {
         /// <summary>
         /// Internal name of the block.
@@ -22,8 +22,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// Debugger display.
         /// </summary>
         internal string DebugDisplay => $"{FlowState?.Routine?.RoutineName}: {DebugName} #{Ordinal}";
-
-        readonly List<BoundStatement> _statements;
 
         Edge _next;
 
@@ -37,20 +35,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         }
 
         private int _tag;
-
-        /// <summary>
-        /// Gets statements contained in this block.
-        /// </summary>
-        public List<BoundStatement> Statements => _statements;
-
-        /// <summary>
-        /// Gets edge pointing out of this block.
-        /// </summary>
-        public Edge NextEdge
-        {
-            get { return _next; }
-            internal set { _next = value; }
-        }
 
         /// <summary>
         /// Gets block topological index.
@@ -69,34 +53,10 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// </summary>
         public bool IsDead => _ordinal < 0;
 
-        internal BoundBlock()
-            : this(new List<BoundStatement>())
-        {
-        }
-
-        internal BoundBlock(List<BoundStatement> statements)
-        {
-            Debug.Assert(statements != null);
-            _statements = statements;
-        }
-
-        internal BoundBlock Update(List<BoundStatement> statements, Edge nextEdge)
-        {
-            if (statements == _statements && nextEdge == _next)
-            {
-                return this;
-            }
-            else
-            {
-                return new BoundBlock(statements) {NextEdge = nextEdge,}
-                    .WithLocalPropertiesFrom(this);
-            }
-        }
-
         internal virtual BoundBlock Clone()
         {
             // We duplicate _statements because of the List's mutability
-            return new BoundBlock(new List<BoundStatement>(_statements)) {NextEdge = this.NextEdge}
+            return new BoundBlock(new List<BoundStatement>(_statements), this._nextEdge)
                 .WithLocalPropertiesFrom(this);
         }
 
@@ -112,7 +72,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// Traverses empty blocks to their non-empty successor. Skips duplicities.
         /// </summary>
-        internal static List<BoundBlock>   SkipEmpty(IEnumerable<BoundBlock>  blocks)
+        internal static List<BoundBlock> SkipEmpty(IEnumerable<BoundBlock> blocks)
         {
             Contract.ThrowIfNull(blocks);
 
@@ -154,18 +114,14 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         protected virtual ImmutableArray<ILocalSymbol> Locals => ImmutableArray<ILocalSymbol>.Empty;
 
-        public override OperationKind Kind => OperationKind.Block;
-
         SyntaxNode IOperation.Syntax => null;
 
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
-            visitor.VisitBlockStatement(this);
+        partial void AcceptImpl(OperationVisitor visitor) => visitor.VisitBlock(this);
 
-        public override void Accept(OperationVisitor visitor) => visitor.VisitBlock(this);
-
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
-            TArgument argument)
-            => visitor.VisitBlock(this, argument);
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result)
+        {
+            result = visitor.VisitBlock(this, argument);
+        }
 
         #endregion
     }
@@ -182,12 +138,17 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         protected override string DebugName => "Start";
 
         internal StartBlock()
-            : base()
+            : base(new List<BoundStatement>())
         {
         }
 
         private StartBlock(List<BoundStatement> statements)
             : base(statements)
+        {
+        }
+
+        private StartBlock(List<BoundStatement> statements, Edge nextEdge)
+            : base(statements, nextEdge)
         {
         }
 
@@ -200,14 +161,14 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             }
             else
             {
-                return new StartBlock(statements) {NextEdge = nextEdge}
+                return new StartBlock(statements, nextEdge)
                     .WithLocalPropertiesFrom(this);
             }
         }
 
         internal override BoundBlock Clone()
         {
-            return new StartBlock(new List<BoundStatement>(Statements)) {NextEdge = this.NextEdge}
+            return new StartBlock(new List<BoundStatement>(Statements), NextEdge)
                 .WithLocalPropertiesFrom(this);
         }
 

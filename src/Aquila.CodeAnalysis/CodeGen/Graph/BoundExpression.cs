@@ -3203,7 +3203,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    partial class BoundThrowExpression
+    partial class BoundThrowEx
     {
         internal override TypeSymbol Emit(CodeGenerator cg)
         {

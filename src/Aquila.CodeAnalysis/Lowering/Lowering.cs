@@ -10,7 +10,7 @@ namespace Aquila.CodeAnalysis.Lowering
     {
         private readonly SourceRoutineSymbol _routine;
 
-        protected PhpCompilation DeclaringCompilation => _routine.DeclaringCompilation;
+        protected AquilaCompilation DeclaringCompilation => _routine.DeclaringCompilation;
         protected BoundTypeRefFactory BoundTypeRefFactory => DeclaringCompilation.TypeRefFactory;
 
         private LocalRewriter()

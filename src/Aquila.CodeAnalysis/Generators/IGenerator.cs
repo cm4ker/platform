@@ -9,7 +9,7 @@ namespace Aquila.CodeAnalysis.Generators
     /// </summary>
     public interface IGenerator
     {
-        void Init(PhpCompilation compilation);
+        void Init(AquilaCompilation compilation);
 
         public IEnumerable<INamedTypeSymbol> Tests();
     }

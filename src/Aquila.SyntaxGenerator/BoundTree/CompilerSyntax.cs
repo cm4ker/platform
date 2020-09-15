@@ -65,5 +65,8 @@ namespace Aquila.SyntaxGenerator.BoundTree
         /// </summary>
         [XmlAttribute]
         public bool NotThrowExMembersNotFound { get; set; }
+
+        [XmlAttribute]
+        public string OperationKind { get; set; }
     }
 }

@@ -18,16 +18,12 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
     #region BoundPrimitiveTypeRef
 
     [DebuggerDisplay("BoundPrimitiveTypeRef ({_type})")]
-    sealed class BoundPrimitiveTypeRef : BoundTypeRef
+    sealed partial class BoundPrimitiveTypeRef : BoundTypeRef
     {
         public AquilaTypeCode TypeCode => _type;
-        readonly AquilaTypeCode _type;
 
-        public BoundPrimitiveTypeRef(AquilaTypeCode type)
+        partial void OnCreateImpl(AquilaTypeCode type)
         {
-            _type = type;
-
-            //
             IsNullable = type == AquilaTypeCode.Null || type == AquilaTypeCode.Mixed;
         }
 
@@ -42,13 +38,13 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
 
         public override bool IsPrimitiveType => _type != AquilaTypeCode.Object;
 
-        public override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
+        internal override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
         {
             // primitive type does not have (should not have) PhpTypeInfo
             throw new NotSupportedException();
         }
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(AquilaCompilation compilation)
         {
             var ct = compilation.CoreTypes;
 
@@ -271,28 +267,19 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
     #region BoundArrayTypeRef
 
     [DebuggerDisplay("BoundArrayTypeRef ({_elementType})")]
-    sealed class BoundArrayTypeRef : BoundTypeRef
+    sealed partial class BoundArrayTypeRef : BoundTypeRef
     {
-        readonly TypeRefMask _elementType;
-
-        public BoundArrayTypeRef(TypeRefMask elementType)
-        {
-            _elementType = elementType;
-        }
-
         public override bool IsArray => true;
 
         public override bool IsPrimitiveType => true;
 
-        public override TypeRefMask ElementType => _elementType;
-
-        public override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
+        internal override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
         {
             // primitive type does not have (should not have) PhpTypeInfo
             throw new NotSupportedException();
         }
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(AquilaCompilation compilation)
         {
             throw new NotImplementedException();
             //return compilation.CoreTypes.PhpArray.Symbol;
@@ -345,7 +332,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             throw ExceptionUtilities.Unreachable;
         }
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(AquilaCompilation compilation)
         {
             throw new NotImplementedException();
             //return compilation.CoreTypes.Closure.Symbol;
@@ -372,32 +359,22 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
     #region BoundClassTypeRef
 
     [DebuggerDisplay("BoundClassTypeRef ({ToString(),nq})")]
-    sealed class BoundClassTypeRef : BoundTypeRef
+    sealed partial class BoundClassTypeRef
     {
         public QualifiedName ClassName { get; }
 
-        readonly SourceRoutineSymbol _routine;
 
-        //readonly SourceTypeSymbol _self;
-        readonly int _arity;
-
-        public BoundClassTypeRef(QualifiedName qname, SourceRoutineSymbol routine, object self,
-            int arity = -1)
+        partial void OnCreateImpl(QualifiedName qName, SourceRoutineSymbol routine, int arity)
         {
-            if (qname.IsReservedClassName)
+            if (qName.IsReservedClassName)
             {
                 throw new ArgumentException();
             }
-
-            ClassName = qname;
-            _routine = routine;
-            //_self = self;
-            _arity = arity;
         }
 
         public override bool IsObject => true;
 
-        public override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
+        internal override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
         {
             var t = ResolvedType ?? (TypeSymbol) ResolveTypeSymbol(cg.DeclaringCompilation);
             if (t.IsValidType())
@@ -415,7 +392,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             }
         }
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(AquilaCompilation compilation)
         {
             if (ResolvedType.IsValidType() && !ResolvedType.IsUnreachable)
             {
@@ -496,7 +473,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
     #region BoundGenericClassTypeRef
 
     [DebuggerDisplay("BoundGenericClassTypeRef ({_targetType,nq}`{_typeArguments.Length})")]
-    sealed class BoundGenericClassTypeRef : BoundTypeRef
+    sealed partial class BoundGenericClassTypeRef : BoundTypeRef
     {
         readonly IBoundTypeRef _targetType;
         readonly ImmutableArray<BoundTypeRef> _typeArguments;
@@ -517,7 +494,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             return cg.EmitLoadPhpTypeInfo(t);
         }
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(AquilaCompilation compilation)
         {
             var resolved = (NamedTypeSymbol) (_targetType.Type ?? _targetType.ResolveTypeSymbol(compilation));
 
@@ -666,7 +643,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
                                                             (other is BoundIndirectTypeRef it &&
                                                              it._typeExpression == _typeExpression);
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(AquilaCompilation compilation)
         {
             // MOVED TO GRAPH REWRITER:
 
@@ -739,7 +716,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             throw new NotImplementedException();
         }
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation)
+        public override ITypeSymbol ResolveTypeSymbol(AquilaCompilation compilation)
         {
             var result = (TypeSymbol) TypeRefs[0].ResolveTypeSymbol(compilation);
 
@@ -805,10 +782,8 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
     /// <summary>
     /// <see cref="IBoundTypeRef"/> refering to resolved reference type symbol.
     /// </summary>
-    sealed class BoundTypeRefFromSymbol : BoundTypeRef
+    sealed partial class BoundTypeRefFromSymbol : BoundTypeRef
     {
-        readonly ITypeSymbol _symbol;
-
         bool IsPeachpieCorLibrary => _symbol.ContainingAssembly is AssemblySymbol ass && ass.IsPeachpieCorLibrary;
 
         public override bool IsObject
@@ -846,24 +821,21 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
 
         public override ITypeSymbol Type => _symbol;
 
-        public BoundTypeRefFromSymbol(ITypeSymbol symbol)
+
+        partial void OnCreateImpl(ITypeSymbol symbol)
         {
             Debug.Assert(((TypeSymbol) symbol).IsValidType());
-
-            Debug.Assert(!symbol.Is_PhpValue());
-            Debug.Assert(!symbol.Is_PhpAlias());
-
-            _symbol = symbol ?? throw ExceptionUtilities.ArgumentNull(nameof(symbol));
+            Contract.ThrowIfNull(_symbol);
         }
 
         public override string ToString() => _symbol.ToString();
 
-        public override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false) =>
+        internal override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false) =>
             cg.EmitLoadPhpTypeInfo(_symbol);
 
         public override IBoundTypeRef Transfer(TypeRefContext source, TypeRefContext target) => this;
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation) =>
+        public override ITypeSymbol ResolveTypeSymbol(AquilaCompilation compilation) =>
             _symbol;
 
         public override TypeRefMask GetTypeRefMask(TypeRefContext ctx)
@@ -920,7 +892,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
 
         public override bool IsObject => true;
 
-        public override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
+        internal override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
         {
             return _place
                 .EmitLoad(cg.Builder)
@@ -930,7 +902,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         public override bool Equals(IBoundTypeRef other) =>
             base.Equals(other) || (other is BoundTypeRefFromPlace pt && pt._place == _place);
 
-        public override ITypeSymbol ResolveTypeSymbol(PhpCompilation compilation) =>
+        public override ITypeSymbol ResolveTypeSymbol(AquilaCompilation compilation) =>
             throw ExceptionUtilities.Unreachable;
 
         public override IBoundTypeRef Transfer(TypeRefContext source, TypeRefContext target) =>

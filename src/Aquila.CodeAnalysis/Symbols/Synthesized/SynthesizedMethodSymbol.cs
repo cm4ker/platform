@@ -113,7 +113,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         internal override IModuleSymbol ContainingModule => _module;
 
-        internal override PhpCompilation DeclaringCompilation => _module.DeclaringCompilation;
+        internal override AquilaCompilation DeclaringCompilation => _module.DeclaringCompilation;
 
         public override Accessibility DeclaredAccessibility => _accessibility;
 

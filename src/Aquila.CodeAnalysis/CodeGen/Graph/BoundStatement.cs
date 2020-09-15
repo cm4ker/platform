@@ -22,7 +22,7 @@ namespace Aquila.CodeAnalysis.Semantics
         void IGenerator.Generate(CodeGenerator cg) => Emit(cg);
     }
 
-    partial class BoundEmptyStatement
+    partial class BoundEmptyStmt
     {
         internal override void Emit(CodeGenerator cg)
         {
@@ -33,7 +33,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    partial class BoundExpressionStatement
+    partial class BoundExpressionStmt
     {
         internal override void Emit(CodeGenerator cg)
         {
@@ -51,7 +51,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    partial class BoundReturnStatement
+    partial class BoundReturnStmt
     {
         internal override void Emit(CodeGenerator cg)
         {
@@ -108,7 +108,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    partial class BoundFunctionDeclStatement
+    partial class BoundMethodDeclStmt
     {
         internal override void Emit(CodeGenerator cg)
         {
@@ -159,7 +159,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    partial class BoundStaticVariableStatement
+    partial class BoundStaticVarStmt
     {
         internal override void Emit(CodeGenerator cg)
         {
@@ -191,7 +191,7 @@ namespace Aquila.CodeAnalysis.Semantics
                 routine: cg.Routine);
         }
 
-        void EmitInit(Emit.PEModuleBuilder module, DiagnosticBag diagnostic, PhpCompilation compilation,
+        void EmitInit(Emit.PEModuleBuilder module, DiagnosticBag diagnostic, AquilaCompilation compilation,
             SynthesizedStaticLocHolder holder, BoundExpression initializer, SourceRoutineSymbol routine)
         {
             var requiresContext = initializer != null && initializer.RequiresContext;
@@ -257,7 +257,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    partial class BoundGlobalConstDeclStatement
+    partial class BoundGlobalConstDeclStmt
     {
         internal override void Emit(CodeGenerator cg)
         {
@@ -274,7 +274,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    partial class BoundYieldStatement
+    partial class BoundYieldStmt
     {
         internal override void Emit(CodeGenerator cg)
         {
@@ -322,7 +322,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    partial class BoundDeclareStatement
+    partial class BoundDeclareStmt
     {
         internal override void Emit(CodeGenerator cg)
         {

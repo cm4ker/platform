@@ -439,7 +439,7 @@ using System.Threading.Tasks;
             return default;
         }
 
-        public override T VisitGlobalConstDecl(BoundGlobalConstDeclStatement x)
+        public override T VisitGlobalConstDecl(BoundGlobalConstDeclStmt x)
         {
             Accept(x.Value);
 
@@ -501,7 +501,7 @@ using System.Threading.Tasks;
             return default;
         }
 
-        public override T VisitThrow(BoundThrowExpression x)
+        public override T VisitThrow(BoundThrowEx x)
         {
             Accept(x.Thrown);
 
@@ -524,7 +524,7 @@ using System.Threading.Tasks;
 
         #region Statements
 
-        public override T VisitEmptyStatement(BoundEmptyStatement x)
+        public override T VisitEmptyStatement(BoundEmptyStmt x)
         {
             return default;
         }
@@ -541,21 +541,21 @@ using System.Threading.Tasks;
             return default;
         }
 
-        public override T VisitExpressionStatement(BoundExpressionStatement x)
+        public override T VisitExpressionStatement(BoundExpressionStmt x)
         {
             Accept(x.Expression);
 
             return default;
         }
 
-        public override T VisitReturn(BoundReturnStatement x)
+        public override T VisitReturn(BoundReturnStmt x)
         {
             Accept(x.Returned);
 
             return default;
         }
 
-        public override T VisitFunctionDeclaration(BoundFunctionDeclStatement x)
+        public override T VisitFunctionDeclaration(BoundMethodDeclStmt x)
         {
             return default;
         }
@@ -572,20 +572,20 @@ using System.Threading.Tasks;
             return default;
         }
 
-        public override T VisitStaticStatement(BoundStaticVariableStatement x)
+        public override T VisitStaticStatement(BoundStaticVarStmt x)
         {
             return default;
         }
 
-        public override T VisitYieldStatement(BoundYieldStatement boundYieldStatement)
+        public override T VisitYieldStatement(BoundYieldStmt boundYieldStmt)
         {
-            Accept(boundYieldStatement.YieldedValue);
-            Accept(boundYieldStatement.YieldedKey);
+            Accept(boundYieldStmt.YieldedValue);
+            Accept(boundYieldStmt.YieldedKey);
 
             return default;
         }
 
-        public override T VisitDeclareStatement(BoundDeclareStatement x)
+        public override T VisitDeclareStatement(BoundDeclareStmt x)
         {
             return default;
         }

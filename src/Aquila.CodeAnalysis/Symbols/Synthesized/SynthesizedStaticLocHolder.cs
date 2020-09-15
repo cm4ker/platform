@@ -118,7 +118,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         public override Symbol ContainingSymbol => _routine.ContainingType;
 
-        internal override PhpCompilation DeclaringCompilation => _routine.DeclaringCompilation;
+        internal override AquilaCompilation DeclaringCompilation => _routine.DeclaringCompilation;
 
         public override NamedTypeSymbol BaseType => DeclaringCompilation.CoreTypes.Object;
 

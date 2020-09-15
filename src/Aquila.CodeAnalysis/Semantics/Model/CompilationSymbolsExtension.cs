@@ -16,7 +16,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// Gets value indicating the extension is defined in compilation time.
         /// </summary>
-        public static bool HasPhpExtenion(this PhpCompilation compilation, string extension_name)
+        public static bool HasPhpExtenion(this AquilaCompilation compilation, string extension_name)
         {
             return compilation.GlobalSemantics.Extensions.Contains(extension_name, StringComparer.OrdinalIgnoreCase);
         }
@@ -26,7 +26,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// Can be <c>null</c> if function could not be found.
         /// Can be an <see cref="AmbiguousMethodSymbol"/> in case there are more functions possible or possible overrides.
         /// </summary>
-        public static IPhpRoutineSymbol ResolveFunction(this PhpCompilation compilation, QualifiedName name,
+        public static IPhpRoutineSymbol ResolveFunction(this AquilaCompilation compilation, QualifiedName name,
             SourceRoutineSymbol routine)
         {
             var symbol = compilation.GlobalSemantics.ResolveFunction(name);

@@ -44,9 +44,9 @@ namespace Aquila.CodeAnalysis.Semantics
 
     sealed class Conversions
     {
-        readonly PhpCompilation _compilation;
+        readonly AquilaCompilation _compilation;
 
-        public Conversions(PhpCompilation compilation)
+        public Conversions(AquilaCompilation compilation)
         {
             _compilation = compilation ?? throw ExceptionUtilities.ArgumentNull();
         }

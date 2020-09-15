@@ -32,7 +32,7 @@ using SourceMethodSymbol = Aquila.CodeAnalysis.Symbols.SourceMethodSymbol;
 
 namespace Aquila.CodeAnalysis
 {
-    public sealed partial class PhpCompilation : Compilation
+    public sealed partial class AquilaCompilation : Compilation
     {
         readonly SourceSymbolCollection _tables;
         MethodSymbol _lazyMainMethod;
@@ -146,7 +146,7 @@ namespace Aquila.CodeAnalysis
             }
         }
 
-        private PhpCompilation(
+        private AquilaCompilation(
             string assemblyName,
             PhpCompilationOptions options,
             ImmutableArray<MetadataReference> references,
@@ -181,12 +181,12 @@ namespace Aquila.CodeAnalysis
         /// <summary>
         /// Create a duplicate of this compilation with different symbol instances.
         /// </summary>
-        public new PhpCompilation Clone()
+        public new AquilaCompilation Clone()
         {
             return Update(reuseReferenceManager: true);
         }
 
-        private PhpCompilation Update(
+        private AquilaCompilation Update(
             string assemblyName = null,
             PhpCompilationOptions options = null,
             IEnumerable<MetadataReference> references = null,
@@ -194,7 +194,7 @@ namespace Aquila.CodeAnalysis
             bool reuseReferenceManager = false,
             IEnumerable<PhpSyntaxTree> syntaxTrees = null)
         {
-            var compilation = new PhpCompilation(
+            var compilation = new AquilaCompilation(
                 assemblyName ?? this.AssemblyName,
                 options ?? _options,
                 references != null ? references.AsImmutable() : this.ExternalReferences,
@@ -211,14 +211,14 @@ namespace Aquila.CodeAnalysis
             return compilation;
         }
 
-        private PhpCompilation WithPhpSyntaxTrees(IEnumerable<PhpSyntaxTree> syntaxTrees)
+        private AquilaCompilation WithPhpSyntaxTrees(IEnumerable<PhpSyntaxTree> syntaxTrees)
         {
             return Update(
                 reuseReferenceManager: true,
                 syntaxTrees: syntaxTrees);
         }
 
-        public PhpCompilation WithPhpOptions(PhpCompilationOptions options)
+        public AquilaCompilation WithPhpOptions(PhpCompilationOptions options)
         {
             return Update(options: options);
         }
@@ -301,7 +301,7 @@ namespace Aquila.CodeAnalysis
             get { return SourceAssembly.StrongNameKeys; }
         }
 
-        public static PhpCompilation Create(
+        public static AquilaCompilation Create(
             string assemblyName,
             IEnumerable<PhpSyntaxTree> syntaxTrees = null,
             IEnumerable<MetadataReference> references = null,
@@ -310,7 +310,7 @@ namespace Aquila.CodeAnalysis
         {
             Debug.Assert(options != null);
 
-            var compilation = new PhpCompilation(
+            var compilation = new AquilaCompilation(
                 assemblyName,
                 options,
                 ValidateReferences<CompilationReference>(references),

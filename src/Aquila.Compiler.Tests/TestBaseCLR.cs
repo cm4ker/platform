@@ -76,7 +76,7 @@ namespace Aquila.Compiler.Tests
             if (diagnostics.IsEmpty)
             {
                 PhpCompilationFactory builder = new PhpCompilationFactory();
-                var compilation = (PhpCompilation) builder.CoreCompilation
+                var compilation = (AquilaCompilation) builder.CoreCompilation
                     .WithAssemblyName("Test")
                     .AddSyntaxTrees(tree);
 

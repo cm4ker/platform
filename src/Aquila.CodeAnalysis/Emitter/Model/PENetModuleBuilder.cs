@@ -13,7 +13,7 @@ namespace Aquila.CodeAnalysis.Emit
     internal sealed class PENetModuleBuilder : PEModuleBuilder
     {
         internal PENetModuleBuilder(
-            PhpCompilation compilation,
+            AquilaCompilation compilation,
             IModuleSymbol sourceModule,
             EmitOptions emitOptions,
             Cci.ModulePropertiesForSerialization serializationProperties,

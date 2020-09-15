@@ -110,7 +110,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         //internal override PHPDocBlock PHPDocBlock => null;
 
-        internal override PhpCompilation DeclaringCompilation => _file.DeclaringCompilation;
+        internal override AquilaCompilation DeclaringCompilation => _file.DeclaringCompilation;
 
         protected override TypeRefContext CreateTypeRefContext() =>
             null; //new TypeRefContext(DeclaringCompilation, null);
