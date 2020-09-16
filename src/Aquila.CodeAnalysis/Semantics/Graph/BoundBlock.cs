@@ -13,6 +13,10 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
     [DebuggerDisplay("{DebugDisplay}")]
     public partial class BoundBlock : IBlockOperation
     {
+        public BoundBlock() : this(new List<BoundStatement>())
+        {
+        }
+
         /// <summary>
         /// Internal name of the block.
         /// </summary>
@@ -67,6 +71,11 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         {
             Contract.ThrowIfNull(stmt);
             _statements.Add(stmt);
+        }
+
+        public void SetNextEdge(Edge edge)
+        {
+            _nextEdge = edge;
         }
 
         /// <summary>
@@ -268,14 +277,15 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             }
             else
             {
-                return new CatchBlock(typeRef, variable, statements) {NextEdge = nextEdge}
+                return new CatchBlock(typeRef, variable, statements).WithEdge(NextEdge)
                     .WithLocalPropertiesFrom(this);
             }
         }
 
         internal override BoundBlock Clone()
         {
-            return new CatchBlock(_typeRef, Variable, new List<BoundStatement>(Statements)) {NextEdge = NextEdge}
+            return new CatchBlock(_typeRef, Variable, new List<BoundStatement>(Statements))
+                .WithEdge(NextEdge)
                 .WithLocalPropertiesFrom(this);
         }
 
@@ -338,14 +348,14 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             }
             else
             {
-                return new CaseBlock(caseValue, statements) {NextEdge = nextEdge}
+                return new CaseBlock(caseValue, statements).WithEdge(NextEdge)
                     .WithLocalPropertiesFrom(this);
             }
         }
 
         internal override BoundBlock Clone()
         {
-            return new CaseBlock(_caseValue, new List<BoundStatement>(Statements)) {NextEdge = NextEdge}
+            return new CaseBlock(_caseValue, new List<BoundStatement>(Statements)).WithEdge(NextEdge)
                 .WithLocalPropertiesFrom(this);
         }
 

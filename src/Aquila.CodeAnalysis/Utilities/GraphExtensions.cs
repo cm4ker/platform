@@ -16,5 +16,12 @@ namespace Aquila.CodeAnalysis
 
             return self;
         }
+
+        internal static TBlock WithEdge<TBlock>(this TBlock self, Edge edge)
+            where TBlock : BoundBlock
+        {
+            self.SetNextEdge(edge);
+            return self;
+        }
     }
 }

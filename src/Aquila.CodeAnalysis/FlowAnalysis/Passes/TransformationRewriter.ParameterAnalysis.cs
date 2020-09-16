@@ -155,21 +155,21 @@ using System.Text;
                 return base.VisitVariableRef(x);
             }
 
-            protected override VoidStruct VisitRoutineCall(BoundRoutineCall x)
-            {
-                // An external alias can be modified when the routine is actually called, after processing the arguments
-                base.VisitRoutineCall(x);
-                State = ParameterAnalysisState.Dirty;
+            // protected override VoidStruct VisitRoutineCall(BoundRoutineCall x)
+            // {
+            //     // An external alias can be modified when the routine is actually called, after processing the arguments
+            //     base.VisitRoutineCall(x);
+            //     State = ParameterAnalysisState.Dirty;
+            //
+            //     return default;
+            // }
 
-                return default;
-            }
-
-            // Assert cannot modify any external alias, so just visit the arguments
-            public override VoidStruct VisitAssert(BoundAssertEx x) => base.VisitRoutineCall(x);
-
-            public override VoidStruct VisitConcat(BoundConcatEx x) => VisitStringConvertingArgs(x.ArgumentsInSourceOrder);
-
-            public override VoidStruct VisitEcho(BoundEcho x) => VisitStringConvertingArgs(x.ArgumentsInSourceOrder);
+            // // Assert cannot modify any external alias, so just visit the arguments
+            // public override VoidStruct VisitAssert(BoundAssertEx x) => base.VisitRoutineCall(x);
+            //
+            // public override VoidStruct VisitConcat(BoundConcatEx x) => VisitStringConvertingArgs(x.ArgumentsInSourceOrder);
+            //
+            // public override VoidStruct VisitEcho(BoundEcho x) => VisitStringConvertingArgs(x.ArgumentsInSourceOrder);
 
             private VoidStruct VisitStringConvertingArgs(ImmutableArray<BoundArgument> args)
             {
@@ -200,9 +200,9 @@ using System.Text;
                 }
             }
 
-            public override VoidStruct VisitConversion(BoundConversionEx x)
+            public override VoidStruct VisitConversionEx(BoundConversionEx x)
             {
-                base.VisitConversion(x);
+                base.VisitConversionEx(x);
 
                 // Custom conversion of an object can call any external code, conversion to string can call __toString
                 var opTypeMask = x.Operand.TypeRefMask;
@@ -224,31 +224,31 @@ using System.Text;
                 return default;
             }
 
-            public override VoidStruct VisitArrayItem(BoundArrayItemEx x)
+            public override VoidStruct VisitArrayItemEx(BoundArrayItemEx x)
             {
-                base.VisitArrayItem(x);
+                base.VisitArrayItemEx(x);
                 State = ParameterAnalysisState.Dirty;
 
                 return default;
             }
 
-            public override VoidStruct VisitOffsetExists(BoundOffsetExists x)
-            {
-                base.VisitOffsetExists(x);
-                State = ParameterAnalysisState.Dirty;
+            // public override VoidStruct VisitOffsetExists(BoundOffsetExists x)
+            // {
+            //     base.VisitOffsetExists(x);
+            //     State = ParameterAnalysisState.Dirty;
+            //
+            //     return default;
+            // }
 
-                return default;
-            }
-
-            public override VoidStruct VisitEval(BoundEvalEx x)
-            {
-                // As anything can happen in eval, force value passing of all parameters
-                base.VisitEval(x);
-                State = ParameterAnalysisState.Dirty;
-                _needPassValueParams.SetAll();
-
-                return default;
-            }
+            // public override VoidStruct VisitEval(BoundEvalEx x)
+            // {
+            //     // As anything can happen in eval, force value passing of all parameters
+            //     base.VisitEval(x);
+            //     State = ParameterAnalysisState.Dirty;
+            //     _needPassValueParams.SetAll();
+            //
+            //     return default;
+            // }
 
             #endregion
         }

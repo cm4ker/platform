@@ -116,7 +116,7 @@ namespace Aquila.CodeAnalysis.Semantics
             //cg.EmitSequencePoint(this.FunctionDecl.HeadingSpan);
 
             // <ctx>.DeclareFunction ...
-            cg.EmitDeclareFunction(this.Function);
+            cg.EmitDeclareFunction(this.Method);
         }
     }
 

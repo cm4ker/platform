@@ -17,54 +17,54 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         #region Primitive Types
 
-        internal readonly BoundPrimitiveTypeRef  
+        internal readonly BoundPrimitiveTypeRef
             VoidTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Void);
 
-        internal readonly BoundPrimitiveTypeRef  
+        internal readonly BoundPrimitiveTypeRef
             NullTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Null);
 
-        internal readonly BoundPrimitiveTypeRef  
+        internal readonly BoundPrimitiveTypeRef
             BoolTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Boolean);
 
-        internal readonly BoundPrimitiveTypeRef  
+        internal readonly BoundPrimitiveTypeRef
             LongTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Long);
 
-        internal readonly BoundPrimitiveTypeRef  
+        internal readonly BoundPrimitiveTypeRef
             DoubleTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Double);
 
-        internal readonly BoundPrimitiveTypeRef  
+        internal readonly BoundPrimitiveTypeRef
             StringTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.String);
 
-        internal readonly BoundPrimitiveTypeRef  
+        internal readonly BoundPrimitiveTypeRef
             ObjectTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Object);
 
-        internal readonly BoundPrimitiveTypeRef  
+        internal readonly BoundPrimitiveTypeRef
             WritableStringRef = new BoundPrimitiveTypeRef(AquilaTypeCode.WritableString);
 
-        internal readonly BoundPrimitiveTypeRef  
+        internal readonly BoundPrimitiveTypeRef
             ArrayTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.PhpArray);
 
-        internal readonly BoundPrimitiveTypeRef  
+        internal readonly BoundPrimitiveTypeRef
             IterableTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Iterable);
 
-        internal readonly BoundPrimitiveTypeRef  
+        internal readonly BoundPrimitiveTypeRef
             CallableTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Callable);
 
-        internal readonly BoundPrimitiveTypeRef  
+        internal readonly BoundPrimitiveTypeRef
             ResourceTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Resource);
 
-        internal readonly BoundPrimitiveTypeRef  
+        internal readonly BoundPrimitiveTypeRef
             MixedTypeRef = new BoundPrimitiveTypeRef(AquilaTypeCode.Mixed);
 
         #endregion
 
         #region Special Types
 
-        internal readonly BoundClassTypeRef  
-            TraversableTypeRef = new BoundClassTypeRef(NameUtils.SpecialNames.Traversable, null, null);
+        internal readonly BoundClassTypeRef
+            TraversableTypeRef = new BoundClassTypeRef(NameUtils.SpecialNames.Traversable, null);
 
-        internal readonly BoundClassTypeRef  
-            ClosureTypeRef = new BoundClassTypeRef(NameUtils.SpecialNames.Closure, null, null);
+        internal readonly BoundClassTypeRef
+            ClosureTypeRef = new BoundClassTypeRef(NameUtils.SpecialNames.Closure, null);
 
         #endregion
 
@@ -153,7 +153,7 @@ namespace Aquila.CodeAnalysis.Semantics
                 //     return CreateFromTypeRef(reserved, binder, self, objectTypeInfoSemantic);
                 // }
 
-                return new BoundClassTypeRef(qName, binder?.Routine, self ?? binder?.Self, arity);
+                return new BoundClassTypeRef(qName, binder?.Routine, arity);
             }
             // else if (tref is Ast.ReservedTypeRef reserved) return new BoundReservedTypeRef(reserved.Type, self);
             // else if (tref is Ast.AnonymousTypeRef at)

@@ -73,7 +73,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 if (!_rewriter.IsRepaired(block))
                 {
                     block.Tag = _rewriter.RepairedColor;
-                    block.NextEdge = AcceptEdge(block, block.NextEdge);
+                    block.SetNextEdge(AcceptEdge(block, block.NextEdge));
                 }
 
                 return block;
@@ -106,7 +106,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 _rewriter = rewriter;
             }
 
-            public override VoidStruct VisitYieldStatement(BoundYieldStmt boundYieldStmt)
+            public override VoidStruct VisitYieldStmt(BoundYieldStmt boundYieldStmt)
             {
                 if (Yields == null)
                 {
@@ -115,14 +115,14 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
                 Yields.Add(boundYieldStmt);
 
-                return base.VisitYieldStatement(boundYieldStmt);
+                return base.VisitYieldStmt(boundYieldStmt);
             }
 
-            public override VoidStruct VisitFunctionDeclaration(BoundMethodDeclStmt x)
+            public override VoidStruct VisitMethodDeclStmt(BoundMethodDeclStmt x)
             {
-                _rewriter.OnUnreachableRoutineFound(x.Function);
+                _rewriter.OnUnreachableRoutineFound(x.Method);
 
-                return base.VisitFunctionDeclaration(x);
+                return base.VisitMethodDeclStmt(x);
             }
 
             // public override VoidStruct VisitTypeDeclaration(BoundTypeDeclStatement x)

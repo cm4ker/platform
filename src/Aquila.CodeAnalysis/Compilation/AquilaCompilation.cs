@@ -27,8 +27,9 @@ using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax.Syntax;
 using Aquila.CodeAnalysis.Utilities;
 using Roslyn.Utilities;
-using SourceFieldSymbol = Aquila.CodeAnalysis.Symbols.SourceFieldSymbol;
-using SourceMethodSymbol = Aquila.CodeAnalysis.Symbols.SourceMethodSymbol;
+using ExceptionUtilities = Aquila.CodeAnalysis.Utilities.ExceptionUtilities;
+// using SourceFieldSymbol = Aquila.CodeAnalysis.Symbols.SourceFieldSymbol;
+// using SourceMethodSymbol = Aquila.CodeAnalysis.Symbols.SourceMethodSymbol;
 
 namespace Aquila.CodeAnalysis
 {
@@ -175,7 +176,6 @@ namespace Aquila.CodeAnalysis
                     referenceManager?.ObservedMetadata, options.SdkDirectory);
 
             _tables = new SourceSymbolCollection(this);
-            
         }
 
         /// <summary>
@@ -1081,11 +1081,11 @@ namespace Aquila.CodeAnalysis
                 var symbols =
                     // global functions
                     table.GetFunctions().OfType<SourceRoutineSymbol>();
-                        // // classes, interfaces, traits
-                        // .Concat<Aquila.CodeAnalysis.Symbols.Symbol>(table.GetDeclaredTypes())
-                        // // type members - properties, constants
-                        // .Concat<Aquila.CodeAnalysis.Symbols.Symbol>(table.GetDeclaredTypes().SelectMany(t =>
-                        //     t.GetMembers().Where(m => m is SourceRoutineSymbol || m is SourceFieldSymbol)));
+                // // classes, interfaces, traits
+                // .Concat<Aquila.CodeAnalysis.Symbols.Symbol>(table.GetDeclaredTypes())
+                // // type members - properties, constants
+                // .Concat<Aquila.CodeAnalysis.Symbols.Symbol>(table.GetDeclaredTypes().SelectMany(t =>
+                //     t.GetMembers().Where(m => m is SourceRoutineSymbol || m is SourceFieldSymbol)));
 
                 var resources = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 

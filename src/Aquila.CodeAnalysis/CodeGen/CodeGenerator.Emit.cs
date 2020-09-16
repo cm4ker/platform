@@ -2402,7 +2402,7 @@ namespace Aquila.CodeAnalysis.CodeGen
             /// Original variable passed to the function call.
             /// Target of the write-back routine.
             /// </summary>
-            public BoundReferenceExpression Target;
+            public BoundReferenceEx Target;
 
             /// <summary>
             /// Loads temporary local variable as an argument to <paramref name="targetp"/>.
@@ -2412,7 +2412,7 @@ namespace Aquila.CodeAnalysis.CodeGen
             /// <param name="expr">Value to be passed as its argument.</param>
             /// <returns><see cref="WriteBackInfo"/> which has to be finalized with <see cref="WriteBackAndFree(CodeGenerator)"/> once the routine call ends.</returns>
             public static WriteBackInfo CreateAndLoad(CodeGenerator cg, ParameterSymbol targetp,
-                BoundReferenceExpression expr)
+                BoundReferenceEx expr)
             {
                 var writeback = new WriteBackInfo()
                 {
@@ -2517,7 +2517,7 @@ namespace Aquila.CodeAnalysis.CodeGen
             }
             else
             {
-                if (expr is BoundReferenceExpression refexpr)
+                if (expr is BoundReferenceEx refexpr)
                 {
                     var place = refexpr.Place();
                     if (place != null && place.HasAddress && place.Type == targetp.Type)

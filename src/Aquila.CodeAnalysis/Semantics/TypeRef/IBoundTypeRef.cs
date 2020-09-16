@@ -77,7 +77,7 @@ namespace Aquila.CodeAnalysis.Semantics
     /// <summary>
     /// Common <see cref="IBoundTypeRef"/> implementation.
     /// </summary>
-    internal abstract partial class BoundTypeRef : IBoundTypeRef
+    public abstract partial class BoundTypeRef : IBoundTypeRef
     {
         public virtual bool IsNullable { get; set; }
         public virtual bool IsObject => false;

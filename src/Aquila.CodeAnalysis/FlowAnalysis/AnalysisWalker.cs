@@ -78,7 +78,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <param name="state">Locals state in which we are entering the target.</param>
         /// <param name="target">Target block.</param>
         /// <remarks>Only for traversing into blocks within the same routine (same type context).</remarks>
-        private void TraverseToBlock(object edgeLabel, TState  state, BoundBlock  target)
+        private void TraverseToBlock(object edgeLabel, TState state, BoundBlock target)
         {
             if (!IsStateInitialized(state))
                 throw new ArgumentException(nameof(state)); // state should be already set by previous block
@@ -114,7 +114,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// Called to initialize <see cref="VisitCFGBlock"/> call.
         /// Sets <see cref="State"/> to known initial block state.
         /// </summary>
-        protected virtual void VisitCFGBlockInit(BoundBlock  x)
+        protected virtual void VisitCFGBlockInit(BoundBlock x)
         {
             var state = GetState(x);
 
@@ -172,19 +172,19 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
                 if (condition is BoundGlobalFunctionCall)
                 {
-                    VisitGlobalFunctionCall((BoundGlobalFunctionCall) condition, branch);
+                    //VisitGlobalFunctionCall((BoundGlobalFunctionCall) condition, branch);
                     return true;
                 }
 
                 if (condition is BoundInstanceOfEx)
                 {
-                    Visit((BoundInstanceOfEx) condition, branch);
+                    //Visit((BoundInstanceOfEx) condition, branch);
                     return true;
                 }
 
                 if (condition is BoundIsSetEx)
                 {
-                    Visit((BoundIsSetEx) condition, branch);
+                    //Visit((BoundIsSetEx) condition, branch);
                     return true;
                 }
 
@@ -200,7 +200,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return false;
         }
 
-        public sealed override TResult VisitBinaryExpression(BoundBinaryEx x)
+        public sealed override TResult VisitBinaryEx(BoundBinaryEx x)
         {
             Visit(x, ConditionBranch.Default);
 
@@ -209,22 +209,22 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         protected virtual void Visit(BoundBinaryEx x, ConditionBranch branch)
         {
-            base.VisitBinaryExpression(x);
+            base.VisitBinaryEx(x);
         }
 
-        public sealed override TResult VisitGlobalFunctionCall(BoundGlobalFunctionCall x)
-        {
-            VisitGlobalFunctionCall(x, ConditionBranch.Default);
+        // public sealed override TResult VisitGlobalFunctionCall(BoundGlobalFunctionCall x)
+        // {
+        //     VisitGlobalFunctionCall(x, ConditionBranch.Default);
+        //
+        //     return default;
+        // }
 
-            return default;
-        }
+        // public virtual void VisitGlobalFunctionCall(BoundGlobalFunctionCall x, ConditionBranch branch)
+        // {
+        //     base.VisitGlobalFunctionCall(x);
+        // }
 
-        public virtual void VisitGlobalFunctionCall(BoundGlobalFunctionCall x, ConditionBranch branch)
-        {
-            base.VisitGlobalFunctionCall(x);
-        }
-
-        public sealed override TResult VisitUnaryExpression(BoundUnaryEx x)
+        public sealed override TResult VisitUnaryEx(BoundUnaryEx x)
         {
             Visit(x, ConditionBranch.Default);
 
@@ -233,32 +233,32 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         protected virtual void Visit(BoundUnaryEx x, ConditionBranch branch)
         {
-            base.VisitUnaryExpression(x);
+            base.VisitUnaryEx(x);
         }
 
-        public sealed override TResult VisitInstanceOf(BoundInstanceOfEx x)
-        {
-            Visit(x, ConditionBranch.Default);
-
-            return default;
-        }
-
-        protected virtual void Visit(BoundInstanceOfEx x, ConditionBranch branch)
-        {
-            base.VisitInstanceOf(x);
-        }
-
-        public sealed override TResult VisitIsSet(BoundIsSetEx x)
-        {
-            Visit(x, ConditionBranch.Default);
-
-            return default;
-        }
-
-        protected virtual void Visit(BoundIsSetEx x, ConditionBranch branch)
-        {
-            base.VisitIsSet(x);
-        }
+        // public sealed override TResult VisitInstanceOf(BoundInstanceOfEx x)
+        // {
+        //     Visit(x, ConditionBranch.Default);
+        //
+        //     return default;
+        // }
+        //
+        // protected virtual void Visit(BoundInstanceOfEx x, ConditionBranch branch)
+        // {
+        //     base.VisitInstanceOf(x);
+        // }
+        //
+        // public sealed override TResult VisitIsSet(BoundIsSetEx x)
+        // {
+        //     Visit(x, ConditionBranch.Default);
+        //
+        //     return default;
+        // }
+        //
+        // protected virtual void Visit(BoundIsSetEx x, ConditionBranch branch)
+        // {
+        //     base.VisitIsSet(x);
+        // }
 
         #endregion
 
@@ -269,7 +269,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// </summary>
         /// <param name="varuse"></param>
         /// <returns>Derivate type of iterated values.</returns>
-        protected virtual TypeRefMask HandleTraversableUse(BoundExpression  varuse)
+        protected virtual TypeRefMask HandleTraversableUse(BoundExpression varuse)
         {
             return TypeRefMask.AnyType;
         }

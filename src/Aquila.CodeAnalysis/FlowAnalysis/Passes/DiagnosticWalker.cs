@@ -254,16 +254,16 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 }
             }
         }
+        //
+        // public override T VisitEval(BoundEvalEx x)
+        // {
+        //     _diagnostics.Add(_routine, null /*'eval'*/,
+        //         ErrorCode.INF_EvalDiscouraged);
+        //
+        //     return base.VisitEval(x);
+        // }
 
-        public override T VisitEval(BoundEvalEx x)
-        {
-            _diagnostics.Add(_routine, null /*'eval'*/,
-                ErrorCode.INF_EvalDiscouraged);
-
-            return base.VisitEval(x);
-        }
-
-        public override T VisitArray(BoundArrayEx x)
+        public override T VisitArrayEx(BoundArrayEx x)
         {
             if (x.Access.IsNone)
             {
@@ -293,7 +293,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                     if (!valid)
                     {
                         string keyTypeStr = TypeCtx.ToString(keyTypeMask);
-                        _diagnostics.Add(_routine, item.Key.AquilaSyntax, ErrorCode.WRN_InvalidArrayKeyType, keyTypeStr);
+                        _diagnostics.Add(_routine, item.Key.AquilaSyntax, ErrorCode.WRN_InvalidArrayKeyType,
+                            keyTypeStr);
                     }
                 }
 
@@ -314,15 +315,15 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 }
             }
 
-            return base.VisitArray(x);
+            return base.VisitArrayEx(x);
         }
 
-        internal override T VisitIndirectTypeRef(BoundIndirectTypeRef x)
-        {
-            return base.VisitIndirectTypeRef(x);
-        }
+        // internal override T VisitIndirectTypeRef(BoundIndirectTypeRef x)
+        // {
+        //     return base.VisitIndirectTypeRef(x);
+        // }
 
-        internal override T VisitTypeRef(BoundTypeRef typeRef)
+        public override T VisitTypeRef(BoundTypeRef typeRef)
         {
             CheckUndefinedType(typeRef);
 
@@ -347,48 +348,48 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return base.VisitTypeRef(typeRef);
         }
 
-        public override T VisitNew(BoundNewEx x)
-        {
-            CheckMissusedPrimitiveType(x.TypeRef);
+        // public override T VisitNew(BoundNewEx x)
+        // {
+        //     CheckMissusedPrimitiveType(x.TypeRef);
+        //
+        //     var type = (TypeSymbol) x.TypeRef.Type;
+        //
+        //     if (type.IsValidType())
+        //     {
+        //         if (type.IsInterfaceType())
+        //         {
+        //             CannotInstantiate(x, "interface", x.TypeRef);
+        //         }
+        //         else if (type.IsStatic)
+        //         {
+        //             CannotInstantiate(x, "static", x.TypeRef);
+        //         }
+        //         else if (type.IsTraitType())
+        //         {
+        //             CannotInstantiate(x, "trait", x.TypeRef);
+        //         }
+        //         else // class:
+        //         {
+        //             // cannot instantiate Closure
+        //             // if (type == DeclaringCompilation.CoreTypes.Closure)
+        //             // {
+        //             //     // Instantiation of '{0}' is not allowed
+        //             //     Add(x.TypeRef.PhpSyntax.Span, Errors.ClosureInstantiated, type.Name);
+        //             // }
+        //             //
+        //             // //
+        //             // else if (type.IsAbstract)
+        //             // {
+        //             //     // Cannot instantiate abstract class {0}
+        //             //     CannotInstantiate(x, "abstract class", x.TypeRef);
+        //             // }
+        //         }
+        //     }
+        //
+        //     return base.VisitNew(x);
+        // }
 
-            var type = (TypeSymbol) x.TypeRef.Type;
-
-            if (type.IsValidType())
-            {
-                if (type.IsInterfaceType())
-                {
-                    CannotInstantiate(x, "interface", x.TypeRef);
-                }
-                else if (type.IsStatic)
-                {
-                    CannotInstantiate(x, "static", x.TypeRef);
-                }
-                else if (type.IsTraitType())
-                {
-                    CannotInstantiate(x, "trait", x.TypeRef);
-                }
-                else // class:
-                {
-                    // cannot instantiate Closure
-                    // if (type == DeclaringCompilation.CoreTypes.Closure)
-                    // {
-                    //     // Instantiation of '{0}' is not allowed
-                    //     Add(x.TypeRef.PhpSyntax.Span, Errors.ClosureInstantiated, type.Name);
-                    // }
-                    //
-                    // //
-                    // else if (type.IsAbstract)
-                    // {
-                    //     // Cannot instantiate abstract class {0}
-                    //     CannotInstantiate(x, "abstract class", x.TypeRef);
-                    // }
-                }
-            }
-
-            return base.VisitNew(x);
-        }
-
-        public override T VisitReturn(BoundReturnStmt x)
+        public override T VisitReturnStmt(BoundReturnStmt x)
         {
             if (_routine.Syntax is MethodDecl m)
             {
@@ -417,7 +418,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             // }
 
             //
-            return base.VisitReturn(x);
+            return base.VisitReturnStmt(x);
         }
 
         bool IsAllowedToStringReturnType(TypeRefMask tmask)
@@ -430,7 +431,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             // anything else (object (even convertible to string), array, number, boolean, ...) is not allowed
         }
 
-        public override T VisitAssign(BoundAssignEx x)
+        public override T VisitAssignEx(BoundAssignEx x)
         {
             // Template: <x> = <x>
             if (x.Target is BoundVariableRef lvar && lvar.Variable is LocalVariableReference lloc &&
@@ -464,108 +465,109 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 
             //
 
-            return base.VisitAssign(x);
+            return base.VisitAssignEx(x);
         }
 
-        public override T VisitInclude(BoundIncludeEx x)
-        {
-            // check arguments
-            base.VisitRoutineCall(x);
+        // public override T VisitInclude(BoundIncludeEx x)
+        // {
+        //     // check arguments
+        //     base.VisitRoutineCall(x);
+        //
+        //     // check the target was not resolved
+        //     if (x.TargetMethod == null)
+        //     {
+        //         foreach (var arg in x.ArgumentsInSourceOrder)
+        //         {
+        //             // in case the include is in form (__DIR__ . LITERAL)
+        //             // it should get resolved
+        //             if (arg.Value is BoundConcatEx concat &&
+        //                 concat.ArgumentsInSourceOrder.Length == 2 &&
+        //                 // concat.ArgumentsInSourceOrder[0].Value is BoundPseudoConst pc &&
+        //                 // pc.ConstType == PseudoConstUse.Types.Dir &&
+        //                 concat.ArgumentsInSourceOrder[1].Value.ConstantValue.TryConvertToString(out var relativePath) &&
+        //                 relativePath.Length != 0)
+        //             {
+        //                 // WARNING: Script file '{0}' could not be resolved
+        //                 if (_routine != null)
+        //                 {
+        //                     relativePath =
+        //                         PhpFileUtilities.NormalizeSlashes(_routine.ContainingFile.DirectoryRelativePath +
+        //                                                           relativePath);
+        //
+        //                     if (Roslyn.Utilities.PathUtilities.IsAnyDirectorySeparator(relativePath[0]))
+        //                     {
+        //                         relativePath = relativePath.Substring(1); // trim leading slash
+        //                     }
+        //
+        //                     _diagnostics.Add(_routine, concat.AquilaSyntax ?? x.AquilaSyntax,
+        //                         ErrorCode.WRN_CannotIncludeFile,
+        //                         relativePath);
+        //                 }
+        //             }
+        //         }
+        //     }
+        //
+        //     //
+        //     return default;
+        // }
 
-            // check the target was not resolved
-            if (x.TargetMethod == null)
-            {
-                foreach (var arg in x.ArgumentsInSourceOrder)
-                {
-                    // in case the include is in form (__DIR__ . LITERAL)
-                    // it should get resolved
-                    if (arg.Value is BoundConcatEx concat &&
-                        concat.ArgumentsInSourceOrder.Length == 2 &&
-                        // concat.ArgumentsInSourceOrder[0].Value is BoundPseudoConst pc &&
-                        // pc.ConstType == PseudoConstUse.Types.Dir &&
-                        concat.ArgumentsInSourceOrder[1].Value.ConstantValue.TryConvertToString(out var relativePath) &&
-                        relativePath.Length != 0)
-                    {
-                        // WARNING: Script file '{0}' could not be resolved
-                        if (_routine != null)
-                        {
-                            relativePath =
-                                PhpFileUtilities.NormalizeSlashes(_routine.ContainingFile.DirectoryRelativePath +
-                                                                  relativePath);
-
-                            if (Roslyn.Utilities.PathUtilities.IsAnyDirectorySeparator(relativePath[0]))
-                            {
-                                relativePath = relativePath.Substring(1); // trim leading slash
-                            }
-
-                            _diagnostics.Add(_routine, concat.AquilaSyntax ?? x.AquilaSyntax, ErrorCode.WRN_CannotIncludeFile,
-                                relativePath);
-                        }
-                    }
-                }
-            }
-
-            //
-            return default;
-        }
-
-        protected override T VisitRoutineCall(BoundRoutineCall x)
-        {
-            // check arguments
-            base.VisitRoutineCall(x);
-
-            // check method
-            if (x.TargetMethod.IsValidMethod() && !x.HasArgumentsUnpacking)
-            {
-                // check mandatory parameters are provided:
-                var ps = x.TargetMethod.Parameters;
-                var skippedps = 0; // number of implicit parameters provided by compiler
-                var expectsmin = 0;
-
-                for (int i = 0; i < ps.Length; i++)
-                {
-                    if (i == skippedps && ps[i].IsImplicitlyDeclared)
-                    {
-                        // implicitly provided arguments,
-                        // ignored
-                        skippedps++;
-                    }
-                    else
-                    {
-                        if (!ps[i].IsPhpOptionalParameter() &&
-                            (i < ps.Length - 1 /*check for IsParams only for last parameter*/ || !ps[i].IsParams))
-                        {
-                            expectsmin = i - skippedps + 1;
-                        }
-                    }
-                }
-
-                var expectsmax = x.TargetMethod.HasParamsParameter()
-                    ? int.MaxValue
-                    : ps.Length - skippedps;
-
-                //
-                var routineName =
-                    (x is BoundNewEx)
-                        ? "new " + x.TargetMethod.ContainingType.PhpQualifiedName().ToString()
-                        : GetMemberNameForDiagnostic(x.TargetMethod,
-                            (x.Instance != null || x is BoundCall));
-
-                //
-                if (x.ArgumentsInSourceOrder.Length < expectsmin)
-                {
-                    _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_MissingArguments, routineName, expectsmin,
-                        x.ArgumentsInSourceOrder.Length);
-                }
-                else if (x.ArgumentsInSourceOrder.Length > expectsmax)
-                {
-                    _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_TooManyArguments, routineName, expectsmax,
-                        x.ArgumentsInSourceOrder.Length);
-                }
-            }
-
-            return default;
-        }
+        // protected override T VisitRoutineCall(BoundRoutineCall x)
+        // {
+        //     // check arguments
+        //     base.VisitRoutineCall(x);
+        //
+        //     // check method
+        //     if (x.TargetMethod.IsValidMethod() && !x.HasArgumentsUnpacking)
+        //     {
+        //         // check mandatory parameters are provided:
+        //         var ps = x.TargetMethod.Parameters;
+        //         var skippedps = 0; // number of implicit parameters provided by compiler
+        //         var expectsmin = 0;
+        //
+        //         for (int i = 0; i < ps.Length; i++)
+        //         {
+        //             if (i == skippedps && ps[i].IsImplicitlyDeclared)
+        //             {
+        //                 // implicitly provided arguments,
+        //                 // ignored
+        //                 skippedps++;
+        //             }
+        //             else
+        //             {
+        //                 if (!ps[i].IsPhpOptionalParameter() &&
+        //                     (i < ps.Length - 1 /*check for IsParams only for last parameter*/ || !ps[i].IsParams))
+        //                 {
+        //                     expectsmin = i - skippedps + 1;
+        //                 }
+        //             }
+        //         }
+        //
+        //         var expectsmax = x.TargetMethod.HasParamsParameter()
+        //             ? int.MaxValue
+        //             : ps.Length - skippedps;
+        //
+        //         //
+        //         var routineName =
+        //             (x is BoundNewEx)
+        //                 ? "new " + x.TargetMethod.ContainingType.PhpQualifiedName().ToString()
+        //                 : GetMemberNameForDiagnostic(x.TargetMethod,
+        //                     (x.Instance != null || x is BoundCall));
+        //
+        //         //
+        //         if (x.ArgumentsInSourceOrder.Length < expectsmin)
+        //         {
+        //             _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_MissingArguments, routineName, expectsmin,
+        //                 x.ArgumentsInSourceOrder.Length);
+        //         }
+        //         else if (x.ArgumentsInSourceOrder.Length > expectsmax)
+        //         {
+        //             _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_TooManyArguments, routineName, expectsmax,
+        //                 x.ArgumentsInSourceOrder.Length);
+        //         }
+        //     }
+        //
+        //     return default;
+        // }
 
         //public override T VisitArgument(BoundArgument x)
         //{
@@ -586,46 +588,46 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
         //    return default;
         //}
 
-        public override T VisitGlobalFunctionCall(BoundGlobalFunctionCall x)
-        {
-            CheckUndefinedFunctionCall(x);
+        // public override T VisitGlobalFunctionCall(BoundGlobalFunctionCall x)
+        // {
+        //     CheckUndefinedFunctionCall(x);
+        //
+        //     // calling indirectly:
+        //     if (x.Name.IsDirect)
+        //     {
+        //         CheckObsoleteSymbol(x.AquilaSyntax, x.TargetMethod, isMemberCall: false);
+        //         CheckGlobalFunctionCall(x);
+        //     }
+        //     else
+        //     {
+        //         Debug.Assert(x.Name.NameExpression != null);
+        //         // check whether expression can be used as a function callback (must be callable - string, array, object ...)
+        //         if (!TypeHelpers.IsCallable(TypeCtx, x.Name.NameExpression.TypeRefMask))
+        //         {
+        //             _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.ERR_InvalidFunctionName,
+        //                 TypeCtx.ToString(x.Name.NameExpression.TypeRefMask));
+        //         }
+        //     }
+        //
+        //     //
+        //     return base.VisitGlobalFunctionCall(x);
+        // }
 
-            // calling indirectly:
-            if (x.Name.IsDirect)
-            {
-                CheckObsoleteSymbol(x.AquilaSyntax, x.TargetMethod, isMemberCall: false);
-                CheckGlobalFunctionCall(x);
-            }
-            else
-            {
-                Debug.Assert(x.Name.NameExpression != null);
-                // check whether expression can be used as a function callback (must be callable - string, array, object ...)
-                if (!TypeHelpers.IsCallable(TypeCtx, x.Name.NameExpression.TypeRefMask))
-                {
-                    _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.ERR_InvalidFunctionName,
-                        TypeCtx.ToString(x.Name.NameExpression.TypeRefMask));
-                }
-            }
-
-            //
-            return base.VisitGlobalFunctionCall(x);
-        }
-
-        public override T VisitInstanceFunctionCall(BoundInstanceFunctionCall call)
-        {
-            // TODO: Consider checking if there are enough situations where this makes sense
-            //       (it could only work if IncludeSubclasses is false or the class is final)
-            //CheckUndefinedMethodCall(call, call.Instance?.ResultType, call.Name);
-
-            // check target type
-            CheckMethodCallTargetInstance(call.Instance, call.Name.NameValue.Name.Value);
-
-            // check deprecated
-            CheckObsoleteSymbol(call.AquilaSyntax, call.TargetMethod, isMemberCall: true);
-
-            //
-            return base.VisitInstanceFunctionCall(call);
-        }
+        // public override T VisitInstanceFunctionCall(BoundInstanceFunctionCall call)
+        // {
+        //     // TODO: Consider checking if there are enough situations where this makes sense
+        //     //       (it could only work if IncludeSubclasses is false or the class is final)
+        //     //CheckUndefinedMethodCall(call, call.Instance?.ResultType, call.Name);
+        //
+        //     // check target type
+        //     CheckMethodCallTargetInstance(call.Instance, call.Name.NameValue.Name.Value);
+        //
+        //     // check deprecated
+        //     CheckObsoleteSymbol(call.AquilaSyntax, call.TargetMethod, isMemberCall: true);
+        //
+        //     //
+        //     return base.VisitInstanceFunctionCall(call);
+        // }
 
         public override T VisitFieldRef(BoundFieldRef x)
         {
@@ -658,42 +660,42 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return base.VisitCFGCatchBlock(x);
         }
 
-        public override T VisitStaticFunctionCall(BoundCall call)
-        {
-            //CheckMissusedPrimitiveType(call.TypeRef);
+        // public override T VisitStaticFunctionCall(BoundCall call)
+        // {
+        //     //CheckMissusedPrimitiveType(call.TypeRef);
+        //
+        //     CheckUndefinedMethodCall(call, call.TypeRef.ResolveTypeSymbol(DeclaringCompilation) as TypeSymbol,
+        //         call.Name);
+        //
+        //     // check deprecated
+        //     CheckObsoleteSymbol(call.AquilaSyntax, call.TargetMethod, isMemberCall: true);
+        //
+        //     // remember there is call to `parent::__construct`
+        //     if ( //call.TypeRef is BoundReservedTypeRef rt && rt.ReservedType == ReservedTypeRef.ReservedType.parent &&
+        //         call.Name.IsDirect &&
+        //         call.Name.NameValue.Name.IsConstructName)
+        //     {
+        //         CallsParentCtor = true;
+        //     }
+        //
+        //     // check the called method is not abstract
+        //     if (call.TargetMethod.IsValidMethod() && call.TargetMethod.IsAbstract)
+        //     {
+        //         // ERR
+        //         Add(call.AquilaSyntax.Span, Aquila.Syntax.Errors.Errors.AbstractMethodCalled,
+        //             call.TargetMethod.ContainingType.PhpName(), call.Name.NameValue.Name.Value);
+        //     }
+        //
+        //     //
+        //     return base.VisitStaticFunctionCall(call);
+        // }
 
-            CheckUndefinedMethodCall(call, call.TypeRef.ResolveTypeSymbol(DeclaringCompilation) as TypeSymbol,
-                call.Name);
-
-            // check deprecated
-            CheckObsoleteSymbol(call.AquilaSyntax, call.TargetMethod, isMemberCall: true);
-
-            // remember there is call to `parent::__construct`
-            if ( //call.TypeRef is BoundReservedTypeRef rt && rt.ReservedType == ReservedTypeRef.ReservedType.parent &&
-                call.Name.IsDirect &&
-                call.Name.NameValue.Name.IsConstructName)
-            {
-                CallsParentCtor = true;
-            }
-
-            // check the called method is not abstract
-            if (call.TargetMethod.IsValidMethod() && call.TargetMethod.IsAbstract)
-            {
-                // ERR
-                Add(call.AquilaSyntax.Span, Aquila.Syntax.Errors.Errors.AbstractMethodCalled,
-                    call.TargetMethod.ContainingType.PhpName(), call.Name.NameValue.Name.Value);
-            }
-
-            //
-            return base.VisitStaticFunctionCall(call);
-        }
-
-        public override T VisitInstanceOf(BoundInstanceOfEx x)
-        {
-            CheckMissusedPrimitiveType(x.AsType);
-
-            return base.VisitInstanceOf(x);
-        }
+        // public override T VisitInstanceOf(BoundInstanceOfEx x)
+        // {
+        //     CheckMissusedPrimitiveType(x.AsType);
+        //
+        //     return base.VisitInstanceOf(x);
+        // }
 
         public override T VisitVariableRef(BoundVariableRef x)
         {
@@ -708,57 +710,58 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return default;
         }
 
-        public override T VisitDeclareStatement(BoundDeclareStmt x)
+        public override T VisitDeclareStmt(BoundDeclareStmt x)
         {
             // _diagnostics.Add(
             //     _routine,
-            //     ((DeclareStmt) x.PhpSyntax).GetDeclareClauseSpan(),
+            //     ((Stmt) x.AquilaSyntax).GetDeclareClauseSpan(),
             //     ErrorCode.WRN_NotYetImplementedIgnored,
             //     "Declare construct");
 
-            return base.VisitDeclareStatement(x);
+            return base.VisitDeclareStmt(x);
         }
 
-        public override T VisitAssert(BoundAssertEx x)
+        // public override T VisitAssertEx(BoundAssertEx x)
+        // {
+        //     base.VisitAssertEx(x);
+        //
+        //     var args = x.ArgumentsInSourceOrder;
+        //
+        //     // check number of parameters
+        //     // check whether it is not always false or always true
+        //     if (args.Length >= 1)
+        //     {
+        //         if (args[0].Value.ConstantValue.EqualsOptional(false.AsOptional()))
+        //         {
+        //             // always failing
+        //             _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_AssertAlwaysFail);
+        //         }
+        //
+        //         if (TypeCtx.IsAString(args[0].Value.TypeRefMask))
+        //         {
+        //             // deprecated and not supported
+        //             _diagnostics.Add(_routine, args[0].Value.AquilaSyntax, ErrorCode.WRN_StringAssertionDeprecated);
+        //         }
+        //
+        //         if (args.Length > 2)
+        //         {
+        //             // too many args
+        //             _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_TooManyArguments, "assert", 2,
+        //                 args.Length);
+        //         }
+        //     }
+        //     else
+        //     {
+        //         // assert() expects at least 1 parameter, 0 given
+        //         _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_MissingArguments, "assert", 1, 0);
+        //     }
+        //
+        //     return default;
+        // }
+
+        public override T VisitUnaryEx(BoundUnaryEx x)
         {
-            base.VisitAssert(x);
-
-            var args = x.ArgumentsInSourceOrder;
-
-            // check number of parameters
-            // check whether it is not always false or always true
-            if (args.Length >= 1)
-            {
-                if (args[0].Value.ConstantValue.EqualsOptional(false.AsOptional()))
-                {
-                    // always failing
-                    _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_AssertAlwaysFail);
-                }
-
-                if (TypeCtx.IsAString(args[0].Value.TypeRefMask))
-                {
-                    // deprecated and not supported
-                    _diagnostics.Add(_routine, args[0].Value.AquilaSyntax, ErrorCode.WRN_StringAssertionDeprecated);
-                }
-
-                if (args.Length > 2)
-                {
-                    // too many args
-                    _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_TooManyArguments, "assert", 2, args.Length);
-                }
-            }
-            else
-            {
-                // assert() expects at least 1 parameter, 0 given
-                _diagnostics.Add(_routine, x.AquilaSyntax, ErrorCode.WRN_MissingArguments, "assert", 1, 0);
-            }
-
-            return default;
-        }
-
-        public override T VisitUnaryExpression(BoundUnaryEx x)
-        {
-            base.VisitUnaryExpression(x);
+            base.VisitUnaryEx(x);
 
             switch (x.Operation)
             {
@@ -780,9 +783,9 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return default;
         }
 
-        public override T VisitBinaryExpression(BoundBinaryEx x)
+        public override T VisitBinaryEx(BoundBinaryEx x)
         {
-            base.VisitBinaryExpression(x);
+            base.VisitBinaryEx(x);
 
             //
 
@@ -803,9 +806,9 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return default;
         }
 
-        public override T VisitConversion(BoundConversionEx x)
+        public override T VisitConversionEx(BoundConversionEx x)
         {
-            base.VisitConversion(x);
+            base.VisitConversionEx(x);
 
             if (!x.IsImplicit && x.AquilaSyntax != null &&
                 x.Operand.TypeRefMask.IsSingleType &&
@@ -864,7 +867,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             //
             if (nonobjtype != null)
             {
-                _diagnostics.Add(_routine, target.AquilaSyntax, ErrorCode.ERR_MethodCalledOnNonObject, methodName ?? "{}",
+                _diagnostics.Add(_routine, target.AquilaSyntax, ErrorCode.ERR_MethodCalledOnNonObject,
+                    methodName ?? "{}",
                     nonobjtype);
             }
         }
@@ -989,9 +993,9 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return base.VisitCFGTryCatchEdge(x);
         }
 
-        public override T VisitStaticStatement(BoundStaticVarStmt x)
+        public override T VisitStaticVarStmt(BoundStaticVarStmt x)
         {
-            return base.VisitStaticStatement(x);
+            return base.VisitStaticVarStmt(x);
         }
 
         public override T VisitCFGForeachEnumereeEdge(ForeachEnumereeEdge x)

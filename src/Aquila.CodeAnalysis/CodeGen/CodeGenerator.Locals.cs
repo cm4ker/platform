@@ -211,7 +211,7 @@ using System.Diagnostics;
         /// <returns>Place or <c>null</c>.</returns>
         internal IPlace PlaceOrNull(BoundExpression expr)
         {
-            return expr is BoundReferenceExpression bref ? bref.Place() : null;
+            return expr is BoundReferenceEx bref ? bref.Place() : null;
         }
     }
 }

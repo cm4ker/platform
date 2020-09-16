@@ -13,8 +13,12 @@ namespace Aquila.SyntaxGenerator.BoundTree
         [XmlAttribute] public bool DenyChildrenFill { get; set; }
 
         [XmlAttribute] public bool PassBase { get; set; }
+        
+        [XmlAttribute] public bool OnlyPrivate { get; set; }
 
         [XmlAttribute] public bool OnlyArgument { get; set; }
+        
+        [XmlAttribute] public bool IsInternal { get; set; }
 
         [XmlAttribute] public bool ImplicitPassInChildren { get; set; }
         

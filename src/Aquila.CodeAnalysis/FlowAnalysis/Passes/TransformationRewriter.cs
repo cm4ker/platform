@@ -293,9 +293,9 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
         //     _delayedTransformations.UnreachableTypes.Add(type);
         // }
 
-        public override object VisitConditional(BoundConditionalEx x)
+        public override object VisitConditionalEx(BoundConditionalEx x)
         {
-            x = (BoundConditionalEx) base.VisitConditional(x);
+            x = (BoundConditionalEx) base.VisitConditionalEx(x);
 
             if (x.IfTrue != null) // otherwise it is (A ?: B) operator
             {
@@ -350,7 +350,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return x;
         }
 
-        public override object VisitBinaryExpression(BoundBinaryEx x)
+        public override object VisitBinaryEx(BoundBinaryEx x)
         {
             if (x.Operation == Operations.And ||
                 x.Operation == Operations.Or)
@@ -400,12 +400,12 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                         x.Access);
                 }
             }
-            
+
             //
-            return base.VisitBinaryExpression(x);
+            return base.VisitBinaryEx(x);
         }
 
-        public override object VisitUnaryExpression(BoundUnaryEx x)
+        public override object VisitUnaryEx(BoundUnaryEx x)
         {
             if (x.Operation == Operations.LogicNegation &&
                 x.Operand is BoundUnaryEx ux &&
@@ -417,25 +417,25 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                     .WithAccess(x.Access);
             }
 
-            return base.VisitUnaryExpression(x);
+            return base.VisitUnaryEx(x);
         }
 
-        public override object VisitCopyValue(BoundCopyValue x)
-        {
-            var valueEx = (BoundExpression) Accept(x.Expression);
-            if (valueEx.IsDeeplyCopied && _unnecessaryCopies?.Contains(x) != true)
-            {
-                return x.Update(valueEx);
-            }
-            else
-            {
-                // deep copy is unnecessary:
-                TransformationCount++;
-                return valueEx;
-            }
-        }
+        // public override object VisitCopyValue(BoundCopyValue x)
+        // {
+        //     var valueEx = (BoundExpression) Accept(x.Expression);
+        //     if (valueEx.IsDeeplyCopied && _unnecessaryCopies?.Contains(x) != true)
+        //     {
+        //         return x.Update(valueEx);
+        //     }
+        //     else
+        //     {
+        //         // deep copy is unnecessary:
+        //         TransformationCount++;
+        //         return valueEx;
+        //     }
+        // }
 
-        public override object VisitAssign(BoundAssignEx x)
+        public override object VisitAssignEx(BoundAssignEx x)
         {
             // A = A <binOp> <right>
             if (x.Target is BoundVariableRef trg
@@ -477,7 +477,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 }
             }
 
-            return base.VisitAssign(x);
+            return base.VisitAssignEx(x);
         }
 
         public override object VisitCFGConditionalEdge(ConditionalEdge x)
@@ -523,102 +523,102 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return base.VisitCFGConditionalEdge(x);
         }
 
-        public override object VisitGlobalFunctionCall(BoundGlobalFunctionCall x)
-        {
-            // first rewrite function arguments if possible
-            var result = base.VisitGlobalFunctionCall(x);
-
-            // use rewrite rule for this routine:
-            if ((x = result as BoundGlobalFunctionCall) != null && x.TargetMethod != null &&
-                _special_functions.TryGetValue(new QualifiedName(new Name(x.TargetMethod.RoutineName)),
-                    out var rewrite_func))
-            {
-                var newnode = rewrite_func(x);
-                if (newnode != null)
-                {
-                    TransformationCount++;
-                    return newnode;
-                }
-            }
-
-            //
-            return result;
-        }
-
-        public override object VisitConcat(BoundConcatEx x)
-        {
-            // transform arguments first:
-            x = (BoundConcatEx) base.VisitConcat(x);
-
-            //
-            var args = x.ArgumentsInSourceOrder;
-            if (args.Length == 0 || args.All(IsEmptyString))
-            {
-                // empty string:
-                TransformationCount++;
-                return new BoundLiteral(string.Empty)
-                    {ConstantValue = new Optional<object>(string.Empty)}.WithContext(x);
-            }
-
-            // visit & concat in compile time if we can:
-            var newargs = args;
-            int i = 0;
-            do
-            {
-                // accumulate evaluated string value if possible:
-                if (newargs[i].Value.ConstantValue.TryConvertToString(out var value))
-                {
-                    string result = value;
-                    int end = i + 1;
-                    while (end < newargs.Length && newargs[end].Value.ConstantValue.TryConvertToString(out var tmp))
-                    {
-                        result += tmp;
-                        end++;
-                    }
-
-                    if (end > i + 1) // we concat'ed something!
-                    {
-                        newargs = newargs.RemoveRange(i, end - i);
-
-                        if (!string.IsNullOrEmpty(result))
-                        {
-                            newargs = newargs.Insert(i, BoundArgument.Create(new BoundLiteral(result)
-                            {
-                                ConstantValue = new Optional<object>(result),
-                                TypeRefMask = _routine.TypeRefContext.GetStringTypeMask(),
-                                ResultType = DeclaringCompilation.CoreTypes.String,
-                            }.WithAccess(BoundAccess.Read)));
-                        }
-                    }
-                }
-
-                //
-                i++;
-            } while (i < newargs.Length);
-
-            //
-            if (newargs != args)
-            {
-                TransformationCount++;
-
-                if (newargs.Length == 0)
-                {
-                    return new BoundLiteral(string.Empty) {ConstantValue = new Optional<object>(string.Empty)}
-                        .WithContext(x);
-                }
-                else if (newargs.Length == 1 && newargs[0].Value.ConstantValue.TryConvertToString(out var value))
-                {
-                    // "value"
-                    return new BoundLiteral(value) {ConstantValue = new Optional<object>(value)}.WithContext(x);
-                }
-
-                //
-                return x.Update(newargs);
-            }
-
-            //
-            return x;
-        }
+        // public override object VisitGlobalFunctionCall(BoundGlobalFunctionCall x)
+        // {
+        //     // first rewrite function arguments if possible
+        //     var result = base.VisitGlobalFunctionCall(x);
+        //
+        //     // use rewrite rule for this routine:
+        //     if ((x = result as BoundGlobalFunctionCall) != null && x.TargetMethod != null &&
+        //         _special_functions.TryGetValue(new QualifiedName(new Name(x.TargetMethod.RoutineName)),
+        //             out var rewrite_func))
+        //     {
+        //         var newnode = rewrite_func(x);
+        //         if (newnode != null)
+        //         {
+        //             TransformationCount++;
+        //             return newnode;
+        //         }
+        //     }
+        //
+        //     //
+        //     return result;
+        // }
+        //
+        // public override object VisitConcat(BoundConcatEx x)
+        // {
+        //     // transform arguments first:
+        //     x = (BoundConcatEx) base.VisitConcat(x);
+        //
+        //     //
+        //     var args = x.ArgumentsInSourceOrder;
+        //     if (args.Length == 0 || args.All(IsEmptyString))
+        //     {
+        //         // empty string:
+        //         TransformationCount++;
+        //         return new BoundLiteral(string.Empty)
+        //             {ConstantValue = new Optional<object>(string.Empty)}.WithContext(x);
+        //     }
+        //
+        //     // visit & concat in compile time if we can:
+        //     var newargs = args;
+        //     int i = 0;
+        //     do
+        //     {
+        //         // accumulate evaluated string value if possible:
+        //         if (newargs[i].Value.ConstantValue.TryConvertToString(out var value))
+        //         {
+        //             string result = value;
+        //             int end = i + 1;
+        //             while (end < newargs.Length && newargs[end].Value.ConstantValue.TryConvertToString(out var tmp))
+        //             {
+        //                 result += tmp;
+        //                 end++;
+        //             }
+        //
+        //             if (end > i + 1) // we concat'ed something!
+        //             {
+        //                 newargs = newargs.RemoveRange(i, end - i);
+        //
+        //                 if (!string.IsNullOrEmpty(result))
+        //                 {
+        //                     newargs = newargs.Insert(i, BoundArgument.Create(new BoundLiteral(result)
+        //                     {
+        //                         ConstantValue = new Optional<object>(result),
+        //                         TypeRefMask = _routine.TypeRefContext.GetStringTypeMask(),
+        //                         ResultType = DeclaringCompilation.CoreTypes.String,
+        //                     }.WithAccess(BoundAccess.Read)));
+        //                 }
+        //             }
+        //         }
+        //
+        //         //
+        //         i++;
+        //     } while (i < newargs.Length);
+        //
+        //     //
+        //     if (newargs != args)
+        //     {
+        //         TransformationCount++;
+        //
+        //         if (newargs.Length == 0)
+        //         {
+        //             return new BoundLiteral(string.Empty) {ConstantValue = new Optional<object>(string.Empty)}
+        //                 .WithContext(x);
+        //         }
+        //         else if (newargs.Length == 1 && newargs[0].Value.ConstantValue.TryConvertToString(out var value))
+        //         {
+        //             // "value"
+        //             return new BoundLiteral(value) {ConstantValue = new Optional<object>(value)}.WithContext(x);
+        //         }
+        //
+        //         //
+        //         return x.Update(newargs);
+        //     }
+        //
+        //     //
+        //     return x;
+        // }
 
         public override object VisitLiteral(BoundLiteral x)
         {
@@ -661,41 +661,41 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return base.VisitLiteral(x);
         }
 
-        public override object VisitFunctionDeclaration(BoundMethodDeclStmt x)
+        public override object VisitMethodDeclStmt(BoundMethodDeclStmt x)
         {
-            if (x.Function.IsConditional && !IsConditional && _routine.IsGlobalScope)
+            if (x.Method.IsConditional && !IsConditional && _routine.IsGlobalScope)
             {
-                _delayedTransformations.FunctionsMarkedAsUnconditional.Add(x.Function);
+                _delayedTransformations.FunctionsMarkedAsUnconditional.Add(x.Method);
             }
 
             // no transformation
-            return base.VisitFunctionDeclaration(x);
+            return base.VisitMethodDeclStmt(x);
         }
 
-        public override object VisitIsEmpty(BoundIsEmptyEx x)
-        {
-            if (x.Operand is BoundVariableRef varRef && varRef.Name.IsDirect && !varRef.Name.NameValue.IsAutoGlobal)
-            {
-                var flowContext = _routine.ControlFlowGraph.FlowContext;
+        // public override object VisitIsEmpty(BoundIsEmptyEx x)
+        // {
+        //     if (x.Operand is BoundVariableRef varRef && varRef.Name.IsDirect && !varRef.Name.NameValue.IsAutoGlobal)
+        //     {
+        //         var flowContext = _routine.ControlFlowGraph.FlowContext;
+        //
+        //         var varType = flowContext.GetVarType(varRef.Name.NameValue);
+        //         if (!varType.IsRef && (varType.IsVoid || flowContext.TypeRefContext.WithoutNull(varType).IsVoid)
+        //                            && !_routine.IsGlobalScope &&
+        //                            (_routine.Flags & RoutineFlags.RequiresLocalsArray) == 0)
+        //         {
+        //             // empty($x) where $x is undefined or null -> TRUE
+        //             TransformationCount++;
+        //             return new BoundLiteral(true.AsObject()).WithAccess(x.Access);
+        //         }
+        //     }
+        //
+        //     return base.VisitIsEmpty(x);
+        // }
 
-                var varType = flowContext.GetVarType(varRef.Name.NameValue);
-                if (!varType.IsRef && (varType.IsVoid || flowContext.TypeRefContext.WithoutNull(varType).IsVoid)
-                                   && !_routine.IsGlobalScope &&
-                                   (_routine.Flags & RoutineFlags.RequiresLocalsArray) == 0)
-                {
-                    // empty($x) where $x is undefined or null -> TRUE
-                    TransformationCount++;
-                    return new BoundLiteral(true.AsObject()).WithAccess(x.Access);
-                }
-            }
-
-            return base.VisitIsEmpty(x);
-        }
-
-        public override object VisitExpressionStatement(BoundExpressionStmt x)
+        public override object VisitExpressionStmt(BoundExpressionStmt x)
         {
             // Transform the original expression first
-            x = (BoundExpressionStmt) base.VisitExpressionStatement(x);
+            x = (BoundExpressionStmt) base.VisitExpressionStmt(x);
 
             // Transform functions which can be turned only to statements (i.e. not to expressions)
             if (_routine.IsGlobalScope && x.Expression is BoundGlobalFunctionCall call && call.Name.IsDirect)
@@ -716,7 +716,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return x;
         }
 
-        public override object VisitArray(BoundArrayEx x)
+        public override object VisitArrayEx(BoundArrayEx x)
         {
             bool TryGetMethod(TypeSymbol typeSymbol, string methodName, out MethodSymbol methodSymbol)
             {
@@ -793,7 +793,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 }
             }
 
-            return base.VisitArray(x);
+            return base.VisitArrayEx(x);
         }
 
         /// <summary>

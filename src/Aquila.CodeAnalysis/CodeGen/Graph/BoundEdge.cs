@@ -645,8 +645,8 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             ;
         }
 
-        internal void EmitGetCurrent(CodeGenerator cg, BoundReferenceExpression valueVar,
-            BoundReferenceExpression keyVar)
+        internal void EmitGetCurrent(CodeGenerator cg, BoundReferenceEx valueVar,
+            BoundReferenceEx keyVar)
         {
             Debug.Assert(_enumeratorLoc.IsValid);
 

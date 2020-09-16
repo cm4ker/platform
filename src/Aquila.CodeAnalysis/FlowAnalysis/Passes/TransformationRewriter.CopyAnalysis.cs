@@ -218,7 +218,7 @@ using System.Text;
 
             #region Visit expressions
 
-            public override VoidStruct VisitAssign(BoundAssignEx assign)
+            public override VoidStruct VisitAssignEx(BoundAssignEx assign)
             {
                 ProcessAssignment(assign);
                 return default;
@@ -293,7 +293,7 @@ using System.Text;
                     }
                 }
 
-                base.VisitAssign(assign);
+                base.VisitAssignEx(assign);
                 return default;
             }
 
@@ -334,7 +334,7 @@ using System.Text;
                 return default;
             }
 
-            public override VoidStruct VisitReturn(BoundReturnStmt x)
+            public override VoidStruct VisitReturnStmt(BoundReturnStmt x)
             {
                 if (x.Returned is BoundCopyValue copy && copy.Expression is BoundVariableRef varRef &&
                     !varRef.TypeRefMask.IsRef && // BoundCopyValue is used to dereference the alias
@@ -344,7 +344,7 @@ using System.Text;
                     Add(ref _lazyReturnCopies, copy);
                 }
 
-                return base.VisitReturn(x);
+                return base.VisitReturnStmt(x);
             }
 
             public override VoidStruct VisitCFGExitBlock(ExitBlock x)

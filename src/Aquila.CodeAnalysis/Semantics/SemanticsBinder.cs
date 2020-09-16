@@ -973,7 +973,7 @@ namespace Aquila.CodeAnalysis.Semantics
         protected BoundExpression BindIncDec(IncDecEx expr)
         {
             // bind variable reference
-            var varref = (BoundReferenceExpression) BindExpression(expr.Operand, BoundAccess.ReadAndWrite);
+            var varref = (BoundReferenceEx) BindExpression(expr.Operand, BoundAccess.ReadAndWrite);
 
             //
             return new BoundIncDecEx(varref, expr.IsIncrement, expr.IsPost);
@@ -1316,7 +1316,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         protected BoundExpression BindAssignEx(AssignEx expr, BoundAccess access)
         {
-            var target = (BoundReferenceExpression) BindExpression(expr.LValue, BoundAccess.Write);
+            var target = (BoundReferenceEx) BindExpression(expr.LValue, BoundAccess.Write);
             BoundExpression value;
 
             // bind value (read as value or as ref)
@@ -1405,7 +1405,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// Updates <paramref name="expr"/>'s <see cref="BoundAccess"/> to <see cref="BoundAccess.ReadRef"/>.
         /// </summary>
         /// <param name="expr">Expression which access has to be updated.</param>
-        public static void BindReadRefAccess(BoundReferenceExpression expr)
+        public static void BindReadRefAccess(BoundReferenceEx expr)
         {
             if (expr == null || expr.Access.IsReadRef) return;
 
@@ -1417,7 +1417,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// Updates <paramref name="expr"/>'s <see cref="BoundAccess"/> to <see cref="BoundAccess.Write"/>.
         /// </summary>
         /// <param name="expr">Expression which access has to be updated.</param>
-        public static void BindWriteAccess(BoundReferenceExpression expr)
+        public static void BindWriteAccess(BoundReferenceEx expr)
         {
             if (expr == null || expr.Access.IsWrite) return;
 
@@ -1429,7 +1429,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// Updates <paramref name="expr"/>'s <see cref="BoundAccess"/> to <see cref="BoundAccess.Write"/>.
         /// </summary>
         /// <param name="expr">Expression which access has to be updated.</param>
-        public static void BindEnsureArrayAccess(BoundReferenceExpression expr)
+        public static void BindEnsureArrayAccess(BoundReferenceEx expr)
         {
             if (expr == null || expr.Access.IsWrite) return;
 
@@ -1689,7 +1689,7 @@ namespace Aquila.CodeAnalysis.Semantics
                         condition = new BoundUnaryEx(leftExpr, Operations.LogicNegation); // left is false
                         break;
                     case Operations.Coalesce:
-                        if (leftExpr is BoundReferenceExpression leftRef) // left is not set or null
+                        if (leftExpr is BoundReferenceEx leftRef) // left is not set or null
                         {
                             condition = new BoundUnaryEx(
                                 new BoundIsSetEx(leftRef),
@@ -1829,7 +1829,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public struct BoundSynthesizedVariableInfo
         {
-            public BoundReferenceExpression BoundExpr;
+            public BoundReferenceEx BoundExpr;
             public BoundAssignEx Assignment;
         }
 

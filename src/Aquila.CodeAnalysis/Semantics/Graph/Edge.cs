@@ -77,7 +77,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         protected void Connect(BoundBlock source)
         {
-            source.NextEdge = this;
+            source.SetNextEdge(this);
         }
 
         /// <summary>
@@ -430,16 +430,16 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// Variable to store key in (can be null).
         /// </summary>
-        public BoundReferenceExpression KeyVariable { get; }
+        public BoundReferenceEx KeyVariable { get; }
 
         /// <summary>
         /// Variable to store value in
         /// </summary>
-        public BoundReferenceExpression ValueVariable { get; }
+        public BoundReferenceEx ValueVariable { get; }
 
         internal ForeachMoveNextEdge(BoundBlock source, BoundBlock body, BoundBlock end,
-            ForeachEnumereeEdge enumereeEdge, BoundReferenceExpression keyVar,
-            BoundReferenceExpression valueVar, TextSpan moveSpan)
+            ForeachEnumereeEdge enumereeEdge, BoundReferenceEx keyVar,
+            BoundReferenceEx valueVar, TextSpan moveSpan)
             : base(source)
         {
             Contract.ThrowIfNull(body);
@@ -458,7 +458,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         }
 
         internal ForeachMoveNextEdge(BoundBlock body, BoundBlock end, ForeachEnumereeEdge enumereeEdge,
-            BoundReferenceExpression keyVar, BoundReferenceExpression valueVar, TextSpan moveSpan)
+            BoundReferenceEx keyVar, BoundReferenceEx valueVar, TextSpan moveSpan)
         {
             Contract.ThrowIfNull(body);
             Contract.ThrowIfNull(end);
@@ -473,7 +473,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         }
 
         public ForeachMoveNextEdge Update(BoundBlock body, BoundBlock end, ForeachEnumereeEdge enumereeEdge,
-            BoundReferenceExpression keyVar, BoundReferenceExpression valueVar, TextSpan moveSpan)
+            BoundReferenceEx keyVar, BoundReferenceEx valueVar, TextSpan moveSpan)
         {
             if (body == BodyBlock && end == _end && enumereeEdge == EnumereeEdge && keyVar == KeyVariable &&
                 valueVar == ValueVariable && moveSpan == MoveNextSpan)

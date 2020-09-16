@@ -2535,7 +2535,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    partial class BoundReferenceExpression
+    partial class BoundReferenceEx
     {
         /// <summary>
         /// Gets <see cref="IVariableReference"/> providing load and store operations.
@@ -2645,7 +2645,7 @@ namespace Aquila.CodeAnalysis.Semantics
             return cg.EmitCall(ILOpCode.Call, null);
         }
 
-        static void EmitItemAssign(CodeGenerator cg, KeyValuePair<BoundExpression, BoundReferenceExpression> item,
+        static void EmitItemAssign(CodeGenerator cg, KeyValuePair<BoundExpression, BoundReferenceEx> item,
             long index, IPlace arrplace)
         {
             var target = item;
@@ -3750,12 +3750,12 @@ namespace Aquila.CodeAnalysis.Semantics
         /// </summary>
         class SearchForTargetVisitor : Graph.GraphWalker<VoidStruct>
         {
-            readonly BoundReferenceExpression  
+            readonly BoundReferenceEx  
                 _target;
 
             public bool Found { get; private set; }
 
-            public SearchForTargetVisitor(BoundReferenceExpression target)
+            public SearchForTargetVisitor(BoundReferenceEx target)
             {
                 _target = target ?? throw ExceptionUtilities.ArgumentNull();
             }
@@ -3774,7 +3774,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// Determines if <paramref name="target"/> is not referenced within <paramref name="rvalue"/>.
         /// </summary>
-        static bool IsSafeToUnroll(BoundReferenceExpression target, BoundExpression rvalue)
+        static bool IsSafeToUnroll(BoundReferenceEx target, BoundExpression rvalue)
         {
             if (rvalue.IsConstant() || rvalue is BoundGlobalConst ||
                 (rvalue is BoundFieldRef f && f.IsClassConstant))
@@ -3787,7 +3787,7 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.Found != true;
         }
 
-        static TypeSymbol EmitAppend(CodeGenerator cg, BoundReferenceExpression target, BoundExpression rvalue,
+        static TypeSymbol EmitAppend(CodeGenerator cg, BoundReferenceEx target, BoundExpression rvalue,
             BoundAccess access)
         {
             var target_place = target.BindPlace(cg);

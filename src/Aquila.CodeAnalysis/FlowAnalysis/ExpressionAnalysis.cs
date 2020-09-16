@@ -35,9 +35,9 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets model for symbols resolution.
         /// </summary>
-        internal ISymbolProvider   Model => _model;
+        internal ISymbolProvider Model => _model;
 
-        readonly ISymbolProvider  
+        readonly ISymbolProvider
             _model;
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// </summary>
         VariableHandle TryGetVariableHandle(BoundExpression expr)
         {
-            var varname = AsVariableName(expr as BoundReferenceExpression);
+            var varname = AsVariableName(expr as BoundReferenceEx);
             if (varname.IsValid())
             {
                 return State.GetLocalHandle(varname);
@@ -78,7 +78,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// In case of a local variable or parameter, gets its name.
         /// </summary>
-        VariableName AsVariableName(BoundReferenceExpression r)
+        VariableName AsVariableName(BoundReferenceEx r)
         {
             if (r is BoundVariableRef vr)
             {
@@ -330,7 +330,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         #region Declaration Statements
 
-        public override T VisitStaticStatement(BoundStaticVarStmt x)
+        public override T VisitStaticVarStmt(BoundStaticVarStmt x)
         {
             var v = x.Declaration;
             var local = State.GetLocalHandle(new VariableName(v.Name));
@@ -362,12 +362,12 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return default;
         }
 
-        public override T VisitGlobalStatement(BoundGlobalVariableStatement x)
-        {
-            base.VisitGlobalStatement(x); // Accept(x.Variable)
-
-            return default;
-        }
+        // public override T VisitGlobalStatement(BoundGlobalVariableStatement x)
+        // {
+        //     base.VisitGlobalStatement(x); // Accept(x.Variable)
+        //
+        //     return default;
+        // }
 
         #endregion
 
@@ -384,32 +384,32 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         #region Visit CopyValue
 
-        public override T VisitCopyValue(BoundCopyValue x)
-        {
-            Accept(x.Expression);
-
-            var tmask = x.Expression.TypeRefMask;
-
-            if (tmask.IsRef)
-            {
-                // copied value is possible a reference,
-                // might be anything:
-                tmask = TypeRefMask.AnyType;
-            }
-
-            // the result is not a reference for sure:
-            Debug.Assert(!tmask.IsRef);
-
-            x.TypeRefMask = tmask;
-
-            return default;
-        }
+        // public override T VisitCopyValue(BoundCopyValue x)
+        // {
+        //     Accept(x.Expression);
+        //
+        //     var tmask = x.Expression.TypeRefMask;
+        //
+        //     if (tmask.IsRef)
+        //     {
+        //         // copied value is possible a reference,
+        //         // might be anything:
+        //         tmask = TypeRefMask.AnyType;
+        //     }
+        //
+        //     // the result is not a reference for sure:
+        //     Debug.Assert(!tmask.IsRef);
+        //
+        //     x.TypeRefMask = tmask;
+        //
+        //     return default;
+        // }
 
         #endregion
 
         #region Visit Assignments
 
-        public override T VisitAssign(BoundAssignEx x)
+        public override T VisitAssignEx(BoundAssignEx x)
         {
             Debug.Assert(x.Target.Access.IsWrite);
             Debug.Assert(x.Value.Access.IsRead);
@@ -433,7 +433,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return default;
         }
 
-        public override T VisitCompoundAssign(BoundCompoundAssignEx x)
+        public override T VisitCompoundAssignEx(BoundCompoundAssignEx x)
         {
             Debug.Assert(x.Target.Access.IsRead && x.Target.Access.IsWrite);
             Debug.Assert(x.Value.Access.IsRead);
@@ -702,7 +702,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return default;
         }
 
-        public override T VisitIncDec(BoundIncDecEx x)
+        public override T VisitIncDecEx(BoundIncDecEx x)
         {
             // <target> = <target> +/- 1L
 
@@ -1104,11 +1104,11 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                         // We must beware not to compute constant value more than once (losing results) -> mark handling of the given expression by this boolean
                         bool handled = false;
 
-                        if (x.Right.ConstantValue.HasValue && x.Left is BoundReferenceExpression boundLeft)
+                        if (x.Right.ConstantValue.HasValue && x.Left is BoundReferenceEx boundLeft)
                         {
                             handled = ResolveEqualityWithConstantValue(x, boundLeft, x.Right.ConstantValue, branch);
                         }
-                        else if (x.Left.ConstantValue.HasValue && x.Right is BoundReferenceExpression boundRight)
+                        else if (x.Left.ConstantValue.HasValue && x.Right is BoundReferenceEx boundRight)
                         {
                             handled = ResolveEqualityWithConstantValue(x, boundRight, x.Left.ConstantValue, branch);
                         }
@@ -1208,7 +1208,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// </summary>
         private bool ResolveEqualityWithConstantValue(
             BoundBinaryEx cmpExpr,
-            BoundReferenceExpression refExpr,
+            BoundReferenceEx refExpr,
             Optional<object> value,
             ConditionBranch branch)
         {
@@ -1382,9 +1382,9 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         #region Visit Conversion
 
-        public override T VisitConversion(BoundConversionEx x)
+        public override T VisitConversionEx(BoundConversionEx x)
         {
-            base.VisitConversion(x);
+            base.VisitConversionEx(x);
 
             // evaluate if possible
 
@@ -1443,153 +1443,155 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         #region Visit InstanceOf
 
-        protected override void Visit(BoundInstanceOfEx x, ConditionBranch branch)
-        {
-            Accept(x.Operand);
-            x.AsType.Accept(this);
-
-            // TOOD: x.ConstantValue // in case we know and the operand is a local variable (we can ignore the expression and emit result immediatelly)
-
-            var opTypeMask = x.Operand.TypeRefMask;
-            if (x.Operand is BoundLiteral
-                || (!opTypeMask.IsAnyType && !opTypeMask.IsRef && !Routine.TypeRefContext.IsObject(opTypeMask)))
-            {
-                x.ConstantValue = ConstantValueExtensions.AsOptional(false);
-            }
-            else if (x.Operand is BoundVariableRef vref && vref.Name.IsDirect)
-            {
-                if (branch == ConditionBranch.ToTrue)
-                {
-                    // if (Variable is T) => variable is T in True branch state
-                    var vartype = x.AsType.GetTypeRefMask(TypeCtx);
-                    if (opTypeMask.IsRef) vartype = vartype.WithRefFlag; // keep IsRef flag
-
-                    State.SetLocalType(State.GetLocalHandle(vref.Name.NameValue), vartype);
-                }
-            }
-
-            //
-            x.TypeRefMask = TypeCtx.GetBooleanTypeMask();
-        }
+        // protected override void Visit(BoundInstanceOfEx x, ConditionBranch branch)
+        // {
+        //     Accept(x.Operand);
+        //     x.AsType.Accept(this);
+        //
+        //     // TOOD: x.ConstantValue // in case we know and the operand is a local variable (we can ignore the expression and emit result immediatelly)
+        //
+        //     var opTypeMask = x.Operand.TypeRefMask;
+        //     if (x.Operand is BoundLiteral
+        //         || (!opTypeMask.IsAnyType && !opTypeMask.IsRef && !Routine.TypeRefContext.IsObject(opTypeMask)))
+        //     {
+        //         x.ConstantValue = ConstantValueExtensions.AsOptional(false);
+        //     }
+        //     else if (x.Operand is BoundVariableRef vref && vref.Name.IsDirect)
+        //     {
+        //         if (branch == ConditionBranch.ToTrue)
+        //         {
+        //             // if (Variable is T) => variable is T in True branch state
+        //             var vartype = x.AsType.GetTypeRefMask(TypeCtx);
+        //             if (opTypeMask.IsRef) vartype = vartype.WithRefFlag; // keep IsRef flag
+        //
+        //             State.SetLocalType(State.GetLocalHandle(vref.Name.NameValue), vartype);
+        //         }
+        //     }
+        //
+        //     //
+        //     x.TypeRefMask = TypeCtx.GetBooleanTypeMask();
+        // }
 
         #endregion
 
         #region Visit IsSet, OffsetExists
 
-        protected override void Visit(BoundIsSetEx x, ConditionBranch branch)
-        {
-            Accept(x.VarReference);
-
-            // try to get resulting value and type of the variable
-            var localname = AsVariableName(x.VarReference);
-            if (localname.IsValid())
-            {
-                var handle = State.GetLocalHandle(localname);
-                Debug.Assert(handle.IsValid);
-
-                // Remove any constant value of isset()
-                x.ConstantValue = default;
-
-                //
-                if (State.IsLocalSet(handle))
-                {
-                    // If the variable is always defined, isset() behaves like !is_null()
-                    var currenttype = State.GetLocalType(handle);
-
-                    // a type in the true branch:
-                    var positivetype = TypeCtx.WithoutNull(currenttype);
-
-                    // resolve the constant if possible,
-                    // does not depend on the branch
-                    if (!currenttype.IsRef && !currenttype.IsAnyType)
-                    {
-                        if (positivetype.IsVoid) // always false
-                        {
-                            x.ConstantValue = ConstantValueExtensions.AsOptional(false);
-                        }
-                        else if (positivetype == currenttype) // not void nor null
-                        {
-                            x.ConstantValue = ConstantValueExtensions.AsOptional(true);
-                        }
-                    }
-
-                    // we can be more specific in true/false branches:
-                    if (branch != ConditionBranch.AnyResult && !x.ConstantValue.HasValue)
-                    {
-                        // update target type in true/false branch:
-                        var newtype = (branch == ConditionBranch.ToTrue)
-                            ? positivetype
-                            : TypeCtx.GetNullTypeMask();
-
-                        // keep the flags
-                        newtype |= currenttype.Flags;
-
-                        //
-                        State.SetLocalType(handle, newtype);
-                    }
-                }
-                else if (localname.IsAutoGlobal)
-                {
-                    // nothing
-                }
-                else
-                {
-                    // variable is not set for sure
-                    // isset : false
-                    x.ConstantValue = ConstantValueExtensions.AsOptional(false);
-                }
-
-                // mark variable as either initialized or uninintialized in respective branches
-                if (branch == ConditionBranch.ToTrue)
-                {
-                    State.SetVarInitialized(handle);
-                }
-            }
-
-            // always returns a boolean
-            x.TypeRefMask = TypeCtx.GetBooleanTypeMask();
-        }
-
-        public override T VisitOffsetExists(BoundOffsetExists x)
-        {
-            // receiver[index]
-            base.VisitOffsetExists(x);
-
-            // TODO: if receiver is undefined -> result is false
-
-            // always bool
-            x.ResultType = DeclaringCompilation.CoreTypes.Boolean;
-            x.TypeRefMask = TypeCtx.GetBooleanTypeMask();
-            return default;
-        }
-
-        public override T VisitTryGetItem(BoundTryGetItem x)
-        {
-            // array, index, fallback
-            base.VisitTryGetItem(x);
-
-            // TODO: resulting type if possible (see VisitArrayItem)
-
-            // The result of array[index] might be a reference
-            x.TypeRefMask = TypeRefMask.AnyType.WithRefFlag;
-
-            return default;
-        }
+        //
+        // protected override void Visit(BoundIsSetEx x, ConditionBranch branch)
+        // {
+        //     Accept(x.VarReference);
+        //
+        //     // try to get resulting value and type of the variable
+        //     var localname = AsVariableName(x.VarReference);
+        //     if (localname.IsValid())
+        //     {
+        //         var handle = State.GetLocalHandle(localname);
+        //         Debug.Assert(handle.IsValid);
+        //
+        //         // Remove any constant value of isset()
+        //         x.ConstantValue = default;
+        //
+        //         //
+        //         if (State.IsLocalSet(handle))
+        //         {
+        //             // If the variable is always defined, isset() behaves like !is_null()
+        //             var currenttype = State.GetLocalType(handle);
+        //
+        //             // a type in the true branch:
+        //             var positivetype = TypeCtx.WithoutNull(currenttype);
+        //
+        //             // resolve the constant if possible,
+        //             // does not depend on the branch
+        //             if (!currenttype.IsRef && !currenttype.IsAnyType)
+        //             {
+        //                 if (positivetype.IsVoid) // always false
+        //                 {
+        //                     x.ConstantValue = ConstantValueExtensions.AsOptional(false);
+        //                 }
+        //                 else if (positivetype == currenttype) // not void nor null
+        //                 {
+        //                     x.ConstantValue = ConstantValueExtensions.AsOptional(true);
+        //                 }
+        //             }
+        //
+        //             // we can be more specific in true/false branches:
+        //             if (branch != ConditionBranch.AnyResult && !x.ConstantValue.HasValue)
+        //             {
+        //                 // update target type in true/false branch:
+        //                 var newtype = (branch == ConditionBranch.ToTrue)
+        //                     ? positivetype
+        //                     : TypeCtx.GetNullTypeMask();
+        //
+        //                 // keep the flags
+        //                 newtype |= currenttype.Flags;
+        //
+        //                 //
+        //                 State.SetLocalType(handle, newtype);
+        //             }
+        //         }
+        //         else if (localname.IsAutoGlobal)
+        //         {
+        //             // nothing
+        //         }
+        //         else
+        //         {
+        //             // variable is not set for sure
+        //             // isset : false
+        //             x.ConstantValue = ConstantValueExtensions.AsOptional(false);
+        //         }
+        //
+        //         // mark variable as either initialized or uninintialized in respective branches
+        //         if (branch == ConditionBranch.ToTrue)
+        //         {
+        //             State.SetVarInitialized(handle);
+        //         }
+        //     }
+        //
+        //     // always returns a boolean
+        //     x.TypeRefMask = TypeCtx.GetBooleanTypeMask();
+        // }
+        //
+        // public override T VisitOffsetExists(BoundOffsetExists x)
+        // {
+        //     // receiver[index]
+        //     base.VisitOffsetExists(x);
+        //
+        //     // TODO: if receiver is undefined -> result is false
+        //
+        //     // always bool
+        //     x.ResultType = DeclaringCompilation.CoreTypes.Boolean;
+        //     x.TypeRefMask = TypeCtx.GetBooleanTypeMask();
+        //     return default;
+        // }
+        //
+        // public override T VisitTryGetItem(BoundTryGetItem x)
+        // {
+        //     // array, index, fallback
+        //     base.VisitTryGetItem(x);
+        //
+        //     // TODO: resulting type if possible (see VisitArrayItem)
+        //
+        //     // The result of array[index] might be a reference
+        //     x.TypeRefMask = TypeRefMask.AnyType.WithRefFlag;
+        //
+        //     return default;
+        // }
 
         #endregion
 
         #region TypeRef
 
-        internal override T VisitIndirectTypeRef(BoundIndirectTypeRef tref)
-        {
-            // visit indirect type
-            base.VisitIndirectTypeRef(tref);
+        //
+        // public override T VisitIndirectTypeRef(BoundIndirectTypeRef tref)
+        // {
+        //     // visit indirect type
+        //     base.VisitIndirectTypeRef(tref);
+        //
+        //     //
+        //     return VisitTypeRef(tref);
+        // }
 
-            //
-            return VisitTypeRef(tref);
-        }
-
-        internal override T VisitTypeRef(BoundTypeRef tref)
+        public override T VisitTypeRef(BoundTypeRef tref)
         {
             Debug.Assert(!(tref is BoundMultipleTypeRef));
 
@@ -1603,19 +1605,20 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         #region Visit Function Call
 
-        protected override T VisitRoutineCall(BoundRoutineCall x)
-        {
-            x.TypeRefMask = TypeRefMask.AnyType.WithRefFlag; // unknown function might return a reference
-
-            // TODO: write arguments Access
-            // TODO: visit invocation member of
-            // TODO: 2 pass, analyze arguments -> resolve method -> assign argument to parameter -> write arguments access -> analyze arguments again
-
-            // visit arguments:
-            base.VisitRoutineCall(x);
-
-            return default;
-        }
+        //
+        // protected override T VisitRoutineCall(BoundRoutineCall x)
+        // {
+        //     x.TypeRefMask = TypeRefMask.AnyType.WithRefFlag; // unknown function might return a reference
+        //
+        //     // TODO: write arguments Access
+        //     // TODO: visit invocation member of
+        //     // TODO: 2 pass, analyze arguments -> resolve method -> assign argument to parameter -> write arguments access -> analyze arguments again
+        //
+        //     // visit arguments:
+        //     base.VisitRoutineCall(x);
+        //
+        //     return default;
+        // }
 
         bool BindParams(IList<PhpParam> expectedparams, ImmutableArray<BoundArgument> givenargs)
         {
@@ -1650,11 +1653,11 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             // [PhpRwAttribute]
             if (expected.IsPhpRw)
             {
-                if (givenarg.Value is BoundReferenceExpression refexpr)
+                if (givenarg.Value is BoundReferenceEx refexpr)
                 {
                     if (TypeCtx.IsArray(expected.Type) && !givenarg.Value.Access.EnsureArray) // [PhpRw]PhpArray
                     {
-                        SemanticsBinder.BindEnsureArrayAccess(givenarg.Value as BoundReferenceExpression);
+                        SemanticsBinder.BindEnsureArrayAccess(givenarg.Value as BoundReferenceEx);
                         Worklist.Enqueue(CurrentBlock);
                     }
                 }
@@ -1663,7 +1666,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             // bind ref parameters to variables:
             if (expected.IsAlias || expected.IsByRef) // => args[i] must be a variable
             {
-                if (givenarg.Value is BoundReferenceExpression refexpr)
+                if (givenarg.Value is BoundReferenceEx refexpr)
                 {
                     if (expected.IsByRef && !refexpr.Access.IsWrite)
                     {
@@ -1832,245 +1835,245 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             }
         }
 
-        public override T VisitExit(BoundExitEx x)
-        {
-            VisitRoutineCall(x);
+        // public override T VisitExit(BoundExitEx x)
+        // {
+        //     VisitRoutineCall(x);
+        //
+        //     // no parameters binding
+        //     // TODO: handle unpacking
+        //     Debug.Assert(x.ArgumentsInSourceOrder.Length == 0 || !x.ArgumentsInSourceOrder[0].IsUnpacking);
+        //
+        //     x.TypeRefMask = 0; // returns void
+        //     x.ResultType = DeclaringCompilation.GetSpecialType(SpecialType.System_Void);
+        //
+        //     return default;
+        // }
 
-            // no parameters binding
-            // TODO: handle unpacking
-            Debug.Assert(x.ArgumentsInSourceOrder.Length == 0 || !x.ArgumentsInSourceOrder[0].IsUnpacking);
+        // public override T VisitEcho(BoundEcho x)
+        // {
+        //     VisitRoutineCall(x);
+        //
+        //     x.TypeRefMask = 0; // returns void
+        //     x.ResultType = DeclaringCompilation.GetSpecialType(SpecialType.System_Void);
+        //
+        //     //
+        //     return default;
+        // }
 
-            x.TypeRefMask = 0; // returns void
-            x.ResultType = DeclaringCompilation.GetSpecialType(SpecialType.System_Void);
+        // public override T VisitConcat(BoundConcatEx x)
+        // {
+        //     VisitRoutineCall(x);
+        //
+        //     // if possible, mark the result type as "String",
+        //     // otherwise we have to use "PhpString"
+        //     var args = x.ArgumentsInSourceOrder;
+        //     bool mustBePhpString = false;
+        //     for (int i = 0; i < args.Length; i++)
+        //     {
+        //         var targ = args[i].Value.TypeRefMask;
+        //         mustBePhpString |=
+        //             targ.IsRef || targ.IsAnyType ||
+        //             this.TypeCtx
+        //                 .IsWritableString(
+        //                     targ) /*|| this.TypeCtx.IsObject(targ) //object are always converted to UTF16 String// */;
+        //     }
+        //
+        //     x.TypeRefMask = mustBePhpString ? TypeCtx.GetWritableStringTypeMask() : TypeCtx.GetStringTypeMask();
+        //
+        //     return default;
+        // }
 
-            return default;
-        }
-
-        public override T VisitEcho(BoundEcho x)
-        {
-            VisitRoutineCall(x);
-
-            x.TypeRefMask = 0; // returns void
-            x.ResultType = DeclaringCompilation.GetSpecialType(SpecialType.System_Void);
-
-            //
-            return default;
-        }
-
-        public override T VisitConcat(BoundConcatEx x)
-        {
-            VisitRoutineCall(x);
-
-            // if possible, mark the result type as "String",
-            // otherwise we have to use "PhpString"
-            var args = x.ArgumentsInSourceOrder;
-            bool mustBePhpString = false;
-            for (int i = 0; i < args.Length; i++)
-            {
-                var targ = args[i].Value.TypeRefMask;
-                mustBePhpString |=
-                    targ.IsRef || targ.IsAnyType ||
-                    this.TypeCtx
-                        .IsWritableString(
-                            targ) /*|| this.TypeCtx.IsObject(targ) //object are always converted to UTF16 String// */;
-            }
-
-            x.TypeRefMask = mustBePhpString ? TypeCtx.GetWritableStringTypeMask() : TypeCtx.GetStringTypeMask();
-
-            return default;
-        }
-
-        public override T VisitAssert(BoundAssertEx x)
-        {
-            VisitRoutineCall(x);
-            x.TypeRefMask = TypeCtx.GetBooleanTypeMask();
-
-            return default;
-        }
-
-        public override void VisitGlobalFunctionCall(BoundGlobalFunctionCall x, ConditionBranch branch)
-        {
-            Accept(x.Name);
-
-            VisitRoutineCall(x);
-
-            if (x.Name.IsDirect)
-            {
-                var symbol = (MethodSymbol) DeclaringCompilation.ResolveFunction(x.Name.NameValue, Routine);
-                if (symbol.IsMissingMethod() && x.NameOpt.HasValue)
-                {
-                    symbol = (MethodSymbol) DeclaringCompilation.ResolveFunction(x.NameOpt.Value, Routine);
-                }
-
-                var overloads = symbol is AmbiguousMethodSymbol ambiguous && ambiguous.IsOverloadable
-                    ? new OverloadsList(ambiguous.Ambiguities.ToArray())
-                    : new OverloadsList(symbol ?? new MissingMethodSymbol(x.Name.NameValue.ToString()));
-
-                Debug.Assert(x.TypeArguments.IsDefaultOrEmpty);
-
-                // symbol might be ErrorSymbol
-
-                x.TargetMethod = overloads.Resolve(this.TypeCtx, x.ArgumentsInSourceOrder, VisibilityScope,
-                    OverloadsList.InvocationKindFlags.StaticCall);
-            }
-
-            BindRoutineCall(x);
-
-            // if possible resolve ConstantValue and TypeRefMask:
-            AnalysisFacts.HandleSpecialFunctionCall(x, this, branch);
-        }
-
-        public override T VisitInstanceFunctionCall(BoundInstanceFunctionCall x)
-        {
-            Accept(x.Instance);
-            Accept(x.Name);
-
-            VisitRoutineCall(x);
-
-            if (x.Name.IsDirect)
-            {
-                var resolvedtype = x.Instance.ResultType;
-                if (resolvedtype == null)
-                {
-                    var typeref =
-                        TypeCtx.GetObjectTypes(
-                            TypeCtx.WithoutNull(x.Instance
-                                .TypeRefMask)); // ignore NULL, causes runtime exception anyway
-                    if (typeref.IsSingle)
-                    {
-                        resolvedtype = (TypeSymbol) typeref.FirstOrDefault().ResolveTypeSymbol(DeclaringCompilation);
-                    }
-
-                    // else: a common base?
-                }
-
-                if (resolvedtype.IsValidType())
-                {
-                    var candidates = resolvedtype.LookupMethods(x.Name.NameValue.Name.Value);
-
-                    candidates = Construct(candidates, x);
-
-                    x.TargetMethod = new OverloadsList(candidates).Resolve(this.TypeCtx, x.ArgumentsInSourceOrder,
-                        VisibilityScope, OverloadsList.InvocationKindFlags.InstanceCall);
-
-                    //
-                    if (x.TargetMethod.IsValidMethod() && x.TargetMethod.IsStatic &&
-                        x.Instance.TypeRefMask.IncludesSubclasses)
-                    {
-                        // static method invoked on an instance object,
-                        // must be postponed to runtime since the type may change
-                        x.TargetMethod = new AmbiguousMethodSymbol(ImmutableArray.Create(x.TargetMethod), false);
-                    }
-                }
-                else
-                {
-                    x.TargetMethod = null;
-                }
-            }
-
-            BindRoutineCall(x, maybeOverload: true);
-
-            return default;
-        }
-
-        public override T VisitStaticFunctionCall(BoundCall x)
-        {
-            Accept(x.TypeRef);
-            Accept(x.Name);
-
-            VisitRoutineCall(x);
-
-            var type = (TypeSymbol) x.TypeRef.Type;
-
-            if (x.Name.NameExpression != null)
-            {
-                // indirect method call -> not resolvable
-            }
-            else if (type.IsValidType())
-            {
-                var candidates = type.LookupMethods(x.Name.ToStringOrThrow());
-                // if (candidates.Any(c => c.HasThis)) throw new NotImplementedException("instance method called statically");
-
-                candidates = Construct(candidates, x);
-
-                var flags = OverloadsList.InvocationKindFlags.StaticCall;
-
-                if (Routine != null && !Routine.IsStatic && (x.TypeRef.IsSelf() || x.TypeRef.IsParent()))
-                {
-                    // self:: or parent:: $this forwarding, prefer both
-                    flags |= OverloadsList.InvocationKindFlags.InstanceCall;
-                }
-
-                var method =
-                    new OverloadsList(candidates).Resolve(this.TypeCtx, x.ArgumentsInSourceOrder, VisibilityScope,
-                        flags);
-
-                // method is missing or inaccessible:
-                if (method is ErrorMethodSymbol errmethod && (errmethod.ErrorKind == ErrorMethodKind.Inaccessible ||
-                                                              errmethod.ErrorKind == ErrorMethodKind.Missing))
-                {
-                    // NOTE: magic methods __call or __callStatic are called in both cases - the target method is inaccessible or missing
-
-                    var isviable = true; // can we safely resolve the method?
-                    var call = Array.Empty<MethodSymbol>();
-
-                    // __call() might be used, if we have a reference to $this:
-                    if (Routine != null && !Routine.IsStatic)
-                    {
-                        // there is $this variable:
-                        if (TypeCtx.ThisType == null || TypeCtx.ThisType.IsOfType(type) ||
-                            type.IsOfType(TypeCtx.ThisType))
-                        {
-                            // try to use __call() first:
-                            call = type.LookupMethods(Name.SpecialMethodNames.Call.Value);
-
-                            //
-                            if (TypeCtx.ThisType == null && call.Length != 0)
-                            {
-                                // $this is resolved dynamically in runtime and
-                                // we don't know if we can use __call() here
-                                isviable = false;
-                            }
-                        }
-                    }
-
-                    if (call.Length == 0)
-                    {
-                        // __callStatic()
-                        call = type.LookupMethods(Name.SpecialMethodNames.CallStatic.Value);
-                    }
-
-                    if (call.Length != 0)
-                    {
-                        // NOTE: PHP ignores visibility of __callStatic
-                        call = Construct(call, x);
-
-                        method = call.Length == 1 && isviable
-                            ? new MagicCallMethodSymbol(x.Name.ToStringOrThrow(), call[0])
-                            : null; // nullify the symbol so it will be called dynamically and resolved in rutime
-                    }
-                }
-
-                x.TargetMethod = method;
-            }
-            else if (x.TypeRef.IsSelf() && Routine != null && Routine.ContainingType.IsTraitType())
-            {
-                // self:: within trait type
-                // resolve possible code path
-                // we need this at least to determine possible late static type binding
-
-                var candidates = Construct(Routine.ContainingType.LookupMethods(x.Name.ToStringOrThrow()), x);
-                if (candidates.Length != 0)
-                {
-                    // accessibility not have to be checked here
-                    x.TargetMethod = new AmbiguousMethodSymbol(candidates.AsImmutable(), overloadable: true);
-                }
-            }
-
-            BindRoutineCall(x);
-
-            return default;
-        }
+        // public override T VisitAssert(BoundAssertEx x)
+        // {
+        //     VisitRoutineCall(x);
+        //     x.TypeRefMask = TypeCtx.GetBooleanTypeMask();
+        //
+        //     return default;
+        // }
+        //
+        // public override void VisitGlobalFunctionCall(BoundGlobalFunctionCall x, ConditionBranch branch)
+        // {
+        //     Accept(x.Name);
+        //
+        //     VisitRoutineCall(x);
+        //
+        //     if (x.Name.IsDirect)
+        //     {
+        //         var symbol = (MethodSymbol) DeclaringCompilation.ResolveFunction(x.Name.NameValue, Routine);
+        //         if (symbol.IsMissingMethod() && x.NameOpt.HasValue)
+        //         {
+        //             symbol = (MethodSymbol) DeclaringCompilation.ResolveFunction(x.NameOpt.Value, Routine);
+        //         }
+        //
+        //         var overloads = symbol is AmbiguousMethodSymbol ambiguous && ambiguous.IsOverloadable
+        //             ? new OverloadsList(ambiguous.Ambiguities.ToArray())
+        //             : new OverloadsList(symbol ?? new MissingMethodSymbol(x.Name.NameValue.ToString()));
+        //
+        //         Debug.Assert(x.TypeArguments.IsDefaultOrEmpty);
+        //
+        //         // symbol might be ErrorSymbol
+        //
+        //         x.TargetMethod = overloads.Resolve(this.TypeCtx, x.ArgumentsInSourceOrder, VisibilityScope,
+        //             OverloadsList.InvocationKindFlags.StaticCall);
+        //     }
+        //
+        //     BindRoutineCall(x);
+        //
+        //     // if possible resolve ConstantValue and TypeRefMask:
+        //     AnalysisFacts.HandleSpecialFunctionCall(x, this, branch);
+        // }
+        //
+        // public override T VisitInstanceFunctionCall(BoundInstanceFunctionCall x)
+        // {
+        //     Accept(x.Instance);
+        //     Accept(x.Name);
+        //
+        //     VisitRoutineCall(x);
+        //
+        //     if (x.Name.IsDirect)
+        //     {
+        //         var resolvedtype = x.Instance.ResultType;
+        //         if (resolvedtype == null)
+        //         {
+        //             var typeref =
+        //                 TypeCtx.GetObjectTypes(
+        //                     TypeCtx.WithoutNull(x.Instance
+        //                         .TypeRefMask)); // ignore NULL, causes runtime exception anyway
+        //             if (typeref.IsSingle)
+        //             {
+        //                 resolvedtype = (TypeSymbol) typeref.FirstOrDefault().ResolveTypeSymbol(DeclaringCompilation);
+        //             }
+        //
+        //             // else: a common base?
+        //         }
+        //
+        //         if (resolvedtype.IsValidType())
+        //         {
+        //             var candidates = resolvedtype.LookupMethods(x.Name.NameValue.Name.Value);
+        //
+        //             candidates = Construct(candidates, x);
+        //
+        //             x.TargetMethod = new OverloadsList(candidates).Resolve(this.TypeCtx, x.ArgumentsInSourceOrder,
+        //                 VisibilityScope, OverloadsList.InvocationKindFlags.InstanceCall);
+        //
+        //             //
+        //             if (x.TargetMethod.IsValidMethod() && x.TargetMethod.IsStatic &&
+        //                 x.Instance.TypeRefMask.IncludesSubclasses)
+        //             {
+        //                 // static method invoked on an instance object,
+        //                 // must be postponed to runtime since the type may change
+        //                 x.TargetMethod = new AmbiguousMethodSymbol(ImmutableArray.Create(x.TargetMethod), false);
+        //             }
+        //         }
+        //         else
+        //         {
+        //             x.TargetMethod = null;
+        //         }
+        //     }
+        //
+        //     BindRoutineCall(x, maybeOverload: true);
+        //
+        //     return default;
+        // }
+        //
+        // public override T VisitStaticFunctionCall(BoundCall x)
+        // {
+        //     Accept(x.TypeRef);
+        //     Accept(x.Name);
+        //
+        //     VisitRoutineCall(x);
+        //
+        //     var type = (TypeSymbol) x.TypeRef.Type;
+        //
+        //     if (x.Name.NameExpression != null)
+        //     {
+        //         // indirect method call -> not resolvable
+        //     }
+        //     else if (type.IsValidType())
+        //     {
+        //         var candidates = type.LookupMethods(x.Name.ToStringOrThrow());
+        //         // if (candidates.Any(c => c.HasThis)) throw new NotImplementedException("instance method called statically");
+        //
+        //         candidates = Construct(candidates, x);
+        //
+        //         var flags = OverloadsList.InvocationKindFlags.StaticCall;
+        //
+        //         if (Routine != null && !Routine.IsStatic && (x.TypeRef.IsSelf() || x.TypeRef.IsParent()))
+        //         {
+        //             // self:: or parent:: $this forwarding, prefer both
+        //             flags |= OverloadsList.InvocationKindFlags.InstanceCall;
+        //         }
+        //
+        //         var method =
+        //             new OverloadsList(candidates).Resolve(this.TypeCtx, x.ArgumentsInSourceOrder, VisibilityScope,
+        //                 flags);
+        //
+        //         // method is missing or inaccessible:
+        //         if (method is ErrorMethodSymbol errmethod && (errmethod.ErrorKind == ErrorMethodKind.Inaccessible ||
+        //                                                       errmethod.ErrorKind == ErrorMethodKind.Missing))
+        //         {
+        //             // NOTE: magic methods __call or __callStatic are called in both cases - the target method is inaccessible or missing
+        //
+        //             var isviable = true; // can we safely resolve the method?
+        //             var call = Array.Empty<MethodSymbol>();
+        //
+        //             // __call() might be used, if we have a reference to $this:
+        //             if (Routine != null && !Routine.IsStatic)
+        //             {
+        //                 // there is $this variable:
+        //                 if (TypeCtx.ThisType == null || TypeCtx.ThisType.IsOfType(type) ||
+        //                     type.IsOfType(TypeCtx.ThisType))
+        //                 {
+        //                     // try to use __call() first:
+        //                     call = type.LookupMethods(Name.SpecialMethodNames.Call.Value);
+        //
+        //                     //
+        //                     if (TypeCtx.ThisType == null && call.Length != 0)
+        //                     {
+        //                         // $this is resolved dynamically in runtime and
+        //                         // we don't know if we can use __call() here
+        //                         isviable = false;
+        //                     }
+        //                 }
+        //             }
+        //
+        //             if (call.Length == 0)
+        //             {
+        //                 // __callStatic()
+        //                 call = type.LookupMethods(Name.SpecialMethodNames.CallStatic.Value);
+        //             }
+        //
+        //             if (call.Length != 0)
+        //             {
+        //                 // NOTE: PHP ignores visibility of __callStatic
+        //                 call = Construct(call, x);
+        //
+        //                 method = call.Length == 1 && isviable
+        //                     ? new MagicCallMethodSymbol(x.Name.ToStringOrThrow(), call[0])
+        //                     : null; // nullify the symbol so it will be called dynamically and resolved in rutime
+        //             }
+        //         }
+        //
+        //         x.TargetMethod = method;
+        //     }
+        //     else if (x.TypeRef.IsSelf() && Routine != null && Routine.ContainingType.IsTraitType())
+        //     {
+        //         // self:: within trait type
+        //         // resolve possible code path
+        //         // we need this at least to determine possible late static type binding
+        //
+        //         var candidates = Construct(Routine.ContainingType.LookupMethods(x.Name.ToStringOrThrow()), x);
+        //         if (candidates.Length != 0)
+        //         {
+        //             // accessibility not have to be checked here
+        //             x.TargetMethod = new AmbiguousMethodSymbol(candidates.AsImmutable(), overloadable: true);
+        //         }
+        //     }
+        //
+        //     BindRoutineCall(x);
+        //
+        //     return default;
+        // }
 
         // helper
         MethodSymbol[] Construct(MethodSymbol[] methods, BoundRoutineCall bound)
@@ -2095,100 +2098,100 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                 return result.ToArray();
             }
         }
-
-        public override T VisitNew(BoundNewEx x)
-        {
-            Accept(x.TypeRef); // resolve target type
-
-            VisitRoutineCall(x); // analyse arguments
-
-            // resolve .ctor method:
-            var type = (NamedTypeSymbol) x.TypeRef.Type;
-            if (type.IsValidType())
-            {
-                var candidates = type.InstanceConstructors.ToArray();
-
-                //
-                x.TargetMethod = new OverloadsList(candidates).Resolve(this.TypeCtx, x.ArgumentsInSourceOrder,
-                    VisibilityScope, OverloadsList.InvocationKindFlags.New);
-                x.ResultType = type;
-            }
-
-            // bind arguments:
-            BindRoutineCall(x);
-
-            // resulting type is always known,
-            // not null,
-            // not ref:
-            x.TypeRefMask = x.TypeRef.GetTypeRefMask(TypeCtx).WithoutSubclasses;
-
-            return default;
-        }
-
-        public override T VisitInclude(BoundIncludeEx x)
-        {
-            VisitRoutineCall(x);
-
-            // resolve target script
-            Debug.Assert(x.ArgumentsInSourceOrder.Length == 1);
-            var targetExpr = x.ArgumentsInSourceOrder[0].Value;
-
-            //
-            x.TargetMethod = null;
-
-            if (targetExpr.ConstantValue.TryConvertToString(out var path))
-            {
-                // include (path)
-                x.TargetMethod = (MethodSymbol) _model.ResolveFile(path)?.MainMethod;
-            }
-            else if (targetExpr is BoundConcatEx concat) // common case
-            {
-                // include (dirname( __FILE__ ) . path) // changed to (__DIR__ . path) by graph rewriter
-                // include (__DIR__ . path)
-                if (concat.ArgumentsInSourceOrder.Length == 2 &&
-                    // concat.ArgumentsInSourceOrder[0].Value is BoundPseudoConst pc &&
-                    // pc.ConstType == PseudoConstUse.Types.Dir &&
-                    concat.ArgumentsInSourceOrder[1].Value.ConstantValue.TryConvertToString(out path))
-                {
-                    // create project relative path
-                    // not starting with a directory separator!
-                    path = Routine.ContainingFile.DirectoryRelativePath + path;
-                    if (path.Length != 0 && PathUtilities.IsAnyDirectorySeparator(path[0]))
-                        path = path.Substring(1); // make nicer when we have a helper method for that
-                    x.TargetMethod = (MethodSymbol) _model.ResolveFile(path)?.MainMethod;
-                }
-            }
-
-            // resolve result type
-            if (x.Access.IsRead)
-            {
-                var target = x.TargetMethod;
-                if (target != null)
-                {
-                    x.ResultType = target.ReturnType;
-                    x.TypeRefMask = target.GetResultType(TypeCtx);
-
-                    if (x.IsOnceSemantic)
-                    {
-                        // include_once, require_once returns TRUE in case the script was already included
-                        x.TypeRefMask |= TypeCtx.GetBooleanTypeMask();
-                    }
-                }
-                else
-                {
-                    x.TypeRefMask = TypeRefMask.AnyType;
-                }
-            }
-            else
-            {
-                x.TypeRefMask = 0;
-            }
-
-            // reset type analysis (include may change local variables)
-            State.SetAllUnknown(true);
-
-            return default;
-        }
+        //
+        // public override T VisitNew(BoundNewEx x)
+        // {
+        //     Accept(x.TypeRef); // resolve target type
+        //
+        //     VisitRoutineCall(x); // analyse arguments
+        //
+        //     // resolve .ctor method:
+        //     var type = (NamedTypeSymbol) x.TypeRef.Type;
+        //     if (type.IsValidType())
+        //     {
+        //         var candidates = type.InstanceConstructors.ToArray();
+        //
+        //         //
+        //         x.TargetMethod = new OverloadsList(candidates).Resolve(this.TypeCtx, x.ArgumentsInSourceOrder,
+        //             VisibilityScope, OverloadsList.InvocationKindFlags.New);
+        //         x.ResultType = type;
+        //     }
+        //
+        //     // bind arguments:
+        //     BindRoutineCall(x);
+        //
+        //     // resulting type is always known,
+        //     // not null,
+        //     // not ref:
+        //     x.TypeRefMask = x.TypeRef.GetTypeRefMask(TypeCtx).WithoutSubclasses;
+        //
+        //     return default;
+        // }
+        //
+        // public override T VisitInclude(BoundIncludeEx x)
+        // {
+        //     VisitRoutineCall(x);
+        //
+        //     // resolve target script
+        //     Debug.Assert(x.ArgumentsInSourceOrder.Length == 1);
+        //     var targetExpr = x.ArgumentsInSourceOrder[0].Value;
+        //
+        //     //
+        //     x.TargetMethod = null;
+        //
+        //     if (targetExpr.ConstantValue.TryConvertToString(out var path))
+        //     {
+        //         // include (path)
+        //         x.TargetMethod = (MethodSymbol) _model.ResolveFile(path)?.MainMethod;
+        //     }
+        //     else if (targetExpr is BoundConcatEx concat) // common case
+        //     {
+        //         // include (dirname( __FILE__ ) . path) // changed to (__DIR__ . path) by graph rewriter
+        //         // include (__DIR__ . path)
+        //         if (concat.ArgumentsInSourceOrder.Length == 2 &&
+        //             // concat.ArgumentsInSourceOrder[0].Value is BoundPseudoConst pc &&
+        //             // pc.ConstType == PseudoConstUse.Types.Dir &&
+        //             concat.ArgumentsInSourceOrder[1].Value.ConstantValue.TryConvertToString(out path))
+        //         {
+        //             // create project relative path
+        //             // not starting with a directory separator!
+        //             path = Routine.ContainingFile.DirectoryRelativePath + path;
+        //             if (path.Length != 0 && PathUtilities.IsAnyDirectorySeparator(path[0]))
+        //                 path = path.Substring(1); // make nicer when we have a helper method for that
+        //             x.TargetMethod = (MethodSymbol) _model.ResolveFile(path)?.MainMethod;
+        //         }
+        //     }
+        //
+        //     // resolve result type
+        //     if (x.Access.IsRead)
+        //     {
+        //         var target = x.TargetMethod;
+        //         if (target != null)
+        //         {
+        //             x.ResultType = target.ReturnType;
+        //             x.TypeRefMask = target.GetResultType(TypeCtx);
+        //
+        //             if (x.IsOnceSemantic)
+        //             {
+        //                 // include_once, require_once returns TRUE in case the script was already included
+        //                 x.TypeRefMask |= TypeCtx.GetBooleanTypeMask();
+        //             }
+        //         }
+        //         else
+        //         {
+        //             x.TypeRefMask = TypeRefMask.AnyType;
+        //         }
+        //     }
+        //     else
+        //     {
+        //         x.TypeRefMask = 0;
+        //     }
+        //
+        //     // reset type analysis (include may change local variables)
+        //     State.SetAllUnknown(true);
+        //
+        //     return default;
+        // }
 
         #endregion
 
@@ -2359,7 +2362,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         #region Visit ArrayEx, ArrayItemEx, ArrayItemOrdEx
 
-        public override T VisitArray(BoundArrayEx x)
+        public override T VisitArrayEx(BoundArrayEx x)
         {
             var items = x.Items;
             TypeRefMask elementType = 0;
@@ -2383,7 +2386,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return default;
         }
 
-        public override T VisitArrayItem(BoundArrayItemEx x)
+        public override T VisitArrayItemEx(BoundArrayItemEx x)
         {
             Accept(x.Array);
             Accept(x.Index);
@@ -2401,7 +2404,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return default;
         }
 
-        public override T VisitArrayItemOrd(BoundArrayItemOrdEx x)
+        public override T VisitArrayItemOrdEx(BoundArrayItemOrdEx x)
         {
             Accept(x.Array);
             Accept(x.Index);
@@ -2411,7 +2414,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
             x.TypeRefMask = TypeCtx.GetLongTypeMask();
 
-            return base.VisitArrayItemOrd(x);
+            return base.VisitArrayItemOrdEx(x);
         }
 
         #endregion
@@ -2453,42 +2456,42 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         #region VisitYield
 
-        public override T VisitYieldStatement(BoundYieldStmt x)
+        public override T VisitYieldStmt(BoundYieldStmt x)
         {
-            base.VisitYieldStatement(x);
+            base.VisitYieldStmt(x);
 
             return default;
         }
 
-        public override T VisitYieldEx(BoundYieldEx x)
-        {
-            base.VisitYieldEx(x);
-            x.TypeRefMask = TypeRefMask.AnyType;
+        // public override T VisitYieldEx(BoundYieldEx x)
+        // {
+        //     base.VisitYieldEx(x);
+        //     x.TypeRefMask = TypeRefMask.AnyType;
+        //
+        //     return default;
+        // }
 
-            return default;
-        }
-
-        public override T VisitYieldFromEx(BoundYieldFromEx x)
-        {
-            base.VisitYieldFromEx(x);
-            x.TypeRefMask = TypeRefMask.AnyType;
-
-            return default;
-        }
+        // public override T VisitYieldFromEx(BoundYieldFromEx x)
+        // {
+        //     base.VisitYieldFromEx(x);
+        //     x.TypeRefMask = TypeRefMask.AnyType;
+        //
+        //     return default;
+        // }
 
         #endregion
 
         #region Visit
 
-        public override T VisitIsEmpty(BoundIsEmptyEx x)
-        {
-            Accept(x.Operand);
-            x.TypeRefMask = TypeCtx.GetBooleanTypeMask();
+        // public override T VisitIsEmpty(BoundIsEmptyEx x)
+        // {
+        //     Accept(x.Operand);
+        //     x.TypeRefMask = TypeCtx.GetBooleanTypeMask();
+        //
+        //     return default;
+        // }
 
-            return default;
-        }
-
-        public override T VisitList(BoundListEx x)
+        public override T VisitListEx(BoundListEx x)
         {
             var elementtype = this.TypeCtx.GetElementType(x.Access.WriteMask);
             Debug.Assert(!elementtype.IsVoid);
@@ -2639,36 +2642,36 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         //     return default;
         // }
 
-        public override T VisitGlobalConstUse(BoundGlobalConst x)
-        {
-            // TODO: check constant name
+        // public override T VisitGlobalConstUse(BoundGlobalConst x)
+        // {
+        //     // TODO: check constant name
+        //
+        //     // bind to app-wide constant if possible
+        //     var symbol = (Aquila.CodeAnalysis.Symbols.Symbol) _model.ResolveConstant(x.Name.ToString());
+        //     var field = symbol as FieldSymbol;
+        //
+        //     if (!BindConstantValue(x, field))
+        //     {
+        //         if (field != null && field.IsStatic)
+        //         {
+        //             x._boundExpressionOpt = new FieldReference(null, field);
+        //             x.TypeRefMask = field.GetResultType(TypeCtx);
+        //         }
+        //         else if (symbol is PEPropertySymbol prop && prop.IsStatic)
+        //         {
+        //             x._boundExpressionOpt = new PropertyReference(null, prop);
+        //             x.TypeRefMask = prop.GetResultType(TypeCtx);
+        //         }
+        //         else
+        //         {
+        //             x.TypeRefMask = TypeRefMask.AnyType; // only scalars ?
+        //         }
+        //     }
+        //
+        //     return default;
+        // }
 
-            // bind to app-wide constant if possible
-            var symbol = (Aquila.CodeAnalysis.Symbols.Symbol) _model.ResolveConstant(x.Name.ToString());
-            var field = symbol as FieldSymbol;
-
-            if (!BindConstantValue(x, field))
-            {
-                if (field != null && field.IsStatic)
-                {
-                    x._boundExpressionOpt = new FieldReference(null, field);
-                    x.TypeRefMask = field.GetResultType(TypeCtx);
-                }
-                else if (symbol is PEPropertySymbol prop && prop.IsStatic)
-                {
-                    x._boundExpressionOpt = new PropertyReference(null, prop);
-                    x.TypeRefMask = prop.GetResultType(TypeCtx);
-                }
-                else
-                {
-                    x.TypeRefMask = TypeRefMask.AnyType; // only scalars ?
-                }
-            }
-
-            return default;
-        }
-
-        public override T VisitConditional(BoundConditionalEx x)
+        public override T VisitConditionalEx(BoundConditionalEx x)
         {
             BoundExpression positiveExpr; // positive expression (if evaluated to true, FalseExpr is not evaluated)
             FlowState positiveState; // state after successful positive branch
@@ -2728,12 +2731,12 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return default;
         }
 
-        public override T VisitExpressionStatement(BoundExpressionStmt x)
+        public override T VisitExpressionStmt(BoundExpressionStmt x)
         {
-            return base.VisitExpressionStatement(x);
+            return base.VisitExpressionStmt(x);
         }
 
-        public override T VisitReturn(BoundReturnStmt x)
+        public override T VisitReturnStmt(BoundReturnStmt x)
         {
             if (x.Returned != null)
             {
@@ -2752,18 +2755,18 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return default;
         }
 
-        public override T VisitEval(BoundEvalEx x)
-        {
-            base.VisitEval(x);
-
-            //
-            State.SetAllUnknown(true);
-
-            //
-            x.TypeRefMask = TypeRefMask.AnyType;
-
-            return default;
-        }
+        // public override T VisitEval(BoundEvalEx x)
+        // {
+        //     base.VisitEval(x);
+        //
+        //     //
+        //     State.SetAllUnknown(true);
+        //
+        //     //
+        //     x.TypeRefMask = TypeRefMask.AnyType;
+        //
+        //     return default;
+        // }
 
         #endregion
     }

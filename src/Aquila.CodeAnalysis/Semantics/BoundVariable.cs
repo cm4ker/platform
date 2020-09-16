@@ -36,14 +36,15 @@ namespace Aquila.CodeAnalysis.Semantics
 
     #region BoundLocal
 
-    public partial class BoundLocal : BoundVariable, IVariableDeclaratorOperation
+    public partial class BoundLocal : IVariableDeclaratorOperation
     {
         IVariableInitializerOperation IVariableDeclaratorOperation.Initializer => null;
 
-        ILocalSymbol IVariableDeclaratorOperation.Symbol => _symbol;
+        ILocalSymbol IVariableDeclaratorOperation.Symbol => _localSymbol;
+
+        internal override Symbol Symbol => _localSymbol;
 
         ImmutableArray<IOperation> IVariableDeclaratorOperation.IgnoredArguments => ImmutableArray<IOperation>.Empty;
-
 
         partial void AcceptImpl(OperationVisitor visitor)
         {
@@ -89,7 +90,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
     #region BoundParameter
 
-    internal partial class BoundParameter : BoundVariable, IParameterInitializerOperation
+    public partial class BoundParameter : BoundVariable, IParameterInitializerOperation
     {
         IParameterSymbol IParameterInitializerOperation.Parameter => _parameterSymbol;
 
@@ -123,12 +124,15 @@ namespace Aquila.CodeAnalysis.Semantics
 
         internal override Aquila.CodeAnalysis.Symbols.Symbol Symbol => null;
 
-        public override void Accept(OperationVisitor visitor)
-            => visitor.DefaultVisit(this);
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result)
+        {
+            result = visitor.DefaultVisit(this, argument);
+        }
 
-        public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
-            TArgument argument)
-            => visitor.DefaultVisit(this, argument);
+        partial void AcceptImpl(OperationVisitor visitor)
+        {
+            visitor.DefaultVisit(this);
+        }
     }
 
     #endregion

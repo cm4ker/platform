@@ -30,7 +30,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// Gets the <see cref="BoundAccess"/> for writing operation.
         /// </summary>
-        public static BoundAccess TargetAccess(this BoundReferenceExpression target)
+        public static BoundAccess TargetAccess(this BoundReferenceEx target)
         {
             var access = target.Access;
 

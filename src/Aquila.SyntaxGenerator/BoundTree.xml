@@ -26,7 +26,7 @@
 
     <Syntax Name="MethodDeclStmt" Base="Statement" OperationKind="LocalFunction">
         <Arguments>
-            <Single Name="Method" Type="SourceFunctionSymbol" IsUpdatable="true"/>
+            <Single Name="Method" Type="SourceFunctionSymbol" IsUpdatable="true" IsInternal="true"/>
         </Arguments>
     </Syntax>
 
@@ -56,13 +56,35 @@
                     IsUpdatable="true"/>
         </Arguments>
     </Syntax>
-    <Syntax Name="ArrayInit" Base="Expression"/>
+    <!--    <Syntax Name="ArrayInit" Base="Expression"/>-->
     <Syntax Name="AssignEx" Base="Expression">
         <Arguments>
-            <Single Name="Target" Type="BoundReferenceExpression" IsUpdatable="true"/>
+            <Single Name="Target" Type="BoundReferenceEx" IsUpdatable="true"/>
             <Single Name="Value" Type="BoundExpression" IsUpdatable="true"/>
         </Arguments>
     </Syntax>
+
+
+    <Syntax Name="CompoundAssignEx" Base="AssignEx" OperationKind="CompoundAssignment">
+        <Arguments>
+            <Single Name="Target" Type="BoundReferenceEx" IsUpdatable="true" OnlyArgument="true"
+                    PassBase="true"/>
+            <Single Name="Value" Type="BoundExpression" IsUpdatable="true" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Operation" Type="Operations" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="IncDecEx" Base="CompoundAssignEx">
+        <Arguments>
+            <Single Name="Target" Type="BoundReferenceEx" IsUpdatable="true" OnlyArgument="true"
+                    PassBase="true"/>
+            <Single Name="IsIncrement" Type="bool" IsUpdatable="true"/>
+            <Single Name="IsPostfix" Type="bool" IsUpdatable="true"/>
+            <Single PassBase="true" PassBaseConst="new BoundLiteral(1L).WithAccess(BoundAccess.Read)"/>
+            <Single PassBase="true" PassBaseConst="Operations.IncDec"/>
+        </Arguments>
+    </Syntax>
+
 
     <Syntax Name="UnaryEx" Base="Expression" OperationKind="UnaryOperator">
         <Arguments>
@@ -106,6 +128,61 @@
             <Single Name="Thrown" Type="BoundExpression" IsUpdatable="true"/>
         </Arguments>
     </Syntax>
+
+    <!-- region ReferenceEx -->
+    <Syntax Name="ReferenceEx" Base="Expression" IsAbstract="true">
+        <Arguments>
+
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="ArrayItemEx" Base="ReferenceEx">
+        <Arguments>
+            <Single Name="DeclaringCompilation" Type="AquilaCompilation" IsUpdatable="false"/>
+            <Single Name="Array" Type="BoundExpression" IsUpdatable="false"/>
+            <Single Name="Index" Type="BoundExpression" IsUpdatable="false"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="ArrayItemOrdEx" Base="ArrayItemEx">
+        <Arguments>
+            <Single Name="DeclaringCompilation" Type="AquilaCompilation" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Array" Type="BoundExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Index" Type="BoundExpression" OnlyArgument="true" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+
+
+    <Syntax Name="FieldRef" Base="ReferenceEx" OperationKind="FieldReference">
+        <Arguments>
+            <Single Name="Instance" Type="BoundExpression" IsUpdatable="false" OnlyPrivate="true"/>
+            <Single Name="ContainingType" Type="IBoundTypeRef" IsUpdatable="false"/>
+            <Single Name="FieldName" Type="BoundVariableName" IsUpdatable="false"/>
+            <Single Name="fieldType" Type="FieldType" IsUpdatable="false"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="ListEx" Base="ReferenceEx" OperationKind="None">
+        <Arguments>
+            <Single Name="Items" Type="ImmutableArray&lt;KeyValuePair&lt;BoundExpression, BoundReferenceEx&gt;&gt;"
+                    IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="VariableRef" Base="ReferenceEx" OperationKind="LocalReference">
+        <Arguments>
+            <Single Name="Name" Type="BoundVariableName" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="TemporalVariableRef" Base="VariableRef">
+        <Arguments>
+            <Single Name="Name" Type="string" IsUpdatable="true" PassBase="true" OnlyArgument="true"/>
+        </Arguments>
+    </Syntax>
+
+    <!-- endregion -->
+
     <!-- endregion -->
 
     <!-- region Argument -->
@@ -138,8 +215,8 @@
     <Syntax Name="ClassTypeRef" Base="TypeRef" NS="TypeRef">
         <Arguments>
             <Single Name="QName" Type="QualifiedName"/>
-            <Single Name="Routine" Type="SourceRoutineSymbol"/>
-            <Single Name="Arity" Type="int"/>
+            <Single Name="Routine" Type="SourceRoutineSymbol" IsInternal="true"/>
+            <Single Name="Arity" Type="int" Default="-1"/>
         </Arguments>
     </Syntax>
     <Syntax Name="GenericClassTypeRef" Base="TypeRef" NS="TypeRef"/>
@@ -173,14 +250,14 @@
 
     <Syntax Name="Local" Base="Variable" OperationKind="VariableDeclaration">
         <Arguments>
-            <Single Name="Symbol" Type="SourceLocalSymbol"/>
+            <Single Name="LocalSymbol" Type="SourceLocalSymbol" IsInternal="true"/>
             <Single Name="VariableKind" Type="VariableKind" PassBase="true" OnlyArgument="true"
                     Default="Symbols.VariableKind.LocalVariable"/>
         </Arguments>
     </Syntax>
     <Syntax Name="Parameter" Base="Variable" OperationKind="ParameterInitializer">
         <Arguments>
-            <Single Name="ParameterSymbol" Type="ParameterSymbol"/>
+            <Single Name="ParameterSymbol" Type="ParameterSymbol" IsInternal="true"/>
             <Single Name="Initializer" Type="BoundExpression"/>
 
             <Single PassBaseConst="VariableKind.Parameter" PassBase="true"/>
@@ -188,14 +265,14 @@
     </Syntax>
     <Syntax Name="ThisParameter" Base="Variable" OperationKind="None">
         <Arguments>
-            <Single Name="Routine" Type="SourceRoutineSymbol"/>
+            <Single Name="Routine" Type="SourceRoutineSymbol" IsInternal="true"/>
             <Single PassBaseConst="VariableKind.ThisParameter" PassBase="true"/>
         </Arguments>
     </Syntax>
     <!-- endregion -->
 
     <!-- region VariableName -->
-    <Syntax Name="VariableName" IsAbstract="true">
+    <Syntax Name="VariableName" OperationKind="None">
         <Arguments>
             <Single Name="NameValue" Type="VariableName"/>
             <Single Name="NameExpression" Type="BoundExpression"/>

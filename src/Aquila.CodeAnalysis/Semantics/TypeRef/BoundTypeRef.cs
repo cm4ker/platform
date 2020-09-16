@@ -18,7 +18,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
     #region BoundPrimitiveTypeRef
 
     [DebuggerDisplay("BoundPrimitiveTypeRef ({_type})")]
-    sealed partial class BoundPrimitiveTypeRef : BoundTypeRef
+    public sealed partial class BoundPrimitiveTypeRef : BoundTypeRef
     {
         public AquilaTypeCode TypeCode => _type;
 
@@ -267,7 +267,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
     #region BoundArrayTypeRef
 
     [DebuggerDisplay("BoundArrayTypeRef ({_elementType})")]
-    sealed partial class BoundArrayTypeRef : BoundTypeRef
+    public sealed partial class BoundArrayTypeRef : BoundTypeRef
     {
         public override bool IsArray => true;
 
@@ -326,7 +326,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
 
         public override TypeRefMask LambdaReturnType => _returnType;
 
-        public override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
+        internal override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
         {
             // primitive type does not have (should not have) PhpTypeInfo
             throw ExceptionUtilities.Unreachable;
@@ -359,7 +359,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
     #region BoundClassTypeRef
 
     [DebuggerDisplay("BoundClassTypeRef ({ToString(),nq})")]
-    sealed partial class BoundClassTypeRef
+    public sealed partial class BoundClassTypeRef
     {
         public QualifiedName ClassName { get; }
 
@@ -473,7 +473,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
     #region BoundGenericClassTypeRef
 
     [DebuggerDisplay("BoundGenericClassTypeRef ({_targetType,nq}`{_typeArguments.Length})")]
-    sealed partial class BoundGenericClassTypeRef : BoundTypeRef
+    public sealed partial class BoundGenericClassTypeRef : BoundTypeRef
     {
         readonly IBoundTypeRef _targetType;
         readonly ImmutableArray<BoundTypeRef> _typeArguments;
@@ -488,7 +488,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
 
         public override ImmutableArray<IBoundTypeRef> TypeArguments => _typeArguments.CastArray<IBoundTypeRef>();
 
-        public override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
+        internal override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
         {
             var t = ResolveTypeSymbol(cg.DeclaringCompilation);
             return cg.EmitLoadPhpTypeInfo(t);
@@ -541,7 +541,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
 
     #region BoundIndirectTypeRef
 
-    sealed class BoundIndirectTypeRef : BoundTypeRef
+    public sealed class BoundIndirectTypeRef : BoundTypeRef
     {
         public BoundExpression TypeExpression => _typeExpression;
         readonly BoundExpression _typeExpression;
@@ -580,7 +580,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
 
         public override bool IsObject => true;
 
-        public void EmitClassName(CodeGenerator cg)
+        internal void EmitClassName(CodeGenerator cg)
         {
             if (ObjectTypeInfoSemantic)
             {
@@ -619,7 +619,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             }
         }
 
-        public override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
+        internal override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
         {
             if (ObjectTypeInfoSemantic) // type of object instance handled // only makes sense if type is indirect
             {
@@ -691,8 +691,8 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
 
         public override string ToString() => "{?}";
 
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
-            visitor.VisitIndirectTypeRef(this);
+        // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
+        //     visitor.VisitIndirectTypeRef(this);
     }
 
     #endregion
@@ -711,7 +711,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             this.IsNullable = trefs.Any(t => t.IsNullable);
         }
 
-        public override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
+        internal override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
         {
             throw new NotImplementedException();
         }
@@ -759,8 +759,8 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             return result;
         }
 
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
-            visitor.VisitMultipleTypeRef(this);
+        // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
+        //     visitor.VisitMultipleTypeRef(this);
 
         public BoundMultipleTypeRef Update(ImmutableArray<BoundTypeRef> trefs)
         {
@@ -782,7 +782,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
     /// <summary>
     /// <see cref="IBoundTypeRef"/> refering to resolved reference type symbol.
     /// </summary>
-    sealed partial class BoundTypeRefFromSymbol : BoundTypeRef
+    public sealed partial class BoundTypeRefFromSymbol : BoundTypeRef
     {
         bool IsPeachpieCorLibrary => _symbol.ContainingAssembly is AssemblySymbol ass && ass.IsPeachpieCorLibrary;
 

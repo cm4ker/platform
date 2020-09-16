@@ -238,7 +238,7 @@ namespace Aquila.CodeAnalysis.CodeGen
                     TypeSymbol t = null;
                     bool byref = false;
 
-                    if (!expr.IsConstant() && expr is BoundReferenceExpression varref)
+                    if (!expr.IsConstant() && expr is BoundReferenceEx varref)
                     {
                         // try to read the value by ref so it can be changed if necessary
                         var place = varref.Place();

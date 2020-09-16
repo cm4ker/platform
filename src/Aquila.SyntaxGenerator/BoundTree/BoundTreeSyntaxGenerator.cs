@@ -93,12 +93,15 @@ namespace Aquila.SyntaxGenerator.BoundTree
         private static void GenerateVisitor(StringBuilder sb, List<CompilerSyntax> syntaxes)
         {
             sb.AppendLine("namespace Aquila.CodeAnalysis.Semantics {");
-            sb.AppendLine("public abstract partial class AquilaOperationVisitor<TResult>{");
+
+            sb.AppendLine("using Aquila.CodeAnalysis.Semantics.TypeRef;");
+
+            sb.AppendLine("abstract partial class AquilaOperationVisitor<TResult>{");
 
             foreach (var syntax in syntaxes)
             {
                 sb.AppendLine(
-                    $"internal virtual TResult Visit{syntax.Name}({Suffix}{syntax.Name} x) => VisitDefault(x);");
+                    $"public virtual TResult Visit{syntax.Name}({Suffix}{syntax.Name} x) => VisitDefault(x);");
             }
 
             sb.AppendLine("}");
@@ -131,8 +134,13 @@ namespace Aquila.SyntaxGenerator.BoundTree
 
         private static void UpdateMethod(StringBuilder sb, CompilerSyntax syntax)
         {
+            if (syntax.Arguments.Any(x => x.IsInternal))
+                sb.Append("internal ");
+            else
+                sb.Append("public ");
+            
             sb.AppendLine(
-                $"public {Suffix}{syntax.Name} Update(");
+                $"{Suffix}{syntax.Name} Update(");
 
             var args = syntax.Arguments.Where(x => x.IsUpdatable).ToList();
 
@@ -210,7 +218,12 @@ namespace Aquila.SyntaxGenerator.BoundTree
             }
 
             //Constructor
-            sb.AppendLine($"public {Suffix}{syntax.Name}(");
+            if (syntax.Arguments.Any(x => x.IsInternal))
+                sb.Append("internal ");
+            else
+                sb.Append("public ");
+
+            sb.AppendLine($"{Suffix}{syntax.Name}(");
 
             var isMoreThanOne = false;
             foreach (var arg in syntax.Arguments)
@@ -226,7 +239,7 @@ namespace Aquila.SyntaxGenerator.BoundTree
                 //default value
                 if (arg is SyntaxArgumentSingle sas && !string.IsNullOrEmpty(sas.Default))
                     sb.Append($" = {sas.Default}");
-                
+
                 isMoreThanOne = true;
             }
 
@@ -269,10 +282,10 @@ namespace Aquila.SyntaxGenerator.BoundTree
                 if (!arg.OnlyArgument)
                     sb.Append($"_{arg.Name.ToCamelCase()} = {arg.Name.ToCamelCase()};");
             }
-            
+
             //call OnCreateImpl
             sb.AppendLine("OnCreateImpl(");
-            
+
             isMoreThanOne = false;
             foreach (var arg in syntax.Arguments)
             {
@@ -284,23 +297,31 @@ namespace Aquila.SyntaxGenerator.BoundTree
 
                 sb.Append($"{arg.Name.ToCamelCase()}");
 
-                
+
                 isMoreThanOne = true;
             }
+
             sb.Append(");");
 
             sb.Append("}");
 
             //partial OnCreate()
             GenerateOnCreatePartialMethod(sb, syntax);
-            
+
             foreach (var arg in syntax.Arguments)
             {
                 if (arg is SyntaxArgumentSingle s && !string.IsNullOrEmpty(s.PassBaseConst))
                     continue;
 
-                if (!arg.OnlyArgument)
-                    sb.AppendLine($"public {arg.Type} {arg.Name} {{get {{ return _{arg.Name.ToCamelCase()};}}}}");
+                if (!arg.OnlyArgument && !arg.OnlyPrivate)
+                {
+                    if (arg.IsInternal)
+                        sb.Append("internal");
+                    else
+                        sb.Append("public");
+
+                    sb.AppendLine($" {arg.Type} {arg.Name} {{get {{ return _{arg.Name.ToCamelCase()};}}}}");
+                }
             }
 
             if (!string.IsNullOrEmpty(syntax.OperationKind))
@@ -322,7 +343,7 @@ namespace Aquila.SyntaxGenerator.BoundTree
         private static void GenerateOnCreatePartialMethod(StringBuilder sb, CompilerSyntax syntax)
         {
             sb.AppendLine("partial void OnCreateImpl(");
-            
+
             bool isMoreThanOne = false;
             foreach (var arg in syntax.Arguments)
             {

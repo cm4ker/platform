@@ -99,61 +99,61 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return expression.ResultType = type;
         }
 
-        protected override TypeSymbol VisitRoutineCall(BoundRoutineCall x)
-        {
-            // visits arguments:
-            base.VisitRoutineCall(x);   // returns `null`
-
-            var method = x.TargetMethod;
-            if (method.IsValidMethod())
-            {
-                var ps = method.Parameters;
-                var args = x.ArgumentsInSourceOrder;
-                int pi = 0, argi = 0;
-                while (argi < args.Length && pi < ps.Length)
-                {
-                    // skip implicit parameters:
-                    if (argi == 0 && ps[pi].IsImplicitlyDeclared && !ps[pi].IsParams)
-                    {
-                        pi++;
-                        continue;
-                    }
-
-                    //
-                    var argex = args[argi].Value;
-                    if (argex.Access.IsRead && !argex.Access.IsReadRef)
-                    {
-                        if (ps[pi].IsParams)
-                        {
-                            if (ps[pi].Type is ArrayTypeSymbol arrt)
-                            {
-                                argex.Access = argex.Access.WithRead(arrt.ElementType);
-                            }
-                            argi++;
-                            continue;   // do not increment {pi}
-                        }
-                        else
-                        {
-                            argex.Access = argex.Access.WithRead(ps[pi].Type);
-                        }
-                    }
-
-                    //// bind args[argi] -> ps[pi] // not used yet
-                    //args[argi].Parameter = ps[pi];
-
-                    //argex.BoundConversion = DeclaringCompilation.Conversions.ClassifyConversion()
-
-                    //
-                    argi++;
-                    pi++;
-                }
-
-                return method.ReturnType;
-            }
-
-            //
-            return null;
-        }
+        // protected override TypeSymbol VisitRoutineCall(BoundRoutineCall x)
+        // {
+        //     // visits arguments:
+        //     base.VisitRoutineCall(x);   // returns `null`
+        //
+        //     var method = x.TargetMethod;
+        //     if (method.IsValidMethod())
+        //     {
+        //         var ps = method.Parameters;
+        //         var args = x.ArgumentsInSourceOrder;
+        //         int pi = 0, argi = 0;
+        //         while (argi < args.Length && pi < ps.Length)
+        //         {
+        //             // skip implicit parameters:
+        //             if (argi == 0 && ps[pi].IsImplicitlyDeclared && !ps[pi].IsParams)
+        //             {
+        //                 pi++;
+        //                 continue;
+        //             }
+        //
+        //             //
+        //             var argex = args[argi].Value;
+        //             if (argex.Access.IsRead && !argex.Access.IsReadRef)
+        //             {
+        //                 if (ps[pi].IsParams)
+        //                 {
+        //                     if (ps[pi].Type is ArrayTypeSymbol arrt)
+        //                     {
+        //                         argex.Access = argex.Access.WithRead(arrt.ElementType);
+        //                     }
+        //                     argi++;
+        //                     continue;   // do not increment {pi}
+        //                 }
+        //                 else
+        //                 {
+        //                     argex.Access = argex.Access.WithRead(ps[pi].Type);
+        //                 }
+        //             }
+        //
+        //             //// bind args[argi] -> ps[pi] // not used yet
+        //             //args[argi].Parameter = ps[pi];
+        //
+        //             //argex.BoundConversion = DeclaringCompilation.Conversions.ClassifyConversion()
+        //
+        //             //
+        //             argi++;
+        //             pi++;
+        //         }
+        //
+        //         return method.ReturnType;
+        //     }
+        //
+        //     //
+        //     return null;
+        // }
 
         //public override TypeSymbol VisitLiteral(BoundLiteral x)
         //{

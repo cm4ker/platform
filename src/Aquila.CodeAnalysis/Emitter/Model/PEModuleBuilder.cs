@@ -21,6 +21,7 @@ using Cci = Microsoft.Cci;
 using Microsoft.CodeAnalysis.Emit.NoPia;
 using Aquila.CodeAnalysis.Utilities;
 using Aquila.CodeAnalysis.CodeGen;
+using ExceptionUtilities = Aquila.CodeAnalysis.Utilities.ExceptionUtilities;
 
 
 namespace Aquila.CodeAnalysis.Emit

@@ -132,7 +132,7 @@ namespace Aquila.CodeAnalysis
         /// <summary>
         /// Enqueues the standalone expression for analysis.
         /// </summary>
-        void EnqueueExpression(BoundExpression expression, TypeRefContext  ctx)
+        void EnqueueExpression(BoundExpression expression, TypeRefContext ctx)
         {
             Contract.ThrowIfNull(expression);
             Contract.ThrowIfNull(ctx);
@@ -234,24 +234,24 @@ namespace Aquila.CodeAnalysis
                 return (IList<MethodSymbol>) visitor._lazyStaticCalls ?? Array.Empty<MethodSymbol>();
             }
 
-            public override bool VisitStaticFunctionCall(BoundCall x)
-            {
-                if (x.TypeRef.IsSelf() || x.TypeRef.IsParent())
-                {
-                    if (_lazyStaticCalls == null) _lazyStaticCalls = new List<MethodSymbol>();
-
-                    if (x.TargetMethod.IsValidMethod() && x.TargetMethod.IsStatic)
-                    {
-                        _lazyStaticCalls.Add(x.TargetMethod);
-                    }
-                    else if (x.TargetMethod is AmbiguousMethodSymbol ambiguous)
-                    {
-                        _lazyStaticCalls.AddRange(ambiguous.Ambiguities.Where(sm => sm.IsStatic));
-                    }
-                }
-
-                return base.VisitStaticFunctionCall(x);
-            }
+            // public override bool VisitStaticFunctionCall(BoundCall x)
+            // {
+            //     if (x.TypeRef.IsSelf() || x.TypeRef.IsParent())
+            //     {
+            //         if (_lazyStaticCalls == null) _lazyStaticCalls = new List<MethodSymbol>();
+            //
+            //         if (x.TargetMethod.IsValidMethod() && x.TargetMethod.IsStatic)
+            //         {
+            //             _lazyStaticCalls.Add(x.TargetMethod);
+            //         }
+            //         else if (x.TargetMethod is AmbiguousMethodSymbol ambiguous)
+            //         {
+            //             _lazyStaticCalls.AddRange(ambiguous.Ambiguities.Where(sm => sm.IsStatic));
+            //         }
+            //     }
+            //
+            //     return base.VisitStaticFunctionCall(x);
+            // }
         }
 
         #endregion

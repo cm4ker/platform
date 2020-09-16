@@ -549,7 +549,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
     /// <summary>
     /// An object specifying a reference to a variable, a field, a property, an array item (a value in general).
-    /// Used by <see cref="BoundReferenceExpression"/>.
+    /// Used by <see cref="BoundReferenceEx"/>.
     /// </summary>
     interface IVariableReference
     {
@@ -1404,7 +1404,7 @@ namespace Aquila.CodeAnalysis.Semantics
                     return new FieldPlace(null, Field);
                 }
 
-                if (Receiver is BoundReferenceExpression bref && bref.Place() is IPlace receiver_place &&
+                if (Receiver is BoundReferenceEx bref && bref.Place() is IPlace receiver_place &&
                     receiver_place.Type.IsOfType(Field.ContainingType))
                 {
                     return new FieldPlace(receiver_place, Field);
@@ -1513,7 +1513,7 @@ namespace Aquila.CodeAnalysis.Semantics
                 if (Receiver == null)
                     return new PropertyPlace(null, Property);
 
-                if (Receiver is BoundReferenceExpression bref && bref.Place() is IPlace receiver_place &&
+                if (Receiver is BoundReferenceEx bref && bref.Place() is IPlace receiver_place &&
                     receiver_place.Type.IsOfType(Property.ContainingType))
                     return new PropertyPlace(receiver_place, Property);
 

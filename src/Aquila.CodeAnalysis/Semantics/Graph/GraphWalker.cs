@@ -1,14 +1,14 @@
-﻿﻿using Microsoft.CodeAnalysis.Operations;
- using Aquila.CodeAnalysis.Utilities;
+﻿using Microsoft.CodeAnalysis.Operations;
+using Aquila.CodeAnalysis.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
- using Aquila.CodeAnalysis.Semantics.TypeRef;
+using Aquila.CodeAnalysis.Semantics.TypeRef;
 
- namespace Aquila.CodeAnalysis.Semantics.Graph
+namespace Aquila.CodeAnalysis.Semantics.Graph
 {
     /// <summary>
     /// Visitor used to traverse CFG and all its operations.
@@ -80,8 +80,15 @@ using System.Threading.Tasks;
 
         public override T VisitCFGCaseBlock(CaseBlock x)
         {
-            if (!x.CaseValue.IsOnlyBoundElement) { VisitCFGBlock(x.CaseValue.PreBoundBlockFirst); }
-            if (!x.CaseValue.IsEmpty) { Accept(x.CaseValue.BoundElement); }
+            if (!x.CaseValue.IsOnlyBoundElement)
+            {
+                VisitCFGBlock(x.CaseValue.PreBoundBlockFirst);
+            }
+
+            if (!x.CaseValue.IsEmpty)
+            {
+                Accept(x.CaseValue.BoundElement);
+            }
 
             DefaultVisitBlock(x);
 
@@ -161,24 +168,25 @@ using System.Threading.Tasks;
 
         #region Expressions
 
-        protected override T VisitRoutineCall(BoundRoutineCall x)
-        {
-            if (x.TypeArguments.IsDefaultOrEmpty == false)
-            {
-                for (int i = 0; i < x.TypeArguments.Length; i++)
-                {
-                    x.TypeArguments[i].Accept(this);
-                }
-            }
+        // protected override T VisitRoutineCall(BoundRoutineCall x)
+        // {
+        //     if (x.TypeArguments.IsDefaultOrEmpty == false)
+        //     {
+        //         for (int i = 0; i < x.TypeArguments.Length; i++)
+        //         {
+        //             x.TypeArguments[i].Accept(this);
+        //         }
+        //     }
+        //
+        //     var args = x.ArgumentsInSourceOrder;
+        //     for (int i = 0; i < args.Length; i++)
+        //     {
+        //         VisitArgument(args[i]);
+        //     }
+        //
+        //     return default;
+        // }
 
-            var args = x.ArgumentsInSourceOrder;
-            for (int i = 0; i < args.Length; i++)
-            {
-                VisitArgument(args[i]);
-            }
-
-            return default;
-        }
 
         public override T VisitLiteral(BoundLiteral x)
         {
@@ -187,12 +195,12 @@ using System.Threading.Tasks;
             return default;
         }
 
-        public override T VisitCopyValue(BoundCopyValue x)
-        {
-            Accept(x.Expression);
-
-            return default;
-        }
+        // public override T VisitCopyValue(BoundCopyValue x)
+        // {
+        //     Accept(x.Expression);
+        //
+        //     return default;
+        // }
 
         public override T VisitArgument(BoundArgument x)
         {
@@ -200,30 +208,30 @@ using System.Threading.Tasks;
 
             return default;
         }
-
-        internal override T VisitTypeRef(BoundTypeRef x)
-        {
-            return base.VisitTypeRef(x);
-        }
-
-        internal override T VisitIndirectTypeRef(BoundIndirectTypeRef x)
-        {
-            Accept(x.TypeExpression);
-            return base.VisitIndirectTypeRef(x);
-        }
-
-        internal override T VisitMultipleTypeRef(BoundMultipleTypeRef x)
-        {
-            Debug.Assert(x != null);
-            Debug.Assert(x.TypeRefs.Length > 1);
-
-            for (int i = 0; i < x.TypeRefs.Length; i++)
-            {
-                x.TypeRefs[i].Accept(this);
-            }
-
-            return default;
-        }
+        //
+        // internal override T VisitTypeRef(BoundTypeRef x)
+        // {
+        //     return base.VisitTypeRef(x);
+        // }
+        //
+        // internal override T VisitIndirectTypeRef(BoundIndirectTypeRef x)
+        // {
+        //     Accept(x.TypeExpression);
+        //     return base.VisitIndirectTypeRef(x);
+        // }
+        //
+        // internal override T VisitMultipleTypeRef(BoundMultipleTypeRef x)
+        // {
+        //     Debug.Assert(x != null);
+        //     Debug.Assert(x.TypeRefs.Length > 1);
+        //
+        //     for (int i = 0; i < x.TypeRefs.Length; i++)
+        //     {
+        //         x.TypeRefs[i].Accept(this);
+        //     }
+        //
+        //     return default;
+        // }
 
         public override T VisitRoutineName(BoundRoutineName x)
         {
@@ -232,76 +240,76 @@ using System.Threading.Tasks;
             return default;
         }
 
-        public override T VisitGlobalFunctionCall(BoundGlobalFunctionCall x)
-        {
-            Accept(x.Name);
-            VisitRoutineCall(x);
+        // public override T VisitGlobalFunctionCall(BoundGlobalFunctionCall x)
+        // {
+        //     Accept(x.Name);
+        //     VisitRoutineCall(x);
+        //
+        //     return default;
+        // }
+        //
+        // public override T VisitInstanceFunctionCall(BoundInstanceFunctionCall x)
+        // {
+        //     Accept(x.Instance);
+        //     Accept(x.Name);
+        //     VisitRoutineCall(x);
+        //
+        //     return default;
+        // }
+        //
+        // public override T VisitStaticFunctionCall(BoundCall x)
+        // {
+        //     Accept(x.TypeRef);
+        //     Accept(x.Name);
+        //     VisitRoutineCall(x);
+        //
+        //     return default;
+        // }
+        //
+        // public override T VisitEcho(BoundEcho x)
+        // {
+        //     VisitRoutineCall(x);
+        //
+        //     return default;
+        // }
+        //
+        // public override T VisitConcat(BoundConcatEx x)
+        // {
+        //     VisitRoutineCall(x);
+        //
+        //     return default;
+        // }
+        //
+        // public override T VisitNew(BoundNewEx x)
+        // {
+        //     Accept(x.TypeRef);
+        //     VisitRoutineCall(x);
+        //
+        //     return default;
+        // }
+        //
+        // public override T VisitInclude(BoundIncludeEx x)
+        // {
+        //     VisitRoutineCall(x);
+        //
+        //     return default;
+        // }
+        //
+        // public override T VisitExit(BoundExitEx x)
+        // {
+        //     VisitRoutineCall(x);
+        //
+        //     return default;
+        // }
+        //
+        // public override T VisitAssert(BoundAssertEx x)
+        // {
+        //     VisitRoutineCall(x);
+        //
+        //     return default;
+        // }
 
-            return default;
-        }
-
-        public override T VisitInstanceFunctionCall(BoundInstanceFunctionCall x)
-        {
-            Accept(x.Instance);
-            Accept(x.Name);
-            VisitRoutineCall(x);
-
-            return default;
-        }
-
-        public override T VisitStaticFunctionCall(BoundCall x)
-        {
-            Accept(x.TypeRef);
-            Accept(x.Name);
-            VisitRoutineCall(x);
-
-            return default;
-        }
-
-        public override T VisitEcho(BoundEcho x)
-        {
-            VisitRoutineCall(x);
-
-            return default;
-        }
-
-        public override T VisitConcat(BoundConcatEx x)
-        {
-            VisitRoutineCall(x);
-
-            return default;
-        }
-
-        public override T VisitNew(BoundNewEx x)
-        {
-            Accept(x.TypeRef);
-            VisitRoutineCall(x);
-
-            return default;
-        }
-
-        public override T VisitInclude(BoundIncludeEx x)
-        {
-            VisitRoutineCall(x);
-
-            return default;
-        }
-
-        public override T VisitExit(BoundExitEx x)
-        {
-            VisitRoutineCall(x);
-
-            return default;
-        }
-
-        public override T VisitAssert(BoundAssertEx x)
-        {
-            VisitRoutineCall(x);
-
-            return default;
-        }
-
-        public override T VisitBinaryExpression(BoundBinaryEx x)
+        public override T VisitBinaryEx(BoundBinaryEx x)
         {
             Accept(x.Left);
             Accept(x.Right);
@@ -309,14 +317,14 @@ using System.Threading.Tasks;
             return default;
         }
 
-        public override T VisitUnaryExpression(BoundUnaryEx x)
+        public override T VisitUnaryEx(BoundUnaryEx x)
         {
             Accept(x.Operand);
 
             return default;
         }
 
-        public override T VisitConversion(BoundConversionEx x)
+        public override T VisitConversionEx(BoundConversionEx x)
         {
             Accept(x.Operand);
             Accept(x.TargetType);
@@ -324,7 +332,7 @@ using System.Threading.Tasks;
             return default;
         }
 
-        public override T VisitIncDec(BoundIncDecEx x)
+        public override T VisitIncDecEx(BoundIncDecEx x)
         {
             Accept(x.Target);
             Accept(x.Value);
@@ -332,7 +340,7 @@ using System.Threading.Tasks;
             return default;
         }
 
-        public override T VisitConditional(BoundConditionalEx x)
+        public override T VisitConditionalEx(BoundConditionalEx x)
         {
             Accept(x.Condition);
             Accept(x.IfTrue);
@@ -341,7 +349,7 @@ using System.Threading.Tasks;
             return default;
         }
 
-        public override T VisitAssign(BoundAssignEx x)
+        public override T VisitAssignEx(BoundAssignEx x)
         {
             Accept(x.Target);
             Accept(x.Value);
@@ -349,7 +357,7 @@ using System.Threading.Tasks;
             return default;
         }
 
-        public override T VisitCompoundAssign(BoundCompoundAssignEx x)
+        public override T VisitCompoundAssignEx(BoundCompoundAssignEx x)
         {
             Accept(x.Target);
             Accept(x.Value);
@@ -379,7 +387,7 @@ using System.Threading.Tasks;
             return default;
         }
 
-        public override T VisitList(BoundListEx x)
+        public override T VisitListEx(BoundListEx x)
         {
             x.Items.ForEach(pair =>
             {
@@ -399,7 +407,7 @@ using System.Threading.Tasks;
             return default;
         }
 
-        public override T VisitArray(BoundArrayEx x)
+        public override T VisitArrayEx(BoundArrayEx x)
         {
             x.Items.ForEach(pair =>
             {
@@ -410,7 +418,7 @@ using System.Threading.Tasks;
             return default;
         }
 
-        public override T VisitArrayItem(BoundArrayItemEx x)
+        public override T VisitArrayItemEx(BoundArrayItemEx x)
         {
             Accept(x.Array);
             Accept(x.Index);
@@ -418,7 +426,7 @@ using System.Threading.Tasks;
             return default;
         }
 
-        public override T VisitArrayItemOrd(BoundArrayItemOrdEx x)
+        public override T VisitArrayItemOrdEx(BoundArrayItemOrdEx x)
         {
             Accept(x.Array);
             Accept(x.Index);
@@ -426,25 +434,25 @@ using System.Threading.Tasks;
             return default;
         }
 
-        public override T VisitInstanceOf(BoundInstanceOfEx x)
-        {
-            Accept(x.Operand);
-            Accept(x.AsType);
+        // public override T VisitInstanceOfEx(BoundInstanceOfEx x)
+        // {
+        //     Accept(x.Operand);
+        //     Accept(x.AsType);
+        //
+        //     return default;
+        // }
 
-            return default;
-        }
+        // public override T VisitGlobalConstUse(BoundGlobalConst x)
+        // {
+        //     return default;
+        // }
 
-        public override T VisitGlobalConstUse(BoundGlobalConst x)
-        {
-            return default;
-        }
-
-        public override T VisitGlobalConstDecl(BoundGlobalConstDeclStmt x)
-        {
-            Accept(x.Value);
-
-            return default;
-        }
+        // public override T VisitGlobalConstDecl(BoundGlobalConstDeclStmt x)
+        // {
+        //     Accept(x.Value);
+        //
+        //     return default;
+        // }
 
         // public override T VisitPseudoConstUse(BoundPseudoConst x)
         // {
@@ -458,78 +466,78 @@ using System.Threading.Tasks;
         //     return default;
         // }
 
-        public override T VisitIsEmpty(BoundIsEmptyEx x)
-        {
-            Accept(x.Operand);
+        // public override T VisitIsEmpty(BoundIsEmptyEx x)
+        // {
+        //     Accept(x.Operand);
+        //
+        //     return default;
+        // }
+        //
+        // public override T VisitIsSet(BoundIsSetEx x)
+        // {
+        //     Accept(x.VarReference);
+        //
+        //     return default;
+        // }
 
-            return default;
-        }
+        // public override T VisitOffsetExists(BoundOffsetExists x)
+        // {
+        //     Accept(x.Receiver);
+        //     Accept(x.Index);
+        //
+        //     return default;
+        // }
+        //
+        // public override T VisitTryGetItem(BoundTryGetItem x)
+        // {
+        //     Accept(x.Array);
+        //     Accept(x.Index);
+        //     Accept(x.Fallback);
+        //
+        //     return default;
+        // }
+        //
+        // public override T VisitLambda(BoundLambda x)
+        // {
+        //     return default;
+        // }
+        //
+        // public override T VisitEval(BoundEvalEx x)
+        // {
+        //     Accept(x.CodeExpression);
+        //
+        //     return default;
+        // }
 
-        public override T VisitIsSet(BoundIsSetEx x)
-        {
-            Accept(x.VarReference);
-
-            return default;
-        }
-
-        public override T VisitOffsetExists(BoundOffsetExists x)
-        {
-            Accept(x.Receiver);
-            Accept(x.Index);
-
-            return default;
-        }
-
-        public override T VisitTryGetItem(BoundTryGetItem x)
-        {
-            Accept(x.Array);
-            Accept(x.Index);
-            Accept(x.Fallback);
-
-            return default;
-        }
-
-        public override T VisitLambda(BoundLambda x)
-        {
-            return default;
-        }
-
-        public override T VisitEval(BoundEvalEx x)
-        {
-            Accept(x.CodeExpression);
-
-            return default;
-        }
-
-        public override T VisitThrow(BoundThrowEx x)
+        public override T VisitThrowEx(BoundThrowEx x)
         {
             Accept(x.Thrown);
 
             return default;
         }
 
-        public override T VisitYieldEx(BoundYieldEx boundYieldEx)
-        {
-            return default;
-        }
-
-        public override T VisitYieldFromEx(BoundYieldFromEx x)
-        {
-            Accept(x.Operand);
-
-            return default;
-        }
+        // public override T VisitYieldEx(BoundYieldEx boundYieldEx)
+        // {
+        //     return default;
+        // }
+        //
+        // public override T VisitYieldFromEx(BoundYieldFromEx x)
+        // {
+        //     Accept(x.Operand);
+        //
+        //     return default;
+        // }
 
         #endregion
 
         #region Statements
 
-        public override T VisitEmptyStatement(BoundEmptyStmt x)
+        public override T VisitEmptyStmt(BoundEmptyStmt x)
         {
             return default;
         }
 
-        public override T VisitBlockStatement(Graph.BoundBlock x)
+        public override T VisitBlock(Graph.BoundBlock x)
         {
             Debug.Assert(x.NextEdge == null);
 
@@ -541,21 +549,21 @@ using System.Threading.Tasks;
             return default;
         }
 
-        public override T VisitExpressionStatement(BoundExpressionStmt x)
+        public override T VisitExpressionStmt(BoundExpressionStmt x)
         {
             Accept(x.Expression);
 
             return default;
         }
 
-        public override T VisitReturn(BoundReturnStmt x)
+        public override T VisitReturnStmt(BoundReturnStmt x)
         {
             Accept(x.Returned);
 
             return default;
         }
 
-        public override T VisitFunctionDeclaration(BoundMethodDeclStmt x)
+        public override T VisitMethodDeclStmt(BoundMethodDeclStmt x)
         {
             return default;
         }
@@ -565,27 +573,27 @@ using System.Threading.Tasks;
         //     return default;
         // }
 
-        public override T VisitGlobalStatement(BoundGlobalVariableStatement x)
-        {
-            Accept(x.Variable);
+        // public override T VisitGlobalStatement(BoundGlobalVariableStatement x)
+        // {
+        //     Accept(x.Variable);
+        //
+        //     return default;
+        // }
+        //
+        // public override T VisitStaticStatement(BoundStaticVarStmt x)
+        // {
+        //     return default;
+        // }
+        //
+        // public override T VisitYieldStatement(BoundYieldStmt boundYieldStmt)
+        // {
+        //     Accept(boundYieldStmt.YieldedValue);
+        //     Accept(boundYieldStmt.YieldedKey);
+        //
+        //     return default;
+        // }
 
-            return default;
-        }
-
-        public override T VisitStaticStatement(BoundStaticVarStmt x)
-        {
-            return default;
-        }
-
-        public override T VisitYieldStatement(BoundYieldStmt boundYieldStmt)
-        {
-            Accept(boundYieldStmt.YieldedValue);
-            Accept(boundYieldStmt.YieldedKey);
-
-            return default;
-        }
-
-        public override T VisitDeclareStatement(BoundDeclareStmt x)
+        public override T VisitDeclareStmt(BoundDeclareStmt x)
         {
             return default;
         }

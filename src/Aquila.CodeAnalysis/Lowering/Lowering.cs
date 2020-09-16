@@ -40,24 +40,23 @@ namespace Aquila.CodeAnalysis.Lowering
             return updatedCFG != currentCFG;
         }
 
-        public override object VisitBinaryExpression(BoundBinaryEx x)
+        public override object VisitBinaryEx(BoundBinaryEx x)
         {
             var typeCtx = _routine.TypeRefContext;
 
             if (typeCtx.IsAString(x.Left.TypeRefMask) && typeCtx.IsAString(x.Right.TypeRefMask))
             {
-                
                 return new BoundCall(BoundTypeRefFactory.StringTypeRef,
-                        new BoundRoutineName(new QualifiedName(new Name(nameof(string.Concat)))),  null, new[]
-                        {
-                            BoundArgument.Create(x.Left), BoundArgument.Create(x.Right)
-                        }.ToImmutableArray())
-                    {TargetMethod = _routine.DeclaringCompilation.CoreMethods.Operators.Concat_String_String}
-                .WithAccess(x);
+                            new BoundRoutineName(new QualifiedName(new Name(nameof(string.Concat)))), null, new[]
+                            {
+                                BoundArgument.Create(x.Left), BoundArgument.Create(x.Right)
+                            }.ToImmutableArray())
+                        {TargetMethod = _routine.DeclaringCompilation.CoreMethods.Operators.Concat_String_String}
+                    .WithAccess(x);
             }
 
             //
-            return base.VisitBinaryExpression(x);
+            return base.VisitBinaryEx(x);
         }
     }
 }
