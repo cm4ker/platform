@@ -15,12 +15,12 @@ namespace Aquila.CodeAnalysis
     /// <summary>
     /// This class stores several source parsing related options and offers access to their values.
     /// </summary>
-    public sealed class PhpParseOptions : ParseOptions, IEquatable<PhpParseOptions>
+    public sealed class AquilaParseOptions : ParseOptions, IEquatable<AquilaParseOptions>
     {
         /// <summary>
         /// The default parse options.
         /// </summary>
-        public static PhpParseOptions Default { get; } = new PhpParseOptions();
+        public static AquilaParseOptions Default { get; } = new AquilaParseOptions();
 
         ImmutableDictionary<string, string> _features;
 
@@ -39,7 +39,7 @@ namespace Aquila.CodeAnalysis
 
         readonly bool _allowShortOpenTags;
 
-        public PhpParseOptions(
+        public AquilaParseOptions(
             DocumentationMode documentationMode = DocumentationMode.Parse,
             SourceCodeKind kind = SourceCodeKind.Regular,
             Version languageVersion = null,
@@ -57,7 +57,7 @@ namespace Aquila.CodeAnalysis
             _allowShortOpenTags = shortOpenTags;
         }
 
-        internal PhpParseOptions(
+        internal AquilaParseOptions(
             DocumentationMode documentationMode,
             SourceCodeKind kind,
             Version languageVersion,
@@ -68,7 +68,7 @@ namespace Aquila.CodeAnalysis
             _features = features ?? throw new ArgumentNullException(nameof(features));
         }
 
-        private PhpParseOptions(PhpParseOptions other)
+        private AquilaParseOptions(AquilaParseOptions other)
             : this(
                 documentationMode: other.DocumentationMode,
                 kind: other.Kind,
@@ -77,7 +77,7 @@ namespace Aquila.CodeAnalysis
         {
         }
 
-        public new PhpParseOptions WithKind(SourceCodeKind kind)
+        public new AquilaParseOptions WithKind(SourceCodeKind kind)
         {
             if (kind == this.Kind)
             {
@@ -89,10 +89,10 @@ namespace Aquila.CodeAnalysis
                 throw new ArgumentOutOfRangeException(nameof(kind));
             }
 
-            return new PhpParseOptions(this) {Kind = kind};
+            return new AquilaParseOptions(this) {Kind = kind};
         }
 
-        public new PhpParseOptions WithDocumentationMode(DocumentationMode documentationMode)
+        public new AquilaParseOptions WithDocumentationMode(DocumentationMode documentationMode)
         {
             if (documentationMode == this.DocumentationMode)
             {
@@ -104,7 +104,7 @@ namespace Aquila.CodeAnalysis
                 throw new ArgumentOutOfRangeException(nameof(documentationMode));
             }
 
-            return new PhpParseOptions(this) {DocumentationMode = documentationMode};
+            return new AquilaParseOptions(this) {DocumentationMode = documentationMode};
         }
 
         public override ParseOptions CommonWithKind(SourceCodeKind kind)
@@ -125,14 +125,14 @@ namespace Aquila.CodeAnalysis
         /// <summary>
         /// Enable some experimental language features for testing.
         /// </summary>
-        public new PhpParseOptions WithFeatures(IEnumerable<KeyValuePair<string, string>> features)
+        public new AquilaParseOptions WithFeatures(IEnumerable<KeyValuePair<string, string>> features)
         {
             if (features == null)
             {
                 throw new ArgumentNullException(nameof(features));
             }
 
-            return new PhpParseOptions(this)
+            return new AquilaParseOptions(this)
                 {_features = features.ToImmutableDictionary(StringComparer.OrdinalIgnoreCase)};
         }
 
@@ -155,10 +155,10 @@ namespace Aquila.CodeAnalysis
 
         public override bool Equals(object obj)
         {
-            return this.Equals(obj as PhpParseOptions);
+            return this.Equals(obj as AquilaParseOptions);
         }
 
-        public bool Equals(PhpParseOptions other)
+        public bool Equals(AquilaParseOptions other)
         {
             if (object.ReferenceEquals(this, other))
             {

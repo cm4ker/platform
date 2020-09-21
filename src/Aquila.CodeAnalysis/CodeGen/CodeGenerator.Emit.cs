@@ -2690,31 +2690,31 @@ namespace Aquila.CodeAnalysis.CodeGen
         /// <param name="expandConcat">Whether to skip evaluation of <c>concat</c> expression and directly append its arguments.</param>
         internal void Emit_PhpStringBlob_Append(BoundExpression value, bool expandConcat = true)
         {
-            if (value is BoundConcatEx concat && expandConcat)
-            {
-                var args = concat.ArgumentsInSourceOrder;
-                for (int i = 0; i < args.Length; i++)
-                {
-                    if (i < args.Length - 1)
-                    {
-                        _il.EmitOpCode(ILOpCode.Dup); // PhpString.Blob
-                    }
-
-                    Emit_PhpStringBlob_Append(args[i].Value);
-                }
-            }
-            else
-            {
-                if (!IsDebug && value.IsConstant() &&
-                    ExpressionsExtension.IsEmptyStringValue(value.ConstantValue.Value))
-                {
-                    _il.EmitOpCode(ILOpCode.Pop);
-                }
-                else
-                {
-                    Emit_PhpStringBlob_Append(Emit(value));
-                }
-            }
+            // if (value is BoundConcatEx concat && expandConcat)
+            // {
+            //     var args = concat.ArgumentsInSourceOrder;
+            //     for (int i = 0; i < args.Length; i++)
+            //     {
+            //         if (i < args.Length - 1)
+            //         {
+            //             _il.EmitOpCode(ILOpCode.Dup); // PhpString.Blob
+            //         }
+            //
+            //         Emit_PhpStringBlob_Append(args[i].Value);
+            //     }
+            // }
+            // else
+            // {
+            //     if (!IsDebug && value.IsConstant() &&
+            //         ExpressionsExtension.IsEmptyStringValue(value.ConstantValue.Value))
+            //     {
+            //         _il.EmitOpCode(ILOpCode.Pop);
+            //     }
+            //     else
+            //     {
+            //         Emit_PhpStringBlob_Append(Emit(value));
+            //     }
+            // }
         }
 
         /// <summary>
@@ -2764,34 +2764,34 @@ namespace Aquila.CodeAnalysis.CodeGen
                     return;
                 }
 
-                // avoid concatenation if possible:
-                if (expr is BoundConcatEx concat)
-                {
-                    // Check if arguments can be echo'ed separately without concatenating them,
-                    // this is only possible if the arguments won't have side effects:
-                    var issafe = true;
-                    var concat_args = concat.ArgumentsInSourceOrder;
-                    for (int i = 1; i < concat_args.Length; i++)
-                    {
-                        issafe &=
-                            // TODO: add more expressions that are safe to echo
-                            concat_args[i].Value.IsConstant() ||
-                            concat_args[i].Value is BoundGlobalConst ||
-                            // concat_args[i].Value is BoundPseudoConst ||
-                            // concat_args[i].Value is BoundPseudoClassConst ||
-                            concat_args[i].Value is BoundVariableRef;
-                    }
-
-                    if (issafe)
-                    {
-                        for (int i = 0; i < concat_args.Length; i++)
-                        {
-                            EmitEcho(concat_args[i].Value);
-                        }
-
-                        return;
-                    }
-                }
+                // // avoid concatenation if possible:
+                // if (expr is BoundConcatEx concat)
+                // {
+                //     // Check if arguments can be echo'ed separately without concatenating them,
+                //     // this is only possible if the arguments won't have side effects:
+                //     var issafe = true;
+                //     var concat_args = concat.ArgumentsInSourceOrder;
+                //     for (int i = 1; i < concat_args.Length; i++)
+                //     {
+                //         issafe &=
+                //             // TODO: add more expressions that are safe to echo
+                //             concat_args[i].Value.IsConstant() ||
+                //             concat_args[i].Value is BoundGlobalConst ||
+                //             // concat_args[i].Value is BoundPseudoConst ||
+                //             // concat_args[i].Value is BoundPseudoClassConst ||
+                //             concat_args[i].Value is BoundVariableRef;
+                //     }
+                //
+                //     if (issafe)
+                //     {
+                //         for (int i = 0; i < concat_args.Length; i++)
+                //         {
+                //             EmitEcho(concat_args[i].Value);
+                //         }
+                //
+                //         return;
+                //     }
+                // }
             }
 
             // Template: <ctx>.Echo(expr);

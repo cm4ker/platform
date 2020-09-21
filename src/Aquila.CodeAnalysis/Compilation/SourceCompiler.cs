@@ -112,6 +112,8 @@ namespace Aquila.CodeAnalysis
         {
             Contract.ThrowIfNull(routine);
 
+            
+            
             // lazily binds CFG and
             // adds their entry block to the worklist
 

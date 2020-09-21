@@ -1,11 +1,11 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Reflection.Metadata;
 using System.Text;
- using Aquila.Compiler.Utilities;
- using Microsoft.CodeAnalysis;
+using Aquila.Compiler.Utilities;
+using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Semantics;
 
@@ -49,11 +49,14 @@ namespace Aquila.CodeAnalysis.Symbols
 
                 // CreateUserRoutine("method", new[] { (MethodInfo)MethodBase.GetMethodFromHandle(ldtoken method), ... })
                 il.EmitStringConstant(method.MetadataName);
-                var methodInfoType = cg.DeclaringCompilation.GetWellKnownType(WellKnownType.System_Reflection_MethodInfo);
+                var methodInfoType =
+                    cg.DeclaringCompilation.GetWellKnownType(WellKnownType.System_Reflection_MethodInfo);
                 cg.Emit_NewArray(methodInfoType, overloads, m =>
                 {
                     cg.EmitLoadToken(m, null);
-                    cg.EmitCall(ILOpCode.Call, (MethodSymbol)cg.DeclaringCompilation.GetWellKnownTypeMember(WellKnownMember.System_Reflection_MethodBase__GetMethodFromHandle));
+                    cg.EmitCall(ILOpCode.Call,
+                        (MethodSymbol) cg.DeclaringCompilation.GetWellKnownTypeMember(WellKnownMember
+                            .System_Reflection_MethodBase__GetMethodFromHandle));
                     cg.EmitCastClass(methodInfoType);
                     return methodInfoType;
                 });
@@ -70,7 +73,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             var name = MetadataName;
             var type = this.ContainingType;
-            name = (type != null ? type.GetFullName() : "?") + "." + name; 
+            name = (type != null ? type.GetFullName() : "?") + "." + name;
 
             // cache the instance of RoutineInfo
             var tmpfld = cg.Module.SynthesizedManager.GetOrCreateSynthesizedField(

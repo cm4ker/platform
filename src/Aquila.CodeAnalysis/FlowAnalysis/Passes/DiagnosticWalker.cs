@@ -910,21 +910,21 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             }
         }
 
-        private void CheckUndefinedFunctionCall(BoundGlobalFunctionCall x)
-        {
-            if (x.Name.IsDirect &&
-                x.TargetMethod is ErrorMethodSymbol errmethod && errmethod.ErrorKind == ErrorMethodKind.Missing)
-            {
-                // var originalName = (x.PhpSyntax is DirectFcnCall fnc)
-                //     ? fnc.FullName.OriginalName
-                //     : x.Name.NameValue;
-                //
-                // _diagnostics.Add(_routine, GetMemberNameSpanForDiagnostic(x.PhpSyntax),
-                //     ErrorCode.WRN_UndefinedFunctionCall, originalName.ToString());
-            }
-        }
+        // private void CheckUndefinedFunctionCall(BoundGlobalFunctionCall x)
+        // {
+        //     if (x.Name.IsDirect &&
+        //         x.TargetMethod is ErrorMethodSymbol errmethod && errmethod.ErrorKind == ErrorMethodKind.Missing)
+        //     {
+        //         // var originalName = (x.PhpSyntax is DirectFcnCall fnc)
+        //         //     ? fnc.FullName.OriginalName
+        //         //     : x.Name.NameValue;
+        //         //
+        //         // _diagnostics.Add(_routine, GetMemberNameSpanForDiagnostic(x.PhpSyntax),
+        //         //     ErrorCode.WRN_UndefinedFunctionCall, originalName.ToString());
+        //     }
+        // }
 
-        private void CheckUndefinedMethodCall(BoundRoutineCall x, TypeSymbol type, BoundRoutineName name)
+        private void CheckUndefinedMethodCall(BoundCallEx x, TypeSymbol type, BoundRoutineName name)
         {
             if (x.TargetMethod is MissingMethodSymbol)
             {

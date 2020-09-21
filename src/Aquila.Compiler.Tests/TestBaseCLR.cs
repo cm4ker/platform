@@ -68,7 +68,7 @@ namespace Aquila.Compiler.Tests
         {
             var parser = ParserHelper.Parse(unit);
             var point = (SourceUnit) _zlv.VisitEntryPoint(parser.entryPoint());
-            var tree = PhpSyntaxTree.ParseCode(SourceText.From(unit, Encoding.UTF8), PhpParseOptions.Default, PhpParseOptions.Default,
+            var tree = AquilaSyntaxTree.ParseCode(SourceText.From(unit, Encoding.UTF8), AquilaParseOptions.Default, AquilaParseOptions.Default,
                 "");
 
             var diagnostics = tree.Diagnostics;

@@ -46,12 +46,11 @@ namespace Aquila.CodeAnalysis.Lowering
 
             if (typeCtx.IsAString(x.Left.TypeRefMask) && typeCtx.IsAString(x.Right.TypeRefMask))
             {
-                return new BoundCall(BoundTypeRefFactory.StringTypeRef,
-                            new BoundRoutineName(new QualifiedName(new Name(nameof(string.Concat)))), null, new[]
-                            {
-                                BoundArgument.Create(x.Left), BoundArgument.Create(x.Right)
-                            }.ToImmutableArray())
-                        {TargetMethod = _routine.DeclaringCompilation.CoreMethods.Operators.Concat_String_String}
+                return new BoundStaticCallEx(_routine.DeclaringCompilation.CoreMethods.Operators.Concat_String_String,
+                        new BoundRoutineName(new QualifiedName(new Name(nameof(string.Concat)))), new[]
+                        {
+                            BoundArgument.Create(x.Left), BoundArgument.Create(x.Right)
+                        }.ToImmutableArray(), ImmutableArray<IBoundTypeRef>.Empty)
                     .WithAccess(x);
             }
 

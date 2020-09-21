@@ -22,7 +22,7 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <summary>
     /// Adapter providing <see cref="SyntaxTree"/> from <see cref="SourceUnit"/> and storing parse diagnostics.
     /// </summary>
-    public class PhpSyntaxTree : SyntaxTree
+    public class AquilaSyntaxTree : SyntaxTree
     {
         readonly SourceUnit _source;
 
@@ -52,7 +52,7 @@ namespace Aquila.CodeAnalysis.Syntax
         public ImmutableArray<LangElement> YieldNodes { get; private set; }
 
         /// <summary>In case of Phar entry, gets or set the PHAR stub.</summary>
-        public PhpSyntaxTree PharStubFile { get; set; }
+        public AquilaSyntaxTree PharStubFile { get; set; }
 
         /// <summary>
         /// Gets value indicating the file is a PHAR entry.
@@ -97,7 +97,7 @@ namespace Aquila.CodeAnalysis.Syntax
 
         public static IReadOnlyCollection<Version> SupportedLanguageVersions => s_langversions.Keys;
 
-        private PhpSyntaxTree(SourceUnit source)
+        private AquilaSyntaxTree(SourceUnit source)
         {
             _source = source ?? throw ExceptionUtilities.ArgumentNull(nameof(source));
         }
@@ -118,7 +118,7 @@ namespace Aquila.CodeAnalysis.Syntax
             }
         }
 
-        static LanguageFeatures GetLanguageFeatures(PhpParseOptions options)
+        static LanguageFeatures GetLanguageFeatures(AquilaParseOptions options)
         {
             var version = options.LanguageVersion;
             var features = ParseLanguageVersion(ref version);
@@ -133,10 +133,10 @@ namespace Aquila.CodeAnalysis.Syntax
             return features;
         }
 
-        public static PhpSyntaxTree ParseCode(
+        public static AquilaSyntaxTree ParseCode(
             SourceText sourceText,
-            PhpParseOptions parseOptions,
-            PhpParseOptions scriptParseOptions,
+            AquilaParseOptions parseOptions,
+            AquilaParseOptions scriptParseOptions,
             string fname)
         {
             if (fname == null)
@@ -149,7 +149,7 @@ namespace Aquila.CodeAnalysis.Syntax
             // TODO: file.IsScript ? scriptParseOptions : parseOptions
             SourceUnit unit = (SourceUnit) ParserHelper.ParseSyntax(sourceText.ToString());
 
-            var result = new PhpSyntaxTree(unit);
+            var result = new AquilaSyntaxTree(unit);
 
             var errorSink = new ErrorSink(result);
             // var factory = new NodesFactory(unit);

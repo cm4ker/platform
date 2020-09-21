@@ -80,7 +80,7 @@ namespace Aquila.CodeAnalysis
         /// <summary>
         /// Source language options.
         /// </summary>
-        public PhpParseOptions ParseOptions { get; private set; }
+        public AquilaParseOptions ParseOptions { get; private set; }
 
         /// <summary>
         /// Options diagnostics.
@@ -164,7 +164,7 @@ namespace Aquila.CodeAnalysis
             PhpDocTypes phpdocTypes = PhpDocTypes.None,
             bool embedSourceMetadata = true,
             ImmutableArray<Diagnostic> diagnostics = default,
-            PhpParseOptions parseOptions = null,
+            AquilaParseOptions parseOptions = null,
             ImmutableDictionary<string, string> defines = default,
             bool referencesSupersedeLowerVersions = false)
             : this(outputKind, baseDirectory, sdkDirectory, subDirectory,
@@ -227,7 +227,7 @@ namespace Aquila.CodeAnalysis
             PhpDocTypes phpdocTypes,
             bool embedSourceMetadata,
             ImmutableArray<Diagnostic> diagnostics,
-            PhpParseOptions parseOptions,
+            AquilaParseOptions parseOptions,
             ImmutableDictionary<string, string> defines,
             bool referencesSupersedeLowerVersions)
             : base(outputKind, reportSuppressedDiagnostics, moduleName, mainTypeName, scriptClassName,

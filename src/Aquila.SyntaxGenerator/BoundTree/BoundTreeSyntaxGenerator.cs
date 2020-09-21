@@ -138,7 +138,7 @@ namespace Aquila.SyntaxGenerator.BoundTree
                 sb.Append("internal ");
             else
                 sb.Append("public ");
-            
+
             sb.AppendLine(
                 $"{Suffix}{syntax.Name} Update(");
 
@@ -173,7 +173,10 @@ namespace Aquila.SyntaxGenerator.BoundTree
                 if (!first)
                     sb.Append("&&");
 
-                sb.AppendLine($"_{arg.Name.ToCamelCase()} == {arg.Name.ToCamelCase()}");
+                if (arg.OnlyArgument)
+                    sb.AppendLine($"{arg.Name} == {arg.Name.ToCamelCase()}");
+                else
+                    sb.AppendLine($"_{arg.Name.ToCamelCase()} == {arg.Name.ToCamelCase()}");
 
                 first = false;
             }
@@ -212,6 +215,9 @@ namespace Aquila.SyntaxGenerator.BoundTree
             foreach (var arg in syntax.Arguments)
             {
                 if (arg is SyntaxArgumentSingle s && !string.IsNullOrEmpty(s.PassBaseConst))
+                    continue;
+
+                if (arg.OnlyArgument)
                     continue;
 
                 sb.AppendLine($"private {arg.Type} _{arg.Name.ToCamelCase()};");

@@ -12,7 +12,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Graph
 {
     struct CallSite
     {
-        public CallSite(BoundBlock block, BoundRoutineCall callExpression)
+        public CallSite(BoundBlock block, BoundCallEx callExpression)
         {
             Block = block;
             CallExpression = callExpression;
@@ -20,7 +20,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Graph
 
         BoundBlock Block { get; }
 
-        BoundRoutineCall CallExpression { get; }
+        BoundCallEx CallExpression { get; }
     }
 
     /// <summary>

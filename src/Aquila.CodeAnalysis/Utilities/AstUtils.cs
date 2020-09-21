@@ -209,7 +209,7 @@ namespace Aquila.CodeAnalysis
         /// Returns the offset of the location specified by (zero-based) line and character from the start of the file.
         /// In the case of invalid line, -1 is returned.
         /// </summary>
-        public static int GetOffset(this PhpSyntaxTree tree, LinePosition linePosition)
+        public static int GetOffset(this AquilaSyntaxTree tree, LinePosition linePosition)
         {
             throw new NotImplementedException();
             

@@ -209,12 +209,12 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             }
         }
 
-        public void AddSyntaxTreeRange(IEnumerable<PhpSyntaxTree> trees)
+        public void AddSyntaxTreeRange(IEnumerable<AquilaSyntaxTree> trees)
         {
             trees.ForEach(AddSyntaxTree);
         }
 
-        public void AddSyntaxTree(PhpSyntaxTree tree)
+        public void AddSyntaxTree(AquilaSyntaxTree tree)
         {
             Contract.ThrowIfNull(tree);
 
@@ -305,7 +305,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         /// <summary>
         /// Gets compilation syntax trees.
         /// </summary>
-        public IEnumerable<PhpSyntaxTree> SyntaxTrees => _files.Values.Select(f => f.SyntaxTree);
+        public IEnumerable<AquilaSyntaxTree> SyntaxTrees => _files.Values.Select(f => f.SyntaxTree);
 
         public IEnumerable<SourceFileSymbol> GetFiles() => _files.Values;
 

@@ -2622,7 +2622,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// Emits conversion to <c>IPhpArray</c>.
         /// Emits empty array on top of stack if object cannot be used as array.
         /// </summary>
-        static TypeSymbol   EmitListAccess(CodeGenerator cg, TypeSymbol valueType)
+        static TypeSymbol EmitListAccess(CodeGenerator cg, TypeSymbol valueType)
         {
             Debug.Assert(valueType != null);
 
@@ -2742,18 +2742,18 @@ namespace Aquila.CodeAnalysis.Semantics
         internal override IPlace Place() => BoundReference?.Place;
     }
 
-    partial class BoundRoutineCall
+    partial class BoundCallEx
     {
         internal override TypeSymbol Emit(CodeGenerator cg)
         {
             EmitBeforeCall(cg);
 
-            if (TargetMethod.IsValidMethod())
+            if (MethodSymbol.IsValidMethod())
             {
-                Debug.Assert(!TargetMethod.IsUnreachable);
+                Debug.Assert(!MethodSymbol.IsUnreachable);
                 // the most preferred case when method is known,
                 // the method can be called directly
-                return EmitDirectCall(cg, IsVirtualCall ? ILOpCode.Callvirt : ILOpCode.Call, TargetMethod,
+                return EmitDirectCall(cg, IsVirtualCall ? ILOpCode.Callvirt : ILOpCode.Call, MethodSymbol,
                     (BoundTypeRef) LateStaticTypeRef);
             }
             else if (TargetMethod is MagicCallMethodSymbol magic && !this.HasArgumentsUnpacking)
@@ -2834,11 +2834,11 @@ namespace Aquila.CodeAnalysis.Semantics
         internal TypeSymbol EmitMagicCall(CodeGenerator cg, string originalMethodName, MethodSymbol method,
             BoundTypeRef staticType = null)
         {
-            // call to __callStatic() or __call()
-            Debug.Assert(
-                string.Equals(method.Name, Name.SpecialMethodNames.Call.Value, StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(method.Name, Name.SpecialMethodNames.CallStatic.Value,
-                    StringComparison.OrdinalIgnoreCase));
+            // // call to __callStatic() or __call()
+            // Debug.Assert(
+            //     string.Equals(method.Name, Name.SpecialMethodNames.Call.Value, StringComparison.OrdinalIgnoreCase) ||
+            //     string.Equals(method.Name, Name.SpecialMethodNames.CallStatic.Value,
+            //         StringComparison.OrdinalIgnoreCase));
 
             if (this.HasArgumentsUnpacking)
             {
@@ -3002,57 +3002,57 @@ namespace Aquila.CodeAnalysis.Semantics
         #endregion
     }
 
-    partial class BoundGlobalFunctionCall
-    {
-        protected override string CallsiteName => _name.IsDirect ? _name.NameValue.ToString() : null;
-        protected override BoundExpression RoutineNameExpr => _name.NameExpression;
-        protected override bool IsVirtualCall => false;
+    // partial class BoundGlobalFunctionCall
+    // {
+    //     protected override string CallsiteName => _name.IsDirect ? _name.NameValue.ToString() : null;
+    //     protected override BoundExpression RoutineNameExpr => _name.NameExpression;
+    //     protected override bool IsVirtualCall => false;
+    //
+    //     internal override TypeSymbol EmitDynamicCall(CodeGenerator cg)
+    //     {
+    //         if (_name.IsDirect)
+    //         {
+    //             return EmitCallsiteCall(cg);
+    //         }
+    //         else
+    //         {
+    //             Debug.Assert(_name.NameExpression != null);
+    //
+    //             // better to use PhpCallback.Invoke instead of call sites
+    //
+    //             // Template: NameExpression.AsCallback().Invoke(Context, PhpValue[])
+    //
+    //             cg.EmitConvert(_name.NameExpression, null); // (IPhpCallable)Name
+    //             cg.EmitLoadContext(); // Context
+    //             cg.Emit_ArgumentsIntoArray(_arguments, default(PhpSignatureMask)); // PhpValue[]
+    //
+    //
+    //             return null;
+    //
+    //             // return cg.EmitMethodAccess(
+    //             //     stack: cg.EmitCall(ILOpCode.Callvirt,
+    //             //         null,
+    //             //     method: null,
+    //             //     access: this.Access);
+    //         }
+    //     }
+    //
+    //     internal override void BuildCallsiteCreate(CodeGenerator cg, TypeSymbol returntype)
+    //     {
+    //         cg.Builder.EmitStringConstant(CallsiteName); // function name
+    //         cg.Builder.EmitStringConstant(_nameOpt.HasValue
+    //             ? _nameOpt.Value.ToString()
+    //             : null); // fallback function name
+    //         cg.EmitLoadToken(returntype, null); // return type
+    //         cg.EmitCall(ILOpCode.Call, null);
+    //     }
+    // }
 
-        internal override TypeSymbol EmitDynamicCall(CodeGenerator cg)
-        {
-            if (_name.IsDirect)
-            {
-                return EmitCallsiteCall(cg);
-            }
-            else
-            {
-                Debug.Assert(_name.NameExpression != null);
-
-                // better to use PhpCallback.Invoke instead of call sites
-
-                // Template: NameExpression.AsCallback().Invoke(Context, PhpValue[])
-
-                cg.EmitConvert(_name.NameExpression, null); // (IPhpCallable)Name
-                cg.EmitLoadContext(); // Context
-                cg.Emit_ArgumentsIntoArray(_arguments, default(PhpSignatureMask)); // PhpValue[]
-
-
-                return null;
-
-                // return cg.EmitMethodAccess(
-                //     stack: cg.EmitCall(ILOpCode.Callvirt,
-                //         null,
-                //     method: null,
-                //     access: this.Access);
-            }
-        }
-
-        internal override void BuildCallsiteCreate(CodeGenerator cg, TypeSymbol returntype)
-        {
-            cg.Builder.EmitStringConstant(CallsiteName); // function name
-            cg.Builder.EmitStringConstant(_nameOpt.HasValue
-                ? _nameOpt.Value.ToString()
-                : null); // fallback function name
-            cg.EmitLoadToken(returntype, null); // return type
-            cg.EmitCall(ILOpCode.Call, null);
-        }
-    }
-
-    partial class BoundInstanceFunctionCall
+    partial class BoundInstanceCallEx
     {
         protected override bool CallsiteRequiresCallerContext => true;
-        protected override string CallsiteName => _name.IsDirect ? _name.NameValue.ToString() : null;
-        protected override BoundExpression RoutineNameExpr => _name.NameExpression;
+        protected override string CallsiteName => Name.IsDirect ? Name.NameValue.ToString() : null;
+        protected override BoundExpression RoutineNameExpr => Name.NameExpression;
 
         internal override void BuildCallsiteCreate(CodeGenerator cg, TypeSymbol returntype)
         {
@@ -3063,48 +3063,48 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    partial class BoundCall
-    {
-        protected override bool CallsiteRequiresCallerContext => true;
-        protected override string CallsiteName => _name.IsDirect ? _name.NameValue.ToString() : null;
-        protected override BoundExpression RoutineNameExpr => _name.NameExpression;
-
-        protected override IBoundTypeRef RoutineTypeRef =>
-            _typeRef.ResolvedType.IsErrorTypeOrNull()
-                ? _typeRef
-                : null; // in case the type has to be resolved in runtime and passed to callsite
-
-        protected override IBoundTypeRef LateStaticTypeRef =>
-            _typeRef; // used for direct routine call requiring late static type
-
-        protected override bool IsVirtualCall => false;
-
-        /// <summary>
-        /// Emits current class instance, expected by callsite to resolve instance function called statically.
-        /// </summary>
-        internal override TypeSymbol EmitTarget(CodeGenerator cg)
-        {
-            return cg.EmitPhpThisOrNull();
-        }
-
-        internal override void BuildCallsiteCreate(CodeGenerator cg, TypeSymbol returntype)
-        {
-            cg.EmitLoadToken(_typeRef.ResolvedType, null); // type
-            cg.Builder.EmitStringConstant(CallsiteName); // name
-            cg.EmitLoadToken(cg.CallerType, null); // class context
-            cg.EmitLoadToken(returntype, null); // return type
-            cg.EmitCall(ILOpCode.Call, null);
-        }
-
-        internal override void EmitBeforeCall(CodeGenerator cg)
-        {
-            // ensure type is declared
-            if (_typeRef.ResolvedType.IsValidType())
-            {
-                cg.EmitExpectTypeDeclared(_typeRef.ResolvedType);
-            }
-        }
-    }
+    // partial class BoundCall
+    // {
+    //     protected override bool CallsiteRequiresCallerContext => true;
+    //     protected override string CallsiteName => _name.IsDirect ? _name.NameValue.ToString() : null;
+    //     protected override BoundExpression RoutineNameExpr => _name.NameExpression;
+    //
+    //     protected override IBoundTypeRef RoutineTypeRef =>
+    //         _typeRef.ResolvedType.IsErrorTypeOrNull()
+    //             ? _typeRef
+    //             : null; // in case the type has to be resolved in runtime and passed to callsite
+    //
+    //     protected override IBoundTypeRef LateStaticTypeRef =>
+    //         _typeRef; // used for direct routine call requiring late static type
+    //
+    //     protected override bool IsVirtualCall => false;
+    //
+    //     /// <summary>
+    //     /// Emits current class instance, expected by callsite to resolve instance function called statically.
+    //     /// </summary>
+    //     internal override TypeSymbol EmitTarget(CodeGenerator cg)
+    //     {
+    //         return cg.EmitPhpThisOrNull();
+    //     }
+    //
+    //     internal override void BuildCallsiteCreate(CodeGenerator cg, TypeSymbol returntype)
+    //     {
+    //         cg.EmitLoadToken(_typeRef.ResolvedType, null); // type
+    //         cg.Builder.EmitStringConstant(CallsiteName); // name
+    //         cg.EmitLoadToken(cg.CallerType, null); // class context
+    //         cg.EmitLoadToken(returntype, null); // return type
+    //         cg.EmitCall(ILOpCode.Call, null);
+    //     }
+    //
+    //     internal override void EmitBeforeCall(CodeGenerator cg)
+    //     {
+    //         // ensure type is declared
+    //         if (_typeRef.ResolvedType.IsValidType())
+    //         {
+    //             cg.EmitExpectTypeDeclared(_typeRef.ResolvedType);
+    //         }
+    //     }
+    // }
 
     partial class BoundNewEx
     {
@@ -3134,7 +3134,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         private TypeSymbol EmitNewClass(CodeGenerator cg)
         {
-            if (!TargetMethod.IsErrorMethodOrNull())
+            if (!MethodSymbol.IsErrorMethodOrNull())
             {
                 // when instantiating anonoymous class
                 // it has to be declared into the context (right before instantiation)
@@ -3152,11 +3152,11 @@ namespace Aquila.CodeAnalysis.Semantics
                 }
 
                 // Template: new T(args)
-                return EmitDirectCall(cg, ILOpCode.Newobj, TargetMethod);
+                return EmitDirectCall(cg, ILOpCode.Newobj, MethodSymbol);
             }
             else
             {
-                if (((BoundTypeRef) _typeref).ResolvedType.IsValidType())
+                if (((BoundTypeRef) TypeRef).ResolvedType.IsValidType())
                 {
                     // // ensure type is delcared
                     // cg.EmitExpectTypeDeclared(_typeref.Type);
@@ -3218,221 +3218,221 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    partial class BoundEcho
-    {
-        internal override TypeSymbol Emit(CodeGenerator cg)
-        {
-            Debug.Assert(Access.IsNone);
-
-            var args = ArgumentsInSourceOrder;
-            for (int i = 0; i < args.Length; i++)
-            {
-                cg.EmitEcho(args[i].Value);
-            }
-
-            return cg.CoreTypes.Void;
-        }
-    }
-
-    partial class BoundConcatEx
-    {
-        static SpecialMember? TryResolveConcatMethod(int stringargs) => stringargs switch
-        {
-            2 => (SpecialMember?) SpecialMember.System_String__ConcatStringString,
-            3 => SpecialMember.System_String__ConcatStringStringString,
-            4 => SpecialMember.System_String__ConcatStringStringStringString,
-            _ => null,
-        };
-
-        internal override TypeSymbol Emit(CodeGenerator cg)
-        {
-            var args = this.ArgumentsInSourceOrder;
-
-            if (args.Length == 0)
-            {
-                // ""
-                cg.Builder.EmitStringConstant(string.Empty);
-                return cg.CoreTypes.String;
-            }
-
-            if (cg.IsReadonlyStringOnly(this.TypeRefMask) || this.Access.TargetType == cg.CoreTypes.String)
-            {
-                // the expression is annotated as it returns "System.String",
-                // all its arguments are UTF16 values
-                // perform standard System.String.Concat():
-
-                var concat_method = TryResolveConcatMethod(args.Length);
-                if (concat_method.HasValue)
-                {
-                    // Template: System.String.Concat( ... )
-                    foreach (var x in args)
-                    {
-                        cg.EmitConvert(x.Value, cg.CoreTypes.String);
-                    }
-
-                    // String.Concat( (string)0, (string)1, ... );
-                    return cg.EmitCall(ILOpCode.Call,
-                            (MethodSymbol) cg.DeclaringCompilation.GetSpecialTypeMember(concat_method.Value))
-                        .Expect(SpecialType.System_String);
-                }
-                else if (args.Length == 1)
-                {
-                    // Template: (string)arg[0]
-                    cg.EmitConvert(args[0].Value, cg.CoreTypes.String);
-                    return cg.CoreTypes.String;
-                }
-                else
-                {
-                    // Template: String.Concat( new []{ ... } )
-                    cg.Emit_NewArray(cg.CoreTypes.String, args);
-                    return cg.EmitCall(ILOpCode.Call,
-                            (MethodSymbol) cg.DeclaringCompilation.GetSpecialTypeMember(SpecialMember
-                                .System_String__ConcatStringArray))
-                        .Expect(SpecialType.System_String);
-                }
-            }
-
-            // returning PhpString:
-
-            if (args.Length == 1)
-            {
-                // Template: (PhpString)args[0]
-                cg.EmitConvert(args[0].Value, null);
-                return null;
-            }
-
-            // Template: new PhpString( new PhpString.Blob() { a1, a2, ..., aN } )
-
-            // new PhpString.Blob()
-            cg.EmitCall(ILOpCode.Newobj, null);
-
-            // TODO: overload for 2, 3, 4 parameters directly
-
-            // <PhpString>.Append(<expr>)
-            foreach (var x in args)
-            {
-                var expr = x.Value;
-                if (IsEmpty(expr))
-                {
-                    continue;
-                }
-
-                //
-                cg.Builder.EmitOpCode(ILOpCode.Dup); // <Blob>
-                cg.Emit_PhpStringBlob_Append(expr); // .Append( ... )
-            }
-
-            // new PhpString( <Blob> )
-            return cg.EmitCall(ILOpCode.Newobj, null)
-                .Expect(null);
-        }
-
-        static bool IsEmpty(BoundExpression x) => x.ConstantValue.HasValue &&
-                                                  ExpressionsExtension.IsEmptyStringValue(x.ConstantValue.Value);
-    }
-
-    partial class BoundIncludeEx
-    {
-        /// <summary>
-        /// True for <c>include_once</c> or <c>require_once</c>.
-        /// </summary>
-        public bool IsOnceSemantic => this.InclusionType == InclusionTypes.IncludeOnce ||
-                                      this.InclusionType == InclusionTypes.RequireOnce;
-
-        /// <summary>
-        /// True for <c>require</c> or <c>require_once</c>.
-        /// </summary>
-        public bool IsRequireSemantic => this.InclusionType == InclusionTypes.Require ||
-                                         this.InclusionType == InclusionTypes.RequireOnce;
-
-        internal override TypeSymbol Emit(CodeGenerator cg)
-        {
-            TypeSymbol result;
-            var isvoid = this.Access.IsNone;
-
-            Debug.Assert(_arguments.Length == 1);
-            Debug.Assert(_arguments[0].Value.Access.IsRead);
-            Debug.Assert(Access.IsRead || Access.IsNone);
-
-            var method = this.TargetMethod;
-            if (method != null) // => IsResolved
-            {
-                // emit condition for include_once/require_once
-                if (IsOnceSemantic)
-                {
-                    var tscript = method.ContainingType;
-
-                    result = isvoid
-                        ? cg.CoreTypes.Void.Symbol
-                        : cg.DeclaringCompilation.GetTypeFromTypeRef(cg.Routine.TypeRefContext, this.TypeRefMask);
-
-                    // Template: (<ctx>.CheckIncludeOnce<TScript>()) ? <Main>() : TRUE
-                    // Template<isvoid>: if (<ctx>.CheckIncludeOnce<TScript>()) <Main>()
-                    var falseLabel = new object();
-                    var endLabel = new object();
-
-                    cg.EmitLoadContext();
-                    cg.EmitCall(ILOpCode.Callvirt, null);
-
-                    cg.Builder.EmitBranch(ILOpCode.Brfalse, falseLabel);
-
-                    // ? (PhpValue)<Main>(...)
-                    cg.EmitCallMain(method);
-                    if (isvoid)
-                    {
-                        cg.EmitPop(method.ReturnType);
-                    }
-                    else
-                    {
-                        cg.EmitConvert(method.ReturnType, 0, result);
-                    }
-
-                    cg.Builder.EmitBranch(ILOpCode.Br, endLabel);
-
-                    if (!isvoid)
-                    {
-                        cg.Builder.AdjustStack(-1);
-                    }
-
-                    // : PhpValue.Create(true)
-                    cg.Builder.MarkLabel(falseLabel);
-                    if (!isvoid)
-                    {
-                        cg.Builder.EmitBoolConstant(true);
-                        cg.EmitConvert(cg.CoreTypes.Boolean, 0, result);
-                    }
-
-                    //
-                    cg.Builder.MarkLabel(endLabel);
-                }
-                else
-                {
-                    // <Main>
-                    result = cg.EmitCallMain(method);
-                }
-            }
-            else
-            {
-                Debug.Assert(cg.LocalsPlaceOpt != null);
-
-                // Template: <ctx>.Include(dir, path, locals, @this, self, bool once = false, bool throwOnError = false)
-                cg.EmitLoadContext();
-                cg.Builder.EmitStringConstant(cg.ContainingFile.DirectoryRelativePath);
-                cg.EmitConvert(_arguments[0].Value, cg.CoreTypes.String);
-                cg.LocalsPlaceOpt
-                    .EmitLoad(cg.Builder); // scope of local variables, corresponds to $GLOBALS in global scope.
-                cg.EmitThisOrNull(); // $this
-                cg.EmitCallerTypeHandle(); // self : RuntimeTypeHandle
-                cg.Builder.EmitBoolConstant(IsOnceSemantic);
-                cg.Builder.EmitBoolConstant(IsRequireSemantic);
-                return cg.EmitCall(ILOpCode.Callvirt,
-                    null);
-            }
-
-            //
-            return result;
-        }
-    }
+    // partial class BoundEcho
+    // {
+    //     internal override TypeSymbol Emit(CodeGenerator cg)
+    //     {
+    //         Debug.Assert(Access.IsNone);
+    //
+    //         var args = ArgumentsInSourceOrder;
+    //         for (int i = 0; i < args.Length; i++)
+    //         {
+    //             cg.EmitEcho(args[i].Value);
+    //         }
+    //
+    //         return cg.CoreTypes.Void;
+    //     }
+    // }
+    //
+    // partial class BoundConcatEx
+    // {
+    //     static SpecialMember? TryResolveConcatMethod(int stringargs) => stringargs switch
+    //     {
+    //         2 => (SpecialMember?) SpecialMember.System_String__ConcatStringString,
+    //         3 => SpecialMember.System_String__ConcatStringStringString,
+    //         4 => SpecialMember.System_String__ConcatStringStringStringString,
+    //         _ => null,
+    //     };
+    //
+    //     internal override TypeSymbol Emit(CodeGenerator cg)
+    //     {
+    //         var args = this.ArgumentsInSourceOrder;
+    //
+    //         if (args.Length == 0)
+    //         {
+    //             // ""
+    //             cg.Builder.EmitStringConstant(string.Empty);
+    //             return cg.CoreTypes.String;
+    //         }
+    //
+    //         if (cg.IsReadonlyStringOnly(this.TypeRefMask) || this.Access.TargetType == cg.CoreTypes.String)
+    //         {
+    //             // the expression is annotated as it returns "System.String",
+    //             // all its arguments are UTF16 values
+    //             // perform standard System.String.Concat():
+    //
+    //             var concat_method = TryResolveConcatMethod(args.Length);
+    //             if (concat_method.HasValue)
+    //             {
+    //                 // Template: System.String.Concat( ... )
+    //                 foreach (var x in args)
+    //                 {
+    //                     cg.EmitConvert(x.Value, cg.CoreTypes.String);
+    //                 }
+    //
+    //                 // String.Concat( (string)0, (string)1, ... );
+    //                 return cg.EmitCall(ILOpCode.Call,
+    //                         (MethodSymbol) cg.DeclaringCompilation.GetSpecialTypeMember(concat_method.Value))
+    //                     .Expect(SpecialType.System_String);
+    //             }
+    //             else if (args.Length == 1)
+    //             {
+    //                 // Template: (string)arg[0]
+    //                 cg.EmitConvert(args[0].Value, cg.CoreTypes.String);
+    //                 return cg.CoreTypes.String;
+    //             }
+    //             else
+    //             {
+    //                 // Template: String.Concat( new []{ ... } )
+    //                 cg.Emit_NewArray(cg.CoreTypes.String, args);
+    //                 return cg.EmitCall(ILOpCode.Call,
+    //                         (MethodSymbol) cg.DeclaringCompilation.GetSpecialTypeMember(SpecialMember
+    //                             .System_String__ConcatStringArray))
+    //                     .Expect(SpecialType.System_String);
+    //             }
+    //         }
+    //
+    //         // returning PhpString:
+    //
+    //         if (args.Length == 1)
+    //         {
+    //             // Template: (PhpString)args[0]
+    //             cg.EmitConvert(args[0].Value, null);
+    //             return null;
+    //         }
+    //
+    //         // Template: new PhpString( new PhpString.Blob() { a1, a2, ..., aN } )
+    //
+    //         // new PhpString.Blob()
+    //         cg.EmitCall(ILOpCode.Newobj, null);
+    //
+    //         // TODO: overload for 2, 3, 4 parameters directly
+    //
+    //         // <PhpString>.Append(<expr>)
+    //         foreach (var x in args)
+    //         {
+    //             var expr = x.Value;
+    //             if (IsEmpty(expr))
+    //             {
+    //                 continue;
+    //             }
+    //
+    //             //
+    //             cg.Builder.EmitOpCode(ILOpCode.Dup); // <Blob>
+    //             cg.Emit_PhpStringBlob_Append(expr); // .Append( ... )
+    //         }
+    //
+    //         // new PhpString( <Blob> )
+    //         return cg.EmitCall(ILOpCode.Newobj, null)
+    //             .Expect(null);
+    //     }
+    //
+    //     static bool IsEmpty(BoundExpression x) => x.ConstantValue.HasValue &&
+    //                                               ExpressionsExtension.IsEmptyStringValue(x.ConstantValue.Value);
+    // }
+    //
+    // partial class BoundIncludeEx
+    // {
+    //     /// <summary>
+    //     /// True for <c>include_once</c> or <c>require_once</c>.
+    //     /// </summary>
+    //     public bool IsOnceSemantic => this.InclusionType == InclusionTypes.IncludeOnce ||
+    //                                   this.InclusionType == InclusionTypes.RequireOnce;
+    //
+    //     /// <summary>
+    //     /// True for <c>require</c> or <c>require_once</c>.
+    //     /// </summary>
+    //     public bool IsRequireSemantic => this.InclusionType == InclusionTypes.Require ||
+    //                                      this.InclusionType == InclusionTypes.RequireOnce;
+    //
+    //     internal override TypeSymbol Emit(CodeGenerator cg)
+    //     {
+    //         TypeSymbol result;
+    //         var isvoid = this.Access.IsNone;
+    //
+    //         Debug.Assert(_arguments.Length == 1);
+    //         Debug.Assert(_arguments[0].Value.Access.IsRead);
+    //         Debug.Assert(Access.IsRead || Access.IsNone);
+    //
+    //         var method = this.TargetMethod;
+    //         if (method != null) // => IsResolved
+    //         {
+    //             // emit condition for include_once/require_once
+    //             if (IsOnceSemantic)
+    //             {
+    //                 var tscript = method.ContainingType;
+    //
+    //                 result = isvoid
+    //                     ? cg.CoreTypes.Void.Symbol
+    //                     : cg.DeclaringCompilation.GetTypeFromTypeRef(cg.Routine.TypeRefContext, this.TypeRefMask);
+    //
+    //                 // Template: (<ctx>.CheckIncludeOnce<TScript>()) ? <Main>() : TRUE
+    //                 // Template<isvoid>: if (<ctx>.CheckIncludeOnce<TScript>()) <Main>()
+    //                 var falseLabel = new object();
+    //                 var endLabel = new object();
+    //
+    //                 cg.EmitLoadContext();
+    //                 cg.EmitCall(ILOpCode.Callvirt, null);
+    //
+    //                 cg.Builder.EmitBranch(ILOpCode.Brfalse, falseLabel);
+    //
+    //                 // ? (PhpValue)<Main>(...)
+    //                 cg.EmitCallMain(method);
+    //                 if (isvoid)
+    //                 {
+    //                     cg.EmitPop(method.ReturnType);
+    //                 }
+    //                 else
+    //                 {
+    //                     cg.EmitConvert(method.ReturnType, 0, result);
+    //                 }
+    //
+    //                 cg.Builder.EmitBranch(ILOpCode.Br, endLabel);
+    //
+    //                 if (!isvoid)
+    //                 {
+    //                     cg.Builder.AdjustStack(-1);
+    //                 }
+    //
+    //                 // : PhpValue.Create(true)
+    //                 cg.Builder.MarkLabel(falseLabel);
+    //                 if (!isvoid)
+    //                 {
+    //                     cg.Builder.EmitBoolConstant(true);
+    //                     cg.EmitConvert(cg.CoreTypes.Boolean, 0, result);
+    //                 }
+    //
+    //                 //
+    //                 cg.Builder.MarkLabel(endLabel);
+    //             }
+    //             else
+    //             {
+    //                 // <Main>
+    //                 result = cg.EmitCallMain(method);
+    //             }
+    //         }
+    //         else
+    //         {
+    //             Debug.Assert(cg.LocalsPlaceOpt != null);
+    //
+    //             // Template: <ctx>.Include(dir, path, locals, @this, self, bool once = false, bool throwOnError = false)
+    //             cg.EmitLoadContext();
+    //             cg.Builder.EmitStringConstant(cg.ContainingFile.DirectoryRelativePath);
+    //             cg.EmitConvert(_arguments[0].Value, cg.CoreTypes.String);
+    //             cg.LocalsPlaceOpt
+    //                 .EmitLoad(cg.Builder); // scope of local variables, corresponds to $GLOBALS in global scope.
+    //             cg.EmitThisOrNull(); // $this
+    //             cg.EmitCallerTypeHandle(); // self : RuntimeTypeHandle
+    //             cg.Builder.EmitBoolConstant(IsOnceSemantic);
+    //             cg.Builder.EmitBoolConstant(IsRequireSemantic);
+    //             return cg.EmitCall(ILOpCode.Callvirt,
+    //                 null);
+    //         }
+    //
+    //         //
+    //         return result;
+    //     }
+    // }
 
     partial class BoundLambda
     {
@@ -3579,91 +3579,91 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    partial class BoundExitEx
-    {
-        internal override TypeSymbol Emit(CodeGenerator cg)
-        {
-            MethodSymbol ctorsymbol;
-
-            if (_arguments.Length == 0)
-            {
-                // <ctx>.Exit();
-                ctorsymbol = null;
-            }
-            else
-            {
-                // LOAD <status>
-                var t = cg.Emit(_arguments[0].Value);
-
-                switch (t.SpecialType)
-                {
-                    case SpecialType.System_Int32:
-                        cg.Builder.EmitOpCode(ILOpCode.Conv_i8); // i4 -> i8
-                        goto case SpecialType.System_Int64;
-
-                    case SpecialType.System_Int64:
-                        ctorsymbol = null;
-                        break;
-
-                    default:
-                        cg.EmitConvertToPhpValue(t, 0);
-                        ctorsymbol = null;
-                        break;
-                }
-            }
-
-            //
-            cg.EmitCall(ILOpCode.Newobj, ctorsymbol);
-            cg.Builder.EmitThrow(false);
-
-            //
-            return cg.CoreTypes.Void;
-        }
-    }
-
-    partial class BoundAssertEx
-    {
-        internal override TypeSymbol Emit(CodeGenerator cg)
-        {
-            var args = ArgumentsInSourceOrder;
-            if (args.Length == 0 ||
-                args[0].Value.ConstantValue.EqualsOptional(true.AsOptional()) || // ignoring assertion evaluated to true
-                cg.IsReadonlyStringOnly(args[0].Value.TypeRefMask)) // ignoring string assertions
-            {
-                if (Access.IsNone)
-                {
-                    // emit nothing
-                    return cg.CoreTypes.Void;
-                }
-
-                // always passing
-                cg.Builder.EmitBoolConstant(true);
-            }
-            else
-            {
-                // Template: <ctx>.Assert( condition.ToBoolean(), action )
-                cg.EmitLoadContext();
-
-                cg.EmitConvertToBool(args[0].Value);
-
-                if (args.Length > 1)
-                {
-                    cg.EmitConvertToPhpValue(args[1].Value);
-                }
-                else
-                {
-                    cg.Emit_PhpValue_Void();
-                }
-
-                // 
-                cg.EmitCall(ILOpCode.Callvirt, null)
-                    .Expect(SpecialType.System_Boolean);
-            }
-
-            //
-            return cg.CoreTypes.Boolean;
-        }
-    }
+    // partial class BoundExitEx
+    // {
+    //     internal override TypeSymbol Emit(CodeGenerator cg)
+    //     {
+    //         MethodSymbol ctorsymbol;
+    //
+    //         if (_arguments.Length == 0)
+    //         {
+    //             // <ctx>.Exit();
+    //             ctorsymbol = null;
+    //         }
+    //         else
+    //         {
+    //             // LOAD <status>
+    //             var t = cg.Emit(_arguments[0].Value);
+    //
+    //             switch (t.SpecialType)
+    //             {
+    //                 case SpecialType.System_Int32:
+    //                     cg.Builder.EmitOpCode(ILOpCode.Conv_i8); // i4 -> i8
+    //                     goto case SpecialType.System_Int64;
+    //
+    //                 case SpecialType.System_Int64:
+    //                     ctorsymbol = null;
+    //                     break;
+    //
+    //                 default:
+    //                     cg.EmitConvertToPhpValue(t, 0);
+    //                     ctorsymbol = null;
+    //                     break;
+    //             }
+    //         }
+    //
+    //         //
+    //         cg.EmitCall(ILOpCode.Newobj, ctorsymbol);
+    //         cg.Builder.EmitThrow(false);
+    //
+    //         //
+    //         return cg.CoreTypes.Void;
+    //     }
+    // }
+    //
+    // partial class BoundAssertEx
+    // {
+    //     internal override TypeSymbol Emit(CodeGenerator cg)
+    //     {
+    //         var args = ArgumentsInSourceOrder;
+    //         if (args.Length == 0 ||
+    //             args[0].Value.ConstantValue.EqualsOptional(true.AsOptional()) || // ignoring assertion evaluated to true
+    //             cg.IsReadonlyStringOnly(args[0].Value.TypeRefMask)) // ignoring string assertions
+    //         {
+    //             if (Access.IsNone)
+    //             {
+    //                 // emit nothing
+    //                 return cg.CoreTypes.Void;
+    //             }
+    //
+    //             // always passing
+    //             cg.Builder.EmitBoolConstant(true);
+    //         }
+    //         else
+    //         {
+    //             // Template: <ctx>.Assert( condition.ToBoolean(), action )
+    //             cg.EmitLoadContext();
+    //
+    //             cg.EmitConvertToBool(args[0].Value);
+    //
+    //             if (args.Length > 1)
+    //             {
+    //                 cg.EmitConvertToPhpValue(args[1].Value);
+    //             }
+    //             else
+    //             {
+    //                 cg.Emit_PhpValue_Void();
+    //             }
+    //
+    //             // 
+    //             cg.EmitCall(ILOpCode.Callvirt, null)
+    //                 .Expect(SpecialType.System_Boolean);
+    //         }
+    //
+    //         //
+    //         return cg.CoreTypes.Boolean;
+    //     }
+    // }
 
     partial class BoundAssignEx
     {
@@ -3750,7 +3750,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// </summary>
         class SearchForTargetVisitor : Graph.GraphWalker<VoidStruct>
         {
-            readonly BoundReferenceEx  
+            readonly BoundReferenceEx
                 _target;
 
             public bool Found { get; private set; }

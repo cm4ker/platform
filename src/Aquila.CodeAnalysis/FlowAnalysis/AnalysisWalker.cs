@@ -170,11 +170,11 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                     return true;
                 }
 
-                if (condition is BoundGlobalFunctionCall)
-                {
-                    //VisitGlobalFunctionCall((BoundGlobalFunctionCall) condition, branch);
-                    return true;
-                }
+                // if (condition is BoundGlobalFunctionCall)
+                // {
+                //     //VisitGlobalFunctionCall((BoundGlobalFunctionCall) condition, branch);
+                //     return true;
+                // }
 
                 if (condition is BoundInstanceOfEx)
                 {

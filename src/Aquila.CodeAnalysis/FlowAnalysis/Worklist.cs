@@ -87,7 +87,7 @@ using System.Threading.Tasks;
             }
         }
 
-        public bool EnqueueRoutine(IPhpRoutineSymbol routine, T caller, BoundRoutineCall callExpression)
+        public bool EnqueueRoutine(IPhpRoutineSymbol routine, T caller, BoundCallEx callExpression)
         {
             Contract.ThrowIfNull(routine);
 

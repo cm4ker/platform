@@ -14,6 +14,7 @@ using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.FlowAnalysis;
 using Contract = Aquila.CodeAnalysis.Contract;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Semantics.Model;
 
 namespace Aquila.CodeAnalysis.Symbols
 {
@@ -56,6 +57,8 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             Contract.ThrowIfNull(file);
 
+            
+            
             _file = file;
             _syntax = syntax;
         }
@@ -87,7 +90,7 @@ namespace Aquila.CodeAnalysis.Symbols
             return fld.EmitLoad(cg, holder: null);
         }
 
-         internal override IEnumerable<Parameter> SyntaxSignature => _syntax.Parameters;
+        internal override IEnumerable<Parameter> SyntaxSignature => _syntax.Parameters;
 
         internal override TypeRef SyntaxReturnType => _syntax.ReturnType;
 
@@ -171,7 +174,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override bool IsSealed => false;
 
-        public override bool IsStatic => true;
+        public override bool IsStatic => false;
 
         public override bool IsVirtual => false;
     }

@@ -33,7 +33,7 @@ namespace Aquila.CodeAnalysis.Symbols
     partial class SourceFileSymbol : NamedTypeSymbol, ILambdaContainerSymbol, IPhpScriptTypeSymbol
     {
         readonly AquilaCompilation _compilation;
-        readonly PhpSyntaxTree _syntaxTree;
+        readonly AquilaSyntaxTree _syntaxTree;
 
         readonly SourceGlobalMethodSymbol _mainMethod;
         //readonly List<SourceTypeSymbol> _containedTypes = new List<SourceTypeSymbol>();
@@ -52,18 +52,18 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         //public List<SourceTypeSymbol> ContainedTypes => _containedTypes;
 
-        public PhpSyntaxTree SyntaxTree => _syntaxTree;
+        public AquilaSyntaxTree SyntaxTree => _syntaxTree;
 
         public SourceModuleSymbol SourceModule => _compilation.SourceModule;
 
-        public static SourceFileSymbol Create(AquilaCompilation compilation, PhpSyntaxTree syntaxTree)
+        public static SourceFileSymbol Create(AquilaCompilation compilation, AquilaSyntaxTree syntaxTree)
         {
             return syntaxTree.IsPharEntry
                 ? new SourcePharEntrySymbol(compilation, syntaxTree)
                 : new SourceFileSymbol(compilation, syntaxTree);
         }
 
-        protected SourceFileSymbol(AquilaCompilation compilation, PhpSyntaxTree syntaxTree)
+        protected SourceFileSymbol(AquilaCompilation compilation, AquilaSyntaxTree syntaxTree)
         {
             Contract.ThrowIfNull(compilation);
             Contract.ThrowIfNull(syntaxTree);
@@ -302,7 +302,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override bool IsSealed => false;
 
-        public override bool IsStatic => true;
+        public override bool IsStatic => false;
 
         public override bool IsSerializable => false;
 
@@ -388,7 +388,7 @@ namespace Aquila.CodeAnalysis.Symbols
     {
         SynthesizedAttributeData _lazyPharAttribute;
 
-        public SourcePharEntrySymbol(AquilaCompilation compilation, PhpSyntaxTree syntaxTree)
+        public SourcePharEntrySymbol(AquilaCompilation compilation, AquilaSyntaxTree syntaxTree)
             : base(compilation, syntaxTree)
         {
             Debug.Assert(syntaxTree.PharStubFile != null);

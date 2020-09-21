@@ -126,6 +126,17 @@ namespace Aquila.Syntax.Parser
             return result;
         }
 
+        public override LangElement VisitLocal_variable_type(ZSharpParser.Local_variable_typeContext context)
+        {
+            if (context.VAR() != null)
+            {
+                Stack.Push(TypeSyntaxHelper.Create(context.ToLineInfo(), context.GetText()));
+                return Stack.PeekNode();
+            }
+            else
+                return base.VisitLocal_variable_type(context);
+        }
+
         // public override LangElement VisitArrayType(ZSharpParser.ArrayTypeContext context)
         // {
         //     base.VisitArrayType(context);
@@ -219,10 +230,15 @@ namespace Aquila.Syntax.Parser
             return Stack.PeekNode();
         }
 
+        public override LangElement VisitDeclarationStatement(ZSharpParser.DeclarationStatementContext context)
+        {
+            return VisitLocal_variable_declaration(context.local_variable_declaration());
+        }
+
         public override LangElement VisitLocal_variable_declaration(
             ZSharpParser.Local_variable_declarationContext context)
         {
-            base.VisitLocal_variable_type(context.local_variable_type());
+            VisitLocal_variable_type(context.local_variable_type());
 
             DeclaratorList list;
 
@@ -351,6 +367,11 @@ namespace Aquila.Syntax.Parser
         {
             base.VisitExpression(context);
             return Stack.PeekNode();
+        }
+
+        public override LangElement VisitStatement(ZSharpParser.StatementContext context)
+        {
+            return base.VisitStatement(context);
         }
 
         // public override LangElement VisitExpressionPostfix(ZSharpParser.ExpressionPostfixContext context)
@@ -508,7 +529,7 @@ namespace Aquila.Syntax.Parser
         public override LangElement VisitMember_access(ZSharpParser.Member_accessContext context)
         {
             base.VisitMember_access(context);
-            
+
             Stack.Push(new MemberAccessEx(context.ToLineInfo(), SyntaxKind.MemberAccessExpression,
                 Operations.MemberAccess, Stack.PopIdentifier(), Stack.PopExpression()));
 

@@ -28,14 +28,13 @@ namespace Aquila.Compiler.Tests
         [Fact]
         public void SimpleCallTestExpression()
         {
-            var script = "void CustomProc() { Callable(); } void Callable() { }";
-            
+            var script = "void CustomProc() { Callable(); } int Callable() { return  1 + 1; }";
 
             var result = (string) this.CompileAndRun(script);
 
             Assert.Equal("Hello world!", result);
         }
-        
+
         [Fact]
         public void ExceptionTest()
         {

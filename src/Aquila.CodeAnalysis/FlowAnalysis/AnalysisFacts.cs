@@ -47,321 +47,321 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return false;
         }
 
-        /// <summary>
-        /// Resolves value of the function call in compile time if possible and updates the variable type if necessary
-        /// </summary>
-        public static void HandleSpecialFunctionCall<T>(BoundGlobalFunctionCall call, ExpressionAnalysis<T> analysis,
-            ConditionBranch branch)
-        {
-            // Only direct function names
-            if (!HasSimpleName(call, out string name))
-            {
-                return;
-            }
+        // /// <summary>
+        // /// Resolves value of the function call in compile time if possible and updates the variable type if necessary
+        // /// </summary>
+        // public static void HandleSpecialFunctionCall<T>(BoundGlobalFunctionCall call, ExpressionAnalysis<T> analysis,
+        //     ConditionBranch branch)
+        // {
+        //     // Only direct function names
+        //     if (!HasSimpleName(call, out string name))
+        //     {
+        //         return;
+        //     }
+        //
+        //     // Type checking functions
+        //     if (branch != ConditionBranch.AnyResult && CanBeTypeCheckingFunction(call, name, out var arg))
+        //     {
+        //         if (HandleTypeCheckingFunctions(call, name, arg, analysis, branch))
+        //         {
+        //             return;
+        //         }
+        //     }
+        //
+        //     // Functions with all arguments resolved
+        //     if (call.ArgumentsInSourceOrder.All(a => a.Value.ConstantValue.HasValue))
+        //     {
+        //         // Clear out the constant value result from the previous run of this method (if it was valid, it will be reassigned below)
+        //         call.ConstantValue = default;
+        //
+        //         string str;
+        //
+        //         var args = call.ArgumentsInSourceOrder;
+        //         switch (name) // TODO: case insensitive
+        //         {
+        //             case "is_callable": // bool is_callable( string $function_name )
+        //             case "function_exists": // bool function_exists ( string $function_name )
+        //                 if (args.Length == 1 && args[0].Value.ConstantValue.TryConvertToString(out str))
+        //                 {
+        //                     // TRUE <=> function is defined unconditionally in a reference library (PE assembly)
+        //                     if (IsUnconditionalDeclaration(
+        //                         analysis.Model.ResolveFunction(NameUtils.MakeQualifiedName(str, true))))
+        //                     {
+        //                         call.ConstantValue = ConstantValueExtensions.AsOptional(true);
+        //                     }
+        //                 }
+        //
+        //                 break;
+        //
+        //             // bool class_exists ( string $class_name [, bool $autoload = true ] )
+        //             case "class_exists":
+        //             case "interface_exists":
+        //                 if (args.Length >= 1)
+        //                 {
+        //                     // TRUE <=> class is defined unconditionally in a reference library (PE assembly)
+        //                     var class_name = args[0].Value.ConstantValue.Value as string;
+        //                     if (class_name != null)
+        //                     {
+        //                         var tmp = (TypeSymbol) analysis.Model.ResolveType(
+        //                             NameUtils.MakeQualifiedName(class_name, true));
+        //                         if (tmp is PENamedTypeSymbol && !tmp.IsPhpUserType()
+        //                         ) // TODO: + SourceTypeSymbol when reachable unconditional declaration
+        //                         {
+        //                             bool @interface = (name == "interface_exists");
+        //                             if (tmp.TypeKind == (@interface ? TypeKind.Interface : TypeKind.Class))
+        //                             {
+        //                                 call.ConstantValue = ConstantValueExtensions.AsOptional(true);
+        //                             }
+        //                         }
+        //                     }
+        //                 }
+        //
+        //                 break;
+        //
+        //             // bool method_exists ( string $class_name , string $method_name )
+        //             case "method_exists":
+        //                 if (args.Length == 2)
+        //                 {
+        //                     var class_name = args[0].Value.ConstantValue.Value as string;
+        //                     if (class_name != null && args[1].Value.ConstantValue.TryConvertToString(out str))
+        //                     {
+        //                         var tmp = (NamedTypeSymbol) analysis.Model.ResolveType(
+        //                             NameUtils.MakeQualifiedName(class_name, true));
+        //                         if (tmp is PENamedTypeSymbol && !tmp.IsPhpUserType())
+        //                         {
+        //                             if (tmp.LookupMethods(str).Any())
+        //                             {
+        //                                 call.ConstantValue = ConstantValueExtensions.AsOptional(true);
+        //                             }
+        //                         }
+        //                     }
+        //                 }
+        //
+        //                 break;
+        //
+        //             case "defined":
+        //             case "constant":
+        //                 if (args.Length == 1 && args[0].Value.ConstantValue.TryConvertToString(out str))
+        //                 {
+        //                     // TODO: const_name in form of "{CLASS}::{NAME}"
+        //                     var tmp = analysis.Model.ResolveConstant(str);
+        //                     if (tmp is PEFieldSymbol fld) // TODO: also user constants defined in the same scope
+        //                     {
+        //                         if (name == "defined")
+        //                         {
+        //                             call.ConstantValue = ConstantValueExtensions.AsOptional(true);
+        //                         }
+        //                         else // name == "constant"
+        //                         {
+        //                             var cvalue = fld.GetConstantValue(false);
+        //                             call.ConstantValue = (cvalue != null) ? new Optional<object>(cvalue.Value) : null;
+        //                             call.TypeRefMask = TypeRefFactory.CreateMask(analysis.TypeCtx, fld.Type,
+        //                                 notNull: fld.IsNotNull());
+        //                         }
+        //                     }
+        //                     else if (tmp is PEPropertySymbol prop)
+        //                     {
+        //                         if (name == "defined")
+        //                         {
+        //                             call.ConstantValue = ConstantValueExtensions.AsOptional(true);
+        //                         }
+        //                         else // name == "constant"
+        //                         {
+        //                             call.TypeRefMask = TypeRefFactory.CreateMask(analysis.TypeCtx, prop.Type,
+        //                                 notNull: prop.IsNotNull());
+        //                         }
+        //                     }
+        //                 }
+        //
+        //                 break;
+        //
+        //             case "strlen":
+        //                 if (args.Length == 1 && args[0].Value.ConstantValue.TryConvertToString(out string value))
+        //                 {
+        //                     call.ConstantValue = new Optional<object>(value.Length);
+        //                 }
+        //
+        //                 break;
+        //         }
+        //     }
+        // }
 
-            // Type checking functions
-            if (branch != ConditionBranch.AnyResult && CanBeTypeCheckingFunction(call, name, out var arg))
-            {
-                if (HandleTypeCheckingFunctions(call, name, arg, analysis, branch))
-                {
-                    return;
-                }
-            }
+        // public static bool HasSimpleName(BoundGlobalFunctionCall call, out string name)
+        // {
+        //     if (call.Name.IsDirect)
+        //     {
+        //         // Take the function name ignoring current namespace resolution, simple names only:
+        //         var qualifiedName = call.NameOpt ?? call.Name.NameValue;
+        //         if (qualifiedName.IsSimpleName)
+        //         {
+        //             name = qualifiedName.Name.Value;
+        //             return true;
+        //         }
+        //     }
+        //
+        //     name = null;
+        //     return false;
+        // }
 
-            // Functions with all arguments resolved
-            if (call.ArgumentsInSourceOrder.All(a => a.Value.ConstantValue.HasValue))
-            {
-                // Clear out the constant value result from the previous run of this method (if it was valid, it will be reassigned below)
-                call.ConstantValue = default;
+        // private static bool CanBeTypeCheckingFunction(BoundGlobalFunctionCall call, string name,
+        //     out BoundVariableRef arg)
+        // {
+        //     if (name.StartsWith("is_") && call.ArgumentsInSourceOrder.Length == 1
+        //                                && call.ArgumentsInSourceOrder[0].Value is BoundVariableRef onlyArg)
+        //     {
+        //         arg = onlyArg;
+        //         return true;
+        //     }
+        //     else
+        //     {
+        //         arg = null;
+        //         return false;
+        //     }
+        // }
 
-                string str;
-
-                var args = call.ArgumentsInSourceOrder;
-                switch (name) // TODO: case insensitive
-                {
-                    case "is_callable": // bool is_callable( string $function_name )
-                    case "function_exists": // bool function_exists ( string $function_name )
-                        if (args.Length == 1 && args[0].Value.ConstantValue.TryConvertToString(out str))
-                        {
-                            // TRUE <=> function is defined unconditionally in a reference library (PE assembly)
-                            if (IsUnconditionalDeclaration(
-                                analysis.Model.ResolveFunction(NameUtils.MakeQualifiedName(str, true))))
-                            {
-                                call.ConstantValue = ConstantValueExtensions.AsOptional(true);
-                            }
-                        }
-
-                        break;
-
-                    // bool class_exists ( string $class_name [, bool $autoload = true ] )
-                    case "class_exists":
-                    case "interface_exists":
-                        if (args.Length >= 1)
-                        {
-                            // TRUE <=> class is defined unconditionally in a reference library (PE assembly)
-                            var class_name = args[0].Value.ConstantValue.Value as string;
-                            if (class_name != null)
-                            {
-                                var tmp = (TypeSymbol) analysis.Model.ResolveType(
-                                    NameUtils.MakeQualifiedName(class_name, true));
-                                if (tmp is PENamedTypeSymbol && !tmp.IsPhpUserType()
-                                ) // TODO: + SourceTypeSymbol when reachable unconditional declaration
-                                {
-                                    bool @interface = (name == "interface_exists");
-                                    if (tmp.TypeKind == (@interface ? TypeKind.Interface : TypeKind.Class))
-                                    {
-                                        call.ConstantValue = ConstantValueExtensions.AsOptional(true);
-                                    }
-                                }
-                            }
-                        }
-
-                        break;
-
-                    // bool method_exists ( string $class_name , string $method_name )
-                    case "method_exists":
-                        if (args.Length == 2)
-                        {
-                            var class_name = args[0].Value.ConstantValue.Value as string;
-                            if (class_name != null && args[1].Value.ConstantValue.TryConvertToString(out str))
-                            {
-                                var tmp = (NamedTypeSymbol) analysis.Model.ResolveType(
-                                    NameUtils.MakeQualifiedName(class_name, true));
-                                if (tmp is PENamedTypeSymbol && !tmp.IsPhpUserType())
-                                {
-                                    if (tmp.LookupMethods(str).Any())
-                                    {
-                                        call.ConstantValue = ConstantValueExtensions.AsOptional(true);
-                                    }
-                                }
-                            }
-                        }
-
-                        break;
-
-                    case "defined":
-                    case "constant":
-                        if (args.Length == 1 && args[0].Value.ConstantValue.TryConvertToString(out str))
-                        {
-                            // TODO: const_name in form of "{CLASS}::{NAME}"
-                            var tmp = analysis.Model.ResolveConstant(str);
-                            if (tmp is PEFieldSymbol fld) // TODO: also user constants defined in the same scope
-                            {
-                                if (name == "defined")
-                                {
-                                    call.ConstantValue = ConstantValueExtensions.AsOptional(true);
-                                }
-                                else // name == "constant"
-                                {
-                                    var cvalue = fld.GetConstantValue(false);
-                                    call.ConstantValue = (cvalue != null) ? new Optional<object>(cvalue.Value) : null;
-                                    call.TypeRefMask = TypeRefFactory.CreateMask(analysis.TypeCtx, fld.Type,
-                                        notNull: fld.IsNotNull());
-                                }
-                            }
-                            else if (tmp is PEPropertySymbol prop)
-                            {
-                                if (name == "defined")
-                                {
-                                    call.ConstantValue = ConstantValueExtensions.AsOptional(true);
-                                }
-                                else // name == "constant"
-                                {
-                                    call.TypeRefMask = TypeRefFactory.CreateMask(analysis.TypeCtx, prop.Type,
-                                        notNull: prop.IsNotNull());
-                                }
-                            }
-                        }
-
-                        break;
-
-                    case "strlen":
-                        if (args.Length == 1 && args[0].Value.ConstantValue.TryConvertToString(out string value))
-                        {
-                            call.ConstantValue = new Optional<object>(value.Length);
-                        }
-
-                        break;
-                }
-            }
-        }
-
-        public static bool HasSimpleName(BoundGlobalFunctionCall call, out string name)
-        {
-            if (call.Name.IsDirect)
-            {
-                // Take the function name ignoring current namespace resolution, simple names only:
-                var qualifiedName = call.NameOpt ?? call.Name.NameValue;
-                if (qualifiedName.IsSimpleName)
-                {
-                    name = qualifiedName.Name.Value;
-                    return true;
-                }
-            }
-
-            name = null;
-            return false;
-        }
-
-        private static bool CanBeTypeCheckingFunction(BoundGlobalFunctionCall call, string name,
-            out BoundVariableRef arg)
-        {
-            if (name.StartsWith("is_") && call.ArgumentsInSourceOrder.Length == 1
-                                       && call.ArgumentsInSourceOrder[0].Value is BoundVariableRef onlyArg)
-            {
-                arg = onlyArg;
-                return true;
-            }
-            else
-            {
-                arg = null;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Processes functions such as is_int, is_bool etc. Returns whether the function was one of these.
-        /// </summary>
-        private static bool HandleTypeCheckingFunctions<T>(
-            BoundGlobalFunctionCall call,
-            string name,
-            BoundVariableRef arg,
-            ExpressionAnalysis<T> analysis,
-            ConditionBranch branch)
-        {
-            var typeCtx = analysis.TypeCtx;
-            var flowState = analysis.State;
-
-            switch (name)
-            {
-                case "is_int":
-                case "is_integer":
-                case "is_long":
-                    HandleTypeCheckingExpression(arg, typeCtx.GetLongTypeMask(), branch, flowState, checkExpr: call);
-                    return true;
-
-                case "is_bool":
-                    HandleTypeCheckingExpression(arg, typeCtx.GetBooleanTypeMask(), branch, flowState, checkExpr: call);
-                    return true;
-
-                case "is_float":
-                case "is_double":
-                case "is_real":
-                    HandleTypeCheckingExpression(arg, typeCtx.GetDoubleTypeMask(), branch, flowState, checkExpr: call);
-                    return true;
-
-                case "is_string":
-                    var stringMask = typeCtx.GetStringTypeMask() | typeCtx.GetWritableStringTypeMask();
-                    HandleTypeCheckingExpression(arg, stringMask, branch, flowState, checkExpr: call);
-                    return true;
-
-                case "is_resource":
-                    HandleTypeCheckingExpression(arg, typeCtx.GetResourceTypeMask(), branch, flowState,
-                        checkExpr: call);
-                    return true;
-
-                case "is_null":
-                    HandleTypeCheckingExpression(arg, typeCtx.GetNullTypeMask(), branch, flowState, checkExpr: call);
-                    return true;
-
-                case "is_array":
-                    HandleTypeCheckingExpression(
-                        arg,
-                        currentType => typeCtx.GetArraysFromMask(currentType),
-                        branch,
-                        flowState,
-                        skipPositiveIfAnyType: true,
-                        checkExpr: call);
-                    return true;
-
-                case "is_object":
-                    // Keep IncludesSubclasses flag in the true branch and clear it in the false branch
-                    HandleTypeCheckingExpression(
-                        arg,
-                        currentType => typeCtx.GetObjectsFromMask(currentType).WithSubclasses,
-                        branch,
-                        flowState,
-                        skipPositiveIfAnyType: true,
-                        checkExpr: call);
-                    return true;
-
-                // TODO
-                //case "is_scalar":
-                //    return;
-
-                case "is_numeric":
-                    HandleTypeCheckingExpression(
-                        arg,
-                        currentType =>
-                        {
-                            // Specify numeric types if they are present 
-                            var targetType = typeCtx.IsLong(currentType) ? typeCtx.GetLongTypeMask() : 0;
-                            targetType |= typeCtx.IsDouble(currentType) ? typeCtx.GetDoubleTypeMask() : 0;
-
-                            if (branch == ConditionBranch.ToTrue)
-                            {
-                                // Also string types can make is_numeric return true, but not anything else
-                                targetType |= typeCtx.IsReadonlyString(currentType) ? typeCtx.GetStringTypeMask() : 0;
-                                targetType |= typeCtx.IsWritableString(currentType)
-                                    ? typeCtx.GetWritableStringTypeMask()
-                                    : 0;
-
-                                return targetType;
-                            }
-                            else
-                            {
-                                // For number, is_numeric always returns true -> remove numeric types from false branch
-                                return targetType;
-                            }
-                        },
-                        branch,
-                        flowState,
-                        skipPositiveIfAnyType: true,
-                        checkExpr: call);
-                    return true;
-
-                case "is_callable":
-                    HandleTypeCheckingExpression(
-                        arg,
-                        currentType =>
-                        {
-                            // Closure and lambdas are specified in both branches
-                            TypeRefMask targetType = typeCtx.GetClosureTypeMask();
-                            targetType |= typeCtx.GetLambdasFromMask(currentType);
-
-                            if (branch == ConditionBranch.ToTrue)
-                            {
-                                // Also string types, arrays and objects can make is_callable return true, but not anything else
-                                targetType |= typeCtx.IsReadonlyString(currentType) ? typeCtx.GetStringTypeMask() : 0;
-                                targetType |= typeCtx.IsWritableString(currentType)
-                                    ? typeCtx.GetWritableStringTypeMask()
-                                    : 0;
-                                targetType |= typeCtx.GetArraysFromMask(currentType);
-                                targetType |= typeCtx.GetObjectsFromMask(currentType);
-
-                                return targetType;
-                            }
-                            else
-                            {
-                                // For closure and lambdas, is_callable always returns true -> remove them from false branch,
-                                // don't remove IncludeSubclasses flag
-                                return targetType;
-                            }
-                        },
-                        branch,
-                        flowState,
-                        skipPositiveIfAnyType: true,
-                        checkExpr: call);
-                    return true;
-
-                // TODO
-                //case "is_iterable":
-                //    return;
-
-                default:
-                    return false;
-            }
-        }
+        // /// <summary>
+        // /// Processes functions such as is_int, is_bool etc. Returns whether the function was one of these.
+        // /// </summary>
+        // private static bool HandleTypeCheckingFunctions<T>(
+        //     BoundGlobalFunctionCall call,
+        //     string name,
+        //     BoundVariableRef arg,
+        //     ExpressionAnalysis<T> analysis,
+        //     ConditionBranch branch)
+        // {
+        //     var typeCtx = analysis.TypeCtx;
+        //     var flowState = analysis.State;
+        //
+        //     switch (name)
+        //     {
+        //         case "is_int":
+        //         case "is_integer":
+        //         case "is_long":
+        //             HandleTypeCheckingExpression(arg, typeCtx.GetLongTypeMask(), branch, flowState, checkExpr: call);
+        //             return true;
+        //
+        //         case "is_bool":
+        //             HandleTypeCheckingExpression(arg, typeCtx.GetBooleanTypeMask(), branch, flowState, checkExpr: call);
+        //             return true;
+        //
+        //         case "is_float":
+        //         case "is_double":
+        //         case "is_real":
+        //             HandleTypeCheckingExpression(arg, typeCtx.GetDoubleTypeMask(), branch, flowState, checkExpr: call);
+        //             return true;
+        //
+        //         case "is_string":
+        //             var stringMask = typeCtx.GetStringTypeMask() | typeCtx.GetWritableStringTypeMask();
+        //             HandleTypeCheckingExpression(arg, stringMask, branch, flowState, checkExpr: call);
+        //             return true;
+        //
+        //         case "is_resource":
+        //             HandleTypeCheckingExpression(arg, typeCtx.GetResourceTypeMask(), branch, flowState,
+        //                 checkExpr: call);
+        //             return true;
+        //
+        //         case "is_null":
+        //             HandleTypeCheckingExpression(arg, typeCtx.GetNullTypeMask(), branch, flowState, checkExpr: call);
+        //             return true;
+        //
+        //         case "is_array":
+        //             HandleTypeCheckingExpression(
+        //                 arg,
+        //                 currentType => typeCtx.GetArraysFromMask(currentType),
+        //                 branch,
+        //                 flowState,
+        //                 skipPositiveIfAnyType: true,
+        //                 checkExpr: call);
+        //             return true;
+        //
+        //         case "is_object":
+        //             // Keep IncludesSubclasses flag in the true branch and clear it in the false branch
+        //             HandleTypeCheckingExpression(
+        //                 arg,
+        //                 currentType => typeCtx.GetObjectsFromMask(currentType).WithSubclasses,
+        //                 branch,
+        //                 flowState,
+        //                 skipPositiveIfAnyType: true,
+        //                 checkExpr: call);
+        //             return true;
+        //
+        //         // TODO
+        //         //case "is_scalar":
+        //         //    return;
+        //
+        //         case "is_numeric":
+        //             HandleTypeCheckingExpression(
+        //                 arg,
+        //                 currentType =>
+        //                 {
+        //                     // Specify numeric types if they are present 
+        //                     var targetType = typeCtx.IsLong(currentType) ? typeCtx.GetLongTypeMask() : 0;
+        //                     targetType |= typeCtx.IsDouble(currentType) ? typeCtx.GetDoubleTypeMask() : 0;
+        //
+        //                     if (branch == ConditionBranch.ToTrue)
+        //                     {
+        //                         // Also string types can make is_numeric return true, but not anything else
+        //                         targetType |= typeCtx.IsReadonlyString(currentType) ? typeCtx.GetStringTypeMask() : 0;
+        //                         targetType |= typeCtx.IsWritableString(currentType)
+        //                             ? typeCtx.GetWritableStringTypeMask()
+        //                             : 0;
+        //
+        //                         return targetType;
+        //                     }
+        //                     else
+        //                     {
+        //                         // For number, is_numeric always returns true -> remove numeric types from false branch
+        //                         return targetType;
+        //                     }
+        //                 },
+        //                 branch,
+        //                 flowState,
+        //                 skipPositiveIfAnyType: true,
+        //                 checkExpr: call);
+        //             return true;
+        //
+        //         case "is_callable":
+        //             HandleTypeCheckingExpression(
+        //                 arg,
+        //                 currentType =>
+        //                 {
+        //                     // Closure and lambdas are specified in both branches
+        //                     TypeRefMask targetType = typeCtx.GetClosureTypeMask();
+        //                     targetType |= typeCtx.GetLambdasFromMask(currentType);
+        //
+        //                     if (branch == ConditionBranch.ToTrue)
+        //                     {
+        //                         // Also string types, arrays and objects can make is_callable return true, but not anything else
+        //                         targetType |= typeCtx.IsReadonlyString(currentType) ? typeCtx.GetStringTypeMask() : 0;
+        //                         targetType |= typeCtx.IsWritableString(currentType)
+        //                             ? typeCtx.GetWritableStringTypeMask()
+        //                             : 0;
+        //                         targetType |= typeCtx.GetArraysFromMask(currentType);
+        //                         targetType |= typeCtx.GetObjectsFromMask(currentType);
+        //
+        //                         return targetType;
+        //                     }
+        //                     else
+        //                     {
+        //                         // For closure and lambdas, is_callable always returns true -> remove them from false branch,
+        //                         // don't remove IncludeSubclasses flag
+        //                         return targetType;
+        //                     }
+        //                 },
+        //                 branch,
+        //                 flowState,
+        //                 skipPositiveIfAnyType: true,
+        //                 checkExpr: call);
+        //             return true;
+        //
+        //         // TODO
+        //         //case "is_iterable":
+        //         //    return;
+        //
+        //         default:
+        //             return false;
+        //     }
+        // }
 
         /// <summary>
         /// Ensures that the variable is of the given type(s) in the positive branch or not of this type in the negative

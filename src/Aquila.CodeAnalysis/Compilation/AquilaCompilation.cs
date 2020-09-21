@@ -192,7 +192,7 @@ namespace Aquila.CodeAnalysis
             IEnumerable<MetadataReference> references = null,
             ReferenceManager referenceManager = null,
             bool reuseReferenceManager = false,
-            IEnumerable<PhpSyntaxTree> syntaxTrees = null)
+            IEnumerable<AquilaSyntaxTree> syntaxTrees = null)
         {
             var compilation = new AquilaCompilation(
                 assemblyName ?? this.AssemblyName,
@@ -211,7 +211,7 @@ namespace Aquila.CodeAnalysis
             return compilation;
         }
 
-        private AquilaCompilation WithPhpSyntaxTrees(IEnumerable<PhpSyntaxTree> syntaxTrees)
+        private AquilaCompilation WithPhpSyntaxTrees(IEnumerable<AquilaSyntaxTree> syntaxTrees)
         {
             return Update(
                 reuseReferenceManager: true,
@@ -303,7 +303,7 @@ namespace Aquila.CodeAnalysis
 
         public static AquilaCompilation Create(
             string assemblyName,
-            IEnumerable<PhpSyntaxTree> syntaxTrees = null,
+            IEnumerable<AquilaSyntaxTree> syntaxTrees = null,
             IEnumerable<MetadataReference> references = null,
             IEnumerable<ResourceDescription> resources = null,
             PhpCompilationOptions options = null)
@@ -454,7 +454,7 @@ namespace Aquila.CodeAnalysis
                 if (this.Options.ConcurrentBuild)
                 {
                     Parallel.ForEach(syntaxTrees,
-                        UICultureUtilities.WithCurrentUICulture<PhpSyntaxTree>(syntaxTree =>
+                        UICultureUtilities.WithCurrentUICulture<AquilaSyntaxTree>(syntaxTree =>
                         {
                             builder.AddRange(syntaxTree.GetDiagnostics(cancellationToken));
                         }));
@@ -700,7 +700,7 @@ namespace Aquila.CodeAnalysis
 
         protected override IEnumerable<SyntaxTree> CommonSyntaxTrees => SyntaxTrees;
 
-        public new IEnumerable<PhpSyntaxTree> SyntaxTrees => this.SourceSymbolCollection.SyntaxTrees;
+        public new IEnumerable<AquilaSyntaxTree> SyntaxTrees => this.SourceSymbolCollection.SyntaxTrees;
 
         internal override Guid DebugSourceDocumentLanguageId => Constants.CorSymLanguageTypePeachpie;
 
@@ -716,17 +716,17 @@ namespace Aquila.CodeAnalysis
 
         protected override Compilation CommonAddSyntaxTrees(IEnumerable<SyntaxTree> trees)
         {
-            return WithPhpSyntaxTrees(this.SyntaxTrees.Concat(trees.Cast<PhpSyntaxTree>()));
+            return WithPhpSyntaxTrees(this.SyntaxTrees.Concat(trees.Cast<AquilaSyntaxTree>()));
         }
 
         protected override Compilation CommonRemoveAllSyntaxTrees()
         {
-            return WithPhpSyntaxTrees(ImmutableArray<PhpSyntaxTree>.Empty);
+            return WithPhpSyntaxTrees(ImmutableArray<AquilaSyntaxTree>.Empty);
         }
 
         protected override Compilation CommonRemoveSyntaxTrees(IEnumerable<SyntaxTree> trees)
         {
-            return WithPhpSyntaxTrees(this.SyntaxTrees.Except(trees.OfType<PhpSyntaxTree>()));
+            return WithPhpSyntaxTrees(this.SyntaxTrees.Except(trees.OfType<AquilaSyntaxTree>()));
         }
 
         protected override Compilation CommonReplaceSyntaxTree(SyntaxTree oldTree, SyntaxTree newTree)
@@ -751,7 +751,7 @@ namespace Aquila.CodeAnalysis
                 throw new KeyNotFoundException();
             }
 
-            return WithPhpSyntaxTrees(SyntaxTrees.Select(t => (t == oldTree) ? (PhpSyntaxTree) newTree : t));
+            return WithPhpSyntaxTrees(SyntaxTrees.Select(t => (t == oldTree) ? (AquilaSyntaxTree) newTree : t));
         }
 
         internal override int GetSyntaxTreeOrdinal(SyntaxTree tree)

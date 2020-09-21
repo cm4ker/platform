@@ -13,11 +13,11 @@ namespace Aquila.CodeAnalysis.Errors
     /// </summary>
     internal class ErrorSink : IErrorSink<Span>
     {
-        readonly PhpSyntaxTree _syntaxTree;
+        readonly AquilaSyntaxTree _syntaxTree;
 
         List<Diagnostic> _diagnostics;
 
-        public ErrorSink(PhpSyntaxTree syntaxTree)
+        public ErrorSink(AquilaSyntaxTree syntaxTree)
         {
             _syntaxTree = syntaxTree;
         }

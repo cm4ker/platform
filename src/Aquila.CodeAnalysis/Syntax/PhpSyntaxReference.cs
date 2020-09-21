@@ -13,10 +13,10 @@ namespace Aquila.CodeAnalysis.Syntax
     /// </summary>
     internal class PhpSyntaxReference : SyntaxReference
     {
-        readonly PhpSyntaxTree _tree;
+        readonly AquilaSyntaxTree _tree;
         readonly LangElement _node;
 
-        internal PhpSyntaxReference(PhpSyntaxTree tree, LangElement node)
+        internal PhpSyntaxReference(AquilaSyntaxTree tree, LangElement node)
         {
             _tree = tree;
             _node = node;

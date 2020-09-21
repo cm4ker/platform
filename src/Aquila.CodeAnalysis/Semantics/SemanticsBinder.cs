@@ -6,15 +6,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Security.Cryptography.X509Certificates;
-using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.CodeAnalysis.FlowAnalysis;
-using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Semantics.Graph;
-using Aquila.CodeAnalysis.Symbols.Source;
-using Aquila.Compiler.Utilities;
 using Aquila.Syntax;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Expressions;
@@ -23,7 +17,6 @@ using Aquila.Syntax.Ast.Statements;
 using Aquila.Syntax.Errors;
 using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
-using Aquila.CodeAnalysis.Semantics.TypeRef;
 
 namespace Aquila.CodeAnalysis.Semantics
 {
@@ -96,7 +89,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// Optional. Local variables table.
         /// Can be <c>null</c> for expressions without variable access (field initializers and parameters initializers).
         /// </summary>
-        protected readonly LocalsTable _locals;
+        protected readonly LocalsTable Locals;
 
         /// <summary>
         /// Optional. Self type context.
@@ -112,7 +105,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// Gets corresponding routine.
         /// Can be <c>null</c>.
         /// </summary>
-        public SourceRoutineSymbol Routine => _routine ?? _locals?.Routine;
+        public SourceRoutineSymbol Routine => _routine ?? Locals?.Routine;
 
         readonly SourceRoutineSymbol _routine;
 
@@ -182,7 +175,7 @@ namespace Aquila.CodeAnalysis.Semantics
             DeclaringCompilation = compilation;
 
             ContainingFile = file;
-            _locals = locals;
+            Locals = locals;
             _routine = routine;
             Self = (TypeSymbol) self;
         }
@@ -284,7 +277,6 @@ namespace Aquila.CodeAnalysis.Semantics
                 {
                     if (unpacking)
                     {
-                        // https://wiki.php.net/rfc/argument_unpacking
                         Diagnostics.Add(GetLocation(p), ErrorCode.ERR_PositionalArgAfterUnpacking);
                     }
                 }
@@ -506,9 +498,9 @@ namespace Aquila.CodeAnalysis.Semantics
 
             if (expr is BinaryEx bex) return BindBinaryEx(bex).WithAccess(access);
             if (expr is AssignEx aex) return BindAssignEx(aex, access);
-            if (expr is UnaryEx) return BindUnaryEx((UnaryEx) expr, access).WithAccess(access);
-            if (expr is IncDecEx) return BindIncDec((IncDecEx) expr).WithAccess(access);
-            if (expr is CallEx) return BindCallEx((CallEx) expr).WithAccess(access);
+            if (expr is UnaryEx ue) return BindUnaryEx(ue, access).WithAccess(access);
+            if (expr is IncDecEx incDec) return BindIncDec(incDec).WithAccess(access);
+            if (expr is CallEx ce) return BindCallEx(ce).WithAccess(access);
             if (expr is MemberAccessEx mae) return BindMemberAccessEx(mae, false).WithAccess(access);
             // if (expr is ConditionalEx) return BindConditionalEx((ConditionalEx) expr, access).WithAccess(access);
             // if (expr is ConcatEx) return BindConcatEx((ConcatEx) expr).WithAccess(access);
@@ -537,9 +529,69 @@ namespace Aquila.CodeAnalysis.Semantics
             return new BoundRoutineName(QualifiedName.Parse(name.Identifier.Text, true));
         }
 
-        private BoundExpression BindName(NameEx expr)
+        private BoundExpression BindName(NameEx expr, bool invocation)
         {
-            return null;
+            var members = this.Routine.ContainingType.GetMembers(expr.Identifier.Text).Where(x => x is MethodSymbol)
+                .ToList();
+
+            if (!members.Any())
+                Diagnostics.Add(GetLocation(expr), ErrorCode.ERR_NotYetImplemented);
+
+            if (members.Count() == 1)
+            {
+                var member = members[0];
+                if (invocation)
+                {
+                    if (member is MethodSymbol ms)
+                    {
+                        if (ms.IsStatic)
+                        {
+                            return new BoundStaticCallEx(ms,
+                                new BoundRoutineName(new QualifiedName(new Name(expr.Identifier.Text))),
+                                ImmutableArray<BoundArgument>.Empty, ImmutableArray<IBoundTypeRef>.Empty);
+                        }
+                        else
+                        {
+                            var th = new BoundVariableRef("this");
+
+                            th.Variable = new ThisVariableReference(_routine);
+
+                            return new BoundInstanceCallEx(ms,
+                                new BoundRoutineName(new QualifiedName(new Name(expr.Identifier.Text))),
+                                ImmutableArray<BoundArgument>.Empty, ImmutableArray<IBoundTypeRef>.Empty, th
+                            );
+                        }
+                    }
+                }
+                else
+                {
+                    if (member is MethodSymbol ms)
+                    {
+                        //... BoundMethod
+                    }
+
+                    if (member is FieldSymbol fs)
+                    {
+                        // ld_fld
+                    }
+
+                    if (member is PropertySymbol ps)
+                    {
+                        // call _get method
+                    }
+                }
+            }
+
+            if (members.Count() > 1 && invocation)
+            {
+                throw new NotImplementedException("");
+                // MethodGroup
+            }
+            else
+            {
+                Diagnostics.Add(GetLocation(expr), ErrorCode.ERR_NotYetImplemented);
+                return null;
+            }
         }
 
         private BoundExpression BindMemberAccessEx(MemberAccessEx expr, bool invoke)
@@ -555,7 +607,7 @@ namespace Aquila.CodeAnalysis.Semantics
                 {
                     if (member is MethodSymbol ms)
                     {
-                        var method = new BoundMethod(ms, leftType);
+                        //var method = new BoundMethod(ms, leftType);
                     }
                 }
                 else
@@ -570,12 +622,12 @@ namespace Aquila.CodeAnalysis.Semantics
             throw new NotImplementedException();
         }
 
-        private BoundExpression BindMethodGroup(Expression expr, bool invoked)
+        private BoundExpression BindMethodGroup(Expression expr, ArgumentList args, bool invoked)
         {
             switch (expr.Kind)
             {
                 case SyntaxKind.NameExpression:
-                    return BindName((NameEx) expr);
+                    return BindName((NameEx) expr, invoked);
                 case SyntaxKind.MemberAccessExpression:
                     return BindMemberAccessEx((MemberAccessEx) expr, invoked);
                 default:
@@ -583,18 +635,10 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
+        
         private BoundExpression BindCallEx(CallEx expr)
         {
-            BoundExpression result;
-            var builder = new List<BoundArgument>(expr.Arguments.Count);
-
-
-            foreach (var arg in expr.Arguments)
-            {
-                builder.Add(BindArgument(arg.Expression));
-            }
-
-            return BindMethodGroup(expr.Expression, true);
+            return BindMethodGroup(expr.Expression, expr.Arguments, true);
         }
 
         // protected virtual BoundYieldEx BindYieldEx(YieldEx expr, BoundAccess access)
@@ -738,52 +782,52 @@ namespace Aquila.CodeAnalysis.Semantics
         //
         // protected BoundExpression BindConcatEx(ConcatEx x) => BindConcatEx(x.Expressions);
 
-        protected BoundExpression BindConcatEx(Expression[] args)
-        {
-            // Flatten and bind concat arguments using a stack (its bottom is the last argument)
-            var boundArgs = new List<BoundArgument>();
-            var exprStack = new Stack<Expression>();
+        // protected BoundExpression BindConcatEx(Expression[] args)
+        // {
+        //     // Flatten and bind concat arguments using a stack (its bottom is the last argument)
+        //     var boundArgs = new List<BoundArgument>();
+        //     var exprStack = new Stack<Expression>();
+        //
+        //     args.Reverse().ForEach(exprStack.Push);
+        //
+        //     while (exprStack.Count > 0)
+        //     {
+        //         var arg = exprStack.Pop();
+        //         // if (arg is ConcatEx concat)
+        //         // {
+        //         //     concat.Expressions.Reverse().ForEach(exprStack.Push);
+        //         // }
+        //         // else 
+        //         if (arg is BinaryEx binEx && binEx.Operation == Operations.Concat)
+        //         {
+        //             exprStack.Push(binEx.Right);
+        //             exprStack.Push(binEx.Left);
+        //         }
+        //         else
+        //         {
+        //             boundArgs.Add(BindArgument(arg));
+        //         }
+        //     }
+        //
+        //     return BindConcatEx(boundArgs);
+        // }
 
-            args.Reverse().ForEach(exprStack.Push);
-
-            while (exprStack.Count > 0)
-            {
-                var arg = exprStack.Pop();
-                // if (arg is ConcatEx concat)
-                // {
-                //     concat.Expressions.Reverse().ForEach(exprStack.Push);
-                // }
-                // else 
-                if (arg is BinaryEx binEx && binEx.Operation == Operations.Concat)
-                {
-                    exprStack.Push(binEx.Right);
-                    exprStack.Push(binEx.Left);
-                }
-                else
-                {
-                    boundArgs.Add(BindArgument(arg));
-                }
-            }
-
-            return BindConcatEx(boundArgs);
-        }
-
-        protected BoundExpression BindConcatEx(List<BoundArgument> boundargs)
-        {
-            // flattern concat arguments
-            for (int i = 0; i < boundargs.Count; i++)
-            {
-                if (boundargs[i].Value is BoundConcatEx c)
-                {
-                    var subargs = c.ArgumentsInSourceOrder;
-                    boundargs.RemoveAt(i);
-                    boundargs.InsertRange(i, subargs);
-                }
-            }
-
-            //
-            return new BoundConcatEx(boundargs.AsImmutable());
-        }
+        // protected BoundExpression BindConcatEx(List<BoundArgument> boundargs)
+        // {
+        //     // flattern concat arguments
+        //     for (int i = 0; i < boundargs.Count; i++)
+        //     {
+        //         if (boundargs[i].Value is BoundConcatEx c)
+        //         {
+        //             var subargs = c.ArgumentsInSourceOrder;
+        //             boundargs.RemoveAt(i);
+        //             boundargs.InsertRange(i, subargs);
+        //         }
+        //     }
+        //
+        //     //
+        //     return new BoundConcatEx(boundargs.AsImmutable());
+        // }
 
         /// <summary>
         /// Optimization:
@@ -931,12 +975,12 @@ namespace Aquila.CodeAnalysis.Semantics
         //     return result;
         // }
 
-        BoundExpression BindAssertExpression(ImmutableArray<BoundArgument> boundArguments)
-        {
-            return EnableAssertExpression
-                ? (BoundExpression) new BoundAssertEx(boundArguments)
-                : (BoundExpression) new BoundLiteral(true.AsObject());
-        }
+        // BoundExpression BindAssertExpression(ImmutableArray<BoundArgument> boundArguments)
+        // {
+        //     return EnableAssertExpression
+        //         ? (BoundExpression) new BoundAssertEx(boundArguments)
+        //         : (BoundExpression) new BoundLiteral(true.AsObject());
+        // }
 
         public IBoundTypeRef BindTypeRef(Aquila.Syntax.Ast.TypeRef tref, bool objectTypeInfoSemantic = false)
         {
@@ -1357,11 +1401,11 @@ namespace Aquila.CodeAnalysis.Semantics
                         // "ARRAY[] .= VALUE" => "ARRAY[] = (string)VALUE"
                         case Operations.AssignPrepend:
                         case Operations.AssignAppend: // .=
-                            value = BindConcatEx(new List<BoundArgument>()
-                            {
-                                BoundArgument.Create(new BoundLiteral(null).WithAccess(BoundAccess.Read)),
-                                BoundArgument.Create(value)
-                            });
+                            // value = BindConcatEx(new List<BoundArgument>()
+                            // {
+                            //     BoundArgument.Create(new BoundLiteral(null).WithAccess(BoundAccess.Read)),
+                            //     BoundArgument.Create(value)
+                            // });
                             break;
 
                         default:
@@ -1698,10 +1742,10 @@ namespace Aquila.CodeAnalysis.Semantics
                         }
                         else
                         {
-                            // Template: "is_null( LValue )"
-                            condition = new BoundGlobalFunctionCall(
-                                NameUtils.SpecialNames.is_null, null,
-                                ImmutableArray.Create(BoundArgument.Create(leftExpr)));
+                            // // Template: "is_null( LValue )"
+                            // condition = new BoundGlobalFunctionCall(
+                            //     NameUtils.SpecialNames.is_null, null,
+                            //     ImmutableArray.Create(BoundArgument.Create(leftExpr)));
                         }
 
                         break;

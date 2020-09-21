@@ -121,8 +121,53 @@
             <Single Name="Value" Type="object" IsUpdatable="true"/>
         </Arguments>
     </Syntax>
-    <Syntax Name="Method" Base="Expression"/>
-    <Syntax Name="CallEx" Base="Expression" OperationKind="None"/>
+    
+    <!-- region Call -->
+    <Syntax IsAbstract="true" Name="CallEx" Base="Expression" OperationKind="Invocation">
+        <Arguments>
+            <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true"/>
+            <Single Name="Name" Type="BoundRoutineName" IsInternal="true"/>
+            <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;"/>
+            <Single Name="TypeArguments" Type="ImmutableArray&lt;IBoundTypeRef&gt;"/>
+            <Single Name="Instance" Type="BoundExpression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="InstanceCallEx" Base="CallEx">
+        <Arguments>
+            <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Name" Type="BoundRoutineName" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;" OnlyArgument="true" PassBase="true"/>
+            <Single Name="TypeArguments" Type="ImmutableArray&lt;IBoundTypeRef&gt;" OnlyArgument="true"
+                    PassBase="true"/>
+            <Single Name="Instance" Type="BoundExpression" OnlyArgument="true" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="StaticCallEx" Base="CallEx">
+        <Arguments>
+            <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Name" Type="BoundRoutineName" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;" OnlyArgument="true" PassBase="true"/>
+            <Single Name="TypeArguments" Type="ImmutableArray&lt;IBoundTypeRef&gt;" OnlyArgument="true"
+                    PassBase="true"/>
+            <Single PassBase="true" PassBaseConst="null"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="NewEx" Base="CallEx">
+        <Arguments>
+            <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Name" Type="BoundRoutineName" OnlyArgument="true" PassBase="true"/>
+            <Single Name="TypeRef" Type="IBoundTypeRef" />
+            <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;" OnlyArgument="true" PassBase="true"/>
+            <Single Name="TypeArguments" Type="ImmutableArray&lt;IBoundTypeRef&gt;" OnlyArgument="true" PassBase="true"/>
+            <Single PassBase="true" PassBaseConst="null"/>
+        </Arguments>
+    </Syntax>
+
+    <!-- endregion -->
+
     <Syntax Name="ThrowEx" Base="Expression" OperationKind="Throw">
         <Arguments>
             <Single Name="Thrown" Type="BoundExpression" IsUpdatable="true"/>
@@ -177,7 +222,7 @@
 
     <Syntax Name="TemporalVariableRef" Base="VariableRef">
         <Arguments>
-            <Single Name="Name" Type="string" IsUpdatable="true" PassBase="true" OnlyArgument="true"/>
+            <Single Name="Name" Type="string" PassBase="true" OnlyArgument="true"/>
         </Arguments>
     </Syntax>
 

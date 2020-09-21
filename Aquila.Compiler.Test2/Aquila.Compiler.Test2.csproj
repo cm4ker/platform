@@ -20,8 +20,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\src\Aquila.CodeAnalysis\Aquila.CodeAnalysis.csproj" />
-      <ProjectReference Include="..\src\Aquila.Compiler.Dnlib\Aquila.Compiler.Dnlib.csproj" />
+      <ProjectReference Include="..\src\Aquila.Syntax\Aquila.Syntax.csproj" />
+      
     </ItemGroup>
 
 </Project>

@@ -1,3 +1,5 @@
+using System;
+using Aquila.Syntax;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Expressions;
 using Aquila.Syntax.Ast.Functions;
@@ -37,8 +39,8 @@ namespace Aquila.Compiler.Test2
             var call = Assert.IsAssignableFrom<CallEx>(result);
             Assert.Equal(3, call.Arguments.Count);
         }
-        
-        
+
+
         [Fact]
         public void MemberAccessTest()
         {
@@ -116,6 +118,15 @@ namespace Aquila.Compiler.Test2
             var result = _v.Visit(parser.entryPoint());
             var expr = Assert.IsAssignableFrom<SourceUnit>(result);
             Assert.Equal(2, expr.Methods.Count);
+        }
+
+        [Fact]
+        public void VarTypeTest()
+        {
+            var parser = Parse("var a = 10;");
+            var result = _v.Visit(parser.statement());
+            var expr = Assert.IsAssignableFrom<VarDecl>(result);
+            Assert.True(expr.VariableType.IsVar);
         }
 
         #region Helpers

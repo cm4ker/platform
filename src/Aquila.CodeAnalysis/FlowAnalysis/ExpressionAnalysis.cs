@@ -139,7 +139,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                 if (x is BoundFieldRef f)
                     return TryGetExpressionChainRoot(f.Instance ??
                                                      (f.ContainingType as BoundIndirectTypeRef)?.TypeExpression);
-                if (x is BoundInstanceFunctionCall m) return TryGetExpressionChainRoot(m.Instance);
+                // if (x is BoundInstanceFunctionCall m) return TryGetExpressionChainRoot(m.Instance);
                 if (x is BoundArrayItemEx a) return TryGetExpressionChainRoot(a.Array);
             }
 
@@ -1725,7 +1725,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             }
         }
 
-        TypeRefMask BindValidRoutineCall(BoundRoutineCall call, MethodSymbol method, ImmutableArray<BoundArgument> args,
+        TypeRefMask BindValidRoutineCall(BoundCallEx call, MethodSymbol method, ImmutableArray<BoundArgument> args,
             bool maybeoverload)
         {
             // analyze TargetMethod with x.Arguments
@@ -1759,8 +1759,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             // process arguments
             if (!BindParams(method.GetExpectedArguments(this.TypeCtx), args) && maybeoverload)
             {
-                call.TargetMethod =
-                    null; // nullify the target method -> call dynamically, arguments cannot be bound at compile time
+                call.UpdateSymbol(null);
             }
 
             //
@@ -1769,14 +1768,14 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         /// <summary>
         /// Bind arguments to target method and resolve resulting <see cref="BoundExpression.TypeRefMask"/>.
-        /// Expecting <see cref="BoundRoutineCall.TargetMethod"/> is resolved.
-        /// If the target method cannot be bound at compile time, <see cref="BoundRoutineCall.TargetMethod"/> is nulled.
+        /// Expecting <see cref="BoundCallEx.TargetMethod"/> is resolved.
+        /// If the target method cannot be bound at compile time, <see cref="BoundCallEx.TargetMethod"/> is nulled.
         /// </summary>
-        void BindRoutineCall(BoundRoutineCall x, bool maybeOverload = false)
+        void BindRoutineCall(BoundCallEx x, bool maybeOverload = false)
         {
-            if (MethodSymbolExtensions.IsValidMethod(x.TargetMethod))
+            if (MethodSymbolExtensions.IsValidMethod(x.MethodSymbol))
             {
-                x.TypeRefMask = BindValidRoutineCall(x, x.TargetMethod, x.ArgumentsInSourceOrder, maybeOverload);
+                x.TypeRefMask = BindValidRoutineCall(x, x.MethodSymbol, x.ArgumentsInSourceOrder, maybeOverload);
             }
             else if (x.TargetMethod is MissingMethodSymbol || x.TargetMethod == null)
             {
@@ -2076,7 +2075,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         // }
 
         // helper
-        MethodSymbol[] Construct(MethodSymbol[] methods, BoundRoutineCall bound)
+        MethodSymbol[] Construct(MethodSymbol[] methods, BoundCallEx bound)
         {
             if (bound.TypeArguments.IsDefaultOrEmpty)
             {

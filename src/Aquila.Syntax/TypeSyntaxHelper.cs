@@ -14,6 +14,9 @@ namespace Aquila.Syntax
                 case "string": return new PredefinedTypeRef(info, SyntaxKind.StringKeyword);
                 case "double": return new PredefinedTypeRef(info, SyntaxKind.DoubleKeyword);
                 // case "void": return new PredefinedTypeRef(info, SyntaxKind.VoidKeyword);
+
+                case "var": return new NamedTypeRef(info, SyntaxKind.VarKeyword, "var");
+
                 default: return new NamedTypeRef(info, SyntaxKind.Type, typeName);
             }
         }

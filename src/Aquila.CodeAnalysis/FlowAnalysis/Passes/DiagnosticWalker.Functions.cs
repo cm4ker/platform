@@ -70,32 +70,32 @@
             }
         }
 
-        void CheckGlobalFunctionCall(BoundGlobalFunctionCall call)
-        {
-            // TODO: regular Roslyn analyzers as part of the referenced assembly
-
-            if (AnalysisFacts.HasSimpleName(call, out var name) && call.ArgumentsInSourceOrder.Length != 0)
-            {
-                if (name.Equals("printf", StringComparison.OrdinalIgnoreCase) ||
-                    name.Equals("sprintf", StringComparison.OrdinalIgnoreCase))
-                {
-                    printfCheck(name, call.ArgumentsInSourceOrder);
-                }
-                else if (name.StartsWith("preg_", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (name.Equals("preg_filter", StringComparison.OrdinalIgnoreCase) ||
-                        name.Equals("preg_grep", StringComparison.OrdinalIgnoreCase) ||
-                        name.Equals("preg_match_all", StringComparison.OrdinalIgnoreCase) ||
-                        name.Equals("preg_match", StringComparison.OrdinalIgnoreCase) ||
-                        name.Equals("preg_replace_callback", StringComparison.OrdinalIgnoreCase) ||
-                        name.Equals("preg_replace", StringComparison.OrdinalIgnoreCase) ||
-                        name.Equals("preg_split", StringComparison.OrdinalIgnoreCase))
-                    {
-                        // NOTE: `$pattern` is always the 1st argument
-                        pcrePatternCheck(name, call.ArgumentsInSourceOrder[0].Value);
-                    }
-                }
-            }
-        }
+        // void CheckGlobalFunctionCall(BoundGlobalFunctionCall call)
+        // {
+        //     // TODO: regular Roslyn analyzers as part of the referenced assembly
+        //
+        //     if (AnalysisFacts.HasSimpleName(call, out var name) && call.ArgumentsInSourceOrder.Length != 0)
+        //     {
+        //         if (name.Equals("printf", StringComparison.OrdinalIgnoreCase) ||
+        //             name.Equals("sprintf", StringComparison.OrdinalIgnoreCase))
+        //         {
+        //             printfCheck(name, call.ArgumentsInSourceOrder);
+        //         }
+        //         else if (name.StartsWith("preg_", StringComparison.OrdinalIgnoreCase))
+        //         {
+        //             if (name.Equals("preg_filter", StringComparison.OrdinalIgnoreCase) ||
+        //                 name.Equals("preg_grep", StringComparison.OrdinalIgnoreCase) ||
+        //                 name.Equals("preg_match_all", StringComparison.OrdinalIgnoreCase) ||
+        //                 name.Equals("preg_match", StringComparison.OrdinalIgnoreCase) ||
+        //                 name.Equals("preg_replace_callback", StringComparison.OrdinalIgnoreCase) ||
+        //                 name.Equals("preg_replace", StringComparison.OrdinalIgnoreCase) ||
+        //                 name.Equals("preg_split", StringComparison.OrdinalIgnoreCase))
+        //             {
+        //                 // NOTE: `$pattern` is always the 1st argument
+        //                 pcrePatternCheck(name, call.ArgumentsInSourceOrder[0].Value);
+        //             }
+        //         }
+        //     }
+        // }
     }
 }

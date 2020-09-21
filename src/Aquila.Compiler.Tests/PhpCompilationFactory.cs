@@ -88,7 +88,7 @@ using System.Threading;
         {
             return AquilaCompilation.Create("project",
                 references: MetadataReferences().Select(CreateMetadataReference),
-                syntaxTrees: Array.Empty<PhpSyntaxTree>(),
+                syntaxTrees: Array.Empty<AquilaSyntaxTree>(),
                 options: new PhpCompilationOptions(
                     outputKind: OutputKind.DynamicallyLinkedLibrary,
                     baseDirectory: Directory.GetCurrentDirectory(),
