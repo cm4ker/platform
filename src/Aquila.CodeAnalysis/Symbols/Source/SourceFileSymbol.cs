@@ -235,7 +235,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override string Name => PathUtilities.GetFileName(_syntaxTree.Source.FilePath, true).Replace('.', '_');
 
-        public override string NamespaceName => WellKnownPchpNames.ScriptsRootNamespace + DirectoryRelativePath;
+        public override string NamespaceName => WellKnownAquilaNames.ScriptsRootNamespace + DirectoryRelativePath;
 
         public override ImmutableArray<AttributeData> GetAttributes()
         {
@@ -423,7 +423,7 @@ namespace Aquila.CodeAnalysis.Symbols
         protected override bool IsAutoloaded => false; // phar entries cannot be autoloaded
 
         // <Phar>pharentrypath
-        public override string NamespaceName => WellKnownPchpNames.PharEntryRootNamespace + DirectoryRelativePath;
+        public override string NamespaceName => WellKnownAquilaNames.PharEntryRootNamespace + DirectoryRelativePath;
 
         public string PharName => CreateRelativeFilePath(SyntaxTree.PharStubFile.FilePath);
 

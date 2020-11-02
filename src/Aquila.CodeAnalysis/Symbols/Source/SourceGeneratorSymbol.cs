@@ -11,7 +11,7 @@ namespace Aquila.CodeAnalysis.Symbols
     internal sealed partial class SourceGeneratorSymbol : SynthesizedMethodSymbol
     {
         public SourceGeneratorSymbol(SourceRoutineSymbol originalRoutine)
-            : base(originalRoutine.ContainingType, string.Format(WellKnownPchpNames.GeneratorStateMachineNameFormatString, originalRoutine.RoutineName),
+            : base(originalRoutine.ContainingType, string.Format(WellKnownAquilaNames.GeneratorStateMachineNameFormatString, originalRoutine.RoutineName),
                   isstatic: true, isvirtual: false,
                   returnType: originalRoutine.DeclaringCompilation.CoreTypes.Void, ps: null)
         {

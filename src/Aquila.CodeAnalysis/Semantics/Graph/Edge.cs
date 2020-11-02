@@ -2,11 +2,11 @@
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using Aquila.Shared.Tree;
 using Aquila.Syntax;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Semantics.Graph;
+using Aquila.Syntax.Tree;
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 
 namespace Aquila.CodeAnalysis.Semantics.Graph

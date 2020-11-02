@@ -1,0 +1,33 @@
+﻿<Project Sdk="Aquila.NET.Sdk/1.0.0">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <DebuggerAttach>true</DebuggerAttach>
+    <DbConnection>fs://file.sqlite</DbConnection>
+  </PropertyGroup>
+
+  <!-- If you need add custom value then you can describe it default values as below -->
+  <!-- <ItemDefinitionGroup>
+    <Extension>
+      <A>ValueA</A>
+      <B>ValueB</B>
+    </Extension>
+  </ItemDefinitionGroup> -->
+
+  <ItemGroup>
+    <ExtensionReference Include="Entity" Version="1.0.0.0" />
+    <ExtensionReference Include="Documents" Version="1.0.0.0"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Metadata Include="Documents\Doc1.aqmd" Extension="Documents" />
+    <Metadata Include="Documents\Doc2.aqmd" Extension="Documents" />
+    <Metadata Include="Documents\Doc3.aqmd" Extension="Documents" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Metadata Update="Documents\Doc1.aqmd">
+      <Modules>Documents\Module1.aq;Documents\Module2.aq</Modules>
+    </Metadata>
+  </ItemGroup>
+</Project>

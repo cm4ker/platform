@@ -10,7 +10,9 @@ namespace Aquila.Syntax.Parser
             RecognitionException e)
         {
             Console.WriteLine($"Error at line {line} at char {charPositionInLine}: {msg}");
-
+            
+            
+            
             base.SyntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e);
         }
     }

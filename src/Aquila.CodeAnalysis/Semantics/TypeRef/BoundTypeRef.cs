@@ -352,6 +352,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
                                                              lt._returnType == this._returnType);
 
         public override string ToString() => NameUtils.SpecialNames.Closure.ToString();
+        public override BoundKind BoundKind { get; }
     }
 
     #endregion
@@ -693,6 +694,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
 
         // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
         //     visitor.VisitIndirectTypeRef(this);
+        public override BoundKind BoundKind { get; }
     }
 
     #endregion
@@ -773,6 +775,8 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
                 return new BoundMultipleTypeRef(trefs).WithSyntax(AquilaSyntax);
             }
         }
+
+        public override BoundKind BoundKind { get; }
     }
 
     #endregion
@@ -907,6 +911,8 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
 
         public override IBoundTypeRef Transfer(TypeRefContext source, TypeRefContext target) =>
             throw ExceptionUtilities.Unreachable;
+
+        public override BoundKind BoundKind { get; }
     }
 
     #endregion

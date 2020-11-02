@@ -11,6 +11,50 @@ using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
 
+public enum BoundKind
+{
+    EmptyStmt,
+    Block,
+    DeclareStmt,
+    ExpressionStmt,
+    MethodDeclStmt,
+    GlobalConstDeclStmt,
+    ReturnStmt,
+    StaticVarStmt,
+    YieldStmt,
+    ArrayEx,
+    AssignEx,
+    CompoundAssignEx,
+    IncDecEx,
+    UnaryEx,
+    BinaryEx,
+    ConditionalEx,
+    ConversionEx,
+    Literal,
+    InstanceCallEx,
+    StaticCallEx,
+    NewEx,
+    ThrowEx,
+    ArrayItemEx,
+    ArrayItemOrdEx,
+    FieldRef,
+    ListEx,
+    VariableRef,
+    TemporalVariableRef,
+    Argument,
+    RoutineName,
+    ArrayTypeRef,
+    ClassTypeRef,
+    GenericClassTypeRef,
+    PrimitiveTypeRef,
+    TypeRefFromSymbol,
+    IndirectLocal,
+    Local,
+    Parameter,
+    ThisParameter,
+    VariableName,
+}
+
 namespace Aquila.CodeAnalysis.Semantics
 {
     abstract partial class BoundStatement : BoundOperation
@@ -63,6 +107,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.Empty;
+        public override BoundKind BoundKind => BoundKind.EmptyStmt;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -122,6 +167,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         }
 
         public override OperationKind Kind => OperationKind.Block;
+        public override BoundKind BoundKind => BoundKind.Block;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -161,6 +207,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         partial void OnCreateImpl();
         public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.DeclareStmt;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -203,6 +250,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.ExpressionStatement;
+        public override BoundKind BoundKind => BoundKind.ExpressionStmt;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -252,6 +300,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.LocalFunction;
+        public override BoundKind BoundKind => BoundKind.MethodDeclStmt;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -311,6 +360,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.VariableDeclaration;
+        public override BoundKind BoundKind => BoundKind.GlobalConstDeclStmt;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -360,6 +410,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.Return;
+        public override BoundKind BoundKind => BoundKind.ReturnStmt;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -398,6 +449,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         partial void OnCreateImpl();
+        public override BoundKind BoundKind => BoundKind.StaticVarStmt;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -430,6 +482,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         partial void OnCreateImpl();
         public override OperationKind Kind => OperationKind.YieldReturn;
+        public override BoundKind BoundKind => BoundKind.YieldStmt;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -503,6 +556,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.ArrayCreation;
+        public override BoundKind BoundKind => BoundKind.ArrayEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -561,6 +615,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
+        public override BoundKind BoundKind => BoundKind.AssignEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -610,6 +665,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.CompoundAssignment;
+        public override BoundKind BoundKind => BoundKind.CompoundAssignEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -668,6 +724,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
+        public override BoundKind BoundKind => BoundKind.IncDecEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -727,6 +784,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.UnaryOperator;
+        public override BoundKind BoundKind => BoundKind.UnaryEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -796,6 +854,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.BinaryOperator;
+        public override BoundKind BoundKind => BoundKind.BinaryEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -864,6 +923,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
+        public override BoundKind BoundKind => BoundKind.ConditionalEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -922,6 +982,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
+        public override BoundKind BoundKind => BoundKind.ConversionEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -970,6 +1031,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
+        public override BoundKind BoundKind => BoundKind.Literal;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1090,6 +1152,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         partial void OnCreateImpl(MethodSymbol methodSymbol, BoundRoutineName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, BoundExpression instance);
+        public override BoundKind BoundKind => BoundKind.InstanceCallEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1121,6 +1184,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         partial void OnCreateImpl(MethodSymbol methodSymbol, BoundRoutineName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments);
+        public override BoundKind BoundKind => BoundKind.StaticCallEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1162,6 +1226,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
+        public override BoundKind BoundKind => BoundKind.NewEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1204,6 +1269,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.Throw;
+        public override BoundKind BoundKind => BoundKind.ThrowEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1303,6 +1369,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
+        public override BoundKind BoundKind => BoundKind.ArrayItemEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1334,6 +1401,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         partial void OnCreateImpl(AquilaCompilation declaringCompilation, BoundExpression array, BoundExpression index);
+        public override BoundKind BoundKind => BoundKind.ArrayItemOrdEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1398,6 +1466,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.FieldReference;
+        public override BoundKind BoundKind => BoundKind.FieldRef;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1440,6 +1509,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.ListEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1489,6 +1559,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.LocalReference;
+        public override BoundKind BoundKind => BoundKind.VariableRef;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1527,6 +1598,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         partial void OnCreateImpl(string name);
+        public override BoundKind BoundKind => BoundKind.TemporalVariableRef;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1578,6 +1650,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
+        public override BoundKind BoundKind => BoundKind.Argument;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1636,6 +1709,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
+        public override BoundKind BoundKind => BoundKind.RoutineName;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1715,6 +1789,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             }
         }
 
+        public override BoundKind BoundKind => BoundKind.ArrayTypeRef;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1776,6 +1851,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             }
         }
 
+        public override BoundKind BoundKind => BoundKind.ClassTypeRef;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1807,6 +1883,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         }
 
         partial void OnCreateImpl();
+        public override BoundKind BoundKind => BoundKind.GenericClassTypeRef;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1848,6 +1925,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             }
         }
 
+        public override BoundKind BoundKind => BoundKind.PrimitiveTypeRef;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1889,6 +1967,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             }
         }
 
+        public override BoundKind BoundKind => BoundKind.TypeRefFromSymbol;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1971,6 +2050,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
+        public override BoundKind BoundKind => BoundKind.IndirectLocal;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -2013,6 +2093,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.VariableDeclaration;
+        public override BoundKind BoundKind => BoundKind.Local;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -2065,6 +2146,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.ParameterInitializer;
+        public override BoundKind BoundKind => BoundKind.Parameter;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -2107,6 +2189,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.ThisParameter;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -2159,6 +2242,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.VariableName;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)

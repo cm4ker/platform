@@ -247,8 +247,8 @@ namespace Aquila.CodeAnalysis.Syntax
         public override FileLinePositionSpan GetLineSpan(TextSpan span,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return new FileLinePositionSpan(_source.FilePath, new LinePosition(0,0), new LinePosition(0,0)); 
-                //_source.LinePosition(span.Start), _source.LinePosition(span.End));
+            return new FileLinePositionSpan(_source.FilePath, new LinePosition(0, 0), new LinePosition(0, 0));
+            //_source.LinePosition(span.Start), _source.LinePosition(span.End));
         }
 
         public override Location GetLocation(TextSpan span)

@@ -57,7 +57,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         public override bool IsSerializable => false;
 
-        public override string Name => WellKnownPchpNames.DefaultScriptClassName;
+        public override string Name => WellKnownAquilaNames.DefaultScriptClassName;
 
         public override string NamespaceName => string.Empty;
 

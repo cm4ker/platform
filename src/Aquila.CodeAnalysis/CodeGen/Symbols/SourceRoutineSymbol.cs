@@ -450,7 +450,7 @@ namespace Aquila.CodeAnalysis.Symbols
             {
                 // PhpValue <Main>`0(parameters)
                 var wrapper = new SynthesizedMethodSymbol(
-                    this.ContainingFile, WellKnownPchpNames.GlobalRoutineName + "`0", true, false,
+                    this.ContainingFile, WellKnownAquilaNames.GlobalRoutineName + "`0", true, false,
                     null, Accessibility.Public);
 
                 wrapper.SetParameters(this.Parameters.Select(p =>

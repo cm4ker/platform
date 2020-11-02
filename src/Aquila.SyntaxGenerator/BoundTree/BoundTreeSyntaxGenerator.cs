@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -24,6 +25,8 @@ namespace Aquila.SyntaxGenerator.BoundTree
         private static string AquilaVisitorClassName = "AquilaOperationVisitor";
         private static string NameBase = "Operation";
         private static string Suffix = "Bound";
+        private static string EnumName = Suffix + "Kind";
+
 
         private static ClassDeclarationSyntax astTreeBaseCls = SyntaxFactory.ClassDeclaration($"{VisitorClassName}<T>")
             .AddModifiers(publicToken)
@@ -65,6 +68,8 @@ namespace Aquila.SyntaxGenerator.BoundTree
                 sb.AppendLine("using Microsoft.CodeAnalysis;");
                 sb.AppendLine("using Microsoft.CodeAnalysis.Operations;");
 
+                GenerateEnum(sb, root.Syntaxes);
+
                 foreach (var syntax in root.Syntaxes)
                 {
                     sb.AppendLine($"namespace {ns_definitions + (syntax.NS != null ? "." : "") + syntax.NS} {{");
@@ -88,6 +93,19 @@ namespace Aquila.SyntaxGenerator.BoundTree
                     Console.WriteLine();
                 }
             }
+        }
+
+        private static void GenerateEnum(StringBuilder sb, List<CompilerSyntax> syntaxes)
+        {
+            sb.AppendLine($"public enum {EnumName} {{");
+
+            foreach (var syntax in syntaxes)
+            {
+                if (!syntax.IsAbstract)
+                    sb.Append($"{syntax.Name},");
+            }
+
+            sb.AppendLine("}");
         }
 
         private static void GenerateVisitor(StringBuilder sb, List<CompilerSyntax> syntaxes)
@@ -203,7 +221,6 @@ namespace Aquila.SyntaxGenerator.BoundTree
 
             sb.AppendLine("}");
         }
-
 
         private static void GenerateClass(StringBuilder sb, CompilerSyntax syntax, List<CompilerSyntax> baseList)
         {
@@ -332,6 +349,9 @@ namespace Aquila.SyntaxGenerator.BoundTree
 
             if (!string.IsNullOrEmpty(syntax.OperationKind))
                 sb.AppendLine($"public override OperationKind Kind => OperationKind.{syntax.OperationKind};");
+
+            if (!syntax.IsAbstract)
+                sb.AppendLine($"public override {EnumName} BoundKind => {EnumName}.{syntax.Name};");
 
             sb.AppendLine(
                 "partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);");

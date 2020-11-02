@@ -8,7 +8,6 @@ using System.Threading;
 using Aquila.CodeAnalysis.Symbols.Php;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
-using Aquila.Shared.Tree;
 using Aquila.Syntax;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Functions;
@@ -17,6 +16,7 @@ using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Semantics.Graph;
+using Aquila.Syntax.Tree;
 
 namespace Aquila.CodeAnalysis.Symbols
 {
@@ -53,7 +53,7 @@ namespace Aquila.CodeAnalysis.Symbols
                     // build control flow graph
                     var cfg = new ControlFlowGraph(
                         this.Statements,
-                        SemanticsBinder.Create(DeclaringCompilation, ContainingFile.SyntaxTree, LocalsTable));
+                        Binder1.Create(DeclaringCompilation, ContainingFile.SyntaxTree, LocalsTable));
                     cfg.Start.FlowState = state;
 
                     //

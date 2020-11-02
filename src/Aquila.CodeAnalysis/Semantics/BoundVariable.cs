@@ -152,6 +152,7 @@ namespace Aquila.CodeAnalysis.Semantics
         public override string Name => _name.Value;
 
         public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind { get; }
 
         internal override Aquila.CodeAnalysis.Symbols.Symbol Symbol
         {

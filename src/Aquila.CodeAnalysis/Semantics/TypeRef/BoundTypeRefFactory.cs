@@ -125,7 +125,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>Create type reference refering to a variable containing <c>PhpTypeInfo</c> value.</summary>
         public static BoundTypeRef CreateFromPlace(IPlace place) => new BoundTypeRefFromPlace(place);
 
-        public BoundTypeRef CreateFromTypeRef(Aquila.Syntax.Ast.TypeRef tref, SemanticsBinder binder = null,
+        public BoundTypeRef CreateFromTypeRef(Aquila.Syntax.Ast.TypeRef tref, Binder1 binder = null,
             object self = null, bool objectTypeInfoSemantic = false, int arity = -1)
         {
             if (tref is PredefinedTypeRef pt)

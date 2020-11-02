@@ -2,6 +2,7 @@ namespace Aquila.Syntax
 {
     public enum SyntaxKind
     {
+        None,
         BadToken,
 
         // Trivia

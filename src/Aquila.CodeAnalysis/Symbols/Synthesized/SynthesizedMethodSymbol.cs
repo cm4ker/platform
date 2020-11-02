@@ -8,14 +8,14 @@ using Cci = Microsoft.Cci;
 
 namespace Aquila.CodeAnalysis.Symbols.Synthesized
 {
-    class SynthesizedMethodSymbol : MethodSymbol
+    partial class SynthesizedMethodSymbol : MethodSymbol
     {
         readonly Cci.ITypeDefinition _type;
         readonly ModuleSymbol _module;
-        readonly bool _static, _virtual, _final, _abstract;
-        readonly string _name;
+        bool _static, _virtual, _final, _abstract;
+        string _name;
         TypeSymbol _return;
-        readonly Accessibility _accessibility;
+        Accessibility _accessibility;
         protected ImmutableArray<ParameterSymbol> _parameters;
 
         /// <summary>
@@ -41,7 +41,9 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         public override IMethodSymbol OverriddenMethod => ExplicitOverride;
 
-        public SynthesizedMethodSymbol(Cci.ITypeDefinition containingType, ModuleSymbol module, string name, bool isstatic, bool isvirtual, TypeSymbol returnType, Accessibility accessibility = Accessibility.Private, bool isfinal = true, bool isabstract = false)
+        public SynthesizedMethodSymbol(Cci.ITypeDefinition containingType, ModuleSymbol module, string name,
+            bool isstatic, bool isvirtual, TypeSymbol returnType, Accessibility accessibility = Accessibility.Private,
+            bool isfinal = true, bool isabstract = false)
         {
             _type = containingType ?? throw new ArgumentNullException(nameof(containingType));
             _module = module ?? throw new ArgumentNullException(nameof(module));
@@ -54,8 +56,18 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             _final = isfinal && isvirtual && !isstatic;
         }
 
-        public SynthesizedMethodSymbol(TypeSymbol containingType, string name, bool isstatic, bool isvirtual, TypeSymbol returnType, Accessibility accessibility = Accessibility.Private, bool isfinal = true, bool isabstract = false, bool phphidden = false, params ParameterSymbol[] ps)
-            : this(containingType as Cci.ITypeDefinition, (ModuleSymbol)containingType.ContainingModule, name, isstatic, isvirtual, returnType, accessibility, isfinal, isabstract)
+        public SynthesizedMethodSymbol(TypeSymbol containingType)
+        {
+            _type = containingType as Cci.ITypeDefinition ?? throw new ArgumentNullException(nameof(containingType));
+            _module = (ModuleSymbol) containingType.ContainingModule ??
+                      throw new NullReferenceException("Module is null");
+        }
+
+        public SynthesizedMethodSymbol(TypeSymbol containingType, string name, bool isstatic, bool isvirtual,
+            TypeSymbol returnType, Accessibility accessibility = Accessibility.Private, bool isfinal = true,
+            bool isabstract = false, bool phphidden = false, params ParameterSymbol[] ps)
+            : this(containingType as Cci.ITypeDefinition, (ModuleSymbol) containingType.ContainingModule, name,
+                isstatic, isvirtual, returnType, accessibility, isfinal, isabstract)
         {
             IsPhpHiddenInternal = phphidden;
             SetParameters(ps);
@@ -67,6 +79,41 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         {
             Debug.Assert(!ps.IsDefault);
             _parameters = ps;
+        }
+
+        internal void SetStatic(bool value)
+        {
+            _static = value;
+        }
+
+        internal void SetVirtual(bool value)
+        {
+            _virtual = value;
+        }
+
+        internal void SetAbstract(bool value)
+        {
+            _abstract = value;
+        }
+
+        internal void SetIsFinal(bool value)
+        {
+            _final = value;
+        }
+
+        internal void SetReturn(TypeSymbol type)
+        {
+            _return = type;
+        }
+
+        internal void SetAccessibility(Accessibility value)
+        {
+            _accessibility = value;
+        }
+
+        internal void SetName(string value)
+        {
+            _name = value;
         }
 
         public override ImmutableArray<AttributeData> GetAttributes()
@@ -85,16 +132,19 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             if (IsEditorBrowsableHidden)
             {
                 builder.Add(new SynthesizedAttributeData(
-                    (MethodSymbol)DeclaringCompilation.GetWellKnownTypeMember(WellKnownMember.System_ComponentModel_EditorBrowsableAttribute__ctor),
+                    (MethodSymbol) DeclaringCompilation.GetWellKnownTypeMember(WellKnownMember
+                        .System_ComponentModel_EditorBrowsableAttribute__ctor),
                     ImmutableArray.Create(
                         new TypedConstant(
-                            DeclaringCompilation.GetWellKnownType(WellKnownType.System_ComponentModel_EditorBrowsableState),
+                            DeclaringCompilation.GetWellKnownType(WellKnownType
+                                .System_ComponentModel_EditorBrowsableState),
                             TypedConstantKind.Enum,
                             System.ComponentModel.EditorBrowsableState.Never)),
                     ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty));
             }
 
-            if (this is SynthesizedPhpCtorSymbol sctor && sctor.IsInitFieldsOnly) // we do it here to avoid allocating new ImmutableArray in derived class
+            if (this is SynthesizedPhpCtorSymbol sctor && sctor.IsInitFieldsOnly
+            ) // we do it here to avoid allocating new ImmutableArray in derived class
             {
                 // [PhpFieldsOnlyCtorAttribute]
                 builder.Add(new SynthesizedAttributeData(
@@ -119,17 +169,15 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
         }
 
         public override bool IsAbstract => _abstract;
 
         public override bool IsExtern => false;
 
-        public override bool IsOverride => OverriddenMethod != null && (OverriddenMethod.ContainingType.TypeKind != TypeKind.Interface);
+        public override bool IsOverride => OverriddenMethod != null &&
+                                           (OverriddenMethod.ContainingType.TypeKind != TypeKind.Interface);
 
         public override bool IsSealed => _final;
 
@@ -140,9 +188,12 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         public override bool IsImplicitlyDeclared => true;
 
         public override ImmutableArray<MethodSymbol> ExplicitInterfaceImplementations =>
-            IsExplicitInterfaceImplementation ? ImmutableArray.Create(ExplicitOverride) : ImmutableArray<MethodSymbol>.Empty;
+            IsExplicitInterfaceImplementation
+                ? ImmutableArray.Create(ExplicitOverride)
+                : ImmutableArray<MethodSymbol>.Empty;
 
-        internal override bool IsExplicitInterfaceImplementation => ExplicitOverride != null && ExplicitOverride.ContainingType.IsInterface;
+        internal override bool IsExplicitInterfaceImplementation =>
+            ExplicitOverride != null && ExplicitOverride.ContainingType.IsInterface;
 
         public override MethodKind MethodKind
         {
@@ -164,7 +215,8 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         public override RefKind RefKind => RefKind.None;
 
-        public override TypeSymbol ReturnType => _return ?? ForwardedCall?.ReturnType ?? throw new InvalidOperationException();
+        public override TypeSymbol ReturnType =>
+            _return ?? ForwardedCall?.ReturnType ?? throw new InvalidOperationException();
 
         internal override ObsoleteAttributeData ObsoleteAttributeData => null;
 
@@ -174,7 +226,8 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         /// virtual = IsVirtual AND NewSlot 
         /// override = IsVirtual AND !NewSlot
         /// </summary>
-        internal override bool IsMetadataNewSlot(bool ignoreInterfaceImplementationChanges = false) => IsVirtual && !IsOverride;
+        internal override bool IsMetadataNewSlot(bool ignoreInterfaceImplementationChanges = false) =>
+            IsVirtual && !IsOverride;
 
         internal override bool IsMetadataVirtual(bool ignoreInterfaceImplementationChanges = false) => IsVirtual;
     }

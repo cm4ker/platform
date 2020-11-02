@@ -884,6 +884,8 @@ namespace Aquila.CodeAnalysis.Semantics
     /// </summary>
     public partial class BoundLambda : BoundExpression, IAnonymousFunctionOperation
     {
+        
+        
         /// <summary>
         /// Declared use variables.
         /// </summary>
@@ -924,6 +926,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.AnonymousFunction;
+        public override BoundKind BoundKind { get; }
 
         // /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
         // /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
@@ -943,6 +946,7 @@ namespace Aquila.CodeAnalysis.Semantics
     public partial class BoundEvalEx : BoundExpression
     {
         public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind { get; }
 
         public BoundExpression CodeExpression { get; internal set; }
 
@@ -1026,6 +1030,7 @@ namespace Aquila.CodeAnalysis.Semantics
         public override bool IsDeeplyCopied => false; // already copied
 
         public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind { get; }
 
         public override void Accept(OperationVisitor visitor) => visitor.DefaultVisit(this);
 
@@ -1655,6 +1660,7 @@ namespace Aquila.CodeAnalysis.Semantics
             readonly BoundArrayEx _array;
 
             public override OperationKind Kind => OperationKind.ArrayInitializer;
+            public override BoundKind BoundKind { get; }
 
             public override bool IsDeeplyCopied => false;
 
@@ -1837,6 +1843,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.IsType;
+        public override BoundKind BoundKind { get; }
 
         public override void Accept(OperationVisitor visitor)
             => visitor.VisitIsType(this);
@@ -1859,6 +1866,7 @@ namespace Aquila.CodeAnalysis.Semantics
     public partial class BoundGlobalConst : BoundExpression
     {
         public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind { get; }
 
         public override bool IsDeeplyCopied => false;
 
@@ -2006,6 +2014,7 @@ namespace Aquila.CodeAnalysis.Semantics
     public partial class BoundIsEmptyEx : BoundExpression
     {
         public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind { get; }
 
         /// <summary>
         /// Reference to be checked if it is set.
@@ -2045,6 +2054,7 @@ namespace Aquila.CodeAnalysis.Semantics
     public partial class BoundIsSetEx : BoundExpression
     {
         public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind { get; }
 
         public override bool IsDeeplyCopied => false;
 
@@ -2088,6 +2098,7 @@ namespace Aquila.CodeAnalysis.Semantics
     public partial class BoundOffsetExists : BoundExpression
     {
         public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind { get; }
 
         public override bool IsDeeplyCopied => false;
 
@@ -2138,6 +2149,7 @@ namespace Aquila.CodeAnalysis.Semantics
     public partial class BoundTryGetItem : BoundExpression
     {
         public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind { get; }
 
         public BoundExpression Array { get; }
         public BoundExpression Index { get; }
@@ -2190,6 +2202,7 @@ namespace Aquila.CodeAnalysis.Semantics
     public partial class BoundYieldEx : BoundExpression
     {
         public override OperationKind Kind => OperationKind.FieldReference;
+        public override BoundKind BoundKind { get; }
 
         // /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
         // /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
@@ -2212,6 +2225,7 @@ namespace Aquila.CodeAnalysis.Semantics
     public partial class BoundYieldFromEx : BoundExpression
     {
         public override OperationKind Kind => OperationKind.FieldReference;
+        public override BoundKind BoundKind { get; }
 
         public BoundExpression Operand { get; internal set; }
 

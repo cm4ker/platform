@@ -138,6 +138,12 @@
         </Arguments>
     </Syntax>
 
+    <Syntax Name="MissingEx" Base="Expression" NS="Expressions">
+        <Arguments>
+            <Single Name="Message" Type="string" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
     <Syntax Name="BinaryEx" Base="Expression" NS="Expressions">
         <Arguments>
             <Single Name="Right" Type="Expression"/>

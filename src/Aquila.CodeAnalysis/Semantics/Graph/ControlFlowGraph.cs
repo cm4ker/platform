@@ -140,7 +140,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #region Construction
 
-        internal ControlFlowGraph(IList<Statement>  statements, SemanticsBinder  binder)
+        internal ControlFlowGraph(IList<Statement>  statements, Binder1  binder)
             : this(BuilderVisitor.Build(statements, binder), binder.Yields)
         {
         }

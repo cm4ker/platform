@@ -1,8 +1,26 @@
+using System;
 using System.IO;
 using Antlr4.Runtime;
 
 namespace Aquila.Syntax.Parser
 {
+    public class MyErrListener : BaseErrorListener, IAntlrErrorListener<int>
+    {
+        public void SyntaxError(IRecognizer recognizer, int offendingSymbol, int line, int charPositionInLine,
+            string msg,
+            RecognitionException e)
+        {
+            throw new ArgumentException("Invalid Expression: {0}", msg, e);
+        }
+
+        public override void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line,
+            int charPositionInLine, string msg,
+            RecognitionException e)
+        {
+            throw new ArgumentException("Invalid Expression: {0}", msg, e);
+        }
+    }
+
     public static class ParserHelper
     {
         public static LangElement ParseSyntax(string text)
@@ -17,7 +35,7 @@ namespace Aquila.Syntax.Parser
         private static ZSharpParser Parse(ITokenStream tokenStream)
         {
             ZSharpParser parser = new ZSharpParser(tokenStream);
-
+            parser.ErrorHandler = new DefaultErrorStrategy();
             parser.AddErrorListener(new Listener());
 
             return parser;
@@ -37,7 +55,10 @@ namespace Aquila.Syntax.Parser
         private static ITokenStream CreateInputStream(TextReader reader)
         {
             Lexer lexer = new ZSharpLexer(new AntlrInputStream(reader));
-            return new CommonTokenStream(lexer);
+
+            var ts = new CommonTokenStream(lexer);
+
+            return ts;
         }
 
         #endregion

@@ -8,12 +8,12 @@ using System.Net.Mime;
 using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Syntax;
-using Aquila.Shared.Tree;
 using Aquila.Syntax;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Functions;
 using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
+using Aquila.Syntax.Tree;
 
 namespace Aquila.CodeAnalysis
 {

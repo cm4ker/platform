@@ -252,7 +252,7 @@
     <value>Assignment made to same variable; did you mean to assign something else?</value>
   </data>
   <data name="ERR_BadAssemblyName" xml:space="preserve">
-    <value>Invalid assembly name: {0}</value>
+    <value>Invalid assembly name: {0} </value>
   </data>
   <data name="ERR_BadDocumentationMode" xml:space="preserve">
     <value>Provided documentation mode is unsupported or invalid: '{0}'.</value>

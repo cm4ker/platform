@@ -145,7 +145,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             {
                 if (this.DeclaredAccessibility == Accessibility.Public && this.IsStatic)
                 {
-                    var method = GetMembers(WellKnownPchpNames.GlobalRoutineName).OfType<IMethodSymbol>().SingleOrDefault();
+                    var method = GetMembers(WellKnownAquilaNames.GlobalRoutineName).OfType<IMethodSymbol>().SingleOrDefault();
                     Debug.Assert(method == null || (method.Parameters.Length == 4 && method.IsStatic && method.DeclaredAccessibility == Accessibility.Public));
 
                     return method;

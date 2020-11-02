@@ -16,13 +16,13 @@ namespace Aquila.CodeAnalysis.Symbols.Php
             //if (t is Source.SourceTypeSymbol srct) return (NamedTypeSymbol)srct.StaticsContainer;
 
             // a nested class `_statics`:
-            return (NamedTypeSymbol)t.GetTypeMembers(WellKnownPchpNames.StaticsHolderClassName).Where(IsStaticsContainer).SingleOrDefault();
+            return (NamedTypeSymbol)t.GetTypeMembers(WellKnownAquilaNames.StaticsHolderClassName).Where(IsStaticsContainer).SingleOrDefault();
         }
 
         public static bool IsStaticsContainer(this INamedTypeSymbol t)
         {
             return
-                t.Name == WellKnownPchpNames.StaticsHolderClassName &&
+                t.Name == WellKnownAquilaNames.StaticsHolderClassName &&
                 t.DeclaredAccessibility == Accessibility.Public &&
                 t.Arity == 0 &&
                 !t.IsStatic &&

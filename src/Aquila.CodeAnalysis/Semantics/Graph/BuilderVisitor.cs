@@ -20,7 +20,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
     /// </summary>
     internal sealed class BuilderVisitor : AstWalker
     {
-        readonly SemanticsBinder
+        readonly Binder1
             _binder;
 
         private BoundBlock
@@ -183,7 +183,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #region Construction
 
-        private BuilderVisitor(IList<Statement> statements, SemanticsBinder binder)
+        private BuilderVisitor(IList<Statement> statements, Binder1 binder)
         {
             Contract.ThrowIfNull(statements);
             Contract.ThrowIfNull(binder);
@@ -212,7 +212,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             Debug.Assert(_breakTargets == null || _breakTargets.Count == 0);
         }
 
-        public static BuilderVisitor Build(IList<Statement> statements, SemanticsBinder binder)
+        public static BuilderVisitor Build(IList<Statement> statements, Binder1 binder)
         {
             return new BuilderVisitor(statements, binder);
         }

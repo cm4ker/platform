@@ -27,6 +27,8 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public abstract OperationKind Kind { get; }
 
+        public abstract BoundKind BoundKind { get; }
+
         public virtual ITypeSymbol Type => null;
 
         /// <summary>

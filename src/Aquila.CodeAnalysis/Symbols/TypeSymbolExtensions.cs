@@ -52,7 +52,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         public static bool IsPhpSourceFile(this ITypeSymbol type) => type is IPhpScriptTypeSymbol phpt && phpt.MainMethod != null;
 
-        public static bool IsPharEntry(this ITypeSymbol type) => type is NamedTypeSymbol ntype && ntype.NamespaceName.StartsWith(WellKnownPchpNames.PharEntryRootNamespace);
+        public static bool IsPharEntry(this ITypeSymbol type) => type is NamedTypeSymbol ntype && ntype.NamespaceName.StartsWith(WellKnownAquilaNames.PharEntryRootNamespace);
 
         /// <summary>
         /// Gets value indicating the type is a PHP user type (declared in a PHP code).

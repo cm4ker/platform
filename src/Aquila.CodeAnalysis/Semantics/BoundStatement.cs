@@ -86,6 +86,7 @@ namespace Aquila.CodeAnalysis.Semantics
     public sealed partial class BoundGlobalVariableStatement : BoundStatement, IVariableDeclarationOperation
     {
         public override OperationKind Kind => OperationKind.VariableDeclaration;
+        public override BoundKind BoundKind { get; }
 
         ImmutableArray<IVariableDeclaratorOperation> IVariableDeclarationOperation.Declarators =>
             (Variable.Variable != null)

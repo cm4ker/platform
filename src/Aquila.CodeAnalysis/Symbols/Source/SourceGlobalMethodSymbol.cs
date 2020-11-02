@@ -4,13 +4,13 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Cryptography.Xml;
 using Aquila.CodeAnalysis.Symbols.Source;
-using Aquila.Shared.Tree;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Functions;
 using Aquila.Syntax.Ast.Statements;
 using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.FlowAnalysis;
+using Aquila.Syntax.Tree;
 
 namespace Aquila.CodeAnalysis.Symbols
 {
@@ -70,7 +70,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public ParameterSymbol SelfParameter => this.ImplicitParameters.First(SpecialParameterSymbol.IsSelfParameter);
 
-        public override string Name => WellKnownPchpNames.GlobalRoutineName;
+        public override string Name => WellKnownAquilaNames.GlobalRoutineName;
 
         public override string RoutineName => string.Empty;
 

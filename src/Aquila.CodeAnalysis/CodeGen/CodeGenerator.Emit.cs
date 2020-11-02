@@ -780,7 +780,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         {
             // <stack>.Value
             EmitOpCode(ILOpCode.Ldfld);
-            EmitSymbolToken((TypeSymbol)null, null);
+            EmitSymbolToken((TypeSymbol) null, null);
             return null;
         }
 
@@ -793,7 +793,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         {
             // ref <stack>.Value
             EmitOpCode(ILOpCode.Ldflda);
-            EmitSymbolToken((TypeSymbol)null, null);
+            EmitSymbolToken((TypeSymbol) null, null);
         }
 
         /// <summary>
@@ -804,7 +804,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         {
             // <stack_1>.Value = <stack_2>
             EmitOpCode(ILOpCode.Stfld);
-            EmitSymbolToken((TypeSymbol)null, null);
+            EmitSymbolToken((TypeSymbol) null, null);
         }
 
         /// <summary>
@@ -829,7 +829,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         static TypeSymbol Emit_PhpValue_Void(ILBuilder il, Emit.PEModuleBuilder module, DiagnosticBag diagnostic)
         {
             il.EmitOpCode(ILOpCode.Ldsfld);
-            il.EmitSymbolToken(module, diagnostic, (TypeSymbol)null, null);
+            il.EmitSymbolToken(module, diagnostic, (TypeSymbol) null, null);
             return null;
         }
 
@@ -839,7 +839,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         public TypeSymbol Emit_PhpValue_Null()
         {
             _il.EmitOpCode(ILOpCode.Ldsfld);
-            EmitSymbolToken((TypeSymbol)null, null);
+            EmitSymbolToken((TypeSymbol) null, null);
             return null;
         }
 
@@ -849,7 +849,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         public TypeSymbol Emit_PhpValue_True()
         {
             _il.EmitOpCode(ILOpCode.Ldsfld);
-            EmitSymbolToken((TypeSymbol)null, null);
+            EmitSymbolToken((TypeSymbol) null, null);
             return null;
         }
 
@@ -859,7 +859,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         public TypeSymbol Emit_PhpValue_False()
         {
             _il.EmitOpCode(ILOpCode.Ldsfld);
-            EmitSymbolToken((TypeSymbol)null, null);
+            EmitSymbolToken((TypeSymbol) null, null);
             return null;
         }
 
@@ -869,7 +869,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         public TypeSymbol Emit_PhpArray_NewEmpty()
         {
             // PhpArray.NewEmpty()
-            
+
             return EmitCall(ILOpCode.Call, null);
         }
 
@@ -881,9 +881,9 @@ namespace Aquila.CodeAnalysis.CodeGen
         {
             // PhpArray.Empty
             Builder.EmitOpCode(ILOpCode.Ldsfld);
-            EmitSymbolToken((TypeSymbol)null, null);
+            EmitSymbolToken((TypeSymbol) null, null);
 
-            return ((TypeSymbol)null)
+            return ((TypeSymbol) null)
                 .Expect(null);
         }
 
@@ -3279,7 +3279,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         {
             Contract.ThrowIfNull(mainmethod);
             Debug.Assert(mainmethod.IsStatic);
-            Debug.Assert(mainmethod.Name == WellKnownPchpNames.GlobalRoutineName);
+            Debug.Assert(mainmethod.Name == WellKnownAquilaNames.GlobalRoutineName);
 
             foreach (var p in mainmethod.Parameters)
             {
@@ -3635,7 +3635,7 @@ namespace Aquila.CodeAnalysis.CodeGen
             {
                 // PhpNumber.Default ~ 0L
                 _il.EmitOpCode(ILOpCode.Ldsfld);
-                EmitSymbolToken((TypeSymbol)null, null);
+                EmitSymbolToken((TypeSymbol) null, null);
             }
             else if (valuetype == null)
             {

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
+using Antlr4.Runtime;
+using Antlr4.Runtime.Tree;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Expressions;
 using Aquila.Syntax.Ast.Functions;
@@ -217,13 +217,19 @@ namespace Aquila.Syntax.Parser
             base.VisitLocal_variable_declarator(context);
 
             LangElement decl;
+            Expression initializer = null;
 
             if (context.local_variable_initializer() != null)
-                decl = new VarDeclarator(context.ToLineInfo(), SyntaxKind.VariableDeclarator,
-                    Stack.PopExpression(), Stack.PopIdentifier());
+                initializer = Stack.PopExpression();
             else
-                decl = new VarDeclarator(context.ToLineInfo(), SyntaxKind.VariableDeclarator,
-                    null, Stack.PopIdentifier());
+            {
+                if (context.exception is InputMismatchException)
+                    initializer = new MissingEx(context.exception.OffendingToken.ToLineInfo(), SyntaxKind.BadToken,
+                        Operations.Empty, context.exception.Message);
+            }
+
+            decl = new VarDeclarator(context.ToLineInfo(), SyntaxKind.VariableDeclarator, initializer,
+                Stack.PopIdentifier());
 
             Stack.Push(decl);
 

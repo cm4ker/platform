@@ -19,6 +19,7 @@ using Microsoft.CodeAnalysis.PooledObjects;
 using Microsoft.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.DocumentationComments;
 using Aquila.CodeAnalysis.Emit;
+using Aquila.CodeAnalysis.Public;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Anonymous;
 using Aquila.CodeAnalysis.Symbols.PE;
@@ -28,6 +29,7 @@ using Aquila.Syntax.Syntax;
 using Aquila.CodeAnalysis.Utilities;
 using Roslyn.Utilities;
 using ExceptionUtilities = Aquila.CodeAnalysis.Utilities.ExceptionUtilities;
+
 // using SourceFieldSymbol = Aquila.CodeAnalysis.Symbols.SourceFieldSymbol;
 // using SourceMethodSymbol = Aquila.CodeAnalysis.Symbols.SourceMethodSymbol;
 
@@ -47,6 +49,8 @@ namespace Aquila.CodeAnalysis
         /// Manages anonymous types declared in this compilation. Unifies types that are structurally equivalent.
         /// </summary>
         readonly AnonymousTypeManager _anonymousTypeManager;
+
+        readonly ComponentTypeManager _componentTypeManager;
 
         /// <summary>
         /// The <see cref="SourceAssemblySymbol"/> for this compilation. Do not access directly, use Assembly property
@@ -71,9 +75,9 @@ namespace Aquila.CodeAnalysis
         internal AssemblySymbol CorLibrary => GetBoundReferenceManager().CorLibrary;
 
         /// <summary>
-        /// PHP COR library containing PHP runtime.
+        /// Aquila COR library containing base platform types.
         /// </summary>
-        internal AssemblySymbol PhpCorLibrary => GetBoundReferenceManager().PhpCorLibrary;
+        internal AssemblySymbol AquilaCorLibrary => GetBoundReferenceManager().AquilaCorLibrary;
 
         /// <summary>
         /// Tables containing all source symbols to be compiled.
@@ -166,6 +170,7 @@ namespace Aquila.CodeAnalysis
             _coreTypes = new CoreTypes(this);
             _coreMethods = new CoreMethods(_coreTypes);
             _anonymousTypeManager = new AnonymousTypeManager(this);
+            _componentTypeManager = new ComponentTypeManager(this);
 
             this.Conversions = new Semantics.Conversions(this);
             this.TypeRefFactory = new Semantics.BoundTypeRefFactory(this);
@@ -218,7 +223,7 @@ namespace Aquila.CodeAnalysis
                 syntaxTrees: syntaxTrees);
         }
 
-        public AquilaCompilation WithPhpOptions(PhpCompilationOptions options)
+        public AquilaCompilation WithAquilaOptions(PhpCompilationOptions options)
         {
             return Update(options: options);
         }
@@ -239,6 +244,8 @@ namespace Aquila.CodeAnalysis
         public override string Language { get; } = Constants.AquilaLanguageName;
 
         internal AnonymousTypeManager AnonymousTypeManager => _anonymousTypeManager;
+
+        public ComponentTypeManager ComponentTypeManager => _componentTypeManager;
 
         public override IEnumerable<AssemblyIdentity> ReferencedAssemblyNames =>
             Assembly.Modules.SelectMany(module => module.ReferencedAssemblies);
@@ -322,6 +329,10 @@ namespace Aquila.CodeAnalysis
 
             compilation.SourceSymbolCollection.AddSyntaxTreeRange(syntaxTrees);
 
+            //Delegate to component
+            
+            
+            
             //
             return compilation;
         }
@@ -777,7 +788,7 @@ namespace Aquila.CodeAnalysis
                 throw ExceptionUtilities.UnexpectedValue(options);
             }
 
-            return WithPhpOptions((PhpCompilationOptions) options);
+            return WithAquilaOptions((PhpCompilationOptions) options);
         }
 
         protected override Compilation CommonWithReferences(IEnumerable<MetadataReference> newReferences)

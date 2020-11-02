@@ -5,7 +5,6 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Emitter;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Attributes;
@@ -20,8 +19,8 @@ using Microsoft.CodeAnalysis.PooledObjects;
 using Cci = Microsoft.Cci;
 using Microsoft.CodeAnalysis.Emit.NoPia;
 using Aquila.CodeAnalysis.Utilities;
-using Aquila.CodeAnalysis.CodeGen;
 using ExceptionUtilities = Aquila.CodeAnalysis.Utilities.ExceptionUtilities;
+using ReferenceEqualityComparer = Roslyn.Utilities.ReferenceEqualityComparer;
 
 
 namespace Aquila.CodeAnalysis.Emit

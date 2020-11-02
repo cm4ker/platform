@@ -1657,7 +1657,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                 {
                     if (TypeCtx.IsArray(expected.Type) && !givenarg.Value.Access.EnsureArray) // [PhpRw]PhpArray
                     {
-                        SemanticsBinder.BindEnsureArrayAccess(givenarg.Value as BoundReferenceEx);
+                        Binder1.BindEnsureArrayAccess(givenarg.Value as BoundReferenceEx);
                         Worklist.Enqueue(CurrentBlock);
                     }
                 }
@@ -1670,13 +1670,13 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                 {
                     if (expected.IsByRef && !refexpr.Access.IsWrite)
                     {
-                        SemanticsBinder.BindWriteAccess(refexpr);
+                        Binder1.BindWriteAccess(refexpr);
                         Worklist.Enqueue(CurrentBlock);
                     }
 
                     if (expected.IsAlias && !refexpr.Access.IsReadRef)
                     {
-                        SemanticsBinder.BindReadRefAccess(refexpr);
+                        Binder1.BindReadRefAccess(refexpr);
                         Worklist.Enqueue(CurrentBlock);
                     }
 

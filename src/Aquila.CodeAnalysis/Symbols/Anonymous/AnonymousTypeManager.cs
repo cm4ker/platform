@@ -69,8 +69,8 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
 
             public SynthesizedDelegateKey(int parameterCount, BitVector byRefs, bool returnsVoid)
             {
-                _parameterCount = (ushort)parameterCount;
-                _returnsVoid = (byte)(returnsVoid ? 1 : 0);
+                _parameterCount = (ushort) parameterCount;
+                _returnsVoid = (byte) (returnsVoid ? 1 : 0);
                 _byRefs = byRefs;
             }
 
@@ -108,19 +108,19 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
 
             public override bool Equals(object obj)
             {
-                return obj is SynthesizedDelegateKey && Equals((SynthesizedDelegateKey)obj);
+                return obj is SynthesizedDelegateKey && Equals((SynthesizedDelegateKey) obj);
             }
 
             public bool Equals(SynthesizedDelegateKey other)
             {
                 return _parameterCount == other._parameterCount
-                    && _returnsVoid == other._returnsVoid
-                    && _byRefs.Equals(other._byRefs);
+                       && _returnsVoid == other._returnsVoid
+                       && _byRefs.Equals(other._byRefs);
             }
 
             public override int GetHashCode()
             {
-                return Hash.Combine((int)_parameterCount, Hash.Combine((int)_returnsVoid, _byRefs.GetHashCode()));
+                return Hash.Combine((int) _parameterCount, Hash.Combine((int) _returnsVoid, _byRefs.GetHashCode()));
             }
         }
 
@@ -133,7 +133,7 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
 
             public SynthesizedDelegateValue(AnonymousTypeManager manager, SynthesizedDelegateSymbol @delegate)
             {
-                Debug.Assert(manager != null && (object)@delegate != null);
+                Debug.Assert(manager != null && (object) @delegate != null);
                 this.Manager = manager;
                 this.Delegate = @delegate;
             }
@@ -166,6 +166,7 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
                         builder.Add(template.Delegate);
                     }
                 }
+
                 builder.Sort(SynthesizedDelegateSymbolComparer.Instance);
             }
         }
@@ -177,15 +178,16 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
                 if (_lazySynthesizedDelegates == null)
                 {
                     Interlocked.CompareExchange(ref _lazySynthesizedDelegates,
-                                                new ConcurrentDictionary<SynthesizedDelegateKey, SynthesizedDelegateValue>(),
-                                                null);
+                        new ConcurrentDictionary<SynthesizedDelegateKey, SynthesizedDelegateValue>(),
+                        null);
                 }
 
                 return _lazySynthesizedDelegates;
             }
         }
 
-        internal SynthesizedDelegateSymbol SynthesizeDelegate(int parameterCount, BitVector byRefParameters, bool returnsVoid)
+        internal SynthesizedDelegateSymbol SynthesizeDelegate(int parameterCount, BitVector byRefParameters,
+            bool returnsVoid)
         {
             // parameterCount doesn't include return type
             Debug.Assert(byRefParameters.IsNull || parameterCount == byRefParameters.Capacity);
@@ -203,7 +205,7 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
                 new SynthesizedDelegateValue(
                     this,
                     new SynthesizedDelegateSymbol(
-                        (NamespaceOrTypeSymbol)this.Compilation.SourceAssembly.GlobalNamespace,
+                        (NamespaceOrTypeSymbol) this.Compilation.SourceAssembly.GlobalNamespace,
                         key.MakeTypeName(),
                         this.System_Object,
                         Compilation.GetSpecialType(SpecialType.System_IntPtr),
@@ -218,9 +220,14 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
 
         private ConcurrentBag<NamedTypeSymbol> _lazySynthesizedTypes;
 
-        public SynthesizedStaticTypeSymbol SynthesizeType(string name, Accessibility accessibility = Accessibility.Internal)
+        public NamedTypeSymbol SynthesizeType(string name, bool isStatic,
+            Accessibility accessibility = Accessibility.Internal)
         {
-            var type = new SynthesizedStaticTypeSymbol(Compilation, name, null, accessibility);
+            NamedTypeSymbol type;
+            if (isStatic)
+                type = new SynthesizedStaticTypeSymbol(Compilation, name, null, accessibility);
+            else
+                type = new SynthesizedTypeSymbol(Compilation);
 
             if (_lazySynthesizedTypes == null)
             {
@@ -278,42 +285,73 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
 
         public MethodSymbol System_Object__GetHashCode
         {
-            get { return this.Compilation.GetSpecialTypeMember(SpecialMember.System_Object__GetHashCode) as MethodSymbol; }
+            get
+            {
+                return this.Compilation.GetSpecialTypeMember(SpecialMember.System_Object__GetHashCode) as MethodSymbol;
+            }
         }
 
         public MethodSymbol System_Runtime_CompilerServices_CompilerGeneratedAttribute__ctor
         {
-            get { return this.Compilation.GetWellKnownTypeMember(WellKnownMember.System_Runtime_CompilerServices_CompilerGeneratedAttribute__ctor) as MethodSymbol; }
+            get
+            {
+                return this.Compilation.GetWellKnownTypeMember(WellKnownMember
+                    .System_Runtime_CompilerServices_CompilerGeneratedAttribute__ctor) as MethodSymbol;
+            }
         }
 
         public MethodSymbol System_Diagnostics_DebuggerHiddenAttribute__ctor
         {
-            get { return this.Compilation.GetWellKnownTypeMember(WellKnownMember.System_Diagnostics_DebuggerHiddenAttribute__ctor) as MethodSymbol; }
+            get
+            {
+                return this.Compilation.GetWellKnownTypeMember(WellKnownMember
+                    .System_Diagnostics_DebuggerHiddenAttribute__ctor) as MethodSymbol;
+            }
         }
 
         public MethodSymbol System_Diagnostics_DebuggerBrowsableAttribute__ctor
         {
-            get { return this.Compilation.GetWellKnownTypeMember(WellKnownMember.System_Diagnostics_DebuggerBrowsableAttribute__ctor) as MethodSymbol; }
+            get
+            {
+                return this.Compilation.GetWellKnownTypeMember(WellKnownMember
+                    .System_Diagnostics_DebuggerBrowsableAttribute__ctor) as MethodSymbol;
+            }
         }
 
         public MethodSymbol System_Collections_Generic_EqualityComparer_T__Equals
         {
-            get { return this.Compilation.GetWellKnownTypeMember(WellKnownMember.System_Collections_Generic_EqualityComparer_T__Equals) as MethodSymbol; }
+            get
+            {
+                return this.Compilation.GetWellKnownTypeMember(WellKnownMember
+                    .System_Collections_Generic_EqualityComparer_T__Equals) as MethodSymbol;
+            }
         }
 
         public MethodSymbol System_Collections_Generic_EqualityComparer_T__GetHashCode
         {
-            get { return this.Compilation.GetWellKnownTypeMember(WellKnownMember.System_Collections_Generic_EqualityComparer_T__GetHashCode) as MethodSymbol; }
+            get
+            {
+                return this.Compilation.GetWellKnownTypeMember(WellKnownMember
+                    .System_Collections_Generic_EqualityComparer_T__GetHashCode) as MethodSymbol;
+            }
         }
 
         public MethodSymbol System_Collections_Generic_EqualityComparer_T__get_Default
         {
-            get { return this.Compilation.GetWellKnownTypeMember(WellKnownMember.System_Collections_Generic_EqualityComparer_T__get_Default) as MethodSymbol; }
+            get
+            {
+                return this.Compilation.GetWellKnownTypeMember(WellKnownMember
+                    .System_Collections_Generic_EqualityComparer_T__get_Default) as MethodSymbol;
+            }
         }
 
         public MethodSymbol System_String__Format_IFormatProvider
         {
-            get { return this.Compilation.GetWellKnownTypeMember(WellKnownMember.System_String__Format_IFormatProvider) as MethodSymbol; }
+            get
+            {
+                return this.Compilation.GetWellKnownTypeMember(WellKnownMember.System_String__Format_IFormatProvider) as
+                    MethodSymbol;
+            }
         }
 
         #endregion

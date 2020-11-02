@@ -119,7 +119,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         readonly Dictionary<SyntaxTree, int> _ordinalMap = new Dictionary<SyntaxTree, int>();
 
-        //readonly SymbolsCache<QualifiedName, SourceTypeSymbol> _types;
+        readonly List<SynthesizedTypeSymbol> _synthesizedTypes;
         readonly SymbolsCache<QualifiedName, SourceFunctionSymbol> _functions;
 
         /// <summary>
@@ -127,6 +127,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         /// <code>static class &lt;constants&gt; { ... }</code>
         /// </summary>
         internal SynthesizedStaticTypeSymbol DefinedConstantsContainer { get; }
+
 
         /// <summary>
         /// First script added to the collection.
@@ -136,24 +137,27 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public IDictionary<SyntaxTree, int> OrdinalMap => _ordinalMap;
 
-        public SourceSymbolCollection(AquilaCompilation  compilation)
+        public SourceSymbolCollection(AquilaCompilation compilation)
         {
             Contract.ThrowIfNull(compilation);
             _compilation = compilation;
 
-            // _types = new SymbolsCache<QualifiedName, SourceTypeSymbol>(this, f => f.ContainedTypes,
-            //     t => t.MakeQualifiedName(), t => !t.IsConditional || t.IsAnonymousType);
+            _synthesizedTypes = new List<SynthesizedTypeSymbol>();
+
             _functions = new SymbolsCache<QualifiedName, SourceFunctionSymbol>(this, f => f.Functions,
                 f => f.QualifiedName, f => !f.IsConditional);
 
-            // class <constants> { ... }
-            PopulateDefinedConstants(
-                this.DefinedConstantsContainer =
-                    _compilation.AnonymousTypeManager.SynthesizeType("<constants>", Accessibility.Internal),
-                _compilation.Options.Defines);
+            // // class <constants> { ... }
+            // PopulateDefinedConstants(
+            //     this.DefinedConstantsContainer =
+            //         _compilation.AnonymousTypeManager.SynthesizeType("<constants>", true, Accessibility.Internal),
+            //     _compilation.Options.Defines);
         }
 
-        void PopulateDefinedConstants(SynthesizedStaticTypeSymbol container, ImmutableDictionary<string, string> defines)
+        
+        
+        void PopulateDefinedConstants(SynthesizedStaticTypeSymbol container,
+            ImmutableDictionary<string, string> defines)
         {
             if (defines == null || defines.IsEmpty)
             {
@@ -341,14 +345,13 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         {
             get
             {
-
-                 var funcs = GetFunctions().Cast<SourceRoutineSymbol>();
+                var funcs = GetFunctions().Cast<SourceRoutineSymbol>();
                 // var mains = _files.Values.Select(f => (SourceRoutineSymbol) f.MainMethod);
                 // var methods = GetTypes().SelectMany(f => f.GetMembers().OfType<SourceRoutineSymbol>());
                 // var lambdas = GetLambdas();
                 //
                 // //
-                 return funcs; //.Concat(mains).Concat(methods).Concat(lambdas);
+                return funcs; //.Concat(mains).Concat(methods).Concat(lambdas);
             }
         }
 
@@ -359,7 +362,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             List<NamedTypeSymbol> alternatives = null;
 
             return new MissingMetadataTypeSymbol(name.ClrName(), 0, false);
-            
+
             // var types = _types.GetAll(name)
             //     .SelectMany(t => t.AllReachableVersions(resolved)); // get all types with {name} and their versions
             // foreach (var t in types)

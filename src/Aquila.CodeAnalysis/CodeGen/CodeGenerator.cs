@@ -168,7 +168,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         readonly ILBuilder _il;
         readonly SourceRoutineSymbol _routine;
         readonly PEModuleBuilder _moduleBuilder;
-        readonly PhpOptimizationLevel _optimizations;
+        readonly AquilaOptimizationLevel _optimizations;
         readonly bool _emitPdbSequencePoints;
         readonly DiagnosticBag _diagnostics;
         readonly DynamicOperationFactory _factory;
@@ -388,7 +388,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         #region Construction
 
         public CodeGenerator(ILBuilder il, PEModuleBuilder moduleBuilder, DiagnosticBag diagnostics,
-            PhpOptimizationLevel optimizations, bool emittingPdb,
+            AquilaOptimizationLevel optimizations, bool emittingPdb,
             NamedTypeSymbol container, IPlace contextPlace, IPlace thisPlace, MethodSymbol routine = null,
             IPlace locals = null, bool localsInitialized = false, IPlace tempLocals = null)
         {
@@ -442,7 +442,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         }
 
         public CodeGenerator(SourceRoutineSymbol routine, ILBuilder il, PEModuleBuilder moduleBuilder,
-            DiagnosticBag diagnostics, PhpOptimizationLevel optimizations, bool emittingPdb)
+            DiagnosticBag diagnostics, AquilaOptimizationLevel optimizations, bool emittingPdb)
             : this(il, moduleBuilder, diagnostics, optimizations, emittingPdb, routine.ContainingType,
                 routine.GetContextPlace(moduleBuilder), routine.GetThisPlace(), routine)
         {

@@ -128,7 +128,7 @@ namespace Aquila.CodeAnalysis.Semantics.Model
 
                     // lookup extensions and cor library for exported types
                     var libs = GetExtensionLibraries(_compilation).ToList();
-                    libs.Add((PEAssemblySymbol) _compilation.PhpCorLibrary);
+                    libs.Add((PEAssemblySymbol) _compilation.AquilaCorLibrary);
 
                     //
                     foreach (var lib in libs)

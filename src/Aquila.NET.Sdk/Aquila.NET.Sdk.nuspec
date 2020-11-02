@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>Aquila.NET.Sdk</title>
+    <owners>peachpie</owners>
+    <authors>peachpie,jmisek</authors>
+    <projectUrl>https://github.com/peachpiecompiler/peachpie</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <tags>php,compile-php,peachpie,sdk</tags>
+    <dependencies>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Aquila.App" version="$version$" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="$packToolsDir$\**" target="tools\" />
+    <file src=".\build\**" target="build\" />
+    <file src=".\buildCrossTargeting\**" target="buildCrossTargeting\" />
+    <file src=".\Sdk\**" target="Sdk\" />    
+  </files>
+</package>

@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Aquila.Shared.Tree;
 using Aquila.Syntax.Text;
+using Aquila.Syntax.Tree;
 
 namespace Aquila.Syntax
 {

@@ -100,7 +100,7 @@ namespace Aquila.CodeAnalysis
         /// <summary>
         /// The compilation optimization level.
         /// </summary>
-        public new PhpOptimizationLevel OptimizationLevel { get; internal set; }
+        public new AquilaOptimizationLevel OptimizationLevel { get; internal set; }
 
         /// <summary>
         /// Set of compile-time defined constants.
@@ -142,7 +142,7 @@ namespace Aquila.CodeAnalysis
             string mainTypeName = null,
             string scriptClassName = null,
             string versionString = null,
-            PhpOptimizationLevel optimizationLevel = PhpOptimizationLevel.Debug,
+            AquilaOptimizationLevel optimizationLevel = AquilaOptimizationLevel.Debug,
             bool checkOverflow = false,
             string cryptoKeyContainer = null,
             string cryptoKeyFile = null,
@@ -203,7 +203,7 @@ namespace Aquila.CodeAnalysis
             string mainTypeName,
             string scriptClassName,
             string versionString,
-            PhpOptimizationLevel optimizationLevel,
+            AquilaOptimizationLevel optimizationLevel,
             bool checkOverflow,
             string cryptoKeyContainer,
             string cryptoKeyFile,

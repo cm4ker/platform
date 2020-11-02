@@ -3,7 +3,7 @@
     <PropertyGroup>
         <LangVersion>8</LangVersion>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net5.0</TargetFramework>
         <Configurations>Debug;Release;DebugServer</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
@@ -16,7 +16,7 @@
 
         <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
 
-        <PackageReference Include="Aquila.Microsoft.CodeAnalysis" Version="0.0.5" />
+        <PackageReference Include="Aquila.Microsoft.CodeAnalysis" Version="0.0.6" />
 
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.4" />
 <!--        <PackageReference Include="NETStandard.Library" Version="2.0.3" />-->
@@ -39,6 +39,16 @@
 
     <ItemGroup>
         <Compile Remove="gen\**" />
+        <Compile Update="AquilaResources.Designer.cs">
+          <AutoGen>True</AutoGen>
+          <DependentUpon>PhpResources.resx</DependentUpon>
+          <DesignTime>True</DesignTime>
+        </Compile>
+        <Compile Update="Errors\ErrorStrings.Designer.cs">
+          <AutoGen>True</AutoGen>
+          <DependentUpon>ErrorStrings.resx</DependentUpon>
+          <DesignTime>True</DesignTime>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -53,6 +63,31 @@
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Generated" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <Compile Update="PhpResources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>False</AutoGen>
+            <DependentUpon>PhpResources.resx</DependentUpon>
+        </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+     
+        <EmbeddedResource Update="AquilaResources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>AquilaResources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Errors\ErrorStrings.resx">
+          <Generator>ResXFileCodeGenerator</Generator>
+          <LastGenOutput>ErrorStrings.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      
     </ItemGroup>
 
 </Project>

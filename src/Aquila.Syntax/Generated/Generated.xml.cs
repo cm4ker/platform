@@ -723,6 +723,32 @@ namespace Aquila.Syntax.Ast
 
 namespace Aquila.Syntax.Ast.Expressions
 {
+    public partial class MissingEx : Expression
+    {
+        public MissingEx(Span span, SyntaxKind syntaxKind, Operations operation,  string  message): base(span, syntaxKind, operation)
+        {
+            Message = message;
+        }
+
+        public string Message
+        {
+            get;
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitMissingEx(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitMissingEx(this);
+        }
+    }
+}
+
+namespace Aquila.Syntax.Ast.Expressions
+{
     public partial class BinaryEx : Expression
     {
         public BinaryEx(Span span, SyntaxKind syntaxKind, Operations operation, Expression right, Expression left): base(span, syntaxKind, operation)
@@ -1829,6 +1855,11 @@ namespace Aquila.Syntax
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitMissingEx(MissingEx arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitBinaryEx(BinaryEx arg)
         {
             return DefaultVisit(arg);
@@ -2073,6 +2104,11 @@ namespace Aquila.Syntax
         }
 
         public virtual void VisitArrayType(ArrayType arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitMissingEx(MissingEx arg)
         {
             DefaultVisit(arg);
         }

@@ -4,7 +4,6 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Aquila.Compiler.Utilities;
-using Aquila.Shared.Tree;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Functions;
 using Aquila.Syntax.Ast.Statements;
@@ -15,6 +14,7 @@ using Aquila.CodeAnalysis.FlowAnalysis;
 using Contract = Aquila.CodeAnalysis.Contract;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Semantics.Model;
+using Aquila.Syntax.Tree;
 
 namespace Aquila.CodeAnalysis.Symbols
 {

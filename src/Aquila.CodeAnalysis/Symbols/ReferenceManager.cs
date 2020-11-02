@@ -14,14 +14,14 @@ namespace Aquila.CodeAnalysis
 {
     partial class AquilaCompilation
     {
-        internal class
-            ReferenceManager : CommonReferenceManager // TODO: inherit the generic version with all the Binding & resolving stuff
+        internal class ReferenceManager : CommonReferenceManager
+            // TODO: inherit the generic version with all the Binding & resolving stuff
         {
             ImmutableArray<MetadataReference> _lazyExplicitReferences;
             ImmutableArray<MetadataReference> _lazyImplicitReferences = ImmutableArray<MetadataReference>.Empty;
             ImmutableDictionary<MetadataReference, IAssemblySymbol> _referencesMap;
             ImmutableDictionary<IAssemblySymbol, MetadataReference> _metadataMap;
-            AssemblySymbol _lazyCorLibrary, _lazyPhpCorLibrary;
+            AssemblySymbol _lazyCorLibrary, _lazyAquilaCorLibrary;
 
             public Dictionary<AssemblyIdentity, PEAssemblySymbol> ObservedMetadata => _observedMetadata;
             readonly Dictionary<AssemblyIdentity, PEAssemblySymbol> _observedMetadata;
@@ -51,7 +51,7 @@ namespace Aquila.CodeAnalysis
             /// <summary>
             /// PHP COR library containing PHP runtime.
             /// </summary>
-            internal AssemblySymbol PhpCorLibrary => _lazyPhpCorLibrary;
+            internal AssemblySymbol AquilaCorLibrary => _lazyAquilaCorLibrary;
 
             internal override ImmutableArray<MetadataReference> ExplicitReferences => _lazyExplicitReferences;
 
