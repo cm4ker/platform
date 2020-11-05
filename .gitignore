@@ -288,3 +288,4 @@ netcoreapp[23].[01]/
 /src/Portable.Xaml/*
 
 .antlr/
+/.nugs/*
