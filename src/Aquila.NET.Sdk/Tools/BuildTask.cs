@@ -130,7 +130,7 @@ namespace Aquila.NET.Sdk.Tools
         public ITaskItem[] ExtensionReference { get; set; }
         public ITaskItem[] Metadata { get; set; }
 
-        public string Test { get; set; }
+        public string DbConnection { get; set; }
 
         /// <summary></summary>
         public override bool Execute()

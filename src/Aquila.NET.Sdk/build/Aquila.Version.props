@@ -1,5 +1,5 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 <PropertyGroup>
-<AquilaVersion Condition=" '$(AquilaVersion)'=='' ">1.0.0</AquilaVersion>
+<AquilaVersion Condition=" '$(AquilaVersion)'=='' ">1.0.0-dev</AquilaVersion>
 </PropertyGroup>
 </Project>

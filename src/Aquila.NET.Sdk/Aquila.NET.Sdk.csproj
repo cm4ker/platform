@@ -1,114 +1,75 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-
-    <PackageOnlyBuild>true</PackageOnlyBuild>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    
-    <PackageId>Aquila.NET.Sdk</PackageId>    
-    <PackageTags>php;sdk;peachpie;msbuild</PackageTags>
-    <GeneratePackageOnBuild Condition=" $(GeneratePackageOnBuild)=='' ">True</GeneratePackageOnBuild>    
-    <Description>The MSBuild SDK containing build targets and runtime.</Description>    
-    <RootNamespace>Aquila.NET.Sdk</RootNamespace>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(PackageOnlyBuild)' == 'true'">
-    <NoPackageAnalysis>true</NoPackageAnalysis>
-    <IncludeBuildOutput>false</IncludeBuildOutput>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackToolsDir>$(MSBuildThisFileDirectory)bin\$(Configuration)\$(TargetFramework)\publish</PackToolsDir>
-    <NuspecFile>$(MSBuildThisFileDirectory)$(MSbuildProjectName).nuspec</NuspecFile>
-  </PropertyGroup>
-
-  <ItemGroup Condition="'$(PackageOnlyBuild)' == 'true'">
-    <IntermediateAssembly Remove="@(IntermediateAssembly)" />
-    <IntermediateRefAssembly Remove="@(IntermediateRefAssembly)" />
-  </ItemGroup>
-
-  <!-- This property must be overridden to remove a few targets that compile assemblies -->
-  <PropertyGroup Condition="'$(PackageOnlyBuild)' == 'true'">
-    <CoreBuildDependsOn>
-      InitializeSourceControlInformation;
-      BuildOnlySettings;
-      PrepareForBuild;
-      PreBuildEvent;
-      ResolveProjectReferences;
-      GetTargetPath;
-      PrepareForRun;
-      IncrementalClean;
-      PostBuildEvent
-    </CoreBuildDependsOn>
-  </PropertyGroup>
-
-  <!--ItemGroup>
-    <Content Include="build/Peachpie.NET.Current.Sdk.targets">
-      <PackagePath>build/Peachpie.NET.Current.Sdk.targets</PackagePath>
-      <Pack>true</Pack>
-    </Content>
-    <Content Include="build/Peachpie.NET.Core.Sdk.targets">
-      <PackagePath>build/Peachpie.NET.Core.Sdk.targets</PackagePath>
-      <Pack>true</Pack>
-    </Content>
-    <Content Include="build/Peachpie.DesignTime.targets">
-      <PackagePath>build/Peachpie.DesignTime.targets</PackagePath>
-      <Pack>true</Pack>
-    </Content>
-    <Content Include="build/Peachpie.NET.Sdk.props">
-      <PackagePath>build/Peachpie.NET.Sdk.props</PackagePath>
-      <Pack>true</Pack>
-    </Content>
-    <Content Include="buildCrossTargeting/Peachpie.NET.Sdk.props">
-      <PackagePath>buildCrossTargeting/Peachpie.NET.Sdk.props</PackagePath>
-      <Pack>true</Pack>
-    </Content>
-    <Content Include="build/Peachpie.Version.props">
-      <PackagePath>build/Peachpie.Version.props</PackagePath>
-      <Pack>true</Pack>
-    </Content>
-    <Content Include="build/PeachPie.ProjectItemsSchema.xaml">
-      <PackagePath>build/PeachPie.ProjectItemsSchema.xaml</PackagePath>
-      <Pack>true</Pack>
-    </Content>
-    <Content Include="Sdk/Sdk.targets">
-      <PackagePath>Sdk/Sdk.targets</PackagePath>
-      <Pack>true</Pack>
-    </Content>
-    <Content Include="Sdk/Sdk.props">
-      <PackagePath>Sdk/Sdk.props</PackagePath>
-      <Pack>true</Pack>
-    </Content>
-  </ItemGroup-->
-
-  <ItemGroup>
-    <ProjectReference Include="..\Aquila.CodeAnalysis\Aquila.CodeAnalysis.csproj" />
-    <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
-    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="[15.8.*,]" />
-  </ItemGroup>
-
-  <Target Name="PublishAll">
-    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="Publish" Properties="GeneratePackageOnBuild=false;Version=$(Version)" />
-  </Target>
-
-  <Target Name="SetPackageDependencies" BeforeTargets="GenerateNuspec" DependsOnTargets="PublishAll">
     <PropertyGroup>
-      <NuspecProperties>$(NuspecProperties);id=$(PackageId)</NuspecProperties>
-      <NuspecProperties>$(NuspecProperties);packToolsDir=$(PackToolsDir)</NuspecProperties>
-      <NuspecProperties>$(NuspecProperties);description=$(Description)</NuspecProperties>
-      <NuspecProperties>$(NuspecProperties);version=$(PackageVersion)</NuspecProperties>
-    </PropertyGroup>
-  </Target>
+        <TargetFramework>net5.0</TargetFramework>
 
-  <Target Name="WriteAquilaVersionProps" BeforeTargets="GenerateNuspec">
-    <ItemGroup>
-      <_PropsLine Include="&lt;Project xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot;&gt;" />
-      <_PropsLine Include="&lt;PropertyGroup&gt;" />
-      <_PropsLine Include="    &lt;AquilaVersion Condition=&quot; '%24(AquilaVersion)'=='' &quot;&gt;$(PackageVersion)&lt;/AquilaVersion&gt;" />
-      <_PropsLine Include="&lt;/PropertyGroup&gt;" />
-      <_PropsLine Include="&lt;/Project&gt;" />
+        <PackageOnlyBuild>true</PackageOnlyBuild>
+        <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+        <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+
+        <PackageId>Aquila.NET.Sdk</PackageId>
+        <PackageTags>php;sdk;peachpie;msbuild</PackageTags>
+        <GeneratePackageOnBuild Condition=" $(GeneratePackageOnBuild)=='' ">True</GeneratePackageOnBuild>
+        <Description>The MSBuild SDK containing build targets and runtime.</Description>
+        <RootNamespace>Aquila.NET.Sdk</RootNamespace>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(PackageOnlyBuild)' == 'true'">
+        <NoPackageAnalysis>true</NoPackageAnalysis>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackToolsDir>$(MSBuildThisFileDirectory)bin\$(Configuration)\$(TargetFramework)\publish</PackToolsDir>
+        <NuspecFile>$(MSBuildThisFileDirectory)$(MSbuildProjectName).nuspec</NuspecFile>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(PackageOnlyBuild)' == 'true'">
+        <IntermediateAssembly Remove="@(IntermediateAssembly)"/>
+        <IntermediateRefAssembly Remove="@(IntermediateRefAssembly)"/>
     </ItemGroup>
-    <WriteLinesToFile File="build\Aquila.Version.props" Overwrite="true" Lines="@(_PropsLine)" />
-  </Target>
+
+    <!-- This property must be overridden to remove a few targets that compile assemblies -->
+    <PropertyGroup Condition="'$(PackageOnlyBuild)' == 'true'">
+        <CoreBuildDependsOn>
+            InitializeSourceControlInformation;
+            BuildOnlySettings;
+            PrepareForBuild;
+            PreBuildEvent;
+            ResolveProjectReferences;
+            GetTargetPath;
+            PrepareForRun;
+            IncrementalClean;
+            PostBuildEvent
+        </CoreBuildDependsOn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Aquila.CodeAnalysis\Aquila.CodeAnalysis.csproj"/>
+        <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0"/>
+        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="[15.8.*,]"/>
+    </ItemGroup>
+
+    <Target Name="PublishAll">
+        <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="Publish" Properties="GeneratePackageOnBuild=false;Version=$(Version)"/>
+    </Target>
+
+    <Target Name="SetPackageDependencies" BeforeTargets="GenerateNuspec" DependsOnTargets="PublishAll">
+        <PropertyGroup>
+            <NuspecProperties>$(NuspecProperties);id=$(PackageId)</NuspecProperties>
+            <NuspecProperties>$(NuspecProperties);packToolsDir=$(PackToolsDir)</NuspecProperties>
+            <NuspecProperties>$(NuspecProperties);description=$(Description)</NuspecProperties>
+            <NuspecProperties>$(NuspecProperties);version=$(PackageVersion)</NuspecProperties>
+        </PropertyGroup>
+    </Target>
+
+    <Target Name="WriteAquilaVersionProps" BeforeTargets="GenerateNuspec">
+        <ItemGroup>
+            <_PropsLine Include="&lt;Project xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot;&gt;"/>
+            <_PropsLine Include="&lt;PropertyGroup&gt;"/>
+            <_PropsLine Include="    &lt;AquilaVersion Condition=&quot; '%24(AquilaVersion)'=='' &quot;&gt;$(PackageVersion)&lt;/AquilaVersion&gt;"/>
+            <_PropsLine Include="&lt;/PropertyGroup&gt;"/>
+            <_PropsLine Include="&lt;/Project&gt;"/>
+        </ItemGroup>
+        <WriteLinesToFile File="build\Aquila.Version.props" Overwrite="true" Lines="@(_PropsLine)"/>
+    </Target>
 
 </Project>

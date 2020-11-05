@@ -4,12 +4,12 @@
     <id>$id$</id>
     <version>$version$</version>
     <title>Aquila.NET.Sdk</title>
-    <owners>peachpie</owners>
-    <authors>peachpie,jmisek</authors>
-    <projectUrl>https://github.com/peachpiecompiler/peachpie</projectUrl>
+    <owners>aquila</owners>
+    <authors>Nikita Zenkov, Oleg Masterskih</authors>
+    <projectUrl>https://github.com/cm4ker/aquila</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <tags>php,compile-php,peachpie,sdk</tags>
+    <tags>aquila,sdk</tags>
     <dependencies>
       <group targetFramework=".NETStandard2.0">
         <dependency id="Aquila.App" version="$version$" exclude="Build,Analyzers" />

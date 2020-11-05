@@ -1,9 +1,18 @@
-﻿<Project Sdk="Aquila.NET.Sdk/1.0.0">
-
+﻿<!-- use our own building system-->
+<Project Sdk="Aquila.NET.Sdk/1.0.0">
   <PropertyGroup>
+    <ProjectName>Test</ProjectName>
     <TargetFramework>net5.0</TargetFramework>
     <DebuggerAttach>true</DebuggerAttach>
-    <DbConnection>fs://file.sqlite</DbConnection>
+    <!-- this is required 
+    possible schemas: 
+    sqdb - sqlite     db file   system ex. : sqdb://file_system_path
+    pgdb - postgres   db file   system ex. : pgdb://host:port@user:password/db_name?tc=true
+    msdb - sql server db file   system ex. : msdb://host:port@user:password/db_name
+    (trusted connection) !?
+    ?? any more providers
+    -->
+    <DbConnection>sqdb://file.sqlite</DbConnection>
   </PropertyGroup>
 
   <!-- If you need add custom value then you can describe it default values as below -->
@@ -14,20 +23,36 @@
     </Extension>
   </ItemDefinitionGroup> -->
 
+  <!-- using nuget for resolve this -->
   <ItemGroup>
     <ExtensionReference Include="Entity" Version="1.0.0.0" />
-    <ExtensionReference Include="Documents" Version="1.0.0.0"/>
+    <!-- if the version attr is absent then we pick latest version -->
+    <ExtensionReference Include="Documents" />
+    <ExtensionReference Include="Modules" Version="1.0.0.0"/>
   </ItemGroup>
 
+  
   <ItemGroup>
+  <!-- Metadata section here we store links to the metadata. 
+    It will pass to the compiler . /md:Modules\Module1.aqmd,Modules-->
+    <Metadata Include="Modules\Module1.aqmd"/>
+
+    <!-- <Metadata Include="Documents\*.aqmd" Extension="documents" /> -->
     <Metadata Include="Documents\Doc1.aqmd" Extension="Documents" />
     <Metadata Include="Documents\Doc2.aqmd" Extension="Documents" />
     <Metadata Include="Documents\Doc3.aqmd" Extension="Documents" />
   </ItemGroup>
 
   <ItemGroup>
-    <Metadata Update="Documents\Doc1.aqmd">
-      <Modules>Documents\Module1.aq;Documents\Module2.aq</Modules>
-    </Metadata>
+    <!-- we applicate modules here -->
+    <!-- All modules must compile after step1 (initialize all components) -->
+    <Module Include="Documents\Module1.aq" Metadata="Documents\Doc1.aqmd" />
+    <Module Include="Documents\Module2.aq" Metadata="Documents\Doc1.aqmd" />
+    <Module Include="Modules\Module1.aq" Metadata="Modules\Module1.aqmd" />
   </ItemGroup>
+
+  <!-- Structure provider - used for create db structure  -->
+  <!-- Query provider - used for constructing the queries -->
+
+  <!-- From query provider we can get type id for clr type -->
 </Project>
