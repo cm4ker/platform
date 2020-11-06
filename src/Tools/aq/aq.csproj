@@ -11,11 +11,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="..\Shared\CodeAnnotations.cs" />
+        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
     </ItemGroup>
 
     <ItemGroup>
-        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+      <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.0.0" />
     </ItemGroup>
 
 </Project>

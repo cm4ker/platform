@@ -3,10 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Aquila.Configuration;
-using Aquila.Configuration.Structure;
-using Aquila.Core.Configuration;
-using Aquila.Core.Environment;
 using System.IO.Compression;
 using SharpFileSystem.Database;
 using SharpFileSystem.FileSystems;
@@ -50,14 +46,14 @@ namespace Aquila.Cli.Commands.Db
             }
 
             var storage = new PhysicalFileSystem(pathTo);
-            
+
 
             var env = _environmentManager.GetEnvironment(Name);
             if (env is IPlatformEnvironment platform)
             {
                 var databaseStorage = new DatabaseFileSystem(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME,
                     platform.DataContextManager.GetContext());
-            
+
                 //TODO: Save the configuration
             }
         }

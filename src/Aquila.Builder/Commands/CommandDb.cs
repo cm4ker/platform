@@ -6,11 +6,12 @@ using Aquila.Cli.Commands.Db;
 
 namespace Aquila.Cli.Commands
 {
-    [Command("db")]
     [HelpOption]
+    [Command("db")]
     [Subcommand(typeof(CommandDbCreate))]
     [Subcommand(typeof(CommandDbDeploy))]
     [Subcommand(typeof(CommandDBList))]
+
     public class CommandDb
     {
         public int OnExecute()

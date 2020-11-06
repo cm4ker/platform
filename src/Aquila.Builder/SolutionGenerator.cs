@@ -3,7 +3,6 @@ using System.IO;
 using System.Xml.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using Aquila.Configuration.Structure.Data;
 using Aquila.Core.Contracts.TypeSystem;
 
 namespace Aquila.Cli
