@@ -62,6 +62,17 @@ namespace Aquila.Compiler.Test2
         }
 
         [Fact]
+        public void MethodDecl2Test()
+        {
+            var parser = Parse(@"int CustomProc() 
+            { 
+                return 2 * 3 / 3 * 6 * (10 + 2); 
+            }");
+            var result = _v.Visit(parser.method_declaration());
+            var expr = Assert.IsAssignableFrom<MethodDecl>(result);
+        }
+
+        [Fact]
         public void UnaryExpressionTest()
         {
             var parser = Parse("!a");
@@ -130,6 +141,7 @@ namespace Aquila.Compiler.Test2
             Assert.True(expr.VariableType.IsVar);
         }
 
+
         [Fact]
         public void MissingElementTest()
         {
@@ -140,6 +152,7 @@ namespace Aquila.Compiler.Test2
             var missing = Assert.IsType<MissingEx>(expr.Declarators[0].Initializer);
             Assert.NotEqual("", missing.Message);
         }
+
 
         #region Helpers
 

@@ -212,7 +212,6 @@
     <PropertyGroup Condition=" '$(DontRunPeachpieCompileWithDotnet)' != '' ">
       <_FscTask_FscToolExe>$(FscToolExe)</_FscTask_FscToolExe>
       <_FscTask_FscToolPath>$(FscToolPath)</_FscTask_FscToolPath>
-      <_FscTask_DotnetFscCompilerPath></_FscTask_DotnetFscCompilerPath>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -277,7 +276,6 @@
                GenerateFullPaths="$(GenerateFullPaths)"
                ExtensionReference="@(ExtensionReference)"
                Metadata="@(Metadata)"
-               Test="$(Test)"
                />
 
     <Copy SourceFiles="$(TempOutputDir)$(DocumentationFile)" DestinationFolder="$(OutputPath)" Condition=" '$(GenerateDocumentation)'=='true' " />

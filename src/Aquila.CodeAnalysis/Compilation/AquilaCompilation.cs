@@ -330,9 +330,8 @@ namespace Aquila.CodeAnalysis
             compilation.SourceSymbolCollection.AddSyntaxTreeRange(syntaxTrees);
 
             //Delegate to component
-            
-            
-            
+
+
             //
             return compilation;
         }
@@ -496,8 +495,7 @@ namespace Aquila.CodeAnalysis
 
                 try
                 {
-                    // TODO: cancellationToken
-                    builder.AddRange(this.BindAndAnalyseTask().Result.AsImmutable());
+                    builder.AddRange(this.BindAndAnalyseTask(cancellationToken).Result.AsImmutable());
                 }
                 catch (AggregateException e) when (e.InnerException != null)
                 {
@@ -865,11 +863,11 @@ namespace Aquila.CodeAnalysis
         /// Ensures semantic binding and flow analysis.
         /// </summary>
         /// <returns>The result of the task contains enumeration of diagnostics.</returns>
-        public async Task<IEnumerable<Diagnostic>> BindAndAnalyseTask()
+        public async Task<IEnumerable<Diagnostic>> BindAndAnalyseTask(CancellationToken cancellationToken)
         {
             if (_lazyAnalysisTask == null)
             {
-                _lazyAnalysisTask = Task.Run(() => SourceCompiler.BindAndAnalyze(this, CancellationToken.None));
+                _lazyAnalysisTask = Task.Run(() => SourceCompiler.BindAndAnalyze(this, cancellationToken));
             }
 
             return await _lazyAnalysisTask.ConfigureAwait(false);

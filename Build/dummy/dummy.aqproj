@@ -3,7 +3,7 @@
   <PropertyGroup>
     <ProjectName>Test</ProjectName>
     <TargetFramework>net5.0</TargetFramework>
-    <DebuggerAttach>true</DebuggerAttach>
+    <DebuggerAttach>false</DebuggerAttach>
     <!-- this is required 
     possible schemas: 
     sqdb - sqlite     db file   system ex. : sqdb://file_system_path
@@ -38,17 +38,19 @@
     <Metadata Include="Modules\Module1.aqmd"/>
 
     <!-- <Metadata Include="Documents\*.aqmd" Extension="documents" /> -->
-    <Metadata Include="Documents\Doc1.aqmd" Extension="Documents" />
-    <Metadata Include="Documents\Doc2.aqmd" Extension="Documents" />
-    <Metadata Include="Documents\Doc3.aqmd" Extension="Documents" />
+    <Metadata Include="Documents\Doc1.aqmd" Ext="Documents" />
+    <Metadata Include="Documents\Doc2.aqmd" Ext="Documents" />
+    <Metadata Include="Documents\Doc3.aqmd" Ext="Documents" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- we applicate modules here -->
     <!-- All modules must compile after step1 (initialize all components) -->
-    <Module Include="Documents\Module1.aq" Metadata="Documents\Doc1.aqmd" />
+    <!-- <Module Include="Documents\Module1.aq" Metadata="Documents\Doc1.aqmd" />
     <Module Include="Documents\Module2.aq" Metadata="Documents\Doc1.aqmd" />
-    <Module Include="Modules\Module1.aq" Metadata="Modules\Module1.aqmd" />
+    <Module Include="Modules\Module1.aq" Metadata="Modules\Module1.aqmd" /> -->
+
+    <Compile Include="test.aq" />
   </ItemGroup>
 
   <!-- Structure provider - used for create db structure  -->

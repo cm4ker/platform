@@ -16,7 +16,7 @@ namespace Aquila.CodeAnalysis.Errors
         {
             get
             {
-                return "PHP";
+                return "AQ";
             }
         }
 

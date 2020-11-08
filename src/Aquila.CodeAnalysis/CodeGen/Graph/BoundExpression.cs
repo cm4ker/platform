@@ -227,9 +227,8 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             var il = cg.Builder;
 
-
-            xtype = cg.EmitConvertStringToPhpNumber(
-                cg.EmitConvertIntToLong(xtype)); // int|bool -> long, string -> number
+            // int|bool -> long, string -> number
+            xtype = cg.EmitConvertStringToPhpNumber(cg.EmitConvertIntToLong(xtype));
             cg.EmitPhpAliasDereference(ref xtype); // alias -> value
 
             //
@@ -300,8 +299,8 @@ namespace Aquila.CodeAnalysis.Semantics
             }
             else if (xtype.SpecialType == SpecialType.System_Int64)
             {
-                var ytype = cg.EmitConvertStringToPhpNumber(
-                    cg.EmitConvertIntToLong(cg.Emit(right))); // int|bool -> long, string -> number
+                // int|bool -> long, string -> number
+                var ytype = cg.EmitConvertStringToPhpNumber(cg.EmitConvertIntToLong(cg.Emit(right)));
                 cg.EmitPhpAliasDereference(ref ytype); // alias -> value
 
                 if (ytype.SpecialType == SpecialType.System_Int64)
@@ -315,6 +314,10 @@ namespace Aquila.CodeAnalysis.Semantics
                             return cg.CoreTypes.Long;
                         }
                     }
+
+                    // i8 + i8 : i8
+                    il.EmitOpCode(ILOpCode.Add);
+                    return cg.CoreTypes.Long;
 
                     // i8 + i8 : number
                     return cg.EmitCall(ILOpCode.Call, null)

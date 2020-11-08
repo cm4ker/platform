@@ -409,25 +409,41 @@ namespace Aquila.Syntax.Parser
             return Stack.PeekNode();
         }
 
+
+        private void CreateBinaryOp(ParserRuleContext currentContext, ParserRuleContext[] childContexts,
+            Func<int, Operations> factory)
+        {
+            var length = childContexts.Length;
+
+            if (length > 1)
+            {
+                for (int i = 1; i < length; i++)
+                {
+                    var indexChild = i * 2;
+
+                    var sign = currentContext.GetChild(indexChild - 1) as TerminalNodeImpl ??
+                               throw new Exception("Unexpected error");
+
+                    Operations opType = factory(sign.Symbol.Type);
+
+                    Stack.Push(new BinaryEx(currentContext.ToLineInfo(), SyntaxKind.BinaryExpression,
+                        opType, Stack.PopExpression(), Stack.PopExpression()));
+                }
+            }
+        }
+
         public override LangElement VisitMultiplicative_expression(
             ZSharpParser.Multiplicative_expressionContext context)
         {
             base.VisitMultiplicative_expression(context);
 
-            if (context.range_expression().Length > 1)
+            CreateBinaryOp(context, context.range_expression(), i => (i) switch
             {
-                Operations opType;
-
-                if (context.PERCENT() != null) opType = Operations.Mod;
-                else if (context.DIV() != null) opType = Operations.Div;
-                else if (context.STAR() != null) opType = Operations.Mul;
-                else throw new Exception();
-
-                Stack.Push(new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression,
-                    opType, Stack.PopExpression(),
-                    Stack.PopExpression()));
-            }
-
+                ZSharpLexer.PERCENT => Operations.Mod,
+                ZSharpLexer.DIV => Operations.Div,
+                ZSharpLexer.STAR => Operations.Mul,
+                _ => throw new InvalidOperationException("Unknown operator")
+            });
             return null;
         }
 
@@ -475,21 +491,13 @@ namespace Aquila.Syntax.Parser
         {
             base.VisitAdditive_expression(context);
 
-            if (context.multiplicative_expression().Length > 1)
+            CreateBinaryOp(context, context.multiplicative_expression(), i => (i) switch
             {
-                Operations opType = Operations.Unknown;
-
-                if (context.PLUS().Any()) opType = Operations.Add;
-                else if (context.MINUS().Any()) opType = Operations.Sub;
-
-                var result = new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression, opType,
-                    Stack.PopExpression(),
-                    Stack.PopExpression());
-
-                Stack.Push(result);
-            }
-
-
+                ZSharpLexer.PLUS => Operations.Add,
+                ZSharpLexer.MINUS => Operations.Sub,
+                _ => throw new InvalidOperationException("Unknown operator")
+            });
+            
             return null;
         }
 

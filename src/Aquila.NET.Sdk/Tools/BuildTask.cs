@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -141,13 +142,17 @@ namespace Aquila.NET.Sdk.Tools
                     $@"Attach information: prc='{Process.GetCurrentProcess().ProcessName}'; pid={Process.GetCurrentProcess().Id}");
                 Console.WriteLine(@"Waiting for debugger attach...");
 
-
-                while (!Debugger.IsAttached)
+                while (!Debugger.IsAttached && !IsCanceled())
                 {
                     Thread.Sleep(1000);
                 }
 
-                Console.WriteLine(@"Attached!");
+                if (!IsCanceled())
+                    Console.WriteLine(@"Attached!");
+                else
+                {
+                    Console.WriteLine(@"Cancelled!");
+                }
             }
 
             _cancellation = new CancellationTokenSource();
@@ -228,6 +233,8 @@ namespace Aquila.NET.Sdk.Tools
                 foreach (var er in ExtensionReference)
                 {
                     args.Add("/er:" + er);
+
+                    Log.LogMessage($"We are found the extension: {er}");
                 }
             }
 
@@ -279,7 +286,7 @@ namespace Aquila.NET.Sdk.Tools
             {
                 foreach (var s in Compile)
                 {
-                    //args.Add(s);
+                    args.Add(s.ToString());
                 }
             }
 

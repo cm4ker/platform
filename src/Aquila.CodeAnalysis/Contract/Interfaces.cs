@@ -204,8 +204,8 @@ namespace Aquila.CodeAnalysis.Public
 
     public interface IAnalysesComponent
     {
-        void PopulateAssemblyReference(AquilaCompilation compilation);
-        void PopulateTypes(AquilaCompilation compilation);
-        void PopulateMembers(AquilaCompilation compilation);
+        AquilaCompilation PopulateAssemblyReference(AquilaCompilation compilation);
+        AquilaCompilation PopulateTypes(AquilaCompilation compilation);
+        AquilaCompilation PopulateMembers(AquilaCompilation compilation);
     }
 }

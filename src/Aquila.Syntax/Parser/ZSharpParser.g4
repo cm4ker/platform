@@ -274,11 +274,11 @@ and_expression
 	;
 
 equality_expression
-	: relational_expression ((OP_EQ | OP_NE)  relational_expression)*
+	: relational_expression (op=(OP_EQ | OP_NE)  relational_expression)*
 	;
 
 relational_expression
-	: shift_expression ((LT | GT | OP_LE | OP_GE) shift_expression | IS isType | AS type_)*
+	: shift_expression (op=(LT | GT | OP_LE | OP_GE) shift_expression | IS isType | AS type_)*
 	;
 
 shift_expression
@@ -290,7 +290,7 @@ additive_expression
 	;
 
 multiplicative_expression
-	: range_expression ((STAR | DIV | PERCENT)  range_expression)*
+	: range_expression (('*' | '/' | '%' ) range_expression)*
 	;
 
 //switch_expression

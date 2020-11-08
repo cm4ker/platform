@@ -262,6 +262,10 @@ namespace Aquila.CodeAnalysis.CommandLine
                             embedInteropTypes: false));
                         continue;
 
+                    case "er":
+                        //cache directory with dirs
+                        continue;
+
                     case "sourcelink":
                         value = RemoveQuotesAndSlashes(value);
                         if (string.IsNullOrEmpty(value))
@@ -807,8 +811,7 @@ namespace Aquila.CodeAnalysis.CommandLine
             {
                 // warning: no source files specified
                 diagnostics.Add(
-                    Errors.MessageProvider.Instance.CreateDiagnostic(
-                        Errors.ErrorCode.WRN_NoSourceFiles,
+                    Errors.MessageProvider.Instance.CreateDiagnostic(Errors.ErrorCode.WRN_NoSourceFiles,
                         Location.None));
             }
 

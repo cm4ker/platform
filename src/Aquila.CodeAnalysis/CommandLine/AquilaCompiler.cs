@@ -84,17 +84,10 @@ namespace Aquila.CodeAnalysis.CommandLine
                 var trees = new AquilaSyntaxTree[sourceFiles.Length];
                 var pharFiles = new List<(int index, ParsedSource phar)>();
 
-                // void ProcessParsedSource(int index, ParsedSource parsed)
-                // {
-                //     if (parsed.Manifest == null)
-                //     {
-                //         trees[index] = parsed.SyntaxTree;
-                //     }
-                //     else
-                //     {
-                //         pharFiles.Add((index, parsed));
-                //     }
-                // }
+                void ProcessParsedSource(int index, ParsedSource parsed)
+                {
+                    trees[index] = parsed.SyntaxTree;
+                }
 
                 // We compute script parse options once so we don't have to do it repeatedly in
                 // case there are many script files.
@@ -102,16 +95,21 @@ namespace Aquila.CodeAnalysis.CommandLine
 
                 if (Arguments.CompilationOptions.ConcurrentBuild)
                 {
-                    Parallel.For(0, sourceFiles.Length, new Action<int>(i =>
-                    {
-                        //ProcessParsedSource(i, ParseFile(consoleOutput, parseOptions, scriptParseOptions, ref hadErrors, sourceFiles[i], errorLogger));
-                    }));
+                    Parallel.For(0, sourceFiles.Length,
+                        new Action<int>(i =>
+                        {
+                            ProcessParsedSource(i,
+                                ParseFile(consoleOutput, parseOptions, scriptParseOptions, ref hadErrors,
+                                    sourceFiles[i], errorLogger));
+                        }));
                 }
                 else
                 {
                     for (int i = 0; i < sourceFiles.Length; i++)
                     {
-                        //ProcessParsedSource(i, ParseFile(consoleOutput, parseOptions, scriptParseOptions, ref hadErrors, sourceFiles[i], errorLogger));
+                        ProcessParsedSource(i,
+                            ParseFile(consoleOutput, parseOptions, scriptParseOptions, ref hadErrors, sourceFiles[i],
+                                errorLogger));
                     }
                 }
 
