@@ -154,8 +154,6 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             //     _compilation.Options.Defines);
         }
 
-        
-        
         void PopulateDefinedConstants(SynthesizedStaticTypeSymbol container,
             ImmutableDictionary<string, string> defines)
         {
@@ -211,6 +209,13 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                     new SynthesizedFieldSymbol(container, type, d.Key, Accessibility.Public, constant: value)
                 );
             }
+        }
+
+        public void PopulateComponents()
+        {
+            var type = _compilation.ComponentTypeManager.SynthesizeType();
+            type.SetName("Cls1");
+            type.SetNamespace("Entity");
         }
 
         public void AddSyntaxTreeRange(IEnumerable<AquilaSyntaxTree> trees)

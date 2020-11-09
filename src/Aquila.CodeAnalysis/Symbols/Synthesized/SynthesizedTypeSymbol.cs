@@ -35,36 +35,6 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         {
             _compilation = compilation;
         }
-
-        #region Setters
-
-        public void SetIsAbstract(bool value)
-        {
-            _isAbstract = value;
-        }
-
-        public void SetIsStatic(bool value)
-        {
-            _isStatic = value;
-        }
-
-        public void SetName(string value)
-        {
-            _name = value;
-        }
-
-        public void SetNamespace(string value)
-        {
-            _namespace = value;
-        }
-
-        public void SetNamespace(INamedTypeSymbol value)
-        {
-            _baseType = (NamedTypeSymbol) value;
-        }
-
-        #endregion
-
         public override int Arity => 0;
 
         internal override bool HasTypeArgumentsCustomModifiers => false;

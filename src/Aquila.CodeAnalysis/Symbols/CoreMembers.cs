@@ -60,7 +60,7 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        protected abstract T ResolveSymbol(NamedTypeSymbol  declaringType);
+        protected abstract T ResolveSymbol(NamedTypeSymbol declaringType);
     }
 
     /// <summary>
@@ -82,7 +82,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// <summary>
         /// Resolves <see cref="MethodSymbol"/> of this descriptor.
         /// </summary>
-        protected override MethodSymbol ResolveSymbol(NamedTypeSymbol  declaringType)
+        protected override MethodSymbol ResolveSymbol(NamedTypeSymbol declaringType)
         {
             return declaringType.GetMembers(MemberName).OfType<MethodSymbol>().First(MatchesSignature);
         }
@@ -246,12 +246,18 @@ namespace Aquila.CodeAnalysis.Symbols
             {
                 IsNullOrEmpty_String = ct.String.Method("IsNullOrEmpty", ct.String);
                 Concat_String_String = ct.String.Method("Concat", ct.String, ct.String);
+                Concat_String_String_String = ct.String.Method("Concat", ct.String, ct.String, ct.String);
+                Concat_String_String_String_String =
+                    ct.String.Method("Concat", ct.String, ct.String, ct.String, ct.String);
                 Long_ToString = ct.Long.Method("ToString");
             }
 
             public readonly CoreMethod
                 IsNullOrEmpty_String,
                 Concat_String_String,
+                Concat_String_String_String,
+                Concat_String_String_String_String,
+                //Concat_Args,
                 Long_ToString;
 
             // public readonly CoreProperty GetName_PhpTypeInfo, GetTypeHandle_PhpTypeInfo;

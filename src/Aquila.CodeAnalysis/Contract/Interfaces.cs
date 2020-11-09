@@ -1,10 +1,14 @@
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
+using Microsoft.Cci;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.PooledObjects;
 
 namespace Aquila.CodeAnalysis.Public
 {
@@ -29,6 +33,11 @@ namespace Aquila.CodeAnalysis.Public
 
     public interface ITypeBuilder : IType
     {
+        void SetName(string value);
+
+
+        void SetNamespace(string value);
+
         public IMethodBuilder CreateMethod();
     }
 
@@ -200,6 +209,28 @@ namespace Aquila.CodeAnalysis.Public
         }
 
         #endregion
+
+        /// <summary>
+        /// Returns all templates owned by this type manager
+        /// </summary>
+        internal ImmutableArray<NamedTypeSymbol> GetAllCreatedTemplates()
+        {
+            // NOTE: templates may not be sealed in case metadata is being emitted without IL
+
+            var builder = ArrayBuilder<NamedTypeSymbol>.GetInstance();
+
+            //var anonymousTypes = ArrayBuilder<AnonymousTypeTemplateSymbol>.GetInstance();
+            //GetCreatedAnonymousTypeTemplates(anonymousTypes);
+            //builder.AddRange(anonymousTypes);
+            //anonymousTypes.Free();
+
+            if (_lazySynthesizedTypes != null)
+            {
+                builder.AddRange(_lazySynthesizedTypes);
+            }
+
+            return builder.ToImmutableAndFree();
+        }
     }
 
     public interface IAnalysesComponent

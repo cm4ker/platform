@@ -49,7 +49,10 @@ namespace Aquila.CodeAnalysis
         /// Manages anonymous types declared in this compilation. Unifies types that are structurally equivalent.
         /// </summary>
         readonly AnonymousTypeManager _anonymousTypeManager;
-
+        
+        /// <summary>
+        /// Manages types declared by the component
+        /// </summary>
         readonly ComponentTypeManager _componentTypeManager;
 
         /// <summary>
@@ -327,12 +330,17 @@ namespace Aquila.CodeAnalysis
 
             compilation.CheckAssemblyName(compilation.DeclarationDiagnostics);
 
+            //Work for components
+            //1. Generate Types
+            //2. Generate Props and methods
+            //3. Generate Method bodies
+            compilation.SourceSymbolCollection.PopulateComponents();
+
+            //Add sources
             compilation.SourceSymbolCollection.AddSyntaxTreeRange(syntaxTrees);
 
             //Delegate to component
 
-
-            //
             return compilation;
         }
 

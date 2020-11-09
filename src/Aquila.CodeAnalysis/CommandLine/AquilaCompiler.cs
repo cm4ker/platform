@@ -340,7 +340,8 @@ namespace Aquila.CodeAnalysis.CommandLine
         }
 
         internal static string GetVersion() => typeof(AquilaCompiler).GetTypeInfo().Assembly
-            .GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+            ?.InformationalVersion;
 
         internal new string GetAssemblyFileVersion() => GetVersion();
 

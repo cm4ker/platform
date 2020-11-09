@@ -3,6 +3,16 @@
   <PropertyGroup>
     <ProjectName>Test</ProjectName>
     <TargetFramework>net5.0</TargetFramework>
+    
+    <!-- 
+        <TargetDatabase>pgsql</TargetDatabase>
+        <TargetDatabase>mssql</TargetDatabase>
+        <TargetDatabase>sqlite</TargetDatabase>
+        <TargetDatabase>oracle</TargetDatabase>
+        ... etc
+     -->
+    
+    <TargetDatabase>pg</TargetDatabase>
     <DebuggerAttach>false</DebuggerAttach>
     <!-- this is required 
     possible schemas: 
@@ -12,7 +22,7 @@
     (trusted connection) !?
     ?? any more providers
     -->
-    <DbConnection>sqdb://file.sqlite</DbConnection>
+    <!-- <DbConnection>sqdb://file.sqlite</DbConnection> -->
   </PropertyGroup>
 
   <!-- If you need add custom value then you can describe it default values as below -->
