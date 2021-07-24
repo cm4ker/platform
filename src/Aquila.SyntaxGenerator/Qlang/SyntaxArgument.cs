@@ -8,10 +8,18 @@ namespace Aquila.SyntaxGenerator.QLang
         [XmlAttribute] public string Type { get; set; }
 
         [XmlAttribute] public bool DenyChildrenFill { get; set; }
+        
+        
+        [XmlAttribute] public bool OnlyArgument { get; set; }
+        
+        [XmlAttribute] public bool IsProtected { get; set; }
 
         [XmlAttribute] public bool DenyDeclare { get; set; }
 
         [XmlAttribute] public bool PassBase { get; set; }
+        
+        
+        [XmlAttribute] public bool ImplicitPassInChildren { get; set; }
         public bool Null { get; set; }
 
         public bool IsNeedInitialize()

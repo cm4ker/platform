@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Aquila.Core.Tools;
-using Aquila.Core.Logging;
+using Aquila.Logging;
 
 namespace Aquila.Core.Network
 {

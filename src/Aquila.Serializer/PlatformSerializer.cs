@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Portable.Xaml;
-using Aquila.Avalonia.Wrapper;
 
 namespace Aquila.Serializer
 {
@@ -53,11 +51,11 @@ namespace Aquila.Serializer
                 }
             }
 
-            if (obj is UXElement)
-            {
-                bw.Write((int) ValType.UXContainer);
-                bw.Write(XamlServices.Save(obj));
-            }
+            // if (obj is UXElement)
+            // {
+            //     bw.Write((int) ValType.UXContainer);
+            //     bw.Write(XamlServices.Save(obj));
+            // }
             else if (obj is int i)
             {
                 bw.Write((int) ValType.Int);

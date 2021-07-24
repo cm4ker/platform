@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using Aquila.Controls.Avalonia;
 
 namespace Aquila.UIBuilder
 {
@@ -33,14 +30,7 @@ namespace Aquila.UIBuilder
 
         private void InitializeComponent()
         {
-            var picker = new ObjectPicker();
             var stackPanel = new StackPanel();
-            var id = new ObjectPicker();
-            
-            
-            stackPanel.Children.Add(picker);
-            stackPanel.Children.Add(id);
-            
 
             Content = stackPanel;
         }

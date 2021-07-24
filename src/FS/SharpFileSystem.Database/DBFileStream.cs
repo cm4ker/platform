@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Data.Common;
 using System.IO;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using Aquila.Core.Helpers;
+using Aquila.Core;
 using Aquila.QueryBuilder;
 
 namespace SharpFileSystem.Database
@@ -55,7 +52,7 @@ namespace SharpFileSystem.Database
                 cmd.AddParameterWithValue("Path", _path.ParentPath.ToString());
                 cmd.AddParameterWithValue("Name", _path.EntityName);
 
-                _ms = new MemoryStream((byte[]) cmd.ExecuteScalar());
+                _ms = new MemoryStream((byte[])cmd.ExecuteScalar());
             }
         }
 

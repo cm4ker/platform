@@ -8,8 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Aquila.Core;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Network;
-using Aquila.Core.Logging;
 using Aquila.Core.Network;
+using Aquila.Logging;
 
 namespace Aquila.Networking
 {
@@ -30,7 +30,6 @@ namespace Aquila.Networking
             _serviceProvider = serviceProvider;
             _unsbscribers = new Dictionary<IConnection, IDisposable>();
         }
-
 
         public async Task<object> Invoke(Route route, ISession session, params object[] arg)
         {

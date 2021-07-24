@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using Aquila.Core.Helpers;
 using Aquila.Data;
 using Aquila.QueryBuilder;
 using Aquila.QueryBuilder.Builders;
@@ -10,10 +9,10 @@ namespace SharpFileSystem.Database
 {
     public class DatabaseFileSystem : IFileSystem
     {
-        internal DataContext Context { get; }
+        internal DataConnectionContext Context { get; }
         internal string TableName { get; }
 
-        public DatabaseFileSystem(string tableName, DataContext context)
+        public DatabaseFileSystem(string tableName, DataConnectionContext context)
         {
             TableName = tableName;
             Context = context;
@@ -28,8 +27,8 @@ namespace SharpFileSystem.Database
                 .Table(TableName)
                 .CheckExists();
 
-            tab.WithColumn("Path").SetType(new ColumnTypeVarChar() {Size = 3000});
-            tab.WithColumn("Name").SetType(new ColumnTypeVarChar() {Size = 3000});
+            tab.WithColumn("Path").SetType(new ColumnTypeVarChar() { Size = 3000 });
+            tab.WithColumn("Name").SetType(new ColumnTypeVarChar() { Size = 3000 });
             tab.WithColumn("IsDirectory").SetType(new ColumnTypeBool());
             tab.WithColumn("Data").SetType(new ColumnTypeVarBinary());
 
@@ -61,7 +60,7 @@ namespace SharpFileSystem.Database
 
             using (var cmd = Context.CreateCommand(Gen))
             {
-                cmd.AddParameterWithValue("Path", path.Path);
+                cmd.AddOrSetParameterWithValue("Path", path.Path);
                 var result = new List<FileSystemPath>();
 
                 using (var r = cmd.ExecuteReader())
@@ -99,8 +98,8 @@ namespace SharpFileSystem.Database
 
             using (var cmd = Context.CreateCommand(Gen))
             {
-                cmd.AddParameterWithValue("Path", path.ParentPath.ToString());
-                cmd.AddParameterWithValue("Name", path.EntityName);
+                cmd.AddOrSetParameterWithValue("Path", path.ParentPath.ToString());
+                cmd.AddOrSetParameterWithValue("Name", path.EntityName);
 
                 return cmd.ExecuteScalar() != null;
             }
@@ -144,8 +143,8 @@ namespace SharpFileSystem.Database
 
             using (var cmd = Context.CreateCommand(Gen))
             {
-                cmd.AddParameterWithValue("Path", path.ParentPath.ToString());
-                cmd.AddParameterWithValue("Name", path.EntityName);
+                cmd.AddOrSetParameterWithValue("Path", path.ParentPath.ToString());
+                cmd.AddOrSetParameterWithValue("Name", path.EntityName);
 
                 cmd.ExecuteNonQuery();
             }

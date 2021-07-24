@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using TextCopy;
-using Aquila.Core.Logging;
+using Aquila.Logging;
 using Aquila.Shell.Ansi;
 using Aquila.Shell.Contracts.Ansi;
 using Aquila.Shell.Contracts;

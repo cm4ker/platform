@@ -96,6 +96,8 @@ namespace Aquila.Compiler.Contracts
 
         bool IsPrimitive { get; }
 
+        bool HasGenericParameters { get; }
+
         IType GetEnumUnderlyingType();
 
         int GetHashCode();

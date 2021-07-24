@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net5.0</TargetFramework>
         <Configurations>Debug;Release;DebugServer</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
@@ -9,11 +9,7 @@
         <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\Aquila.Controls.Avalonia\Aquila.Controls.Avalonia.csproj" />
-        <ProjectReference Include="..\Aquila.Core.Querying\Aquila.Core.Querying.csproj" />
-        <ProjectReference Include="..\Aquila.Shared\Aquila.Shared.csproj" />
-        <ProjectReference Include="..\Aquila.Test.Tools\Aquila.Test.Tools.csproj" />
-        <ProjectReference Include="..\Aquila.UI.Ast\Aquila.UI.Ast.csproj" />
+        <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="App.xaml">
@@ -23,10 +19,12 @@
             <SubType>Designer</SubType>
         </EmbeddedResource>
     </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+      <PackageReference Include="Avalonia.Diagnostics" Version="0.10.6" />
+    </ItemGroup>
 
     <Import Project="..\Props\avalonia.props" />
     <Import Project="..\Props\avalonia.desktop.props" />
     <Import Project="..\Props\avalonia.reactiveui.props" />
-    <Import Project="..\Props\portable.xaml.props" />
-
 </Project>

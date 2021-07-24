@@ -8,12 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Aquila.Cli;
 using Aquila.Core.Contracts.Environment;
 using Aquila.Core.Environment;
-using Aquila.Core.Logging;
 using Aquila.Core.Network;
 using Aquila.Core.Serialisers;
 using Aquila.Core.Settings;
 using Aquila.Core.Tools;
 using Aquila.Data;
+using Aquila.Logging;
 using Aquila.Shell.Contracts;
 using Aquila.Shell.Terminal;
 using Aquila.SSH;
@@ -142,7 +142,7 @@ namespace Aquila.Shell
             IServiceCollection services = new ServiceCollection();
 
             
-            services.AddScoped<ICommandLineInterface, McMasterCommandLineInterface>();
+            services.AddScoped<ICommandLineInterface, CliInterface>();
             services.AddSingleton(f => _serviceProvider.GetRequiredService<IPlatformEnvironmentManager>());
             services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
 

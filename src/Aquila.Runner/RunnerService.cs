@@ -4,11 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Aquila.Core.Network;
 using Aquila.Core.Environment;
-using Aquila.Core.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Aquila.Core.Contracts.Environment;
 using Aquila.Core.Contracts.Network;
 using Aquila.Core.Settings;
+using Aquila.Logging;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Aquila.Runner

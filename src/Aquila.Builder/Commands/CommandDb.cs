@@ -6,8 +6,8 @@ using Aquila.Cli.Commands.Db;
 
 namespace Aquila.Cli.Commands
 {
-    [Command("db")]
     [HelpOption]
+    [Command("db")]
     [Subcommand(typeof(CommandDbCreate))]
     [Subcommand(typeof(CommandDbDeploy))]
     [Subcommand(typeof(CommandDBList))]
@@ -15,6 +15,17 @@ namespace Aquila.Cli.Commands
     {
         public int OnExecute()
         {
+            return 0;
+        }
+    }
+
+    [HelpOption]
+    [Command("deploy")]
+    public class CommandDeploy
+    {
+        public int OnExecute()
+        {
+            Console.WriteLine("Deploy!!!");
             return 0;
         }
     }

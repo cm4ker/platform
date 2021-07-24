@@ -12,9 +12,9 @@ using Aquila.Core.Contracts.Data;
 using Aquila.Core.Contracts.TypeSystem;
 using Aquila.EntityComponent.Entity;
 using Aquila.Language.Ast;
-using Aquila.Language.Ast.Definitions;
 using Aquila.QueryBuilder;
 using Aquila.QueryBuilder.Model;
+using Name = Aquila.Language.Ast.Name;
 using SystemTypeBindings = Aquila.Compiler.Roslyn.SystemTypeBindings;
 
 namespace Aquila.EntityComponent.Compilation

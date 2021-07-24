@@ -21,7 +21,6 @@ using Aquila.SimpleIde.Dock;
 using Aquila.Configuration.Common.TypeSystem;
 using Aquila.Configuration.Storage;
 using Aquila.Configuration;
-using Aquila.Language.Ast.Definitions;
 using Aquila.Compiler.Platform;
 using Aquila.Compiler.Dnlib;
 

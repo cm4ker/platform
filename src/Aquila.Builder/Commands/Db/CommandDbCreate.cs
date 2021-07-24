@@ -1,15 +1,9 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
-using SharpFileSystem.Database;
-using Aquila.Configuration.Structure;
-using Aquila.Core.Configuration;
 using Aquila.Data;
 using Aquila.Data.Tools;
 using Aquila.Initializer;
-using Aquila.QueryBuilder;
 
 namespace Aquila.Cli.Commands.Db
 {
@@ -64,19 +58,19 @@ namespace Aquila.Cli.Commands.Db
 
             //Создаём пустой проект с именем Project Name
 
-            var newProject = new Project(null, null) {ProjectName = projectName};
+            //var newProject = new Project(null, null) {ProjectName = projectName};
 
             // Необходимо создать контекст данных
 
-            var dataContext = new DataContext(databaseType, connectionString);
+            var dataContext = new DataConnectionContext(databaseType, connectionString);
 
-            var configStorage = new DatabaseFileSystem(DatabaseConstantNames.CONFIG_TABLE_NAME, dataContext);
-
-            var configSaveStorage = new DatabaseFileSystem(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME, dataContext);
+            // var configStorage = new DatabaseFileSystem(DatabaseConstantNames.CONFIG_TABLE_NAME, dataContext);
+            //
+            // var configSaveStorage = new DatabaseFileSystem(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME, dataContext);
 
             //Сохраняем новоиспечённый проект в сохранённую и конфигураци базы данных
-            newProject.Save(configStorage);
-            newProject.Save(configSaveStorage);
+            // newProject.Save(configStorage);
+            // newProject.Save(configSaveStorage);
 
             Console.WriteLine($"Done!");
         }

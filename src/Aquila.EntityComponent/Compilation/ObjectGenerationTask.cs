@@ -12,11 +12,13 @@ using Aquila.Core.Contracts.TypeSystem;
 using Aquila.EntityComponent.Configuration;
 using Aquila.EntityComponent.Entity;
 using Aquila.Language.Ast;
-using Aquila.Language.Ast.Definitions;
 using Aquila.Language.Ast.Definitions.Functions;
+using Aquila.Language.Ast.Misc;
 using Aquila.Language.Ast.Symbols;
 using Aquila.QueryBuilder;
 using Aquila.Serializer;
+using Name = Aquila.Language.Ast.Name;
+using Property = Aquila.Language.Ast.Property;
 
 namespace Aquila.EntityComponent.Compilation
 {
@@ -111,7 +113,7 @@ namespace Aquila.EntityComponent.Compilation
 
                 var saveBuilder = builder.DefineMethod("Save", true, false, false);
 
-                var astMethod = new Function(null, null, new ParameterList(), new GenericParameterList(),
+                var astMethod = new Method(null, null, new ParameterList(), new GenericParameterList(),
                     new AttributeList(), saveBuilder.Name, saveBuilder.ReturnType.ToAstType());
 
                 TypeBody.SymbolTable.AddMethod(astMethod)

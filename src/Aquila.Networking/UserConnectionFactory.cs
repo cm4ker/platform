@@ -5,7 +5,6 @@ using Aquila.Core.Environment;
 
 namespace Aquila.Core.Network
 {
-    
     /// <summary>
     /// Фабрика создания серверных подключений для полльзователей исключительно к рабочим средам
     /// </summary>

@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Aquila.Core.Authentication;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Environment;
 using Aquila.Core.Contracts.Network;
-using Aquila.Core.Environment;
-using Aquila.Core.Sessions;
 
 namespace Aquila.Core.Network
 {

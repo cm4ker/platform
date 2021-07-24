@@ -1,9 +1,4 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Aquila.Shell.Contracts;
 
 namespace Aquila.Cli.Commands
 {
@@ -12,8 +7,9 @@ namespace Aquila.Cli.Commands
     public class CommandExit
     {
         private IConsole _console;
-        private ITerminalSession _terminalSession;
-        public CommandExit(IConsole console, ITerminalSession terminalSession)
+        private object _terminalSession;
+        
+        public CommandExit(IConsole console, object terminalSession)
         {
             _console = console;
             _terminalSession = terminalSession;
@@ -22,7 +18,7 @@ namespace Aquila.Cli.Commands
         {
             _console.WriteLine("Bye!");
             
-            _terminalSession.Close();
+            //_terminalSession.Close();
         }
     }
 }

@@ -4,10 +4,12 @@ using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Configuration;
 using Aquila.Core.Contracts.Data;
 using Aquila.Core.Contracts.TypeSystem;
+using Aquila.Language.Ast;
 using Aquila.Language.Ast.Definitions;
 using Aquila.QueryBuilder;
 using Aquila.SerializableTypeComponent.Compilation;
 using Aquila.Shared.Tree;
+using CompilationUnit = Aquila.Language.Ast.Definitions.CompilationUnit;
 
 namespace Aquila.SerializableTypeComponent
 {

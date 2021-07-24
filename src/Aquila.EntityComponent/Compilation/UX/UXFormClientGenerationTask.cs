@@ -10,8 +10,8 @@ using Aquila.Core.Contracts.Configuration;
 using Aquila.Core.Contracts.TypeSystem;
 using Aquila.EntityComponent.Configuration;
 using Aquila.Language.Ast;
-using Aquila.Language.Ast.Definitions;
 using Aquila.QueryBuilder;
+using Name = Aquila.Language.Ast.Name;
 using SystemTypeBindings = Aquila.Compiler.Roslyn.SystemTypeBindings;
 
 namespace Aquila.EntityComponent.Compilation.UX

@@ -1,0 +1,48 @@
+<Project>
+
+    <PropertyGroup>
+
+        <!-- version -->
+        <Version Condition=" '$(APPVEYOR_BUILD_VERSION)'!='' ">$(APPVEYOR_BUILD_VERSION)</Version>
+        <Version Condition=" '$(Version)'=='' ">1.0.0</Version>
+        <PackageVersion>$(Version)</PackageVersion>
+
+        <!-- metadata generation -->
+        <GenerateAssemblyVersionAttribute>true</GenerateAssemblyVersionAttribute>
+        <GenerateAssemblyFileVersionAttribute>true</GenerateAssemblyFileVersionAttribute>
+        <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+        <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+        <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+        <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+        <GenerateNeutralResourcesLanguageAttribute>true</GenerateNeutralResourcesLanguageAttribute>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+        <LangVersion>latest</LangVersion>
+        <GenerateFullPaths>true</GenerateFullPaths>
+        <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
+
+        <!-- signing -->
+        <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)build/StrongKeys/core.snk</AssemblyOriginatorKeyFile>
+        <SignAssembly>true</SignAssembly>
+
+        <!-- SourceLink -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>false</EmbedUntrackedSources>
+
+        <!-- symbols -->
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    </PropertyGroup>
+
+    <!-- package -->
+    <PropertyGroup>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/cm4ler/platform</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/cm4ler/platform</PackageProjectUrl>
+        <PackageOutputPath>$(MSBuildThisFileDirectory).nugs</PackageOutputPath>
+        <Authors>cm4ker</Authors>
+        <NoWarn>$(NoWarn),NU5048</NoWarn>
+    </PropertyGroup>
+
+</Project>

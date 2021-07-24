@@ -1,16 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net5.0</TargetFramework>
         <LangVersion>preview</LangVersion>
         <Configurations>Debug;Release;DebugServer</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Aquila.Core\Aquila.Core.csproj" />
-      <ProjectReference Include="..\Aquila.Serializer\Aquila.Serializer.csproj" />
-      <ProjectReference Include="..\Aquila.ServerClientShared\Aquila.ServerClientShared.csproj" />
+        <ProjectReference Include="..\Aquila.Initializer\Aquila.Initializer.csproj" />
+        <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj" />
+        <ProjectReference Include="..\Aquila.Serializer\Aquila.Serializer.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Apex.Serialization" Version="3.0.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+      <PackageReference Include="System.Runtime.Caching" Version="4.7.0" />
     </ItemGroup>
 
 </Project>

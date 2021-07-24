@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="Parser\ZSharpLexer.g4" />
+        <Content Include="Parser\ZSharpParser.g4" />
+        <Content Include="Parser\ZSharpPreprocessorParser.g4" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+
+        <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+
+        <PackageReference Include="morelinq" Version="3.0.0" />
+        <PackageReference Include="Aquila.Microsoft.CodeAnalysis" Version="0.0.6" />
+    </ItemGroup>
+
+</Project>

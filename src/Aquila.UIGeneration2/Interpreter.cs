@@ -3,49 +3,67 @@ using System.IO;
 using Antlr4.Runtime;
 using Aquila.Core.Querying;
 using Aquila.Core.Querying.Model;
+using Aquila.Data;
+using Aquila.Metadata;
 using Aquila.QueryBuilder.Model;
 using Aquila.QueryBuilder.Visitor;
-using Aquila.Test.Tools;
+using Aquila.Runtime;
 
 namespace Aquila.UIBuilder
 {
     public class Interpreter
     {
+        private readonly DatabaseRuntimeContext _drContext;
+        private readonly EntityMetadataCollection _mdCollection;
         private QLang _m;
 
-        private class CustomWalker : QLangWalker
+        private class PrinterWalker : QLangWalker
         {
             private readonly StringWriter _output;
 
-            public CustomWalker(StringWriter output)
+            public PrinterWalker(StringWriter output)
             {
                 _output = output;
             }
 
-            public override object Visit(QItem visitable)
+            public override void DefaultVisit(QLangElement visitable)
             {
-                _output.Write(new String(' ', Depth * 4) + visitable.ToString());
+                if (visitable is null)
+                    return;
 
-                if (visitable is QField)
+                if (string.IsNullOrEmpty(visitable.ToString()))
                 {
-                    _output.Write($"(Name : {visitable.GetDbName()})");
+                    base.DefaultVisit(visitable);
+                    return;
                 }
 
-                if (visitable is QDataSource)
+                _output.Write(new String(' ', Depth * 4) + visitable.ToString());
+
+                switch (visitable)
                 {
-                    _output.Write($"(DS : {visitable.GetDbName()})");
+                    case QField:
+                        _output.Write($"(Name : {visitable.GetDbName()})");
+                        break;
+                    case QDataSource:
+                        _output.Write($"(DS : {visitable.GetDbName()})");
+                        break;
+                    case QFromItem:
+                        _output.Write($"(JOIN : {visitable.GetDbName()})");
+                        break;
                 }
 
                 _output.WriteLine();
 
-                return base.Visit(visitable);
+                base.DefaultVisit(visitable);
             }
         }
 
-        public Interpreter()
+        public Interpreter(DatabaseRuntimeContext drContext)
         {
-            var proj = ConfigurationFactory.Create();
-            _m = new QLang(proj.TypeManager);
+            _drContext = drContext;
+            _mdCollection = TestMetadata.GetTestMetadata();
+
+            _m = new QLang();
         }
 
         public (string Output1, string Output2) RunQuery(string sql)
@@ -67,18 +85,18 @@ namespace Aquila.UIBuilder
 
                 try
                 {
-                    var pwalker = new PhysicalNameWalker();
-                    pwalker.Visit(_m.top() as QItem);
+                    var pwalker = new PhysicalNameWalker( _drContext);
+                    pwalker.Visit(_m.top() as QLangElement);
 
-                    var walker = new CustomWalker(output);
-                    walker.Visit(_m.top() as QItem);
+                    var walker = new PrinterWalker(output);
+                    walker.Visit(_m.top() as QLangElement);
 
-                    var realWalker = new RealWalker(_m.TypeManager);
-                    realWalker.Visit(_m.top() as QItem);
+                    var realWalker = new RealWalker(_drContext);
+                    realWalker.Visit(_m.top() as QLangElement);
 
 
                     var syntax = (realWalker.QueryMachine.pop() as SSyntaxNode);
-                    sqlString = new SQLVisitorBase().Visit(syntax);
+                    sqlString = new MsSqlBuilder().Visit(syntax);
                 }
                 catch (Exception ex)
                 {
@@ -122,18 +140,18 @@ namespace Aquila.UIBuilder
 
                 try
                 {
-                    var pwalker = new PhysicalNameWalker();
-                    pwalker.Visit(_m.top() as QItem);
+                    var pwalker = new PhysicalNameWalker( _drContext);
+                    pwalker.Visit(_m.top() as QLangElement);
 
-                    var walker = new CustomWalker(output);
-                    walker.Visit(_m.top() as QItem);
+                    var walker = new PrinterWalker(output);
+                    walker.Visit(_m.top() as QLangElement);
 
-                    var realWalker = new RealWalker(_m.TypeManager);
-                    realWalker.Visit(_m.top() as QItem);
+                    var realWalker = new RealWalker(_drContext);
+                    realWalker.Visit(_m.top() as QLangElement);
 
 
                     var syntax = (realWalker.QueryMachine.pop() as SSyntaxNode);
-                    sqlString = new SQLVisitorBase().Visit(syntax);
+                    sqlString = new MsSqlBuilder().Visit(syntax);
                 }
                 catch (Exception ex)
                 {

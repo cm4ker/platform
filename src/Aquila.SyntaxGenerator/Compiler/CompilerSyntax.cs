@@ -10,7 +10,7 @@ namespace Aquila.SyntaxGenerator.Compiler
         public CompilerSyntax()
         {
             Arguments = new List<SyntaxArgument>();
-            Base = "SyntaxNode";
+            //Base = "LangElement";
         }
 
         /// <summary>

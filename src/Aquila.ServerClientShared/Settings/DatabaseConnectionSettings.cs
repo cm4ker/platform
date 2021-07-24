@@ -12,9 +12,7 @@ namespace Aquila.Core.Settings
         public PlatformClientSettings()
         {
             Databases = new List<DatabaseConnectionSettings>();
-            
         }
-
     }
 
     public class DatabaseConnectionSettings
@@ -22,9 +20,4 @@ namespace Aquila.Core.Settings
         public string Address;
         public string Database;
     }
-
-
-   
-
-
 }

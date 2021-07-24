@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using System.Threading;
 using Microsoft.VisualBasic.CompilerServices;
 using Aquila.Compiler.Contracts;
+using Aquila.Language.Ast;
 using Aquila.Language.Ast.Definitions;
+using ArrayTypeSyntax = Aquila.Language.Ast.ArrayTypeSyntax;
+using PrimitiveTypeSyntax = Aquila.Language.Ast.PrimitiveTypeSyntax;
+using SingleTypeSyntax = Aquila.Language.Ast.SingleTypeSyntax;
+using TypeSyntax = Aquila.Language.Ast.TypeSyntax;
 
 namespace Aquila.Compiler.ComputingEngine
 {

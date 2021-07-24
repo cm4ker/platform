@@ -8,7 +8,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Aquila.Core.Contracts\Aquila.Core.Contracts.csproj" />
-        <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj" />
         <ProjectReference Include="..\Aquila.SharedRuntime\Aquila.SharedRuntime.csproj" />
     </ItemGroup>
 

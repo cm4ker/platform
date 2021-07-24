@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Aquila.Core.Contracts.Configuration.Migration;
 
-namespace Aquila.Migration
+namespace Aquila.Migrations
 {
 
 

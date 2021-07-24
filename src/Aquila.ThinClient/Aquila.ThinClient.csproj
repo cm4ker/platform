@@ -34,7 +34,6 @@
     <ItemGroup>
         <ProjectReference Include="..\Aquila.Avalonia.Wrapper\Aquila.Avalonia.Wrapper.csproj" />
         <ProjectReference Include="..\Aquila.Core\Aquila.Core.csproj" />
-        <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj" />
         <ProjectReference Include="..\Aquila.ServerClientShared\Aquila.ServerClientShared.csproj" />
         <ProjectReference Include="..\Aquila.ThinClient.FakeAssembly\Aquila.ThinClient.FakeAssembly.csproj" />
         

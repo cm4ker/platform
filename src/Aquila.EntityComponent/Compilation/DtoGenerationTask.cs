@@ -8,7 +8,6 @@ using Aquila.Core.Contracts.Configuration;
 using Aquila.Core.Contracts.TypeSystem;
 using Aquila.EntityComponent.Entity;
 using Aquila.Language.Ast;
-using Aquila.Language.Ast.Definitions;
 using Aquila.QueryBuilder;
 
 namespace Aquila.EntityComponent.Compilation

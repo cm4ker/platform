@@ -10,7 +10,7 @@
     <Description>FxSsh is a lightweight SSH server side application as SSH reinforcement of GitCandy. http://gitcandy.com</Description>
     <Version>1.1.0</Version>
     <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <AssemblyOriginatorKeyFile>FxSsh.snk</AssemblyOriginatorKeyFile>
+<!--    <AssemblyOriginatorKeyFile>FxSsh.snk</AssemblyOriginatorKeyFile>-->
     <Configurations>Debug;Release;DebugServer</Configurations>
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>

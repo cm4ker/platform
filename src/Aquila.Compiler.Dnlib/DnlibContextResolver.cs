@@ -49,7 +49,11 @@ namespace Aquila.Compiler.Dnlib
 
         public IType GetType(ITypeDefOrRef tr)
         {
+            if (tr is TypeRef)
+                return _ts.Resolve(tr);
             if (tr is TypeDefUser)
+                return _ts.Resolve(tr);
+            if (tr is TypeSpec)
                 return _ts.Resolve(tr);
             else
                 return _ts.Resolve(tr.ToTypeRef());

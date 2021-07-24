@@ -1,58 +1,48 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Configurations>Debug;Release;DebugServer</Configurations>
-    <Platforms>AnyCPU</Platforms>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>7.1</LangVersion>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <LangVersion>7.1</LangVersion>
-  </PropertyGroup> 
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <LangVersion>7.1</LangVersion>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="3.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.3" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.3" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.3" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.3" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="3.1.3" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.3" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.3" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.3" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.3" />
-  </ItemGroup> 
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <LangVersion>7.1</LangVersion>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Aquila.Compiler.Platform\Aquila.Compiler.Platform.csproj" />
-    <ProjectReference Include="..\Aquila.Configuration\Aquila.Configuration.csproj" />
-    <ProjectReference Include="..\Aquila.Core\Aquila.Core.csproj" />
-    <ProjectReference Include="..\Aquila.Data\Aquila.Data.csproj" />
-    <ProjectReference Include="..\Aquila.Networking\Aquila.Networking.csproj" />
-    <ProjectReference Include="..\Aquila.ServerClientShared\Aquila.ServerClientShared.csproj" />
-    <ProjectReference Include="..\Aquila.Test.Tools\Aquila.Test.Tools.csproj" />
-    <ProjectReference Include="..\Aquila.WebServiceCore\Aquila.WebServiceCore.csproj" />
-  </ItemGroup> 
+    <ItemGroup>
+        <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="3.0.3" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.3" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.3" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.3" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.3" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="3.1.3" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.3" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.3" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.3" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.3" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <None Update="NLog.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="App.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup> 
+    <ItemGroup>
+        <ProjectReference Include="..\Aquila.Networking\Aquila.Networking.csproj" />
+        <ProjectReference Include="..\Aquila.WebServiceCore\Aquila.WebServiceCore.csproj" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Hosting.Abstractions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
-      <HintPath>C:\Program Files\dotnet\packs\Microsoft.AspNetCore.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.AspNetCore.Hosting.Abstractions.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
+    <ItemGroup>
+        <None Update="NLog.config">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="App.config">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Settings\Instance.config">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>

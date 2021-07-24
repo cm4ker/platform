@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Xml;
 using Avalonia.Metadata;
-using Portable.Xaml;
 
 namespace Aquila.UIBuilder
 {
@@ -46,22 +44,7 @@ namespace Aquila.UIBuilder
         }
     }
 
-    public class MyXamlType : XamlType
-    {
-        private Type _underlyingType;
-
-        public MyXamlType(Type underlyingType, XamlSchemaContext schemaContext) : base(NsResolver.Do(underlyingType),
-            underlyingType.Name, null, schemaContext)
-        {
-            _underlyingType = underlyingType;
-        }
-
-        protected override Type LookupUnderlyingType()
-        {
-            return _underlyingType;
-        }
-    }
-
+    
     public static class NsResolver
     {
         public static string Do(Type type)

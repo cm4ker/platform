@@ -1,7 +1,7 @@
 ﻿using Aquila.Configuration.Structure;
 using Aquila.Core.Contracts;
 
-namespace Aquila.Migration
+namespace Aquila.Migrations
 {
     public interface IMigrationManager
     {
