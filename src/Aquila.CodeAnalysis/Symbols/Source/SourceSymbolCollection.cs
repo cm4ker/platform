@@ -157,6 +157,10 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
             foreach (var d in defines)
             {
+                
+                //TODO: Fix defines
+                continue;
+                
                 // resolve the value from string
                 ConstantValue value;
 

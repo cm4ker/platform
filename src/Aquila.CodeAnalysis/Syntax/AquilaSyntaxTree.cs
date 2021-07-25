@@ -190,8 +190,12 @@ namespace Aquila.CodeAnalysis.Syntax
         public override FileLinePositionSpan GetLineSpan(TextSpan span,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return new FileLinePositionSpan(_source.FilePath, new LinePosition(0, 0), new LinePosition(0, 0));
-            //_source.LinePosition(span.Start), _source.LinePosition(span.End));
+            return new FileLinePositionSpan(this.FilePath, GetLinePosition(span.Start), GetLinePosition(span.End));
+        }
+
+        private LinePosition GetLinePosition(int position)
+        {
+            return this.GetText().Lines.GetLinePosition(position);
         }
 
         public override Location GetLocation(TextSpan span)
@@ -212,7 +216,7 @@ namespace Aquila.CodeAnalysis.Syntax
 
         public override SourceText GetText(CancellationToken cancellationToken = default)
         {
-            return SourceText.From("", Encoding.UTF8); //_source.SourceText;
+            return SourceText.From(_source.SourceText, Encoding.UTF8);
         }
 
         public override bool HasHiddenRegions()

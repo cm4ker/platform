@@ -34,7 +34,7 @@ namespace Aquila.Syntax.Parser
         public static SourceUnit ParseUnit(string text, string fileName)
         {
             var parser = Parse(text);
-            ZLanguageVisitor zl = new ZLanguageVisitor(fileName);
+            ZLanguageVisitor zl = new ZLanguageVisitor(text, fileName);
 
             var ast = zl.Visit(parser.entryPoint()) as SourceUnit;
             return ast;

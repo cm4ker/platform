@@ -26,6 +26,7 @@
     <!-- #region Structure -->
     <Syntax Name="SourceUnit">
         <Arguments>
+            <Single Name="SourceText" Type="string" DenyChildrenFill="true"/>
             <Single Name="FilePath" Type="string" DenyChildrenFill="true"/>
             <List Name="Imports" Type="ImportList"/>
             <List Name="Methods" Type="MethodList"/>

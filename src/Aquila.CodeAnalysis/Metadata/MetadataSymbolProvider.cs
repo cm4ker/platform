@@ -326,7 +326,7 @@ namespace Aquila.Syntax.Metadata
                                 dtoFieldPlace.EmitLoad(il);
                                 setValueParam.EmitLoad(il);
                                 il.EmitCall(m, d, ILOpCode.Call, dtoProperty.SetMethod);
-                                il.EmitRet(false);
+                                il.EmitRet(true);
                             };
                         });
                 }

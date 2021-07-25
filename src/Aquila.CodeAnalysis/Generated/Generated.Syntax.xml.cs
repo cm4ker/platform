@@ -306,14 +306,17 @@ namespace Aquila.Syntax.Ast
 {
     public partial record SourceUnit : LangElement
     {
-        public SourceUnit(Span span, SyntaxKind syntaxKind,  string  filePath, ImportList imports, MethodList methods, ExtendList extends, ComponentList components): base(span, syntaxKind)
+        public SourceUnit(Span span, SyntaxKind syntaxKind,  string  sourceText,  string  filePath, ImportList imports, MethodList methods, ExtendList extends, ComponentList components): base(span, syntaxKind)
         {
+            SourceText = sourceText;
             FilePath = filePath;
             this.imports = imports;
             this.methods = methods;
             this.extends = extends;
             this.components = components;
         }
+
+        public string SourceText { get => this.sourceText; init => this.sourceText = value; }
 
         public string FilePath { get => this.filePath; init => this.filePath = value; }
 
@@ -344,6 +347,7 @@ namespace Aquila.Syntax.Ast
             yield break;
         }
 
+        private string sourceText;
         private string filePath;
         private ImportList imports;
         private MethodList methods;

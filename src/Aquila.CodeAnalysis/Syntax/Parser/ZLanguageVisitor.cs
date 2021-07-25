@@ -20,14 +20,16 @@ namespace Aquila.Syntax.Parser
 {
     public class ZLanguageVisitor : ZSharpParserBaseVisitor<LangElement>
     {
+        private readonly string _code;
         private readonly string _filePath;
         private Stack<SyntaxStack> _stackOfStacks;
         private bool _isGlobal;
 
         private SyntaxStack Stack => _stackOfStacks.Peek();
 
-        public ZLanguageVisitor(string filePath)
+        public ZLanguageVisitor(string code, string filePath)
         {
+            _code = code;
             _filePath = filePath;
             _stackOfStacks = new Stack<SyntaxStack>();
             PushStack();
@@ -81,7 +83,7 @@ namespace Aquila.Syntax.Parser
             context.component_declaration().ForEach(x => VisitComponent_declaration(x));
             var namespaces = PopStack().ToCollection<ComponentList, ComponentDecl>();
 
-            var cu = new SourceUnit(context.ToLineInfo(), SyntaxKind.CompilationUnit,
+            var cu = new SourceUnit(context.ToLineInfo(), SyntaxKind.CompilationUnit, _code,
                 _filePath,
                 imports,
                 methods,

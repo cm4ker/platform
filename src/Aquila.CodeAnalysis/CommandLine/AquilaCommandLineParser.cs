@@ -168,6 +168,7 @@ namespace Aquila.CodeAnalysis.CommandLine
             var sourceFiles = new List<CommandLineSourceFile>();
             var metadataReferences = new List<CommandLineReference>();
             var analyzers = new List<CommandLineAnalyzerReference>();
+            var analyzerConfigPaths = new List<string>();
             var additionalFiles = new List<CommandLineSourceFile>();
             var embeddedFiles = new List<CommandLineSourceFile>();
             var managedResources = new List<ResourceDescription>();
@@ -979,6 +980,7 @@ namespace Aquila.CodeAnalysis.CommandLine
                 Encoding = codepage, // Encoding.UTF8,
                 ChecksumAlgorithm = SourceHashAlgorithm.Sha1, // checksumAlgorithm,
                 MetadataReferences = metadataReferences.AsImmutable(),
+                AnalyzerConfigPaths = analyzerConfigPaths.AsImmutable(),
                 AnalyzerReferences = analyzers.AsImmutable(),
                 AdditionalFiles = additionalFiles.AsImmutable(),
                 ReferencePaths = referencePaths.AsImmutable(),
