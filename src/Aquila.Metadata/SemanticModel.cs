@@ -33,6 +33,11 @@ namespace Aquila.Metadata
     {
         private readonly EntityMetadata _md;
         private readonly SMCache _cache;
+        private const string Namespace = "Entity";
+        private const string ObjectPostfix = "Object";
+        private const string DtoPostfix = "Dto";
+        private const string ManagerPostfix = "Manager";
+        private const string LinkPostfix = "Link";
 
         internal SMEntity(EntityMetadata md, SMCache cache)
         {
@@ -71,9 +76,9 @@ namespace Aquila.Metadata
 
         public string Name => _md.Name;
 
-        public string FullName => $"Entity.{Name}";
+        public string FullName => $"{Namespace}.{Name}";
 
-        public string ReferenceName => $"{FullName}Link";
+        public string ReferenceName => $"{FullName}{LinkPostfix}";
     }
 
     public class SMProperty

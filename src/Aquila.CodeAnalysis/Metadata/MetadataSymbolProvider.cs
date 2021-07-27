@@ -89,6 +89,10 @@ namespace Aquila.Syntax.Metadata
         {
             var dtoType = _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{DtoPostfix}", false));
 
+            var ctor = _ps.SynthesizeConstructor(dtoType);
+            ctor
+                .SetMethodBuilder((m, d) => (il) => { il.EmitRet(true); });
+
             foreach (var prop in md.Properties)
             {
                 var isComplexType = prop.Types.Count() > 1;
@@ -105,7 +109,7 @@ namespace Aquila.Syntax.Metadata
                     {
                         propType = MetadataTypeProvider.Resolve(_declaredCompilation, type);
 
-                        var postfix = GetPropertyPostfix(type, propType);
+                        var postfix = GetPropertyPostfix(type);
 
                         //if we already have link property then we don't need it again
                         if (propType.IsLink() && hasLinkPropery)
@@ -134,22 +138,8 @@ namespace Aquila.Syntax.Metadata
                 }
             }
 
+            dtoType.AddMember(ctor);
             return dtoType;
-        }
-
-        private static string GetPropertyPostfix(SMType type, TypeSymbol propType)
-        {
-            var postfix = type.Kind switch
-            {
-                SMTypeKind.Int => "N",
-                SMTypeKind.DateTime => "D",
-                SMTypeKind.Binary => "B",
-                SMTypeKind.String => "S",
-                SMTypeKind.Guid => "G",
-                SMTypeKind.Reference => "R",
-                _ => throw new NotImplementedException()
-            };
-            return postfix;
         }
 
         private NamedTypeSymbol PopulateObjectType(SMEntity md, NamedTypeSymbol dtoType)
@@ -216,7 +206,7 @@ namespace Aquila.Syntax.Metadata
                             foreach (var type in prop.Types)
                             {
                                 var underlyingPropType = MetadataTypeProvider.Resolve(_declaredCompilation, type);
-                                var postfix = GetPropertyPostfix(type, underlyingPropType);
+                                var postfix = GetPropertyPostfix(type);
 
                                 var dtoMemberName = $"{prop.Name}_{postfix}";
                                 var dtoTypeMemberName = $"{prop.Name}_T";
@@ -256,7 +246,7 @@ namespace Aquila.Syntax.Metadata
                         foreach (var type in prop.Types)
                         {
                             var underlyingPropType = MetadataTypeProvider.Resolve(_declaredCompilation, type);
-                            var postfix = GetPropertyPostfix(type, underlyingPropType);
+                            var postfix = GetPropertyPostfix(type);
 
                             var dtoMemberName = $"{prop.Name}_{postfix}";
                             var dtoTypeMemberName = $"{prop.Name}_T";
@@ -417,7 +407,9 @@ namespace Aquila.Syntax.Metadata
                 .SetReturn(objectType)
                 .SetMethodBuilder((m, d) => il =>
                 {
-                    il.EmitNullConstant();
+                    il.EmitCall(m, d, ILOpCode.Newobj, dtoType.InstanceConstructors.First());
+                    il.EmitCall(m, d, ILOpCode.Newobj, objectType.InstanceConstructors.First());
+
                     il.EmitRet(true);
                 });
 
@@ -485,6 +477,22 @@ namespace Aquila.Syntax.Metadata
             linkType.AddMember(ctor);
 
             return linkType;
+        }
+
+
+        private static string GetPropertyPostfix(SMType type)
+        {
+            var postfix = type.Kind switch
+            {
+                SMTypeKind.Int => "N",
+                SMTypeKind.DateTime => "D",
+                SMTypeKind.Binary => "B",
+                SMTypeKind.String => "S",
+                SMTypeKind.Guid => "G",
+                SMTypeKind.Reference => "R",
+                _ => throw new NotImplementedException()
+            };
+            return postfix;
         }
     }
 }

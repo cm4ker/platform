@@ -315,6 +315,8 @@ namespace Aquila.NET.Sdk.Tools
             // compile
             try
             {
+                var lw = new LogWriter(this.Log);
+
                 var resultCode = AquilaCompilerDriver.Run(
                     AquilaCommandLineParser.Default,
                     null,
@@ -324,8 +326,9 @@ namespace Aquila.NET.Sdk.Tools
                     sdkDirectory: NetFrameworkPath,
                     additionalReferenceDirectories: libs,
                     analyzerLoader: new SimpleAnalyzerAssemblyLoader(),
-                    output: new LogWriter(this.Log),
+                    output: lw,
                     cancellationToken: _cancellation.Token);
+                lw.Write(lw.NewLine);
 
                 return resultCode == 0;
             }

@@ -13,7 +13,7 @@
      -->
     
     <TargetDatabase>pg</TargetDatabase>
-    <DebuggerAttach>false</DebuggerAttach>
+    <DebuggerAttach>true</DebuggerAttach>
     <!-- this is required 
     possible schemas: 
     sqdb - sqlite     db file   system ex. : sqdb://file_system_path

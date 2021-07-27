@@ -5,5 +5,5 @@ FOR /D %%p IN ("C:\Users\cmaker\.nuget\packages\aquila.net.sdk\*.*") DO rmdir "%
 cd "..\..\src\Aquila.NET.Sdk"
 dotnet build
 cd "..\..\build\dummy"
-dotnet build 
+dotnet build /flp:v=diag; /bl:binarylogfilename.binlog
 #rem -p:Test=SomeValue

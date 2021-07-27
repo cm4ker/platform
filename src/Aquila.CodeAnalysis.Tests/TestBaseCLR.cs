@@ -23,7 +23,7 @@ namespace Aquila.Compiler.Tests
 
         public CompilerTestBase()
         {
-            _zlv = new ZLanguageVisitor("unknown.cs");
+            _zlv = new ZLanguageVisitor("", "unknown.cs");
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
