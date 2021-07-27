@@ -3,6 +3,7 @@
     <PropertyGroup>
         <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
         <DefaultLanguageSourceExtension>.aq</DefaultLanguageSourceExtension>
+        <PackageExtensionLanguage>.aqpk</PackageExtensionLanguage>
         <Language>Aquila</Language>
         <TargetRuntime>Managed</TargetRuntime>
         <AlwaysUseNumericalSuffixInItemNames>true</AlwaysUseNumericalSuffixInItemNames>
@@ -42,12 +43,6 @@
     <PropertyGroup>
         <SomeVariable>foo</SomeVariable>
     </PropertyGroup>
-    <Target Name="MyTarget">
-        <!-- Some tasks -->
-        <Message Text="The value of SomeVariable is: $(SomeVariable)" Importance="High"/>
-        <!-- Some tasks -->
-    </Target>
-
     <!--
         The CreateManifestResourceNames target create the manifest resource names from the .RESX
         files.
@@ -233,17 +228,20 @@
         <PropertyGroup>
             <TempOutputDir>%(IntermediateAssembly.RelativeDir)</TempOutputDir>
             <OutputPackagePath>$(OutputPath)Package\</OutputPackagePath>
-            <OutputPackageFullPath>$(OutputPackagePath)$(MSBuildProjectName).aqpk</OutputPackageFullPath>
+            <OutputPackageFullPath>$(OutputPackagePath)$(MSBuildProjectName)$(PackageExtensionLanguage)</OutputPackageFullPath>
         </PropertyGroup>
-        
-        <MakeDir
-                Directories="$(OutputPackagePath)"/>
-        
+
+        <MakeDir Directories="$(OutputPackagePath)"/>
+        <Delete Files="$(OutputPackageFullPath)"/>
+
         <PackTask OutputPath="$(OutputPath)"
                   OutputPackagePath="$(OutputPackagePath)"
                   OutputPackageFullPath="$(OutputPackageFullPath)"
                   OutputName="%(IntermediateAssembly.Filename)"
                   TempOutputPath="$(TempOutputDir)"/>
+       
+        <Message Text="The package was created: $(OutputPackageFullPath)" Importance="High"/>
+        
     </Target>
 
     <!--End Required Task by .Common.target-->
