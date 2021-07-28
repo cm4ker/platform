@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO.Compression;
 using Aquila.Core.Contracts;
 using McMaster.Extensions.CommandLineUtils;
 
@@ -22,8 +23,8 @@ namespace Aquila.Tools
         /// <summary>
         /// Folder with compiled executables
         /// </summary>
-        [Argument(0, "folder", description: "Folder with binaries for deploy")]
-        public string BinariesFolder { get; set; }
+        [Argument(0, "pkg", description: "Package path")]
+        public string PackagePath { get; set; }
 
         [Argument(1, "endpoint", description: "Destination server for deploy")]
         public string Endpoint { get; set; }
@@ -35,7 +36,7 @@ namespace Aquila.Tools
             dpl(@"Starting deploy...");
 
             //Step 1. We need executable solution folder
-            dpl($"Folder = {BinariesFolder}");
+            dpl($"Package = {PackagePath}");
             dpl($"Endpoint = {Endpoint}");
             dpl($"Deployer runtime version = {typeof(ILink).Assembly.GetName().Version}");
 
@@ -50,6 +51,9 @@ namespace Aquila.Tools
                  6) Migrate data
                  7) Update migration table
              */
+
+            using var package = ZipFile.Open(PackagePath, ZipArchiveMode.Read);
+            //TODO: add manifest to the archive
 
             dpl(@"Done!");
         }
