@@ -1,23 +1,22 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Reflection;
-using System.Transactions;
+using System.Linq;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.CodeAnalysis.FlowAnalysis;
-using Aquila.CodeAnalysis.Semantics.Model;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Utilities;
 using Aquila.Syntax;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Expressions;
-using Aquila.Syntax.Ast.Functions;
 using Aquila.Syntax.Ast.Statements;
 using Aquila.Syntax.Declarations;
 using Aquila.Syntax.Errors;
+using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
 using Microsoft.CodeAnalysis;
+using MoreLinq.Extensions;
 
 namespace Aquila.CodeAnalysis.Semantics
 {
@@ -138,8 +137,17 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public DiagnosticBag Diagnostics => Container.DeclaringCompilation.DeclarationDiagnostics;
 
+        /// <summary>Gets <see cref="BoundTypeRefFactory"/> instance.</summary>
+        internal BoundTypeRefFactory BoundTypeRefFactory => DeclaringCompilation.TypeRefFactory;
+
+        public AquilaCompilation DeclaringCompilation => Container.DeclaringCompilation;
+
+
         public virtual SourceMethodSymbol Method { get; }
+
         public virtual NamespaceOrTypeSymbol Container { get; }
+
+        #region Bind statements
 
         protected virtual BoundStatement BindStatement(Statement stmt) => BindStatementCore(stmt).WithSyntax(stmt);
 
@@ -156,8 +164,33 @@ namespace Aquila.CodeAnalysis.Semantics
             return new BoundEmptyStmt(stmt.Span.ToTextSpan());
         }
 
+        protected BoundStatement BindReturnStmt(ReturnStmt stmt)
+        {
+            Debug.Assert(Method != null);
+
+            BoundExpression expr = null;
+
+            if (stmt.Expression != null)
+            {
+                expr = BindExpression(stmt.Expression, BoundAccess.Read);
+            }
+
+            return new BoundReturnStmt(expr).WithSyntax(expr.AquilaSyntax);
+        }
+
+        public BoundStatement BindEmptyStmt(Span span)
+        {
+            return new BoundEmptyStmt(span.ToTextSpan());
+        }
+
+        #endregion
+
+        #region Bind expressions
+
         protected virtual BoundExpression BindExpression(Expression expr, BoundAccess access) =>
             BindExpressionCore(expr, access).WithSyntax(expr);
+
+        protected BoundExpression BindExpression(Expression expr) => BindExpression(expr, BoundAccess.Read);
 
         protected BoundExpression BindExpressionCore(Expression expr, BoundAccess access)
         {
@@ -181,7 +214,6 @@ namespace Aquila.CodeAnalysis.Semantics
                 $"Expression of type '{expr.GetType().Name}'");
             return new BoundLiteral(null);
         }
-
 
         protected BoundExpression BindLiteral(LiteralEx expr)
         {
@@ -226,7 +258,7 @@ namespace Aquila.CodeAnalysis.Semantics
                         if (Method != null && Method.IsStatic && !Method.IsGlobalScope)
                         {
                             // WARN:
-                            Diagnostics.Add(DiagnosticBagExtensions.ParserDiagnostic(ContainingFile, expr.Span,
+                            Diagnostics.Add(DiagnosticBagExtensions.ParserDiagnostic(expr.SyntaxTree, expr.Span,
                                 Warnings.ThisOutOfMethod));
                             // ERR: // NOTE: causes a lot of project to not compile // CONSIDER: uncomment
                             // Diagnostics.Add(GetLocation(expr), Errors.ErrorCode.ERR_ThisOutOfObjectContext);
@@ -456,13 +488,15 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
-        private BoundExpression BindName(NameEx expr, ArgumentList argumentList, bool invocation)
+        protected virtual BoundExpression BindName(NameEx expr, ArgumentList argumentList, bool invocation)
         {
-            var members = this.Method.ContainingType.GetMembers(expr.Identifier.Text).Where(x => x is MethodSymbol)
+            Debug.Assert(Method != null);
+
+            var members = Container.GetMembers(expr.Identifier.Text).Where(x => x is MethodSymbol)
                 .ToList();
 
-            if (!members.Any())
-                Diagnostics.Add(GetLocation(expr), ErrorCode.ERR_NotYetImplemented);
+            if (!Enumerable.Any(members))
+                Diagnostics.Add(GetLocation(expr), ErrorCode.INF_CantResolveSymbol);
 
             if (members.Count() == 1)
             {
@@ -542,7 +576,7 @@ namespace Aquila.CodeAnalysis.Semantics
                 {
                     if (member is PropertySymbol ps)
                     {
-                        throw new Exception("Can't bound property: not implemented");
+                        Diagnostics.Add(GetLocation(expr.Identifier), ErrorCode.ERR_NotYetImplemented);
                     }
                 }
             }
@@ -550,10 +584,20 @@ namespace Aquila.CodeAnalysis.Semantics
             throw new NotImplementedException();
         }
 
-        public BoundStatement BindEmptyStmt(Span span)
+        protected BoundExpression BindCopyValue(BoundExpression expr)
         {
-            return new BoundEmptyStmt(span.ToTextSpan());
+            if (expr.IsDeeplyCopied)
+            {
+                return new BoundCopyValue(expr).WithAccess(BoundAccess.Read);
+            }
+            else
+            {
+                // value does not have to be copied
+                return expr;
+            }
         }
+
+        #endregion
 
 
         /*
@@ -592,4 +636,51 @@ Binder
         {
         }
     }
+
+
+    /*
+         
+     public void some_method()
+     {
+        Query q = query();
+        q.Text = "FROM A SELECT @Test as B";
+        q.AddParameter("Test", "Value");  
+     
+     
+        Reader r = q.exec();
+        var was_break = false;
+        
+        while(r.read())
+        {
+            var value = r.B;
+            //here var = string
+            
+            if(value == "Value")
+            {
+                message_to_client("Hello");
+                log_error("Some value set to the \"Value\"");
+                
+                was_braked = true;
+                break;
+            }
+        }
+        
+        if(was_break)
+        {
+            log_info("the cycle was break start create record in store");
+            
+            var store = new Entity.Store;
+            
+            store.init(was_break);
+            store.is_main = false;
+            var rows = store.rows;
+            
+            var first_row = rows.add();
+        }
+        
+                
+     }
+     
+     
+     */
 }
