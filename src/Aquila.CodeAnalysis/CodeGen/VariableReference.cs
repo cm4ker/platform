@@ -585,7 +585,7 @@ namespace Aquila.CodeAnalysis.Semantics
         public override TypeSymbol Type => Place != null ? Place.Type : base.Type;
 
         public ParameterReference(ParameterSymbol symbol, SourceMethodSymbol method)
-            : base(VariableKind.Parameter, method, symbol, new BoundVariableName(symbol.Name))
+            : base(VariableKind.Parameter, method, symbol, new BoundVariableName(symbol.Name, symbol.Type))
         {
         }
 
@@ -603,7 +603,8 @@ namespace Aquila.CodeAnalysis.Semantics
     class ThisVariableReference : LocalVariableReference
     {
         public ThisVariableReference(SourceMethodSymbol method)
-            : base(VariableKind.ThisParameter, method, null, new BoundVariableName(VariableName.ThisVariableName))
+            : base(VariableKind.ThisParameter, method, null,
+                new BoundVariableName(VariableName.ThisVariableName, method.ContainingType))
         {
         }
 

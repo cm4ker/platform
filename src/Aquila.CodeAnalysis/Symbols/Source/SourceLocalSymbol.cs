@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Aquila.CodeAnalysis;
+using Aquila.Syntax.Ast;
 using Microsoft.CodeAnalysis.Symbols;
 
 namespace Aquila.CodeAnalysis.Symbols
@@ -47,16 +48,18 @@ namespace Aquila.CodeAnalysis.Symbols
     internal class SourceLocalSymbol : Symbol, ILocalSymbol, ILocalSymbolInternal
     {
         readonly protected SourceMethodSymbol _method;
+        readonly protected VarDecl _decl;
 
         readonly string _name;
 
-        public SourceLocalSymbol(SourceMethodSymbol method, string name, TextSpan span)
+        public SourceLocalSymbol(SourceMethodSymbol method, VarDeclarator declarator)
         {
             Debug.Assert(method != null);
-            Debug.Assert(!string.IsNullOrWhiteSpace(name));
+            Debug.Assert(!string.IsNullOrWhiteSpace(declarator.Identifier.Text));
 
             _method = method;
-            _name = name;
+            _decl = (VarDecl)declarator.Parent.Parent;
+            _name = declarator.Identifier.Text;
         }
 
         #region Symbol
@@ -117,8 +120,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get
             {
-                var type = _method.ControlFlowGraph.GetLocalType(this.Name);
-                var langElem = _method.SyntaxReturnType;
+                var langElem = _decl.VariableType;
                 var binder = DeclaringCompilation.GetBinder(langElem);
                 var tsymbol = binder.BindType(langElem);
 
@@ -147,7 +149,7 @@ namespace Aquila.CodeAnalysis.Symbols
         readonly TypeSymbol _type;
 
         public SynthesizedLocalSymbol(SourceMethodSymbol method, string name, TypeSymbol type)
-            : base(method, name + "'", default(TextSpan))
+            : base(method, null)
         {
             Contract.ThrowIfNull(type);
             _type = type;

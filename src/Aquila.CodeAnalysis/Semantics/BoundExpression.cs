@@ -1329,8 +1329,12 @@ namespace Aquila.CodeAnalysis.Semantics
 
         #endregion
 
-        public override OperationKind Kind => OperationKind.SimpleAssignment;
+        public BoundAssignEx(BoundReferenceEx targer, BoundExpression value) : this(targer, value, targer.Type)
+        {
+        }
 
+
+        public override OperationKind Kind => OperationKind.SimpleAssignment;
 
         partial void AcceptImpl(OperationVisitor visitor) => visitor.VisitSimpleAssignment(this);
 
@@ -1395,6 +1399,8 @@ namespace Aquila.CodeAnalysis.Semantics
     [DebuggerDisplay("{DebugView,nq}")]
     public partial class BoundVariableName : BoundOperation, IAquilaOperation
     {
+        private ITypeSymbol _type;
+
         public static bool operator ==(BoundVariableName lname, BoundVariableName rname)
         {
             if (ReferenceEquals(lname, rname)) return true;
@@ -1408,10 +1414,8 @@ namespace Aquila.CodeAnalysis.Semantics
             return !(lname == rname);
         }
 
-        public static implicit operator BoundVariableName(string s)
-        {
-            return new BoundVariableName(s);
-        }
+        public override ITypeSymbol Type => ResultType;
+
 
         public override bool Equals(object obj) => obj is BoundVariableName bname && this == bname;
 
@@ -1427,18 +1431,18 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public LangElement AquilaSyntax { get; set; }
 
-        public BoundVariableName(VariableName name)
-            : this(name, null)
+        public BoundVariableName(VariableName name, ITypeSymbol type)
+            : this(name, null, type)
         {
         }
 
-        public BoundVariableName(string name)
-            : this(new VariableName(name))
+        public BoundVariableName(string name, ITypeSymbol type)
+            : this(new VariableName(name), type)
         {
         }
 
-        public BoundVariableName(BoundExpression nameExpr)
-            : this(default, nameExpr)
+        public BoundVariableName(BoundExpression nameExpr, ITypeSymbol type)
+            : this(default, nameExpr, type)
         {
         }
 
@@ -1450,7 +1454,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
             else
             {
-                return new BoundVariableName(name, nameExpr);
+                return new BoundVariableName(name, nameExpr, ResultType);
             }
         }
 
@@ -1470,7 +1474,8 @@ namespace Aquila.CodeAnalysis.Semantics
     /// </summary>
     public partial class BoundVariableRef : BoundReferenceEx, ILocalReferenceOperation
     {
-        public BoundVariableRef(string name) : this(new BoundVariableName(new VariableName(name)), null)
+        public BoundVariableRef(string name, ITypeSymbol type) : this(
+            new BoundVariableName(new VariableName(name), type), type)
         {
         }
 
@@ -1507,9 +1512,9 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         private string _name;
 
-        partial void OnCreateImpl(string name, ITypeSymbol typeSymbol)
+        partial void OnCreateImpl(BoundVariableName name, ITypeSymbol typeSymbol)
         {
-            _name = name;
+            _name = name.NameValue.Value;
         }
     }
 

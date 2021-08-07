@@ -3,6 +3,7 @@ using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.Syntax.Syntax;
 using Aquila.CodeAnalysis.Semantics.Graph;
+using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis.Lowering
 {
@@ -33,7 +34,7 @@ namespace Aquila.CodeAnalysis.Lowering
 
             var rewriter = new LocalRewriter(method);
             var currentCFG = method.ControlFlowGraph;
-            var updatedCFG = (ControlFlowGraph) rewriter.VisitCFG(currentCFG);
+            var updatedCFG = (ControlFlowGraph)rewriter.VisitCFG(currentCFG);
 
             method.ControlFlowGraph = updatedCFG;
 
@@ -42,19 +43,19 @@ namespace Aquila.CodeAnalysis.Lowering
 
         public override object VisitBinaryEx(BoundBinaryEx x)
         {
-            var typeCtx = _method.TypeRefContext;
+            if (x.Left.Type.SpecialType == SpecialType.System_String &&
+                x.Right.Type.SpecialType == SpecialType.System_String)
+            {
+                return new BoundStaticCallEx(_method.DeclaringCompilation.CoreMethods.Operators.Concat_String_String,
+                        new BoundMethodName(new QualifiedName(new Name(nameof(string.Concat)))), new[]
+                        {
+                            BoundArgument.Create(x.Left), BoundArgument.Create(x.Right)
+                        }.ToImmutableArray(), ImmutableArray<IBoundTypeRef>.Empty,
+                        DeclaringCompilation.CoreTypes.String.Symbol)
+                    .WithAccess(x);
+            }
 
-            // if (typeCtx.IsAString(x.Left) && typeCtx.IsAString(x.Right.TypeRefMask))
-            // {
-            //     return new BoundStaticCallEx(_method.DeclaringCompilation.CoreMethods.Operators.Concat_String_String,
-            //             new BoundMethodName(new QualifiedName(new Name(nameof(string.Concat)))), new[]
-            //             {
-            //                 BoundArgument.Create(x.Left), BoundArgument.Create(x.Right)
-            //             }.ToImmutableArray(), ImmutableArray<IBoundTypeRef>.Empty)
-            //         .WithAccess(x);
-            // }
 
-            //
             return base.VisitBinaryEx(x);
         }
     }

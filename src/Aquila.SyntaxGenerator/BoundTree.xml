@@ -59,7 +59,8 @@
             <Single Name="Items" Type="ImmutableArray&lt;KeyValuePair&lt;BoundExpression, BoundExpression&gt;&gt;"
                     IsUpdatable="true"/>
 
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
     <!--    <Syntax Name="ArrayInit" Base="Expression"/>-->
@@ -67,7 +68,8 @@
         <Arguments>
             <Single Name="Target" Type="BoundReferenceEx" IsUpdatable="true"/>
             <Single Name="Value" Type="BoundExpression" IsUpdatable="true"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
@@ -78,7 +80,8 @@
                     PassBase="true"/>
             <Single Name="Value" Type="BoundExpression" IsUpdatable="true" OnlyArgument="true" PassBase="true"/>
             <Single Name="Operation" Type="Operations" IsUpdatable="true"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
@@ -90,7 +93,8 @@
             <Single Name="IsPostfix" Type="bool" IsUpdatable="true"/>
             <Single PassBase="true" PassBaseConst="new BoundLiteral(1L, resultType).WithAccess(BoundAccess.Read)"/>
             <Single PassBase="true" PassBaseConst="Operations.IncDec"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
@@ -99,7 +103,8 @@
         <Arguments>
             <Single Name="Operand" Type="BoundExpression" IsUpdatable="true"/>
             <Single Name="Operation" Type="Operations" IsUpdatable="true"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
@@ -108,7 +113,8 @@
             <Single Name="Left" Type="BoundExpression" IsUpdatable="true"/>
             <Single Name="Right" Type="BoundExpression" IsUpdatable="true"/>
             <Single Name="Operation" Type="Operations" IsUpdatable="true"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
@@ -117,7 +123,8 @@
             <Single Name="Condition" Type="BoundExpression" IsUpdatable="true"/>
             <Single Name="IfTrue" Type="BoundExpression" IsUpdatable="true"/>
             <Single Name="IfFalse" Type="BoundExpression" IsUpdatable="true"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
@@ -126,15 +133,19 @@
         <Arguments>
             <Single Name="Operand" Type="BoundExpression" IsUpdatable="true"/>
             <Single Name="TargetType" Type="BoundTypeRef" IsUpdatable="true"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
     <Syntax Name="Literal" Base="Expression">
         <Arguments>
             <Single Name="Value" Type="object" IsUpdatable="true"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
+
+    <!-- region MemberAccess -->
 
     <!-- region Call -->
     <Syntax IsAbstract="true" Name="CallEx" Base="Expression" OperationKind="Invocation">
@@ -144,7 +155,8 @@
             <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;"/>
             <Single Name="TypeArguments" Type="ImmutableArray&lt;IBoundTypeRef&gt;"/>
             <Single Name="Instance" Type="BoundExpression"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
@@ -156,7 +168,8 @@
             <Single Name="TypeArguments" Type="ImmutableArray&lt;IBoundTypeRef&gt;" OnlyArgument="true"
                     PassBase="true"/>
             <Single Name="Instance" Type="BoundExpression" OnlyArgument="true" PassBase="true"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
@@ -168,7 +181,8 @@
             <Single Name="TypeArguments" Type="ImmutableArray&lt;IBoundTypeRef&gt;" OnlyArgument="true"
                     PassBase="true"/>
             <Single PassBase="true" PassBaseConst="null"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
@@ -181,23 +195,38 @@
             <Single Name="TypeArguments" Type="ImmutableArray&lt;IBoundTypeRef&gt;" OnlyArgument="true"
                     PassBase="true"/>
             <Single PassBase="true" PassBaseConst="null"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
     <!-- endregion -->
 
+
+    <Syntax Name="PropertyAccess" Base="Expression" OperationKind="Invocation">
+        <Arguments>
+            <Single Name="Property" Type="IPropertySymbol"/>
+            <Single Name="Instance" Type="BoundExpression"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true"
+                    IsInternal="true" PassBaseConst="property.Type"/>
+        </Arguments>
+    </Syntax>
+
+    <!-- endregion MemberAccess -->
+
     <Syntax Name="ThrowEx" Base="Expression" OperationKind="Throw">
         <Arguments>
             <Single Name="Thrown" Type="BoundExpression" IsUpdatable="true"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
     <!-- region ReferenceEx -->
     <Syntax Name="ReferenceEx" Base="Expression" IsAbstract="true">
         <Arguments>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
@@ -206,7 +235,8 @@
             <Single Name="DeclaringCompilation" Type="AquilaCompilation" IsUpdatable="false"/>
             <Single Name="Array" Type="BoundExpression" IsUpdatable="false"/>
             <Single Name="Index" Type="BoundExpression" IsUpdatable="false"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
@@ -215,10 +245,10 @@
             <Single Name="DeclaringCompilation" Type="AquilaCompilation" OnlyArgument="true" PassBase="true"/>
             <Single Name="Array" Type="BoundExpression" OnlyArgument="true" PassBase="true"/>
             <Single Name="Index" Type="BoundExpression" OnlyArgument="true" PassBase="true"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
-
 
     <Syntax Name="FieldRef" Base="ReferenceEx" OperationKind="FieldReference">
         <Arguments>
@@ -226,7 +256,8 @@
             <Single Name="ContainingType" Type="IBoundTypeRef" IsUpdatable="false"/>
             <Single Name="FieldName" Type="BoundVariableName" IsUpdatable="false"/>
             <Single Name="fieldType" Type="FieldType" IsUpdatable="false"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
@@ -234,21 +265,24 @@
         <Arguments>
             <Single Name="Items" Type="ImmutableArray&lt;KeyValuePair&lt;BoundExpression, BoundReferenceEx&gt;&gt;"
                     IsUpdatable="true"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="VariableRef" Base="ReferenceEx" OperationKind="LocalReference">
         <Arguments>
             <Single Name="Name" Type="BoundVariableName" IsUpdatable="true"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="TemporalVariableRef" Base="VariableRef">
         <Arguments>
-            <Single Name="Name" Type="string" PassBase="true" OnlyArgument="true" IsUpdatable="true"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="Name" Type="BoundVariableName" PassBase="true" OnlyArgument="true" IsUpdatable="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
@@ -282,7 +316,8 @@
     </Syntax>
     <Syntax Name="ArrayTypeRef" Base="TypeRef" NS="TypeRef">
         <Arguments>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
@@ -290,26 +325,30 @@
         <Arguments>
             <Single Name="QName" Type="QualifiedName"/>
             <Single Name="Method" Type="SourceMethodSymbol" IsInternal="true"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
             <Single Name="Arity" Type="int" Default="-1"/>
         </Arguments>
     </Syntax>
     <Syntax Name="GenericClassTypeRef" Base="TypeRef" NS="TypeRef">
         <Arguments>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="PrimitiveTypeRef" Base="TypeRef" NS="TypeRef">
         <Arguments>
             <Single Name="Type" Type="AquilaTypeCode"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="TypeRefFromSymbol" Base="TypeRef" NS="TypeRef">
         <Arguments>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
     <!-- endregion -->
@@ -356,6 +395,7 @@
         <Arguments>
             <Single Name="NameValue" Type="VariableName"/>
             <Single Name="NameExpression" Type="BoundExpression"/>
+            <Single Name="ResultType" Type="ITypeSymbol" IsUpdatable="true" IsInternal="true"/>
         </Arguments>
     </Syntax>
     <!-- endregion -->

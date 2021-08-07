@@ -73,7 +73,9 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 if (!_rewriter.IsRepaired(block))
                 {
                     block.Tag = _rewriter.RepairedColor;
-                    block.SetNextEdge(AcceptEdge(block, block.NextEdge));
+
+                    if (block is not ExitBlock)
+                        block.SetNextEdge(AcceptEdge(block, block.NextEdge));
                 }
 
                 return block;
@@ -202,7 +204,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             _updatedBlocks = null;
 
             // Traverse the whole graph and possibly obtain new versions of start and exit
-            var updatedStart = (StartBlock) Accept(x.Start);
+            var updatedStart = (StartBlock)Accept(x.Start);
             var updatedExit = TryGetNewVersion(x.Exit);
 
             // Assume that yields and unreachable blocks stay the same
@@ -216,7 +218,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
                 // Rescan and repair nodes and edges if any blocks were modified
                 var repairer = new GraphRepairer(this);
-                updatedStart = (StartBlock) updatedStart.Accept(repairer);
+                updatedStart = (StartBlock)updatedStart.Accept(repairer);
                 updatedExit = TryGetNewVersion(x.Exit);
 
                 // Handle newly unreachable blocks
@@ -240,7 +242,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 // (enables to properly produce reachability diagnostics)
                 unreachableBlocks =
                     unreachableBlocks.Concat(newlyUnreachableBlocks)
-                        .Select(b => (BoundBlock) b.Accept(repairer))
+                        .Select(b => (BoundBlock)b.Accept(repairer))
                         .ToImmutableArray();
             }
 
@@ -328,15 +330,15 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             }
         }
 
-        public virtual BoundBlock OnVisitCFGBlock(BoundBlock x) => (BoundBlock) base.VisitCFGBlock(x);
+        public virtual BoundBlock OnVisitCFGBlock(BoundBlock x) => (BoundBlock)base.VisitCFGBlock(x);
 
-        public virtual StartBlock OnVisitCFGStartBlock(StartBlock x) => (StartBlock) base.VisitCFGStartBlock(x);
+        public virtual StartBlock OnVisitCFGStartBlock(StartBlock x) => (StartBlock)base.VisitCFGStartBlock(x);
 
-        public virtual ExitBlock OnVisitCFGExitBlock(ExitBlock x) => (ExitBlock) base.VisitCFGExitBlock(x);
+        public virtual ExitBlock OnVisitCFGExitBlock(ExitBlock x) => (ExitBlock)base.VisitCFGExitBlock(x);
 
-        public virtual CatchBlock OnVisitCFGCatchBlock(CatchBlock x) => (CatchBlock) base.VisitCFGCatchBlock(x);
+        public virtual CatchBlock OnVisitCFGCatchBlock(CatchBlock x) => (CatchBlock)base.VisitCFGCatchBlock(x);
 
-        public virtual CaseBlock OnVisitCFGCaseBlock(CaseBlock x) => (CaseBlock) base.VisitCFGCaseBlock(x);
+        public virtual CaseBlock OnVisitCFGCaseBlock(CaseBlock x) => (CaseBlock)base.VisitCFGCaseBlock(x);
 
         #endregion
 

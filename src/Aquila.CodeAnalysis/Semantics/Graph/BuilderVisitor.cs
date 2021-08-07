@@ -627,17 +627,19 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         private void BuildVariableDecl(VarDecl varDecl)
         {
-            //Transform the variable declaration into ExprStmt(AssignEx)
-            foreach (var decl in varDecl.Declarators)
-            {
-                var assignEx = new AssignEx(decl.Span, SyntaxKind.AssignmentExpression, Operations.AssignValue,
-                    decl.Initializer,
-                    new NameEx(decl.Initializer.Span, SyntaxKind.NameExpression, Operations.Empty, decl.Identifier));
+            Add(varDecl);
 
-                var statement = new ExpressionStmt(assignEx.Span, SyntaxKind.ExpressionStatement, assignEx);
-
-                Add(statement);
-            }
+            // //Transform the variable declaration into ExprStmt(AssignEx)
+            // foreach (var decl in varDecl.Declarators)
+            // {
+            //     var assignEx = new AssignEx(decl.Span, SyntaxKind.AssignmentExpression, Operations.AssignValue,
+            //         decl.Initializer,
+            //         new NameEx(decl.Initializer.Span, SyntaxKind.NameExpression, Operations.Empty, decl.Identifier));
+            //
+            //     var statement = new ExpressionStmt(assignEx.Span, SyntaxKind.ExpressionStatement, assignEx);
+            //
+            //     Add(statement);
+            // }
         }
 
         public override void VisitReturnStmt(ReturnStmt x)

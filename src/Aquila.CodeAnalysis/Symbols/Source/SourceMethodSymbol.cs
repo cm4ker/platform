@@ -153,10 +153,10 @@ namespace Aquila.CodeAnalysis.Symbols
                     // create initial flow state
                     var state = StateBinder.CreateInitialState(this);
 
+                    var binder = DeclaringCompilation.GetBinder(_syntax);
+
                     // build control flow graph
-                    var cfg = new ControlFlowGraph(
-                        this.Statements,
-                        new InMethodBinder(this, null));
+                    var cfg = new ControlFlowGraph(this.Statements, binder);
                     cfg.Start.FlowState = state;
 
                     //

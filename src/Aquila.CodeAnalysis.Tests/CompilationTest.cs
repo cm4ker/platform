@@ -26,6 +26,16 @@ namespace Aquila.Compiler.Tests
 
 
         [Fact]
+        public void SimpleAssingExpressionString()
+        {
+            var script = "static int Main() { string a = \"HELLO \" + \"WORLD\"; return a.Length; }";
+
+            var result = (int)this.CompileAndRun(script);
+
+            Assert.Equal("Hello world".Length, result);
+        }
+
+        [Fact]
         public void SimpleAssingExpression()
         {
             var script = "static int Main() { int a = 9 + 1; return a; }";

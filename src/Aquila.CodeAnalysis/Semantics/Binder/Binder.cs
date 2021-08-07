@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -26,7 +27,7 @@ namespace Aquila.CodeAnalysis.Semantics
 {
     internal class BinderFactory : AstVisitorBase<Binder>
     {
-        private readonly Dictionary<LangElement, Binder> _resolvedBinders;
+        private readonly ConcurrentDictionary<LangElement, Binder> _resolvedBinders;
         private Stack<Binder> _stack;
 
         private Binder TopStack
@@ -43,6 +44,7 @@ namespace Aquila.CodeAnalysis.Semantics
             _compilation = compilation;
             _merged = compilation.SourceSymbolCollection.GetMergedUnit();
 
+            _resolvedBinders = new ConcurrentDictionary<LangElement, Binder>();
             _stack = new Stack<Binder>();
 
             _global = new GlobalBinder();
@@ -109,7 +111,7 @@ Binder
                 var ns = _compilation.PlatformSymbolCollection.GetNamespace(comDecl.Identifier.Text);
 
                 var icBinder = new InContainerBinder(ns, next);
-                _resolvedBinders.Add(element, icBinder);
+                _resolvedBinders.TryAdd(element, icBinder);
 
                 return icBinder;
             }
@@ -120,7 +122,7 @@ Binder
                 if (EnumerableExtensions.IsSingle(types))
                 {
                     var icBinder = new InContainerBinder(types[0], next);
-                    _resolvedBinders.Add(element, icBinder);
+                    _resolvedBinders.TryAdd(element, icBinder);
 
                     return icBinder;
                 }
@@ -132,35 +134,42 @@ Binder
                 if (ns.Count() == 1)
                 {
                     var b = new InContainerBinder(ns.First(), Pop());
-                    _resolvedBinders.Add(element, b);
+                    _resolvedBinders.TryAdd(element, b);
 
                     return b;
                 }
             }
             else if (element is MethodDecl md)
             {
-                var methods = next.Container.GetMembers(md.Identifier.Text).OfType<SourceMethodSymbol>();
+                NamespaceOrTypeSymbol container;
+                if (md.IsGlobal)
+                    container = _compilation.SourceSymbolCollection.DefinedConstantsContainer;
+                else
+                    container = next.Container;
+
+                var methods = container.GetMembers(md.Identifier.Text).OfType<SourceMethodSymbol>();
                 var first = methods.First();
                 var ib = new InMethodBinder(first, next);
-                _resolvedBinders.Add(element, ib);
+                _resolvedBinders.TryAdd(element, ib);
+
+                return ib;
             }
             else if (element is BlockStmt blc)
             {
                 var b = new InMethodBinder(next.Method, next);
-                _resolvedBinders.Add(element, b);
+                _resolvedBinders.TryAdd(element, b);
+
+                return b;
             }
 
             return next;
         }
 
 
-        private bool TryGetBinder(LangElement element, out Binder binder)
+        private void GetBinder(LangElement element, out Binder binder)
         {
-            if (_resolvedBinders.TryGetValue(element, out binder))
-                return true;
-
-            binder = CreateBinder(element);
-            return false;
+            if (!_resolvedBinders.TryGetValue(element, out binder))
+                binder = CreateBinder(element);
         }
 
         public override Binder VisitSourceUnit(SourceUnit arg)
@@ -172,12 +181,29 @@ Binder
                     .Reverse()
                     .Foreach(x =>
                     {
-                        TryGetBinder(x, out var b);
+                        GetBinder(x, out var b);
                         Push(b);
                     });
             }
 
             return _global;
+        }
+
+
+        public override Binder VisitMethodDecl(MethodDecl arg)
+        {
+            GetBinder(arg, out var binder);
+            return binder;
+
+            return base.VisitMethodDecl(arg);
+        }
+
+        public override Binder VisitExtendDecl(ExtendDecl arg)
+        {
+            GetBinder(arg, out var binder);
+            return binder;
+
+            return base.VisitExtendDecl(arg);
         }
 
         public override Binder DefaultVisit(LangElement node)
@@ -267,8 +293,22 @@ Binder
 
         private BoundStatement BindVarDeclStmt(VarDecl varDecl)
         {
-            //varDecl.VariableType
-            throw new NotImplementedException();
+            foreach (var decl in varDecl.Declarators)
+            {
+                var localVar = Method.LocalsTable.BindLocalVariable(new VariableName(decl.Identifier.Text), decl);
+                var boundExpression = BindExpression(decl.Initializer);
+
+                return new BoundExpressionStmt(new BoundAssignEx(
+                    new BoundVariableRef(decl.Identifier.Text, localVar.Type).WithAccess(BoundAccess.Write),
+                    boundExpression, localVar.Type));
+                break;
+
+                //TODO:
+                //For not we support only one declarator. Need introduce Statements set for statements or change 
+                //Result for IEnumerable<BoundStatement>
+            }
+
+            throw new Exception();
         }
 
         public TypeSymbol BindType(Aquila.Syntax.Ast.TypeRef tref)
@@ -447,7 +487,7 @@ Binder
                         Method.Flags |= MethodFlags.HasIndirectVar;
                 }
 
-                return new BoundVariableRef(varname, null).WithAccess(access);
+                return new BoundVariableRef(varname, varname.Type).WithAccess(access);
             }
             else
             {
@@ -470,11 +510,9 @@ Binder
             Debug.Assert(nameEx != null);
             Debug.Assert(Method != null);
 
-            var localVar = Method.LocalsTable.BindLocalVariable(new VariableName(nameEx.Identifier.Text),
-                nameEx.Identifier.Span.ToTextSpan());
+            Method.LocalsTable.TryGetVariable(new VariableName(nameEx.Identifier.Text), out var localVar);
             var type = localVar.Type;
-
-            return new BoundVariableName(nameEx.Identifier.Text).WithSyntax(nameEx);
+            return new BoundVariableName(nameEx.Identifier.Text, type).WithSyntax(nameEx);
         }
 
         protected Location GetLocation(LangElement expr) => expr.SyntaxTree.GetLocation(expr);
@@ -675,7 +713,9 @@ Binder
                         }
                         else
                         {
-                            var th = new BoundVariableRef("this");
+                            var type = Container as ITypeSymbol;
+
+                            var th = new BoundVariableRef("this", type);
 
                             return new BoundInstanceCallEx(ms,
                                 new BoundMethodName(new QualifiedName(new Name(expr.Identifier.Text))),
@@ -735,7 +775,7 @@ Binder
                 {
                     if (member is PropertySymbol ps)
                     {
-                        Diagnostics.Add(GetLocation(expr.Identifier), ErrorCode.ERR_NotYetImplemented);
+                        return new BoundPropertyAccess(ps, boundLeft);
                     }
                 }
             }

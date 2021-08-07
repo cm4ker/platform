@@ -390,9 +390,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             // bind variable place
             if (x.Variable == null)
             {
-                var span =
-                    x.Variable = Method.LocalsTable.BindLocalVariable(local.Name,
-                        x.AquilaSyntax?.Span.ToTextSpan() ?? TextSpan.FromBounds(0, 0));
+                if (Method.LocalsTable.TryGetVariable(local.Name, out var localVar))
+                    x.Variable = localVar;
             }
 
             //
@@ -431,6 +430,12 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             }
 
             return default;
+        }
+
+        public override T VisitPropertyAccess(BoundPropertyAccess x)
+        {
+            Visit(x.Instance, BoundAccess.Read);
+            return base.VisitPropertyAccess(x);
         }
 
         public override T VisitIncDecEx(BoundIncDecEx x)

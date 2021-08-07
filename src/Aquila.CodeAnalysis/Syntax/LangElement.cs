@@ -57,6 +57,28 @@ namespace Aquila.Syntax
         {
             return true;
         }
+
+        public override int GetHashCode()
+        {
+            return
+                EqualityComparer<Type>.Default.GetHashCode(EqualityContract) * -1521134295
+                + EqualityComparer<Span>.Default.GetHashCode(Span) * -1521134295
+                + EqualityComparer<SyntaxKind>.Default.GetHashCode(Kind) * -1521134295;
+        }
+
+        public virtual bool Equals(LangElement other)
+        {
+            if ((object)this != other)
+            {
+                return (object)other != null && EqualityContract == other.EqualityContract
+                                             && EqualityComparer<Span>.Default.Equals(Span, other.Span)
+                                             && EqualityComparer<SyntaxKind>.Default.Equals(Kind, other.Kind);
+
+                return false;
+            }
+
+            return true;
+        }
     }
 
     public abstract record LangCollection : LangElement, IEnumerable
@@ -70,7 +92,7 @@ namespace Aquila.Syntax
 
         public IEnumerator GetEnumerator()
         {
-            return ((IEnumerable<LangElement>) _elements).GetEnumerator();
+            return ((IEnumerable<LangElement>)_elements).GetEnumerator();
         }
     }
 
@@ -101,7 +123,7 @@ namespace Aquila.Syntax
 
         public new IEnumerator<T> GetEnumerator()
         {
-            return ((IEnumerable<T>) _elements).GetEnumerator();
+            return ((IEnumerable<T>)_elements).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

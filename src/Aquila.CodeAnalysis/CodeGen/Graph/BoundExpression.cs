@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Utilities;
 using System;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Reflection.Metadata;
 using Aquila.CodeAnalysis.CodeGen;
@@ -299,7 +300,6 @@ namespace Aquila.CodeAnalysis.Semantics
         bool IsDecrement => !this.IsIncrement;
     }
 
-
     partial class BoundStaticCallEx
     {
         internal override TypeSymbol Emit(CodeGenerator cg)
@@ -313,6 +313,15 @@ namespace Aquila.CodeAnalysis.Semantics
         internal override TypeSymbol Emit(CodeGenerator cg)
         {
             return cg.EmitCall(ILOpCode.Call, this.MethodSymbol, Instance, Arguments);
+        }
+    }
+
+    public partial class BoundPropertyAccess
+    {
+        internal override TypeSymbol Emit(CodeGenerator cg)
+        {
+            return cg.EmitCall(ILOpCode.Call, (MethodSymbol)Property.GetMethod, this.Instance,
+                ImmutableArray<BoundArgument>.Empty);
         }
     }
 }
