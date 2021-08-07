@@ -3,7 +3,6 @@ using Aquila.CodeAnalysis.Symbols;
 using Roslyn.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Aquila.CodeAnalysis.Semantics;
@@ -12,7 +11,6 @@ using Aquila.CodeAnalysis.Semantics.TypeRef;
 using Aquila.Compiler.Utilities;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Syntax;
-using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 
 
 namespace Aquila.CodeAnalysis.FlowAnalysis
@@ -48,8 +46,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         internal TypeRefContext TypeCtx => State.TypeRefContext;
 
         protected AquilaCompilation DeclaringCompilation => _model.Compilation;
-
-        protected BoundTypeRefFactory BoundTypeRefFactory => DeclaringCompilation.TypeRefFactory;
 
         #endregion
 
@@ -160,25 +156,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                     Method.IsReturnAnalysed = true;
                     wasNotAnalysed = true;
                 }
-
-                // Ping the subscribers either if the return type has changed or
-                // it is the first time the analysis reached the method exit
-                // var rtype = State.GetReturnType();
-                // if (rtype != exit._lastReturnTypeMask || wasNotAnalysed)
-                // {
-                //     exit._lastReturnTypeMask = rtype;
-                //     var subscribers = exit.Subscribers;
-                //     if (subscribers.Count != 0)
-                //     {
-                //         lock (subscribers)
-                //         {
-                //             foreach (var subscriber in subscribers)
-                //             {
-                //                 Worklist.PingReturnUpdate(exit, subscriber);
-                //             }
-                //         }
-                //     }
-                // }
             }
         }
 
@@ -234,25 +211,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         public override T VisitCFGCatchBlock(CatchBlock x)
         {
-            // VisitCFGBlockInit(x);
-            //
-            // // add catch control variable to the state
-            // x.TypeRef.Accept(this);
-            //
-            // if (x.Variable != null)
-            // {
-            //     x.Variable.Access = BoundAccess.Write.WithWrite(x.TypeRef.GetTypeRefMask(TypeCtx));
-            //     State.SetLocalType(State.GetLocalHandle(x.Variable.Name.NameValue), x.Variable.Access.WriteMask);
-            //     Accept(x.Variable);
-            //
-            //     //
-            //     x.Variable.ResultType = (TypeSymbol) x.TypeRef.Type;
-            // }
-            //
-            //
-            // //
-            // DefaultVisitBlock(x);
-            //
             return default;
         }
 
@@ -307,31 +265,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         {
             return default;
         }
-
-        #endregion
-
-        #region Visit CopyValue
-
-        // public override T VisitCopyValue(BoundCopyValue x)
-        // {
-        //     Accept(x.Expression);
-        //
-        //     var tmask = x.Expression.TypeRefMask;
-        //
-        //     if (tmask.IsRef)
-        //     {
-        //         // copied value is possible a reference,
-        //         // might be anything:
-        //         tmask = TypeRefMask.AnyType;
-        //     }
-        //
-        //     // the result is not a reference for sure:
-        //     Debug.Assert(!tmask.IsRef);
-        //
-        //     x.TypeRefMask = tmask;
-        //
-        //     return default;
-        // }
 
         #endregion
 
@@ -693,96 +626,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         #region Visit UnaryEx
 
-        protected override void Visit(BoundUnaryEx x, ConditionBranch branch)
-        {
-            // x.TypeRefMask = ResolveUnaryOperatorExpression(x, branch);
-        }
-
-        // TypeRefMask ResolveUnaryOperatorExpression(BoundUnaryEx x, ConditionBranch branch)
-        // {
-        //     if (branch != ConditionBranch.AnyResult && x.Operation == Operations.LogicNegation)
-        //     {
-        //         // Negation swaps the branches
-        //         VisitCondition(x.Operand, branch.NegativeBranch());
-        //     }
-        //     else
-        //     {
-        //         Accept(x.Operand);
-        //     }
-        //
-        //     // clear any previous resolved constant 
-        //     x.ConstantValue = default(Optional<object>);
-        //
-        //     //
-        //     switch (x.Operation)
-        //     {
-        //         case Operations.AtSign:
-        //             return x.Operand.TypeRefMask;
-        //
-        //         case Operations.BitNegation:
-        //             if (x.Operand.ConstantValue.HasValue)
-        //             {
-        //                 if (x.Operand.ConstantValue.Value is long l)
-        //                 {
-        //                     x.ConstantValue = new Optional<object>(~l);
-        //                 }
-        //                 else if (x.Operand.ConstantValue.Value is int i)
-        //                 {
-        //                     x.ConstantValue = new Optional<object>(~(long) i);
-        //                 }
-        //             }
-        //
-        //             return TypeCtx.GetLongTypeMask(); // TODO: or byte[]
-        //
-        //         case Operations.Clone:
-        //             // result is always object, not aliased
-        //             return TypeCtx.GetObjectsFromMask(x.Operand.TypeRefMask).IsVoid
-        //                 ? TypeCtx.GetSystemObjectTypeMask() // "object"
-        //                 : TypeCtx.GetObjectsFromMask(x.Operand.TypeRefMask); // (object)T
-        //
-        //         case Operations.LogicNegation:
-        //         {
-        //             if (x.Operand.ConstantValue.TryConvertToBool(out bool constBool))
-        //             {
-        //                 x.ConstantValue = ConstantValueExtensions.AsOptional(!constBool);
-        //             }
-        //
-        //             return TypeCtx.GetBooleanTypeMask();
-        //         }
-        //
-        //         case Operations.Minus:
-        //             var cvalue = ResolveUnaryMinus(x.Operand.ConstantValue.ToConstantValueOrNull());
-        //             if (cvalue != null)
-        //             {
-        //                 x.ConstantValue = new Optional<object>(cvalue.Value);
-        //                 return TypeCtx.GetTypeMask(BoundTypeRefFactory.Create(cvalue), false);
-        //             }
-        //             else
-        //             {
-        //                 if (IsDoubleOnly(x.Operand))
-        //                 {
-        //                     return TypeCtx.GetDoubleTypeMask(); // double in case operand is double
-        //                 }
-        //
-        //                 return TypeCtx.GetNumberTypeMask(); // TODO: long in case operand is not a number
-        //             }
-        //
-        //         case Operations.UnsetCast:
-        //             return TypeCtx.GetNullTypeMask(); // null
-        //
-        //         case Operations.Plus:
-        //             if (IsNumberOnly(x.Operand.TypeRefMask))
-        //                 return x.Operand.TypeRefMask;
-        //             return TypeCtx.GetNumberTypeMask();
-        //
-        //         case Operations.Print:
-        //             return TypeCtx.GetLongTypeMask();
-        //
-        //         default:
-        //             throw ExceptionUtilities.Unreachable;
-        //     }
-        // }
-
         ConstantValue ResolveUnaryMinus(ConstantValue value)
         {
             if (value != null)
@@ -872,155 +715,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         #endregion
 
-        #region Visit InstanceOf
-
-        // protected override void Visit(BoundInstanceOfEx x, ConditionBranch branch)
-        // {
-        //     Accept(x.Operand);
-        //     x.AsType.Accept(this);
-        //
-        //     // TOOD: x.ConstantValue // in case we know and the operand is a local variable (we can ignore the expression and emit result immediatelly)
-        //
-        //     var opTypeMask = x.Operand.TypeRefMask;
-        //     if (x.Operand is BoundLiteral
-        //         || (!opTypeMask.IsAnyType && !opTypeMask.IsRef && !Method.TypeRefContext.IsObject(opTypeMask)))
-        //     {
-        //         x.ConstantValue = ConstantValueExtensions.AsOptional(false);
-        //     }
-        //     else if (x.Operand is BoundVariableRef vref && vref.Name.IsDirect)
-        //     {
-        //         if (branch == ConditionBranch.ToTrue)
-        //         {
-        //             // if (Variable is T) => variable is T in True branch state
-        //             var vartype = x.AsType.GetTypeRefMask(TypeCtx);
-        //             if (opTypeMask.IsRef) vartype = vartype.WithRefFlag; // keep IsRef flag
-        //
-        //             State.SetLocalType(State.GetLocalHandle(vref.Name.NameValue), vartype);
-        //         }
-        //     }
-        //
-        //     //
-        //     x.TypeRefMask = TypeCtx.GetBooleanTypeMask();
-        // }
-
-        #endregion
-
-        #region Visit IsSet, OffsetExists
-
-        //
-        // protected override void Visit(BoundIsSetEx x, ConditionBranch branch)
-        // {
-        //     Accept(x.VarReference);
-        //
-        //     // try to get resulting value and type of the variable
-        //     var localname = AsVariableName(x.VarReference);
-        //     if (localname.IsValid())
-        //     {
-        //         var handle = State.GetLocalHandle(localname);
-        //         Debug.Assert(handle.IsValid);
-        //
-        //         // Remove any constant value of isset()
-        //         x.ConstantValue = default;
-        //
-        //         //
-        //         if (State.IsLocalSet(handle))
-        //         {
-        //             // If the variable is always defined, isset() behaves like !is_null()
-        //             var currenttype = State.GetLocalType(handle);
-        //
-        //             // a type in the true branch:
-        //             var positivetype = TypeCtx.WithoutNull(currenttype);
-        //
-        //             // resolve the constant if possible,
-        //             // does not depend on the branch
-        //             if (!currenttype.IsRef && !currenttype.IsAnyType)
-        //             {
-        //                 if (positivetype.IsVoid) // always false
-        //                 {
-        //                     x.ConstantValue = ConstantValueExtensions.AsOptional(false);
-        //                 }
-        //                 else if (positivetype == currenttype) // not void nor null
-        //                 {
-        //                     x.ConstantValue = ConstantValueExtensions.AsOptional(true);
-        //                 }
-        //             }
-        //
-        //             // we can be more specific in true/false branches:
-        //             if (branch != ConditionBranch.AnyResult && !x.ConstantValue.HasValue)
-        //             {
-        //                 // update target type in true/false branch:
-        //                 var newtype = (branch == ConditionBranch.ToTrue)
-        //                     ? positivetype
-        //                     : TypeCtx.GetNullTypeMask();
-        //
-        //                 // keep the flags
-        //                 newtype |= currenttype.Flags;
-        //
-        //                 //
-        //                 State.SetLocalType(handle, newtype);
-        //             }
-        //         }
-        //         else if (localname.IsAutoGlobal)
-        //         {
-        //             // nothing
-        //         }
-        //         else
-        //         {
-        //             // variable is not set for sure
-        //             // isset : false
-        //             x.ConstantValue = ConstantValueExtensions.AsOptional(false);
-        //         }
-        //
-        //         // mark variable as either initialized or uninintialized in respective branches
-        //         if (branch == ConditionBranch.ToTrue)
-        //         {
-        //             State.SetVarInitialized(handle);
-        //         }
-        //     }
-        //
-        //     // always returns a boolean
-        //     x.TypeRefMask = TypeCtx.GetBooleanTypeMask();
-        // }
-        //
-        // public override T VisitOffsetExists(BoundOffsetExists x)
-        // {
-        //     // receiver[index]
-        //     base.VisitOffsetExists(x);
-        //
-        //     // TODO: if receiver is undefined -> result is false
-        //
-        //     // always bool
-        //     x.ResultType = DeclaringCompilation.CoreTypes.Boolean;
-        //     x.TypeRefMask = TypeCtx.GetBooleanTypeMask();
-        //     return default;
-        // }
-        //
-        // public override T VisitTryGetItem(BoundTryGetItem x)
-        // {
-        //     // array, index, fallback
-        //     base.VisitTryGetItem(x);
-        //
-        //     // TODO: resulting type if possible (see VisitArrayItem)
-        //
-        //     // The result of array[index] might be a reference
-        //     x.TypeRefMask = TypeRefMask.AnyType.WithRefFlag;
-        //
-        //     return default;
-        // }
-
-        #endregion
-
         #region TypeRef
-
-        //
-        // public override T VisitIndirectTypeRef(BoundIndirectTypeRef tref)
-        // {
-        //     // visit indirect type
-        //     base.VisitIndirectTypeRef(tref);
-        //
-        //     //
-        //     return VisitTypeRef(tref);
-        // }
 
         public override T VisitTypeRef(BoundTypeRef tref)
         {
@@ -1071,26 +766,11 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                 // get the return type from all the ambiguities:
                 if (!maybeOverload && x.Access.IsRead)
                 {
-                    // var r = (TypeRefMask) 0;
-                    // foreach (var m in ambiguity.Ambiguities)
-                    // {
-                    //     if (Worklist.EnqueueMethod(m, CurrentBlock, x))
-                    //     {
-                    //         // The next blocks will be analysed after this method is re-enqueued due to the dependency
-                    //         _flags |= AnalysisFlags.IsCanceled;
-                    //     }
-                    //
-                    //     r |= m.GetResultType(TypeCtx);
-                    // }
-                    //
-                    // x.TypeRefMask = r;
                 }
             }
 
             if (x.Access.IsReadRef)
             {
-                // reading by ref:
-                //x.TypeRefMask = x.TypeRefMask.WithRefFlag;
             }
         }
 
@@ -1117,100 +797,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                 return result.ToArray();
             }
         }
-        //
-        // public override T VisitNew(BoundNewEx x)
-        // {
-        //     Accept(x.TypeRef); // resolve target type
-        //
-        //     VisitMethodCall(x); // analyse arguments
-        //
-        //     // resolve .ctor method:
-        //     var type = (NamedTypeSymbol) x.TypeRef.Type;
-        //     if (type.IsValidType())
-        //     {
-        //         var candidates = type.InstanceConstructors.ToArray();
-        //
-        //         //
-        //         x.TargetMethod = new OverloadsList(candidates).Resolve(this.TypeCtx, x.ArgumentsInSourceOrder,
-        //             VisibilityScope, OverloadsList.InvocationKindFlags.New);
-        //         x.ResultType = type;
-        //     }
-        //
-        //     // bind arguments:
-        //     BindMethodCall(x);
-        //
-        //     // resulting type is always known,
-        //     // not null,
-        //     // not ref:
-        //     x.TypeRefMask = x.TypeRef.GetTypeRefMask(TypeCtx).WithoutSubclasses;
-        //
-        //     return default;
-        // }
-        //
-        // public override T VisitInclude(BoundIncludeEx x)
-        // {
-        //     VisitMethodCall(x);
-        //
-        //     // resolve target script
-        //     Debug.Assert(x.ArgumentsInSourceOrder.Length == 1);
-        //     var targetExpr = x.ArgumentsInSourceOrder[0].Value;
-        //
-        //     //
-        //     x.TargetMethod = null;
-        //
-        //     if (targetExpr.ConstantValue.TryConvertToString(out var path))
-        //     {
-        //         // include (path)
-        //         x.TargetMethod = (MethodSymbol) _model.ResolveFile(path)?.MainMethod;
-        //     }
-        //     else if (targetExpr is BoundConcatEx concat) // common case
-        //     {
-        //         // include (dirname( __FILE__ ) . path) // changed to (__DIR__ . path) by graph rewriter
-        //         // include (__DIR__ . path)
-        //         if (concat.ArgumentsInSourceOrder.Length == 2 &&
-        //             // concat.ArgumentsInSourceOrder[0].Value is BoundPseudoConst pc &&
-        //             // pc.ConstType == PseudoConstUse.Types.Dir &&
-        //             concat.ArgumentsInSourceOrder[1].Value.ConstantValue.TryConvertToString(out path))
-        //         {
-        //             // create project relative path
-        //             // not starting with a directory separator!
-        //             path = Method.ContainingFile.DirectoryRelativePath + path;
-        //             if (path.Length != 0 && PathUtilities.IsAnyDirectorySeparator(path[0]))
-        //                 path = path.Substring(1); // make nicer when we have a helper method for that
-        //             x.TargetMethod = (MethodSymbol) _model.ResolveFile(path)?.MainMethod;
-        //         }
-        //     }
-        //
-        //     // resolve result type
-        //     if (x.Access.IsRead)
-        //     {
-        //         var target = x.TargetMethod;
-        //         if (target != null)
-        //         {
-        //             x.ResultType = target.ReturnType;
-        //             x.TypeRefMask = target.GetResultType(TypeCtx);
-        //
-        //             if (x.IsOnceSemantic)
-        //             {
-        //                 // include_once, require_once returns TRUE in case the script was already included
-        //                 x.TypeRefMask |= TypeCtx.GetBooleanTypeMask();
-        //             }
-        //         }
-        //         else
-        //         {
-        //             x.TypeRefMask = TypeRefMask.AnyType;
-        //         }
-        //     }
-        //     else
-        //     {
-        //         x.TypeRefMask = 0;
-        //     }
-        //
-        //     // reset type analysis (include may change local variables)
-        //     State.SetAllUnknown(true);
-        //
-        //     return default;
-        // }
 
         #endregion
 
@@ -1232,25 +818,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         public override T VisitArrayEx(BoundArrayEx x)
         {
-            // var items = x.Items;
-            // TypeRefMask elementType = 0;
-            //
-            // // analyse elements
-            // foreach (var i in items)
-            // {
-            //     Debug.Assert(i.Value != null);
-            //
-            //     Accept(i.Key);
-            //     Accept(i.Value);
-            //
-            //     elementType |= i.Value.TypeRefMask;
-            // }
-            //
-            // // writeup result type
-            // x.TypeRefMask = elementType.IsVoid
-            //     ? TypeCtx.GetArrayTypeMask()
-            //     : TypeCtx.GetArrayTypeMask(elementType);
-
             return default;
         }
 
@@ -1258,16 +825,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         {
             Accept(x.Array);
             Accept(x.Index);
-
-            // TODO: resulting type if possible:
-            // var element_type = TypeCtx.GetElementType(x.Array.TypeRefMask); // + handle classes with ArrayAccess and TypeRefMask.Uninitialized
-
-            //
-
-            // x.TypeRefMask =
-            //     x.Access.IsReadRef ? TypeRefMask.AnyType.WithRefFlag :
-            //     x.Access.IsEnsure ? TypeRefMask.AnyType : // object|array ?
-            //     TypeRefMask.AnyType.WithRefFlag; // result might be a anything (including a reference?)
 
             return default;
         }
@@ -1300,108 +857,17 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return default;
         }
 
-        // public override T VisitYieldEx(BoundYieldEx x)
-        // {
-        //     base.VisitYieldEx(x);
-        //     x.TypeRefMask = TypeRefMask.AnyType;
-        //
-        //     return default;
-        // }
-
-        // public override T VisitYieldFromEx(BoundYieldFromEx x)
-        // {
-        //     base.VisitYieldFromEx(x);
-        //     x.TypeRefMask = TypeRefMask.AnyType;
-        //
-        //     return default;
-        // }
-
         #endregion
 
         #region Visit
 
-        // public override T VisitIsEmpty(BoundIsEmptyEx x)
-        // {
-        //     Accept(x.Operand);
-        //     x.TypeRefMask = TypeCtx.GetBooleanTypeMask();
-        //
-        //     return default;
-        // }
-
         public override T VisitListEx(BoundListEx x)
         {
-            // var elementtype = this.TypeCtx.GetElementType(x.Access.WriteMask);
-            // Debug.Assert(!elementtype.IsVoid);
-            //
-            // foreach (var v in x.Items) // list() may contain NULL implying ignored variable
-            // {
-            //     if (v.Value != null)
-            //     {
-            //         Accept(v.Key);
-            //         Visit(v.Value, v.Value.Access.WithWrite(elementtype));
-            //     }
-            // }
-
             return default;
         }
 
         public override T VisitConditionalEx(BoundConditionalEx x)
         {
-            // BoundExpression positiveExpr; // positive expression (if evaluated to true, FalseExpr is not evaluated)
-            // FlowState positiveState; // state after successful positive branch
-            //
-            // if (x.IfTrue != null && x.IfTrue != x.Condition)
-            // {
-            //     // Template: Condition ? IfTrue : IfFalse
-            //
-            //     var originalState = State.Clone();
-            //     positiveExpr = x.IfTrue;
-            //
-            //     // true branch:
-            //     if (VisitCondition(x.Condition, ConditionBranch.ToTrue))
-            //     {
-            //         Accept(x.IfTrue);
-            //         positiveState = State;
-            //
-            //         // false branch
-            //         State = originalState.Clone();
-            //         VisitCondition(x.Condition, ConditionBranch.ToFalse);
-            //     }
-            //     else
-            //     {
-            //         // OPTIMIZATION: Condition does not have to be visited twice!
-            //
-            //         originalState = State.Clone(); // state after visiting Condition
-            //
-            //         Accept(x.IfTrue);
-            //         positiveState = State;
-            //
-            //         State = originalState.Clone();
-            //     }
-            // }
-            // else
-            // {
-            //     // Template: Condition ?: IfFalse
-            //     positiveExpr = x.Condition;
-            //
-            //     // in case ?: do not evaluate trueExpr twice:
-            //     // Template: Condition ?: FalseExpr
-            //
-            //     Accept(x.Condition);
-            //     positiveState = State.Clone();
-            //
-            //     // condition != false => condition != null =>
-            //     // ignoring NULL type from Condition:
-            //     x.Condition.TypeRefMask = TypeCtx.WithoutNull(x.Condition.TypeRefMask);
-            // }
-            //
-            // // and start over with false branch:
-            // Accept(x.IfFalse);
-            //
-            // // merge both states (after positive evaluation and the false branch)
-            // State = State.Merge(positiveState);
-            // x.TypeRefMask = positiveExpr.TypeRefMask | x.IfFalse.TypeRefMask;
-
             return default;
         }
 
@@ -1422,19 +888,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
             return default;
         }
-
-        // public override T VisitEval(BoundEvalEx x)
-        // {
-        //     base.VisitEval(x);
-        //
-        //     //
-        //     State.SetAllUnknown(true);
-        //
-        //     //
-        //     x.TypeRefMask = TypeRefMask.AnyType;
-        //
-        //     return default;
-        // }
 
         #endregion
     }
