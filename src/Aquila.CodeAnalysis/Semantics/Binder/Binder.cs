@@ -5,11 +5,14 @@ using System.Diagnostics;
 using System.Linq;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.CodeAnalysis.FlowAnalysis;
+using Aquila.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Utilities;
+using Aquila.Compiler.Utilities;
 using Aquila.Syntax;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Expressions;
+using Aquila.Syntax.Ast.Functions;
 using Aquila.Syntax.Ast.Statements;
 using Aquila.Syntax.Declarations;
 using Aquila.Syntax.Errors;
@@ -17,10 +20,11 @@ using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
 using Microsoft.CodeAnalysis;
 using MoreLinq.Extensions;
+using EnumerableExtensions = Roslyn.Utilities.EnumerableExtensions;
 
 namespace Aquila.CodeAnalysis.Semantics
 {
-    internal class BinderFactory : AstWalker<Binder>
+    internal class BinderFactory : AstVisitorBase<Binder>
     {
         private readonly Dictionary<LangElement, Binder> _resolvedBinders;
         private Stack<Binder> _stack;
@@ -32,14 +36,18 @@ namespace Aquila.CodeAnalysis.Semantics
 
         private MergedSourceUnit _merged;
         private readonly AquilaCompilation _compilation;
+        private readonly GlobalBinder _global;
 
-        public BinderFactory(MergedSourceUnit merged, AquilaCompilation compilation)
+        public BinderFactory(AquilaCompilation compilation)
         {
-            _merged = merged;
             _compilation = compilation;
+            _merged = compilation.SourceSymbolCollection.GetMergedUnit();
+
             _stack = new Stack<Binder>();
 
-            _stack.Push(new GlobalBinder());
+            _global = new GlobalBinder();
+
+            _stack.Push(_global);
         }
 
         public void Push(Binder binder)
@@ -53,52 +61,141 @@ namespace Aquila.CodeAnalysis.Semantics
             return _stack.Pop();
         }
 
-        public Binder CreateBinder(LangElement element)
+        public Binder Peek()
         {
-            if (_resolvedBinders.TryGetValue(element, out var binder))
-                return binder;
+            return _stack.Peek();
+        }
 
-            binder = Visit(element);
-            _resolvedBinders.Add(element, binder);
+        /*
+Component
+    - ComponentItem
+        - Module
+            -Code
+                -Method
+                
+                
+-global <--- Binder here
+    - import Reference; <--- Binder here
+    
+    - static int global_function()
+    
+    - component Document <---- Binder here
+        
+        - extend Invoice <---- Binder here
+            
+            - void SetSum() <---- Binder here
+               {            
+                    Order d = new Order(); 
+                        ^
+                    This is type founded in "InNamespaceContainer"
+                    
+                    { <---- Binder here on every scope created
+                    
+                    
+                    }
+                }   
+                
+Binder
+    -> GetNext() - getting next Binder for the lookup
+    -> Container - TypeOrNamespace Context
+         */
 
-            return binder;
+        private Binder CreateBinder(LangElement element)
+        {
+            var next = Visit(element.Parent);
+
+            if (element is ComponentDecl comDecl)
+            {
+                var ns = _compilation.PlatformSymbolCollection.GetNamespace(comDecl.Identifier.Text);
+
+                var icBinder = new InContainerBinder(ns, next);
+                _resolvedBinders.Add(element, icBinder);
+
+                return icBinder;
+            }
+            else if (element is ExtendDecl ext)
+            {
+                var types = next.Container.ContainingNamespace.GetTypeMembers(ext.Identifier.Text + "Object");
+
+                if (EnumerableExtensions.IsSingle(types))
+                {
+                    var icBinder = new InContainerBinder(types[0], next);
+                    _resolvedBinders.Add(element, icBinder);
+
+                    return icBinder;
+                }
+            }
+            else if (element is ImportDecl import)
+            {
+                var ns = _compilation.GlobalNamespace.GetMembers(import.Name).ToImmutableArray();
+
+                if (ns.Count() == 1)
+                {
+                    var b = new InContainerBinder(ns.First(), Pop());
+                    _resolvedBinders.Add(element, b);
+
+                    return b;
+                }
+            }
+            else if (element is MethodDecl md)
+            {
+                var methods = next.Container.GetMembers(md.Identifier.Text).OfType<SourceMethodSymbol>();
+                var first = methods.First();
+                var ib = new InMethodBinder(first, next);
+                _resolvedBinders.Add(element, ib);
+            }
+            else if (element is BlockStmt blc)
+            {
+                var b = new InMethodBinder(next.Method, next);
+                _resolvedBinders.Add(element, b);
+            }
+
+            return next;
+        }
+
+
+        private bool TryGetBinder(LangElement element, out Binder binder)
+        {
+            if (_resolvedBinders.TryGetValue(element, out binder))
+                return true;
+
+            binder = CreateBinder(element);
+            return false;
         }
 
         public override Binder VisitSourceUnit(SourceUnit arg)
         {
-            var unitBinder = new Binder(TopStack);
-            _resolvedBinders.Add(arg, unitBinder);
+            if (arg.Imports.Any())
+            {
+                Push(_global);
+                arg.Imports
+                    .Reverse()
+                    .Foreach(x =>
+                    {
+                        TryGetBinder(x, out var b);
+                        Push(b);
+                    });
+            }
 
-            Push(unitBinder);
-
-            base.VisitSourceUnit(arg);
-
-            Pop();
-
-            return unitBinder;
+            return _global;
         }
 
-        public override Binder VisitComponentDecl(ComponentDecl arg)
+        public override Binder DefaultVisit(LangElement node)
         {
-            return base.VisitComponentDecl(arg);
-        }
-
-        public override Binder VisitExtendDecl(ExtendDecl arg)
-        {
-            return base.VisitExtendDecl(arg);
+            return Visit(node.Parent);
         }
     }
 
     internal class InContainerBinder : Binder
     {
-        private readonly NamedTypeSymbol _container;
+        private readonly INamespaceOrTypeSymbol _container;
 
-        public InContainerBinder(NamedTypeSymbol container, Binder next) : base(next)
+        public InContainerBinder(INamespaceOrTypeSymbol container, Binder next) : base(next)
         {
             _container = container;
         }
 
-        public override NamespaceOrTypeSymbol Container => _container;
+        public override NamespaceOrTypeSymbol Container => (NamespaceOrTypeSymbol)_container;
     }
 
     internal class InMethodBinder : Binder
@@ -113,10 +210,11 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public override SourceMethodSymbol Method => _method;
 
+
         public override NamespaceOrTypeSymbol Container => _method.ContainingType;
     }
 
-    internal class Binder
+    abstract class Binder
     {
         private readonly Binder _next;
 
@@ -144,12 +242,12 @@ namespace Aquila.CodeAnalysis.Semantics
 
 
         public virtual SourceMethodSymbol Method { get; }
-
         public virtual NamespaceOrTypeSymbol Container { get; }
+        public LocalsTable Locals => Method.LocalsTable;
 
         #region Bind statements
 
-        protected virtual BoundStatement BindStatement(Statement stmt) => BindStatementCore(stmt).WithSyntax(stmt);
+        public virtual BoundStatement BindStatement(Statement stmt) => BindStatementCore(stmt).WithSyntax(stmt);
 
         BoundStatement BindStatementCore(Statement stmt)
         {
@@ -157,11 +255,73 @@ namespace Aquila.CodeAnalysis.Semantics
 
             if (stmt is ExpressionStmt exprStm)
                 return new BoundExpressionStmt(BindExpression(exprStm.Expression, BoundAccess.None));
-            if (stmt is ReturnStmt jmpStm) return BindReturnStmt(jmpStm);
+            if (stmt is ReturnStmt jmpStm)
+                return BindReturnStmt(jmpStm);
+            if (stmt is VarDecl varDecl)
+                return BindVarDeclStmt(varDecl);
 
             Diagnostics.Add(GetLocation(stmt), ErrorCode.ERR_NotYetImplemented,
                 $"Statement of type '{stmt.GetType().Name}'");
             return new BoundEmptyStmt(stmt.Span.ToTextSpan());
+        }
+
+        private BoundStatement BindVarDeclStmt(VarDecl varDecl)
+        {
+            //varDecl.VariableType
+            throw new NotImplementedException();
+        }
+
+        public TypeSymbol BindType(Aquila.Syntax.Ast.TypeRef tref)
+        {
+            var trf = DeclaringCompilation.CoreTypes;
+
+
+            if (tref is PredefinedTypeRef pt)
+            {
+                switch (pt.Kind)
+                {
+                    case SyntaxKind.IntKeyword: return trf.Int32;
+                    case SyntaxKind.LongKeyword: return trf.Int64;
+                    case SyntaxKind.VoidKeyword: return trf.Void;
+                    case SyntaxKind.ObjectKeyword: return trf.Object;
+                    case SyntaxKind.StringKeyword: return trf.String;
+                    case SyntaxKind.BoolKeyword: return trf.Boolean;
+
+                    default: throw ExceptionUtilities.UnexpectedValue(pt.Kind);
+                }
+            }
+            else if (tref is NamedTypeRef named)
+            {
+                var qName = new QualifiedName(new Name(named.Value));
+                var typeSymbol = FindTypeByName(tref, qName);
+                return (TypeSymbol)typeSymbol;
+            }
+            else
+            {
+                Diagnostics.Add(GetLocation(tref), ErrorCode.ERR_NotYetImplemented,
+                    $"Expression of type '{tref.GetType().Name}'");
+
+                throw new NotImplementedException();
+            }
+        }
+
+        private ITypeSymbol FindTypeByName(Aquila.Syntax.Ast.TypeRef tref, QualifiedName name)
+        {
+            var typeMembers = Container.GetTypeMembers(name.ToString(), -1);
+
+            if (typeMembers.Length == 1)
+                return typeMembers[0];
+
+            if (typeMembers.Length == 0)
+                return _next.FindTypeByName(tref, name);
+
+            if (typeMembers.Length > 1)
+            {
+                Diagnostics.Add(GetLocation(tref), ErrorCode.WRN_UndefinedType,
+                    $"Expression of type '{tref.GetType().Name}'");
+            }
+
+            return null;
         }
 
         protected BoundStatement BindReturnStmt(ReturnStmt stmt)
@@ -187,7 +347,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         #region Bind expressions
 
-        protected virtual BoundExpression BindExpression(Expression expr, BoundAccess access) =>
+        public virtual BoundExpression BindExpression(Expression expr, BoundAccess access) =>
             BindExpressionCore(expr, access).WithSyntax(expr);
 
         protected BoundExpression BindExpression(Expression expr) => BindExpression(expr, BoundAccess.Read);
@@ -207,12 +367,12 @@ namespace Aquila.CodeAnalysis.Semantics
             if (expr is MemberAccessEx mae) return BindMemberAccessEx(mae, false).WithAccess(access);
 
             if (expr is ThrowEx throwEx)
-                return new BoundThrowEx(BindExpression(throwEx.Expression, BoundAccess.Read));
+                return new BoundThrowEx(BindExpression(throwEx.Expression, BoundAccess.Read), null);
 
             //
             Diagnostics.Add(GetLocation(expr), ErrorCode.ERR_NotYetImplemented,
                 $"Expression of type '{expr.GetType().Name}'");
-            return new BoundLiteral(null);
+            return new BoundLiteral(null, null);
         }
 
         protected BoundExpression BindLiteral(LiteralEx expr)
@@ -225,10 +385,26 @@ namespace Aquila.CodeAnalysis.Semantics
                 case Operations.NullLiteral:
                 case Operations.BinaryStringLiteral:
                 case Operations.BoolLiteral:
-                    return new BoundLiteral(expr.ObjectiveValue);
+                    return new BoundLiteral(expr.ObjectiveValue, GetSymbolFromLiteralOperation(expr.Operation));
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        protected ITypeSymbol GetSymbolFromLiteralOperation(Operations op)
+        {
+            var ct = DeclaringCompilation.CoreTypes;
+
+            return op switch
+            {
+                Operations.BoolLiteral => ct.Boolean.Symbol,
+                Operations.IntLiteral => ct.Int32.Symbol,
+                Operations.CharLiteral => ct.Char.Symbol,
+                Operations.LongIntLiteral => ct.Int64.Symbol,
+                Operations.DoubleLiteral => ct.Double.Symbol,
+                Operations.StringLiteral => ct.String.Symbol,
+                _ => new MissingMetadataTypeSymbol("Unknown", 1, false)
+            };
         }
 
         protected BoundExpression BindSimpleVarUse(NameEx expr, BoundAccess access)
@@ -271,7 +447,7 @@ namespace Aquila.CodeAnalysis.Semantics
                         Method.Flags |= MethodFlags.HasIndirectVar;
                 }
 
-                return new BoundVariableRef(varname).WithAccess(access);
+                return new BoundVariableRef(varname, null).WithAccess(access);
             }
             else
             {
@@ -292,6 +468,11 @@ namespace Aquila.CodeAnalysis.Semantics
         protected BoundVariableName BindVariableName(NameEx nameEx)
         {
             Debug.Assert(nameEx != null);
+            Debug.Assert(Method != null);
+
+            var localVar = Method.LocalsTable.BindLocalVariable(new VariableName(nameEx.Identifier.Text),
+                nameEx.Identifier.Span.ToTextSpan());
+            var type = localVar.Type;
 
             return new BoundVariableName(nameEx.Identifier.Text).WithSyntax(nameEx);
         }
@@ -313,10 +494,10 @@ namespace Aquila.CodeAnalysis.Semantics
                     goto default;
 
                 default:
-                    return new BoundBinaryEx(
-                        BindExpression(expr.Left, laccess),
-                        BindExpression(expr.Right, BoundAccess.Read),
-                        expr.Operation);
+                    var left = BindExpression(expr.Left, laccess);
+                    var right = BindExpression(expr.Right, BoundAccess.Read);
+
+                    return new BoundBinaryEx(left, right, expr.Operation, left.ResultType);
             }
         }
 
@@ -339,7 +520,7 @@ namespace Aquila.CodeAnalysis.Semantics
             switch (expr.Operation)
             {
                 case Operations.BoolCast:
-                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.BoolTypeRef);
+                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.BoolTypeRef, null);
 
                 case Operations.Int8Cast:
                 case Operations.Int16Cast:
@@ -350,15 +531,15 @@ namespace Aquila.CodeAnalysis.Semantics
                 case Operations.UInt64Cast:
                 case Operations.UInt32Cast:
                 case Operations.Int64Cast:
-                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.LongTypeRef);
+                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.LongTypeRef, null);
 
                 case Operations.DecimalCast:
                 case Operations.DoubleCast:
                 case Operations.FloatCast:
-                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.DoubleTypeRef);
+                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.DoubleTypeRef, null);
 
                 case Operations.UnicodeCast:
-                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.StringTypeRef);
+                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.StringTypeRef, null);
 
                 case Operations.StringCast:
 
@@ -371,7 +552,7 @@ namespace Aquila.CodeAnalysis.Semantics
                     return
                         new BoundConversionEx(boundOperation,
                             BoundTypeRefFactory
-                                .StringTypeRef); // TODO // CONSIDER: should be WritableString and analysis should rewrite it to String if possible
+                                .StringTypeRef, null);
 
                 case Operations.BinaryCast:
                     return new BoundConversionEx(
@@ -379,18 +560,18 @@ namespace Aquila.CodeAnalysis.Semantics
                             boundOperation,
                             BoundTypeRefFactory.Create(
                                 DeclaringCompilation.CreateArrayTypeSymbol(
-                                    DeclaringCompilation.GetSpecialType(SpecialType.System_Byte)))
+                                    DeclaringCompilation.GetSpecialType(SpecialType.System_Byte))), null
                         ).WithAccess(BoundAccess.Read),
-                        BoundTypeRefFactory.WritableStringRef);
+                        BoundTypeRefFactory.StringTypeRef, null);
 
-                case Operations.ArrayCast:
-                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.ArrayTypeRef);
+                // case Operations.ArrayCast:
+                //     return new BoundConversionEx(boundOperation, BoundTypeRefFactory.ArrayTypeRef, null);
 
                 case Operations.ObjectCast:
-                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.ObjectTypeRef);
+                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.ObjectTypeRef, null);
 
                 default:
-                    return new BoundUnaryEx(BindExpression(expr.Expression, operandAccess), expr.Operation);
+                    return new BoundUnaryEx(BindExpression(expr.Expression, operandAccess), expr.Operation, null);
             }
         }
 
@@ -399,33 +580,16 @@ namespace Aquila.CodeAnalysis.Semantics
             var target = (BoundReferenceEx)BindExpression(expr.LValue, BoundAccess.Write);
             BoundExpression value;
 
-            // bind value (read as value or as ref)
-            if (expr is AssignEx assignEx)
-            {
-                value = BindExpression(assignEx.RValue, BoundAccess.Read);
+            value = BindExpression(expr.RValue, BoundAccess.Read);
 
-                // we don't need copy of RValue if assigning to list() or in a part of compound operation
-                if (expr.Operation == Operations.AssignValue && !(target is BoundListEx))
-                {
-                    value = BindCopyValue(value);
-                }
-            }
-            // else if (expr is RefAssignEx refAssignEx)
-            // {
-            //     Debug.Assert(expr.Operation == Operations.AssignRef);
-            //     target.Access = target.Access.WithWriteRef(0); // note: analysis will write the write type
-            //     value = BindExpression(refAssignEx.RValue, BoundAccess.ReadRef);
-            // }
-            else
+            if (expr.Operation == Operations.AssignValue && !(target is BoundListEx))
             {
-                ExceptionUtilities.UnexpectedValue(expr);
-                return null;
+                value = BindCopyValue(value);
             }
 
-            //
             if (expr.Operation == Operations.AssignValue || expr.Operation == Operations.AssignRef)
             {
-                return new BoundAssignEx(target, value).WithAccess(access);
+                return new BoundAssignEx(target, value, value.ResultType).WithAccess(access);
             }
             else
             {
@@ -434,29 +598,24 @@ namespace Aquila.CodeAnalysis.Semantics
                     // Special case:
                     switch (expr.Operation)
                     {
-                        // "ARRAY[] .= VALUE" => "ARRAY[] = (string)VALUE"
                         case Operations.AssignPrepend:
-                        case Operations.AssignAppend: // .=
-                            // value = BindConcatEx(new List<BoundArgument>()
-                            // {
-                            //     BoundArgument.Create(new BoundLiteral(null).WithAccess(BoundAccess.Read)),
-                            //     BoundArgument.Create(value)
-                            // });
+                        case Operations.AssignAppend:
                             break;
-
                         default:
-                            value = new BoundBinaryEx(new BoundLiteral(null).WithAccess(BoundAccess.Read), value,
-                                AstUtils.CompoundOpToBinaryOp(expr.Operation));
+                            value = new BoundBinaryEx(new BoundLiteral(null, null).WithAccess(BoundAccess.Read), value,
+                                AstUtils.CompoundOpToBinaryOp(expr.Operation), null);
                             break;
                     }
 
-                    return new BoundAssignEx(target, value.WithAccess(BoundAccess.Read)).WithAccess(access);
+                    return new BoundAssignEx(target, value.WithAccess(BoundAccess.Read), value.ResultType)
+                        .WithAccess(access);
                 }
                 else
                 {
-                    target.Access = target.Access.WithRead(); // Read & Write on target
+                    target.Access = target.Access.WithRead();
 
-                    return new BoundCompoundAssignEx(target, value, expr.Operation).WithAccess(access);
+                    return new BoundCompoundAssignEx(target, value, expr.Operation, value.ResultType)
+                        .WithAccess(access);
                 }
             }
         }
@@ -467,7 +626,7 @@ namespace Aquila.CodeAnalysis.Semantics
             var varref = (BoundReferenceEx)BindExpression(expr.Operand, BoundAccess.ReadAndWrite);
 
             //
-            return new BoundIncDecEx(varref, expr.IsIncrement, expr.IsPost);
+            return new BoundIncDecEx(varref, expr.IsIncrement, expr.IsPost, null);
         }
 
         private BoundExpression BindCallEx(CallEx expr)
@@ -512,7 +671,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
                             return new BoundStaticCallEx(ms,
                                 new BoundMethodName(new QualifiedName(new Name(expr.Identifier.Text))),
-                                arglist, ImmutableArray<IBoundTypeRef>.Empty);
+                                arglist, ImmutableArray<IBoundTypeRef>.Empty, null);
                         }
                         else
                         {
@@ -520,7 +679,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
                             return new BoundInstanceCallEx(ms,
                                 new BoundMethodName(new QualifiedName(new Name(expr.Identifier.Text))),
-                                ImmutableArray<BoundArgument>.Empty, ImmutableArray<IBoundTypeRef>.Empty, th
+                                ImmutableArray<BoundArgument>.Empty, ImmutableArray<IBoundTypeRef>.Empty, th, null
                             );
                         }
                     }
@@ -598,36 +757,6 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         #endregion
-
-
-        /*
-Component
-    - ComponentItem
-        - Module
-            -Code
-                -Method
-                
-                
--global
-    - import Reference;
-    
-    - static int global_function()
-    
-    - component Document
-        
-        - extend Invoice
-            
-            - void SetSum()
-               {
-                    Order d = new Order(); 
-                        ^
-                    This is type founded in "InNamespaceContainer"
-                }   
-                
-Binder
-    -> GetNext() - getting next Binder for the lookup
-    -> Container - TypeOrNamespace Context
-         */
     }
 
     internal class GlobalBinder : Binder

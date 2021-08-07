@@ -21,9 +21,10 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get
             {
-                // MAYBE: if (DefaultValueField != null) BoundFieldRef.CreateStaticField(DefaultValueField)
                 var cvalue = ExplicitDefaultConstantValue;
-                return cvalue != null ? new BoundLiteral(cvalue.Value) : null;
+                return cvalue != null
+                    ? new BoundLiteral(cvalue.Value, this.DeclaringCompilation.GetSpecialType(cvalue.SpecialType))
+                    : null;
             }
         }
 

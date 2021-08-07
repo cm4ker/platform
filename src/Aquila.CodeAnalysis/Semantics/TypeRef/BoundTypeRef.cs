@@ -22,7 +22,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
     {
         public AquilaTypeCode TypeCode => _type;
 
-        partial void OnCreateImpl(AquilaTypeCode type)
+        partial void OnCreateImpl(AquilaTypeCode type, ITypeSymbol symbol)
         {
             IsNullable = type == AquilaTypeCode.Null || type == AquilaTypeCode.Mixed;
         }
@@ -104,19 +104,6 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
 
         public override string ToString() => AquilaTypeCode.AquilaArray.ToString().ToLowerInvariant();
 
-        // public override IBoundTypeRef Transfer(TypeRefContext source, TypeRefContext target)
-        // {
-        //     Contract.ThrowIfNull(source);
-        //     Contract.ThrowIfNull(target);
-        //
-        //     if (source == target || _elementType.IsVoid || _elementType.IsAnyType)
-        //         return this;
-        //
-        //     return null;
-        //     // note: there should be no circular dependency
-        //     // return new BoundArrayTypeRef(target.AddToContext(source, _elementType));
-        // }
-
         public override bool Equals(IBoundTypeRef other) => base.Equals(other) ||
                                                             (other is BoundArrayTypeRef at);
     }
@@ -128,20 +115,9 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
     [DebuggerDisplay("BoundLambdaTypeRef ({_returnType})")]
     sealed class BoundLambdaTypeRef : BoundTypeRef
     {
-        // readonly TypeRefMask _returnType;
-
-        // TODO: signature
-
-        // public BoundLambdaTypeRef(TypeRefMask returnType)
-        // {
-        //     _returnType = returnType;
-        // }
-
         public override bool IsObject => true; // Closure
 
         public override bool IsLambda => true;
-
-        // public override TypeRefMask LambdaReturnType => _returnType;
 
         internal override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false)
         {
@@ -154,21 +130,12 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             //return compilation.CoreTypes.Closure.Symbol;
         }
 
-        // public override IBoundTypeRef Transfer(TypeRefContext source, TypeRefContext target)
-        // {
-        //     if (source == target || _returnType.IsVoid || _returnType.IsAnyType)
-        //         return this;
-        //
-        //     // note: there should be no circular dependency
-        //     return new BoundLambdaTypeRef(target.AddToContext(source, _returnType) /*, _signature*/);
-        // }
-
-        // public override bool Equals(IBoundTypeRef other) => base.Equals(other) ||
-        //                                                     (other is BoundLambdaTypeRef lt &&
-        //                                                      lt._returnType == this._returnType);
-
         public override string ToString() => NameUtils.SpecialNames.Closure.ToString();
         public override BoundKind BoundKind { get; }
+
+        public BoundLambdaTypeRef() : base(null)
+        {
+        }
     }
 
     #endregion
@@ -181,7 +148,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         public QualifiedName ClassName { get; }
 
 
-        partial void OnCreateImpl(QualifiedName qName, SourceMethodSymbol method, int arity)
+        partial void OnCreateImpl(QualifiedName qName, SourceMethodSymbol method, ITypeSymbol symbol, int arity)
         {
             if (qName.IsReservedClassName)
             {
@@ -269,7 +236,8 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         readonly IBoundTypeRef _targetType;
         readonly ImmutableArray<BoundTypeRef> _typeArguments;
 
-        public BoundGenericClassTypeRef(IBoundTypeRef targetType, ImmutableArray<BoundTypeRef> typeArguments)
+        public BoundGenericClassTypeRef(IBoundTypeRef targetType, ImmutableArray<BoundTypeRef> typeArguments) :
+            base(null)
         {
             _targetType = targetType ?? throw ExceptionUtilities.ArgumentNull(nameof(targetType));
             _typeArguments = typeArguments;
@@ -336,7 +304,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         public BoundExpression TypeExpression => _typeExpression;
         readonly BoundExpression _typeExpression;
 
-        public BoundIndirectTypeRef(BoundExpression typeExpression, bool objectTypeInfoSemantic)
+        public BoundIndirectTypeRef(BoundExpression typeExpression, bool objectTypeInfoSemantic) : base(null)
         {
             _typeExpression = typeExpression ?? throw ExceptionUtilities.ArgumentNull();
             ObjectTypeInfoSemantic = objectTypeInfoSemantic;
@@ -455,7 +423,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
 
         public override bool IsObject => true;
 
-        public BoundMultipleTypeRef(ImmutableArray<BoundTypeRef> trefs)
+        public BoundMultipleTypeRef(ImmutableArray<BoundTypeRef> trefs) : base(null)
         {
             this.TypeRefs = trefs;
             this.IsNullable = trefs.Any(t => t.IsNullable);
@@ -536,13 +504,13 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
     /// </summary>
     public sealed partial class BoundTypeRefFromSymbol : BoundTypeRef
     {
-        bool IsAquilaCorLibrary => _symbol.ContainingAssembly is AssemblySymbol ass && ass.IsAquilaCorLibrary;
+        bool IsAquilaCorLibrary => ResultType.ContainingAssembly is AssemblySymbol ass && ass.IsAquilaCorLibrary;
 
         public override bool IsObject
         {
             get
             {
-                switch (_symbol.SpecialType)
+                switch (ResultType.SpecialType)
                 {
                     case SpecialType.System_DateTime:
                         return true;
@@ -551,37 +519,32 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
                         return false;
 
                     case SpecialType.None:
-
-
-                        return _symbol.IsReferenceType;
+                        return ResultType.IsReferenceType;
 
                     default:
-                        return _symbol.IsReferenceType;
+                        return ResultType.IsReferenceType;
                 }
             }
         }
 
-        public override ITypeSymbol Type => _symbol;
+        public override ITypeSymbol Type => ResultType;
 
 
         partial void OnCreateImpl(ITypeSymbol symbol)
         {
             Debug.Assert(((TypeSymbol)symbol).IsValidType());
-            Contract.ThrowIfNull(_symbol);
+            Contract.ThrowIfNull(symbol);
         }
 
-        public override string ToString() => _symbol.ToString();
+        public override string ToString() => ResultType.ToString();
 
         internal override ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false) =>
             throw new NotImplementedException();
 
-        //public override IBoundTypeRef Transfer(TypeRefContext source, TypeRefContext target) => this;
-
-        public override ITypeSymbol ResolveTypeSymbol(AquilaCompilation compilation) =>
-            _symbol;
+        public override ITypeSymbol ResolveTypeSymbol(AquilaCompilation compilation) => ResultType;
 
         public override bool Equals(IBoundTypeRef other) =>
-            base.Equals(other) || (other is BoundTypeRefFromSymbol ts && ts._symbol == _symbol);
+            base.Equals(other) || (other is BoundTypeRefFromSymbol ts && ts.ResultType == ResultType);
     }
 
     #endregion

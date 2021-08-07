@@ -73,23 +73,23 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// Gets the control flow start block. Cannot be <c>null</c>.
         /// </summary>
-        public BoundBlock   Start
+        public BoundBlock Start
         {
             get { return _start; }
         }
 
-        readonly BoundBlock  
+        readonly BoundBlock
             _start;
 
         /// <summary>
         /// Gets the control flow exit block. Cannot be <c>null</c>.
         /// </summary>
-        public BoundBlock   Exit
+        public BoundBlock Exit
         {
             get { return _exit; }
         }
 
-        readonly BoundBlock  
+        readonly BoundBlock
             _exit;
 
         ///// <summary>
@@ -123,12 +123,12 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// List of blocks that are unreachable syntactically (statements after JumpStmt etc.).
         /// </summary>
-        public ImmutableArray<BoundBlock>   UnreachableBlocks
+        public ImmutableArray<BoundBlock> UnreachableBlocks
         {
             get { return _unreachable; }
         }
 
-        readonly ImmutableArray<BoundBlock>  
+        readonly ImmutableArray<BoundBlock>
             _unreachable;
 
         /// <summary>
@@ -140,20 +140,20 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #region Construction
 
-        internal ControlFlowGraph(IList<Statement>  statements, Binder1  binder)
-            : this(BuilderVisitor.Build(statements, binder), binder.Yields)
+        internal ControlFlowGraph(IList<Statement> statements, Binder binder)
+            : this(BuilderVisitor.Build(statements, binder))
         {
         }
 
-        private ControlFlowGraph(BuilderVisitor  builder, ImmutableArray<BoundYieldStmt> yields)
-            : this(builder.Start, builder.Exit, builder.Declarations, /*builder.Exception*/null, builder.Labels, yields,
+        private ControlFlowGraph(BuilderVisitor builder)
+            : this(builder.Start, builder.Exit, builder.Declarations, /*builder.Exception*/null, builder.Labels,
                 builder.DeadBlocks)
         {
         }
 
-        private ControlFlowGraph(BoundBlock  start, BoundBlock  exit,
-            IEnumerable<BoundStatement>  declarations, BoundBlock exception, ImmutableArray<LabelBlockState> labels,
-            ImmutableArray<BoundYieldStmt> yields, ImmutableArray<BoundBlock> unreachable)
+        private ControlFlowGraph(BoundBlock start, BoundBlock exit,
+            IEnumerable<BoundStatement> declarations, BoundBlock exception, ImmutableArray<LabelBlockState> labels,
+            ImmutableArray<BoundBlock> unreachable)
         {
             Contract.ThrowIfNull(start);
             Contract.ThrowIfNull(exit);
@@ -164,7 +164,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             //_exception = exception;
             _labels = labels;
-            _yields = yields;
             _unreachable = unreachable;
         }
 
@@ -178,7 +177,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             }
             else
             {
-                return new ControlFlowGraph(start, exit, ImmutableArray<BoundStatement>.Empty, null, labels, yields,
+                return new ControlFlowGraph(start, exit, ImmutableArray<BoundStatement>.Empty, null, labels,
                     unreachable)
                 {
                     _lastcolor = this._lastcolor

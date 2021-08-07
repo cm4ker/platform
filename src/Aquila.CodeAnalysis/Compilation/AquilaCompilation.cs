@@ -18,6 +18,7 @@ using Microsoft.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.DocumentationComments;
 using Aquila.CodeAnalysis.Emit;
 using Aquila.CodeAnalysis.Public;
+using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Anonymous;
 using Aquila.CodeAnalysis.Symbols.PE;
@@ -71,6 +72,9 @@ namespace Aquila.CodeAnalysis
         /// We do so by creating a new reference manager for such compilation. 
         /// </summary>
         private ReferenceManager _referenceManager;
+
+        private BinderFactory _binderFactory;
+        internal BinderFactory BinderFactory => _binderFactory ??= new BinderFactory(this);
 
         /// <summary>
         /// COR library containing base system types.
@@ -269,7 +273,7 @@ namespace Aquila.CodeAnalysis
 
         protected override INamespaceSymbol CommonGlobalNamespace
         {
-            get { throw new NotImplementedException(); }
+            get { return SourceModule.GlobalNamespace; }
         }
 
         protected override INamedTypeSymbol CommonObjectType
@@ -717,7 +721,7 @@ namespace Aquila.CodeAnalysis
 
         protected override IEnumerable<SyntaxTree> CommonSyntaxTrees => SyntaxTrees;
 
-        public new IEnumerable<AquilaSyntaxTree> SyntaxTrees => this.SourceSymbolCollection.SyntaxTrees;
+        public new ImmutableArray<AquilaSyntaxTree> SyntaxTrees => this.SourceSymbolCollection.SyntaxTrees;
 
         internal override Guid DebugSourceDocumentLanguageId => Constants.CorSymLanguageTypeAquila;
 

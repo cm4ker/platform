@@ -187,7 +187,8 @@ namespace Aquila.CodeAnalysis
         /// <summary>
         /// Wraps given <see cref="MediaTypeNames.Text.Span"/> into <see cref="Microsoft.CodeAnalysis.Text.TextSpan"/> representing the same value.
         /// </summary>
-        public static Microsoft.CodeAnalysis.Text.TextSpan ToTextSpan(this Span span)
+        public static Microsoft.CodeAnalysis.Text.TextSpan 
+            ToTextSpan(this Span span)
         {
             return span.IsValid
                 ? new Microsoft.CodeAnalysis.Text.TextSpan(span.Start, span.Length)

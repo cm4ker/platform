@@ -171,7 +171,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 // resolved type symbol if possible
                 if (Initializer.ResultType != null)
                 {
-                    return Initializer.ResultType;
+                    return (TypeSymbol)Initializer.ResultType;
                 }
 
                 // resolved value type if possible

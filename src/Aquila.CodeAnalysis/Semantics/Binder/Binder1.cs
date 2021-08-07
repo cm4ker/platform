@@ -316,12 +316,12 @@ namespace Aquila.CodeAnalysis.Semantics
             if (expr is MemberAccessEx mae) return BindMemberAccessEx(mae, false).WithAccess(access);
 
             if (expr is ThrowEx throwEx)
-                return new BoundThrowEx(BindExpression(throwEx.Expression, BoundAccess.Read));
+                return new BoundThrowEx(BindExpression(throwEx.Expression, BoundAccess.Read), null);
 
             //
             Diagnostics.Add(GetLocation(expr), ErrorCode.ERR_NotYetImplemented,
                 $"Expression of type '{expr.GetType().Name}'");
-            return new BoundLiteral(null);
+            return new BoundLiteral(null, null);
         }
 
         private BoundMethodName BindMethodName(NameEx name)
@@ -351,7 +351,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
                             return new BoundStaticCallEx(ms,
                                 new BoundMethodName(new QualifiedName(new Name(expr.Identifier.Text))),
-                                arglist, ImmutableArray<IBoundTypeRef>.Empty);
+                                arglist, ImmutableArray<IBoundTypeRef>.Empty, null);
                         }
                         else
                         {
@@ -359,7 +359,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
                             return new BoundInstanceCallEx(ms,
                                 new BoundMethodName(new QualifiedName(new Name(expr.Identifier.Text))),
-                                ImmutableArray<BoundArgument>.Empty, ImmutableArray<IBoundTypeRef>.Empty, th
+                                ImmutableArray<BoundArgument>.Empty, ImmutableArray<IBoundTypeRef>.Empty, th, null
                             );
                         }
                     }
@@ -448,7 +448,7 @@ namespace Aquila.CodeAnalysis.Semantics
             var varref = (BoundReferenceEx)BindExpression(expr.Operand, BoundAccess.ReadAndWrite);
 
             //
-            return new BoundIncDecEx(varref, expr.IsIncrement, expr.IsPost);
+            return new BoundIncDecEx(varref, expr.IsIncrement, expr.IsPost, null);
         }
 
         protected BoundVariableName BindVariableName(NameEx nameEx)
@@ -498,7 +498,7 @@ namespace Aquila.CodeAnalysis.Semantics
                         Method.Flags |= MethodFlags.HasIndirectVar;
                 }
 
-                return new BoundVariableRef(varname).WithAccess(access);
+                return new BoundVariableRef(varname, null).WithAccess(access);
             }
             else
             {
@@ -534,7 +534,7 @@ namespace Aquila.CodeAnalysis.Semantics
                     return new BoundBinaryEx(
                         BindExpression(expr.Left, laccess),
                         BindExpression(expr.Right, BoundAccess.Read),
-                        expr.Operation);
+                        expr.Operation, null);
             }
         }
 
@@ -557,7 +557,7 @@ namespace Aquila.CodeAnalysis.Semantics
             switch (expr.Operation)
             {
                 case Operations.BoolCast:
-                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.BoolTypeRef);
+                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.BoolTypeRef, null);
 
                 case Operations.Int8Cast:
                 case Operations.Int16Cast:
@@ -568,15 +568,15 @@ namespace Aquila.CodeAnalysis.Semantics
                 case Operations.UInt64Cast:
                 case Operations.UInt32Cast:
                 case Operations.Int64Cast:
-                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.LongTypeRef);
+                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.LongTypeRef, null);
 
                 case Operations.DecimalCast:
                 case Operations.DoubleCast:
                 case Operations.FloatCast:
-                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.DoubleTypeRef);
+                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.DoubleTypeRef, null);
 
                 case Operations.UnicodeCast:
-                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.StringTypeRef);
+                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.StringTypeRef, null);
 
                 case Operations.StringCast:
 
@@ -589,7 +589,8 @@ namespace Aquila.CodeAnalysis.Semantics
                     return
                         new BoundConversionEx(boundOperation,
                             BoundTypeRefFactory
-                                .StringTypeRef); // TODO // CONSIDER: should be WritableString and analysis should rewrite it to String if possible
+                                .StringTypeRef,
+                            null); // TODO // CONSIDER: should be WritableString and analysis should rewrite it to String if possible
 
                 case Operations.BinaryCast:
                     return new BoundConversionEx(
@@ -597,18 +598,18 @@ namespace Aquila.CodeAnalysis.Semantics
                             boundOperation,
                             BoundTypeRefFactory.Create(
                                 DeclaringCompilation.CreateArrayTypeSymbol(
-                                    DeclaringCompilation.GetSpecialType(SpecialType.System_Byte)))
+                                    DeclaringCompilation.GetSpecialType(SpecialType.System_Byte))), null
                         ).WithAccess(BoundAccess.Read),
-                        BoundTypeRefFactory.WritableStringRef);
+                        BoundTypeRefFactory.StringTypeRef, null);
 
                 case Operations.ArrayCast:
-                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.ArrayTypeRef);
+                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.BoolTypeRef, null);
 
                 case Operations.ObjectCast:
-                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.ObjectTypeRef);
+                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.ObjectTypeRef, null);
 
                 default:
-                    return new BoundUnaryEx(BindExpression(expr.Expression, operandAccess), expr.Operation);
+                    return new BoundUnaryEx(BindExpression(expr.Expression, operandAccess), expr.Operation, null);
             }
         }
 
@@ -643,7 +644,7 @@ namespace Aquila.CodeAnalysis.Semantics
             //
             if (expr.Operation == Operations.AssignValue || expr.Operation == Operations.AssignRef)
             {
-                return new BoundAssignEx(target, value).WithAccess(access);
+                return new BoundAssignEx(target, value, null).WithAccess(access);
             }
             else
             {
@@ -663,18 +664,18 @@ namespace Aquila.CodeAnalysis.Semantics
                             break;
 
                         default:
-                            value = new BoundBinaryEx(new BoundLiteral(null).WithAccess(BoundAccess.Read), value,
-                                AstUtils.CompoundOpToBinaryOp(expr.Operation));
+                            value = new BoundBinaryEx(new BoundLiteral(null, null).WithAccess(BoundAccess.Read), value,
+                                AstUtils.CompoundOpToBinaryOp(expr.Operation), null);
                             break;
                     }
 
-                    return new BoundAssignEx(target, value.WithAccess(BoundAccess.Read)).WithAccess(access);
+                    return new BoundAssignEx(target, value.WithAccess(BoundAccess.Read), null).WithAccess(access);
                 }
                 else
                 {
                     target.Access = target.Access.WithRead(); // Read & Write on target
 
-                    return new BoundCompoundAssignEx(target, value, expr.Operation).WithAccess(access);
+                    return new BoundCompoundAssignEx(target, value, expr.Operation, null).WithAccess(access);
                 }
             }
         }
@@ -694,7 +695,7 @@ namespace Aquila.CodeAnalysis.Semantics
                 case Operations.NullLiteral:
                 case Operations.BinaryStringLiteral:
                 case Operations.BoolLiteral:
-                    return new BoundLiteral(expr.ObjectiveValue);
+                    return new BoundLiteral(expr.ObjectiveValue, null);
                 default:
                     throw new NotImplementedException();
             }
@@ -969,14 +970,14 @@ namespace Aquila.CodeAnalysis.Semantics
                         condition = leftExpr; // left is true
                         break;
                     case Operations.Or:
-                        condition = new BoundUnaryEx(leftExpr, Operations.LogicNegation); // left is false
+                        condition = new BoundUnaryEx(leftExpr, Operations.LogicNegation, null); // left is false
                         break;
                     case Operations.Coalesce:
                         if (leftExpr is BoundReferenceEx leftRef) // left is not set or null
                         {
                             condition = new BoundUnaryEx(
                                 new BoundIsSetEx(leftRef),
-                                Operations.LogicNegation
+                                Operations.LogicNegation, null
                             );
                         }
                         else
@@ -1000,7 +1001,7 @@ namespace Aquila.CodeAnalysis.Semantics
             return new BoundBinaryEx(
                 leftExpr,
                 rightExprBag.BoundElement,
-                expr.Operation);
+                expr.Operation, null);
         }
 
         // protected override BoundExpression BindConditionalEx(ConditionalEx expr, BoundAccess access)
@@ -1146,7 +1147,7 @@ namespace Aquila.CodeAnalysis.Semantics
             var refAccess = (access.IsReadRef || access.IsWrite);
 
             // bind assigment target variable with appropriate access
-            var targetVariable = new BoundTemporalVariableRef(name)
+            var targetVariable = new BoundTemporalVariableRef(name, null)
                 .WithAccess(refAccess ? BoundAccess.Write.WithWriteRef() : BoundAccess.Write);
 
             // set appropriate access of the original value expression
@@ -1154,8 +1155,8 @@ namespace Aquila.CodeAnalysis.Semantics
                 (refAccess) ? expr.WithAccess(BoundAccess.ReadRef) : expr.WithAccess(BoundAccess.Read);
 
             // bind assigment and reference to the created synthesized variable
-            var assigment = new BoundAssignEx(targetVariable, valueBeingMoved);
-            var boundExpr = new BoundTemporalVariableRef(name).WithAccess(access);
+            var assigment = new BoundAssignEx(targetVariable, valueBeingMoved, null);
+            var boundExpr = new BoundTemporalVariableRef(name, null).WithAccess(access);
 
             return new BoundSynthesizedVariableInfo() { BoundExpr = boundExpr, Assignment = assigment };
         }
@@ -1173,7 +1174,7 @@ namespace Aquila.CodeAnalysis.Semantics
             // if only false branch is non-empty flip the condition and conditioned blocks so that true is non-empty
             if (trueBlockStart == null)
             {
-                condExpr = new BoundUnaryEx(condExpr, Operations.LogicNegation);
+                condExpr = new BoundUnaryEx(condExpr, Operations.LogicNegation, null);
                 trueBlockStart = falseBlockStart;
                 trueBlockEnd = falseBlockEnd;
                 falseBlockStart = null;

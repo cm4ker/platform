@@ -15,6 +15,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
     /// </summary>
     partial class SynthesizedTypeSymbol : NamedTypeSymbol
     {
+        private readonly NamespaceOrTypeSymbol _container;
         readonly AquilaCompilation _compilation;
 
         /// <summary>
@@ -29,14 +30,17 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         private bool _isAbstract;
         private bool _isStatic;
+
         private string _name;
-        private string _namespace = string.Empty;
+
+        // private string _namespace = string.Empty;
         private NamedTypeSymbol _baseType;
         private Accessibility _declaredAccessibility = Accessibility.Public;
         private ImmutableArray<AttributeData>.Builder _attributes;
 
-        public SynthesizedTypeSymbol(AquilaCompilation compilation)
+        public SynthesizedTypeSymbol(NamespaceOrTypeSymbol container, AquilaCompilation compilation)
         {
+            _container = container;
             _compilation = compilation;
 
             _attributes = ImmutableArray.CreateBuilder<AttributeData>();
@@ -49,7 +53,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         public override ImmutableArray<CustomModifier> GetTypeArgumentCustomModifiers(int ordinal) =>
             GetEmptyTypeArgumentCustomModifiers(ordinal);
 
-        public override Symbol ContainingSymbol => _compilation.SourceModule;
+        public override Symbol ContainingSymbol => _container;
 
         internal override ModuleSymbol ContainingModule => _compilation.SourceModule;
 
@@ -70,11 +74,11 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         public override string Name => _name ??
                                        throw new NullReferenceException(
-                                           "For this type was now set name. Please invoke SetName before get it");
+                                           "For this type the name was not set. Please invoke SetName before get it");
 
-        public override string NamespaceName => _namespace ??
-                                                throw new NullReferenceException(
-                                                    "For this type was now set NamespaceName. Please invoke SetNamespaceName before get it");
+        // public override string NamespaceName => _namespace ??
+        //                                         throw new NullReferenceException(
+        //                                             "For this type the NamespaceName was not set. Please invoke SetNamespaceName before get it");
 
         public override NamedTypeSymbol BaseType => _baseType ?? _compilation.CoreTypes.Object;
 
@@ -159,11 +163,11 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             return this;
         }
 
-        public SynthesizedTypeSymbol SetNamespace(string value)
-        {
-            _namespace = value;
-            return this;
-        }
+        // public SynthesizedTypeSymbol SetNamespace(string value)
+        // {
+        //     _namespace = value;
+        //     return this;
+        // }
 
         public SynthesizedTypeSymbol SetBaseType(INamedTypeSymbol value)
         {

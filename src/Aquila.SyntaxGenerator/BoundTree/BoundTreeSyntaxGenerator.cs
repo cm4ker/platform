@@ -47,7 +47,7 @@ namespace Aquila.SyntaxGenerator.BoundTree
             using (TextReader tr = new StreamReader(args[0]))
             {
                 XmlSerializer xs = new XmlSerializer(typeof(Config));
-                var root = (Config) xs.Deserialize(tr);
+                var root = (Config)xs.Deserialize(tr);
 
                 StringBuilder sb = new StringBuilder();
 
@@ -205,13 +205,22 @@ namespace Aquila.SyntaxGenerator.BoundTree
 
             sb.AppendLine($"return new {Suffix}{syntax.Name}(");
 
+            args = syntax.Arguments.ToList();
+
             isTwoOrMore = false;
             foreach (var arg in args)
             {
+                if (arg is SyntaxArgumentSingle s && !string.IsNullOrEmpty(s.PassBaseConst))
+                    continue;
+
                 if (isTwoOrMore)
                     sb.Append(",");
 
-                sb.Append($"{arg.Name.ToCamelCase()}");
+                if (arg.IsUpdatable)
+                    sb.Append($"{arg.Name.ToCamelCase()}");
+                else
+                    sb.Append($"this.{arg.Name}");
+
 
                 isTwoOrMore = true;
             }

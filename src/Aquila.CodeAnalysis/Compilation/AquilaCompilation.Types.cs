@@ -267,7 +267,7 @@ namespace Aquila.CodeAnalysis
         /// Current type scope for better <paramref name="tref"/> resolution since <paramref name="tref"/> might be ambiguous</param>
         /// <param name="nullable">Whether the resulting type must be able to contain NULL. Default is <c>false</c>.</param>
         /// <returns>Resolved symbol.</returns>
-        internal TypeSymbol GetTypeFromTypeRef(TypeRef tref, object selfHint = null,
+        internal TypeSymbol GetTypeFromTypeRef(TypeRef tref,
             bool nullable = false)
         {
             if (tref == null)
@@ -275,13 +275,12 @@ namespace Aquila.CodeAnalysis
                 return null;
             }
 
-            var t = this.TypeRefFactory.CreateFromTypeRef(tref, null, selfHint);
+            var t = this.TypeRefFactory.CreateFromTypeRef(tref);
 
             var symbol = t.ResolveRuntimeType(this);
 
             if (t.IsNullable || nullable)
             {
-                // TODO: for value types -> Nullable<T>
                 symbol = MergeNull(symbol);
             }
 

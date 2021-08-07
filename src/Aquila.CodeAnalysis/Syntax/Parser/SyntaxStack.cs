@@ -29,7 +29,7 @@ namespace Aquila.Syntax
 
         public T Pop<T>()
         {
-            return (T) internalStack.Pop();
+            return (T)internalStack.Pop();
         }
 
         public T TryPop<T>(Func<T> onError)
@@ -45,7 +45,7 @@ namespace Aquila.Syntax
 
         public List<T> PopList<T>()
         {
-            return (List<T>) internalStack.Pop();
+            return (List<T>)internalStack.Pop();
         }
 
 
@@ -82,7 +82,7 @@ namespace Aquila.Syntax
         public T ToCollection<T, TC>() where TC : LangElement where T : LangCollection<TC>
         {
             var elems = GetElementsReverse<TC>();
-            return (T) Activator.CreateInstance(typeof(T), elems);
+            return (T)Activator.CreateInstance(typeof(T), elems);
         }
 
         public object Peek()
@@ -132,27 +132,28 @@ namespace Aquila.Syntax
 
         public string PopString()
         {
-            return (string) internalStack.Pop();
+            return (string)internalStack.Pop();
         }
 
         public TypeRef PopType()
         {
-            return (TypeRef) internalStack.Pop();
+            return (TypeRef)internalStack.Pop();
         }
 
 
         public BlockStmt PopInstructionsBody()
         {
-            return (BlockStmt) internalStack.Pop();
+            return (BlockStmt)internalStack.Pop();
         }
 
         public Expression PopExpression()
         {
             var item = internalStack.Pop();
+
             if (item is IdentifierToken e)
                 return new NameEx(e.Span, SyntaxKind.NameExpression, Operations.Empty, e);
 
-            return (Expression) item;
+            return (Expression)item;
         }
 
         public T PeekType<T>()
@@ -162,22 +163,22 @@ namespace Aquila.Syntax
 
         public IList PeekCollection()
         {
-            return (IList) internalStack.Peek();
+            return (IList)internalStack.Peek();
         }
 
         public Statement PopStatement()
         {
-            return (Statement) internalStack.Pop();
+            return (Statement)internalStack.Pop();
         }
 
         public AssignEx PopAssignment()
         {
-            return (AssignEx) internalStack.Pop();
+            return (AssignEx)internalStack.Pop();
         }
 
         public IdentifierToken PopIdentifier()
         {
-            return (IdentifierToken) internalStack.Pop();
+            return (IdentifierToken)internalStack.Pop();
         }
     }
 }

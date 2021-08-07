@@ -124,13 +124,15 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                     {
                         // A ? true : false => (bool)A
                         TransformationCount++;
-                        return new BoundConversionEx(x.Condition, BoundTypeRefFactory.BoolTypeRef).WithAccess(x);
+                        return new BoundConversionEx(x.Condition, BoundTypeRefFactory.BoolTypeRef,
+                            BoundTypeRefFactory.BoolTypeRef.ResolvedType).WithAccess(x);
                     }
                     else if (!trueVal && falseVal)
                     {
                         // A ? false : true => !A
                         TransformationCount++;
-                        return new BoundUnaryEx(x.Condition, Operations.LogicNegation).WithAccess(x);
+                        return new BoundUnaryEx(x.Condition, Operations.LogicNegation, x.Condition.ResultType)
+                            .WithAccess(x);
                     }
                 }
             }
@@ -184,7 +186,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 {
                     // X * -1, -1 * X -> -X
                     TransformationCount++;
-                    return new BoundUnaryEx(leftCons == -1 ? x.Right : x.Left, Operations.Minus).WithAccess(
+                    var expr = leftCons == -1 ? x.Right : x.Left;
+                    return new BoundUnaryEx(expr, Operations.Minus, expr.ResultType).WithAccess(
                         x.Access);
                 }
             }
@@ -201,7 +204,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             {
                 // !!X -> (bool)X
                 TransformationCount++;
-                return new BoundConversionEx((BoundExpression)Accept(ux.Operand), BoundTypeRefFactory.BoolTypeRef)
+                return new BoundConversionEx((BoundExpression)Accept(ux.Operand), BoundTypeRefFactory.BoolTypeRef,
+                        BoundTypeRefFactory.BoolTypeRef.ResolveTypeSymbol(_method.DeclaringCompilation))
                     .WithAccess(x.Access);
             }
 

@@ -117,12 +117,10 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get
             {
-                var tsymbol = DeclaringCompilation.GetTypeFromTypeRef(_method.SyntaxReturnType,
-                    _method.ControlFlowGraph.GetLocalType(this.Name));
-                if (tsymbol.SpecialType == SpecialType.System_Void)
-                {
-                    tsymbol = DeclaringCompilation.CoreTypes.Void; // temporary workaround for uninitialized variables
-                }
+                var type = _method.ControlFlowGraph.GetLocalType(this.Name);
+                var langElem = _method.SyntaxReturnType;
+                var binder = DeclaringCompilation.GetBinder(langElem);
+                var tsymbol = binder.BindType(langElem);
 
                 Debug.Assert(tsymbol.IsValidType());
                 return tsymbol;

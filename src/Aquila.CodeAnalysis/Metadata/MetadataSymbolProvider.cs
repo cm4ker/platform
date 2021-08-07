@@ -20,6 +20,7 @@ namespace Aquila.Syntax.Metadata
         private readonly AquilaCompilation _declaredCompilation;
         private CoreTypes _ct;
         private PlatformSymbolCollection _ps;
+        private NamespaceSymbol _entityNamespaceSymbol;
 
         private const string ObjectPostfix = "Object";
         private const string DtoPostfix = "Dto";
@@ -38,36 +39,39 @@ namespace Aquila.Syntax.Metadata
             _ps = _declaredCompilation.PlatformSymbolCollection;
         }
 
+        public INamespaceSymbol EntityNamespace => _entityNamespaceSymbol;
+
+        public void PopulateNamespaces(IEnumerable<SMEntity> mds)
+        {
+            _entityNamespaceSymbol = _ps.SynthesizeNamespace(_declaredCompilation.GlobalNamespace, Namespace);
+        }
+
         public void PopulateTypes(IEnumerable<SMEntity> mds)
         {
             foreach (var md in mds)
             {
                 //Dto
-                _ps.SynthesizeType()
+                _ps.SynthesizeType(_entityNamespaceSymbol)
                     .SetName($"{md.Name}{DtoPostfix}")
-                    .SetAccess(Accessibility.Public)
-                    .SetNamespace(Namespace);
+                    .SetAccess(Accessibility.Public);
 
                 //Object
-                _ps.SynthesizeType()
+                _ps.SynthesizeType(_entityNamespaceSymbol)
                     .SetName($"{md.Name}{ObjectPostfix}")
                     .SetAccess(Accessibility.Public)
-                    .SetNamespace(Namespace)
                     .AddAttribute(new SynthesizedAttributeData(_ct.EntityAttribute.Ctor(),
                         ImmutableArray<TypedConstant>.Empty,
                         ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty));
 
                 //Manager
-                _ps.SynthesizeType()
+                _ps.SynthesizeType(_entityNamespaceSymbol)
                     .SetName($"{md.Name}{ManagerPostfix}")
-                    .SetNamespace(Namespace)
                     .SetIsStatic(true);
 
                 //Link
-                _ps.SynthesizeType()
+                _ps.SynthesizeType(_entityNamespaceSymbol)
                     .SetName($"{md.Name}{LinkPostfix}")
                     .SetAccess(Accessibility.Public)
-                    .SetNamespace(Namespace)
                     .AddAttribute(new SynthesizedAttributeData(_ct.LinkAttribute.Ctor(),
                         ImmutableArray<TypedConstant>.Empty,
                         ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty));
@@ -478,7 +482,6 @@ namespace Aquila.Syntax.Metadata
 
             return linkType;
         }
-
 
         private static string GetPropertyPostfix(SMType type)
         {

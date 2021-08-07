@@ -168,39 +168,12 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #region Expressions
 
-        // protected override T VisitMethodCall(BoundMethodCall x)
-        // {
-        //     if (x.TypeArguments.IsDefaultOrEmpty == false)
-        //     {
-        //         for (int i = 0; i < x.TypeArguments.Length; i++)
-        //         {
-        //             x.TypeArguments[i].Accept(this);
-        //         }
-        //     }
-        //
-        //     var args = x.ArgumentsInSourceOrder;
-        //     for (int i = 0; i < args.Length; i++)
-        //     {
-        //         VisitArgument(args[i]);
-        //     }
-        //
-        //     return default;
-        // }
-
-
         public override T VisitLiteral(BoundLiteral x)
         {
             //VisitLiteralExpression(x);
 
             return default;
         }
-
-        // public override T VisitCopyValue(BoundCopyValue x)
-        // {
-        //     Accept(x.Expression);
-        //
-        //     return default;
-        // }
 
         public override T VisitArgument(BoundArgument x)
         {
@@ -239,75 +212,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             return default;
         }
-
-        // public override T VisitGlobalFunctionCall(BoundGlobalFunctionCall x)
-        // {
-        //     Accept(x.Name);
-        //     VisitMethodCall(x);
-        //
-        //     return default;
-        // }
-        //
-        // public override T VisitInstanceFunctionCall(BoundInstanceFunctionCall x)
-        // {
-        //     Accept(x.Instance);
-        //     Accept(x.Name);
-        //     VisitMethodCall(x);
-        //
-        //     return default;
-        // }
-        //
-        // public override T VisitStaticFunctionCall(BoundCall x)
-        // {
-        //     Accept(x.TypeRef);
-        //     Accept(x.Name);
-        //     VisitMethodCall(x);
-        //
-        //     return default;
-        // }
-        //
-        // public override T VisitEcho(BoundEcho x)
-        // {
-        //     VisitMethodCall(x);
-        //
-        //     return default;
-        // }
-        //
-        // public override T VisitConcat(BoundConcatEx x)
-        // {
-        //     VisitMethodCall(x);
-        //
-        //     return default;
-        // }
-        //
-        // public override T VisitNew(BoundNewEx x)
-        // {
-        //     Accept(x.TypeRef);
-        //     VisitMethodCall(x);
-        //
-        //     return default;
-        // }
-        //
-        // public override T VisitInclude(BoundIncludeEx x)
-        // {
-        //     VisitMethodCall(x);
-        //
-        //     return default;
-        // }
-        //
-        // public override T VisitExit(BoundExitEx x)
-        // {
-        //     VisitMethodCall(x);
-        //
-        //     return default;
-        // }
-        //
-        // public override T VisitAssert(BoundAssertEx x)
-        // {
-        //     VisitMethodCall(x);
-        //
-        //     return default;
-        // }
 
         public override T VisitBinaryEx(BoundBinaryEx x)
         {

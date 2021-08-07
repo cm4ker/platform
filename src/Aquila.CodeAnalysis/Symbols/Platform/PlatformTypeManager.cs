@@ -27,6 +27,7 @@ namespace Aquila.CodeAnalysis.Public
     {
         private int instanceNumber = 1;
 
+
         public PlatformSymbolCollection(AquilaCompilation compilation)
         {
             Compilation = compilation;
@@ -40,10 +41,21 @@ namespace Aquila.CodeAnalysis.Public
         #region Types
 
         private ConcurrentBag<SynthesizedTypeSymbol> _lazySynthesizedTypes;
+        private ConcurrentBag<SynthesizedNamespaceSymbol> _lazySynthesizedNamespaces;
 
-        public SynthesizedTypeSymbol SynthesizeType()
+
+        public SynthesizedNamespaceSymbol SynthesizeNamespace(INamespaceSymbol container, string name)
         {
-            var type = new SynthesizedTypeSymbol(Compilation);
+            EnsureLazyNamespaces();
+            var ns = new SynthesizedNamespaceSymbol(container, name);
+            _lazySynthesizedNamespaces.Add(ns);
+
+            return ns;
+        }
+
+        public SynthesizedTypeSymbol SynthesizeType(NamespaceOrTypeSymbol container)
+        {
+            var type = new SynthesizedTypeSymbol(container, Compilation);
 
             EnsureLazyTypes();
 
@@ -84,6 +96,16 @@ namespace Aquila.CodeAnalysis.Public
                     null);
 
                 EnsureMetadataPopulated();
+            }
+        }
+
+        private void EnsureLazyNamespaces()
+        {
+            if (_lazySynthesizedNamespaces == null)
+            {
+                Interlocked.CompareExchange(ref _lazySynthesizedNamespaces,
+                    new ConcurrentBag<SynthesizedNamespaceSymbol>(),
+                    null);
             }
         }
 
@@ -134,6 +156,11 @@ namespace Aquila.CodeAnalysis.Public
             return result;
         }
 
+        internal NamespaceSymbol GetNamespace(string name)
+        {
+            EnsureLazyNamespaces();
+            return _lazySynthesizedNamespaces.FirstOrDefault(x => x.Name == name);
+        }
 
         /// <summary>
         /// Returns null if synthesized type in platform manager not found
@@ -160,13 +187,13 @@ namespace Aquila.CodeAnalysis.Public
         public IEnumerable<SynthesizedTypeSymbol> SynthesizedTypes =>
             GetAllCreatedTypes().OfType<SynthesizedTypeSymbol>();
 
-
         private void AddMetadata(IEnumerable<SMEntity> entityMetadata)
         {
             MetadataSymbolProvider mp = new MetadataSymbolProvider(Compilation);
 
             var smEntities = entityMetadata as SMEntity[] ?? entityMetadata.ToArray();
 
+            mp.PopulateNamespaces(smEntities);
             mp.PopulateTypes(smEntities);
             mp.PopulateMembers(smEntities);
         }

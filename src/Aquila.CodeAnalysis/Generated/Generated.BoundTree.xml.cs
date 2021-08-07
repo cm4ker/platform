@@ -508,12 +508,22 @@ namespace Aquila.CodeAnalysis.Semantics
 {
     abstract partial class BoundExpression : BoundOperation
     {
-        public BoundExpression()
+        private ITypeSymbol _resultType;
+        internal BoundExpression(ITypeSymbol resultType)
         {
-            OnCreateImpl();
+            _resultType = resultType;
+            OnCreateImpl(resultType);
         }
 
-        partial void OnCreateImpl();
+        partial void OnCreateImpl(ITypeSymbol resultType);
+        internal ITypeSymbol ResultType
+        {
+            get
+            {
+                return _resultType;
+            }
+        }
+
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -540,13 +550,13 @@ namespace Aquila.CodeAnalysis.Semantics
     partial class BoundArrayEx : BoundExpression
     {
         private ImmutableArray<KeyValuePair<BoundExpression, BoundExpression>> _items;
-        public BoundArrayEx(ImmutableArray<KeyValuePair<BoundExpression, BoundExpression>> items)
+        internal BoundArrayEx(ImmutableArray<KeyValuePair<BoundExpression, BoundExpression>> items, ITypeSymbol resultType): base(resultType)
         {
             _items = items;
-            OnCreateImpl(items);
+            OnCreateImpl(items, resultType);
         }
 
-        partial void OnCreateImpl(ImmutableArray<KeyValuePair<BoundExpression, BoundExpression>> items);
+        partial void OnCreateImpl(ImmutableArray<KeyValuePair<BoundExpression, BoundExpression>> items, ITypeSymbol resultType);
         public ImmutableArray<KeyValuePair<BoundExpression, BoundExpression>> Items
         {
             get
@@ -576,11 +586,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitArrayEx(this);
         }
 
-        public BoundArrayEx Update(ImmutableArray<KeyValuePair<BoundExpression, BoundExpression>> items)
+        internal BoundArrayEx Update(ImmutableArray<KeyValuePair<BoundExpression, BoundExpression>> items, ITypeSymbol resultType)
         {
-            if (_items == items)
+            if (_items == items && ResultType == resultType)
                 return this;
-            return new BoundArrayEx(items);
+            return new BoundArrayEx(items, resultType);
         }
     }
 }
@@ -591,14 +601,14 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         private BoundReferenceEx _target;
         private BoundExpression _value;
-        public BoundAssignEx(BoundReferenceEx target, BoundExpression value)
+        internal BoundAssignEx(BoundReferenceEx target, BoundExpression value, ITypeSymbol resultType): base(resultType)
         {
             _target = target;
             _value = value;
-            OnCreateImpl(target, value);
+            OnCreateImpl(target, value, resultType);
         }
 
-        partial void OnCreateImpl(BoundReferenceEx target, BoundExpression value);
+        partial void OnCreateImpl(BoundReferenceEx target, BoundExpression value, ITypeSymbol resultType);
         public BoundReferenceEx Target
         {
             get
@@ -635,11 +645,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitAssignEx(this);
         }
 
-        public BoundAssignEx Update(BoundReferenceEx target, BoundExpression value)
+        internal BoundAssignEx Update(BoundReferenceEx target, BoundExpression value, ITypeSymbol resultType)
         {
-            if (_target == target && _value == value)
+            if (_target == target && _value == value && ResultType == resultType)
                 return this;
-            return new BoundAssignEx(target, value);
+            return new BoundAssignEx(target, value, resultType);
         }
     }
 }
@@ -649,13 +659,13 @@ namespace Aquila.CodeAnalysis.Semantics
     partial class BoundCompoundAssignEx : BoundAssignEx
     {
         private Operations _operation;
-        public BoundCompoundAssignEx(BoundReferenceEx target, BoundExpression value, Operations operation): base(target, value)
+        internal BoundCompoundAssignEx(BoundReferenceEx target, BoundExpression value, Operations operation, ITypeSymbol resultType): base(target, value, resultType)
         {
             _operation = operation;
-            OnCreateImpl(target, value, operation);
+            OnCreateImpl(target, value, operation, resultType);
         }
 
-        partial void OnCreateImpl(BoundReferenceEx target, BoundExpression value, Operations operation);
+        partial void OnCreateImpl(BoundReferenceEx target, BoundExpression value, Operations operation, ITypeSymbol resultType);
         public Operations Operation
         {
             get
@@ -685,11 +695,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitCompoundAssignEx(this);
         }
 
-        public BoundCompoundAssignEx Update(BoundReferenceEx target, BoundExpression value, Operations operation)
+        internal BoundCompoundAssignEx Update(BoundReferenceEx target, BoundExpression value, Operations operation, ITypeSymbol resultType)
         {
-            if (Target == target && Value == value && _operation == operation)
+            if (Target == target && Value == value && _operation == operation && ResultType == resultType)
                 return this;
-            return new BoundCompoundAssignEx(target, value, operation);
+            return new BoundCompoundAssignEx(target, value, operation, resultType);
         }
     }
 }
@@ -700,14 +710,14 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         private bool _isIncrement;
         private bool _isPostfix;
-        public BoundIncDecEx(BoundReferenceEx target, bool isIncrement, bool isPostfix): base(target, new BoundLiteral(1L).WithAccess(BoundAccess.Read), Operations.IncDec)
+        internal BoundIncDecEx(BoundReferenceEx target, bool isIncrement, bool isPostfix, ITypeSymbol resultType): base(target, new BoundLiteral(1L, resultType).WithAccess(BoundAccess.Read), Operations.IncDec, resultType)
         {
             _isIncrement = isIncrement;
             _isPostfix = isPostfix;
-            OnCreateImpl(target, isIncrement, isPostfix);
+            OnCreateImpl(target, isIncrement, isPostfix, resultType);
         }
 
-        partial void OnCreateImpl(BoundReferenceEx target, bool isIncrement, bool isPostfix);
+        partial void OnCreateImpl(BoundReferenceEx target, bool isIncrement, bool isPostfix, ITypeSymbol resultType);
         public bool IsIncrement
         {
             get
@@ -744,11 +754,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitIncDecEx(this);
         }
 
-        public BoundIncDecEx Update(BoundReferenceEx target, bool isIncrement, bool isPostfix)
+        internal BoundIncDecEx Update(BoundReferenceEx target, bool isIncrement, bool isPostfix, ITypeSymbol resultType)
         {
-            if (Target == target && _isIncrement == isIncrement && _isPostfix == isPostfix)
+            if (Target == target && _isIncrement == isIncrement && _isPostfix == isPostfix && ResultType == resultType)
                 return this;
-            return new BoundIncDecEx(target, isIncrement, isPostfix);
+            return new BoundIncDecEx(target, isIncrement, isPostfix, resultType);
         }
     }
 }
@@ -759,14 +769,14 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         private BoundExpression _operand;
         private Operations _operation;
-        public BoundUnaryEx(BoundExpression operand, Operations operation)
+        internal BoundUnaryEx(BoundExpression operand, Operations operation, ITypeSymbol resultType): base(resultType)
         {
             _operand = operand;
             _operation = operation;
-            OnCreateImpl(operand, operation);
+            OnCreateImpl(operand, operation, resultType);
         }
 
-        partial void OnCreateImpl(BoundExpression operand, Operations operation);
+        partial void OnCreateImpl(BoundExpression operand, Operations operation, ITypeSymbol resultType);
         public BoundExpression Operand
         {
             get
@@ -804,11 +814,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitUnaryEx(this);
         }
 
-        public BoundUnaryEx Update(BoundExpression operand, Operations operation)
+        internal BoundUnaryEx Update(BoundExpression operand, Operations operation, ITypeSymbol resultType)
         {
-            if (_operand == operand && _operation == operation)
+            if (_operand == operand && _operation == operation && ResultType == resultType)
                 return this;
-            return new BoundUnaryEx(operand, operation);
+            return new BoundUnaryEx(operand, operation, resultType);
         }
     }
 }
@@ -820,15 +830,15 @@ namespace Aquila.CodeAnalysis.Semantics
         private BoundExpression _left;
         private BoundExpression _right;
         private Operations _operation;
-        public BoundBinaryEx(BoundExpression left, BoundExpression right, Operations operation)
+        internal BoundBinaryEx(BoundExpression left, BoundExpression right, Operations operation, ITypeSymbol resultType): base(resultType)
         {
             _left = left;
             _right = right;
             _operation = operation;
-            OnCreateImpl(left, right, operation);
+            OnCreateImpl(left, right, operation, resultType);
         }
 
-        partial void OnCreateImpl(BoundExpression left, BoundExpression right, Operations operation);
+        partial void OnCreateImpl(BoundExpression left, BoundExpression right, Operations operation, ITypeSymbol resultType);
         public BoundExpression Left
         {
             get
@@ -874,11 +884,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitBinaryEx(this);
         }
 
-        public BoundBinaryEx Update(BoundExpression left, BoundExpression right, Operations operation)
+        internal BoundBinaryEx Update(BoundExpression left, BoundExpression right, Operations operation, ITypeSymbol resultType)
         {
-            if (_left == left && _right == right && _operation == operation)
+            if (_left == left && _right == right && _operation == operation && ResultType == resultType)
                 return this;
-            return new BoundBinaryEx(left, right, operation);
+            return new BoundBinaryEx(left, right, operation, resultType);
         }
     }
 }
@@ -890,15 +900,15 @@ namespace Aquila.CodeAnalysis.Semantics
         private BoundExpression _condition;
         private BoundExpression _ifTrue;
         private BoundExpression _ifFalse;
-        public BoundConditionalEx(BoundExpression condition, BoundExpression ifTrue, BoundExpression ifFalse)
+        internal BoundConditionalEx(BoundExpression condition, BoundExpression ifTrue, BoundExpression ifFalse, ITypeSymbol resultType): base(resultType)
         {
             _condition = condition;
             _ifTrue = ifTrue;
             _ifFalse = ifFalse;
-            OnCreateImpl(condition, ifTrue, ifFalse);
+            OnCreateImpl(condition, ifTrue, ifFalse, resultType);
         }
 
-        partial void OnCreateImpl(BoundExpression condition, BoundExpression ifTrue, BoundExpression ifFalse);
+        partial void OnCreateImpl(BoundExpression condition, BoundExpression ifTrue, BoundExpression ifFalse, ITypeSymbol resultType);
         public BoundExpression Condition
         {
             get
@@ -943,11 +953,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitConditionalEx(this);
         }
 
-        public BoundConditionalEx Update(BoundExpression condition, BoundExpression ifTrue, BoundExpression ifFalse)
+        internal BoundConditionalEx Update(BoundExpression condition, BoundExpression ifTrue, BoundExpression ifFalse, ITypeSymbol resultType)
         {
-            if (_condition == condition && _ifTrue == ifTrue && _ifFalse == ifFalse)
+            if (_condition == condition && _ifTrue == ifTrue && _ifFalse == ifFalse && ResultType == resultType)
                 return this;
-            return new BoundConditionalEx(condition, ifTrue, ifFalse);
+            return new BoundConditionalEx(condition, ifTrue, ifFalse, resultType);
         }
     }
 }
@@ -958,14 +968,14 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         private BoundExpression _operand;
         private BoundTypeRef _targetType;
-        public BoundConversionEx(BoundExpression operand, BoundTypeRef targetType)
+        internal BoundConversionEx(BoundExpression operand, BoundTypeRef targetType, ITypeSymbol resultType): base(resultType)
         {
             _operand = operand;
             _targetType = targetType;
-            OnCreateImpl(operand, targetType);
+            OnCreateImpl(operand, targetType, resultType);
         }
 
-        partial void OnCreateImpl(BoundExpression operand, BoundTypeRef targetType);
+        partial void OnCreateImpl(BoundExpression operand, BoundTypeRef targetType, ITypeSymbol resultType);
         public BoundExpression Operand
         {
             get
@@ -1002,11 +1012,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitConversionEx(this);
         }
 
-        public BoundConversionEx Update(BoundExpression operand, BoundTypeRef targetType)
+        internal BoundConversionEx Update(BoundExpression operand, BoundTypeRef targetType, ITypeSymbol resultType)
         {
-            if (_operand == operand && _targetType == targetType)
+            if (_operand == operand && _targetType == targetType && ResultType == resultType)
                 return this;
-            return new BoundConversionEx(operand, targetType);
+            return new BoundConversionEx(operand, targetType, resultType);
         }
     }
 }
@@ -1016,13 +1026,13 @@ namespace Aquila.CodeAnalysis.Semantics
     partial class BoundLiteral : BoundExpression
     {
         private object _value;
-        public BoundLiteral(object value)
+        internal BoundLiteral(object value, ITypeSymbol resultType): base(resultType)
         {
             _value = value;
-            OnCreateImpl(value);
+            OnCreateImpl(value, resultType);
         }
 
-        partial void OnCreateImpl(object value);
+        partial void OnCreateImpl(object value, ITypeSymbol resultType);
         public object Value
         {
             get
@@ -1051,11 +1061,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitLiteral(this);
         }
 
-        public BoundLiteral Update(object value)
+        internal BoundLiteral Update(object value, ITypeSymbol resultType)
         {
-            if (_value == value)
+            if (_value == value && ResultType == resultType)
                 return this;
-            return new BoundLiteral(value);
+            return new BoundLiteral(value, resultType);
         }
     }
 }
@@ -1069,17 +1079,17 @@ namespace Aquila.CodeAnalysis.Semantics
         private ImmutableArray<BoundArgument> _arguments;
         private ImmutableArray<IBoundTypeRef> _typeArguments;
         private BoundExpression _instance;
-        internal BoundCallEx(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, BoundExpression instance)
+        internal BoundCallEx(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, BoundExpression instance, ITypeSymbol resultType): base(resultType)
         {
             _methodSymbol = methodSymbol;
             _name = name;
             _arguments = arguments;
             _typeArguments = typeArguments;
             _instance = instance;
-            OnCreateImpl(methodSymbol, name, arguments, typeArguments, instance);
+            OnCreateImpl(methodSymbol, name, arguments, typeArguments, instance, resultType);
         }
 
-        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, BoundExpression instance);
+        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, BoundExpression instance, ITypeSymbol resultType);
         internal MethodSymbol MethodSymbol
         {
             get
@@ -1146,12 +1156,12 @@ namespace Aquila.CodeAnalysis.Semantics
 {
     partial class BoundInstanceCallEx : BoundCallEx
     {
-        internal BoundInstanceCallEx(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, BoundExpression instance): base(methodSymbol, name, arguments, typeArguments, instance)
+        internal BoundInstanceCallEx(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, BoundExpression instance, ITypeSymbol resultType): base(methodSymbol, name, arguments, typeArguments, instance, resultType)
         {
-            OnCreateImpl(methodSymbol, name, arguments, typeArguments, instance);
+            OnCreateImpl(methodSymbol, name, arguments, typeArguments, instance, resultType);
         }
 
-        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, BoundExpression instance);
+        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, BoundExpression instance, ITypeSymbol resultType);
         public override BoundKind BoundKind => BoundKind.InstanceCallEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
@@ -1171,6 +1181,13 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             return visitor.VisitInstanceCallEx(this);
         }
+
+        internal BoundInstanceCallEx Update(ITypeSymbol resultType)
+        {
+            if (ResultType == resultType)
+                return this;
+            return new BoundInstanceCallEx(this.MethodSymbol, this.Name, this.Arguments, this.TypeArguments, this.Instance, resultType);
+        }
     }
 }
 
@@ -1178,12 +1195,12 @@ namespace Aquila.CodeAnalysis.Semantics
 {
     partial class BoundStaticCallEx : BoundCallEx
     {
-        internal BoundStaticCallEx(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments): base(methodSymbol, name, arguments, typeArguments, null)
+        internal BoundStaticCallEx(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, ITypeSymbol resultType): base(methodSymbol, name, arguments, typeArguments, null, resultType)
         {
-            OnCreateImpl(methodSymbol, name, arguments, typeArguments);
+            OnCreateImpl(methodSymbol, name, arguments, typeArguments, resultType);
         }
 
-        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments);
+        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, ITypeSymbol resultType);
         public override BoundKind BoundKind => BoundKind.StaticCallEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
@@ -1203,6 +1220,13 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             return visitor.VisitStaticCallEx(this);
         }
+
+        internal BoundStaticCallEx Update(ITypeSymbol resultType)
+        {
+            if (ResultType == resultType)
+                return this;
+            return new BoundStaticCallEx(this.MethodSymbol, this.Name, this.Arguments, this.TypeArguments, resultType);
+        }
     }
 }
 
@@ -1211,13 +1235,13 @@ namespace Aquila.CodeAnalysis.Semantics
     partial class BoundNewEx : BoundCallEx
     {
         private IBoundTypeRef _typeRef;
-        internal BoundNewEx(MethodSymbol methodSymbol, BoundMethodName name, IBoundTypeRef typeRef, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments): base(methodSymbol, name, arguments, typeArguments, null)
+        internal BoundNewEx(MethodSymbol methodSymbol, BoundMethodName name, IBoundTypeRef typeRef, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, ITypeSymbol resultType): base(methodSymbol, name, arguments, typeArguments, null, resultType)
         {
             _typeRef = typeRef;
-            OnCreateImpl(methodSymbol, name, typeRef, arguments, typeArguments);
+            OnCreateImpl(methodSymbol, name, typeRef, arguments, typeArguments, resultType);
         }
 
-        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, IBoundTypeRef typeRef, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments);
+        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, IBoundTypeRef typeRef, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, ITypeSymbol resultType);
         public IBoundTypeRef TypeRef
         {
             get
@@ -1245,6 +1269,13 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             return visitor.VisitNewEx(this);
         }
+
+        internal BoundNewEx Update(ITypeSymbol resultType)
+        {
+            if (ResultType == resultType)
+                return this;
+            return new BoundNewEx(this.MethodSymbol, this.Name, this.TypeRef, this.Arguments, this.TypeArguments, resultType);
+        }
     }
 }
 
@@ -1253,13 +1284,13 @@ namespace Aquila.CodeAnalysis.Semantics
     partial class BoundThrowEx : BoundExpression
     {
         private BoundExpression _thrown;
-        public BoundThrowEx(BoundExpression thrown)
+        internal BoundThrowEx(BoundExpression thrown, ITypeSymbol resultType): base(resultType)
         {
             _thrown = thrown;
-            OnCreateImpl(thrown);
+            OnCreateImpl(thrown, resultType);
         }
 
-        partial void OnCreateImpl(BoundExpression thrown);
+        partial void OnCreateImpl(BoundExpression thrown, ITypeSymbol resultType);
         public BoundExpression Thrown
         {
             get
@@ -1289,11 +1320,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitThrowEx(this);
         }
 
-        public BoundThrowEx Update(BoundExpression thrown)
+        internal BoundThrowEx Update(BoundExpression thrown, ITypeSymbol resultType)
         {
-            if (_thrown == thrown)
+            if (_thrown == thrown && ResultType == resultType)
                 return this;
-            return new BoundThrowEx(thrown);
+            return new BoundThrowEx(thrown, resultType);
         }
     }
 }
@@ -1302,12 +1333,12 @@ namespace Aquila.CodeAnalysis.Semantics
 {
     abstract partial class BoundReferenceEx : BoundExpression
     {
-        public BoundReferenceEx()
+        internal BoundReferenceEx(ITypeSymbol resultType): base(resultType)
         {
-            OnCreateImpl();
+            OnCreateImpl(resultType);
         }
 
-        partial void OnCreateImpl();
+        partial void OnCreateImpl(ITypeSymbol resultType);
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1336,15 +1367,15 @@ namespace Aquila.CodeAnalysis.Semantics
         private AquilaCompilation _declaringCompilation;
         private BoundExpression _array;
         private BoundExpression _index;
-        public BoundArrayItemEx(AquilaCompilation declaringCompilation, BoundExpression array, BoundExpression index)
+        internal BoundArrayItemEx(AquilaCompilation declaringCompilation, BoundExpression array, BoundExpression index, ITypeSymbol resultType): base(resultType)
         {
             _declaringCompilation = declaringCompilation;
             _array = array;
             _index = index;
-            OnCreateImpl(declaringCompilation, array, index);
+            OnCreateImpl(declaringCompilation, array, index, resultType);
         }
 
-        partial void OnCreateImpl(AquilaCompilation declaringCompilation, BoundExpression array, BoundExpression index);
+        partial void OnCreateImpl(AquilaCompilation declaringCompilation, BoundExpression array, BoundExpression index, ITypeSymbol resultType);
         public AquilaCompilation DeclaringCompilation
         {
             get
@@ -1388,6 +1419,13 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             return visitor.VisitArrayItemEx(this);
         }
+
+        internal BoundArrayItemEx Update(ITypeSymbol resultType)
+        {
+            if (ResultType == resultType)
+                return this;
+            return new BoundArrayItemEx(this.DeclaringCompilation, this.Array, this.Index, resultType);
+        }
     }
 }
 
@@ -1395,12 +1433,12 @@ namespace Aquila.CodeAnalysis.Semantics
 {
     partial class BoundArrayItemOrdEx : BoundArrayItemEx
     {
-        public BoundArrayItemOrdEx(AquilaCompilation declaringCompilation, BoundExpression array, BoundExpression index): base(declaringCompilation, array, index)
+        internal BoundArrayItemOrdEx(AquilaCompilation declaringCompilation, BoundExpression array, BoundExpression index, ITypeSymbol resultType): base(declaringCompilation, array, index, resultType)
         {
-            OnCreateImpl(declaringCompilation, array, index);
+            OnCreateImpl(declaringCompilation, array, index, resultType);
         }
 
-        partial void OnCreateImpl(AquilaCompilation declaringCompilation, BoundExpression array, BoundExpression index);
+        partial void OnCreateImpl(AquilaCompilation declaringCompilation, BoundExpression array, BoundExpression index, ITypeSymbol resultType);
         public override BoundKind BoundKind => BoundKind.ArrayItemOrdEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
@@ -1420,6 +1458,13 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             return visitor.VisitArrayItemOrdEx(this);
         }
+
+        internal BoundArrayItemOrdEx Update(ITypeSymbol resultType)
+        {
+            if (ResultType == resultType)
+                return this;
+            return new BoundArrayItemOrdEx(this.DeclaringCompilation, this.Array, this.Index, resultType);
+        }
     }
 }
 
@@ -1431,16 +1476,16 @@ namespace Aquila.CodeAnalysis.Semantics
         private IBoundTypeRef _containingType;
         private BoundVariableName _fieldName;
         private FieldType _fieldType;
-        public BoundFieldRef(BoundExpression instance, IBoundTypeRef containingType, BoundVariableName fieldName, FieldType fieldType)
+        internal BoundFieldRef(BoundExpression instance, IBoundTypeRef containingType, BoundVariableName fieldName, FieldType fieldType, ITypeSymbol resultType): base(resultType)
         {
             _instance = instance;
             _containingType = containingType;
             _fieldName = fieldName;
             _fieldType = fieldType;
-            OnCreateImpl(instance, containingType, fieldName, fieldType);
+            OnCreateImpl(instance, containingType, fieldName, fieldType, resultType);
         }
 
-        partial void OnCreateImpl(BoundExpression instance, IBoundTypeRef containingType, BoundVariableName fieldName, FieldType fieldType);
+        partial void OnCreateImpl(BoundExpression instance, IBoundTypeRef containingType, BoundVariableName fieldName, FieldType fieldType, ITypeSymbol resultType);
         public IBoundTypeRef ContainingType
         {
             get
@@ -1485,6 +1530,13 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             return visitor.VisitFieldRef(this);
         }
+
+        internal BoundFieldRef Update(ITypeSymbol resultType)
+        {
+            if (ResultType == resultType)
+                return this;
+            return new BoundFieldRef(this.Instance, this.ContainingType, this.FieldName, this.fieldType, resultType);
+        }
     }
 }
 
@@ -1493,13 +1545,13 @@ namespace Aquila.CodeAnalysis.Semantics
     partial class BoundListEx : BoundReferenceEx
     {
         private ImmutableArray<KeyValuePair<BoundExpression, BoundReferenceEx>> _items;
-        public BoundListEx(ImmutableArray<KeyValuePair<BoundExpression, BoundReferenceEx>> items)
+        internal BoundListEx(ImmutableArray<KeyValuePair<BoundExpression, BoundReferenceEx>> items, ITypeSymbol resultType): base(resultType)
         {
             _items = items;
-            OnCreateImpl(items);
+            OnCreateImpl(items, resultType);
         }
 
-        partial void OnCreateImpl(ImmutableArray<KeyValuePair<BoundExpression, BoundReferenceEx>> items);
+        partial void OnCreateImpl(ImmutableArray<KeyValuePair<BoundExpression, BoundReferenceEx>> items, ITypeSymbol resultType);
         public ImmutableArray<KeyValuePair<BoundExpression, BoundReferenceEx>> Items
         {
             get
@@ -1529,11 +1581,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitListEx(this);
         }
 
-        public BoundListEx Update(ImmutableArray<KeyValuePair<BoundExpression, BoundReferenceEx>> items)
+        internal BoundListEx Update(ImmutableArray<KeyValuePair<BoundExpression, BoundReferenceEx>> items, ITypeSymbol resultType)
         {
-            if (_items == items)
+            if (_items == items && ResultType == resultType)
                 return this;
-            return new BoundListEx(items);
+            return new BoundListEx(items, resultType);
         }
     }
 }
@@ -1543,13 +1595,13 @@ namespace Aquila.CodeAnalysis.Semantics
     partial class BoundVariableRef : BoundReferenceEx
     {
         private BoundVariableName _name;
-        public BoundVariableRef(BoundVariableName name)
+        internal BoundVariableRef(BoundVariableName name, ITypeSymbol resultType): base(resultType)
         {
             _name = name;
-            OnCreateImpl(name);
+            OnCreateImpl(name, resultType);
         }
 
-        partial void OnCreateImpl(BoundVariableName name);
+        partial void OnCreateImpl(BoundVariableName name, ITypeSymbol resultType);
         public BoundVariableName Name
         {
             get
@@ -1579,11 +1631,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitVariableRef(this);
         }
 
-        public BoundVariableRef Update(BoundVariableName name)
+        internal BoundVariableRef Update(BoundVariableName name, ITypeSymbol resultType)
         {
-            if (_name == name)
+            if (_name == name && ResultType == resultType)
                 return this;
-            return new BoundVariableRef(name);
+            return new BoundVariableRef(name, resultType);
         }
     }
 }
@@ -1592,12 +1644,12 @@ namespace Aquila.CodeAnalysis.Semantics
 {
     partial class BoundTemporalVariableRef : BoundVariableRef
     {
-        public BoundTemporalVariableRef(string name): base(name)
+        internal BoundTemporalVariableRef(string name, ITypeSymbol resultType): base(name, resultType)
         {
-            OnCreateImpl(name);
+            OnCreateImpl(name, resultType);
         }
 
-        partial void OnCreateImpl(string name);
+        partial void OnCreateImpl(string name, ITypeSymbol resultType);
         public override BoundKind BoundKind => BoundKind.TemporalVariableRef;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
@@ -1616,6 +1668,13 @@ namespace Aquila.CodeAnalysis.Semantics
         public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
         {
             return visitor.VisitTemporalVariableRef(this);
+        }
+
+        internal BoundTemporalVariableRef Update(string name, ITypeSymbol resultType)
+        {
+            if (Name == name && ResultType == resultType)
+                return this;
+            return new BoundTemporalVariableRef(name, resultType);
         }
     }
 }
@@ -1742,12 +1801,22 @@ namespace Aquila.CodeAnalysis.Semantics
 {
     abstract partial class BoundTypeRef : BoundOperation
     {
-        public BoundTypeRef()
+        private ITypeSymbol _resultType;
+        internal BoundTypeRef(ITypeSymbol resultType)
         {
-            OnCreateImpl();
+            _resultType = resultType;
+            OnCreateImpl(resultType);
         }
 
-        partial void OnCreateImpl();
+        partial void OnCreateImpl(ITypeSymbol resultType);
+        internal ITypeSymbol ResultType
+        {
+            get
+            {
+                return _resultType;
+            }
+        }
+
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1773,12 +1842,12 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
 {
     partial class BoundArrayTypeRef : BoundTypeRef
     {
-        public BoundArrayTypeRef()
+        internal BoundArrayTypeRef(ITypeSymbol resultType): base(resultType)
         {
-            OnCreateImpl();
+            OnCreateImpl(resultType);
         }
 
-        partial void OnCreateImpl();
+        partial void OnCreateImpl(ITypeSymbol resultType);
         public override BoundKind BoundKind => BoundKind.ArrayTypeRef;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
@@ -1798,6 +1867,13 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         {
             return visitor.VisitArrayTypeRef(this);
         }
+
+        internal BoundArrayTypeRef Update(ITypeSymbol resultType)
+        {
+            if (ResultType == resultType)
+                return this;
+            return new BoundArrayTypeRef(resultType);
+        }
     }
 }
 
@@ -1808,15 +1884,15 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         private QualifiedName _qName;
         private SourceMethodSymbol _method;
         private int _arity;
-        internal BoundClassTypeRef(QualifiedName qName, SourceMethodSymbol method, int arity = -1)
+        internal BoundClassTypeRef(QualifiedName qName, SourceMethodSymbol method, ITypeSymbol resultType, int arity = -1): base(resultType)
         {
             _qName = qName;
             _method = method;
             _arity = arity;
-            OnCreateImpl(qName, method, arity);
+            OnCreateImpl(qName, method, resultType, arity);
         }
 
-        partial void OnCreateImpl(QualifiedName qName, SourceMethodSymbol method, int arity);
+        partial void OnCreateImpl(QualifiedName qName, SourceMethodSymbol method, ITypeSymbol resultType, int arity);
         public QualifiedName QName
         {
             get
@@ -1860,6 +1936,13 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         {
             return visitor.VisitClassTypeRef(this);
         }
+
+        internal BoundClassTypeRef Update(ITypeSymbol resultType)
+        {
+            if (ResultType == resultType)
+                return this;
+            return new BoundClassTypeRef(this.QName, this.Method, resultType, this.Arity);
+        }
     }
 }
 
@@ -1867,12 +1950,12 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
 {
     partial class BoundGenericClassTypeRef : BoundTypeRef
     {
-        public BoundGenericClassTypeRef()
+        internal BoundGenericClassTypeRef(ITypeSymbol resultType): base(resultType)
         {
-            OnCreateImpl();
+            OnCreateImpl(resultType);
         }
 
-        partial void OnCreateImpl();
+        partial void OnCreateImpl(ITypeSymbol resultType);
         public override BoundKind BoundKind => BoundKind.GenericClassTypeRef;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
@@ -1892,6 +1975,13 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         {
             return visitor.VisitGenericClassTypeRef(this);
         }
+
+        internal BoundGenericClassTypeRef Update(ITypeSymbol resultType)
+        {
+            if (ResultType == resultType)
+                return this;
+            return new BoundGenericClassTypeRef(resultType);
+        }
     }
 }
 
@@ -1900,13 +1990,13 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
     partial class BoundPrimitiveTypeRef : BoundTypeRef
     {
         private AquilaTypeCode _type;
-        public BoundPrimitiveTypeRef(AquilaTypeCode type)
+        internal BoundPrimitiveTypeRef(AquilaTypeCode type, ITypeSymbol resultType): base(resultType)
         {
             _type = type;
-            OnCreateImpl(type);
+            OnCreateImpl(type, resultType);
         }
 
-        partial void OnCreateImpl(AquilaTypeCode type);
+        partial void OnCreateImpl(AquilaTypeCode type, ITypeSymbol resultType);
         public AquilaTypeCode Type
         {
             get
@@ -1934,6 +2024,13 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         {
             return visitor.VisitPrimitiveTypeRef(this);
         }
+
+        internal BoundPrimitiveTypeRef Update(ITypeSymbol resultType)
+        {
+            if (ResultType == resultType)
+                return this;
+            return new BoundPrimitiveTypeRef(this.Type, resultType);
+        }
     }
 }
 
@@ -1941,22 +2038,12 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
 {
     partial class BoundTypeRefFromSymbol : BoundTypeRef
     {
-        private ITypeSymbol _symbol;
-        public BoundTypeRefFromSymbol(ITypeSymbol symbol)
+        internal BoundTypeRefFromSymbol(ITypeSymbol resultType): base(resultType)
         {
-            _symbol = symbol;
-            OnCreateImpl(symbol);
+            OnCreateImpl(resultType);
         }
 
-        partial void OnCreateImpl(ITypeSymbol symbol);
-        public ITypeSymbol Symbol
-        {
-            get
-            {
-                return _symbol;
-            }
-        }
-
+        partial void OnCreateImpl(ITypeSymbol resultType);
         public override BoundKind BoundKind => BoundKind.TypeRefFromSymbol;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
@@ -1975,6 +2062,13 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
         {
             return visitor.VisitTypeRefFromSymbol(this);
+        }
+
+        internal BoundTypeRefFromSymbol Update(ITypeSymbol resultType)
+        {
+            if (ResultType == resultType)
+                return this;
+            return new BoundTypeRefFromSymbol(resultType);
         }
     }
 }

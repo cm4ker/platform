@@ -56,7 +56,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         LocalDefinition _indexTemp; // name/index value had to be stored into temp, we can load it from there
 
-        public TypeSymbol EmitReceiver(CodeGenerator cg, BoundExpression receiver)
+        public ITypeSymbol EmitReceiver(CodeGenerator cg, BoundExpression receiver)
         {
             Debug.Assert(receiver != null);
 
@@ -197,7 +197,7 @@ namespace Aquila.CodeAnalysis.Semantics
             lhs.Dispose();
         }
 
-        public static LhsStack EmitReceiver(CodeGenerator cg, Symbol symbol, TypeSymbol receiver)
+        public static LhsStack EmitReceiver(CodeGenerator cg, Symbol symbol, ITypeSymbol receiver)
         {
             return default;
         }

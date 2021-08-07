@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.Operations;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Utilities;
+using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 {
@@ -41,7 +42,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
         /// <param name="type">The value type.</param>
         /// <param name="hasref">Whether we have the value by ref (addr).</param>
         /// <returns>Resulting expression type.</returns>
-        TypeSymbol BindAccess(BoundExpression expression, TypeSymbol type, bool hasref)
+        ITypeSymbol BindAccess(BoundExpression expression, TypeSymbol type, bool hasref)
         {
             var access = expression.Access;
 
@@ -89,8 +90,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 }
             }
 
-            //
-            return expression.ResultType = type;
+            throw new NotImplementedException("Obsolete maybe");
         }
     }
 }

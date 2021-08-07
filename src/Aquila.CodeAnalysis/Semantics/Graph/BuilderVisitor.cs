@@ -20,11 +20,9 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
     /// </summary>
     internal sealed class BuilderVisitor : AstWalker
     {
-        readonly Binder1
-            _binder;
+        readonly Binder _binder;
 
-        private BoundBlock
-            _current;
+        private BoundBlock _current;
 
         private Dictionary<string, ControlFlowGraph.LabelBlockState> _labels;
         private List<BreakTargetScope> _breakTargets;
@@ -167,7 +165,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         {
             if (_tryTargets == null)
             {
-                _binder.WithTryScopes(_tryTargets = new Stack<TryCatchEdge>());
+                //_binder.WithTryScopes(_tryTargets = new Stack<TryCatchEdge>());
             }
 
             _tryTargets.Push(edge);
@@ -183,13 +181,10 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #region Construction
 
-        private BuilderVisitor(IList<Statement> statements, Binder1 binder)
+        private BuilderVisitor(IList<Statement> statements, Binder binder)
         {
             Contract.ThrowIfNull(statements);
             Contract.ThrowIfNull(binder);
-
-            // setup the binder
-            binder.SetupBuilder(this.NewBlock);
 
             _binder = binder;
 
@@ -212,7 +207,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             Debug.Assert(_breakTargets == null || _breakTargets.Count == 0);
         }
 
-        public static BuilderVisitor Build(IList<Statement> statements, Binder1 binder)
+        public static BuilderVisitor Build(IList<Statement> statements, Binder binder)
         {
             return new BuilderVisitor(statements, binder);
         }
@@ -231,7 +226,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         private void Add(Statement stmt)
         {
-            Add(_binder.BindWholeStatement(stmt));
+            Add(_binder.BindStatement(stmt));
         }
 
         private void Add(BoundItemsBag<BoundStatement> stmtBag)
@@ -272,7 +267,9 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             if (_binder.Method.IsGlobalScope)
             {
                 // global code returns 1 by default if no other value is specified
-                expression = new BoundLiteral(1).WithAccess(BoundAccess.Read);
+                expression =
+                    new BoundLiteral(1, _binder.DeclaringCompilation.CoreTypes.Int32.Symbol).WithAccess(
+                        BoundAccess.Read);
             }
             else
             {
@@ -307,10 +304,8 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             if (condition != null)
             {
                 // bind condition expression & connect pre-condition blocks to source
-                var boundConditionBag = _binder.BindWholeExpression(condition, BoundAccess.Read);
-                source = ConnectBoundItemsBagBlocks(boundConditionBag, source);
-                source.NextCondition(ifTarget, elseTarget, boundConditionBag.BoundElement, isloop);
-
+                var boundConditionBag = _binder.BindExpression(condition, BoundAccess.Read);
+                source.NextCondition(ifTarget, elseTarget, boundConditionBag, isloop);
                 return ifTarget;
             }
             else
@@ -632,15 +627,16 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         private void BuildVariableDecl(VarDecl varDecl)
         {
+            //Transform the variable declaration into ExprStmt(AssignEx)
             foreach (var decl in varDecl.Declarators)
             {
-                var assignmnet = new AssignEx(decl.Span, SyntaxKind.AssignmentExpression, Operations.AssignValue,
+                var assignEx = new AssignEx(decl.Span, SyntaxKind.AssignmentExpression, Operations.AssignValue,
                     decl.Initializer,
                     new NameEx(decl.Initializer.Span, SyntaxKind.NameExpression, Operations.Empty, decl.Identifier));
 
-                var statemetn = new ExpressionStmt(assignmnet.Span, SyntaxKind.ExpressionStatement, assignmnet);
+                var statement = new ExpressionStmt(assignEx.Span, SyntaxKind.ExpressionStatement, assignEx);
 
-                Add(statemetn);
+                Add(statement);
             }
         }
 

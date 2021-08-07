@@ -29,12 +29,12 @@ namespace Aquila.CodeAnalysis.CodeGen
         /// short-lived temporary local. If <paramref name="immediateReturn"/> is <c>false</c>, return the local
         /// to the pool of locals available for reuse by calling <see cref="ReturnTemporaryLocal(LocalDefinition)"/>.
         /// </remarks>
-        public LocalDefinition /*!*/ GetTemporaryLocal(TypeSymbol /*!*/ type, bool immediateReturn = false)
+        public LocalDefinition GetTemporaryLocal(ITypeSymbol type, bool immediateReturn = false)
         {
             Debug.Assert(type.SpecialType != SpecialType.System_Void, "Variable cannot be of type 'void'!");
 
             var definition =
-                _il.LocalSlotManager.AllocateSlot((Microsoft.Cci.ITypeReference) type, LocalSlotConstraints.None);
+                _il.LocalSlotManager.AllocateSlot((Microsoft.Cci.ITypeReference)type, LocalSlotConstraints.None);
 
             if (immediateReturn)
             {
@@ -76,7 +76,7 @@ namespace Aquila.CodeAnalysis.CodeGen
             {
                 _cg = cg;
                 _loc = loc;
-                _type = (TypeSymbol) loc.Type;
+                _type = (TypeSymbol)loc.Type;
             }
 
             public TemporaryLocalDefinition(CodeGenerator cg, string tempname, TypeSymbol type)

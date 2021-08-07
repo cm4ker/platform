@@ -2,7 +2,9 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Aquila.Compiler.Utilities;
+using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.PooledObjects;
 
 namespace Aquila.CodeAnalysis.Symbols.Source
 {
@@ -114,9 +116,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public override ImmutableArray<NamedTypeSymbol> GetTypeMembers()
         {
-            return
-                ImmutableArray<NamedTypeSymbol>
-                    .Empty; // _sourceModule.SymbolCollection.GetTypes().Cast<NamedTypeSymbol>().AsImmutable();
+            return _sourceModule.DeclaringCompilation.PlatformSymbolCollection.GetAllCreatedTypes().AsImmutable();
         }
 
         public override ImmutableArray<NamedTypeSymbol> GetTypeMembers(string name)
@@ -138,7 +138,15 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 }
             }
 
-            return ImmutableArray<NamedTypeSymbol>.Empty;
+            var builder = new ArrayBuilder<NamedTypeSymbol>();
+
+            var type = _sourceModule.DeclaringCompilation.PlatformSymbolCollection
+                .GetType(QualifiedName.Parse(name, false));
+
+            if (type != null)
+                builder.Add(type);
+
+            return builder.ToImmutableAndFree();
         }
     }
 }

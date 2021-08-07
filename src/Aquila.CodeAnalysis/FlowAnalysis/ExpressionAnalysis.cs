@@ -358,7 +358,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
             // Target X Value
             var tmp = new BoundBinaryEx(x.Target.WithAccess(BoundAccess.Read), x.Value,
-                AstUtils.CompoundOpToBinaryOp(x.Operation));
+                AstUtils.CompoundOpToBinaryOp(x.Operation), x.Target.ResultType);
             Visit(tmp, ConditionBranch.AnyResult);
 
             // Target =

@@ -156,7 +156,7 @@ namespace Aquila.CodeAnalysis.Symbols
                     // build control flow graph
                     var cfg = new ControlFlowGraph(
                         this.Statements,
-                        Binder1.Create(DeclaringCompilation, Syntax.SyntaxTree, LocalsTable));
+                        new InMethodBinder(this, null));
                     cfg.Start.FlowState = state;
 
                     //

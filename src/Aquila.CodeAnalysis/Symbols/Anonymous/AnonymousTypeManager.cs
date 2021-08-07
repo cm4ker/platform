@@ -69,8 +69,8 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
 
             public SynthesizedDelegateKey(int parameterCount, BitVector byRefs, bool returnsVoid)
             {
-                _parameterCount = (ushort) parameterCount;
-                _returnsVoid = (byte) (returnsVoid ? 1 : 0);
+                _parameterCount = (ushort)parameterCount;
+                _returnsVoid = (byte)(returnsVoid ? 1 : 0);
                 _byRefs = byRefs;
             }
 
@@ -108,7 +108,7 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
 
             public override bool Equals(object obj)
             {
-                return obj is SynthesizedDelegateKey && Equals((SynthesizedDelegateKey) obj);
+                return obj is SynthesizedDelegateKey && Equals((SynthesizedDelegateKey)obj);
             }
 
             public bool Equals(SynthesizedDelegateKey other)
@@ -120,7 +120,7 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
 
             public override int GetHashCode()
             {
-                return Hash.Combine((int) _parameterCount, Hash.Combine((int) _returnsVoid, _byRefs.GetHashCode()));
+                return Hash.Combine((int)_parameterCount, Hash.Combine((int)_returnsVoid, _byRefs.GetHashCode()));
             }
         }
 
@@ -133,7 +133,7 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
 
             public SynthesizedDelegateValue(AnonymousTypeManager manager, SynthesizedDelegateSymbol @delegate)
             {
-                Debug.Assert(manager != null && (object) @delegate != null);
+                Debug.Assert(manager != null && (object)@delegate != null);
                 this.Manager = manager;
                 this.Delegate = @delegate;
             }
@@ -205,7 +205,7 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
                 new SynthesizedDelegateValue(
                     this,
                     new SynthesizedDelegateSymbol(
-                        (NamespaceOrTypeSymbol) this.Compilation.SourceAssembly.GlobalNamespace,
+                        (NamespaceOrTypeSymbol)this.Compilation.SourceAssembly.GlobalNamespace,
                         key.MakeTypeName(),
                         this.System_Object,
                         Compilation.GetSpecialType(SpecialType.System_IntPtr),
@@ -223,7 +223,7 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
         public SynthesizedTypeSymbol SynthesizeType(string name, bool isStatic,
             Accessibility accessibility = Accessibility.Internal)
         {
-            var type = new SynthesizedTypeSymbol(Compilation);
+            var type = new SynthesizedTypeSymbol((NamespaceOrTypeSymbol)Compilation.GlobalNamespace, Compilation);
 
             type.SetName(name);
             type.SetIsStatic(isStatic);

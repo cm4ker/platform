@@ -42,6 +42,11 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         public static implicit operator NamedTypeSymbol(CoreType t) => t.Symbol;
 
+        /// <summary>
+        /// Implicit cast to type symbol.
+        /// </summary>
+        public static explicit operator TypeSymbol(CoreType t) => t.Symbol;
+
         #region IEquatable
 
         //public override bool Equals(object obj)
@@ -123,6 +128,7 @@ namespace Aquila.CodeAnalysis.Symbols
             Int32,
             Int64,
             Double,
+            Char,
             Boolean,
             Guid,
             String,
@@ -149,6 +155,7 @@ namespace Aquila.CodeAnalysis.Symbols
             Int64 = Create(SpecialType.System_Int64);
             Double = Create(SpecialType.System_Double);
             Decimal = Create(SpecialType.System_Decimal);
+            Char = Create(SpecialType.System_Char);
             Boolean = Create(SpecialType.System_Boolean);
             String = Create(SpecialType.System_String);
             Guid = CreateFromFullName("System.Guid");

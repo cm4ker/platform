@@ -11,6 +11,7 @@ using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Utilities;
+using Aquila.Syntax.Declarations;
 using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols.Source
@@ -103,8 +104,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         /// </summary>
         public int Version => _version;
 
-        int
-            _version = 0;
+        int _version = 0;
 
         /// <summary>
         /// Gets reference to containing compilation object.
@@ -157,10 +157,9 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
             foreach (var d in defines)
             {
-                
                 //TODO: Fix defines
                 continue;
-                
+
                 // resolve the value from string
                 ConstantValue value;
 
@@ -278,7 +277,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         /// <summary>
         /// Gets compilation syntax trees.
         /// </summary>
-        public IEnumerable<AquilaSyntaxTree> SyntaxTrees => _trees;
+        public ImmutableArray<AquilaSyntaxTree> SyntaxTrees => _trees.ToImmutableArray();
 
         public IEnumerable<MethodSymbol> GetMethods()
         {
@@ -314,6 +313,11 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             List<NamedTypeSymbol> alternatives = null;
 
             return new MissingMetadataTypeSymbol(name.ClrName(), 0, false);
+        }
+
+        public MergedSourceUnit GetMergedUnit()
+        {
+            return new MergedSourceUnit(_trees.Select(x => x.Source));
         }
     }
 }
