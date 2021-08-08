@@ -71,6 +71,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Aquila.Metadata\Aquila.Metadata.csproj" />
+      <ProjectReference Include="..\Aquila.Querying\Aquila.Querying.csproj" />
     </ItemGroup>
 
 </Project>

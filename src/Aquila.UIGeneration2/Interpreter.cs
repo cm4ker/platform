@@ -63,7 +63,7 @@ namespace Aquila.UIBuilder
             _drContext = drContext;
             _mdCollection = TestMetadata.GetTestMetadata();
 
-            _m = new QLang();
+            _m = new QLang(_mdCollection);
         }
 
         public (string Output1, string Output2) RunQuery(string sql)
@@ -85,7 +85,7 @@ namespace Aquila.UIBuilder
 
                 try
                 {
-                    var pwalker = new PhysicalNameWalker( _drContext);
+                    var pwalker = new PhysicalNameWalker(_drContext);
                     pwalker.Visit(_m.top() as QLangElement);
 
                     var walker = new PrinterWalker(output);
@@ -140,7 +140,7 @@ namespace Aquila.UIBuilder
 
                 try
                 {
-                    var pwalker = new PhysicalNameWalker( _drContext);
+                    var pwalker = new PhysicalNameWalker(_drContext);
                     pwalker.Visit(_m.top() as QLangElement);
 
                     var walker = new PrinterWalker(output);

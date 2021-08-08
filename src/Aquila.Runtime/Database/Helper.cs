@@ -40,6 +40,7 @@ namespace Aquila.Runtime
                             SMTypeKind.Bool => "Bit",
                             SMTypeKind.DateTime => "Dt8",
                             SMTypeKind.Binary => "Bin",
+                            _ => throw new NotImplementedException()
                         };
 
                         yield return new ColumnSchemaDefinition(ColumnSchemaType.Value, propName, type, "",

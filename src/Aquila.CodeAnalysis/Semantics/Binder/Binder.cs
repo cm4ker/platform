@@ -11,6 +11,7 @@ using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Utilities;
 using Aquila.Compiler.Utilities;
+using Aquila.Core.Querying.Model;
 using Aquila.Syntax;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Expressions;
@@ -459,6 +460,15 @@ Binder
                 case Operations.BinaryStringLiteral:
                 case Operations.BoolLiteral:
                     return new BoundLiteral(expr.ObjectiveValue, GetSymbolFromLiteralOperation(expr.Operation));
+
+                case Operations.QueryLiteral:
+
+                    var query = (string)expr.ObjectiveValue;
+                    var element = QLang.Parse(query, DeclaringCompilation.MetadataCollection);
+                    //TODO: Add errors to the DiagnosticBug if we catch error
+
+                    return new BoundLiteral(expr.ObjectiveValue, GetSymbolFromLiteralOperation(expr.Operation));
+
                 default:
                     throw new NotImplementedException();
             }
@@ -476,6 +486,7 @@ Binder
                 Operations.LongIntLiteral => ct.Int64.Symbol,
                 Operations.DoubleLiteral => ct.Double.Symbol,
                 Operations.StringLiteral => ct.String.Symbol,
+                Operations.QueryLiteral => ct.String.Symbol,
                 _ => new MissingMetadataTypeSymbol("Unknown", 1, false)
             };
         }

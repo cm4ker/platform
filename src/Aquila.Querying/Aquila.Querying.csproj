@@ -2,7 +2,6 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
-        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <ItemGroup>
@@ -14,13 +13,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="morelinq" Version="3.0.0" />
-        <PackageReference Include="Npgsql" Version="5.0.7" />
-        <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Antlr4 Update="Querying\ZSqlGrammar.g4">
+        <Content Include="ZSqlGrammar.g4" />
+        <Antlr4 Update="ZSqlGrammar.g4">
             <Generator>MSBuild:Compile</Generator>
             <CustomToolNamespace>Aquila.Core.Querying</CustomToolNamespace>
         </Antlr4>
@@ -28,8 +22,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Aquila.Metadata\Aquila.Metadata.csproj" />
-        <ProjectReference Include="..\Aquila.Querying\Aquila.Querying.csproj" />
-        <ProjectReference Include="..\DB\BufferedDataReader\BufferedDataReader.csproj" />
     </ItemGroup>
 
 </Project>

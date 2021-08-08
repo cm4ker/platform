@@ -10,11 +10,6 @@ namespace Aquila.Core.Querying
     {
         private readonly QLang _stack;
 
-        public ZSqlGrammarVisitor()
-        {
-            _stack = new QLang();
-        }
-
         public ZSqlGrammarVisitor(QLang stackMachine)
         {
             _stack = stackMachine;

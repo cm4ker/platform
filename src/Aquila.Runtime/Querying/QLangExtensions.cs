@@ -18,7 +18,7 @@ namespace Aquila.Core.Querying
         public static string GetDbName(this QLangElement item)
         {
             if (item.AttachedPropery.TryGetValue("DbName", out var result))
-                return (string) result;
+                return (string)result;
             else
                 return null;
         }

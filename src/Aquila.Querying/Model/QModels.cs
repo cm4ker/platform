@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Aquila.Metadata;
-using Aquila.QueryBuilder.Model;
 
 namespace Aquila.Core.Querying.Model
 {

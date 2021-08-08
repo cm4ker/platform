@@ -7,6 +7,5 @@ namespace Aquila.Core.Querying.Model
         Right,
         Full,
         Cross
-        
     }
 }

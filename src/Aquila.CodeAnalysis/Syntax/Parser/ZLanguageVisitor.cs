@@ -200,15 +200,18 @@ namespace Aquila.Syntax.Parser
                 //заниматься таким вот извращением
 
                 var text = context.string_literal().REGULAR_STRING()?.GetText() ??
-                           context.string_literal().VERBATIUM_STRING()?.GetText();
+                           context.string_literal().VERBATIUM_STRING()?.GetText() ??
+                           context.string_literal().SQL_STRING()?.GetText()
+                    ;
 
                 text = Regex.Unescape(text ?? throw new NullReferenceException());
 
-                if (context.string_literal().REGULAR_STRING() != null)
+                if (context.string_literal().REGULAR_STRING() != null ||
+                    context.string_literal().VERBATIUM_STRING() != null)
                     result = new LiteralEx(li, SyntaxKind.LiteralExpression, Operations.StringLiteral,
                         text.Substring(1, text.Length - 2), false);
                 else
-                    result = new LiteralEx(li, SyntaxKind.LiteralExpression, Operations.StringLiteral,
+                    result = new LiteralEx(li, SyntaxKind.LiteralExpression, Operations.QueryLiteral,
                         text.Substring(2, text.Length - 3), false);
 
                 result.ObjectiveValue = result.Value;

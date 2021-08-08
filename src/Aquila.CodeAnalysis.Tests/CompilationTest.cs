@@ -284,5 +284,24 @@ type Test
 
             this.Compile(script);
         }
+
+
+        [Fact]
+        public void QueryParsingTest()
+        {
+            var script =
+                @"
+                 
+public static int Main() 
+{
+    string q = q"" FROM Entity.Invoice SELECT Id "" ;
+
+    return 0;
+}
+
+";
+
+            var result = (int)this.CompileAndRun(script);
+        }
     }
 }

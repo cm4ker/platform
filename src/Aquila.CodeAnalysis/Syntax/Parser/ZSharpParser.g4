@@ -595,6 +595,7 @@ boolean_literal
 string_literal
 	: REGULAR_STRING
 	| VERBATIUM_STRING
+	| SQL_STRING
 	;
 	
 method_invocation

@@ -2,21 +2,39 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Antlr4.Runtime;
 using Aquila.Metadata;
 
 namespace Aquila.Core.Querying.Model
 {
     public class QLang
     {
+        private readonly EntityMetadataCollection _metadata;
         private LogicStack _logicStack;
         private Stack<LogicScope> _scope;
         private QLangTypeBuilder _tb;
 
-        public QLang()
+        public QLang(EntityMetadataCollection metadata)
         {
+            _metadata = metadata;
             _logicStack = new LogicStack();
             _scope = new Stack<LogicScope>();
             _tb = new QLangTypeBuilder();
+        }
+
+        public static QLangElement Parse(string sql, EntityMetadataCollection md)
+        {
+            var m = new QLang(md);
+
+            AntlrInputStream inputStream = new AntlrInputStream(sql);
+            ZSqlGrammarLexer speakLexer = new ZSqlGrammarLexer(inputStream);
+            CommonTokenStream commonTokenStream = new CommonTokenStream(speakLexer);
+            ZSqlGrammarParser parser = new ZSqlGrammarParser(commonTokenStream);
+            ZSqlGrammarVisitor visitor = new ZSqlGrammarVisitor(m);
+
+            visitor.Visit(parser.parse());
+
+            return m.top() as QLangElement;
         }
 
         public LogicScope CurrentScope => _scope.TryPeek(out var res) ? res : null;
@@ -131,10 +149,8 @@ namespace Aquila.Core.Querying.Model
 
         public void ld_object_type(string typeName)
         {
-            var metadata = TestMetadata.GetTestMetadata();
-            var type = metadata.GetSemanticByName(typeName);
+            var type = _metadata.GetSemanticByName(typeName);
 
-            // var type = _logicStack.PopComponent().FindTypeByName(typeName);
             var ds = new QObjectTable(type);
             _logicStack.Push(ds);
             if (CurrentScope != null)

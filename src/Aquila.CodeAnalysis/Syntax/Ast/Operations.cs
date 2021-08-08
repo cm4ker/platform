@@ -96,6 +96,7 @@ namespace Aquila.Syntax.Ast
         DoubleLiteral,
         StringLiteral,
         BinaryStringLiteral,
+        QueryLiteral,
 
         // calls:
         Call,
