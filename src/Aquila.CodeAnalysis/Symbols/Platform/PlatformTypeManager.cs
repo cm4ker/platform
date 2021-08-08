@@ -46,22 +46,33 @@ namespace Aquila.CodeAnalysis.Public
 
         public SynthesizedNamespaceSymbol SynthesizeNamespace(INamespaceSymbol container, string name)
         {
-            EnsureLazyNamespaces();
+            EnsureLazyMetadata();
             var ns = new SynthesizedNamespaceSymbol(container, name);
             _lazySynthesizedNamespaces.Add(ns);
 
             return ns;
         }
 
-        public SynthesizedTypeSymbol SynthesizeType(NamespaceOrTypeSymbol container)
+        public SynthesizedTypeSymbol SynthesizeType(NamespaceOrTypeSymbol container, string name)
         {
             var type = new SynthesizedTypeSymbol(container, Compilation);
+            type.SetName(name);
 
-            EnsureLazyTypes();
+            if (container is SynthesizedNamespaceSymbol ns)
+            {
+                ns.AddType(type);
+            }
+
+            EnsureLazyMetadata();
 
             _lazySynthesizedTypes.Add(type);
 
             return type;
+        }
+
+        public void RegisterAlias(string alias, SynthesizedTypeSymbol type, SynthesizedNamespaceSymbol ns)
+        {
+            ns.AddAlias(alias, type);
         }
 
         public SynthesizedFieldSymbol SynthesizeField(NamedTypeSymbol container)
@@ -88,24 +99,18 @@ namespace Aquila.CodeAnalysis.Public
             return prop;
         }
 
-        private void EnsureLazyTypes()
+        private void EnsureLazyMetadata()
         {
-            if (_lazySynthesizedTypes == null)
+            if (_lazySynthesizedTypes == null || _lazySynthesizedNamespaces == null)
             {
                 Interlocked.CompareExchange(ref _lazySynthesizedTypes, new ConcurrentBag<SynthesizedTypeSymbol>(),
                     null);
 
-                EnsureMetadataPopulated();
-            }
-        }
-
-        private void EnsureLazyNamespaces()
-        {
-            if (_lazySynthesizedNamespaces == null)
-            {
                 Interlocked.CompareExchange(ref _lazySynthesizedNamespaces,
                     new ConcurrentBag<SynthesizedNamespaceSymbol>(),
                     null);
+
+                EnsureMetadataPopulated();
             }
         }
 
@@ -119,11 +124,11 @@ namespace Aquila.CodeAnalysis.Public
         internal NamedTypeSymbol GetType(QualifiedName name,
             Dictionary<QualifiedName, INamedTypeSymbol> resolved = null)
         {
-            EnsureLazyTypes();
+            EnsureLazyMetadata();
 
             NamedTypeSymbol first = null;
             List<NamedTypeSymbol> alternatives = null;
-
+            
             var types = _lazySynthesizedTypes.Where(x => x.MakeQualifiedName() == name);
             foreach (var t in types)
             {
@@ -158,7 +163,7 @@ namespace Aquila.CodeAnalysis.Public
 
         internal NamespaceSymbol GetNamespace(string name)
         {
-            EnsureLazyNamespaces();
+            EnsureLazyMetadata();
             return _lazySynthesizedNamespaces.FirstOrDefault(x => x.Name == name);
         }
 
@@ -180,7 +185,7 @@ namespace Aquila.CodeAnalysis.Public
 
         internal IEnumerable<NamedTypeSymbol> GetAllCreatedTypes()
         {
-            EnsureLazyTypes();
+            EnsureLazyMetadata();
             return _lazySynthesizedTypes;
         }
 

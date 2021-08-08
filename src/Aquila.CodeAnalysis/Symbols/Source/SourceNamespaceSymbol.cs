@@ -109,9 +109,15 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             throw new NotImplementedException();
         }
 
+
         public override ImmutableArray<Symbol> GetMembers(string name)
         {
-            throw new NotImplementedException();
+            var arr = new ArrayBuilder<Symbol>();
+
+            var ns = DeclaringCompilation.PlatformSymbolCollection.GetNamespace(name);
+            arr.Add(ns);
+
+            return arr.ToImmutableAndFree();
         }
 
         public override ImmutableArray<NamedTypeSymbol> GetTypeMembers()

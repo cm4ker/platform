@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using Aquila.CodeAnalysis.Symbols.PE;
 using Microsoft.CodeAnalysis;
@@ -18,13 +19,28 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         /// A map of types immediately contained within this namespace 
         /// grouped by their name (case-sensitively).
         /// </summary>
-        List<NamedTypeSymbol> _types;
+        Dictionary<string, NamedTypeSymbol> _types;
 
 
         public SynthesizedNamespaceSymbol(INamespaceSymbol container, string name)
         {
             _container = (NamespaceSymbol)container;
             _name = name;
+
+            _types = new Dictionary<string, NamedTypeSymbol>();
+        }
+
+        internal override AquilaCompilation DeclaringCompilation => _container.DeclaringCompilation;
+
+        public void AddType(NamedTypeSymbol type)
+        {
+            Debug.Assert(type.ContainingNamespace == this);
+            _types.Add(type.Name, type);
+        }
+
+        public void AddAlias(string alias, NamedTypeSymbol type)
+        {
+            _types.Add(alias, type);
         }
 
         public override string Name => _name;
@@ -39,23 +55,28 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         public override ImmutableArray<Symbol> GetMembers()
         {
             var builder = ArrayBuilder<Symbol>.GetInstance(_types.Count);
-            builder.AddRange(_types);
+            builder.AddRange(_types.Values.Distinct());
+
             return builder.ToImmutableAndFree();
         }
 
         public override ImmutableArray<Symbol> GetMembers(string name)
         {
-            return _types.Where(x => x.Name == name).OfType<Symbol>().ToImmutableArray();
+            if (_types.TryGetValue(name, out var type))
+
+                return new List<Symbol>() { type }.ToImmutableArray();
+
+            return ImmutableArray<Symbol>.Empty;
         }
 
         public override ImmutableArray<NamedTypeSymbol> GetTypeMembers()
         {
-            return _types.ToImmutableArray();
+            return GetMembers().OfType<NamedTypeSymbol>().ToImmutableArray();
         }
 
         public override ImmutableArray<NamedTypeSymbol> GetTypeMembers(string name)
         {
-            return GetTypeMembers().WhereAsArray(x => x.Name == name);
+            return GetMembers(name).OfType<NamedTypeSymbol>().ToImmutableArray();
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Aquila.Syntax.Metadata
         private readonly AquilaCompilation _declaredCompilation;
         private CoreTypes _ct;
         private PlatformSymbolCollection _ps;
-        private NamespaceSymbol _entityNamespaceSymbol;
+        private SynthesizedNamespaceSymbol _entityNamespaceSymbol;
 
         private const string ObjectPostfix = "Object";
         private const string DtoPostfix = "Dto";
@@ -51,26 +51,24 @@ namespace Aquila.Syntax.Metadata
             foreach (var md in mds)
             {
                 //Dto
-                _ps.SynthesizeType(_entityNamespaceSymbol)
-                    .SetName($"{md.Name}{DtoPostfix}")
+                _ps.SynthesizeType(_entityNamespaceSymbol, $"{md.Name}{DtoPostfix}")
                     .SetAccess(Accessibility.Public);
 
                 //Object
-                _ps.SynthesizeType(_entityNamespaceSymbol)
-                    .SetName($"{md.Name}{ObjectPostfix}")
+                var oType = _ps.SynthesizeType(_entityNamespaceSymbol, $"{md.Name}{ObjectPostfix}")
                     .SetAccess(Accessibility.Public)
                     .AddAttribute(new SynthesizedAttributeData(_ct.EntityAttribute.Ctor(),
                         ImmutableArray<TypedConstant>.Empty,
                         ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty));
 
+                _ps.RegisterAlias(md.Name, oType, _entityNamespaceSymbol);
+
                 //Manager
-                _ps.SynthesizeType(_entityNamespaceSymbol)
-                    .SetName($"{md.Name}{ManagerPostfix}")
+                _ps.SynthesizeType(_entityNamespaceSymbol, $"{md.Name}{ManagerPostfix}")
                     .SetIsStatic(true);
 
                 //Link
-                _ps.SynthesizeType(_entityNamespaceSymbol)
-                    .SetName($"{md.Name}{LinkPostfix}")
+                _ps.SynthesizeType(_entityNamespaceSymbol, $"{md.Name}{LinkPostfix}")
                     .SetAccess(Accessibility.Public)
                     .AddAttribute(new SynthesizedAttributeData(_ct.LinkAttribute.Ctor(),
                         ImmutableArray<TypedConstant>.Empty,

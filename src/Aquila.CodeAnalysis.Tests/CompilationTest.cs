@@ -47,6 +47,25 @@ namespace Aquila.Compiler.Tests
 
 
         [Fact]
+        public void BinderImportingTypeTest()
+        {
+            var script =
+                @"
+import Entity;
+
+static int Main() 
+{ 
+    Invoice i = 0; 
+    return 1; 
+}";
+
+            var result = (int)this.CompileAndRun(script);
+
+            Assert.Equal(1, result);
+        }
+
+
+        [Fact]
         public void SimpleCallTestExpression()
         {
             var script = @"

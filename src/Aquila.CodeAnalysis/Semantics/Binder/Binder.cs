@@ -8,6 +8,7 @@ using Aquila.CodeAnalysis.Errors;
 using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Utilities;
 using Aquila.Compiler.Utilities;
 using Aquila.Syntax;
@@ -47,7 +48,7 @@ namespace Aquila.CodeAnalysis.Semantics
             _resolvedBinders = new ConcurrentDictionary<LangElement, Binder>();
             _stack = new Stack<Binder>();
 
-            _global = new GlobalBinder();
+            _global = new GlobalBinder(_compilation.GlobalNamespace);
 
             _stack.Push(_global);
         }
@@ -117,7 +118,7 @@ Binder
             }
             else if (element is ExtendDecl ext)
             {
-                var types = next.Container.ContainingNamespace.GetTypeMembers(ext.Identifier.Text + "Object");
+                var types = next.Container.GetTypeMembers(ext.Identifier.Text);
 
                 if (EnumerableExtensions.IsSingle(types))
                 {
@@ -129,15 +130,6 @@ Binder
             }
             else if (element is ImportDecl import)
             {
-                var ns = _compilation.GlobalNamespace.GetMembers(import.Name).ToImmutableArray();
-
-                if (ns.Count() == 1)
-                {
-                    var b = new InContainerBinder(ns.First(), Pop());
-                    _resolvedBinders.TryAdd(element, b);
-
-                    return b;
-                }
             }
             else if (element is MethodDecl md)
             {
@@ -172,21 +164,38 @@ Binder
                 binder = CreateBinder(element);
         }
 
+        public override Binder VisitImportDecl(ImportDecl arg)
+        {
+            var nextBinder = Pop();
+
+            var ns = _compilation.GlobalNamespace.GetMembers(arg.Name).ToImmutableArray();
+
+            if (ns.Count() == 1)
+            {
+                var b = new InContainerBinder(ns.First(), nextBinder);
+                _resolvedBinders.TryAdd(arg, b);
+
+                return b;
+            }
+
+            throw new Exception("Namespace not found");
+        }
+
         public override Binder VisitSourceUnit(SourceUnit arg)
         {
+            Push(_global);
             if (arg.Imports.Any())
             {
-                Push(_global);
                 arg.Imports
                     .Reverse()
                     .Foreach(x =>
                     {
-                        GetBinder(x, out var b);
+                        var b = Visit(x);
                         Push(b);
                     });
             }
 
-            return _global;
+            return Pop();
         }
 
 
@@ -194,16 +203,18 @@ Binder
         {
             GetBinder(arg, out var binder);
             return binder;
-
-            return base.VisitMethodDecl(arg);
         }
 
         public override Binder VisitExtendDecl(ExtendDecl arg)
         {
             GetBinder(arg, out var binder);
             return binder;
+        }
 
-            return base.VisitExtendDecl(arg);
+        public override Binder VisitComponentDecl(ComponentDecl arg)
+        {
+            GetBinder(arg, out var binder);
+            return binder;
         }
 
         public override Binder DefaultVisit(LangElement node)
@@ -222,6 +233,30 @@ Binder
         }
 
         public override NamespaceOrTypeSymbol Container => (NamespaceOrTypeSymbol)_container;
+
+
+        protected override ITypeSymbol FindTypeByName(NamedTypeRef tref)
+        {
+            var qName = new QualifiedName(new Name(tref.Value));
+
+            var typeMembers = Container.GetTypeMembers(qName.ToString(), -1);
+
+            if (typeMembers.Length == 1)
+                return typeMembers[0];
+
+            if (typeMembers.Length == 0)
+            {
+                return GetNext().BindType(tref);
+            }
+
+            if (typeMembers.Length > 1)
+            {
+                Diagnostics.Add(GetLocation(tref), ErrorCode.WRN_UndefinedType,
+                    $"Expression of type '{tref.GetType().Name}'");
+            }
+
+            return null;
+        }
     }
 
     internal class InMethodBinder : Binder
@@ -239,6 +274,19 @@ Binder
 
         public override NamespaceOrTypeSymbol Container => _method.ContainingType;
     }
+
+    internal class GlobalBinder : InContainerBinder
+    {
+        private readonly NamespaceOrTypeSymbol _ns;
+
+        public GlobalBinder(INamespaceOrTypeSymbol ns) : base(ns, null)
+        {
+            _ns = (NamespaceOrTypeSymbol)ns;
+        }
+
+        public override NamespaceOrTypeSymbol Container => _ns;
+    }
+
 
     abstract class Binder
     {
@@ -332,8 +380,7 @@ Binder
             }
             else if (tref is NamedTypeRef named)
             {
-                var qName = new QualifiedName(new Name(named.Value));
-                var typeSymbol = FindTypeByName(tref, qName);
+                var typeSymbol = FindTypeByName(named);
                 return (TypeSymbol)typeSymbol;
             }
             else
@@ -345,23 +392,9 @@ Binder
             }
         }
 
-        private ITypeSymbol FindTypeByName(Aquila.Syntax.Ast.TypeRef tref, QualifiedName name)
+        protected virtual ITypeSymbol FindTypeByName(NamedTypeRef tref)
         {
-            var typeMembers = Container.GetTypeMembers(name.ToString(), -1);
-
-            if (typeMembers.Length == 1)
-                return typeMembers[0];
-
-            if (typeMembers.Length == 0)
-                return _next.FindTypeByName(tref, name);
-
-            if (typeMembers.Length > 1)
-            {
-                Diagnostics.Add(GetLocation(tref), ErrorCode.WRN_UndefinedType,
-                    $"Expression of type '{tref.GetType().Name}'");
-            }
-
-            return null;
+            return _next?.FindTypeByName(tref);
         }
 
         protected BoundStatement BindReturnStmt(ReturnStmt stmt)
@@ -797,13 +830,6 @@ Binder
         }
 
         #endregion
-    }
-
-    internal class GlobalBinder : Binder
-    {
-        public GlobalBinder() : base(null)
-        {
-        }
     }
 
 
