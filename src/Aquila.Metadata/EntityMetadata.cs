@@ -14,6 +14,6 @@ namespace Aquila.Metadata
         /// </summary>
         public string Name { get; set; }
 
-        public List<EntityProperty> Properties { get; }
+        public List<EntityProperty> Properties { get; set; }
     }
 }

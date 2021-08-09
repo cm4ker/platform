@@ -5,22 +5,22 @@
         #region User table
 
         /// <summary>
-        /// Имя таблицы пользователей
+        /// User table name
         /// </summary>
         public const string USER_TABLE_NAME = "users";
 
         /// <summary>
-        /// Имя колонки идентификатора
+        /// User id field
         /// </summary>
         public const string USER_TABLE_ID_FIELD = "user_id";
 
         /// <summary>
-        /// Имя колонки имени пользователя
+        /// User name field
         /// </summary>
         public const string USER_TABLE_NAME_FIELD = "user_name";
 
         /// <summary>
-        /// Имя колонки пароль пользователя
+        /// user password
         /// </summary>
         public const string USER_TABLE_PASSWORD_FIELD = "user_password";
 
@@ -29,20 +29,20 @@
         #region Config table
 
         /// <summary>
-        /// Имя таблицы конфигурации
+        /// Metadata table name
         /// </summary>
-        public const string CONFIG_TABLE_NAME = "config";
+        public const string MD_TABLE_NAME = "metadata";
 
 
         /// <summary>
-        /// Имя столбца с именем данных
+        /// Column witch contains name of blob
         /// </summary>
-        public const string CONFIG_TABLE_BLOB_NAME_FIELD = "blob_name";
+        public const string MD_TABLE_BLOB_NAME_FIELD = "blob_name";
 
         /// <summary>
-        /// Имя столбца с данными
+        /// Column with data
         /// </summary>
-        public const string CONFIG_TABLE_DATA_FIELD = "data";
+        public const string MD_TABLE_DATA_FIELD = "data";
 
         #endregion
 
@@ -50,15 +50,15 @@
         #region SaveConfig table
 
         /// <summary>
-        /// Имя таблицы непременённой конфигурации
+        /// Pending configuration for migration
         /// </summary>
-        public const string SAVE_CONFIG_TABLE_NAME = "config_save";
+        public const string PEND_MD_TABLE_NAME = "metadata_pending";
 
         #endregion
 
         #region Migration status table
-        public const string MIGRATION_STATUS_TABLE_NAME = "migration_status";
 
+        public const string MIGRATION_STATUS_TABLE_NAME = "migration_status";
 
         public const string MIGRATION_STATUS_TABLE_CHANGE_NAME_FIELD = "change_table";
         public const string MIGRATION_STATUS_TABLE_RENAME_NAME_FIELD = "rename_table";
@@ -68,10 +68,6 @@
         public const string MIGRATION_STATUS_TABLE_ORIGINAL_NAME_FIELD = "original_table";
         public const string MIGRATION_STATUS_TABLE_TEMP_NAME_FIELD = "temp_table";
 
-
         #endregion
-
-
-
     }
 }

@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.Unicode;
 using Aquila.Data;
 using Aquila.Metadata;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace Aquila.Runtime
 {
@@ -12,8 +16,10 @@ namespace Aquila.Runtime
     public class DatabaseRuntimeContext
     {
         private const string DescriptorsTableName = "descriptors";
+        private const string MetadataTableName = "metadata";
 
         private List<EntityDescriptor> _descriptors;
+        private EntityMetadataCollection _md;
 
         /// <summary>
         /// Creates the instance for database runtime context
@@ -21,6 +27,7 @@ namespace Aquila.Runtime
         public DatabaseRuntimeContext()
         {
             _descriptors = new List<EntityDescriptor>();
+            _md = TestMetadata.GetTestMetadata();
         }
 
         /// <summary>
@@ -32,45 +39,38 @@ namespace Aquila.Runtime
         }
 
         /// <summary>
-        /// Load descriptors from DB. If db version is not in sync with in-memory then the table rewrite version from db
+        /// Returns metadata model for current database (from moment then DatabaseRuntimeContext being loaded) state
+        /// </summary>
+        /// <returns></returns>
+        public EntityMetadataCollection GetMetadata()
+        {
+            return _md;
+        }
+
+        /// <summary>
+        /// Load runtime information from DB. If db version is not in sync with in-memory then the table rewrite version from db
         /// </summary>
         /// <param name="context"></param>
         public void Load(DataConnectionContext context)
         {
-            var cmd = context.CreateCommand(q =>
-            {
-                q.bg_query()
-                    .m_from()
-                    .ld_table(DescriptorsTableName)
-                    .m_select()
-                    .ld_column("db_name")
-                    .ld_column("id_s")
-                    .ld_column("id")
-                    
-                    .st_query();
-            });
-
-            using var reader = cmd.ExecuteReader();
-
-            _descriptors.Clear();
-
-            while (reader.Read())
-            {
-                var dbId = reader.GetInt32(0);
-                var mId = reader.GetString(1);
-                var dbName = reader.GetString(2);
-
-
-                _descriptors.Add(new EntityDescriptor(dbId)
-                    { DatabaseName = dbName, MetadataId = mId });
-            }
+            LoadDescriptors(context);
+            LoadMetadata(context);
         }
+
 
         /// <summary>
         /// Store in-memory changes to the db
         /// </summary>
         /// <param name="context"></param>
         public void Save(DataConnectionContext context)
+        {
+            SaveDescriptors(context);
+            SaveMetadata(context);
+        }
+
+        #region Descriptors
+
+        private void SaveDescriptors(DataConnectionContext context)
         {
             using var cmd = context.CreateCommand(q =>
             {
@@ -104,6 +104,114 @@ namespace Aquila.Runtime
                 cmd.ExecuteNonQuery();
             }
         }
+
+        private void LoadDescriptors(DataConnectionContext context)
+        {
+            using var cmd = context.CreateCommand(q =>
+            {
+                q.bg_query()
+                    .m_from()
+                    .ld_table(DescriptorsTableName)
+                    .m_select()
+                    .ld_column("db_name")
+                    .ld_column("id_s")
+                    .ld_column("id")
+                    .st_query();
+            });
+
+            using var reader = cmd.ExecuteReader();
+
+            _descriptors.Clear();
+
+            while (reader.Read())
+            {
+                var dbId = reader.GetInt32(0);
+                var mId = reader.GetString(1);
+                var dbName = reader.GetString(2);
+
+
+                _descriptors.Add(new EntityDescriptor(dbId)
+                    { DatabaseName = dbName, MetadataId = mId });
+            }
+        }
+
+        /// <summary>
+        /// Remove descriptor from database and in-memory model
+        /// </summary>
+        /// <param name="key"></param>
+        public void RemoveDescriptor(string key)
+        {
+        }
+
+        #endregion
+
+        #region Metadata
+
+        private void LoadMetadata(DataConnectionContext context)
+        {
+            using var cmd = context.CreateCommand(q =>
+            {
+                q.bg_query()
+                    .m_from()
+                    .ld_table(MetadataTableName)
+                    .m_select()
+                    .ld_column("blob_name")
+                    .ld_column("data")
+                    .st_query();
+            });
+
+            using var reader = cmd.ExecuteReader();
+
+            var list = new List<EntityMetadata>();
+
+            var deserializer = new DeserializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .Build();
+
+            while (reader.Read())
+            {
+                var data = (byte[])reader["data"];
+
+                var yaml = Encoding.UTF8.GetString(data);
+                var md = deserializer.Deserialize<EntityMetadata>(yaml);
+
+                list.Add(md);
+            }
+
+            _md = new EntityMetadataCollection(list);
+        }
+
+        private void SaveMetadata(DataConnectionContext context)
+        {
+            using var cmd = context.CreateCommand(q =>
+            {
+                q.bg_query()
+                    .m_values()
+                    .ld_param("blob_name")
+                    .ld_param("data")
+                    .m_insert()
+                    .ld_table(MetadataTableName)
+                    .ld_column("blob_name")
+                    .ld_column("data")
+                    .st_query();
+            });
+
+            foreach (var md in _md)
+            {
+                var serializer = new SerializerBuilder()
+                    .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                    .Build();
+                var yaml = serializer.Serialize(md);
+
+                //TODO: remove this static
+                cmd.AddOrSetParameterWithValue("blob_name", $"Entity.{md.Name}");
+                cmd.AddOrSetParameterWithValue("data", Encoding.UTF8.GetBytes(yaml));
+
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Get random string for new metadata. Because we don't know the DatabaseId (it not assigned yet)
@@ -187,14 +295,6 @@ namespace Aquila.Runtime
                 throw new Exception("Metadata not found");
         }
 
-
-        /// <summary>
-        /// Remove descriptor from database and in-memory model
-        /// </summary>
-        /// <param name="key"></param>
-        public void RemoveDescriptor(string key)
-        {
-        }
 
         public EntityDescriptor FindDescriptor(string key)
         {

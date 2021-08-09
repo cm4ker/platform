@@ -1,4 +1,5 @@
-﻿using FluentMigrator;
+﻿using System;
+using FluentMigrator;
 
 namespace Aquila.Initializer.InternalDatabaseStructureMigrations
 {
@@ -7,19 +8,19 @@ namespace Aquila.Initializer.InternalDatabaseStructureMigrations
     {
         public override void Up()
         {
-            Create.Table(DatabaseConstantNames.CONFIG_TABLE_NAME)
-                .WithColumn(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD).AsString(200)
-                .WithColumn(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD).AsBinary();
+            Create.Table(DatabaseConstantNames.MD_TABLE_NAME)
+                .WithColumn(DatabaseConstantNames.MD_TABLE_BLOB_NAME_FIELD).AsString(200)
+                .WithColumn(DatabaseConstantNames.MD_TABLE_DATA_FIELD).AsBinary(Int32.MaxValue);
 
-            Create.Table(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME)
-                .WithColumn(DatabaseConstantNames.CONFIG_TABLE_BLOB_NAME_FIELD).AsString(200)
-                .WithColumn(DatabaseConstantNames.CONFIG_TABLE_DATA_FIELD).AsBinary();
+            Create.Table(DatabaseConstantNames.PEND_MD_TABLE_NAME)
+                .WithColumn(DatabaseConstantNames.MD_TABLE_BLOB_NAME_FIELD).AsString(200)
+                .WithColumn(DatabaseConstantNames.MD_TABLE_DATA_FIELD).AsBinary(Int32.MaxValue);
         }
 
         public override void Down()
         {
-            Delete.Table(DatabaseConstantNames.CONFIG_TABLE_NAME);
-            Delete.Table(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME);
+            Delete.Table(DatabaseConstantNames.MD_TABLE_NAME);
+            Delete.Table(DatabaseConstantNames.PEND_MD_TABLE_NAME);
         }
     }
 }

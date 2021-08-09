@@ -2,6 +2,7 @@ using System.Linq;
 using System.Reflection.Metadata;
 using Xunit;
 using Aquila.Core.Querying.Model;
+using Aquila.Metadata;
 
 namespace Aquila.Core.Querying.Test
 {
@@ -11,7 +12,7 @@ namespace Aquila.Core.Querying.Test
 
         public QLangTest()
         {
-            _m = new QLang();
+            _m = new QLang(TestMetadata.GetTestMetadata());
         }
 
         [Fact]

@@ -2,7 +2,7 @@
 
 namespace Aquila.Initializer.InternalDatabaseStructureMigrations
 {
-    [Migration(202107121615)]
+    [Migration(202108081428)]
     public class AddPackagesTableMigration : Migration
     {
         public override void Up()

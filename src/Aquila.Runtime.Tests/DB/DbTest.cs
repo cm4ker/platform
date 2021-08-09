@@ -1,4 +1,5 @@
-﻿using Aquila.Data;
+﻿using System.Linq;
+using Aquila.Data;
 using Aquila.Initializer;
 using Aquila.Metadata;
 using SqlInMemory;
@@ -31,6 +32,13 @@ namespace Aquila.Runtime.Tests.DB
 
             Assert.Equal(1, d1.DatabaseId);
             Assert.Equal(2, d2.DatabaseId);
+
+            DatabaseRuntimeContext db2 = new DatabaseRuntimeContext();
+
+            db2.Load(dc);
+
+            var md = db2.GetMetadata();
+            Assert.True(md.GetSemanticMetadata().Any());
         }
     }
 }
