@@ -136,11 +136,14 @@ base_type
 	| class_type  // represents types: enum, class, interface, delegate, type_parameter
 	| VOID '*'
 	| tuple_type
+	| union_type
 	;
 
 tuple_type
     : '(' tuple_element (',' tuple_element)+ ')'
     ;
+union_type
+    : (simple_type | class_type) ('|' base_type)* ;
 
 tuple_element
     : type_ identifier?

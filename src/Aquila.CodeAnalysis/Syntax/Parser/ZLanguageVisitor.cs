@@ -135,14 +135,17 @@ namespace Aquila.Syntax.Parser
             PushStack();
             //resolve all methods
             //TODO: Make all members based from MemberDecl
-            // var methodsContext = context.extend_body()?.extend_member_declarations()?.extend_member_declaration()
-            //     .Select(x => x.common_member_declaration())
-            //     .Select(x => x.method_declaration()).ToArray();
-            //
-            // methodsContext?.ForEach(x => VisitMethod_declaration(x));
-            VisitExtend_member_declarations(context.extend_body().extend_member_declarations());
 
-            var methods = PopStack().ToCollection<MethodList, MethodDecl>();
+            MethodList methods;
+            if (context.extend_body().extend_member_declarations() != null)
+            {
+                VisitExtend_member_declarations(context.extend_body().extend_member_declarations());
+                methods = PopStack().ToCollection<MethodList, MethodDecl>();
+            }
+            else
+            {
+                methods = MethodList.Empty;
+            }
 
             VisitIdentifier(context.identifier());
 
@@ -151,6 +154,43 @@ namespace Aquila.Syntax.Parser
 
             return Stack.PeekNode();
         }
+
+        public override LangElement VisitUnion_type(ZSharpParser.Union_typeContext context)
+        {
+            PushStack();
+            base.VisitUnion_type(context);
+            var col = PopStack().ToCollection<TypeList, TypeRef>();
+
+            Stack.Push(new UnionType(context.ToLineInfo(), SyntaxKind.UnionType, col));
+
+            return Stack.PeekNode();
+        }
+
+        public override LangElement VisitSimple_type(ZSharpParser.Simple_typeContext context)
+        {
+            var result = TypeSyntaxHelper.Create(context.ToLineInfo(), context.GetText());
+            Stack.Push(result);
+            return result;
+        }
+
+        public override LangElement VisitBase_type(ZSharpParser.Base_typeContext context)
+        {
+            TypeRef result;
+            if (context.union_type() != null)
+            {
+                base.VisitBase_type(context);
+                result = Stack.PopType();
+            }
+            else
+            {
+                result = TypeSyntaxHelper.Create(context.ToLineInfo(), context.GetText());
+            }
+
+
+            Stack.Push(result);
+            return result;
+        }
+
 
         public override LangElement VisitReturn_type(ZSharpParser.Return_typeContext context)
         {
@@ -162,12 +202,22 @@ namespace Aquila.Syntax.Parser
             return Stack.PeekNode();
         }
 
-        public override LangElement VisitType_(ZSharpParser.Type_Context context)
-        {
-            var result = TypeSyntaxHelper.Create(context.ToLineInfo(), context.GetText());
-            Stack.Push(result);
-            return result;
-        }
+        // public override LangElement VisitType_(ZSharpParser.Type_Context context)
+        // {
+        //     TypeRef result;
+        //     if (context.base_type()?.union_type() != null)
+        //     {
+        //         base.VisitType_(context);
+        //         result = Stack.PopType();
+        //     }
+        //     else
+        //     {
+        //         result = TypeSyntaxHelper.Create(context.ToLineInfo(), context.GetText());
+        //     }
+        //
+        //     Stack.Push(result);
+        //     return result;
+        // }
 
         public override LangElement VisitLocal_variable_type(ZSharpParser.Local_variable_typeContext context)
         {

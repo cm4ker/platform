@@ -43,7 +43,6 @@ namespace Aquila.CodeAnalysis.Public
         private ConcurrentBag<SynthesizedTypeSymbol> _lazySynthesizedTypes;
         private ConcurrentBag<SynthesizedNamespaceSymbol> _lazySynthesizedNamespaces;
 
-
         public SynthesizedNamespaceSymbol SynthesizeNamespace(INamespaceSymbol container, string name)
         {
             EnsureLazyMetadata();
@@ -64,6 +63,29 @@ namespace Aquila.CodeAnalysis.Public
             }
 
             EnsureLazyMetadata();
+
+            _lazySynthesizedTypes.Add(type);
+
+            return type;
+        }
+
+
+        public SynthesizedUnionTypeSymbol SynthesizeUnionType(NamespaceOrTypeSymbol container,
+            IEnumerable<TypeSymbol> types)
+        {
+            EnsureLazyMetadata();
+
+            var symbol = _lazySynthesizedTypes.OfType<SynthesizedUnionTypeSymbol>()
+                .FirstOrDefault(x => x.ContainingTypes.SequenceEqual(types));
+
+            if (symbol != null) return symbol;
+
+            var type = new SynthesizedUnionTypeSymbol(container, types);
+
+            if (container is SynthesizedNamespaceSymbol ns)
+            {
+                ns.AddType(type);
+            }
 
             _lazySynthesizedTypes.Add(type);
 
@@ -128,7 +150,7 @@ namespace Aquila.CodeAnalysis.Public
 
             NamedTypeSymbol first = null;
             List<NamedTypeSymbol> alternatives = null;
-            
+
             var types = _lazySynthesizedTypes.Where(x => x.MakeQualifiedName() == name);
             foreach (var t in types)
             {

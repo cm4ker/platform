@@ -92,7 +92,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         }
 
         // These object are unique (per index).
-        internal override bool Equals(TypeSymbol t2, bool ignoreCustomModifiersAndArraySizesAndLowerBounds, bool ignoreDynamic)
+        internal override bool Equals(TypeSymbol t2, bool ignoreCustomModifiersAndArraySizesAndLowerBounds,
+            bool ignoreDynamic)
         {
             return ReferenceEquals(this, t2);
         }
@@ -124,26 +125,17 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public override Symbol ContainingSymbol
         {
-            get
-            {
-                return null;
-            }
+            get { return null; }
         }
 
         public override ImmutableArray<Location> Locations
         {
-            get
-            {
-                return ImmutableArray<Location>.Empty;
-            }
+            get { return ImmutableArray<Location>.Empty; }
         }
 
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
         {
-            get
-            {
-                return ImmutableArray<SyntaxReference>.Empty;
-            }
+            get { return ImmutableArray<SyntaxReference>.Empty; }
         }
 
         internal override void EnsureAllConstraintsAreResolved()

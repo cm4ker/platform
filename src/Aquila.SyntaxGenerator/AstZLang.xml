@@ -160,6 +160,12 @@
           </Arguments>
       </Syntax> -->
 
+    <Syntax Name="UnionType" Base="TypeRef">
+        <Arguments>
+            <List Name="Types" Type="TypeList"/>
+        </Arguments>
+    </Syntax>
+
     <!-- #endregion -->
 
     <!-- #region Expressions -->

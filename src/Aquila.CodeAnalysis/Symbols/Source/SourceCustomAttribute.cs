@@ -117,25 +117,25 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             switch (target.SpecialType)
             {
                 case SpecialType.System_Byte:
-                    result = new TypedConstant(target, TypedConstantKind.Primitive, (byte) value);
+                    result = new TypedConstant(target, TypedConstantKind.Primitive, (byte)value);
                     return true;
                 case SpecialType.System_Int32:
-                    result = new TypedConstant(target, TypedConstantKind.Primitive, (int) value);
+                    result = new TypedConstant(target, TypedConstantKind.Primitive, (int)value);
                     return true;
                 case SpecialType.System_Int64:
                     result = new TypedConstant(target, TypedConstantKind.Primitive, value);
                     return true;
                 case SpecialType.System_UInt32:
-                    result = new TypedConstant(target, TypedConstantKind.Primitive, (uint) value);
+                    result = new TypedConstant(target, TypedConstantKind.Primitive, (uint)value);
                     return true;
                 case SpecialType.System_UInt64:
-                    result = new TypedConstant(target, TypedConstantKind.Primitive, (ulong) value);
+                    result = new TypedConstant(target, TypedConstantKind.Primitive, (ulong)value);
                     return true;
                 case SpecialType.System_Double:
-                    result = new TypedConstant(target, TypedConstantKind.Primitive, (double) value);
+                    result = new TypedConstant(target, TypedConstantKind.Primitive, (double)value);
                     return true;
                 case SpecialType.System_Single:
-                    result = new TypedConstant(target, TypedConstantKind.Primitive, (float) value);
+                    result = new TypedConstant(target, TypedConstantKind.Primitive, (float)value);
                     return true;
                 default:
 
@@ -157,7 +157,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                     result = new TypedConstant(target, TypedConstantKind.Primitive, value);
                     return true;
                 case SpecialType.System_Single:
-                    result = new TypedConstant(target, TypedConstantKind.Primitive, (float) value);
+                    result = new TypedConstant(target, TypedConstantKind.Primitive, (float)value);
                     return true;
                 default:
                     result = default;
@@ -232,7 +232,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             if (element is TypeRef tref)
             {
                 var system_type = compilation.GetWellKnownType(WellKnownType.System_Type);
-                result = new TypedConstant(system_type, TypedConstantKind.Type, null); //compilation.GetTypeFromTypeRef(tref));
+                result = new TypedConstant(system_type, TypedConstantKind.Type,
+                    null); //compilation.GetTypeFromTypeRef(tref));
                 return target == system_type;
             }
 

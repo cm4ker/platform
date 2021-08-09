@@ -9,6 +9,7 @@ using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.CodeAnalysis.Utilities;
 using Aquila.Compiler.Utilities;
 using Aquila.Core.Querying.Model;
@@ -383,6 +384,21 @@ Binder
             {
                 var typeSymbol = FindTypeByName(named);
                 return (TypeSymbol)typeSymbol;
+            }
+            else if (tref is UnionType union)
+            {
+                var listSym = new List<TypeSymbol>();
+                foreach (var type in union.Types)
+                {
+                    var symbol = BindType(type);
+                    listSym.Add(symbol);
+                }
+
+                //TODO: create Union type symbol
+                var tsym = DeclaringCompilation.PlatformSymbolCollection.SynthesizeUnionType(
+                    (NamespaceSymbol)DeclaringCompilation.GlobalNamespace, listSym);
+
+                return tsym;
             }
             else
             {

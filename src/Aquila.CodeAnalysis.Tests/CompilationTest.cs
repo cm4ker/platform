@@ -303,5 +303,19 @@ public static int Main()
 
             var result = (int)this.CompileAndRun(script);
         }
+
+        [Fact]
+        public void UnionTypeTest()
+        {
+            var script =
+                @"
+public static int Main() 
+{
+    int|string a = 10;
+    return 0;
+}";
+
+            var result = (int)this.CompileAndRun(script);
+        }
     }
 }

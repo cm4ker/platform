@@ -92,6 +92,7 @@ namespace Aquila.Syntax
         Parameter,
         Type,
         ArrayType,
+        UnionType,
         ElseClause,
         Attribute,
         Argument,

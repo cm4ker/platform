@@ -18,7 +18,7 @@ namespace Aquila.Compiler.Test2
 
         public ParserTest()
         {
-            _v = new ZLanguageVisitor("unknown");
+            _v = new ZLanguageVisitor("", "unknown");
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace Aquila.Compiler.Test2
         public void ImportTest()
         {
             var parser = Parse("import A.B; import A.C;");
-            var result = (ImportList) _v.VisitImport_directives(parser.import_directives());
+            var result = (ImportList)_v.VisitImport_directives(parser.import_directives());
 
 
             Assert.Equal(2, result.Count());
@@ -194,6 +194,16 @@ namespace Aquila.Compiler.Test2
             Assert.NotEmpty(unit.Components.Elements[0].Extends);
         }
 
+        [Fact]
+        public void UnitonTypeTest()
+        {
+            var parser = Parse("int|string|Entity|Store");
+            var result = _v.Visit(parser.type_());
+            var unit = Assert.IsAssignableFrom<UnionType>(result);
+            Assert.NotEmpty(unit.Types);
+            Assert.Equal(4, unit.Types.Count());
+        }
+
 
         #region Helpers
 
@@ -217,7 +227,7 @@ namespace Aquila.Compiler.Test2
         [Fact]
         public void PrinterTest()
         {
-            var visitor = new ZLanguageVisitor("unknown");
+            var visitor = new ZLanguageVisitor("", "unknown");
             var cst = ParserHelper.Parse(@"
 component Documents 
 {

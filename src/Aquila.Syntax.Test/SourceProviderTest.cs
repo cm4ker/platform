@@ -22,7 +22,7 @@ namespace Aquila.Compiler.Test2
 
         public SourceProviderTest(ITestOutputHelper output)
         {
-            _v = new ZLanguageVisitor("unknown");
+            _v = new ZLanguageVisitor("" ,"unknown");
             _output = output;
         }
 

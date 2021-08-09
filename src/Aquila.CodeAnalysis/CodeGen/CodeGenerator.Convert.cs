@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Symbols.Synthesized;
 
 namespace Aquila.CodeAnalysis.CodeGen
 {
@@ -72,6 +73,20 @@ namespace Aquila.CodeAnalysis.CodeGen
                 // void -> T
                 EmitLoadDefault(to);
                 return;
+            }
+
+            if (to is SynthesizedUnionTypeSymbol s)
+            {
+                var a = s.GetMembers("op_Implicit").OfType<MethodSymbol>().Where(
+                    x => x.ReturnType == to
+                         && x.ParameterCount == 1
+                         && x.ParametersType()[0] == from);
+
+                if (a.Any())
+                {
+                    EmitCall(ILOpCode.Call, a.First());
+                    return;
+                }
             }
 
             throw new NotImplementedException();

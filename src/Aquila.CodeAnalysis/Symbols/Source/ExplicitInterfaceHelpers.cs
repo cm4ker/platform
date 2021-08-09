@@ -6,7 +6,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 {
     internal static class ExplicitInterfaceHelpers
     {
-        public static ImmutableArray<T> SubstituteExplicitInterfaceImplementations<T>(ImmutableArray<T> unsubstitutedExplicitInterfaceImplementations, TypeMap map) where T : Symbol
+        public static ImmutableArray<T> SubstituteExplicitInterfaceImplementations<T>(
+            ImmutableArray<T> unsubstitutedExplicitInterfaceImplementations, TypeMap map) where T : Symbol
         {
             var builder = ArrayBuilder<T>.GetInstance();
             foreach (var unsubstitutedPropertyImplemented in unsubstitutedExplicitInterfaceImplementations)
@@ -26,7 +27,9 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                         break;
                     }
                 }
-                Debug.Assert((object)substitutedMemberImplemented != null); //if it was an explicit implementation before the substitution, it should still be after
+
+                Debug.Assert((object)substitutedMemberImplemented !=
+                             null); //if it was an explicit implementation before the substitution, it should still be after
                 builder.Add(substitutedMemberImplemented);
             }
 

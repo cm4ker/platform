@@ -163,6 +163,13 @@ namespace Aquila.CodeAnalysis.CodeGen
         public void EmitStore(ILBuilder il) => il.EmitStoreArgumentOpcode(Index);
     }
 
+    internal class ThisArgPlace : ArgPlace
+    {
+        public ThisArgPlace(TypeSymbol t) : base(t, 0)
+        {
+        }
+    }
+
     /// <summary>
     /// Place wrapper allowing only read operation.
     /// </summary>

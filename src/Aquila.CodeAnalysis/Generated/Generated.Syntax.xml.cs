@@ -907,6 +907,37 @@ namespace Aquila.Syntax.Ast
 
 namespace Aquila.Syntax.Ast
 {
+    public partial record UnionType : TypeRef
+    {
+        public UnionType(Span span, SyntaxKind syntaxKind, TypeList types): base(span, syntaxKind)
+        {
+            this.types = types;
+        }
+
+        public TypeList Types { get => this.types; init => this.types = value; }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitUnionType(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitUnionType(this);
+        }
+
+        public override IEnumerable<LangElement> GetChildren()
+        {
+            yield return this.types;
+            yield break;
+        }
+
+        private TypeList types;
+    }
+}
+
+namespace Aquila.Syntax.Ast
+{
     public abstract partial record Expression : LangElement
     {
         public Expression(Span span, SyntaxKind syntaxKind, Operations operation): base(span, syntaxKind)
@@ -2099,6 +2130,11 @@ namespace Aquila.Syntax
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitUnionType(UnionType arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitMissingEx(MissingEx arg)
         {
             return DefaultVisit(arg);
@@ -2383,6 +2419,11 @@ namespace Aquila.Syntax
         }
 
         public virtual void VisitArrayType(ArrayType arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitUnionType(UnionType arg)
         {
             DefaultVisit(arg);
         }
