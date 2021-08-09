@@ -173,6 +173,13 @@ namespace Aquila.Syntax.Parser
             return result;
         }
 
+        public override LangElement VisitClass_type(ZSharpParser.Class_typeContext context)
+        {
+            var result = TypeSyntaxHelper.Create(context.ToLineInfo(), context.GetText());
+            Stack.Push(result);
+            return result;
+        }
+
         public override LangElement VisitBase_type(ZSharpParser.Base_typeContext context)
         {
             TypeRef result;

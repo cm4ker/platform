@@ -213,7 +213,7 @@ namespace Aquila.ServerRuntime
      var rd = q"FROM A SELECT B WHERE Id < {a}";
      rd.Execute();
      
-     iter(dbreader -> elem)
+     iter(rd -> elem)
      {
         var counter = 0;
 

@@ -311,9 +311,24 @@ public static int Main()
                 @"
 public static int Main() 
 {
-    int|string a = 10;
+    int|string|Invoice a = 10;
+    string|int b = ""test"";
+
     return 0;
 }";
+
+/*
+public static string Main() 
+{
+    int|string a = 10;
+    string|int b = "test";
+
+    return match a with
+        | int x => "here is string value"
+        | string y => "here is y value";
+}                 
+*/
+
 
             var result = (int)this.CompileAndRun(script);
         }

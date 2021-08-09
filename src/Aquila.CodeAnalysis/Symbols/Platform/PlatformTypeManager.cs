@@ -76,7 +76,9 @@ namespace Aquila.CodeAnalysis.Public
             EnsureLazyMetadata();
 
             var symbol = _lazySynthesizedTypes.OfType<SynthesizedUnionTypeSymbol>()
-                .FirstOrDefault(x => x.ContainingTypes.SequenceEqual(types));
+                .FirstOrDefault(x =>
+                    x.ContainingTypes.OrderBy(x => x.Name).ThenBy(x => x.SpecialType)
+                        .SequenceEqual(types.OrderBy(x => x.Name).ThenBy(x => x.SpecialType)));
 
             if (symbol != null) return symbol;
 

@@ -203,6 +203,16 @@ namespace Aquila.Compiler.Test2
             Assert.NotEmpty(unit.Types);
             Assert.Equal(4, unit.Types.Count());
         }
+        
+        [Fact]
+        public void UnitonTypeTest2()
+        {
+            var parser = Parse("string|int|Entity|Store");
+            var result = _v.Visit(parser.type_());
+            var unit = Assert.IsAssignableFrom<UnionType>(result);
+            Assert.NotEmpty(unit.Types);
+            Assert.Equal(4, unit.Types.Count());
+        }
 
 
         #region Helpers
