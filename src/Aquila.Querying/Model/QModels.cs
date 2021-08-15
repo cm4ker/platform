@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Aquila.Metadata;
 
@@ -284,6 +285,11 @@ namespace Aquila.Core.Querying.Model
         {
             return _types;
         }
+
+        public override string ToString()
+        {
+            return $"Param {Name}";
+        }
     }
 
     /// <summary>
@@ -302,6 +308,14 @@ namespace Aquila.Core.Querying.Model
         public override string ToString()
         {
             return "Select";
+        }
+    }
+
+    partial class QWhere
+    {
+        public override string ToString()
+        {
+            return "Where";
         }
     }
 
@@ -398,6 +412,26 @@ namespace Aquila.Core.Querying.Model
                 .SelectMany(x => x.GetFields())
                 // .Select()
                 .ToList();
+        }
+    }
+
+    public partial class QVar
+    {
+        SMType _bType = new SMType(SMType.Unknown);
+
+        public void BindType(SMType type)
+        {
+            _bType = type;
+        }
+
+        public override IEnumerable<SMType> GetExpressionType()
+        {
+            yield return _bType;
+        }
+
+        public override string ToString()
+        {
+            return $"Variable {Name}";
         }
     }
 }

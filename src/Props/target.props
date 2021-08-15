@@ -1,0 +1,9 @@
+<Project>
+    <PropertyGroup>
+        <LangVersion>9</LangVersion>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <TargetFramework>net5.0</TargetFramework>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+</Project>

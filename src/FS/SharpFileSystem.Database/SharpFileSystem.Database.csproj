@@ -1,18 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
-        <Configurations>Debug;Release;DebugServer</Configurations>
-        <Platforms>AnyCPU</Platforms>
-    </PropertyGroup>
+    <Import Project="..\..\Props\target.props"/>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Aquila.Runtime\Aquila.Runtime.csproj" />
-        <ProjectReference Include="..\SharpFileSystem\SharpFileSystem.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="System.Data.SqlClient" Version="4.8.0" />
+        <ProjectReference Include="..\..\Aquila.Runtime\Aquila.Runtime.csproj"/>
+        <ProjectReference Include="..\SharpFileSystem\SharpFileSystem.csproj"/>
     </ItemGroup>
 
 </Project>

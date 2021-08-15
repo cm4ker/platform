@@ -1,31 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>Library</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
-    <ApplicationIcon />
-    <StartupObject />
-    <Configurations>Debug;Release;DebugServer</Configurations>
-    <Platforms>AnyCPU</Platforms>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Update="**\*.xaml.cs">
-      <DependentUpon>%(Filename)</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="**\*.xaml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Assets\*" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Models\**" />
-    <EmbeddedResource Remove="Models\**" />
-    <None Remove="Models\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="FluentMigrator" Version="3.2.16" />
-    <PackageReference Include="FluentMigrator.Runner" Version="3.2.16" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj" />
-  </ItemGroup>
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+    </PropertyGroup>
+
+    <Import Project="..\Props\target.props"/>
+
+    <ItemGroup>
+        <PackageReference Include="FluentMigrator" Version="3.2.16"/>
+        <PackageReference Include="FluentMigrator.Runner" Version="3.2.16"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj"/>
+    </ItemGroup>
 </Project>

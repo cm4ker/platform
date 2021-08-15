@@ -3,6 +3,7 @@ using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.Metadata;
 using Aquila.Syntax.Syntax;
+using Microsoft.CodeAnalysis;
 
 namespace Aquila.Syntax.Metadata
 {
@@ -23,6 +24,19 @@ namespace Aquila.Syntax.Metadata
                 SMTypeKind.Reference => compilation.PlatformSymbolCollection.GetType(
                     QualifiedName.Parse(typeName.GetSemantic().ReferenceName, true)),
                 _ => throw new NotImplementedException("Unknown metadata type")
+            };
+        }
+
+        public static SMType Resolve(AquilaCompilation compilation, ITypeSymbol tSymbol)
+        {
+            return tSymbol switch
+            {
+                { } x when x.SpecialType == SpecialType.System_Int32 => new SMType(SMType.Int),
+                { } x when x.SpecialType == SpecialType.System_String => new SMType(SMType.String),
+                { } x when x.SpecialType == SpecialType.System_DateTime => new SMType(SMType.DateTime),
+                { } x when x.SpecialType == SpecialType.System_Boolean => new SMType(SMType.Boolean),
+                { } x when x.SpecialType == SpecialType.System_Decimal => new SMType(SMType.Numeric),
+                _ => throw new NotImplementedException($"Can't translate type {tSymbol} to database type")
             };
         }
     }

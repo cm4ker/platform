@@ -115,11 +115,12 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public const string AquilaTargetPlatformAttributeFullName = AquilaRuntimeNamespace + ".TargetPlatform";
 
+        public const string AquilaPlatformQueryFullName = AquilaRuntimeNamespace + ".PlatformQuery";
+
         /// <summary>
         /// Full name of Context+DllLoader&lt;&gt;.
         /// </summary>
         public const string Context_DllLoader_T = AquilaRuntimeNamespace + ".Context+DllLoader`1";
-
 
         public readonly CoreType
             Void,
@@ -139,14 +140,16 @@ namespace Aquila.CodeAnalysis.Symbols
             QueryAttribute,
             EntityAttribute,
             LinkAttribute,
-            // stdClass, ArrayAccess, Closure, Generator, Iterator, Traversable, GeneratorStateMachineDelegate, MainDelegate, 
-            IntPtr;
+            IntPtr,
+            PlatformQuery;
 
         public CoreTypes(AquilaCompilation compilation)
         {
             Contract.ThrowIfNull(compilation);
             _compilation = compilation;
             _table = new Dictionary<string, CoreType>();
+
+            #region BCL
 
             Void = Create(SpecialType.System_Void);
             Object = Create(SpecialType.System_Object);
@@ -159,15 +162,29 @@ namespace Aquila.CodeAnalysis.Symbols
             Boolean = Create(SpecialType.System_Boolean);
             String = Create(SpecialType.System_String);
             Guid = CreateFromFullName("System.Guid");
+            IntPtr = Create(SpecialType.System_IntPtr);
+
             Exception = CreateFromFullName(WellKnownTypes.GetMetadataName(WellKnownType.System_Exception));
             RuntimeTypeHandle = Create(SpecialType.System_RuntimeTypeHandle);
             RuntimeMethodHandle = Create(SpecialType.System_RuntimeMethodHandle);
+
+            #endregion
+
+            #region Attributes
 
             QueryAttribute = CreateFromFullName(AquilaQueryAttributeFullName);
             EntityAttribute = CreateFromFullName(AquilaEntityAttributeFullName);
             LinkAttribute = CreateFromFullName(AquilaLinkAttributeFullName);
 
-            IntPtr = CreateFromFullName("System.IntPtr");
+            #endregion
+
+            #region Types
+
+            PlatformQuery = CreateFromFullName(AquilaPlatformQueryFullName);
+
+            #endregion
+
+            ;
         }
 
         #region Table of types

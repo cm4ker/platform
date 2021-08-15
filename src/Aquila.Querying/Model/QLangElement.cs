@@ -44,6 +44,20 @@ namespace Aquila.Core.Querying.Model
         {
             return true;
         }
+
+        public IEnumerable<T> Find<T>()
+        {
+            foreach (var child in this.GetChildren())
+            {
+                if (child is T c)
+                    yield return c;
+
+                foreach (var nested in child.Find<T>())
+                {
+                    yield return nested;
+                }
+            }
+        }
     }
 
     public abstract class QLangCollection : QLangElement, IEnumerable

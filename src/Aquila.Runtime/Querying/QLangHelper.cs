@@ -31,22 +31,5 @@ namespace Aquila.Core.Querying
             var syntax = (realWalker.QueryMachine.pop() as SSyntaxNode);
             return new MsSqlBuilder().Visit(syntax);
         }
-
-
-        public static IEnumerable<T> Find<T>(this QLangElement element)
-        {
-            if (element is null) yield break;
-
-            foreach (var child in element.GetChildren())
-            {
-                if (child is T c)
-                    yield return c;
-
-                foreach (var nested in child.Find<T>())
-                {
-                    yield return nested;
-                }
-            }
-        }
     }
 }

@@ -4,7 +4,7 @@ using Aquila.Core.Querying.Model;
 namespace Aquila.Core.Querying
 {
     /// <summary>
-    /// Обходит дерево запроса платформы и распарсивает все его части. Также отправляет запросы всем комопнентам на разворот
+    /// Visitor for creating AST tree for Platform query language
     /// </summary>
     public class ZSqlGrammarVisitor : ZSqlGrammarBaseVisitor<object>
     {
@@ -128,6 +128,12 @@ namespace Aquila.Core.Querying
             return null;
         }
 
+        public override object VisitVariable(ZSqlGrammarParser.VariableContext context)
+        {
+            _stack.ld_var(context.IDENTIFIER().GetText());
+            return null;
+        }
+
         public override object VisitWhere_stmt(ZSqlGrammarParser.Where_stmtContext context)
         {
             base.VisitWhere_stmt(context);
@@ -140,6 +146,20 @@ namespace Aquila.Core.Querying
             base.VisitFrom_stmt(context);
 
             _stack.@from();
+            return null;
+        }
+
+        public override object VisitExprRelational(ZSqlGrammarParser.ExprRelationalContext context)
+        {
+            base.VisitExprRelational(context);
+
+            if (context.LT() != null)
+                _stack.lt();
+
+            if (context.GT() != null)
+                _stack.gt();
+
+
             return null;
         }
 
@@ -236,8 +256,6 @@ namespace Aquila.Core.Querying
 
         public override object VisitResult_column(ZSqlGrammarParser.Result_columnContext context)
         {
-            //duplicate array of fields for load the new result column into it
-            //_stack.dup();
             base.VisitResult_column(context);
             _stack.create(QObjectType.ResultColumn);
 
@@ -261,8 +279,6 @@ namespace Aquila.Core.Querying
 
             _stack.create(QObjectType.OrderExpression);
             _stack.st_elem();
-            return null;
-
             return null;
         }
     }

@@ -78,6 +78,7 @@ ProjectSection(SolutionItems) = preProject
 	src\Props\avalonia.xaml.behaviors.props = src\Props\avalonia.xaml.behaviors.props
 	src\Props\dock.props = src\Props\dock.props
 	src\Props\portable.xaml.props = src\Props\portable.xaml.props
+	src\Props\target.props = src\Props\target.props
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aquila.NET.Sdk", "src\Aquila.NET.Sdk\Aquila.NET.Sdk.csproj", "{54228E12-5852-411F-8D5E-F5A4413B9BB5}"

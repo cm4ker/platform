@@ -120,10 +120,15 @@ exprAtom:
     //| functionCallexpr
     | expr_column
     | parameter
+    | variable
 ;
 
 parameter: 
     '@' IDENTIFIER
+;
+
+variable:
+    '{' IDENTIFIER '}'
 ;
 
 result_column

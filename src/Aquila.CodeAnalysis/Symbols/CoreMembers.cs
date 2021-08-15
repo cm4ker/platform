@@ -229,7 +229,6 @@ namespace Aquila.CodeAnalysis.Symbols
     {
         public readonly OperatorsHolder Operators;
 
-
         /// <summary>Property name of <c>ScriptAttribute.IsAutoloaded</c>.</summary>
         public static string ScriptAttribute_IsAutoloaded => "IsAutoloaded";
 

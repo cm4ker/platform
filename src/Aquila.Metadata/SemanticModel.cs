@@ -179,6 +179,7 @@ namespace Aquila.Metadata
         public const string DateTime = "datetime";
         public const string Decimal = "decimal";
         public const string Numeric = "numeric";
+        public const string Unknown = "unknown";
 
         #endregion
 

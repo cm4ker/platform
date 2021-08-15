@@ -10,8 +10,7 @@ namespace Aquila.Core.Querying.Model
     public class QFieldList : QLangCollection<QField>
     {
         public static QFieldList Empty => new QFieldList(ImmutableArray<QField>.Empty);
-
-        public QFieldList(ImmutableArray<QField> elements) : base(elements)
+        public QFieldList(ImmutableArray<QField> elements): base(elements)
         {
         }
 
@@ -40,8 +39,7 @@ namespace Aquila.Core.Querying.Model
     public class QJoinList : QLangCollection<QFromItem>
     {
         public static QJoinList Empty => new QJoinList(ImmutableArray<QFromItem>.Empty);
-
-        public QJoinList(ImmutableArray<QFromItem> elements) : base(elements)
+        public QJoinList(ImmutableArray<QFromItem> elements): base(elements)
         {
         }
 
@@ -70,8 +68,7 @@ namespace Aquila.Core.Querying.Model
     public class QExpressionList : QLangCollection<QExpression>
     {
         public static QExpressionList Empty => new QExpressionList(ImmutableArray<QExpression>.Empty);
-
-        public QExpressionList(ImmutableArray<QExpression> elements) : base(elements)
+        public QExpressionList(ImmutableArray<QExpression> elements): base(elements)
         {
         }
 
@@ -100,8 +97,7 @@ namespace Aquila.Core.Querying.Model
     public class QDataSourceList : QLangCollection<QDataSource>
     {
         public static QDataSourceList Empty => new QDataSourceList(ImmutableArray<QDataSource>.Empty);
-
-        public QDataSourceList(ImmutableArray<QDataSource> elements) : base(elements)
+        public QDataSourceList(ImmutableArray<QDataSource> elements): base(elements)
         {
         }
 
@@ -130,8 +126,7 @@ namespace Aquila.Core.Querying.Model
     public class QOrderList : QLangCollection<QOrderExpression>
     {
         public static QOrderList Empty => new QOrderList(ImmutableArray<QOrderExpression>.Empty);
-
-        public QOrderList(ImmutableArray<QOrderExpression> elements) : base(elements)
+        public QOrderList(ImmutableArray<QOrderExpression> elements): base(elements)
         {
         }
 
@@ -160,8 +155,7 @@ namespace Aquila.Core.Querying.Model
     public class QWhenList : QLangCollection<QWhen>
     {
         public static QWhenList Empty => new QWhenList(ImmutableArray<QWhen>.Empty);
-
-        public QWhenList(ImmutableArray<QWhen> elements) : base(elements)
+        public QWhenList(ImmutableArray<QWhen> elements): base(elements)
         {
         }
 
@@ -190,8 +184,7 @@ namespace Aquila.Core.Querying.Model
     public class QQueryList : QLangCollection<QQuery>
     {
         public static QQueryList Empty => new QQueryList(ImmutableArray<QQuery>.Empty);
-
-        public QQueryList(ImmutableArray<QQuery> elements) : base(elements)
+        public QQueryList(ImmutableArray<QQuery> elements): base(elements)
         {
         }
 
@@ -219,7 +212,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QExpression : QLangElement
     {
-        public QExpression() : base()
+        public QExpression(): base()
         {
         }
 
@@ -244,8 +237,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QQuery : QLangElement
     {
-        public QQuery(QOrderBy orderBy, QSelect select, QHaving having, QGroupBy groupBy, QWhere where,
-            QFrom from) : base()
+        public QQuery(QOrderBy orderBy, QSelect select, QHaving having, QGroupBy groupBy, QWhere where, QFrom from): base()
         {
             this.orderBy = orderBy;
             this.select = select;
@@ -255,41 +247,17 @@ namespace Aquila.Core.Querying.Model
             this.from = from;
         }
 
-        public QOrderBy OrderBy
-        {
-            get => this.orderBy;
-            init => this.orderBy = value;
-        }
+        public QOrderBy OrderBy { get => this.orderBy; init => this.orderBy = value; }
 
-        public QSelect Select
-        {
-            get => this.select;
-            init => this.select = value;
-        }
+        public QSelect Select { get => this.select; init => this.select = value; }
 
-        public QHaving Having
-        {
-            get => this.having;
-            init => this.having = value;
-        }
+        public QHaving Having { get => this.having; init => this.having = value; }
 
-        public QGroupBy GroupBy
-        {
-            get => this.groupBy;
-            init => this.groupBy = value;
-        }
+        public QGroupBy GroupBy { get => this.groupBy; init => this.groupBy = value; }
 
-        public QWhere Where
-        {
-            get => this.where;
-            init => this.where = value;
-        }
+        public QWhere Where { get => this.where; init => this.where = value; }
 
-        public QFrom From
-        {
-            get => this.from;
-            init => this.from = value;
-        }
+        public QFrom From { get => this.from; init => this.from = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -325,16 +293,12 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QSelect : QLangElement
     {
-        public QSelect(QFieldList fields) : base()
+        public QSelect(QFieldList fields): base()
         {
             this.fields = fields;
         }
 
-        public QFieldList Fields
-        {
-            get => this.fields;
-            init => this.fields = value;
-        }
+        public QFieldList Fields { get => this.fields; init => this.fields = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -360,23 +324,15 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QFrom : QLangElement
     {
-        public QFrom(QJoinList joins, QDataSource source) : base()
+        public QFrom(QJoinList joins, QDataSource source): base()
         {
             this.joins = joins;
             this.source = source;
         }
 
-        public QJoinList Joins
-        {
-            get => this.joins;
-            init => this.joins = value;
-        }
+        public QJoinList Joins { get => this.joins; init => this.joins = value; }
 
-        public QDataSource Source
-        {
-            get => this.source;
-            init => this.source = value;
-        }
+        public QDataSource Source { get => this.source; init => this.source = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -404,16 +360,12 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QGroupBy : QLangElement
     {
-        public QGroupBy(QExpressionList expressions) : base()
+        public QGroupBy(QExpressionList expressions): base()
         {
             this.expressions = expressions;
         }
 
-        public QExpressionList Expressions
-        {
-            get => this.expressions;
-            init => this.expressions = value;
-        }
+        public QExpressionList Expressions { get => this.expressions; init => this.expressions = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -439,16 +391,12 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QOrderBy : QLangElement
     {
-        public QOrderBy(QOrderList expressions) : base()
+        public QOrderBy(QOrderList expressions): base()
         {
             this.expressions = expressions;
         }
 
-        public QOrderList Expressions
-        {
-            get => this.expressions;
-            init => this.expressions = value;
-        }
+        public QOrderList Expressions { get => this.expressions; init => this.expressions = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -474,16 +422,12 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QWhere : QLangElement
     {
-        public QWhere(QExpression expression) : base()
+        public QWhere(QExpression expression): base()
         {
             this.expression = expression;
         }
 
-        public QExpression Expression
-        {
-            get => this.expression;
-            init => this.expression = value;
-        }
+        public QExpression Expression { get => this.expression; init => this.expression = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -509,16 +453,12 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QHaving : QLangElement
     {
-        public QHaving(QExpression expression) : base()
+        public QHaving(QExpression expression): base()
         {
             this.expression = expression;
         }
 
-        public QExpression Expression
-        {
-            get => this.expression;
-            init => this.expression = value;
-        }
+        public QExpression Expression { get => this.expression; init => this.expression = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -544,7 +484,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QDataSource : QLangElement
     {
-        public QDataSource() : base()
+        public QDataSource(): base()
         {
         }
 
@@ -569,23 +509,15 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QAliasedDataSource : QDataSource
     {
-        public QAliasedDataSource(QDataSource parentSource, String alias) : base()
+        public QAliasedDataSource(QDataSource parentSource, String alias): base()
         {
             this.parentSource = parentSource;
             Alias = alias;
         }
 
-        public QDataSource ParentSource
-        {
-            get => this.parentSource;
-            init => this.parentSource = value;
-        }
+        public QDataSource ParentSource { get => this.parentSource; init => this.parentSource = value; }
 
-        public String Alias
-        {
-            get => this.alias;
-            init => this.alias = value;
-        }
+        public String Alias { get => this.alias; init => this.alias = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -617,16 +549,12 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QCombinedDataSource : QDataSource
     {
-        public QCombinedDataSource(QDataSourceList dataSources) : base()
+        public QCombinedDataSource(QDataSourceList dataSources): base()
         {
             this.dataSources = dataSources;
         }
 
-        public QDataSourceList DataSources
-        {
-            get => this.dataSources;
-            init => this.dataSources = value;
-        }
+        public QDataSourceList DataSources { get => this.dataSources; init => this.dataSources = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -657,16 +585,12 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QNestedQuery : QDataSource
     {
-        public QNestedQuery(QQuery nested) : base()
+        public QNestedQuery(QQuery nested): base()
         {
             this.nested = nested;
         }
 
-        public QQuery Nested
-        {
-            get => this.nested;
-            init => this.nested = value;
-        }
+        public QQuery Nested { get => this.nested; init => this.nested = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -697,7 +621,7 @@ namespace Aquila.Core.Querying.Model
 {
     public abstract partial class QPlatformDataSource : QDataSource
     {
-        public QPlatformDataSource() : base()
+        public QPlatformDataSource(): base()
         {
         }
 
@@ -727,7 +651,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QObjectTable : QPlatformDataSource
     {
-        public QObjectTable() : base()
+        public QObjectTable(): base()
         {
         }
 
@@ -757,16 +681,12 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QTable : QPlatformDataSource
     {
-        public QTable(QObjectTable objectTable) : base()
+        public QTable(QObjectTable objectTable): base()
         {
             this.objectTable = objectTable;
         }
 
-        public QObjectTable ObjectTable
-        {
-            get => this.objectTable;
-            init => this.objectTable = value;
-        }
+        public QObjectTable ObjectTable { get => this.objectTable; init => this.objectTable = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -797,16 +717,12 @@ namespace Aquila.Core.Querying.Model
 {
     public abstract partial class QField : QExpression
     {
-        public QField(QLangElement element) : base()
+        public QField(QLangElement element): base()
         {
             this.element = element;
         }
 
-        public QLangElement Element
-        {
-            get => this.element;
-            init => this.element = value;
-        }
+        public QLangElement Element { get => this.element; init => this.element = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -837,23 +753,15 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QIntermediateSourceField : QField
     {
-        public QIntermediateSourceField(QField field, QDataSource dataSource) : base(field)
+        public QIntermediateSourceField(QField field, QDataSource dataSource): base(field)
         {
             Field = field;
             DataSource = dataSource;
         }
 
-        public QField Field
-        {
-            get => this.field;
-            init => this.field = value;
-        }
+        public QField Field { get => this.field; init => this.field = value; }
 
-        public QDataSource DataSource
-        {
-            get => this.dataSource;
-            init => this.dataSource = value;
-        }
+        public QDataSource DataSource { get => this.dataSource; init => this.dataSource = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -884,23 +792,15 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QNestedQueryField : QField
     {
-        public QNestedQueryField(QField field, QDataSource dataSource) : base(field)
+        public QNestedQueryField(QField field, QDataSource dataSource): base(field)
         {
             Field = field;
             DataSource = dataSource;
         }
 
-        public QField Field
-        {
-            get => this.field;
-            init => this.field = value;
-        }
+        public QField Field { get => this.field; init => this.field = value; }
 
-        public QDataSource DataSource
-        {
-            get => this.dataSource;
-            init => this.dataSource = value;
-        }
+        public QDataSource DataSource { get => this.dataSource; init => this.dataSource = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -931,23 +831,15 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QLookupField : QField
     {
-        public QLookupField(String propName, QExpression baseExpression) : base(baseExpression)
+        public QLookupField(String propName, QExpression baseExpression): base(baseExpression)
         {
             PropName = propName;
             BaseExpression = baseExpression;
         }
 
-        public String PropName
-        {
-            get => this.propName;
-            init => this.propName = value;
-        }
+        public String PropName { get => this.propName; init => this.propName = value; }
 
-        public QExpression BaseExpression
-        {
-            get => this.baseExpression;
-            init => this.baseExpression = value;
-        }
+        public QExpression BaseExpression { get => this.baseExpression; init => this.baseExpression = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -978,23 +870,15 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QSourceFieldExpression : QField
     {
-        public QSourceFieldExpression(QPlatformDataSource platformSource, SMProperty property) : base(platformSource)
+        public QSourceFieldExpression(QPlatformDataSource platformSource, SMProperty property): base(platformSource)
         {
             PlatformSource = platformSource;
             Property = property;
         }
 
-        public QPlatformDataSource PlatformSource
-        {
-            get => this.platformSource;
-            init => this.platformSource = value;
-        }
+        public QPlatformDataSource PlatformSource { get => this.platformSource; init => this.platformSource = value; }
 
-        public SMProperty Property
-        {
-            get => this.property;
-            init => this.property = value;
-        }
+        public SMProperty Property { get => this.property; init => this.property = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -1025,23 +909,15 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QOrderExpression : QExpression
     {
-        public QOrderExpression(QSortDirection sortingDirection, QExpression expression) : base()
+        public QOrderExpression(QSortDirection sortingDirection, QExpression expression): base()
         {
             SortingDirection = sortingDirection;
             this.expression = expression;
         }
 
-        public QSortDirection SortingDirection
-        {
-            get => this.sortingDirection;
-            init => this.sortingDirection = value;
-        }
+        public QSortDirection SortingDirection { get => this.sortingDirection; init => this.sortingDirection = value; }
 
-        public QExpression Expression
-        {
-            get => this.expression;
-            init => this.expression = value;
-        }
+        public QExpression Expression { get => this.expression; init => this.expression = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -1073,16 +949,12 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QSelectExpression : QField
     {
-        public QSelectExpression(QExpression expression) : base(expression)
+        public QSelectExpression(QExpression expression): base(expression)
         {
             Expression = expression;
         }
 
-        public QExpression Expression
-        {
-            get => this.expression;
-            init => this.expression = value;
-        }
+        public QExpression Expression { get => this.expression; init => this.expression = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -1112,23 +984,15 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QAliasedSelectExpression : QSelectExpression
     {
-        public QAliasedSelectExpression(QExpression aliasedExpression, String alias) : base(aliasedExpression)
+        public QAliasedSelectExpression(QExpression aliasedExpression, String alias): base(aliasedExpression)
         {
             AliasedExpression = aliasedExpression;
             Alias = alias;
         }
 
-        public QExpression AliasedExpression
-        {
-            get => this.aliasedExpression;
-            init => this.aliasedExpression = value;
-        }
+        public QExpression AliasedExpression { get => this.aliasedExpression; init => this.aliasedExpression = value; }
 
-        public String Alias
-        {
-            get => this.alias;
-            init => this.alias = value;
-        }
+        public String Alias { get => this.alias; init => this.alias = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -1159,30 +1023,18 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QFromItem : QLangElement
     {
-        public QFromItem(QExpression condition, QDataSource joined, QJoinType joinType) : base()
+        public QFromItem(QExpression condition, QDataSource joined, QJoinType joinType): base()
         {
             this.condition = condition;
             this.joined = joined;
             JoinType = joinType;
         }
 
-        public QExpression Condition
-        {
-            get => this.condition;
-            init => this.condition = value;
-        }
+        public QExpression Condition { get => this.condition; init => this.condition = value; }
 
-        public QDataSource Joined
-        {
-            get => this.joined;
-            init => this.joined = value;
-        }
+        public QDataSource Joined { get => this.joined; init => this.joined = value; }
 
-        public QJoinType JoinType
-        {
-            get => this.joinType;
-            init => this.joinType = value;
-        }
+        public QJoinType JoinType { get => this.joinType; init => this.joinType = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -1211,7 +1063,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QConst : QExpression
     {
-        public QConst() : base()
+        public QConst(): base()
         {
         }
 
@@ -1241,16 +1093,12 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QParameter : QExpression
     {
-        public QParameter(String name) : base()
+        public QParameter(String name): base()
         {
             Name = name;
         }
 
-        public String Name
-        {
-            get => this.name;
-            init => this.name = value;
-        }
+        public String Name { get => this.name; init => this.name = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -1278,25 +1126,52 @@ namespace Aquila.Core.Querying.Model
 
 namespace Aquila.Core.Querying.Model
 {
+    public partial class QVar : QExpression
+    {
+        public QVar(String name): base()
+        {
+            Name = name;
+        }
+
+        public String Name { get => this.name; init => this.name = value; }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQVar(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQVar(this);
+        }
+
+        public override IEnumerable<QLangElement> GetChildren()
+        {
+            foreach (var item in base.GetChildren())
+            {
+                yield return item;
+            }
+
+            yield break;
+        }
+
+        private String name;
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
     public partial class QCase : QExpression
     {
-        public QCase(QExpression @else, QWhenList whens) : base()
+        public QCase(QExpression @else, QWhenList whens): base()
         {
             this.@else = @else;
             this.whens = whens;
         }
 
-        public QExpression Else
-        {
-            get => this.@else;
-            init => this.@else = value;
-        }
+        public QExpression Else { get => this.@else; init => this.@else = value; }
 
-        public QWhenList Whens
-        {
-            get => this.whens;
-            init => this.whens = value;
-        }
+        public QWhenList Whens { get => this.whens; init => this.whens = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -1329,23 +1204,15 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QWhen : QLangElement
     {
-        public QWhen(QExpression then, QOperationExpression @when) : base()
+        public QWhen(QExpression then, QOperationExpression @when): base()
         {
             this.then = then;
             this.@when = @when;
         }
 
-        public QExpression Then
-        {
-            get => this.then;
-            init => this.then = value;
-        }
+        public QExpression Then { get => this.then; init => this.then = value; }
 
-        public QOperationExpression When
-        {
-            get => this.@when;
-            init => this.@when = value;
-        }
+        public QOperationExpression When { get => this.@when; init => this.@when = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -1373,23 +1240,15 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QOperationExpression : QExpression
     {
-        public QOperationExpression(QExpression left, QExpression right) : base()
+        public QOperationExpression(QExpression left, QExpression right): base()
         {
             this.left = left;
             this.right = right;
         }
 
-        public QExpression Left
-        {
-            get => this.left;
-            init => this.left = value;
-        }
+        public QExpression Left { get => this.left; init => this.left = value; }
 
-        public QExpression Right
-        {
-            get => this.right;
-            init => this.right = value;
-        }
+        public QExpression Right { get => this.right; init => this.right = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -1422,7 +1281,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QAnd : QOperationExpression
     {
-        public QAnd(QExpression left, QExpression right) : base(left, right)
+        public QAnd(QExpression left, QExpression right): base(left, right)
         {
         }
 
@@ -1454,7 +1313,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QAdd : QOperationExpression
     {
-        public QAdd(QExpression left, QExpression right) : base(left, right)
+        public QAdd(QExpression left, QExpression right): base(left, right)
         {
         }
 
@@ -1486,7 +1345,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QOr : QOperationExpression
     {
-        public QOr(QExpression left, QExpression right) : base(left, right)
+        public QOr(QExpression left, QExpression right): base(left, right)
         {
         }
 
@@ -1516,7 +1375,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QEquals : QOperationExpression
     {
-        public QEquals(QExpression left, QExpression right) : base(left, right)
+        public QEquals(QExpression left, QExpression right): base(left, right)
         {
         }
 
@@ -1546,7 +1405,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QNotEquals : QOperationExpression
     {
-        public QNotEquals(QExpression left, QExpression right) : base(left, right)
+        public QNotEquals(QExpression left, QExpression right): base(left, right)
         {
         }
 
@@ -1576,7 +1435,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QGreatThen : QOperationExpression
     {
-        public QGreatThen(QExpression left, QExpression right) : base(left, right)
+        public QGreatThen(QExpression left, QExpression right): base(left, right)
         {
         }
 
@@ -1606,7 +1465,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QLessThen : QOperationExpression
     {
-        public QLessThen(QExpression left, QExpression right) : base(left, right)
+        public QLessThen(QExpression left, QExpression right): base(left, right)
         {
         }
 
@@ -1636,7 +1495,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QLessThenOrEquals : QOperationExpression
     {
-        public QLessThenOrEquals(QExpression left, QExpression right) : base(left, right)
+        public QLessThenOrEquals(QExpression left, QExpression right): base(left, right)
         {
         }
 
@@ -1666,7 +1525,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QGreatThenOrEquals : QOperationExpression
     {
-        public QGreatThenOrEquals(QExpression left, QExpression right) : base(left, right)
+        public QGreatThenOrEquals(QExpression left, QExpression right): base(left, right)
         {
         }
 
@@ -1696,23 +1555,15 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QCast : QExpression
     {
-        public QCast(SMType type, QExpression baseExpression) : base()
+        public QCast(SMType type, QExpression baseExpression): base()
         {
             Type = type;
             this.baseExpression = baseExpression;
         }
 
-        public SMType Type
-        {
-            get => this.type;
-            init => this.type = value;
-        }
+        public SMType Type { get => this.type; init => this.type = value; }
 
-        public QExpression BaseExpression
-        {
-            get => this.baseExpression;
-            init => this.baseExpression = value;
-        }
+        public QExpression BaseExpression { get => this.baseExpression; init => this.baseExpression = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -1744,16 +1595,12 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QDataRequest : QLangElement
     {
-        public QDataRequest(QFieldList source) : base()
+        public QDataRequest(QFieldList source): base()
         {
             this.source = source;
         }
 
-        public QFieldList Source
-        {
-            get => this.source;
-            init => this.source = value;
-        }
+        public QFieldList Source { get => this.source; init => this.source = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -1930,6 +1777,11 @@ namespace Aquila.Core.Querying
         }
 
         public virtual T VisitQParameter(QParameter arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitQVar(QVar arg)
         {
             return DefaultVisit(arg);
         }
@@ -2158,6 +2010,11 @@ namespace Aquila.Core.Querying
         }
 
         public virtual void VisitQParameter(QParameter arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQVar(QVar arg)
         {
             DefaultVisit(arg);
         }

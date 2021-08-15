@@ -13,6 +13,7 @@ using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.CodeAnalysis.Utilities;
 using Aquila.Compiler.Utilities;
 using Aquila.Core.Querying.Model;
+using Aquila.Metadata;
 using Aquila.Syntax;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Expressions;
@@ -20,6 +21,7 @@ using Aquila.Syntax.Ast.Functions;
 using Aquila.Syntax.Ast.Statements;
 using Aquila.Syntax.Declarations;
 using Aquila.Syntax.Errors;
+using Aquila.Syntax.Metadata;
 using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
 using Microsoft.CodeAnalysis;
@@ -481,7 +483,23 @@ Binder
 
                     var query = (string)expr.ObjectiveValue;
                     var element = QLang.Parse(query, DeclaringCompilation.MetadataCollection);
+
+                    var vars = element.Find<QVar>();
+
+                    foreach (var @var in vars)
+                    {
+                        var bVar = BindVariableName(@var.Name);
+                        var vType = bVar.Type;
+                        var smType = MetadataTypeProvider.Resolve(DeclaringCompilation, vType);
+
+                        @var.BindType(smType);
+                    }
+
+                    //var transforms into parameter
+
+
                     //TODO: Add errors to the DiagnosticBug if we catch error
+                    //DeclaringCompilation.GetDiagnostics()
 
                     return new BoundLiteral(expr.ObjectiveValue, GetSymbolFromLiteralOperation(expr.Operation));
 
@@ -568,11 +586,17 @@ Binder
         protected BoundVariableName BindVariableName(NameEx nameEx)
         {
             Debug.Assert(nameEx != null);
+            return BindVariableName(nameEx.Identifier.Text).WithSyntax(nameEx);
+        }
+
+        protected BoundVariableName BindVariableName(string varName)
+        {
+            Debug.Assert(varName != null);
             Debug.Assert(Method != null);
 
-            Method.LocalsTable.TryGetVariable(new VariableName(nameEx.Identifier.Text), out var localVar);
+            Method.LocalsTable.TryGetVariable(new VariableName(varName), out var localVar);
             var type = localVar.Type;
-            return new BoundVariableName(nameEx.Identifier.Text, type).WithSyntax(nameEx);
+            return new BoundVariableName(varName, type);
         }
 
         protected Location GetLocation(LangElement expr) => expr.SyntaxTree.GetLocation(expr);
@@ -749,15 +773,19 @@ Binder
         {
             Debug.Assert(Method != null);
 
-            var members = Container.GetMembers(expr.Identifier.Text).Where(x => x is MethodSymbol)
+            var containerMembers = Container.GetMembers(expr.Identifier.Text).Where(x => x is MethodSymbol)
                 .ToList();
 
-            if (!Enumerable.Any(members))
+
+            //TODO: Add global built-in methods and try to resolve it here, if local members not found
+            var globalMembers = (MethodSymbol)null;
+
+            if (!Enumerable.Any(containerMembers))
                 Diagnostics.Add(GetLocation(expr), ErrorCode.INF_CantResolveSymbol);
 
-            if (members.Count() == 1)
+            if (containerMembers.Count() == 1)
             {
-                var member = members[0];
+                var member = containerMembers[0];
                 if (invocation)
                 {
                     if (member is MethodSymbol ms)
@@ -803,10 +831,10 @@ Binder
                 }
             }
 
-            if (members.Count() > 1 && invocation)
+            if (containerMembers.Count() > 1 && invocation)
             {
-                throw new NotImplementedException("");
-                // MethodGroup
+                //Resolve overload
+                throw new NotImplementedException("Overload not supported for now");
             }
             else
             {

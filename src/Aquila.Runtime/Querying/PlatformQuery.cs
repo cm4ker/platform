@@ -10,8 +10,9 @@ using Aquila.Data;
 using Aquila.Metadata;
 using Aquila.Migrations;
 using Aquila.Runtime;
+using Aquila.ServerRuntime;
 
-namespace Aquila.ServerRuntime
+namespace Aquila.Core
 {
     public class PlatformQuery
     {
@@ -203,6 +204,44 @@ namespace Aquila.ServerRuntime
         {
         }
     }
+
+
+    /*
+    
+    var a = 10;
+     
+     //Where B is string/int/ref type for example
+     var q = query();
+     
+     q.Text = "FROM A SELECT B WHERE Id < @param1";
+     q.SetParameter("param1", a);
+     var col = q.Execute();
+     
+     iter(col -> elem)
+     {
+        var counter = 0;
+
+        elem.B match  <-- Here we can access to the B element
+        {
+            string x => show_message(x);
+            int i =>  counter  + i;
+            Invoice inv => some_func(inv);
+            Store s => some_func2(s);
+            Nomenclature n => some_func3(n);
+            _ => show_message("we can't do anything")
+        } 
+
+        match(elem.B)  <-- Here we can access to the B element
+        {
+            "Валенки" x => valenki(x);
+            "Сапоги" y => sapogi(y);
+            0 => nothing
+        } 
+     }
+    
+    
+          
+    */
 
 
     /*

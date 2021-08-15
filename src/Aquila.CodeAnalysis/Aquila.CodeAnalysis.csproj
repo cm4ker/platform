@@ -1,13 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
-        <LangVersion>9</LangVersion>
-        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <TargetFramework>net5.0</TargetFramework>
-        <Configurations>Debug;Release;DebugServer</Configurations>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
+
+    <Import Project="..\Props\target.props"/>
 
     <ItemGroup>
         <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
@@ -15,18 +11,18 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
 
-        <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
-        <PackageReference Include="Aquila.Microsoft.CodeAnalysis" Version="3.7.4" />
-        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.4" />
-        <PackageReference Include="morelinq" Version="3.3.2" />
-        <PackageReference Include="System.ServiceModel.Primitives" Version="4.7.0" />
+        <PackageReference Include="Antlr4.Runtime" Version="4.6.6"/>
+        <PackageReference Include="Aquila.Microsoft.CodeAnalysis" Version="3.7.4"/>
+        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.4"/>
+        <PackageReference Include="morelinq" Version="3.3.2"/>
+        <PackageReference Include="System.ServiceModel.Primitives" Version="4.7.0"/>
 
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="Syntax\Parser\ZSharpLexer.g4" />
-        <Content Include="Syntax\Parser\ZSharpParser.g4" />
-        <Content Include="Syntax\Parser\ZSharpPreprocessorParser.g4" />
+        <Content Include="Syntax\Parser\ZSharpLexer.g4"/>
+        <Content Include="Syntax\Parser\ZSharpParser.g4"/>
+        <Content Include="Syntax\Parser\ZSharpPreprocessorParser.g4"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -42,8 +38,8 @@
         </Compile>
     </ItemGroup>
     <ItemGroup>
-        <InternalsVisibleTo Include="Aquila.Compiler.Test2, PublicKey=0024000004800000940000000602000000240000525341310004000001000100d54a25086509c296a6a99121c80b814e0e143135055ceec7b259f572c72706a8a8b1f749a6fd1faf6f9a659097433e78b409de7996b55335fc49395a12bbf8eace40a118c071c353ac44e59345ab41aeffd440df117230af41b236cffca16b992c2828b90f3a6dfaf16c9d4debc7dec0dd00365079152fe6bd8d187b144f50b9" />
-        <InternalsVisibleTo Include="Aquila.CodeAnalysis.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100d54a25086509c296a6a99121c80b814e0e143135055ceec7b259f572c72706a8a8b1f749a6fd1faf6f9a659097433e78b409de7996b55335fc49395a12bbf8eace40a118c071c353ac44e59345ab41aeffd440df117230af41b236cffca16b992c2828b90f3a6dfaf16c9d4debc7dec0dd00365079152fe6bd8d187b144f50b9" />
+        <InternalsVisibleTo Include="Aquila.Compiler.Test2, PublicKey=0024000004800000940000000602000000240000525341310004000001000100d54a25086509c296a6a99121c80b814e0e143135055ceec7b259f572c72706a8a8b1f749a6fd1faf6f9a659097433e78b409de7996b55335fc49395a12bbf8eace40a118c071c353ac44e59345ab41aeffd440df117230af41b236cffca16b992c2828b90f3a6dfaf16c9d4debc7dec0dd00365079152fe6bd8d187b144f50b9"/>
+        <InternalsVisibleTo Include="Aquila.CodeAnalysis.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100d54a25086509c296a6a99121c80b814e0e143135055ceec7b259f572c72706a8a8b1f749a6fd1faf6f9a659097433e78b409de7996b55335fc49395a12bbf8eace40a118c071c353ac44e59345ab41aeffd440df117230af41b236cffca16b992c2828b90f3a6dfaf16c9d4debc7dec0dd00365079152fe6bd8d187b144f50b9"/>
     </ItemGroup>
     <ItemGroup>
         <Compile Update="AquilaResources.Designer.cs">
@@ -70,8 +66,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Aquila.Metadata\Aquila.Metadata.csproj" />
-      <ProjectReference Include="..\Aquila.Querying\Aquila.Querying.csproj" />
+        <ProjectReference Include="..\Aquila.Metadata\Aquila.Metadata.csproj"/>
+        <ProjectReference Include="..\Aquila.Querying\Aquila.Querying.csproj"/>
     </ItemGroup>
 
 </Project>

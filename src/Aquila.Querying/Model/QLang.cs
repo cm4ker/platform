@@ -192,6 +192,11 @@ namespace Aquila.Core.Querying.Model
             _logicStack.Push(new QParameter(name));
         }
 
+        public void ld_var(string name)
+        {
+            _logicStack.Push(new QVar(name));
+        }
+
         public void ld_source_context()
         {
             _logicStack.Push(
@@ -417,7 +422,8 @@ namespace Aquila.Core.Querying.Model
         }
 
         /// <summary>
-        /// Равно
+        /// Great or equals then
+        /// Great or equals then
         /// </summary>
         public void gte()
         {
@@ -425,7 +431,7 @@ namespace Aquila.Core.Querying.Model
         }
 
         /// <summary>
-        /// Равно
+        /// Less or equals then
         /// </summary>
         public void lte()
         {
@@ -433,7 +439,7 @@ namespace Aquila.Core.Querying.Model
         }
 
         /// <summary>
-        /// Равно
+        /// Less then
         /// </summary>
         public void lt()
         {
@@ -492,5 +498,9 @@ namespace Aquila.Core.Querying.Model
         {
             _logicStack.Push(new QConst(new SMType(SMType.Numeric, 0, 10, 10), number));
         }
+    }
+
+    public class Diagnostic
+    {
     }
 }

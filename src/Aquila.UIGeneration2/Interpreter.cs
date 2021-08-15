@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using Antlr4.Runtime;
 using Aquila.Core.Querying;
 using Aquila.Core.Querying.Model;
@@ -37,20 +38,25 @@ namespace Aquila.UIBuilder
                     return;
                 }
 
-                _output.Write(new String(' ', Depth * 4) + visitable.ToString());
+                _output.Write(new String(' ', Depth * 4) + visitable ?? "");
 
                 switch (visitable)
                 {
                     case QField:
-                        _output.Write($"(Name : {visitable.GetDbName()})");
+                        _output.Write($"(Name : {visitable.GetDbName() ?? ""})");
                         break;
                     case QDataSource:
-                        _output.Write($"(DS : {visitable.GetDbName()})");
+                        _output.Write($"(DS : {visitable.GetDbName() ?? ""})");
                         break;
                     case QFromItem:
-                        _output.Write($"(JOIN : {visitable.GetDbName()})");
+                        _output.Write($"(JOIN : {visitable.GetDbName() ?? ""})");
                         break;
                 }
+
+
+                if (visitable is QExpression e)
+                    _output.Write(
+                        $"(Type : {e.GetExpressionType().Aggregate("", (s, type) => $"{s}|{type.Name}")})");
 
                 _output.WriteLine();
 
@@ -85,11 +91,11 @@ namespace Aquila.UIBuilder
 
                 try
                 {
-                    var pwalker = new PhysicalNameWalker(_drContext);
-                    pwalker.Visit(_m.top() as QLangElement);
-
                     var walker = new PrinterWalker(output);
                     walker.Visit(_m.top() as QLangElement);
+
+                    var pwalker = new PhysicalNameWalker(_drContext);
+                    pwalker.Visit(_m.top() as QLangElement);
 
                     var realWalker = new RealWalker(_drContext);
                     realWalker.Visit(_m.top() as QLangElement);

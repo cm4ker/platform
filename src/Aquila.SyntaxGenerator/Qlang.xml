@@ -158,6 +158,12 @@
         </Arguments>
     </Syntax>
 
+    <Syntax Name="QVar" Base="QExpression">
+        <Arguments>
+            <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
     <Syntax Name="QCase" Base="QExpression">
         <Arguments>
             <Single Name="Else" Type="QExpression"/>

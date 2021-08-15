@@ -1,9 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
-    </PropertyGroup>
-
+    <Import Project="..\Props\target.props"/>
+    
     <ItemGroup>
         <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
             <PrivateAssets>all</PrivateAssets>
