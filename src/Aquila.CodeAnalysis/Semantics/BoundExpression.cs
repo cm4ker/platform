@@ -90,6 +90,12 @@ namespace Aquila.CodeAnalysis.Semantics
         public bool IsWriteRef => (_flags & AccessMask.WriteRef) == AccessMask.WriteRef;
 
         /// <summary>
+        /// Is invoke
+        /// </summary>
+        public bool IsInvoke => (_flags & AccessMask.Invoke) == AccessMask.Invoke;
+
+
+        /// <summary>
         /// The expression won't be read or written to.
         /// </summary>
         public bool IsNone => (_flags == 0);
@@ -170,6 +176,13 @@ namespace Aquila.CodeAnalysis.Semantics
             return new BoundAccess(_flags | AccessMask.Read, target);
         }
 
+        internal BoundAccess WithInvoke(TypeSymbol target)
+        {
+            Contract.ThrowIfNull(target);
+            return new BoundAccess(_flags | AccessMask.Invoke | AccessMask.Read, target);
+        }
+
+
         public BoundAccess WithQuiet()
         {
             return new BoundAccess(_flags | AccessMask.ReadQuiet, _targetType);
@@ -232,6 +245,8 @@ namespace Aquila.CodeAnalysis.Semantics
         /// </summary>
         public static BoundAccess ReadAndWrite => new BoundAccess(AccessMask.Read | AccessMask.Write, null);
 
+        public static BoundAccess Invoke => new BoundAccess(AccessMask.Invoke | AccessMask.Read, null);
+
         #endregion
     }
 
@@ -243,11 +258,17 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         private LangElement _aquilaSyntax;
 
+        private BoundAccess _acc;
+        
         /// <summary>
         /// Additional expression access,
         /// specifies how the expression is being accessed.
         /// </summary>
-        public BoundAccess Access { get; internal set; }
+        public BoundAccess Access
+        {
+            get => _acc;
+            set => _acc = value;
+        }
 
         /// <summary>
         /// Lazily resolved conversion used to access the value.

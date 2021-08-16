@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
+using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.Compiler.Utilities;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
@@ -70,6 +71,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
     internal class SourceGlobalNamespaceSymbol : NamespaceSymbol
     {
         readonly SourceModuleSymbol _sourceModule;
+        private ImmutableArray<MethodSymbol> _exntensionMethods;
+
 
         public SourceGlobalNamespaceSymbol(SourceModuleSymbol module)
         {
@@ -102,20 +105,67 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             get { throw new NotImplementedException(); }
         }
 
+        private void EnsureExtensionMethods()
+        {
+            if (!_exntensionMethods.IsDefault)
+                return;
+
+            var builder = new ArrayBuilder<MethodSymbol>();
+
+            var syms = DeclaringCompilation.GetBoundReferenceManager().ExplicitReferencesSymbols;
+            foreach (AssemblySymbol sym in syms)
+            {
+                var gns = sym.Modules[0].GlobalNamespace;
+
+                HandleNs(gns);
+
+                void HandleNs(NamespaceSymbol ns)
+                {
+                    var members = ns.GetMembers();
+
+                    foreach (var member in members)
+                    {
+                        if (member.Kind == SymbolKind.Namespace)
+                        {
+                            var nestedNs = (NamespaceSymbol)member;
+                            HandleNs(nestedNs);
+                        }
+
+                        if (member.Kind == SymbolKind.NamedType &&
+                            member.GetAttribute(CoreTypes.AquilaExtensionAqAttributeFullName) != null)
+                        {
+                            var ext = (NamedTypeSymbol)member;
+                            var methods = ext.GetMembers().OfType<MethodSymbol>()
+                                .Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public);
+
+                            builder.AddRange(methods);
+                        }
+                    }
+                }
+            }
+
+            _exntensionMethods = builder.ToImmutableAndFree();
+        }
+
         public override ImmutableArray<Symbol> GetMembers()
         {
-            //var table = _sourceModule.SymbolTables;
-            //return table.GetFunctions().Cast<Symbol>().Concat(table.GetTypes()).AsImmutable();
-            throw new NotImplementedException();
+            return DeclaringCompilation.PlatformSymbolCollection.GetNamespaces().OfType<Symbol>().ToImmutableArray();
         }
 
 
         public override ImmutableArray<Symbol> GetMembers(string name)
         {
+            EnsureExtensionMethods();
+
             var arr = new ArrayBuilder<Symbol>();
 
             var ns = DeclaringCompilation.PlatformSymbolCollection.GetNamespace(name);
-            arr.Add(ns);
+
+            if (ns != null)
+                arr.Add(ns);
+
+            var result = _exntensionMethods.Where(x => x.Name == name);
+            arr.AddRange(result);
 
             return arr.ToImmutableAndFree();
         }

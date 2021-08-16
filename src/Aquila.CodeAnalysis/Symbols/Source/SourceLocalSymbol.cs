@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Semantics;
 using Aquila.Syntax.Ast;
 using Microsoft.CodeAnalysis.Symbols;
 
@@ -121,8 +123,22 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 var langElem = _decl.VariableType;
+
                 var binder = DeclaringCompilation.GetBinder(langElem);
-                var tsymbol = binder.BindType(langElem);
+
+                TypeSymbol tsymbol;
+
+                if (langElem.IsVar)
+                {
+                    tsymbol = (TypeSymbol)binder.BindExpression(_decl.Declarators.First().Initializer, BoundAccess.ReadAndWrite)
+                        .Type;
+                }
+                else
+
+                {
+                    tsymbol = binder.BindType(langElem);
+                }
+
 
                 Debug.Assert(tsymbol.IsValidType());
                 return tsymbol;

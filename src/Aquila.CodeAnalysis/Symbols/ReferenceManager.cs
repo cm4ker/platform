@@ -117,15 +117,7 @@ namespace Aquila.CodeAnalysis
                             return pair.Value;
                         }
                     }
-
-                    //foreach (var m in modules)
-                    //{
-                    //    if (IsIdentitySimilar(m.ContainingAssembly.Identity, identity))
-                    //    {
-                    //        return m.ContainingAssembly as PEAssemblySymbol;
-                    //    }
-                    //}
-
+                    
                     //
                     if (resolver != null)
                     {

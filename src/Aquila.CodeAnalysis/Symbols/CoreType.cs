@@ -109,6 +109,9 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public const string AquilaQueryAttributeFullName = AquilaRuntimeNamespace + ".QueryAttribute";
 
+        public const string AquilaExtensionAqAttributeFullName =
+            AquilaRuntimeNamespace + ".ExtensionAqAttribute";
+
         public const string AquilaEntityAttributeFullName = AquilaRuntimeNamespace + ".EntityAttribute";
 
         public const string AquilaLinkAttributeFullName = AquilaRuntimeNamespace + ".LinkAttribute";
@@ -134,13 +137,18 @@ namespace Aquila.CodeAnalysis.Symbols
             Guid,
             String,
             Decimal,
+            IntPtr,
             Exception,
             RuntimeTypeHandle,
             RuntimeMethodHandle,
+
+            //Attributes
             QueryAttribute,
             EntityAttribute,
             LinkAttribute,
-            IntPtr,
+            ExtensionMethodAttribute,
+
+            //Aq Runtime Types
             PlatformQuery;
 
         public CoreTypes(AquilaCompilation compilation)
@@ -175,6 +183,7 @@ namespace Aquila.CodeAnalysis.Symbols
             QueryAttribute = CreateFromFullName(AquilaQueryAttributeFullName);
             EntityAttribute = CreateFromFullName(AquilaEntityAttributeFullName);
             LinkAttribute = CreateFromFullName(AquilaLinkAttributeFullName);
+            ExtensionMethodAttribute = CreateFromFullName(AquilaExtensionAqAttributeFullName);
 
             #endregion
 

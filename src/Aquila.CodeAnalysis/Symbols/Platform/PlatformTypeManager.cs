@@ -191,6 +191,11 @@ namespace Aquila.CodeAnalysis.Public
             return _lazySynthesizedNamespaces.FirstOrDefault(x => x.Name == name);
         }
 
+        internal ImmutableArray<NamespaceSymbol> GetNamespaces()
+        {
+            return _lazySynthesizedNamespaces.OfType<NamespaceSymbol>().ToImmutableArray();
+        }
+
         /// <summary>
         /// Returns null if synthesized type in platform manager not found
         /// </summary>

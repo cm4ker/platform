@@ -332,5 +332,41 @@ public static string Main()
 
             var result = (int)this.CompileAndRun(script);
         }
+
+
+        [Fact]
+        public void ExtensionMethodTest()
+        {
+            var script =
+                @"
+public static int Main() 
+{
+    var a = 1;
+    var b = a;
+
+    var q = query();
+    var d = get_date();
+
+    q.set_param(""value"", ""value"");
+
+
+    return d.Day;
+}";
+
+/*
+public static string Main() 
+{
+    int|string a = 10;
+    string|int b = "test";
+
+    return match a with
+        | int x => "here is string value"
+        | string y => "here is y value";
+}                 
+*/
+
+
+            var result = (int)this.CompileAndRun(script);
+        }
     }
 }

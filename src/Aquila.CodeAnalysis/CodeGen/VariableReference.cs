@@ -112,6 +112,12 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             var type = place.Type;
 
+            if (access.IsInvoke && type.IsValueType)
+            {
+                place.EmitLoadAddress(cg.Builder);
+                return type;
+            }
+
             return place.EmitLoad(cg.Builder);
         }
 
@@ -147,6 +153,7 @@ namespace Aquila.CodeAnalysis.Semantics
             Debug.Assert(cg != null);
 
             var lhs = default(LhsStack);
+
 
             return reference.EmitLoadValue(cg, ref lhs, access);
         }
@@ -396,6 +403,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
             // declare variable in global scope
             var il = cg.Builder;
+
             var def = il.LocalSlotManager.DeclareLocal(
                 (Cci.ITypeReference)Symbol.GetTypeOrReturnType(), Symbol as ILocalSymbolInternal,
                 this.Name, this.SynthesizedLocalKind,

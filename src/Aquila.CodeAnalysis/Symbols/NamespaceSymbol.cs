@@ -29,7 +29,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         public virtual bool IsGlobalNamespace
         {
-            get { return (object) ContainingNamespace == null; }
+            get { return (object)ContainingNamespace == null; }
         }
 
         /// <summary>
@@ -179,11 +179,11 @@ namespace Aquila.CodeAnalysis.Symbols
                 {
                     var ns = symbol as NamespaceSymbol;
 
-                    if ((object) ns != null)
+                    if ((object)ns != null)
                     {
-                        if ((object) nextScope != null)
+                        if ((object)nextScope != null)
                         {
-                            Debug.Assert((object) nextScope == null, "Why did we run into an unmerged namespace?");
+                            Debug.Assert((object)nextScope == null, "Why did we run into an unmerged namespace?");
                             nextScope = null;
                             break;
                         }
@@ -194,7 +194,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
                 scope = nextScope;
 
-                if ((object) scope == null)
+                if ((object)scope == null)
                 {
                     break;
                 }
@@ -209,7 +209,7 @@ namespace Aquila.CodeAnalysis.Symbols
             {
                 if (sym.Kind == SymbolKind.Namespace)
                 {
-                    return (NamespaceSymbol) sym;
+                    return (NamespaceSymbol)sym;
                 }
             }
 

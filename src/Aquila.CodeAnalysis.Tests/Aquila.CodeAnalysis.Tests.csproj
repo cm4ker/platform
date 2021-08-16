@@ -5,20 +5,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Antlr4.Runtime" Version="4.6.6"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0"/>
-        <PackageReference Include="Npgsql" Version="5.0.7"/>
-        <PackageReference Include="xunit" Version="2.4.1"/>
-        <PackageReference Include="xunit.extensibility.core" Version="2.4.1"/>
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1"/>
+        <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+        <PackageReference Include="Npgsql" Version="5.0.7" />
+        <PackageReference Include="xunit" Version="2.4.1" />
+        <PackageReference Include="xunit.extensibility.core" Version="2.4.1" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
     </ItemGroup>
 
-    <Import Project="..\Props\target.props"/>
+    <Import Project="..\Props\target.props" />
 
     <ItemGroup>
-        <ProjectReference Include="..\Aquila.CodeAnalysis\Aquila.CodeAnalysis.csproj"/>
-        <ProjectReference Include="..\Aquila.Metadata\Aquila.Metadata.csproj"/>
-        <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj"/>
+        <ProjectReference Include="..\Aquila.CodeAnalysis\Aquila.CodeAnalysis.csproj" />
+        <ProjectReference Include="..\Aquila.Library\Aquila.Library.csproj" />
+        <ProjectReference Include="..\Aquila.Metadata\Aquila.Metadata.csproj" />
+        <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj" />
     </ItemGroup>
 
 </Project>

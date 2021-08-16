@@ -367,7 +367,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         public override T VisitPropertyAccess(BoundPropertyAccess x)
         {
-            Visit(x.Instance, BoundAccess.Read);
+            Visit(x.Instance, BoundAccess.Invoke);
             return base.VisitPropertyAccess(x);
         }
 
@@ -733,7 +733,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         public override T VisitInstanceCallEx(BoundInstanceCallEx x)
         {
-            Visit(x.Instance, BoundAccess.Read);
+            Visit(x.Instance, BoundAccess.Invoke);
             return base.VisitInstanceCallEx(x);
         }
 

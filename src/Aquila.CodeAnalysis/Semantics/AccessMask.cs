@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 
 namespace Aquila.CodeAnalysis.Semantics
 {
@@ -68,18 +68,18 @@ namespace Aquila.CodeAnalysis.Semantics
         /// </summary>
         IsNotRef = 1 << 9,
 
-        // NOTE: WriteAndReadRef has to be constructed by semantic binder as bound expression with Write and another bound expression with ReadRef
-        // NOTE: ReadAndWriteAndReadRef has to be constructed by semantic binder as bound expression with Read|Write and another bound expression with ReadRef
-
-        //
-        ReadMask = EnsureObject | EnsureArray | ReadRef | ReadQuiet,
-        WriteMask = Write | WriteRef | Unset,
+        //TODO: Add Invocation access for correct load address
+        Invoke,
     }
 
     internal static class AccessMaskExtensions
     {
-        public static bool EnsureObject(this AccessMask flags) => (flags & AccessMask.EnsureObject) == AccessMask.EnsureObject;
-        public static bool EnsureArray(this AccessMask flags) => (flags & AccessMask.EnsureArray) == AccessMask.EnsureArray;
+        public static bool EnsureObject(this AccessMask flags) =>
+            (flags & AccessMask.EnsureObject) == AccessMask.EnsureObject;
+
+        public static bool EnsureArray(this AccessMask flags) =>
+            (flags & AccessMask.EnsureArray) == AccessMask.EnsureArray;
+
         public static bool EnsureAlias(this AccessMask flags) => (flags & AccessMask.ReadRef) == AccessMask.ReadRef;
         public static bool Quiet(this AccessMask flags) => (flags & AccessMask.ReadQuiet) != 0;
         public static bool Read(this AccessMask flags) => (flags & AccessMask.Read) != 0;

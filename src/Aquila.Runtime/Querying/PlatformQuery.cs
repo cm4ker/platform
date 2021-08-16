@@ -195,12 +195,12 @@ namespace Aquila.Core
             return GetDefaultClr(type);
         }
 
-        public void SetParameter(string paramName, object value)
+        public void set_param(string paramName, object value)
         {
             _parameters.Add(paramName, value);
         }
 
-        public void Execute()
+        public void exec()
         {
         }
     }

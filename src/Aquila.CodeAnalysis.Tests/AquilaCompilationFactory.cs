@@ -8,6 +8,7 @@ using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Syntax;
 using Aquila.CodeAnalysis.Syntax.Parser;
 using Aquila.Core;
+using Aquila.Library;
 using Aquila.Metadata;
 using Microsoft.CodeAnalysis;
 using Npgsql;
@@ -47,7 +48,7 @@ namespace Aquila.Compiler.Tests
             {
                 typeof(object).Assembly, // mscorlib (or System.Runtime)
                 typeof(QueryAttribute).Assembly, // Aquila.Runtime
-
+                typeof(QueryExtensions).Assembly, // Aquila.Library
                 typeof(NpgsqlConnection).Assembly
             };
 

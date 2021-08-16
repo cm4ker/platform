@@ -32,4 +32,12 @@ namespace Aquila.Core
             Version = version;
         }
     }
+
+    /// <summary>
+    /// Marks the method as extension. This method will be visible in the global context 
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    public class ExtensionAqAttribute : Attribute
+    {
+    }
 }

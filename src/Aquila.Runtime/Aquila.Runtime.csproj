@@ -4,7 +4,7 @@
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     </PropertyGroup>
 
-    <Import Project="..\Props\target.props"/>
+    <Import Project="..\Props\target.props" />
 
 
     <ItemGroup>
@@ -12,13 +12,13 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; analyzers</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Antlr4.Runtime" Version="4.6.6"/>
+        <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="morelinq" Version="3.0.0"/>
-        <PackageReference Include="Npgsql" Version="5.0.7"/>
-        <PackageReference Include="System.Data.SqlClient" Version="4.8.2"/>
+        <PackageReference Include="morelinq" Version="3.0.0" />
+        <PackageReference Include="Npgsql" Version="5.0.7" />
+        <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -29,9 +29,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Aquila.Metadata\Aquila.Metadata.csproj"/>
-        <ProjectReference Include="..\Aquila.Querying\Aquila.Querying.csproj"/>
-        <ProjectReference Include="..\DB\BufferedDataReader\BufferedDataReader.csproj"/>
+        <ProjectReference Include="..\Aquila.Metadata\Aquila.Metadata.csproj" />
+        <ProjectReference Include="..\Aquila.Querying\Aquila.Querying.csproj" />
+        <ProjectReference Include="..\DB\BufferedDataReader\BufferedDataReader.csproj" />
     </ItemGroup>
 
 </Project>

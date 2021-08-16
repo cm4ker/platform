@@ -289,6 +289,11 @@ Binder
         }
 
         public override NamespaceOrTypeSymbol Container => _ns;
+
+        protected override IEnumerable<IMethodSymbol> FindMethodsByName(string name)
+        {
+            return _ns.GetMembers(name).OfType<MethodSymbol>();
+        }
     }
 
 
@@ -367,7 +372,6 @@ Binder
         {
             var trf = DeclaringCompilation.CoreTypes;
 
-
             if (tref is PredefinedTypeRef pt)
             {
                 switch (pt.Kind)
@@ -416,6 +420,11 @@ Binder
             return _next?.FindTypeByName(tref);
         }
 
+        protected virtual IEnumerable<IMethodSymbol> FindMethodsByName(string name)
+        {
+            return _next?.FindMethodsByName(name);
+        }
+
         protected BoundStatement BindReturnStmt(ReturnStmt stmt)
         {
             Debug.Assert(Method != null);
@@ -456,7 +465,8 @@ Binder
             if (expr is UnaryEx ue) return BindUnaryEx(ue, access).WithAccess(access);
             if (expr is IncDecEx incDec) return BindIncDec(incDec).WithAccess(access);
             if (expr is CallEx ce) return BindCallEx(ce).WithAccess(access);
-            if (expr is MemberAccessEx mae) return BindMemberAccessEx(mae, false).WithAccess(access);
+            if (expr is MemberAccessEx mae)
+                return BindMemberAccessEx(mae, ArgumentList.Empty, false).WithAccess(access);
 
             if (expr is ThrowEx throwEx)
                 return new BoundThrowEx(BindExpression(throwEx.Expression, BoundAccess.Read), null);
@@ -763,7 +773,7 @@ Binder
                 case SyntaxKind.NameExpression:
                     return BindName((NameEx)expr, args, invoked);
                 case SyntaxKind.MemberAccessExpression:
-                    return BindMemberAccessEx((MemberAccessEx)expr, invoked);
+                    return BindMemberAccessEx((MemberAccessEx)expr, args, invoked);
                 default:
                     throw new NotImplementedException();
             }
@@ -775,13 +785,6 @@ Binder
 
             var containerMembers = Container.GetMembers(expr.Identifier.Text).Where(x => x is MethodSymbol)
                 .ToList();
-
-
-            //TODO: Add global built-in methods and try to resolve it here, if local members not found
-            var globalMembers = (MethodSymbol)null;
-
-            if (!Enumerable.Any(containerMembers))
-                Diagnostics.Add(GetLocation(expr), ErrorCode.INF_CantResolveSymbol);
 
             if (containerMembers.Count() == 1)
             {
@@ -836,16 +839,44 @@ Binder
                 //Resolve overload
                 throw new NotImplementedException("Overload not supported for now");
             }
-            else
+
+            if (!Enumerable.Any(containerMembers))
+                Diagnostics.Add(GetLocation(expr), ErrorCode.INF_CantResolveSymbol);
+
+            //TODO: Add global built-in methods and try to resolve it here, if local members not found
+            var globalMembers = FindMethodsByName(expr.Identifier.Text).ToImmutableArray();
+
+            if (globalMembers.Length == 1)
             {
-                Diagnostics.Add(GetLocation(expr), ErrorCode.ERR_NotYetImplemented);
-                return null;
+                var member = globalMembers[0];
+
+                if (invocation)
+                {
+                    if (member is MethodSymbol ms)
+                    {
+                        if (ms.IsStatic)
+                        {
+                            var arglist = argumentList.Select(x => BoundArgument.Create(BindExpression(x.Expression)))
+                                .ToImmutableArray();
+
+                            return new BoundStaticCallEx(ms,
+                                new BoundMethodName(new QualifiedName(new Name(expr.Identifier.Text))),
+                                arglist, ImmutableArray<IBoundTypeRef>.Empty, ms.ReturnType);
+                        }
+                        else
+                        {
+                            //Extension method can't be instance
+                        }
+                    }
+                }
             }
+
+            throw new Exception("Test");
         }
 
-        private BoundExpression BindMemberAccessEx(MemberAccessEx expr, bool invoke)
+        private BoundExpression BindMemberAccessEx(MemberAccessEx expr, ArgumentList args, bool invoke)
         {
-            var boundLeft = BindExpression(expr.Expression);
+            var boundLeft = BindExpression(expr.Expression).WithAccess(BoundAccess.Invoke);
 
             var leftType = boundLeft.Type;
 
@@ -856,7 +887,22 @@ Binder
                 {
                     if (member is MethodSymbol ms)
                     {
-                        //var method = new BoundMethod(ms, leftType);
+                        var arglist = args.Select(x => BoundArgument.Create(BindExpression(x.Expression)))
+                            .ToImmutableArray();
+
+
+                        if (ms.IsStatic)
+                            return new BoundStaticCallEx(ms,
+                                new BoundMethodName(QualifiedName.Parse(expr.Identifier.Text, true)),
+                                arglist,
+                                ImmutableArray<IBoundTypeRef>.Empty, leftType);
+
+                        else
+
+                            return new BoundInstanceCallEx(ms,
+                                new BoundMethodName(QualifiedName.Parse(expr.Identifier.Text, true)),
+                                arglist, ImmutableArray<IBoundTypeRef>.Empty,
+                                boundLeft, leftType);
                     }
                 }
                 else
