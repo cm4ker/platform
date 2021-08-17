@@ -245,6 +245,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// </summary>
         public static BoundAccess ReadAndWrite => new BoundAccess(AccessMask.Read | AccessMask.Write, null);
 
+        //TODO: set another name
         public static BoundAccess Invoke => new BoundAccess(AccessMask.Invoke | AccessMask.Read, null);
 
         #endregion
@@ -259,7 +260,7 @@ namespace Aquila.CodeAnalysis.Semantics
         private LangElement _aquilaSyntax;
 
         private BoundAccess _acc;
-        
+
         /// <summary>
         /// Additional expression access,
         /// specifies how the expression is being accessed.

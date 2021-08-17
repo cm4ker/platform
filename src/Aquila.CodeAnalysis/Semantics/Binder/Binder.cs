@@ -709,7 +709,15 @@ Binder
 
         protected BoundExpression BindAssignEx(AssignEx expr, BoundAccess access)
         {
-            var target = (BoundReferenceEx)BindExpression(expr.LValue, BoundAccess.Write);
+            var boundExpr = BindExpression(expr.LValue, BoundAccess.Write);
+
+
+            if (!(boundExpr is BoundReferenceEx target))
+            {
+                throw new Exception("Can't assign values to the not reference store");
+                return null;
+            }
+
             BoundExpression value;
 
             value = BindExpression(expr.RValue, BoundAccess.Read);
@@ -909,7 +917,7 @@ Binder
                 {
                     if (member is PropertySymbol ps)
                     {
-                        return new BoundPropertyAccess(ps, boundLeft);
+                        return new BoundPropertyRef(ps, boundLeft);
                     }
                 }
             }

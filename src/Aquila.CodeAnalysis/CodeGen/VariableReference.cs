@@ -653,4 +653,196 @@ namespace Aquila.CodeAnalysis.Semantics
     }
 
     #endregion
+
+
+    #region Class members
+
+    class FieldReference : IVariableReference
+    {
+        public BoundExpression Receiver { get; } // can be null
+
+        public FieldSymbol Field => (FieldSymbol)Symbol;
+
+        public Symbol Symbol { get; }
+
+        public TypeSymbol Type => Field.Type;
+
+        public bool HasAddress => true;
+
+        public IPlace Place
+        {
+            get
+            {
+                if (Receiver == null)
+                {
+                    // _statics holder ?
+                    if (!Field.IsStatic)
+                    {
+                        return null; // new FieldPlace ( Receiver: Context.GetStatics<Holder>(), Field );
+                    }
+
+                    return new FieldPlace(Field);
+                }
+
+                if (Receiver is BoundReferenceEx bref && bref.Place() is IPlace receiver_place &&
+                    receiver_place.Type.IsOfType(Field.ContainingType))
+                {
+                    return receiver_place;
+                    //return new FieldPlace(receiver_place, Field);
+                }
+
+                return null;
+            }
+        }
+
+        public FieldReference(BoundExpression receiver, FieldSymbol /*!*/field)
+        {
+            this.Receiver = receiver;
+            this.Symbol = field ?? throw ExceptionUtilities.ArgumentNull(nameof(field));
+        }
+
+        public LhsStack EmitStorePreamble(CodeGenerator cg, BoundAccess access)
+        {
+            LhsStack lhs = default;
+
+            var fieldplace = new FieldPlace(Field, cg.Module);
+
+            return
+                VariableReferenceExtensions.EmitReceiver(cg, ref lhs, Field, Receiver) +
+                fieldplace.EmitStorePreamble(cg, access);
+        }
+
+        public void EmitStore(CodeGenerator cg, ref LhsStack lhs, TypeSymbol stack, BoundAccess access)
+        {
+            if (Field.IsConst)
+            {
+                throw ExceptionUtilities.Unreachable; // cannot assign to const and analysis should report it already
+            }
+
+            new FieldPlace(Field, cg.Module).EmitStore(cg, ref lhs, stack, access);
+        }
+
+        public TypeSymbol EmitLoadValue(CodeGenerator cg, ref LhsStack lhs, BoundAccess access)
+        {
+            if (Field.IsConst)
+            {
+                return cg.EmitLoadConstant(Field.ConstantValue, targetOpt: access.TargetType);
+            }
+
+            VariableReferenceExtensions.EmitReceiver(cg, ref lhs, Field, Receiver);
+
+            if (access.IsQuiet && Receiver != null)
+            {
+                // handle nullref in "quiet" mode (e.g. within empty() expression),
+                // emit null-safe "?." operator
+
+                //  .dup ? .ldfld : default
+
+                // cg.EmitNullCoalescing( , ) but we need the resulting type
+
+                var _il = cg.Builder;
+                var lbl_null = new NamedLabel("ReceiverNull");
+                var lbl_end = new object();
+
+                _il.EmitOpCode(ILOpCode.Dup);
+                _il.EmitBranch(ILOpCode.Brfalse, lbl_null);
+                var type = new FieldPlace(Field, cg.Module).EmitLoadValue(cg, ref lhs, access); // .field
+
+                _il.EmitBranch(ILOpCode.Br, lbl_end);
+
+                _il.MarkLabel(lbl_null);
+                _il.EmitOpCode(ILOpCode.Pop);
+                cg.EmitLoadDefault(type); // default
+
+                _il.MarkLabel(lbl_end);
+
+                //
+                return type;
+            }
+            else
+            {
+                return new FieldPlace(Field, cg.Module).EmitLoadValue(cg, ref lhs, access);
+            }
+        }
+
+        public TypeSymbol EmitLoadAddress(CodeGenerator cg, ref LhsStack lhs)
+        {
+            VariableReferenceExtensions.EmitReceiver(cg, ref lhs, Field, Receiver);
+
+            new FieldPlace(Field, cg.Module).EmitLoadAddress(cg.Builder);
+
+            return Field.Type;
+        }
+    }
+
+    class PropertyReference : IVariableReference
+    {
+        public BoundExpression Receiver { get; } // can be null
+
+        public PropertySymbol Property => (PropertySymbol)Symbol;
+
+        public Symbol Symbol { get; }
+
+        public TypeSymbol Type => Property.Type;
+
+        public bool HasAddress => false;
+
+        public IPlace Place
+        {
+            get
+            {
+                if (Receiver == null)
+                    return new PropertyPlace(null, Property);
+
+                if (Receiver is BoundReferenceEx bref && bref.Place() is IPlace receiver_place &&
+                    receiver_place.Type.IsOfType(Property.ContainingType))
+                    return new PropertyPlace(receiver_place, Property);
+
+                return null;
+            }
+        }
+
+        public PropertyReference(BoundExpression receiver, PropertySymbol /*!*/prop)
+        {
+            this.Receiver = receiver;
+            this.Symbol = prop ?? throw ExceptionUtilities.ArgumentNull(nameof(prop));
+        }
+
+        public LhsStack EmitStorePreamble(CodeGenerator cg, BoundAccess access)
+        {
+            LhsStack lhs = default;
+            return VariableReferenceExtensions.EmitReceiver(cg, ref lhs, Symbol, Receiver);
+        }
+
+        public void EmitStore(CodeGenerator cg, ref LhsStack lhs, TypeSymbol stack, BoundAccess access)
+        {
+            var setter = Property.SetMethod;
+            var type = setter.Parameters[0].Type;
+
+            if (stack == null) // unset
+            {
+                stack = cg.EmitLoadDefault(type);
+            }
+
+            cg.EmitConvert(stack, type, conversion: ConversionKind.Strict);
+            cg.EmitCall(setter.IsVirtual ? ILOpCode.Callvirt : ILOpCode.Call, setter);
+        }
+
+        public TypeSymbol EmitLoadValue(CodeGenerator cg, ref LhsStack lhs, BoundAccess access)
+        {
+            VariableReferenceExtensions.EmitReceiver(cg, ref lhs, Symbol, Receiver);
+
+            var getter = Property.GetMethod;
+            return cg.EmitCall(getter.IsVirtual ? ILOpCode.Callvirt : ILOpCode.Call, getter);
+
+            // TODO: ACCESS
+        }
+
+        public TypeSymbol EmitLoadAddress(CodeGenerator cg, ref LhsStack lhsStack)
+        {
+            throw ExceptionUtilities.Unreachable;
+        }
+    }
+
+    #endregion
 }

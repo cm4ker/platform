@@ -22,7 +22,7 @@
     },
     "BoundTreeDirect": {
       "commandName": "Project",
-      "commandLineArgs": "bound_tree BoundTree.xml ..\\..\\..\\..\\Aquila.CodeAnalysis\\Generated\\Generated.BoundTree.xml.cs"
+      "commandLineArgs": "bound_tree BoundTree.xml ..\\..\\..\\Aquila.CodeAnalysis\\Generated\\Generated.BoundTree.xml.cs"
     }
   }
 }

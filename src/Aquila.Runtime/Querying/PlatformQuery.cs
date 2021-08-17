@@ -30,7 +30,7 @@ namespace Aquila.Core
             _context = ContextHelper.GetContext();
         }
 
-        public string Text
+        public string text
         {
             get => _text;
             set

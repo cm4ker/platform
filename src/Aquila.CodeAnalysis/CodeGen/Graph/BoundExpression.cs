@@ -160,6 +160,8 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         internal override TypeSymbol Emit(CodeGenerator cg)
         {
+            BoundExpression b;
+
             var target_place = this.Target.BindPlace(cg);
 
             Debug.Assert(target_place != null);
@@ -316,12 +318,22 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    public partial class BoundPropertyAccess
+    public partial class BoundPropertyRef
     {
-        internal override TypeSymbol Emit(CodeGenerator cg)
+        internal override IVariableReference BindPlace(CodeGenerator cg)
         {
-            return cg.EmitCall(ILOpCode.Call, (MethodSymbol)Property.GetMethod, this.Instance,
-                ImmutableArray<BoundArgument>.Empty);
+            return new PropertyReference(this._instance, (PropertySymbol)_property);
         }
+
+        internal override IPlace Place()
+        {
+            return new PropertyPlace(null, (PropertySymbol)_property);
+        }
+
+        // internal override TypeSymbol Emit(CodeGenerator cg)
+        // {
+        //     return cg.EmitCall(ILOpCode.Call, (MethodSymbol)Property.GetMethod, this.Instance,
+        //         ImmutableArray<BoundArgument>.Empty);
+        // }
     }
 }

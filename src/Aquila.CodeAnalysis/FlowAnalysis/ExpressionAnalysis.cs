@@ -365,10 +365,10 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return default;
         }
 
-        public override T VisitPropertyAccess(BoundPropertyAccess x)
+        public override T VisitPropertyRef(BoundPropertyRef x)
         {
             Visit(x.Instance, BoundAccess.Invoke);
-            return base.VisitPropertyAccess(x);
+            return base.VisitPropertyRef(x);
         }
 
         public override T VisitIncDecEx(BoundIncDecEx x)

@@ -202,16 +202,6 @@
 
     <!-- endregion -->
 
-
-    <Syntax Name="PropertyAccess" Base="Expression" OperationKind="Invocation">
-        <Arguments>
-            <Single Name="Property" Type="IPropertySymbol"/>
-            <Single Name="Instance" Type="BoundExpression"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true"
-                    IsInternal="true" PassBaseConst="property.Type"/>
-        </Arguments>
-    </Syntax>
-
     <!-- endregion MemberAccess -->
 
     <Syntax Name="ThrowEx" Base="Expression" OperationKind="Throw">
@@ -283,6 +273,15 @@
             <Single Name="Name" Type="BoundVariableName" PassBase="true" OnlyArgument="true" IsUpdatable="true"/>
             <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
                     IsInternal="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="PropertyRef" Base="ReferenceEx" OperationKind="Invocation">
+        <Arguments>
+            <Single Name="Property" Type="IPropertySymbol"/>
+            <Single Name="Instance" Type="BoundExpression"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true"
+                    IsInternal="true" PassBaseConst="property.Type"/>
         </Arguments>
     </Syntax>
 

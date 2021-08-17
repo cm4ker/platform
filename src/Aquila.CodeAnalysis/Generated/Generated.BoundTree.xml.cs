@@ -34,7 +34,6 @@ public enum BoundKind
     InstanceCallEx,
     StaticCallEx,
     NewEx,
-    PropertyAccess,
     ThrowEx,
     ArrayItemEx,
     ArrayItemOrdEx,
@@ -42,6 +41,7 @@ public enum BoundKind
     ListEx,
     VariableRef,
     TemporalVariableRef,
+    PropertyRef,
     Argument,
     MethodName,
     ArrayTypeRef,
@@ -1282,59 +1282,6 @@ namespace Aquila.CodeAnalysis.Semantics
 
 namespace Aquila.CodeAnalysis.Semantics
 {
-    partial class BoundPropertyAccess : BoundExpression
-    {
-        private IPropertySymbol _property;
-        private BoundExpression _instance;
-        internal BoundPropertyAccess(IPropertySymbol property, BoundExpression instance): base(property.Type)
-        {
-            _property = property;
-            _instance = instance;
-            OnCreateImpl(property, instance);
-        }
-
-        partial void OnCreateImpl(IPropertySymbol property, BoundExpression instance);
-        public IPropertySymbol Property
-        {
-            get
-            {
-                return _property;
-            }
-        }
-
-        public BoundExpression Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
-        public override OperationKind Kind => OperationKind.Invocation;
-        public override BoundKind BoundKind => BoundKind.PropertyAccess;
-        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
-        partial void AcceptImpl(OperationVisitor visitor);
-        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
-        {
-            TRes res = default;
-            AcceptImpl(visitor, argument, ref res);
-            return res;
-        }
-
-        public override void Accept(OperationVisitor visitor)
-        {
-            AcceptImpl(visitor);
-        }
-
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
-        {
-            return visitor.VisitPropertyAccess(this);
-        }
-    }
-}
-
-namespace Aquila.CodeAnalysis.Semantics
-{
     partial class BoundThrowEx : BoundExpression
     {
         private BoundExpression _thrown;
@@ -1729,6 +1676,59 @@ namespace Aquila.CodeAnalysis.Semantics
             if (Name == name && ResultType == resultType)
                 return this;
             return new BoundTemporalVariableRef(name, resultType);
+        }
+    }
+}
+
+namespace Aquila.CodeAnalysis.Semantics
+{
+    partial class BoundPropertyRef : BoundReferenceEx
+    {
+        private IPropertySymbol _property;
+        private BoundExpression _instance;
+        internal BoundPropertyRef(IPropertySymbol property, BoundExpression instance): base(property.Type)
+        {
+            _property = property;
+            _instance = instance;
+            OnCreateImpl(property, instance);
+        }
+
+        partial void OnCreateImpl(IPropertySymbol property, BoundExpression instance);
+        public IPropertySymbol Property
+        {
+            get
+            {
+                return _property;
+            }
+        }
+
+        public BoundExpression Instance
+        {
+            get
+            {
+                return _instance;
+            }
+        }
+
+        public override OperationKind Kind => OperationKind.Invocation;
+        public override BoundKind BoundKind => BoundKind.PropertyRef;
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
+        partial void AcceptImpl(OperationVisitor visitor);
+        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
+        {
+            TRes res = default;
+            AcceptImpl(visitor, argument, ref res);
+            return res;
+        }
+
+        public override void Accept(OperationVisitor visitor)
+        {
+            AcceptImpl(visitor);
+        }
+
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        {
+            return visitor.VisitPropertyRef(this);
         }
     }
 }
@@ -2449,7 +2449,6 @@ namespace Aquila.CodeAnalysis.Semantics
         public virtual TResult VisitInstanceCallEx(BoundInstanceCallEx x) => VisitDefault(x);
         public virtual TResult VisitStaticCallEx(BoundStaticCallEx x) => VisitDefault(x);
         public virtual TResult VisitNewEx(BoundNewEx x) => VisitDefault(x);
-        public virtual TResult VisitPropertyAccess(BoundPropertyAccess x) => VisitDefault(x);
         public virtual TResult VisitThrowEx(BoundThrowEx x) => VisitDefault(x);
         public virtual TResult VisitReferenceEx(BoundReferenceEx x) => VisitDefault(x);
         public virtual TResult VisitArrayItemEx(BoundArrayItemEx x) => VisitDefault(x);
@@ -2458,6 +2457,7 @@ namespace Aquila.CodeAnalysis.Semantics
         public virtual TResult VisitListEx(BoundListEx x) => VisitDefault(x);
         public virtual TResult VisitVariableRef(BoundVariableRef x) => VisitDefault(x);
         public virtual TResult VisitTemporalVariableRef(BoundTemporalVariableRef x) => VisitDefault(x);
+        public virtual TResult VisitPropertyRef(BoundPropertyRef x) => VisitDefault(x);
         public virtual TResult VisitArgument(BoundArgument x) => VisitDefault(x);
         public virtual TResult VisitMethodName(BoundMethodName x) => VisitDefault(x);
         public virtual TResult VisitTypeRef(BoundTypeRef x) => VisitDefault(x);
