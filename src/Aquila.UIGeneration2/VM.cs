@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Aquila.Data;
 using Aquila.Metadata;
 using Aquila.Runtime;
+using Aquila.Runtime.Querying;
 using JetBrains.Annotations;
 
 namespace Aquila.UIBuilder
@@ -33,7 +34,6 @@ namespace Aquila.UIBuilder
             {
                 if (value == _input) return;
                 _input = value;
-                InputChanged();
                 OnPropertyChanged();
             }
         }
@@ -53,10 +53,6 @@ namespace Aquila.UIBuilder
 
         private void InputChanged()
         {
-            Interpreter i = new Interpreter(_drContext);
-            var o = i.Run(_input);
-            Output1 = o.Output1;
-            Output2 = o.Output2;
         }
 
         private void InputChanged2()
@@ -65,6 +61,15 @@ namespace Aquila.UIBuilder
             var o = i.RunQuery(_input2);
             Output1 = o.Output1;
             Output2 = o.Output2;
+
+            var crud = new CRUDQueryGenerator();
+            var md = _drContext.GetMetadata();
+            var invoice = md.GetSemanticByName("Invoice");
+
+            var insert = crud.GetSaveInsert(invoice, _drContext);
+            var update = crud.GetSaveUpdate(invoice, _drContext);
+
+            Input = $"{insert}\n{update}";
         }
 
 

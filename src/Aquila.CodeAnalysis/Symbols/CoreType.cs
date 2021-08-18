@@ -120,6 +120,19 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public const string AquilaPlatformQueryFullName = AquilaRuntimeNamespace + ".PlatformQuery";
 
+        public const string AquilaPlatformContextFullName = AquilaRuntimeNamespace + ".PlatformContext";
+
+
+        //System.Data
+
+        /// <summary>
+        /// Root namespace for  System.Data.Common
+        /// </summary>
+        public const string SystemDataCommonNamespace = "System.Data.Common";
+
+        public static readonly string SDCDBCommandFullName = $"{SystemDataCommonNamespace}.DbCommand";
+        public static readonly string SDCDBParameterFullName = $"{SystemDataCommonNamespace}.DbParameter";
+
         /// <summary>
         /// Full name of Context+DllLoader&lt;&gt;.
         /// </summary>
@@ -149,7 +162,12 @@ namespace Aquila.CodeAnalysis.Symbols
             ExtensionMethodAttribute,
 
             //Aq Runtime Types
-            PlatformQuery;
+            PlatformQuery,
+            PlatformContext,
+
+            //System.Data.Common Types
+            DbCommand,
+            DbParameter;
 
         public CoreTypes(AquilaCompilation compilation)
         {
@@ -190,6 +208,14 @@ namespace Aquila.CodeAnalysis.Symbols
             #region Types
 
             PlatformQuery = CreateFromFullName(AquilaPlatformQueryFullName);
+            PlatformContext = CreateFromFullName(AquilaPlatformContextFullName);
+
+            #endregion
+
+            #region System.Data.Common
+
+            DbCommand = CreateFromFullName(SDCDBCommandFullName);
+            DbParameter = CreateFromFullName(SDCDBParameterFullName);
 
             #endregion
 
@@ -292,11 +318,5 @@ namespace Aquila.CodeAnalysis.Symbols
         }
 
         #endregion
-
-        public static readonly int IdOfInt = 10;
-        public static readonly int IdOfString = 11;
-        public static readonly int IdOfBool = 12;
-        public static readonly int IdOfDouble = 13;
-        public static readonly int IdOfDecimal = 14;
     }
 }

@@ -12,6 +12,7 @@ using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.Metadata;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeGen;
 
 namespace Aquila.Syntax.Metadata
 {
@@ -19,6 +20,7 @@ namespace Aquila.Syntax.Metadata
     {
         private readonly AquilaCompilation _declaredCompilation;
         private CoreTypes _ct;
+        private CoreMethods _cm;
         private PlatformSymbolCollection _ps;
         private SynthesizedNamespaceSymbol _entityNamespaceSymbol;
 
@@ -36,6 +38,7 @@ namespace Aquila.Syntax.Metadata
             _declaredCompilation.GetBoundReferenceManager();
 
             _ct = _declaredCompilation.CoreTypes;
+            _cm = _declaredCompilation.CoreMethods;
             _ps = _declaredCompilation.PlatformSymbolCollection;
         }
 
@@ -87,6 +90,30 @@ namespace Aquila.Syntax.Metadata
             }
         }
 
+        private IEnumerable<(string propName, TypeSymbol type)> GetDtoPropertySchema(SMProperty prop)
+        {
+            var isComplexType = prop.Types.Count() > 1;
+
+            TypeSymbol propType;
+            var hasLinkProperty = false;
+
+            foreach (var info in prop.GetOrderedFlattenTypes())
+            {
+                propType = MetadataTypeProvider.Resolve(_declaredCompilation, info.type);
+
+                if (info.type.IsReference && hasLinkProperty)
+                    continue;
+
+                if (info.type.IsReference)
+                {
+                    hasLinkProperty = true;
+                    yield return new($"{prop.Name}{info.postfix}", _ct.Guid);
+                }
+                else
+                    yield return new($"{prop.Name}{info.postfix}", propType);
+            }
+        }
+
         private NamedTypeSymbol PopulateDtoType(SMEntity md)
         {
             var dtoType = _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{DtoPostfix}", false));
@@ -95,48 +122,12 @@ namespace Aquila.Syntax.Metadata
             ctor
                 .SetMethodBuilder((m, d) => (il) => { il.EmitRet(true); });
 
+
             foreach (var prop in md.Properties)
             {
-                var isComplexType = prop.Types.Count() > 1;
-
-                TypeSymbol propType;
-
-                if (isComplexType)
+                foreach (var schema in GetDtoPropertySchema(prop))
                 {
-                    _ps.CreatePropertyWithBackingField(dtoType, _ct.Int32, $"{prop.Name}_T");
-
-                    var hasLinkPropery = false;
-
-                    foreach (var type in prop.Types)
-                    {
-                        propType = MetadataTypeProvider.Resolve(_declaredCompilation, type);
-
-                        var postfix = GetPropertyPostfix(type);
-
-                        //if we already have link property then we don't need it again
-                        if (propType.IsLink() && hasLinkPropery)
-                            continue;
-
-                        if (propType.IsLink())
-                        {
-                            hasLinkPropery = true;
-                            _ps.CreatePropertyWithBackingField(dtoType, _ct.Guid, $"{prop.Name}_{postfix}");
-                        }
-                        else
-                            _ps.CreatePropertyWithBackingField(dtoType, propType, $"{prop.Name}_{postfix}");
-                    }
-                }
-                else
-                {
-                    propType = MetadataTypeProvider.Resolve(_declaredCompilation, prop.Types.First());
-
-                    if (propType is MissingMetadataTypeSymbol)
-                        throw new Exception($"Error during build metadata unknown type: {propType}");
-
-                    if (propType.IsLink())
-                        _ps.CreatePropertyWithBackingField(dtoType, _ct.Guid, prop.Name);
-                    else
-                        _ps.CreatePropertyWithBackingField(dtoType, propType, prop.Name);
+                    _ps.CreatePropertyWithBackingField(dtoType, schema.type, schema.propName);
                 }
             }
 
@@ -205,13 +196,14 @@ namespace Aquila.Syntax.Metadata
                     {
                         return (il) =>
                         {
-                            foreach (var type in prop.Types)
-                            {
-                                var underlyingPropType = MetadataTypeProvider.Resolve(_declaredCompilation, type);
-                                var postfix = GetPropertyPostfix(type);
+                            var types = prop.Types.GetOrderedFlattenTypes().ToImmutableArray();
 
-                                var dtoMemberName = $"{prop.Name}_{postfix}";
-                                var dtoTypeMemberName = $"{prop.Name}_T";
+                            foreach (var type in types)
+                            {
+                                var underlyingPropType = MetadataTypeProvider.Resolve(_declaredCompilation, type.type);
+
+                                var dtoMemberName = $"{prop.Name}{type.postfix}";
+                                var dtoTypeMemberName = prop.Name + types.FirstOrDefault(x => x.isType).postfix;
 
                                 var dtoMember = dtoType.GetMembers(dtoMemberName).OfType<PropertySymbol>().First();
                                 var dtoTypeMember = dtoType.GetMembers(dtoTypeMemberName).OfType<PropertySymbol>()
@@ -245,13 +237,14 @@ namespace Aquila.Syntax.Metadata
 
                     setter.SetMethodBuilder((m, d) => (il) =>
                     {
-                        foreach (var type in prop.Types)
-                        {
-                            var underlyingPropType = MetadataTypeProvider.Resolve(_declaredCompilation, type);
-                            var postfix = GetPropertyPostfix(type);
+                        var types = prop.Types.GetOrderedFlattenTypes().ToImmutableArray();
 
-                            var dtoMemberName = $"{prop.Name}_{postfix}";
-                            var dtoTypeMemberName = $"{prop.Name}_T";
+                        foreach (var typeInfo in types.Where(x => !x.isType))
+                        {
+                            var underlyingPropType = MetadataTypeProvider.Resolve(_declaredCompilation, typeInfo.type);
+
+                            var dtoMemberName = $"{prop.Name}{typeInfo.postfix}";
+                            var dtoTypeMemberName = prop.Name + types.FirstOrDefault(x => x.isType).postfix;
 
                             var dtoMember = dtoType.GetMembers(dtoMemberName).OfType<PropertySymbol>().First();
                             var dtoTypeMember = dtoType.GetMembers(dtoTypeMemberName).OfType<PropertySymbol>()
@@ -398,7 +391,65 @@ namespace Aquila.Syntax.Metadata
                 .SetParameters(saveDtoPerameter)
                 .SetMethodBuilder((m, d) => il =>
                 {
-                    //TODO: handle saving
+                    var dbLoc = new LocalPlace(il.DefineSynthLocal(saveMethod, "dbCommand", _ct.DbCommand));
+                    var paramLoc = new LocalPlace(il.DefineSynthLocal(saveMethod, "dbParameter", _ct.DbParameter));
+
+                    var paramName = _ct.DbParameter.Property("ParameterName");
+                    var paramValue = _ct.DbParameter.Property("Value");
+
+                    var dbParamsProp = _ct.DbCommand.Property("Parameters");
+                    var paramsCollectionAdd = dbParamsProp.Symbol.Type.GetMembers("Add").OfType<MethodSymbol>()
+                        .FirstOrDefault();
+
+                    il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.CreateCommand);
+                    dbLoc.EmitStore(il);
+
+                    var paramNumber = 0;
+
+                    foreach (var prop in md.Properties)
+                    {
+                        var visitRef = false;
+                        foreach (var typeInfo in prop.Types.GetOrderedFlattenTypes())
+                        {
+                            if (visitRef)
+                                continue;
+
+                            if (typeInfo.isComplex && typeInfo.type.IsReference)
+                                visitRef = true;
+
+                            var clrProp = dtoType.GetMembers($"{prop.Name}{typeInfo.postfix}").OfType<PropertySymbol>()
+                                .FirstOrDefault();
+
+                            if (clrProp == null)
+                                throw new NullReferenceException(
+                                    $"Clr prop with name {prop.Name}{typeInfo.postfix} not found");
+
+                            dbLoc.EmitLoad(il);
+                            il.EmitCall(m, d, ILOpCode.Call, _cm.Operators.CreateParameter);
+                            paramLoc.EmitStore(il);
+
+                            paramLoc.EmitLoad(il);
+                            il.EmitStringConstant($"p_{paramNumber++}");
+                            il.EmitCall(m, d, ILOpCode.Call, paramName.Setter);
+
+                            paramLoc.EmitLoad(il);
+                            sdpp.EmitLoad(il);
+                            il.EmitCall(m, d, ILOpCode.Call, clrProp.GetMethod);
+                            il.EmitCall(m, d, ILOpCode.Call, paramValue.Setter);
+
+
+                            dbLoc.EmitLoad(il);
+                            il.EmitCall(m, d, ILOpCode.Call, dbParamsProp.Getter);
+                            paramLoc.EmitLoad(il);
+                            il.EmitCall(m, d, ILOpCode.Call, paramsCollectionAdd);
+                        }
+                    }
+
+
+                    foreach (var ps in dtoType.GetMembers().OfType<PropertySymbol>())
+                    {
+                    }
+
                     il.EmitRet(true);
                 });
 
@@ -479,21 +530,6 @@ namespace Aquila.Syntax.Metadata
             linkType.AddMember(ctor);
 
             return linkType;
-        }
-
-        private static string GetPropertyPostfix(SMType type)
-        {
-            var postfix = type.Kind switch
-            {
-                SMTypeKind.Int => "N",
-                SMTypeKind.DateTime => "D",
-                SMTypeKind.Binary => "B",
-                SMTypeKind.String => "S",
-                SMTypeKind.Guid => "G",
-                SMTypeKind.Reference => "R",
-                _ => throw new NotImplementedException()
-            };
-            return postfix;
         }
     }
 }

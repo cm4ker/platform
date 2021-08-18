@@ -50,7 +50,7 @@ namespace Aquila.Metadata
         private void CoreLazyProperties()
         {
             _props = new List<SMProperty>();
-            foreach (var p in _md.Properties)
+            foreach (var p in _md.Properties.OrderBy(x => x.Name))
             {
                 var prop = new SMProperty(p, _cache);
                 AddProperty(prop);
@@ -74,8 +74,13 @@ namespace Aquila.Metadata
             }
         }
 
+
         public string Name => _md.Name;
 
+
+        /// <summary>
+        /// Full name use in descriptor
+        /// </summary>
         public string FullName => $"{Namespace}.{Name}";
 
         public string ReferenceName => $"{FullName}{LinkPostfix}";

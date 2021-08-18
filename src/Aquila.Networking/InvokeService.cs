@@ -43,7 +43,7 @@ namespace Aquila.Networking
                 var c = ExecutionContext.Capture();
                 ExecutionContext.Run(c, state =>
                 {
-                    ContextHelper.SetContext(new PlatformContext(ic.Session));
+                    PlatformContext.SetContext(new PlatformContext(ic.Session));
                     result = methods[route](ic, arg);
                 }, null);
 
@@ -78,7 +78,7 @@ namespace Aquila.Networking
                 var c = ExecutionContext.Capture();
                 ExecutionContext.Run(c, state =>
                 {
-                    ContextHelper.SetContext(new PlatformContext(ic.Session));
+                    PlatformContext.SetContext(new PlatformContext(ic.Session));
                     streamMethods[route](ic, stream, arg);
                 }, null);
 

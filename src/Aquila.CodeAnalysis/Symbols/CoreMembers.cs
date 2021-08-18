@@ -228,6 +228,7 @@ namespace Aquila.CodeAnalysis.Symbols
     class CoreMethods
     {
         public readonly OperatorsHolder Operators;
+        public readonly RuntimeHolder Runtime;
 
         /// <summary>Property name of <c>ScriptAttribute.IsAutoloaded</c>.</summary>
         public static string ScriptAttribute_IsAutoloaded => "IsAutoloaded";
@@ -237,6 +238,7 @@ namespace Aquila.CodeAnalysis.Symbols
             Contract.ThrowIfNull(types);
 
             Operators = new OperatorsHolder(types);
+            Runtime = new RuntimeHolder(types);
         }
 
         public struct OperatorsHolder
@@ -249,6 +251,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 Concat_String_String_String_String =
                     ct.String.Method("Concat", ct.String, ct.String, ct.String, ct.String);
                 Long_ToString = ct.Int64.Method("ToString");
+                CreateParameter = ct.DbCommand.Method("CreateParameter");
             }
 
             public readonly CoreMethod
@@ -257,7 +260,27 @@ namespace Aquila.CodeAnalysis.Symbols
                 Concat_String_String_String,
                 Concat_String_String_String_String,
                 //Concat_Args,
-                Long_ToString;
+                Long_ToString,
+                CreateParameter;
+        }
+
+        public struct RuntimeHolder
+        {
+            public RuntimeHolder(CoreTypes ct)
+            {
+                GetContext = ct.PlatformContext.Method("GetContext");
+                GetDataContext = ct.PlatformContext.Method("GetDataContext");
+                GetDataRuntimeContext = ct.PlatformContext.Method("GetDataRuntimeContext");
+                CreateCommand = ct.PlatformContext.Method("CreateCommand");
+            }
+
+            public readonly CoreMethod
+
+                //Aquila.Runtime methods
+                GetContext,
+                GetDataContext,
+                GetDataRuntimeContext,
+                CreateCommand;
         }
     }
 }

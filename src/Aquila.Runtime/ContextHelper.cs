@@ -3,15 +3,6 @@ using System.Threading;
 
 namespace Aquila.Core
 {
-    public class ContextHelper
-    {
-        private static AsyncLocal<PlatformContext> Context = new AsyncLocal<PlatformContext>();
-
-        public static PlatformContext GetContext() => Context.Value;
-
-        public static void SetContext(PlatformContext value) => Context.Value = value;
-    }
-
     public static class DatabaseWorkHelper
     {
         public static void AddParameterWithValue(this DbCommand cmd, string parameterName,

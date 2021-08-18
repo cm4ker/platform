@@ -19,5 +19,10 @@
         /// Corresponds to our runtime library (<c>Aquila.Runtime</c>).
         /// </summary>
         AquilaCorLibrary,
+
+        /// <summary>
+        /// Corresponds to System.Common.Data
+        /// </summary>
+        CommonData
     }
 }

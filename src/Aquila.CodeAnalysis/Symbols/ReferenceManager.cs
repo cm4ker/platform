@@ -22,7 +22,7 @@ namespace Aquila.CodeAnalysis
             ImmutableArray<MetadataReference> _lazyImplicitReferences = ImmutableArray<MetadataReference>.Empty;
             ImmutableDictionary<MetadataReference, IAssemblySymbolInternal> _referencesMap;
             ImmutableDictionary<IAssemblySymbol, MetadataReference> _metadataMap;
-            AssemblySymbol _lazyCorLibrary, _lazyAquilaCorLibrary;
+            AssemblySymbol _lazyCorLibrary, _lazyAquilaCorLibrary, _systemCommonData;
 
             public Dictionary<AssemblyIdentity, PEAssemblySymbol> ObservedMetadata => _observedMetadata;
             readonly Dictionary<AssemblyIdentity, PEAssemblySymbol> _observedMetadata;
@@ -117,7 +117,7 @@ namespace Aquila.CodeAnalysis
                             return pair.Value;
                         }
                     }
-                    
+
                     //
                     if (resolver != null)
                     {
@@ -221,6 +221,9 @@ namespace Aquila.CodeAnalysis
                             if (_lazyAquilaCorLibrary == null && symbol.IsAquilaCorLibrary)
                                 _lazyAquilaCorLibrary = symbol;
 
+                            if (_systemCommonData == null && symbol.SpecialAssembly == SpecialAssembly.CommonData)
+                                _systemCommonData = symbol;
+
                             // cache bound assembly symbol
                             _observedMetadata[symbol.Identity] = symbol;
                         }
@@ -273,11 +276,13 @@ namespace Aquila.CodeAnalysis
 
                 if (_lazyCorLibrary == null)
                 {
+                    _diagnostics.Add(Location.None, Errors.ErrorCode.ERR_MetadataFileNotFound, "System.Runtime.dll");
                     throw new DllNotFoundException("A corlib not found");
                 }
 
                 compilation.CoreTypes.Update(_lazyAquilaCorLibrary);
                 compilation.CoreTypes.Update(_lazyCorLibrary);
+                compilation.CoreTypes.Update(_systemCommonData);
 
                 //
                 return assembly;

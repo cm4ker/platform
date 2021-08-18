@@ -5,7 +5,7 @@
     </PropertyGroup>
 
 
-    <Import Project="..\Props\target.props"/>
+    <Import Project="..\Props\target.props" />
     
     <ItemGroup>
         <PackageReference Include="YamlDotNet" Version="11.2.0" />

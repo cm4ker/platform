@@ -76,6 +76,8 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public virtual bool IsAquilaCorLibrary => false;
 
+        public virtual SpecialAssembly SpecialAssembly => SpecialAssembly.None;
+
         public override bool IsAbstract => false;
 
         public override bool IsExtern => false;

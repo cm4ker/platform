@@ -47,12 +47,12 @@ namespace Aquila.Migrations
         }
 
         /// <summary>
-        /// Тип колонки
+        /// Type of column
         /// </summary>
         public ColumnSchemaType SchemaType { get; set; }
 
         /// <summary>
-        /// Полное название
+        /// Full name with prefix and postfix
         /// </summary>
         public string FullName => $"{Prefix}{Name}{Postfix}";
 

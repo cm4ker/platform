@@ -74,7 +74,7 @@ namespace Aquila.WebServiceCore
                     {
                         var env = _mrg.GetEnvironment("Library");
                         var plContext = new PlatformContext(env.CreateSession(new Anonymous()));
-                        ContextHelper.SetContext(plContext);
+                        PlatformContext.SetContext(plContext);
                         await next.Invoke();
                     });
 

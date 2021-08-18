@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -47,9 +48,10 @@ namespace Aquila.Compiler.Tests
             var impl = new List<Assembly>(8)
             {
                 typeof(object).Assembly, // mscorlib (or System.Runtime)
+                typeof(DbCommand).Assembly, // System.Common.Data
                 typeof(QueryAttribute).Assembly, // Aquila.Runtime
                 typeof(QueryExtensions).Assembly, // Aquila.Library
-                typeof(NpgsqlConnection).Assembly
+                typeof(NpgsqlConnection).Assembly // Npgsql
             };
 
             var set = new HashSet<Assembly>();

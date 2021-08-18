@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -14,48 +15,33 @@ namespace Aquila.Runtime
         {
             if (string.IsNullOrEmpty(propName)) throw new ArgumentNullException(nameof(propName));
 
-            var internalTypes = types.ToList();
+            var hasRefAlready = false;
 
-            var done = false;
-
-            if (internalTypes.Count() == 1)
-                yield return new ColumnSchemaDefinition(ColumnSchemaType.NoSpecial, propName, internalTypes[0]);
-
-            if (internalTypes.Count() > 1)
+            foreach (var typeInfo in types.GetOrderedFlattenTypes())
             {
-                yield return new ColumnSchemaDefinition(ColumnSchemaType.Type, propName,
-                    new SMType("int"),
-                    "", "_T");
+                ColumnSchemaType coltype;
 
-                foreach (var type in internalTypes)
-                {
-                    if (type.IsPrimitive)
-                    {
-                        string postfix = (type.Kind) switch
-                        {
-                            SMTypeKind.String => "Str",
-                            SMTypeKind.Int => "I32",
-                            SMTypeKind.Long => "I64",
-                            SMTypeKind.Decimal => "Dec",
-                            SMTypeKind.Bool => "Bit",
-                            SMTypeKind.DateTime => "Dt8",
-                            SMTypeKind.Binary => "Bin",
-                            _ => throw new NotImplementedException()
-                        };
+                if (typeInfo.isComplex)
+                    if (typeInfo.isType)
+                        coltype = ColumnSchemaType.Type;
+                    else if (typeInfo.type.IsReference)
+                        coltype = ColumnSchemaType.Ref;
+                    else
+                        coltype = ColumnSchemaType.Value;
+                else
+                    coltype = ColumnSchemaType.NoSpecial;
 
-                        yield return new ColumnSchemaDefinition(ColumnSchemaType.Value, propName, type, "",
-                            $"_{postfix}");
-                    }
+                if (typeInfo.type.IsReference && hasRefAlready)
+                    continue;
 
-                    if (type.IsReference && !done)
-                    {
-                        yield return new ColumnSchemaDefinition(ColumnSchemaType.Ref, propName, type, "", "_Ref");
-                        done = true;
-                    }
+                if (typeInfo.type.IsReference)
+                    hasRefAlready = true;
 
-                    if (type.IsUnknown)
-                        throw new Exception("Unknown metadata. This must never be happen.");
-                }
+                yield return new ColumnSchemaDefinition(coltype, propName, typeInfo.type, typeInfo.prefix,
+                    typeInfo.postfix);
+
+                if (typeInfo.type.IsUnknown)
+                    throw new Exception("Unknown metadata. This must never be happen.");
             }
         }
 

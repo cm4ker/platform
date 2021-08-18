@@ -626,5 +626,17 @@ namespace Aquila.CodeAnalysis.CodeGen
             //
             return f.Type;
         }
+
+
+        public static LocalDefinition DefineSynthLocal(this ILBuilder il, MethodSymbol method, string name,
+            NamedTypeSymbol type)
+        {
+            var loc = new SynthesizedLocalSymbol(method, name, type);
+            var locDef = il.LocalSlotManager.DeclareLocal(type, loc,
+                loc.Name, loc.SynthesizedKind, LocalDebugId.None, LocalVariableAttributes.None,
+                LocalSlotConstraints.None, ImmutableArray<bool>.Empty, ImmutableArray<string>.Empty, false);
+
+            return locDef;
+        }
     }
 }

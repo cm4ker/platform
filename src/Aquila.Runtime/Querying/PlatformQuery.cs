@@ -27,7 +27,7 @@ namespace Aquila.Core
 
         public PlatformQuery()
         {
-            _context = ContextHelper.GetContext();
+            _context = PlatformContext.GetContext();
         }
 
         public string text

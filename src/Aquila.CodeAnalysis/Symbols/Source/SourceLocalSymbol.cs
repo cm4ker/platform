@@ -130,7 +130,8 @@ namespace Aquila.CodeAnalysis.Symbols
 
                 if (langElem.IsVar)
                 {
-                    tsymbol = (TypeSymbol)binder.BindExpression(_decl.Declarators.First().Initializer, BoundAccess.ReadAndWrite)
+                    tsymbol = (TypeSymbol)binder
+                        .BindExpression(_decl.Declarators.First().Initializer, BoundAccess.ReadAndWrite)
                         .Type;
                 }
                 else
@@ -158,19 +159,5 @@ namespace Aquila.CodeAnalysis.Symbols
         NullableAnnotation ILocalSymbol.NullableAnnotation => NullableAnnotation.None;
 
         #endregion
-    }
-
-    internal class SynthesizedLocalSymbol : SourceLocalSymbol
-    {
-        readonly TypeSymbol _type;
-
-        public SynthesizedLocalSymbol(SourceMethodSymbol method, string name, TypeSymbol type)
-            : base(method, null)
-        {
-            Contract.ThrowIfNull(type);
-            _type = type;
-        }
-
-        public override ITypeSymbol Type => _type;
     }
 }
