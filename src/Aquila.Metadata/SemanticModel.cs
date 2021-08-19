@@ -39,6 +39,11 @@ namespace Aquila.Metadata
         private const string ManagerPostfix = "Manager";
         private const string LinkPostfix = "Link";
 
+        private EntityProperty idProp = new EntityProperty
+        {
+            Name = "Id", Types = { new MetadataType { Name = SMType.Guid } }
+        };
+
         internal SMEntity(EntityMetadata md, SMCache cache)
         {
             _md = md;
@@ -46,10 +51,15 @@ namespace Aquila.Metadata
         }
 
         private List<SMProperty> _props;
+        private SMProperty _idProperty;
 
         private void CoreLazyProperties()
         {
             _props = new List<SMProperty>();
+
+            var id = new SMProperty(idProp, _cache);
+            AddProperty(id);
+
             foreach (var p in _md.Properties.OrderBy(x => x.Name))
             {
                 var prop = new SMProperty(p, _cache);
@@ -59,6 +69,9 @@ namespace Aquila.Metadata
 
         public void AddProperty(SMProperty prop)
         {
+            if (_props.Exists(x => x.Name == prop.Name))
+                throw new Exception($"Property with name {prop.Name} already declared");
+
             prop.UpdateParent(this);
             _props.Add(prop);
         }
@@ -76,6 +89,8 @@ namespace Aquila.Metadata
 
 
         public string Name => _md.Name;
+
+        public EntityMetadata Metadata => _md;
 
 
         /// <summary>
@@ -103,6 +118,8 @@ namespace Aquila.Metadata
         public string FullName => $"{Parent.FullName}.{Name}";
 
         public SMEntity Parent { get; private set; }
+
+        public bool IsIdProperty => Name == "Id";
 
         internal void UpdateParent(SMEntity entity)
         {
@@ -184,6 +201,7 @@ namespace Aquila.Metadata
         public const string DateTime = "datetime";
         public const string Decimal = "decimal";
         public const string Numeric = "numeric";
+        public const string Guid = "guid";
         public const string Unknown = "unknown";
 
         #endregion
@@ -242,6 +260,7 @@ namespace Aquila.Metadata
                         Decimal => SMTypeKind.Decimal,
                         DateTime => SMTypeKind.DateTime,
                         Numeric => SMTypeKind.Numeric,
+                        Guid => SMTypeKind.Guid,
                         _ => SMTypeKind.Unknown
                     };
                 }

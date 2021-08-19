@@ -11,7 +11,6 @@
                 Name = "Invoice",
                 Properties =
                 {
-                    new EntityProperty { Name = "Id", Types = { new MetadataType { Name = "int" } } },
                     new EntityProperty { Name = "Name", Types = { new MetadataType { Name = "string", Size = 30 } } },
                     new EntityProperty
                     {
@@ -35,7 +34,6 @@
                 Name = "Contract",
                 Properties =
                 {
-                    new EntityProperty { Name = "Id", Types = { new MetadataType { Name = "int" } } },
                     new EntityProperty { Name = "Name", Types = { new MetadataType { Name = "string", Size = 30 } } },
                 }
             };
@@ -45,7 +43,6 @@
                 Name = "Store",
                 Properties =
                 {
-                    new EntityProperty { Name = "Id", Types = { new MetadataType { Name = "int" } } },
                     new EntityProperty { Name = "Name", Types = { new MetadataType { Name = "string", Size = 30 } } },
                 }
             };

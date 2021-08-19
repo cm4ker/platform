@@ -29,5 +29,14 @@ SomeProp: Add value
 
             Assert.Equal("Custom component", instance.ComponentName);
         }
+
+        [Fact]
+        public void SerTest()
+        {
+            var i = TestMetadata.GetTestMetadata().GetSemanticByName("Invoice");
+            var d = new YamlDotNet.Serialization.SerializerBuilder()
+                .Build();
+            var str = d.Serialize(i.Metadata);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis.CommandLine
 {
@@ -18,6 +19,8 @@ namespace Aquila.CodeAnalysis.CommandLine
         protected override ParseOptions ParseOptionsCore => ParseOptions;
 
         protected override CompilationOptions CompilationOptionsCore => CompilationOptions;
+
+        public ImmutableArray<string> MetadataFiles { get; set; }
 
         /// <value>
         /// Should the format of error messages include the line and column of

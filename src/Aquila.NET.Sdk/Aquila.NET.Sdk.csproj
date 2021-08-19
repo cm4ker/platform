@@ -1,20 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+    <Import Project="..\Props\target.props"/>
+    
     <PropertyGroup>
         <PackageOnlyBuild>true</PackageOnlyBuild>
         <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
         <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-
+        <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
         <PackageId>Aquila.NET.Sdk</PackageId>
         <PackageTags>aq;sdk;aquila;msbuild</PackageTags>
         <GeneratePackageOnBuild Condition=" $(GeneratePackageOnBuild)=='' ">True</GeneratePackageOnBuild>
         <Description>The MSBuild SDK containing build targets and runtime.</Description>
         <RootNamespace>Aquila.NET.Sdk</RootNamespace>
+
+        <!--        <IncludeSymbols>true</IncludeSymbols>-->
+        <!--        <DebugType>embedded</DebugType>-->
     </PropertyGroup>
 
 
-    <Import Project="..\Props\target.props"/>
-    
+
+
     <PropertyGroup Condition="'$(PackageOnlyBuild)' == 'true'">
         <NoPackageAnalysis>true</NoPackageAnalysis>
         <IncludeBuildOutput>false</IncludeBuildOutput>

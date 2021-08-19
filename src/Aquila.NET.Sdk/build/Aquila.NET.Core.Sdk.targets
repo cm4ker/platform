@@ -15,11 +15,11 @@
     <UsingTask AssemblyFile="$(AquilaToolFullPath)" TaskName="Aquila.NET.Sdk.Tools.BuildTask"/>
     <UsingTask AssemblyFile="$(AquilaToolFullPath)" TaskName="Aquila.NET.Sdk.Tools.PackTask"/>
 
-    <!--  &lt;!&ndash; well-known non-compile items &ndash;&gt;-->
-    <!--  <ItemGroup>-->
-    <!--    <Compile Include="**/*.phar;**/*.php" Exclude="obj/**;bin/**;.*/**" Condition=" '$(EnableDefaultPeachpieCompileItems)'=='true' " />-->
-    <!--    <Compile Remove="**/.phpstorm.meta.php/**;**/.phpstorm.meta.php" />-->
-    <!--  </ItemGroup>-->
+    <!--  well known compile items -->
+    <ItemGroup>
+        <Metadata Include="**/*.md" Exclude="obj/**;bin/**;.*/**"/>
+        <Compile Include="**/*.aq" Exclude="obj/**;bin/**;.*/**"/>
+    </ItemGroup>
 
     <ItemGroup>
         <DocFileItem Include="$(DocumentationFile)" Condition="'$(DocumentationFile)'!=''"/>
@@ -203,7 +203,6 @@
                    PublicSign="$(_PublicSign)"
                    SourceLink="$(SourceLink)"
                    CodePage="$(CodePage)"
-                   PhpRelativePath="$(PhpRelativePath)"
                    DefineConstants="@(DefineConstants)"
                    ReferencePath="@(ReferencePath)"
                    Compile="@(Compile)"
@@ -239,9 +238,9 @@
                   OutputPackageFullPath="$(OutputPackageFullPath)"
                   OutputName="%(IntermediateAssembly.Filename)"
                   TempOutputPath="$(TempOutputDir)"/>
-       
+
         <Message Text="The package was created: $(OutputPackageFullPath)" Importance="High"/>
-        
+
     </Target>
 
     <!--End Required Task by .Common.target-->

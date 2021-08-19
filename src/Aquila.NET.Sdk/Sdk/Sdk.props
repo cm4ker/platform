@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk"/>
-
   <Import Project="$(MSBuildThisFileDirectory)..\build\Aquila.NET.Sdk.props"/>
-
+  
 </Project>

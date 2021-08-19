@@ -26,7 +26,7 @@ namespace Aquila.Runtime.Tests.DB
 
             d1.DatabaseName = "some_name";
             d2.DatabaseName = $"Tbl_{d2.DatabaseId}";
-            d2.MetadataId = "Entity.Invoice";
+            d2.MetadataId = "test";
 
             db.Save(dc);
 

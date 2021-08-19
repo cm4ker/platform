@@ -19,13 +19,7 @@
         <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     </PropertyGroup>
 
-    <!-- default Compile and None items -->
-    <ItemGroup>
-        <None Include="**/*" Exclude="obj/**;bin/**;.*/**;*.msbuildproj;*.msbuildproj.user;*.sln;"/>
-        <!--Content Include="" /-->
-    </ItemGroup>
-
-    <!-- current Peachpie SDK version -->
+    <!-- current Aquila SDK version -->
     <Import Project="$(MSBuildThisFileDirectory)Aquila.Version.props" Condition=" '$(AquilaVersion)'=='' "/>
 
 </Project>

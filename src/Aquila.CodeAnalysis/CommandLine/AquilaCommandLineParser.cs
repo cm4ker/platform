@@ -166,6 +166,7 @@ namespace Aquila.CodeAnalysis.CommandLine
             FlattenArgs(args, diagnostics, flattenedArgs, scriptArgs, baseDirectory);
 
             var sourceFiles = new List<CommandLineSourceFile>();
+            var metadataFiles = new List<string>();
             var metadataReferences = new List<CommandLineReference>();
             var analyzers = new List<CommandLineAnalyzerReference>();
             var analyzerConfigPaths = new List<string>();
@@ -278,6 +279,21 @@ namespace Aquila.CodeAnalysis.CommandLine
                         else
                         {
                             sourceLink = ParseGenericPathToFile(value, diagnostics, baseDirectory);
+                        }
+
+                        continue;
+                    //metadata
+                    case "md":
+                        value = RemoveQuotesAndSlashes(value);
+                        if (string.IsNullOrEmpty(value))
+                        {
+                            diagnostics.Add(
+                                Errors.MessageProvider.Instance.CreateDiagnostic(Errors.ErrorCode.ERR_FileNotFound,
+                                    Location.None, ""));
+                        }
+                        else
+                        {
+                            metadataFiles.Add(value);
                         }
 
                         continue;
@@ -791,7 +807,7 @@ namespace Aquila.CodeAnalysis.CommandLine
             }
 
             GetCompilationAndModuleNames(diagnostics, outputKind, sourceFiles,
-                sourceFiles.Count != 0, /*moduleAssemblyName*/null, ref outputFileName, ref moduleName,
+                sourceFiles.Count != 0, null, ref outputFileName, ref moduleName,
                 out compilationName);
 
             //
@@ -977,6 +993,7 @@ namespace Aquila.CodeAnalysis.CommandLine
                 //ErrorLogPath = errorLogPath,
                 //AppConfigPath = appConfigPath,
                 SourceFiles = sourceFiles.AsImmutable(),
+                MetadataFiles = metadataFiles.ToImmutableArray(),
                 Encoding = codepage, // Encoding.UTF8,
                 ChecksumAlgorithm = SourceHashAlgorithm.Sha1, // checksumAlgorithm,
                 MetadataReferences = metadataReferences.AsImmutable(),

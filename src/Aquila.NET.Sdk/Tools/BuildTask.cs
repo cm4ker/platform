@@ -90,7 +90,7 @@ namespace Aquila.NET.Sdk.Tools
         public string SourceLink { get; set; }
 
         /// <summary></summary>
-        public string PhpRelativePath { get; set; }
+        public string AquilaRelativePath { get; set; }
 
         /// <summary> <c>/codepage</c> switch</summary>
         public string CodePage { get; set; }
@@ -201,10 +201,9 @@ namespace Aquila.NET.Sdk.Tools
             AddNoEmpty(args, "langversion", LangVersion);
             AddNoEmpty(args, "v", Version);
             AddNoEmpty(args, "nowarn", NoWarn);
-            AddNoEmpty(args, "phpdoctypes", PhpDocTypes);
             AddNoEmpty(args, "sourcelink", SourceLink);
             AddNoEmpty(args, "codepage", CodePage);
-            AddNoEmpty(args, "subdir", PhpRelativePath);
+            AddNoEmpty(args, "subdir", AquilaRelativePath);
 
             if (DefineConstants != null)
             {
@@ -279,6 +278,15 @@ namespace Aquila.NET.Sdk.Tools
             if (!Directory.Exists(BasePath))
             {
                 this.Log.LogWarning("Specified base directory '{0}' does not exist.", BasePath);
+            }
+
+
+            if (Metadata != null)
+            {
+                foreach (var mdPath in Metadata)
+                {
+                    args.Add("/md:" + mdPath);
+                }
             }
 
             // sources at the end:

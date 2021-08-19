@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Aquila.CodeAnalysis.Syntax;
 using Aquila.CodeAnalysis.Utilities;
+using Aquila.Metadata;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Collections;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -66,8 +67,12 @@ namespace Aquila.CodeAnalysis.CommandLine
         {
             bool hadErrors = false;
             var sourceFiles = Arguments.SourceFiles;
+            var metadataFiles = Arguments.MetadataFiles;
 
             IEnumerable<AquilaSyntaxTree> sourceTrees;
+
+            IEnumerable<EntityMetadata> metadata;
+
             var resources = Enumerable.Empty<ResourceDescription>();
 
             using (Arguments.CompilationOptions.EventSources.StartMetric("parse"))
@@ -78,7 +83,6 @@ namespace Aquila.CodeAnalysis.CommandLine
 
                 // NOTE: order of trees is important!!
                 var trees = new AquilaSyntaxTree[sourceFiles.Length];
-                var pharFiles = new List<(int index, ParsedSource phar)>();
 
                 void ProcessParsedSource(int index, ParsedSource parsed)
                 {
@@ -109,33 +113,39 @@ namespace Aquila.CodeAnalysis.CommandLine
                     }
                 }
 
-                // flattern trees and pharFiles
+                sourceTrees = trees;
+                // END PARSE
+            }
 
-                if (pharFiles == null || pharFiles.Count == 0)
+            using (Arguments.CompilationOptions.EventSources.StartMetric("parse-md"))
+            {
+                var mdList = new EntityMetadata[metadataFiles.Length];
+
+                var d = new YamlDotNet.Serialization.DeserializerBuilder()
+                    .IgnoreUnmatchedProperties()
+                    .Build();
+
+
+                if (Arguments.CompilationOptions.ConcurrentBuild)
                 {
-                    sourceTrees = trees;
+                    Parallel.For(0, sourceFiles.Length,
+                        new Action<int>(i =>
+                        {
+                            using TextReader tr = new StreamReader(metadataFiles[i]);
+                            mdList[i] = d.Deserialize<EntityMetadata>(tr);
+                        }));
                 }
                 else
                 {
-                    var treesList = new List<AquilaSyntaxTree>(trees);
-
-                    // enlist phars from the end (index)
-                    foreach (var f in pharFiles.OrderByDescending(x => x.index))
+                    for (int i = 0; i < sourceFiles.Length; i++)
                     {
-                        treesList[f.index] = f.phar.SyntaxTree; // phar stub, may be null
-                        treesList.InsertRange(f.index + 1, f.phar.Trees);
-
-                        // add content files
-                        if (f.phar.Resources != null)
-                        {
-                            resources = resources.Concat(f.phar.Resources);
-                        }
+                        using TextReader tr = new StreamReader(metadataFiles[i]);
+                        mdList[i] = d.Deserialize<EntityMetadata>(tr);
                     }
-
-                    sourceTrees = treesList;
                 }
 
-                // END PARSE
+
+                metadata = mdList;
             }
 
             // If errors had been reported in ParseFile, while trying to read files, then we should simply exit.
@@ -168,7 +178,7 @@ namespace Aquila.CodeAnalysis.CommandLine
             var compilation = AquilaCompilation.Create(
                 Arguments.CompilationName,
                 sourceTrees.WhereNotNull(),
-                null,
+                metadata,
                 resolvedReferences,
                 resources: resources,
                 options: Arguments.CompilationOptions.WithMetadataReferenceResolver(referenceResolver)

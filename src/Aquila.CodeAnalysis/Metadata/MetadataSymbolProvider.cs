@@ -9,6 +9,7 @@ using Aquila.CodeAnalysis.Public;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Attributes;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
+using Aquila.CodeAnalysis.Syntax.Parser;
 using Aquila.Metadata;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
@@ -434,7 +435,11 @@ namespace Aquila.Syntax.Metadata
 
                             paramLoc.EmitLoad(il);
                             sdpp.EmitLoad(il);
+                            
                             il.EmitCall(m, d, ILOpCode.Call, clrProp.GetMethod);
+                            il.EmitOpCode(ILOpCode.Box);
+                            il.EmitSymbolToken(m, d, clrProp.Type, null);
+                            
                             il.EmitCall(m, d, ILOpCode.Call, paramValue.Setter);
 
 
@@ -445,10 +450,8 @@ namespace Aquila.Syntax.Metadata
                         }
                     }
 
-
-                    foreach (var ps in dtoType.GetMembers().OfType<PropertySymbol>())
-                    {
-                    }
+                    dbLoc.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Call, _ct.DbCommand.Method("ExecuteNonQuery"));
 
                     il.EmitRet(true);
                 });
