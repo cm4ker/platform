@@ -149,6 +149,7 @@ namespace Aquila.CodeAnalysis.Symbols
             Boolean,
             Guid,
             String,
+            DateTime,
             Decimal,
             IntPtr,
             Exception,
@@ -187,6 +188,7 @@ namespace Aquila.CodeAnalysis.Symbols
             Char = Create(SpecialType.System_Char);
             Boolean = Create(SpecialType.System_Boolean);
             String = Create(SpecialType.System_String);
+            DateTime = Create(SpecialType.System_DateTime);
             Guid = CreateFromFullName("System.Guid");
             IntPtr = Create(SpecialType.System_IntPtr);
 

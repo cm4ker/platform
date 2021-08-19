@@ -21,6 +21,7 @@ namespace Aquila.Syntax.Metadata
                 SMTypeKind.Double => ct.Double,
                 SMTypeKind.Decimal => ct.Decimal,
                 SMTypeKind.Guid => ct.Guid,
+                SMTypeKind.DateTime => ct.DateTime,
                 SMTypeKind.Reference => compilation.PlatformSymbolCollection.GetType(
                     QualifiedName.Parse(typeName.GetSemantic().ReferenceName, true)),
                 _ => throw new NotImplementedException("Unknown metadata type")
