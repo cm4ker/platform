@@ -324,6 +324,18 @@ public static string Main()
     int|string a = 10;
     string|int b = "test";
 
+    var l1 = list<int>();
+    var l2 = dict<int, string>();
+    var l3 = arr<int>();
+    
+    var l = list();
+       
+    l.add(1);
+    l.add(ref);
+    
+    l1.add(1);       -- ok
+    l1.add("test");  -- error!
+    
     return match a with
         | int x => "here is string value"
         | string y => "here is y value";
@@ -366,6 +378,33 @@ public static int Main()
                 expected = d;
 
             Assert.Equal(expected, result);
+        }
+
+
+        [Fact]
+        public void TestCollections()
+        {
+            var script =
+                @"
+public static int Main() 
+{
+    var c1 = list();
+    var c2 = list<int>();
+    var c3 = list<int|string>();
+
+    c1.Add(""test"");
+    c1.Add(""test2"");
+   
+    c2.Add(1);
+    c2.Add(""test""); //Error
+   
+    return c1.Count;
+    return 0;
+}";
+
+            var result = (int)this.CompileAndRun(script);
+
+            Assert.Equal(2, result);
         }
     }
 }

@@ -304,7 +304,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public override T VisitFieldRef(BoundFieldRef x)
         {
-            Accept(x.ContainingType);
             Accept(x.Instance);
             Accept(x.FieldName);
 

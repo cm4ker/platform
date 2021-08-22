@@ -26,7 +26,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
         private readonly HashSet<BoundCopyValue> _unnecessaryCopies; // Possibly null if all are necessary
 
         protected AquilaCompilation DeclaringCompilation => _method.DeclaringCompilation;
-        protected BoundTypeRefFactory BoundTypeRefFactory => DeclaringCompilation.TypeRefFactory;
+        protected PrimitiveBoundTypeRefs PrimitiveBoundTypeRefs => DeclaringCompilation.TypeRefs;
 
         public int TransformationCount { get; private set; }
 
@@ -124,8 +124,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                     {
                         // A ? true : false => (bool)A
                         TransformationCount++;
-                        return new BoundConversionEx(x.Condition, BoundTypeRefFactory.BoolTypeRef,
-                            BoundTypeRefFactory.BoolTypeRef.ResolvedType).WithAccess(x);
+                        return new BoundConversionEx(x.Condition, PrimitiveBoundTypeRefs.BoolTypeRef,
+                            PrimitiveBoundTypeRefs.BoolTypeRef.ResolvedType).WithAccess(x);
                     }
                     else if (!trueVal && falseVal)
                     {
@@ -204,8 +204,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             {
                 // !!X -> (bool)X
                 TransformationCount++;
-                return new BoundConversionEx((BoundExpression)Accept(ux.Operand), BoundTypeRefFactory.BoolTypeRef,
-                        BoundTypeRefFactory.BoolTypeRef.ResolveTypeSymbol(_method.DeclaringCompilation))
+                return new BoundConversionEx((BoundExpression)Accept(ux.Operand), PrimitiveBoundTypeRefs.BoolTypeRef,
+                        PrimitiveBoundTypeRefs.BoolTypeRef.ResolveTypeSymbol(_method.DeclaringCompilation))
                     .WithAccess(x.Access);
             }
 
@@ -402,10 +402,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                     (symbol is AmbiguousMethodSymbol a && a.IsOverloadable && a.Ambiguities.Length != 0)
                 ) // valid or ambiguous
                 {
-                    TransformationCount++;
-                    x.Access = x.Access.WithRead(DeclaringCompilation.CoreTypes
-                        .String); // read the literal as string, do not rewrite it to BoundCallableConvert again
-                    return new BoundCallableConvert(x, DeclaringCompilation) { TargetCallable = symbol }.WithContext(x);
+                    throw new NotImplementedException();
                 }
             }
 
@@ -487,20 +484,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 }
             }
 
-            BoundCallableConvert Transform(BoundArrayEx origArray, IMethodSymbol targetCallable,
-                BoundExpression receiver = null)
-            {
-                // read the literal as array, do not rewrite it to BoundCallableConvert again
-                origArray.Access = origArray.Access.WithRead(null);
-
-                TransformationCount++;
-                return new BoundCallableConvert(origArray, DeclaringCompilation)
-                {
-                    TargetCallable = targetCallable,
-                    Receiver = receiver
-                }.WithContext(origArray);
-            }
-
             // implicit conversion: ["typeName" / $this, "methodName"] -> callable
             if (x.Access.TargetType == null &&
                 x.Items.Length == 2 && x.Items[1].Value.ConstantValue.TryConvertToString(out var methodName))
@@ -532,8 +515,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 
                     if (TryGetMethod(typeSymbol, methodName, out var methodSymbol) && methodSymbol.IsStatic)
                     {
-                        // ["typeName", "methodName"]
-                        return Transform(x, methodSymbol);
+                        throw new NotImplementedException();
                     }
                 }
             }

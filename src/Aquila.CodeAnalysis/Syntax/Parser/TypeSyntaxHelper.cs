@@ -5,7 +5,7 @@ namespace Aquila.Syntax
 {
     public static class TypeSyntaxHelper
     {
-        public static TypeRef Create(Span info, string typeName)
+        public static TypeRef Create(Span info, string typeName, TypeRef genericArguments = null)
         {
             switch (typeName)
             {
@@ -19,7 +19,10 @@ namespace Aquila.Syntax
 
                 case "var": return new NamedTypeRef(info, SyntaxKind.VarKeyword, "var");
 
-                default: return new NamedTypeRef(info, SyntaxKind.Type, typeName);
+                default:
+                {
+                    return new NamedTypeRef(info, SyntaxKind.Type, typeName);
+                }
             }
         }
 

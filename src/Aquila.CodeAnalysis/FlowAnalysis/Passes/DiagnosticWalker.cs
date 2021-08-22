@@ -282,7 +282,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             {
                 // class const
                 // static field
-                CheckMissusedPrimitiveType(x.ContainingType);
+                //CheckMissusedPrimitiveType(x.ContainingType);
             }
 
             if (x.Access.IsWrite &&

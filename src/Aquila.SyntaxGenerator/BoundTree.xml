@@ -153,7 +153,7 @@
             <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true"/>
             <Single Name="Name" Type="BoundMethodName" IsInternal="true"/>
             <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;"/>
-            <Single Name="TypeArguments" Type="ImmutableArray&lt;IBoundTypeRef&gt;"/>
+            <Single Name="TypeArguments" Type="ImmutableArray&lt;ITypeSymbol&gt;"/>
             <Single Name="Instance" Type="BoundExpression"/>
             <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
                     IsInternal="true"/>
@@ -165,7 +165,7 @@
             <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true" OnlyArgument="true" PassBase="true"/>
             <Single Name="Name" Type="BoundMethodName" OnlyArgument="true" PassBase="true"/>
             <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;" OnlyArgument="true" PassBase="true"/>
-            <Single Name="TypeArguments" Type="ImmutableArray&lt;IBoundTypeRef&gt;" OnlyArgument="true"
+            <Single Name="TypeArguments" Type="ImmutableArray&lt;ITypeSymbol&gt;" OnlyArgument="true"
                     PassBase="true"/>
             <Single Name="Instance" Type="BoundExpression" OnlyArgument="true" PassBase="true"/>
             <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
@@ -178,7 +178,7 @@
             <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true" OnlyArgument="true" PassBase="true"/>
             <Single Name="Name" Type="BoundMethodName" OnlyArgument="true" PassBase="true"/>
             <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;" OnlyArgument="true" PassBase="true"/>
-            <Single Name="TypeArguments" Type="ImmutableArray&lt;IBoundTypeRef&gt;" OnlyArgument="true"
+            <Single Name="TypeArguments" Type="ImmutableArray&lt;ITypeSymbol&gt;" OnlyArgument="true"
                     PassBase="true"/>
             <Single PassBase="true" PassBaseConst="null"/>
             <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
@@ -190,9 +190,9 @@
         <Arguments>
             <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true" OnlyArgument="true" PassBase="true"/>
             <Single Name="Name" Type="BoundMethodName" OnlyArgument="true" PassBase="true"/>
-            <Single Name="TypeRef" Type="IBoundTypeRef"/>
+            <Single Name="TypeRef" Type="ITypeSymbol"/>
             <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;" OnlyArgument="true" PassBase="true"/>
-            <Single Name="TypeArguments" Type="ImmutableArray&lt;IBoundTypeRef&gt;" OnlyArgument="true"
+            <Single Name="TypeArguments" Type="ImmutableArray&lt;ITypeSymbol&gt;" OnlyArgument="true"
                     PassBase="true"/>
             <Single PassBase="true" PassBaseConst="null"/>
             <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
@@ -243,7 +243,7 @@
     <Syntax Name="FieldRef" Base="ReferenceEx" OperationKind="FieldReference">
         <Arguments>
             <Single Name="Instance" Type="BoundExpression" IsUpdatable="false" OnlyPrivate="true"/>
-            <Single Name="ContainingType" Type="IBoundTypeRef" IsUpdatable="false"/>
+            <Single Name="ContainingType" Type="ITypeSymbol" IsUpdatable="false"/>
             <Single Name="FieldName" Type="BoundVariableName" IsUpdatable="false"/>
             <Single Name="fieldType" Type="FieldType" IsUpdatable="false"/>
             <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"

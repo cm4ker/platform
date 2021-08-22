@@ -151,7 +151,7 @@ namespace Aquila.Syntax
             var item = internalStack.Pop();
 
             if (item is IdentifierToken e)
-                return new NameEx(e.Span, SyntaxKind.NameExpression, Operations.Empty, e);
+                return new NameEx(e.Span, SyntaxKind.NameExpression, Operations.Empty, e, TypeList.Empty);
 
             return (Expression)item;
         }

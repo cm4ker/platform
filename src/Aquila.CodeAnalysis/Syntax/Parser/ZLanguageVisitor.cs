@@ -737,6 +737,26 @@ namespace Aquila.Syntax.Parser
             return Stack.PeekNode();
         }
 
+        public override LangElement VisitSimpleNameExpression(ZSharpParser.SimpleNameExpressionContext context)
+        {
+            var argList = TypeList.Empty;
+
+            if (context.type_argument_list() != null)
+            {
+                PushStack();
+                VisitType_argument_list(context.type_argument_list());
+                argList = PopStack().ToCollection<TypeList, TypeRef>();
+            }
+
+            VisitIdentifier(context.identifier());
+
+            var id = Stack.PopIdentifier();
+            Stack.Push(new NameEx(id.Span, SyntaxKind.NameExpression, Operations.Empty, id, argList));
+
+
+            return Stack.PeekNode();
+        }
+
         public override LangElement VisitAssignment(ZSharpParser.AssignmentContext context)
         {
             base.VisitAssignment(context);

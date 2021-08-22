@@ -103,7 +103,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override TypeSymbol ReturnType
         {
-            get { return DeclaringCompilation.GetTypeFromTypeRef(SyntaxReturnType); }
+            get { return DeclaringCompilation.GetBinder(_syntax).BindType(SyntaxReturnType); }
         }
 
         public override bool IsStatic => _syntax.GetModifiers().IsStatic();

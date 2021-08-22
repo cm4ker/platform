@@ -196,8 +196,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 return ContainingType;
             }
 
-            return DeclaringCompilation.GetTypeFromTypeRef(_syntax.Type);
-            throw new NotImplementedException();
+            return DeclaringCompilation.GetBinder(_syntax).BindType(_syntax.Type);
         }
 
         public override RefKind RefKind

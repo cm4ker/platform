@@ -426,7 +426,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
-        public BoundCallEx(ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArgs)
+        public BoundCallEx(ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArgs)
             : this(null, null, arguments, typeArgs, null, null)
         {
         }
@@ -450,7 +450,7 @@ namespace Aquila.CodeAnalysis.Semantics
     public partial class BoundInstanceCallEx
     {
         public BoundInstanceCallEx Update(BoundMethodName name, ImmutableArray<BoundArgument> arguments,
-            ImmutableArray<IBoundTypeRef> typeArgs, BoundExpression instance)
+            ImmutableArray<ITypeSymbol> typeArgs, BoundExpression instance)
         {
             if (Arguments == arguments && Instance == instance && TypeArguments == typeArgs && Name == name)
                 return this;
@@ -462,7 +462,7 @@ namespace Aquila.CodeAnalysis.Semantics
     public partial class BoundStaticCallEx
     {
         public BoundStaticCallEx Update(BoundMethodName name, ImmutableArray<BoundArgument> arguments,
-            ImmutableArray<IBoundTypeRef> typeArgs)
+            ImmutableArray<ITypeSymbol> typeArgs)
         {
             if (Arguments == arguments && TypeArguments == typeArgs && Name == name)
                 return this;
@@ -1261,21 +1261,21 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    internal partial class BoundCallableConvert : BoundConversionEx
-    {
-        /// <summary>
-        /// Resolved method to be converted to callable.
-        /// </summary>
-        public IMethodSymbol TargetCallable { get; internal set; }
-
-        /// <summary>In case of an instance method, this is its receiver instance.</summary>
-        internal BoundExpression Receiver { get; set; }
-
-        internal BoundCallableConvert(BoundExpression operand, AquilaCompilation compilation)
-            : base(operand, compilation.TypeRefFactory.Create((NamedTypeSymbol)null), null)
-        {
-        }
-    }
+    // internal partial class BoundCallableConvert : BoundConversionEx
+    // {
+    //     /// <summary>
+    //     /// Resolved method to be converted to callable.
+    //     /// </summary>
+    //     public IMethodSymbol TargetCallable { get; internal set; }
+    //
+    //     /// <summary>In case of an instance method, this is its receiver instance.</summary>
+    //     internal BoundExpression Receiver { get; set; }
+    //
+    //     internal BoundCallableConvert(BoundExpression operand, AquilaCompilation compilation)
+    //         : base(operand, compilation.TypeRefFactory.Create((NamedTypeSymbol)null), null)
+    //     {
+    //     }
+    // }
 
     #endregion
 
@@ -1613,7 +1613,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
-        partial void OnCreateImpl(BoundExpression instance, IBoundTypeRef containingType, BoundVariableName fieldName,
+        partial void OnCreateImpl(BoundExpression instance, ITypeSymbol containingType, BoundVariableName fieldName,
             FieldType fieldType, ITypeSymbol resultType)
         {
             Debug.Assert((instance == null) != (containingType == null));
@@ -1623,10 +1623,10 @@ namespace Aquila.CodeAnalysis.Semantics
         public static BoundFieldRef CreateInstanceField(BoundExpression instance, BoundVariableName name) =>
             new BoundFieldRef(instance, null, name, FieldType.InstanceField, null);
 
-        public static BoundFieldRef CreateStaticField(IBoundTypeRef type, BoundVariableName name) =>
+        public static BoundFieldRef CreateStaticField(ITypeSymbol type, BoundVariableName name) =>
             new BoundFieldRef(null, type, name, FieldType.StaticField, null);
 
-        public static BoundFieldRef CreateClassConst(IBoundTypeRef type, BoundVariableName name) =>
+        public static BoundFieldRef CreateClassConst(ITypeSymbol type, BoundVariableName name) =>
             new BoundFieldRef(null, type, name, FieldType.ClassConstant, null);
 
         partial void AcceptImpl(OperationVisitor visitor)
@@ -1640,7 +1640,7 @@ namespace Aquila.CodeAnalysis.Semantics
             result = visitor.VisitFieldReference(this, argument);
         }
 
-        public BoundFieldRef Update(BoundExpression instance, IBoundTypeRef containingType, BoundVariableName fieldName)
+        public BoundFieldRef Update(BoundExpression instance, ITypeSymbol containingType, BoundVariableName fieldName)
         {
             if (_instance == instance && _containingType == containingType && _fieldName == fieldName)
                 return this;

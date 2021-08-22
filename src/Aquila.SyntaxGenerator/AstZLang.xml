@@ -279,6 +279,7 @@
     <Syntax Name="NameEx" Base="Expression" NS="Expressions">
         <Arguments>
             <Single Name="Identifier" Type="IdentifierToken"/>
+            <Single Name="ArgList" Type="TypeList"/>
         </Arguments>
     </Syntax>
 

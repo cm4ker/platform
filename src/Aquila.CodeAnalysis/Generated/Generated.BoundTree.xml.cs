@@ -1078,9 +1078,9 @@ namespace Aquila.CodeAnalysis.Semantics
         private MethodSymbol _methodSymbol;
         private BoundMethodName _name;
         private ImmutableArray<BoundArgument> _arguments;
-        private ImmutableArray<IBoundTypeRef> _typeArguments;
+        private ImmutableArray<ITypeSymbol> _typeArguments;
         private BoundExpression _instance;
-        internal BoundCallEx(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, BoundExpression instance, ITypeSymbol resultType): base(resultType)
+        internal BoundCallEx(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, BoundExpression instance, ITypeSymbol resultType): base(resultType)
         {
             _methodSymbol = methodSymbol;
             _name = name;
@@ -1090,7 +1090,7 @@ namespace Aquila.CodeAnalysis.Semantics
             OnCreateImpl(methodSymbol, name, arguments, typeArguments, instance, resultType);
         }
 
-        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, BoundExpression instance, ITypeSymbol resultType);
+        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, BoundExpression instance, ITypeSymbol resultType);
         internal MethodSymbol MethodSymbol
         {
             get
@@ -1115,7 +1115,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
-        public ImmutableArray<IBoundTypeRef> TypeArguments
+        public ImmutableArray<ITypeSymbol> TypeArguments
         {
             get
             {
@@ -1157,12 +1157,12 @@ namespace Aquila.CodeAnalysis.Semantics
 {
     partial class BoundInstanceCallEx : BoundCallEx
     {
-        internal BoundInstanceCallEx(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, BoundExpression instance, ITypeSymbol resultType): base(methodSymbol, name, arguments, typeArguments, instance, resultType)
+        internal BoundInstanceCallEx(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, BoundExpression instance, ITypeSymbol resultType): base(methodSymbol, name, arguments, typeArguments, instance, resultType)
         {
             OnCreateImpl(methodSymbol, name, arguments, typeArguments, instance, resultType);
         }
 
-        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, BoundExpression instance, ITypeSymbol resultType);
+        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, BoundExpression instance, ITypeSymbol resultType);
         public override BoundKind BoundKind => BoundKind.InstanceCallEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
@@ -1196,12 +1196,12 @@ namespace Aquila.CodeAnalysis.Semantics
 {
     partial class BoundStaticCallEx : BoundCallEx
     {
-        internal BoundStaticCallEx(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, ITypeSymbol resultType): base(methodSymbol, name, arguments, typeArguments, null, resultType)
+        internal BoundStaticCallEx(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, ITypeSymbol resultType): base(methodSymbol, name, arguments, typeArguments, null, resultType)
         {
             OnCreateImpl(methodSymbol, name, arguments, typeArguments, resultType);
         }
 
-        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, ITypeSymbol resultType);
+        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, ITypeSymbol resultType);
         public override BoundKind BoundKind => BoundKind.StaticCallEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
@@ -1235,15 +1235,15 @@ namespace Aquila.CodeAnalysis.Semantics
 {
     partial class BoundNewEx : BoundCallEx
     {
-        private IBoundTypeRef _typeRef;
-        internal BoundNewEx(MethodSymbol methodSymbol, BoundMethodName name, IBoundTypeRef typeRef, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, ITypeSymbol resultType): base(methodSymbol, name, arguments, typeArguments, null, resultType)
+        private ITypeSymbol _typeRef;
+        internal BoundNewEx(MethodSymbol methodSymbol, BoundMethodName name, ITypeSymbol typeRef, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, ITypeSymbol resultType): base(methodSymbol, name, arguments, typeArguments, null, resultType)
         {
             _typeRef = typeRef;
             OnCreateImpl(methodSymbol, name, typeRef, arguments, typeArguments, resultType);
         }
 
-        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, IBoundTypeRef typeRef, ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments, ITypeSymbol resultType);
-        public IBoundTypeRef TypeRef
+        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, ITypeSymbol typeRef, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, ITypeSymbol resultType);
+        public ITypeSymbol TypeRef
         {
             get
             {
@@ -1474,10 +1474,10 @@ namespace Aquila.CodeAnalysis.Semantics
     partial class BoundFieldRef : BoundReferenceEx
     {
         private BoundExpression _instance;
-        private IBoundTypeRef _containingType;
+        private ITypeSymbol _containingType;
         private BoundVariableName _fieldName;
         private FieldType _fieldType;
-        internal BoundFieldRef(BoundExpression instance, IBoundTypeRef containingType, BoundVariableName fieldName, FieldType fieldType, ITypeSymbol resultType): base(resultType)
+        internal BoundFieldRef(BoundExpression instance, ITypeSymbol containingType, BoundVariableName fieldName, FieldType fieldType, ITypeSymbol resultType): base(resultType)
         {
             _instance = instance;
             _containingType = containingType;
@@ -1486,8 +1486,8 @@ namespace Aquila.CodeAnalysis.Semantics
             OnCreateImpl(instance, containingType, fieldName, fieldType, resultType);
         }
 
-        partial void OnCreateImpl(BoundExpression instance, IBoundTypeRef containingType, BoundVariableName fieldName, FieldType fieldType, ITypeSymbol resultType);
-        public IBoundTypeRef ContainingType
+        partial void OnCreateImpl(BoundExpression instance, ITypeSymbol containingType, BoundVariableName fieldName, FieldType fieldType, ITypeSymbol resultType);
+        public ITypeSymbol ContainingType
         {
             get
             {

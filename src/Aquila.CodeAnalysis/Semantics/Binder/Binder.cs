@@ -318,8 +318,8 @@ Binder
 
         public DiagnosticBag Diagnostics => Container.DeclaringCompilation.DeclarationDiagnostics;
 
-        /// <summary>Gets <see cref="BoundTypeRefFactory"/> instance.</summary>
-        internal BoundTypeRefFactory BoundTypeRefFactory => DeclaringCompilation.TypeRefFactory;
+        /// <summary>Gets <see cref="PrimitiveBoundTypeRefs"/> instance.</summary>
+        internal PrimitiveBoundTypeRefs PrimitiveBoundTypeRefs => DeclaringCompilation.TypeRefs;
 
         public AquilaCompilation DeclaringCompilation => Container.DeclaringCompilation;
 
@@ -652,7 +652,7 @@ Binder
             switch (expr.Operation)
             {
                 case Operations.BoolCast:
-                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.BoolTypeRef, null);
+                    return new BoundConversionEx(boundOperation, PrimitiveBoundTypeRefs.BoolTypeRef, null);
 
                 case Operations.Int8Cast:
                 case Operations.Int16Cast:
@@ -663,15 +663,15 @@ Binder
                 case Operations.UInt64Cast:
                 case Operations.UInt32Cast:
                 case Operations.Int64Cast:
-                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.LongTypeRef, null);
+                    return new BoundConversionEx(boundOperation, PrimitiveBoundTypeRefs.LongTypeRef, null);
 
                 case Operations.DecimalCast:
                 case Operations.DoubleCast:
                 case Operations.FloatCast:
-                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.DoubleTypeRef, null);
+                    return new BoundConversionEx(boundOperation, PrimitiveBoundTypeRefs.DoubleTypeRef, null);
 
                 case Operations.UnicodeCast:
-                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.StringTypeRef, null);
+                    return new BoundConversionEx(boundOperation, PrimitiveBoundTypeRefs.StringTypeRef, null);
 
                 case Operations.StringCast:
 
@@ -683,24 +683,16 @@ Binder
 
                     return
                         new BoundConversionEx(boundOperation,
-                            BoundTypeRefFactory
-                                .StringTypeRef, null);
+                            PrimitiveBoundTypeRefs.StringTypeRef, null);
 
                 case Operations.BinaryCast:
-                    return new BoundConversionEx(
-                        new BoundConversionEx(
-                            boundOperation,
-                            BoundTypeRefFactory.Create(
-                                DeclaringCompilation.CreateArrayTypeSymbol(
-                                    DeclaringCompilation.GetSpecialType(SpecialType.System_Byte))), null
-                        ).WithAccess(BoundAccess.Read),
-                        BoundTypeRefFactory.StringTypeRef, null);
+                    throw new NotImplementedException();
 
-                // case Operations.ArrayCast:
-                //     return new BoundConversionEx(boundOperation, BoundTypeRefFactory.ArrayTypeRef, null);
+                case Operations.ArrayCast:
+                    throw new NotImplementedException();
 
                 case Operations.ObjectCast:
-                    return new BoundConversionEx(boundOperation, BoundTypeRefFactory.ObjectTypeRef, null);
+                    throw new NotImplementedException();
 
                 default:
                     return new BoundUnaryEx(BindExpression(expr.Expression, operandAccess), expr.Operation, null);
@@ -787,9 +779,36 @@ Binder
             }
         }
 
+        // helper
+        ImmutableArray<IMethodSymbol> Construct(ImmutableArray<IMethodSymbol> methods,
+            ImmutableArray<ITypeSymbol> typeArgs)
+        {
+            if (typeArgs.IsDefaultOrEmpty)
+            {
+                return methods;
+            }
+            else
+            {
+                var result = new List<IMethodSymbol>();
+
+                for (int i = 0; i < methods.Length; i++)
+                {
+                    if (methods[i].Arity == typeArgs.Length) // TODO: check the type argument is assignable
+                    {
+                        result.Add(methods[i].Construct(typeArgs.ToArray()));
+                    }
+                }
+
+                return result.ToImmutableArray();
+            }
+        }
+
+
         protected virtual BoundExpression BindName(NameEx expr, ArgumentList argumentList, bool invocation)
         {
             Debug.Assert(Method != null);
+
+            var typeArgs = expr.ArgList.Select(x => (ITypeSymbol)BindType(x)).ToImmutableArray();
 
             var containerMembers = Container.GetMembers(expr.Identifier.Text).Where(x => x is MethodSymbol)
                 .ToList();
@@ -808,7 +827,7 @@ Binder
 
                             return new BoundStaticCallEx(ms,
                                 new BoundMethodName(new QualifiedName(new Name(expr.Identifier.Text))),
-                                arglist, ImmutableArray<IBoundTypeRef>.Empty, null);
+                                arglist, ImmutableArray<ITypeSymbol>.Empty, null);
                         }
                         else
                         {
@@ -818,7 +837,7 @@ Binder
 
                             return new BoundInstanceCallEx(ms,
                                 new BoundMethodName(new QualifiedName(new Name(expr.Identifier.Text))),
-                                ImmutableArray<BoundArgument>.Empty, ImmutableArray<IBoundTypeRef>.Empty, th, null
+                                ImmutableArray<BoundArgument>.Empty, ImmutableArray<ITypeSymbol>.Empty, th, null
                             );
                         }
                     }
@@ -852,7 +871,10 @@ Binder
                 Diagnostics.Add(GetLocation(expr), ErrorCode.INF_CantResolveSymbol);
 
             //TODO: Add global built-in methods and try to resolve it here, if local members not found
-            var globalMembers = FindMethodsByName(expr.Identifier.Text).ToImmutableArray();
+            var globalMembers = FindMethodsByName(expr.Identifier.Text)
+                .Where(x => x.Arity == expr.ArgList.Count()).ToImmutableArray();
+
+            globalMembers = Construct(globalMembers, typeArgs);
 
             if (globalMembers.Length == 1)
             {
@@ -867,9 +889,10 @@ Binder
                             var arglist = argumentList.Select(x => BoundArgument.Create(BindExpression(x.Expression)))
                                 .ToImmutableArray();
 
+
                             return new BoundStaticCallEx(ms,
                                 new BoundMethodName(new QualifiedName(new Name(expr.Identifier.Text))),
-                                arglist, ImmutableArray<IBoundTypeRef>.Empty, ms.ReturnType);
+                                arglist, typeArgs, ms.ReturnType);
                         }
                         else
                         {
@@ -903,13 +926,13 @@ Binder
                             return new BoundStaticCallEx(ms,
                                 new BoundMethodName(QualifiedName.Parse(expr.Identifier.Text, true)),
                                 arglist,
-                                ImmutableArray<IBoundTypeRef>.Empty, leftType);
+                                ImmutableArray<ITypeSymbol>.Empty, leftType);
 
                         else
 
                             return new BoundInstanceCallEx(ms,
                                 new BoundMethodName(QualifiedName.Parse(expr.Identifier.Text, true)),
-                                arglist, ImmutableArray<IBoundTypeRef>.Empty,
+                                arglist, ImmutableArray<ITypeSymbol>.Empty,
                                 boundLeft, leftType);
                     }
                 }
@@ -922,7 +945,10 @@ Binder
                 }
             }
 
-            throw new NotImplementedException();
+            Diagnostics.Add(GetLocation(expr.Identifier), ErrorCode.ERR_MethodNotFound,
+                expr.Identifier.Text, leftType.Name);
+
+            return new BoundLiteral(0, DeclaringCompilation.CoreTypes.Int32.Symbol);
         }
 
         protected BoundExpression BindCopyValue(BoundExpression expr)

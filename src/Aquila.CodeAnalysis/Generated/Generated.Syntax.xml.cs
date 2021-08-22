@@ -1452,12 +1452,15 @@ namespace Aquila.Syntax.Ast.Expressions
 {
     public partial record NameEx : Expression
     {
-        public NameEx(Span span, SyntaxKind syntaxKind, Operations operation, IdentifierToken identifier): base(span, syntaxKind, operation)
+        public NameEx(Span span, SyntaxKind syntaxKind, Operations operation, IdentifierToken identifier, TypeList argList): base(span, syntaxKind, operation)
         {
             this.identifier = identifier;
+            this.argList = argList;
         }
 
         public IdentifierToken Identifier { get => this.identifier; init => this.identifier = value; }
+
+        public TypeList ArgList { get => this.argList; init => this.argList = value; }
 
         public override T Accept<T>(AstVisitorBase<T> visitor)
         {
@@ -1472,10 +1475,12 @@ namespace Aquila.Syntax.Ast.Expressions
         public override IEnumerable<LangElement> GetChildren()
         {
             yield return this.identifier;
+            yield return this.argList;
             yield break;
         }
 
         private IdentifierToken identifier;
+        private TypeList argList;
     }
 }
 

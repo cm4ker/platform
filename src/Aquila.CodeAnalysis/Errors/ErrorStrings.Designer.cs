@@ -367,6 +367,15 @@ namespace Aquila.CodeAnalysis.Errors {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Method &apos;{0}&apos; not found for type {1}..
+        /// </summary>
+        internal static string ERR_MethodNotFound {
+            get {
+                return ResourceManager.GetString("ERR_MethodNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to emit module &apos;{0}&apos;..
         /// </summary>
         internal static string ERR_ModuleEmitFailure {

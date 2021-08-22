@@ -286,8 +286,8 @@ namespace Aquila.CodeAnalysis.CodeGen
         /// </summary>
         public AquilaCompilation DeclaringCompilation => _moduleBuilder.Compilation;
 
-        /// <summary>Gets <see cref="BoundTypeRefFactory"/> instance.</summary>
-        BoundTypeRefFactory BoundTypeRefFactory => DeclaringCompilation.TypeRefFactory;
+        /// <summary>Gets <see cref="PrimitiveBoundTypeRefs"/> instance.</summary>
+        PrimitiveBoundTypeRefs PrimitiveBoundTypeRefs => DeclaringCompilation.TypeRefs;
 
         /// <summary>
         /// Gets conversions helper class.

@@ -158,7 +158,7 @@ namespace Aquila.CodeAnalysis
 
 
             this.Conversions = new Semantics.Conversions(this);
-            this.TypeRefFactory = new Semantics.BoundTypeRefFactory(this);
+            this.TypeRefs = new Semantics.PrimitiveBoundTypeRefs(this);
 
             _referenceManager = (reuseReferenceManager && referenceManager != null)
                 ? referenceManager

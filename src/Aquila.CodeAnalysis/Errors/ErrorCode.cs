@@ -188,6 +188,10 @@
         /// <summary>Multiple analyzer config files cannot be in the same directory ('{0}').</summary>
         ERR_MultipleAnalyzerConfigsInSameDir,
 
+        /// <summary>Method '{0}' not found for type {1}.</summary>
+        ERR_MethodNotFound,
+
+
         //
         // Warnings
         //

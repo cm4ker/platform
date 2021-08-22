@@ -12,7 +12,7 @@ namespace Aquila.CodeAnalysis.Lowering
         private readonly SourceMethodSymbol _method;
 
         protected AquilaCompilation DeclaringCompilation => _method.DeclaringCompilation;
-        protected BoundTypeRefFactory BoundTypeRefFactory => DeclaringCompilation.TypeRefFactory;
+        protected PrimitiveBoundTypeRefs PrimitiveBoundTypeRefs => DeclaringCompilation.TypeRefs;
 
         private LocalRewriter()
         {
@@ -50,7 +50,7 @@ namespace Aquila.CodeAnalysis.Lowering
                         new BoundMethodName(new QualifiedName(new Name(nameof(string.Concat)))), new[]
                         {
                             BoundArgument.Create(x.Left), BoundArgument.Create(x.Right)
-                        }.ToImmutableArray(), ImmutableArray<IBoundTypeRef>.Empty,
+                        }.ToImmutableArray(), ImmutableArray<ITypeSymbol>.Empty,
                         DeclaringCompilation.CoreTypes.String.Symbol)
                     .WithAccess(x);
             }

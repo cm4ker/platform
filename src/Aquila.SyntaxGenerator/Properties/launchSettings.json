@@ -6,7 +6,7 @@
     },
     "ZLangDirect": {
       "commandName": "Project",
-      "commandLineArgs": "compiler AstZlang.xml ..\\..\\..\\..\\Aquila.CodeAnalysis\\Generated\\Generated.Syntax.xml.cs"
+      "commandLineArgs": "compiler AstZlang.xml ..\\..\\..\\Aquila.CodeAnalysis\\Generated\\Generated.Syntax.xml.cs"
     },
     "QLang": {
       "commandName": "Project",

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Aquila.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Utilities;
+using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis.Semantics.Graph
 {
@@ -414,7 +415,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         {
             return x.Update(
                 (BoundExpression)Accept(x.Instance),
-                (BoundTypeRef)Accept(x.ContainingType),
+                x.ContainingType,
                 (BoundVariableName)Accept(x.FieldName));
         }
 

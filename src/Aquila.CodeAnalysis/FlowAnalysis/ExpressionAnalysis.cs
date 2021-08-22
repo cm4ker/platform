@@ -129,9 +129,9 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             {
                 if (x is BoundVariableRef v)
                     return v.Name.IsDirect ? v : TryGetExpressionChainRoot(v.Name.NameExpression);
-                if (x is BoundFieldRef f)
-                    return TryGetExpressionChainRoot(f.Instance ??
-                                                     (f.ContainingType as BoundIndirectTypeRef)?.TypeExpression);
+                // if (x is BoundFieldRef f)
+                //     return TryGetExpressionChainRoot(f.Instance ??
+                //                                      (f.ContainingType)?.TypeExpression);
                 // if (x is BoundInstanceFunctionCall m) return TryGetExpressionChainRoot(m.Instance);
                 if (x is BoundArrayItemEx a) return TryGetExpressionChainRoot(a.Array);
             }
@@ -774,30 +774,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             }
         }
 
-        // helper
-        MethodSymbol[] Construct(MethodSymbol[] methods, BoundCallEx bound)
-        {
-            if (bound.TypeArguments.IsDefaultOrEmpty)
-            {
-                return methods;
-            }
-            else
-            {
-                var types = bound.TypeArguments.Select(t => (TypeSymbol)t.Type).AsImmutable();
-                var result = new List<MethodSymbol>();
-
-                for (int i = 0; i < methods.Length; i++)
-                {
-                    if (methods[i].Arity == types.Length) // TODO: check the type argument is assignable
-                    {
-                        result.Add(methods[i].Construct(types));
-                    }
-                }
-
-                return result.ToArray();
-            }
-        }
-
         #endregion
 
         #region Visit FieldRef
@@ -805,9 +781,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         public override T VisitFieldRef(BoundFieldRef x)
         {
             Accept(x.Instance);
-            Accept(x.ContainingType);
             Accept(x.FieldName);
-
 
             return default;
         }

@@ -45,7 +45,7 @@ namespace Aquila.CodeAnalysis
         /// <summary>
         /// Gets factory object for constructing <see cref="BoundTypeRef"/>.
         /// </summary>
-        internal BoundTypeRefFactory TypeRefFactory { get; }
+        internal PrimitiveBoundTypeRefs TypeRefs { get; }
 
         #region CoreTypes, CoreMethods
 
@@ -253,38 +253,6 @@ namespace Aquila.CodeAnalysis
             return
                 type.SpecialType == SpecialType.System_String ||
                 type == null;
-        }
-
-        #endregion
-
-        #region TypeSymbol From AST.TypeRef
-
-        /// <summary>
-        /// Binds <see cref="TypeRef"/> to a type symbol.
-        /// </summary>
-        /// <param name="tref">Type reference.</param>
-        /// <param name="selfHint">Optional.
-        /// Current type scope for better <paramref name="tref"/> resolution since <paramref name="tref"/> might be ambiguous</param>
-        /// <param name="nullable">Whether the resulting type must be able to contain NULL. Default is <c>false</c>.</param>
-        /// <returns>Resolved symbol.</returns>
-        internal TypeSymbol GetTypeFromTypeRef(TypeRef tref,
-            bool nullable = false)
-        {
-            if (tref == null)
-            {
-                return null;
-            }
-
-            var t = this.TypeRefFactory.CreateFromTypeRef(tref);
-
-            var symbol = t.ResolveRuntimeType(this);
-
-            if (t.IsNullable || nullable)
-            {
-                symbol = MergeNull(symbol);
-            }
-
-            return symbol;
         }
 
         #endregion
