@@ -421,6 +421,8 @@ public static int Main()
 {
     var q = query();
     q.text = ""from Entity.Invoice select Id"";
+    q.set_param(""param_name"", 1);
+
     var r = q.exec();
     if(r.read())
     {

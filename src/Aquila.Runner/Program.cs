@@ -54,7 +54,6 @@ namespace Aquila.Runner
 
                     services.AddSingleton<ISettingsStorage, FileSettingsStorage>();
 
-
                     services.AddTransient<IConnectionManager, ConnectionManager>();
                     services.AddTransient(typeof(ILogger<>), typeof(SimpleConsoleLogger<>));
                     services.AddTransient<IDatabaseNetworkListener, TCPListener>();
@@ -90,7 +89,6 @@ namespace Aquila.Runner
                     services.AddScoped<IWorkEnvironment, DatabaseTestEnvironment>();
 
                     services.AddSingleton<ICacheService, DictionaryCacheService>();
-
 
                     //services.AddTransient<IUserMessageHandler, UserMessageHandler>();
                     services.AddScoped<IAuthenticationManager, AuthenticationManager>();

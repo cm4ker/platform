@@ -5,7 +5,6 @@ using Aquila.Core.Contracts.Authentication;
 
 namespace Aquila.Core.Network
 {
-
     public interface INetworkMessage
     {
         Guid Id { get; }
@@ -14,7 +13,6 @@ namespace Aquila.Core.Network
 
     public interface IInvokeMessage : INetworkMessage
     {
-        
     }
 
     [Serializable]
@@ -47,7 +45,9 @@ namespace Aquila.Core.Network
         public Route Route { get; private set; }
         public object[] Args { get; private set; }
 
-        public RequestInvokeUnaryNetworkMessage() { }
+        public RequestInvokeUnaryNetworkMessage()
+        {
+        }
 
         public RequestInvokeUnaryNetworkMessage(Route route, object[] args)
         {
@@ -55,7 +55,6 @@ namespace Aquila.Core.Network
             Route = route;
             Args = args;
         }
-
     }
 
     [Serializable]
@@ -65,7 +64,9 @@ namespace Aquila.Core.Network
         public Guid RequestId { get; private set; }
         public object Result { get; private set; }
 
-        public ResponceInvokeUnaryNetworkMessage() { }
+        public ResponceInvokeUnaryNetworkMessage()
+        {
+        }
 
         public ResponceInvokeUnaryNetworkMessage(Guid InvokeId, object result)
         {
@@ -83,7 +84,9 @@ namespace Aquila.Core.Network
         public Route Route { get; private set; }
         public byte[][] Args { get; private set; }
 
-        public RequestInvokeUnaryByteArgsNetworkMessage() { }
+        public RequestInvokeUnaryByteArgsNetworkMessage()
+        {
+        }
 
         public RequestInvokeUnaryByteArgsNetworkMessage(Route route, byte[][] args)
         {
@@ -91,7 +94,6 @@ namespace Aquila.Core.Network
             Route = route;
             Args = args;
         }
-
     }
 
     [Serializable]
@@ -101,7 +103,9 @@ namespace Aquila.Core.Network
         public Guid RequestId { get; private set; }
         public byte[] Result { get; private set; }
 
-        public ResponceInvokeUnaryByteArgsNetworkMessage() { }
+        public ResponceInvokeUnaryByteArgsNetworkMessage()
+        {
+        }
 
         public ResponceInvokeUnaryByteArgsNetworkMessage(Guid InvokeId, byte[] result)
         {
@@ -121,7 +125,9 @@ namespace Aquila.Core.Network
         public string ErrorMessage { get; private set; }
         public Exception Exception { get; private set; }
 
-        public ErrorNetworkMessage() { }
+        public ErrorNetworkMessage()
+        {
+        }
 
         public ErrorNetworkMessage(Guid InvokeId, string errorMessage, Exception exception = null)
         {
@@ -143,9 +149,7 @@ namespace Aquila.Core.Network
         {
             Id = Guid.NewGuid();
         }
-
     }
-
 
     [Serializable]
     public class RequestEnvironmentUseNetworkMessage : INetworkMessage
@@ -154,14 +158,15 @@ namespace Aquila.Core.Network
         public Guid RequestId { get; private set; }
         public string Name { get; private set; }
 
-        public RequestEnvironmentUseNetworkMessage() { }
+        public RequestEnvironmentUseNetworkMessage()
+        {
+        }
 
         public RequestEnvironmentUseNetworkMessage(string name)
         {
             Id = Guid.NewGuid();
             Name = name;
         }
-
     }
 
     [Serializable]
@@ -170,14 +175,17 @@ namespace Aquila.Core.Network
         public Guid Id { get; private set; }
         public Guid RequestId { get; private set; }
         public string Name { get; private set; }
-        public ResponceEnvironmentUseNetworkMessage() { }
+
+        public ResponceEnvironmentUseNetworkMessage()
+        {
+        }
+
         public ResponceEnvironmentUseNetworkMessage(RequestEnvironmentUseNetworkMessage request)
         {
             Id = Guid.NewGuid();
             RequestId = request.Id;
             Name = request.Name;
         }
-
     }
 
 
@@ -189,7 +197,10 @@ namespace Aquila.Core.Network
         public List<string> List { get; private set; }
 
 
-        public ResponceEnvironmentListNetworkMessage() { }
+        public ResponceEnvironmentListNetworkMessage()
+        {
+        }
+
         public ResponceEnvironmentListNetworkMessage(Guid requestId, List<string> list)
         {
             Id = Guid.NewGuid();
@@ -205,7 +216,9 @@ namespace Aquila.Core.Network
         public Guid RequestId { get; private set; }
         public byte[] Data { get; private set; }
 
-        public DataStreamNetworkMessage() { }
+        public DataStreamNetworkMessage()
+        {
+        }
 
         public DataStreamNetworkMessage(Guid requestId, byte[] data)
         {
@@ -223,7 +236,9 @@ namespace Aquila.Core.Network
         public Route Route { get; private set; }
         public object Request { get; private set; }
 
-        public StartInvokeStreamNetworkMessage() { }
+        public StartInvokeStreamNetworkMessage()
+        {
+        }
 
         public StartInvokeStreamNetworkMessage(Route route, object request)
         {
@@ -239,7 +254,9 @@ namespace Aquila.Core.Network
         public Guid Id { get; private set; }
         public Guid RequestId { get; private set; }
 
-        public EndInvokeStreamNetworkMessage() { }
+        public EndInvokeStreamNetworkMessage()
+        {
+        }
 
         public EndInvokeStreamNetworkMessage(Guid requestId)
         {
@@ -255,14 +272,15 @@ namespace Aquila.Core.Network
         public Guid RequestId { get; private set; }
         public IAuthenticationToken Token { get; private set; }
 
-        public RequestAuthenticationNetworkMessage() { }
+        public RequestAuthenticationNetworkMessage()
+        {
+        }
 
         public RequestAuthenticationNetworkMessage(IAuthenticationToken token)
         {
             Id = Guid.NewGuid();
             Token = token;
         }
-
     }
 
     [Serializable]
@@ -271,23 +289,24 @@ namespace Aquila.Core.Network
         public Guid Id { get; private set; }
         public Guid RequestId { get; private set; }
 
-        public ResponceAuthenticationNetworkMessage() { }
+        public ResponceAuthenticationNetworkMessage()
+        {
+        }
 
         public ResponceAuthenticationNetworkMessage(RequestAuthenticationNetworkMessage request)
         {
             Id = Guid.NewGuid();
             RequestId = request.Id;
-
         }
-
     }
 
     [Serializable]
-    public class RequestInvokeInstanceProxy: INetworkMessage
+    public class RequestInvokeInstanceProxy : INetworkMessage
     {
         public Guid Id { get; private set; }
         public Guid RequestId { get; private set; }
         public string InterfaceName { get; private set; }
+
         public RequestInvokeInstanceProxy(string interfaceName)
         {
             Id = Guid.NewGuid();
@@ -300,6 +319,7 @@ namespace Aquila.Core.Network
     {
         public Guid Id { get; private set; }
         public Guid RequestId { get; private set; }
+
         public RequestInvokeDisposeProxy(Guid requestI)
         {
             Id = Guid.NewGuid();
@@ -331,7 +351,7 @@ namespace Aquila.Core.Network
         public Guid RequestId { get; private set; }
         public object Result { get; private set; }
 
-        public ResponceInvokeMethodProxy(Guid requestId, object result )
+        public ResponceInvokeMethodProxy(Guid requestId, object result)
         {
             RequestId = requestId;
             Result = result;
@@ -353,8 +373,4 @@ namespace Aquila.Core.Network
             Args = args;
         }
     }
-
-    
-
 }
-

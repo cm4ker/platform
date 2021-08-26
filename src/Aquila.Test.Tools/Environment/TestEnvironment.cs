@@ -62,7 +62,6 @@ namespace Aquila.Core.Test.Environment
         // public IProject Configuration => ConfigurationFactory.Create();
 
         public TestEnvironment(IAuthenticationManager authenticationManager, IInvokeService invokeService,
-            ILinkFactory linkFactory,
             ILogger<TestEnvironment> logger
         )
         {
@@ -70,7 +69,7 @@ namespace Aquila.Core.Test.Environment
             AuthenticationManager = authenticationManager;
             AuthenticationManager.RegisterProvider(new AnonymousAuthenticationProvider());
             InvokeService = invokeService;
-            LinkFactory = linkFactory;
+
 
             _logger = logger;
         }

@@ -75,6 +75,7 @@ namespace Aquila.Core.Test
 
             return services.BuildServiceProvider();
         }
+
         //
         // public static ServiceProvider GetServerServiceWithDatabase(ITestOutputHelper testOutput)
         // {
@@ -135,32 +136,31 @@ namespace Aquila.Core.Test
         //     return services.BuildServiceProvider();
         // }
         //
-        // public static ServiceProvider GetClientService(ITestOutputHelper testOutput)
-        // {
-        //     IServiceCollection services = new ServiceCollection();
-        //
-        //
-        //     services.AddSingleton<ClientPlatformContext>();
-        //
-        //     services.AddSingleton<IPlatformClient, Network.Client>();
-        //
-        //     //services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
-        //     services.AddSingleton(testOutput);
-        //     //services.AddTransient(typeof(ILogger<>), typeof(XUnitLogger<>));
-        //
-        //     services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
-        //     services.AddSingleton<PlatformAssemblyLoadContext>();
-        //     services.AddSingleton<IClientAssemblyManager, PlatformClientAssemblyManager>();
-        //     services.AddTransient<ITransportClientFactory, TCPTransportClientFactory>();
-        //
-        //
-        //     services.AddSingleton(factory =>
-        //     {
-        //         var client = factory.GetRequiredService<IPlatformClient>();
-        //         return client.GetService<IAssemblyManagerClientService>();
-        //     });
-        //
-        //     return services.BuildServiceProvider();
-        // }
+        public static ServiceProvider GetClientService(ITestOutputHelper testOutput)
+        {
+            IServiceCollection services = new ServiceCollection();
+
+
+            services.AddSingleton<ClientPlatformContext>();
+
+            services.AddSingleton<IPlatformClient, Network.Client>();
+
+            services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
+            services.AddSingleton(testOutput);
+            //services.AddTransient(typeof(ILogger<>), typeof(XUnitLogger<>));
+
+            //services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
+            services.AddSingleton<PlatformAssemblyLoadContext>();
+            services.AddSingleton<IClientAssemblyManager, PlatformClientAssemblyManager>();
+            services.AddTransient<ITransportClientFactory, TCPTransportClientFactory>();
+
+            services.AddSingleton(factory =>
+            {
+                var client = factory.GetRequiredService<IPlatformClient>();
+                return client.GetService<IAssemblyManagerClientService>();
+            });
+
+            return services.BuildServiceProvider();
+        }
     }
 }

@@ -17,6 +17,7 @@
 
     <ItemGroup>
         <PackageReference Include="morelinq" Version="3.0.0" />
+        <PackageReference Include="NLog" Version="5.0.0-preview.1" />
         <PackageReference Include="Npgsql" Version="5.0.7" />
         <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
     </ItemGroup>

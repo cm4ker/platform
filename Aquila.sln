@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquila.Runner", "src\Aquila
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquila.SyntaxGenerator", "src\Aquila.SyntaxGenerator\Aquila.SyntaxGenerator.csproj", "{41C68053-B10C-4836-A98A-204022CCEDA7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquila.Core.Test", "src\Aquila.Core.Test\Aquila.Core.Test.csproj", "{27BB7A0D-E074-488B-B774-4CF9AFD1A6CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquila.Integration.Test", "src\Aquila.Integration.Test\Aquila.Integration.Test.csproj", "{27BB7A0D-E074-488B-B774-4CF9AFD1A6CF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquila.SSH", "src\Aquila.SSH\Aquila.SSH.csproj", "{312510BE-85E3-4016-952A-BF963D71440A}"
 EndProject

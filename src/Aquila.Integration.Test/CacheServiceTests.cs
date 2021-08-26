@@ -1,6 +1,4 @@
 using System;
-using System.Threading.Tasks;
-using Microsoft.Build.Utilities;
 using Xunit;
 using Task = System.Threading.Tasks.Task;
 

@@ -10,7 +10,7 @@ namespace Aquila.Core.Serialisers
     {
         public T FromBytes<T>(byte[] input)
         {
-            var binarySerializer = Binary.Create(new Apex.Serialization.Settings());
+            var binarySerializer = Binary.Create(new Apex.Serialization.Settings().MarkSerializable((t) => true));
             return binarySerializer.Read<T>(new MemoryStream(input));
         }
 
@@ -21,7 +21,7 @@ namespace Aquila.Core.Serialisers
 
         public byte[] ToBytes<T>(T input)
         {
-            var binarySerializer = Binary.Create(new Apex.Serialization.Settings());
+            var binarySerializer = Binary.Create(new Apex.Serialization.Settings().MarkSerializable((t) => true));
             var stream = new MemoryStream();
             binarySerializer.Write(input, stream);
 

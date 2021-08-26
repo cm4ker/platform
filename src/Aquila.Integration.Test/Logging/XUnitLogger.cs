@@ -1,18 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using Aquila.Logging;
 using Xunit.Abstractions;
-using Aquila.Core.Logging;
 
 namespace Aquila.Core.Test.Logging
 {
     public class XUnitLogger<T> : ILogger<T>
     {
         private ITestOutputHelper _testOutput;
+
         public XUnitLogger(ITestOutputHelper testOutput)
         {
             _testOutput = testOutput;
         }
+
         public bool IsTrace => true;
 
         public bool IsDebug => true;
