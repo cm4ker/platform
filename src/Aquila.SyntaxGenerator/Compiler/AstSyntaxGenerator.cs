@@ -39,7 +39,7 @@ namespace Aquila.SyntaxGenerator.Compiler
             using (TextReader tr = new StreamReader(args[0]))
             {
                 XmlSerializer xs = new XmlSerializer(typeof(Config));
-                var root = (Config) xs.Deserialize(tr);
+                var root = (Config)xs.Deserialize(tr);
 
                 StringBuilder sb = new StringBuilder();
 
@@ -131,7 +131,7 @@ namespace Aquila.SyntaxGenerator.Compiler
                     continue;
 
                 var fieldName = $"{arg.Name.ToCamelCase()}";
-                result.Add((FieldDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                result.Add((FieldDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
                     $"private {arg.Type} {fieldName};"));
             }
 
@@ -144,13 +144,16 @@ namespace Aquila.SyntaxGenerator.Compiler
             foreach (var arg in syntax.Arguments)
             {
                 if (!arg.DenyChildrenFill)
+                {
+                    sb.Append($"if (this.{arg.Name.ToCamelCase()} != null)");
                     sb.Append($"yield return this.{arg.Name.ToCamelCase()};");
+                }
             }
 
             sb.Append($"yield break;");
             sb.Append("}");
 
-            return (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(sb.ToString());
+            return (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(sb.ToString());
         }
 
         private static MemberDeclarationSyntax GetVisitorMethod(CompilerSyntax syntax)
@@ -162,7 +165,7 @@ namespace Aquila.SyntaxGenerator.Compiler
             {
                 sb.Append($"return visitor.Visit{syntax.Name}(this);");
 
-                var visitorBaseMethod = (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                var visitorBaseMethod = (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
                     $"public virtual T Visit{syntax.Name}({syntax.Name} arg) {{ return DefaultVisit(arg); }}");
 
                 astTreeBaseCls = astTreeBaseCls.AddMembers(visitorBaseMethod);
@@ -174,13 +177,13 @@ namespace Aquila.SyntaxGenerator.Compiler
 
             sb.Append("}");
 
-            return (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(sb.ToString());
+            return (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(sb.ToString());
         }
 
         private static MemberDeclarationSyntax GetVisitorMethod2(CompilerSyntax syntax)
         {
             var visitor =
-                (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
                     "public override void Accept(AstVisitorBase visitor){}");
 
             if (!syntax.IsAbstract)
@@ -188,7 +191,7 @@ namespace Aquila.SyntaxGenerator.Compiler
                 visitor = visitor.AddBodyStatements(
                     SyntaxFactory.ParseStatement($"visitor.Visit{syntax.Name}(this);"));
 
-                var visitorBaseMethod = (MethodDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+                var visitorBaseMethod = (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
                     $"public virtual void Visit{syntax.Name}({syntax.Name} arg) {{ DefaultVisit(arg); }}");
 
                 astTreeBaseCls2 = astTreeBaseCls2.AddMembers(visitorBaseMethod);
@@ -207,17 +210,19 @@ namespace Aquila.SyntaxGenerator.Compiler
 
             var ctor = (ConstructorDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
                 $"public {syntax.Name}(ImmutableArray<{syntax.Base}> elements) : base(Span.Empty, elements){{}}");
-           
+
 
             members.Add(
-                SyntaxFactory.ParseMemberDeclaration($"public static {syntax.Name} Empty => new {syntax.Name}(ImmutableArray<{syntax.Base}>.Empty);"));
+                SyntaxFactory.ParseMemberDeclaration(
+                    $"public static {syntax.Name} Empty => new {syntax.Name}(ImmutableArray<{syntax.Base}>.Empty);"));
             members.Add(ctor);
             members.Add(GetVisitorMethod(syntax));
             members.Add(GetVisitorMethod2(syntax));
 
             var record =
-                (RecordDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration($"public record {syntax.Name} : LangCollection<{syntax.Base}>{{}}");
-            
+                (RecordDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
+                    $"public record {syntax.Name} : LangCollection<{syntax.Base}>{{}}");
+
             return record.AddMembers(members.ToArray());
         }
 
@@ -225,7 +230,7 @@ namespace Aquila.SyntaxGenerator.Compiler
         {
             List<MemberDeclarationSyntax> members = new List<MemberDeclarationSyntax>();
 
-            var constructor = (ConstructorDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration(
+            var constructor = (ConstructorDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(
                 $"public {syntax.Name}(Span span, SyntaxKind syntaxKind) : base(span, syntaxKind){{}}");
 
             var initializer = constructor.Initializer;
@@ -321,7 +326,7 @@ namespace Aquila.SyntaxGenerator.Compiler
             members.Add(GetChildMethod(syntax));
             GetPrivateFieldsSyntax(syntax).ForEach(members.Add);
 
-            var cls = (RecordDeclarationSyntax) SyntaxFactory.ParseMemberDeclaration($@"
+            var cls = (RecordDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration($@"
 
 public record {syntax.Name} : {(string.IsNullOrEmpty(syntax.Base) ? NameBase : syntax.Base)}
 {{

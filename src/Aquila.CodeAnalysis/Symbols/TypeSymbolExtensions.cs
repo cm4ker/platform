@@ -95,6 +95,14 @@ namespace Aquila.CodeAnalysis.Symbols
             return false;
         }
 
+        public static bool IsEqualOrDerivedFrom(this ITypeSymbol t, ITypeSymbol ofType)
+        {
+            var tx = (TypeSymbol)t;
+            var ty = (TypeSymbol)ofType;
+
+            return tx.IsEqualToOrDerivedFrom(ty);
+        }
+
         public static bool IsAssignableFrom(this TypeSymbol t, TypeSymbol fromtype)
         {
             return fromtype.IsOfType(t) || (fromtype.IsInterfaceType() && t.IsObjectType());

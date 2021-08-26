@@ -670,9 +670,9 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             }
             else // else ...
             {
-                var body = elseBlock;
                 elseBlock = end; // last ConditionalStmt
-                _current = WithNewOrdinal(body);
+                _current = Connect(_current, NewBlock(), elseBlock, cond);
+                //_current = WithNewOrdinal(NewBlock());
             }
 
             OpenScope(_current);

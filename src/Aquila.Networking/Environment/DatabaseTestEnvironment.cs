@@ -123,6 +123,7 @@ namespace Aquila.Core.Environment
 
         public MigrationManager MigrationManager { get; }
 
+        public override string Name => "Library";
 
         /// <summary>
         /// Сборка конфигурации.

@@ -1,6 +1,8 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.ServiceModel;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Aquila.Core;
@@ -12,10 +14,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using SoapCore;
 
 namespace Aquila.WebServiceCore
@@ -65,18 +69,61 @@ namespace Aquila.WebServiceCore
                 {
                     _startupService.ConfigureServices(services);
                     services.AddSoapCore();
+
+                    services.AddExceptionHandler(o => o.AllowStatusCode404Response = false);
                 })
                 .Configure(app =>
                 {
                     app.UseRouting();
 
-                    app.Use(async (context, next) =>
+                    app.UseEndpoints(x =>
+                        x.MapGet("dbName/api/entity/invoice", async context => { await CustomHandler(context); }));
+
+                    async Task CustomHandler(HttpContext context)
                     {
+                        /*
+                         1. Generate crud api
+                         
+                         Create()                               
+                         
+                         Get()                                GET       GetList
+                         
+                         FROM Invoice SELECT *
+                         
+                         Get(lookup_fields, condition)        GET       advanced GetList
+                         
+                         FROM Invoice WHERE condition SELECT lookup_fields
+                         
+                         Get(id)                              GET       GetById
+                         
+                         Post(object)                         POST      Update object or store
+                         
+                         Delete(id)                           DELETE    Delete object
+                                                  
+                         */
+
                         var env = _mrg.GetEnvironment("Library");
                         var plContext = new PlatformContext(env.CreateSession(new Anonymous()));
-                        PlatformContext.SetContext(plContext);
-                        await next.Invoke();
-                    });
+
+                        var md = plContext.DataRuntimeContext.GetMetadata();
+
+                        var list = md.Metadata.ToList();
+
+                        await context.Response.WriteAsJsonAsync(list, cancellationToken);
+                    }
+
+                    ;
+
+
+                    // app.Use(async (context, next) =>
+                    // {
+                    //     var env = _mrg.GetEnvironment("Library");
+                    //
+                    //
+                    //     var plContext = new PlatformContext(env.CreateSession(new Anonymous()));
+                    //     PlatformContext.SetContext(plContext);
+                    //     await next.Invoke();
+                    // });
 
                     _startupService.Configure(app);
 
@@ -85,6 +132,7 @@ namespace Aquila.WebServiceCore
                 .UseKestrel()
                 .ConfigureServices(x => x.AddRouting())
                 .UseContentRoot(Directory.GetCurrentDirectory());
+
 
             _host = builder.Build();
 

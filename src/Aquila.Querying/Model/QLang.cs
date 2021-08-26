@@ -225,6 +225,17 @@ namespace Aquila.Core.Querying.Model
             _logicStack.Push(null);
         }
 
+        public void ld_star()
+        {
+            var fields = CurrentScope.ScopedDataSources.SelectMany(x => x.GetFields());
+
+            foreach (var field in fields)
+            {
+                _logicStack.Push(field);
+                st_elem();
+            }
+        }
+
         public void ld_field(string name)
         {
             var ds = _logicStack.PopDataSource();

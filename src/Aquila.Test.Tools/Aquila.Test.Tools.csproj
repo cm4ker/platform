@@ -1,21 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="..\Props\target.props"/>
+    <Import Project="..\Props\target.props" />
 
     <ItemGroup>
-        <!--      <ProjectReference Include="..\Aquila.ConfigurationExample\Aquila.ConfigurationExample.csproj" />-->
-        <ProjectReference Include="..\Aquila.Configuration\Aquila.Configuration.csproj"/>
-        <ProjectReference Include="..\Aquila.EntityComponent\Aquila.EntityComponent.csproj"/>
-        <ProjectReference Include="..\Aquila.Migration\Aquila.Migration.csproj"/>
-        <ProjectReference Include="..\Aquila.Networking\Aquila.Networking.csproj"/>
-        <ProjectReference Include="..\Aquila.SerializableTypeComponent\Aquila.SerializableTypeComponent.csproj"/>
-        <ProjectReference Include="..\Aquila.Shell\Aquila.Shell.csproj"/>
-        <ProjectReference Include="..\Aquila.ThinClient.FakeAssembly\Aquila.ThinClient.FakeAssembly.csproj"/>
-        <ProjectReference Include="..\Aquila.WebServiceComponent\Aquila.WebServiceComponent.csproj"/>
+      <ProjectReference Include="..\Aquila.Networking\Aquila.Networking.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="xunit.abstractions" Version="2.0.2"/>
+        <PackageReference Include="xunit.abstractions" Version="2.0.2" />
     </ItemGroup>
+
+    
 
 </Project>

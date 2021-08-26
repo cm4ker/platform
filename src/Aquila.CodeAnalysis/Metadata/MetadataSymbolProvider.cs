@@ -379,6 +379,7 @@ namespace Aquila.Syntax.Metadata
                         ImmutableArray<TypedConstant>.Empty, ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty))
                 ;
 
+            var saveQueryFieldPlace = new FieldPlace(saveQueryField);
 
             var saveMethod = _ps.SynthesizeMethod(managerType)
                 .SetName("Save")
@@ -399,11 +400,16 @@ namespace Aquila.Syntax.Metadata
                     var paramValue = _ct.DbParameter.Property("Value");
 
                     var dbParamsProp = _ct.DbCommand.Property("Parameters");
+                    var dbTextProp = _ct.DbCommand.Property("CommandText");
                     var paramsCollectionAdd = dbParamsProp.Symbol.Type.GetMembers("Add").OfType<MethodSymbol>()
                         .FirstOrDefault();
 
                     il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.CreateCommand);
                     dbLoc.EmitStore(il);
+
+                    dbLoc.EmitLoad(il);
+                    saveQueryFieldPlace.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Call, dbTextProp.Setter);
 
                     var paramNumber = 0;
 
@@ -435,11 +441,11 @@ namespace Aquila.Syntax.Metadata
 
                             paramLoc.EmitLoad(il);
                             sdpp.EmitLoad(il);
-                            
+
                             il.EmitCall(m, d, ILOpCode.Call, clrProp.GetMethod);
                             il.EmitOpCode(ILOpCode.Box);
                             il.EmitSymbolToken(m, d, clrProp.Type, null);
-                            
+
                             il.EmitCall(m, d, ILOpCode.Call, paramValue.Setter);
 
 

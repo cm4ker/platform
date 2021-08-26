@@ -467,6 +467,7 @@ Binder
             if (expr is CallEx ce) return BindCallEx(ce).WithAccess(access);
             if (expr is MemberAccessEx mae)
                 return BindMemberAccessEx(mae, ArgumentList.Empty, false).WithAccess(access);
+            if (expr is IndexerEx ie) return BindIndexerEx(ie).WithAccess(access);
 
             if (expr is ThrowEx throwEx)
                 return new BoundThrowEx(BindExpression(throwEx.Expression, BoundAccess.Read), null);
@@ -475,6 +476,22 @@ Binder
             Diagnostics.Add(GetLocation(expr), ErrorCode.ERR_NotYetImplemented,
                 $"Expression of type '{expr.GetType().Name}'");
             return new BoundLiteral(null, null);
+        }
+
+        private BoundExpression BindIndexerEx(IndexerEx ie)
+        {
+            var array = BindExpression(ie.Expression);
+            var indexer = BindExpression(ie.Indexer);
+
+            
+            var accessIndexMethod = array.Type.GetMembers("get_Item").OfType<MethodSymbol>()
+                .FirstOrDefault(x => x.ParameterCount == 1 && x.Parameters[0].Type == indexer.Type);
+
+            if (accessIndexMethod != null)
+                return new BoundArrayItemEx(DeclaringCompilation, array, indexer, accessIndexMethod.ReturnType);
+
+            
+            throw new NotImplementedException();
         }
 
         protected BoundExpression BindLiteral(LiteralEx expr)
@@ -926,14 +943,14 @@ Binder
                             return new BoundStaticCallEx(ms,
                                 new BoundMethodName(QualifiedName.Parse(expr.Identifier.Text, true)),
                                 arglist,
-                                ImmutableArray<ITypeSymbol>.Empty, leftType);
+                                ImmutableArray<ITypeSymbol>.Empty, ms.ReturnType);
 
                         else
 
                             return new BoundInstanceCallEx(ms,
                                 new BoundMethodName(QualifiedName.Parse(expr.Identifier.Text, true)),
                                 arglist, ImmutableArray<ITypeSymbol>.Empty,
-                                boundLeft, leftType);
+                                boundLeft, ms.ReturnType);
                     }
                 }
                 else

@@ -7,7 +7,7 @@ using BufferedDataReaderDotNet;
 
 namespace Aquila.Data
 {
-    public class ApplicationCachedPlatformReader : PlatformReader
+    public class AppCachedAqReader : AqReader
     {
         private readonly DbDataReader _reader;
         private readonly QQuery _logicalQuery;
@@ -15,7 +15,7 @@ namespace Aquila.Data
         private BufferedData _buffered;
         private BufferedDataReader _bufferedReader;
 
-        public ApplicationCachedPlatformReader(DbDataReader reader, QQuery logicalQuery, PlatformContext context)
+        public AppCachedAqReader(DbDataReader reader, QQuery logicalQuery, PlatformContext context)
         {
             _reader = reader;
             _logicalQuery = logicalQuery;
@@ -46,7 +46,7 @@ namespace Aquila.Data
             }
         }
 
-        public override bool Read()
+        public override bool read()
         {
             return _bufferedReader.Read();
         }

@@ -132,7 +132,7 @@ variable:
 ;
 
 result_column
- : '*'
+ : STAR
  | object_name '.' '*'
  | ( column_alias '=')? expr 
  ;

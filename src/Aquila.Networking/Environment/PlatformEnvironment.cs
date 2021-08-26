@@ -68,6 +68,6 @@ namespace Aquila.Core.Environment
 
         public abstract IAuthenticationManager AuthenticationManager { get; }
 
-        public string Name => throw new NotImplementedException();
+        public virtual string Name => throw new NotImplementedException();
     }
 }

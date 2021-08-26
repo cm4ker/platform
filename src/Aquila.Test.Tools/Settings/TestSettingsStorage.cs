@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Aquila.Core.Environment;
 using Aquila.Core.Settings;
+using Aquila.Data;
 
 namespace Aquila.Core.Test
 {
@@ -30,8 +31,9 @@ namespace Aquila.Core.Test
             {
                 new StartupConfig()
                 {
-                    ConnectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=testdb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
-                    DatabaseType = QueryBuilder.SqlDatabaseType.SqlServer
+                    ConnectionString =
+                        "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=testdb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
+                    DatabaseType = SqlDatabaseType.SqlServer
                 }
             }
         };

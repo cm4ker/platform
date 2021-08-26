@@ -5,6 +5,7 @@ using Aquila.CodeAnalysis.Utilities;
 using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection.Metadata;
 using Aquila.CodeAnalysis.CodeGen;
 using Aquila.Syntax.Ast;
@@ -75,14 +76,62 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    partial class BoundArrayItemEx
+    partial class BoundArrayItemEx : IVariableReference
     {
-        internal override IVariableReference BindPlace(CodeGenerator cg)
+        private IPlace _place;
+
+        internal override IVariableReference BindPlace(CodeGenerator cg) => this;
+
+        internal override IPlace Place() => ((IVariableReference)this).Place;
+
+        Symbol IVariableReference.Symbol => null;
+
+        TypeSymbol IVariableReference.Type => null;
+
+        bool IVariableReference.HasAddress => false;
+
+        IPlace IVariableReference.Place => _place;
+
+        LhsStack IVariableReference.EmitStorePreamble(CodeGenerator cg, BoundAccess access)
         {
             throw new NotImplementedException();
         }
 
-        internal override IPlace Place()
+        void IVariableReference.EmitStore(CodeGenerator cg, ref LhsStack lhs, TypeSymbol stack, BoundAccess access)
+        {
+            throw new NotImplementedException();
+        }
+
+        TypeSymbol IVariableReference.EmitLoadValue(CodeGenerator cg, ref LhsStack lhs, BoundAccess access)
+        {
+            var arrayType = _array.Emit(cg);
+            var indexType = _index.Emit(cg);
+
+            if (arrayType.IsSZArray() && arrayType is ArrayTypeSymbol arrTs)
+            {
+                cg.Builder.EmitOpCode(ILOpCode.Ldelem);
+                return arrTs.ElementType;
+            }
+            else
+            {
+                //1. find method get_Item
+                var accessIndexMethod = arrayType.GetMembers("get_Item").OfType<MethodSymbol>()
+                    .FirstOrDefault(x => x.ParameterCount == 1 && indexType.IsEqualOrDerivedFrom(x.Parameters[0].Type));
+
+                if (accessIndexMethod == null)
+                    throw new Exception("Method get_Item not found");
+
+                var opCode = ILOpCode.Call;
+
+                if (accessIndexMethod.IsVirtual || accessIndexMethod.IsAbstract)
+                    opCode = ILOpCode.Callvirt;
+
+                cg.EmitCall(opCode, accessIndexMethod);
+                return accessIndexMethod.ReturnType;
+            }
+        }
+
+        TypeSymbol IVariableReference.EmitLoadAddress(CodeGenerator cg, ref LhsStack lhs)
         {
             throw new NotImplementedException();
         }

@@ -118,7 +118,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public const string AquilaTargetPlatformAttributeFullName = AquilaRuntimeNamespace + ".TargetPlatform";
 
-        public const string AquilaPlatformQueryFullName = AquilaRuntimeNamespace + ".PlatformQuery";
+        public const string AquilaPlatformQueryFullName = AquilaRuntimeNamespace + ".AqQuery";
 
         public const string AquilaPlatformContextFullName = AquilaRuntimeNamespace + ".PlatformContext";
 
@@ -152,6 +152,7 @@ namespace Aquila.CodeAnalysis.Symbols
             DateTime,
             Decimal,
             IntPtr,
+            Array,
             Exception,
             RuntimeTypeHandle,
             RuntimeMethodHandle,
@@ -191,7 +192,7 @@ namespace Aquila.CodeAnalysis.Symbols
             DateTime = Create(SpecialType.System_DateTime);
             Guid = CreateFromFullName("System.Guid");
             IntPtr = Create(SpecialType.System_IntPtr);
-
+            Array = Create(SpecialType.System_Array);
             Exception = CreateFromFullName(WellKnownTypes.GetMetadataName(WellKnownType.System_Exception));
             RuntimeTypeHandle = Create(SpecialType.System_RuntimeTypeHandle);
             RuntimeMethodHandle = Create(SpecialType.System_RuntimeMethodHandle);

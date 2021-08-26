@@ -340,10 +340,14 @@ namespace Aquila.Syntax.Ast
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.imports;
-            yield return this.methods;
-            yield return this.extends;
-            yield return this.components;
+            if (this.imports != null)
+                yield return this.imports;
+            if (this.methods != null)
+                yield return this.methods;
+            if (this.extends != null)
+                yield return this.extends;
+            if (this.components != null)
+                yield return this.components;
             yield break;
         }
 
@@ -382,8 +386,10 @@ namespace Aquila.Syntax.Ast
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.methods;
-            yield return this.identifier;
+            if (this.methods != null)
+                yield return this.methods;
+            if (this.identifier != null)
+                yield return this.identifier;
             yield break;
         }
 
@@ -418,8 +424,10 @@ namespace Aquila.Syntax.Ast
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.extends;
-            yield return this.identifier;
+            if (this.extends != null)
+                yield return this.extends;
+            if (this.identifier != null)
+                yield return this.identifier;
             yield break;
         }
 
@@ -548,8 +556,10 @@ namespace Aquila.Syntax.Ast
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.arguments;
-            yield return this.identifier;
+            if (this.arguments != null)
+                yield return this.arguments;
+            if (this.identifier != null)
+                yield return this.identifier;
             yield break;
         }
 
@@ -637,8 +647,10 @@ namespace Aquila.Syntax.Ast.Functions
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.type;
-            yield return this.identifier;
+            if (this.type != null)
+                yield return this.type;
+            if (this.identifier != null)
+                yield return this.identifier;
             yield break;
         }
 
@@ -689,12 +701,18 @@ namespace Aquila.Syntax.Ast.Functions
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.block;
-            yield return this.parameters;
-            yield return this.annotations;
-            yield return this.identifier;
-            yield return this.returnType;
-            yield return this.modifiers;
+            if (this.block != null)
+                yield return this.block;
+            if (this.parameters != null)
+                yield return this.parameters;
+            if (this.annotations != null)
+                yield return this.annotations;
+            if (this.identifier != null)
+                yield return this.identifier;
+            if (this.returnType != null)
+                yield return this.returnType;
+            if (this.modifiers != null)
+                yield return this.modifiers;
             yield break;
         }
 
@@ -734,8 +752,10 @@ namespace Aquila.Syntax.Ast
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.identifier;
-            yield return this.type;
+            if (this.identifier != null)
+                yield return this.identifier;
+            if (this.type != null)
+                yield return this.type;
             yield break;
         }
 
@@ -897,7 +917,8 @@ namespace Aquila.Syntax.Ast
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.type;
+            if (this.type != null)
+                yield return this.type;
             yield break;
         }
 
@@ -928,7 +949,8 @@ namespace Aquila.Syntax.Ast
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.types;
+            if (this.types != null)
+                yield return this.types;
             yield break;
         }
 
@@ -1022,8 +1044,10 @@ namespace Aquila.Syntax.Ast.Expressions
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.right;
-            yield return this.left;
+            if (this.right != null)
+                yield return this.right;
+            if (this.left != null)
+                yield return this.left;
             yield break;
         }
 
@@ -1055,7 +1079,8 @@ namespace Aquila.Syntax.Ast.Expressions
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.expression;
+            if (this.expression != null)
+                yield return this.expression;
             yield break;
         }
 
@@ -1089,8 +1114,10 @@ namespace Aquila.Syntax.Ast.Expressions
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.expression;
-            yield return this.castType;
+            if (this.expression != null)
+                yield return this.expression;
+            if (this.castType != null)
+                yield return this.castType;
             yield break;
         }
 
@@ -1125,8 +1152,10 @@ namespace Aquila.Syntax.Ast.Expressions
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.indexer;
-            yield return this.expression;
+            if (this.indexer != null)
+                yield return this.indexer;
+            if (this.expression != null)
+                yield return this.expression;
             yield break;
         }
 
@@ -1158,7 +1187,8 @@ namespace Aquila.Syntax.Ast.Expressions
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.expression;
+            if (this.expression != null)
+                yield return this.expression;
             yield break;
         }
 
@@ -1192,8 +1222,10 @@ namespace Aquila.Syntax.Ast.Expressions
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.rValue;
-            yield return this.lValue;
+            if (this.rValue != null)
+                yield return this.rValue;
+            if (this.lValue != null)
+                yield return this.lValue;
             yield break;
         }
 
@@ -1228,8 +1260,10 @@ namespace Aquila.Syntax.Ast.Expressions
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.identifier;
-            yield return this.expression;
+            if (this.identifier != null)
+                yield return this.identifier;
+            if (this.expression != null)
+                yield return this.expression;
             yield break;
         }
 
@@ -1264,8 +1298,10 @@ namespace Aquila.Syntax.Ast.Expressions
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.arguments;
-            yield return this.expression;
+            if (this.arguments != null)
+                yield return this.arguments;
+            if (this.expression != null)
+                yield return this.expression;
             yield break;
         }
 
@@ -1300,7 +1336,8 @@ namespace Aquila.Syntax.Ast.Functions
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.expression;
+            if (this.expression != null)
+                yield return this.expression;
             yield break;
         }
 
@@ -1335,7 +1372,8 @@ namespace Aquila.Syntax.Ast.Expressions
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.call;
+            if (this.call != null)
+                yield return this.call;
             yield break;
         }
 
@@ -1407,7 +1445,8 @@ namespace Aquila.Syntax.Ast.Expressions
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.operand;
+            if (this.operand != null)
+                yield return this.operand;
             yield break;
         }
 
@@ -1440,7 +1479,8 @@ namespace Aquila.Syntax.Ast.Expressions
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.expression;
+            if (this.expression != null)
+                yield return this.expression;
             yield break;
         }
 
@@ -1474,8 +1514,10 @@ namespace Aquila.Syntax.Ast.Expressions
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.identifier;
-            yield return this.argList;
+            if (this.identifier != null)
+                yield return this.identifier;
+            if (this.argList != null)
+                yield return this.argList;
             yield break;
         }
 
@@ -1532,7 +1574,8 @@ namespace Aquila.Syntax.Ast
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.statements;
+            if (this.statements != null)
+                yield return this.statements;
             yield break;
         }
 
@@ -1563,7 +1606,8 @@ namespace Aquila.Syntax.Ast.Statements
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.expression;
+            if (this.expression != null)
+                yield return this.expression;
             yield break;
         }
 
@@ -1647,8 +1691,10 @@ namespace Aquila.Syntax.Ast
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.variableType;
-            yield return this.declarators;
+            if (this.variableType != null)
+                yield return this.variableType;
+            if (this.declarators != null)
+                yield return this.declarators;
             yield break;
         }
 
@@ -1683,8 +1729,10 @@ namespace Aquila.Syntax.Ast
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.initializer;
-            yield return this.identifier;
+            if (this.initializer != null)
+                yield return this.initializer;
+            if (this.identifier != null)
+                yield return this.identifier;
             yield break;
         }
 
@@ -1722,9 +1770,12 @@ namespace Aquila.Syntax.Ast.Statements
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.tryBlock;
-            yield return this.catches;
-            yield return this.finallyItem;
+            if (this.tryBlock != null)
+                yield return this.tryBlock;
+            if (this.catches != null)
+                yield return this.catches;
+            if (this.finallyItem != null)
+                yield return this.finallyItem;
             yield break;
         }
 
@@ -1757,7 +1808,8 @@ namespace Aquila.Syntax.Ast.Statements
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.block;
+            if (this.block != null)
+                yield return this.block;
             yield break;
         }
 
@@ -1788,7 +1840,8 @@ namespace Aquila.Syntax.Ast.Statements
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.block;
+            if (this.block != null)
+                yield return this.block;
             yield break;
         }
 
@@ -1819,7 +1872,8 @@ namespace Aquila.Syntax.Ast.Statements
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.expression;
+            if (this.expression != null)
+                yield return this.expression;
             yield break;
         }
 
@@ -1859,10 +1913,14 @@ namespace Aquila.Syntax.Ast.Statements
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.block;
-            yield return this.counter;
-            yield return this.condition;
-            yield return this.varDecl;
+            if (this.block != null)
+                yield return this.block;
+            if (this.counter != null)
+                yield return this.counter;
+            if (this.condition != null)
+                yield return this.condition;
+            if (this.varDecl != null)
+                yield return this.varDecl;
             yield break;
         }
 
@@ -1899,8 +1957,10 @@ namespace Aquila.Syntax.Ast.Statements
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.block;
-            yield return this.condition;
+            if (this.block != null)
+                yield return this.block;
+            if (this.condition != null)
+                yield return this.condition;
             yield break;
         }
 
@@ -1935,8 +1995,10 @@ namespace Aquila.Syntax.Ast.Statements
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.condition;
-            yield return this.block;
+            if (this.condition != null)
+                yield return this.condition;
+            if (this.block != null)
+                yield return this.block;
             yield break;
         }
 
@@ -1974,9 +2036,12 @@ namespace Aquila.Syntax.Ast.Statements
 
         public override IEnumerable<LangElement> GetChildren()
         {
-            yield return this.elseBlock;
-            yield return this.thenBlock;
-            yield return this.condition;
+            if (this.elseBlock != null)
+                yield return this.elseBlock;
+            if (this.thenBlock != null)
+                yield return this.thenBlock;
+            if (this.condition != null)
+                yield return this.condition;
             yield break;
         }
 

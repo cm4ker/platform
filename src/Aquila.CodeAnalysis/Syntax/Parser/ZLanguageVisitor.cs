@@ -424,8 +424,8 @@ namespace Aquila.Syntax.Parser
         public override LangElement VisitMethod_declaration(ZSharpParser.Method_declarationContext context)
         {
             MethodDecl result = null;
-            Visit(context.return_type());
-            Visit(context.method_body());
+            VisitReturn_type(context.return_type());
+            VisitMethod_body(context.method_body());
             PushStack();
             if (context.parameters() != null)
                 VisitParameters(context.parameters());
@@ -732,6 +732,12 @@ namespace Aquila.Syntax.Parser
             {
                 Stack.Push(new IncDecEx(context.ToLineInfo(), SyntaxKind.IncDecExpression, Operations.IncDec,
                     Stack.PopExpression(), false, true));
+            }
+
+            if (context.bracket_expression() != null && context.bracket_expression().Any())
+            {
+                Stack.Push(new IndexerEx(context.ToLineInfo(), SyntaxKind.IndexerExpression, Operations.Indexer,
+                    Stack.PopExpression(), Stack.PopExpression()));
             }
 
             return Stack.PeekNode();

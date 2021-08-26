@@ -257,6 +257,12 @@ namespace Aquila.Core.Querying
         public override object VisitResult_column(ZSqlGrammarParser.Result_columnContext context)
         {
             base.VisitResult_column(context);
+            if (context.STAR() != null)
+            {
+                _stack.ld_star();
+                return null;
+            }
+            
             _stack.create(QObjectType.ResultColumn);
 
             if (context.column_alias() != null)

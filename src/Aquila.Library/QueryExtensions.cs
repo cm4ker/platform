@@ -9,9 +9,9 @@ namespace Aquila.Library
     [ExtensionAq]
     public static class QueryExtensions
     {
-        public static PlatformQuery query()
+        public static AqQuery query()
         {
-            return new PlatformQuery();
+            return new AqQuery();
         }
     }
 

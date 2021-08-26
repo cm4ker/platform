@@ -1,4 +1,8 @@
 using System;
+using Aquila.Core;
+using Aquila.Core.Authentication;
+using Aquila.Core.CacheService;
+using Aquila.Core.Sessions;
 using Xunit;
 
 namespace Aquila.Compiler.Tests
@@ -405,6 +409,35 @@ public static int Main()
             var result = (int)this.CompileAndRun(script);
 
             Assert.Equal(2, result);
+        }
+
+
+        [Fact]
+        public void QueryTestDBReaderAccess()
+        {
+            var script =
+                @"
+public static int Main() 
+{
+    var q = query();
+    q.text = ""from Entity.Invoice select Id"";
+    var r = q.exec();
+    if(r.read())
+    {
+        var id = r[""Id11""];
+        var name = r[""Name""];
+        var summ = r[""Sum""];
+
+        return 1;
+    }
+
+    return 0;
+}";
+
+            var d = DateTime.Now.Day;
+
+            var result = (int)this.CompileAndRun(script);
+            var da = DateTime.Now.Day;
         }
     }
 }

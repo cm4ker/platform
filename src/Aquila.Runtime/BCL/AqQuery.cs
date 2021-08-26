@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
-using Aquila.Core;
 using Aquila.Core.Contracts;
 using Aquila.Core.Querying;
 using Aquila.Core.Querying.Model;
@@ -14,7 +13,7 @@ using Aquila.ServerRuntime;
 
 namespace Aquila.Core
 {
-    public class PlatformQuery
+    public class AqQuery
     {
         private string _text;
         private string _compiled;
@@ -25,7 +24,7 @@ namespace Aquila.Core
 
         private Dictionary<string, object> _parameters = new Dictionary<string, object>();
 
-        public PlatformQuery()
+        public AqQuery()
         {
             _context = PlatformContext.GetContext();
         }
@@ -40,7 +39,7 @@ namespace Aquila.Core
             }
         }
 
-        public PlatformReader ExecuteReader()
+        public AqReader exec()
         {
             if (_needRecompile)
             {
@@ -72,13 +71,12 @@ namespace Aquila.Core
                 _logicalTree = result.logicalTree;
             }
 
-
             _command.CommandText = _compiled;
             _command.Parameters.Clear();
 
             FillParametersCore();
 
-            return new ApplicationCachedPlatformReader(_command.ExecuteReader(), _logicalTree.Last(), _context);
+            return new AppCachedAqReader(_command.ExecuteReader(), _logicalTree.Last(), _context);
         }
 
         private void FillParametersCore()
@@ -90,7 +88,6 @@ namespace Aquila.Core
                     into t
                 from d in t.DefaultIfEmpty()
                 select new { Name = p.Key, QElem = d, Real = p.Value });
-
 
             foreach (var pr in result)
             {
@@ -129,7 +126,7 @@ namespace Aquila.Core
                 }
                 else
                 {
-                    //Debug the parameter not using
+                    //Parameter not joined (not provide?)
                 }
             }
         }
@@ -152,27 +149,19 @@ namespace Aquila.Core
         {
             return type.Kind switch
             {
-                // String => _context.DataContext.Types.String.DefaultValue,
-                // PrimitiveKind.Int => _context.DataContext.Types.Int.DefaultValue,
-                // PrimitiveKind.Binary => _context.DataContext.Types.Binary.DefaultValue,
-                // PrimitiveKind.Boolean => _context.DataContext.Types.Boolean.DefaultValue,
-                // PrimitiveKind.DateTime => _context.DataContext.Types.DateTime.DefaultValue,
-                // PrimitiveKind.Guid => _context.DataContext.Types.Guid.DefaultValue,
-                // PrimitiveKind.Numeric => _context.DataContext.Types.Numeric.DefaultValue,
-                // _ => DBNull.Value,
                 SMTypeKind.Unknown => _context.DataContext.Types.String.DefaultValue,
                 SMTypeKind.String => _context.DataContext.Types.String.DefaultValue,
-                SMTypeKind.Int => _context.DataContext.Types.String.DefaultValue,
-                SMTypeKind.Long => _context.DataContext.Types.String.DefaultValue,
-                SMTypeKind.Bool => _context.DataContext.Types.String.DefaultValue,
-                SMTypeKind.Double => _context.DataContext.Types.String.DefaultValue,
-                SMTypeKind.Decimal => _context.DataContext.Types.String.DefaultValue,
-                SMTypeKind.DateTime => _context.DataContext.Types.String.DefaultValue,
-                SMTypeKind.Numeric => _context.DataContext.Types.String.DefaultValue,
-                SMTypeKind.Binary => _context.DataContext.Types.String.DefaultValue,
-                SMTypeKind.Guid => _context.DataContext.Types.String.DefaultValue,
-                SMTypeKind.Reference => _context.DataContext.Types.String.DefaultValue,
-                _ => throw new ArgumentOutOfRangeException()
+                SMTypeKind.Int => _context.DataContext.Types.Int.DefaultValue,
+                SMTypeKind.Long => _context.DataContext.Types.Int.DefaultValue,
+                SMTypeKind.Bool => _context.DataContext.Types.Boolean.DefaultValue,
+                SMTypeKind.Double => _context.DataContext.Types.Numeric.DefaultValue,
+                SMTypeKind.Decimal => _context.DataContext.Types.Numeric.DefaultValue,
+                SMTypeKind.DateTime => _context.DataContext.Types.DateTime.DefaultValue,
+                SMTypeKind.Numeric => _context.DataContext.Types.Numeric.DefaultValue,
+                SMTypeKind.Binary => _context.DataContext.Types.Binary.DefaultValue,
+                SMTypeKind.Guid => _context.DataContext.Types.Guid.DefaultValue,
+                SMTypeKind.Reference => _context.DataContext.Types.Guid.DefaultValue,
+                _ => DBNull.Value,
             };
         }
 
@@ -198,10 +187,6 @@ namespace Aquila.Core
         public void set_param(string paramName, object value)
         {
             _parameters.Add(paramName, value);
-        }
-
-        public void exec()
-        {
         }
     }
 
