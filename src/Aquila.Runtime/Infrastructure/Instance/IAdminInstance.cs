@@ -1,4 +1,4 @@
-namespace Aquila.Core.Contracts.Environment
+namespace Aquila.Core.Contracts.Instance
 {
     /// <summary>
     /// <br /> Интрфейс среды для администрирования
@@ -11,7 +11,7 @@ namespace Aquila.Core.Contracts.Environment
     /// <br />    * Остановка/запуск обслуживания баз (экземпляра приложения)
     /// <br />    * Утилиты для обеспеяения сохранности данных (бэкапирование)
     /// </summary>
-    public interface IAdminEnvironment : IInitializibleEnvironment<object>
+    public interface IAdminInstance : IInitializableInstance<object>
     {
     }
 }

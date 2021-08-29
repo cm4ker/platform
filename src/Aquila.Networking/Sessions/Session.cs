@@ -7,7 +7,7 @@ using System;
 using Aquila.Core.CacheService;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 
 namespace Aquila.Core.Sessions
 {
@@ -16,9 +16,9 @@ namespace Aquila.Core.Sessions
     /// </summary>
     public abstract class Session : ISession
     {
-        protected Session(IEnvironment env, DataContextManager dataContextManger, ICacheService cacheService)
+        protected Session(IInstance env, DataContextManager dataContextManger, ICacheService cacheService)
         {
-            Environment = env;
+            Instance = env;
             Id = Guid.NewGuid();
             CacheService = cacheService;
             _dataContextManger = dataContextManger;
@@ -30,7 +30,7 @@ namespace Aquila.Core.Sessions
 
         protected DataContextManager _dataContextManger;
 
-        public IEnvironment Environment { get; }
+        public IInstance Instance { get; }
 
         public abstract IUser User { get; protected set; }
 

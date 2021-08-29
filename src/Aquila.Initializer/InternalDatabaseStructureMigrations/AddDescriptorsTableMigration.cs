@@ -10,6 +10,7 @@ namespace Aquila.Initializer.InternalDatabaseStructureMigrations
             Create.Table("descriptors")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
                 .WithColumn("id_s").AsString(300)
+                .WithColumn("id_n").AsInt32()
                 .WithColumn("db_name").AsString(150);
         }
 

@@ -8,6 +8,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Syntax;
+using Aquila.Core;
+using Aquila.Core.Authentication;
 using Aquila.Metadata;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Parser;
@@ -150,7 +152,7 @@ namespace Aquila.Compiler.Tests
         {
             Compile(unit);
             var asm = Assembly.LoadFile("C:\\Test\\test_aq.dll");
-            var result = asm.GetType("<Constants>").GetMethod("Main").Invoke(null, null);
+            var result = asm.GetType("<Constants>").GetMethod("Main").Invoke(null, new[] { (AqContext)null });
             return result;
         }
 

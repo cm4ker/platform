@@ -16,6 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Apex.Serialization" Version="3.0.0" />
         <PackageReference Include="morelinq" Version="3.0.0" />
         <PackageReference Include="NLog" Version="5.0.0-preview.1" />
         <PackageReference Include="Npgsql" Version="5.0.7" />

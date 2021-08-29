@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Linq;
 using Aquila.Core.Querying.Model;
 using Aquila.Metadata;
 using Aquila.QueryBuilder;
@@ -11,7 +12,7 @@ namespace Aquila.Runtime.Querying
     {
         public string GetSaveUpdate(SMEntity entity, DatabaseRuntimeContext drc)
         {
-            var e_desc = drc.FindDescriptor(entity.FullName);
+            var e_desc = drc.FindEntityDescriptor(entity.FullName);
             var qm = new QueryMachine();
             var paramNum = 0;
             qm.bg_query()
@@ -46,7 +47,7 @@ namespace Aquila.Runtime.Querying
 
         public string GetSaveInsert(SMEntity entity, DatabaseRuntimeContext drc)
         {
-            var e_desc = drc.FindDescriptor(entity.FullName);
+            var e_desc = drc.FindEntityDescriptor(entity.FullName);
             var qm = new QueryMachine();
             var paramNum = 0;
 
@@ -80,9 +81,36 @@ namespace Aquila.Runtime.Querying
             return builder.Visit((SSyntaxNode)qm.peek());
         }
 
-
-        public void GetLoad()
+        public string GetLoad(SMEntity entity, DatabaseRuntimeContext drc)
         {
+            var e_desc = drc.FindEntityDescriptor(entity.FullName);
+            var id_desc = drc.FindEntityDescriptor(entity.IdProperty.FullName);
+
+            var qm = new QueryMachine();
+            var paramNum = 0;
+
+            qm.bg_query()
+                .m_from()
+                .ld_table(e_desc.DatabaseName)
+                .m_where()
+                .ld_column(id_desc.DatabaseName)
+                .ld_param("p0")
+                .eq()
+                .m_select()
+                ;
+
+            foreach (var prop in entity.Properties)
+            {
+                foreach (var schema in prop.GetSchema(drc))
+                {
+                    qm.ld_column(schema.FullName);
+                }
+            }
+
+            qm.st_query();
+            var builder = new MsSqlBuilder();
+
+            return builder.Visit((SSyntaxNode)qm.peek());
         }
     }
 }

@@ -268,19 +268,19 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             public RuntimeHolder(CoreTypes ct)
             {
-                GetContext = ct.PlatformContext.Method("GetContext");
-                GetDataContext = ct.PlatformContext.Method("GetDataContext");
-                GetDataRuntimeContext = ct.PlatformContext.Method("GetDataRuntimeContext");
-                CreateCommand = ct.PlatformContext.Method("CreateCommand");
+                DataContext = ct.AqContext.Property("DataContext");
+                DataRuntimeContext = ct.AqContext.Property("DataRuntimeContext");
+                CreateCommand = ct.AqContext.Method("CreateCommand");
             }
 
             public readonly CoreMethod
 
                 //Aquila.Runtime methods
-                GetContext,
-                GetDataContext,
-                GetDataRuntimeContext,
                 CreateCommand;
+
+            public readonly CoreProperty
+                DataContext,
+                DataRuntimeContext;
         }
     }
 }

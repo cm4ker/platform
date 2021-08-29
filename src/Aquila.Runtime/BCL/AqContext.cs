@@ -7,13 +7,14 @@ using Aquila.Runtime;
 
 namespace Aquila.Core
 {
-    public class PlatformContext
+    //Context. Not static. Immutable. Thread safe
+    public class AqContext
     {
         private readonly ISession _session;
         private readonly DataConnectionContext _dcc;
         private readonly DatabaseRuntimeContext _drc;
 
-        public PlatformContext(ISession session)
+        public AqContext(ISession session)
         {
             _session = session;
             _dcc = _session.DataContext;
@@ -25,15 +26,6 @@ namespace Aquila.Core
 
         public DatabaseRuntimeContext DataRuntimeContext => _drc;
 
-        private static AsyncLocal<PlatformContext> Context = new AsyncLocal<PlatformContext>();
-
-        public static PlatformContext GetContext() => Context.Value;
-
-        public static DataConnectionContext GetDataContext() => GetContext().DataContext;
-        public static DatabaseRuntimeContext GetDataRuntimeContext() => GetContext().DataRuntimeContext;
-
-        public static DbCommand CreateCommand() => GetDataContext().CreateCommand();
-
-        public static void SetContext(PlatformContext value) => Context.Value = value;
+        public DbCommand CreateCommand() => DataContext.CreateCommand();
     }
 }

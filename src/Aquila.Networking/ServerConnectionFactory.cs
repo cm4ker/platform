@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Network.Contracts;
 using Aquila.Logging;
 
@@ -19,13 +19,13 @@ namespace Aquila.Core.Network
         }
 
         protected Connection CreateConnection(ITransportClient tcpClient,
-            IPlatformEnvironmentManager environmentManager)
+            IPlatformInstanceManager instanceManager)
         {
             var connection = new ServerConnection(
                 _serviceProvider.GetRequiredService<ILogger<ServerConnection>>(),
                 _serviceProvider.GetRequiredService<IChannelFactory>(),
                 tcpClient,
-                environmentManager
+                instanceManager
             );
 
             return connection;
@@ -35,7 +35,7 @@ namespace Aquila.Core.Network
         {
             var connection = CreateConnection(
                 tcpClient,
-                _serviceProvider.GetRequiredService<IPlatformEnvironmentManager>()
+                _serviceProvider.GetRequiredService<IPlatformInstanceManager>()
             );
 
             return connection;

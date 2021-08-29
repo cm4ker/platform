@@ -31,7 +31,7 @@ namespace Aquila.Migrations
         private string GetDbName(SMEntity md, EntityMigratorDataContext context)
         {
             var mdId = md.FullName;
-            var descriptor = context.RuntimeContext.FindDescriptor(mdId);
+            var descriptor = context.RuntimeContext.FindEntityDescriptor(mdId);
 
             if (descriptor == null)
             {

@@ -237,7 +237,9 @@
                   OutputPackagePath="$(OutputPackagePath)"
                   OutputPackageFullPath="$(OutputPackageFullPath)"
                   OutputName="%(IntermediateAssembly.Filename)"
-                  TempOutputPath="$(TempOutputDir)"/>
+                  TempOutputPath="$(TempOutputDir)"
+                  Metadata="@(Metadata)"
+                  ProjectDirectory="$(MSBuildProjectDirectory)"/>
 
         <Message Text="The package was created: $(OutputPackageFullPath)" Importance="High"/>
 

@@ -206,6 +206,14 @@ namespace Aquila.CodeAnalysis.Symbols
         protected virtual IEnumerable<ParameterSymbol> BuildImplicitParams()
         {
             var index = 0;
+
+            if (IsStatic)
+            {
+                // Context <ctx>
+                yield return new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.AqContext,
+                    SpecialParameterSymbol.ContextName, index++);
+            }
+
             yield break;
         }
 

@@ -1,6 +1,6 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Environment;
 
 namespace Aquila.Core.Network
@@ -16,9 +16,9 @@ namespace Aquila.Core.Network
 
         public override Connection CreateConnection(ITransportClient tcpClient)
         {
-            return CreateConnection(tcpClient, new FilteredEnvironmentManager(
-                _serviceProvider.GetRequiredService<IPlatformEnvironmentManager>(),
-                env => env.GetType() == typeof(WorkEnvironment)));
+            return CreateConnection(tcpClient, new FilteredInstanceManager(
+                _serviceProvider.GetRequiredService<IPlatformInstanceManager>(),
+                env => env.GetType() == typeof(WorkInstance)));
         }
     }
 }

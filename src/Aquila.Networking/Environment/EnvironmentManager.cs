@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Settings;
 using Aquila.Logging;
 
@@ -20,14 +20,14 @@ namespace Aquila.Core.Environment
     ///
     /// <br /> Возжможно, потом, топологически каждая отдельная среда - это отдельный процесс
     ///  </summary>
-    public class EnvironmentManager : IPlatformEnvironmentManager
+    public class InstanceManager : IPlatformInstanceManager
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly List<IEnvironment> environments = new List<IEnvironment>();
+        private readonly List<IInstance> environments = new List<IInstance>();
         private readonly ILogger _logger;
 
-        public EnvironmentManager(ISettingsStorage configStorage, IServiceProvider serviceProvider,
-            ILogger<EnvironmentManager> logger)
+        public InstanceManager(ISettingsStorage configStorage, IServiceProvider serviceProvider,
+            ILogger<InstanceManager> logger)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
@@ -37,16 +37,16 @@ namespace Aquila.Core.Environment
 
         private void Initialize(List<StartupConfig> list)
         {
-            list.ForEach(c => environments.Add(CreatePlatformEnvironment<IWorkEnvironment>(c)));
+            list.ForEach(c => environments.Add(CreatePlatformEnvironment<IWorkInstance>(c)));
         }
 
-        public void AddWorkEnvironment(IStartupConfig config)
+        public void AddWorkInstance(IStartupConfig config)
         {
-            environments.Add(CreatePlatformEnvironment<IWorkEnvironment>(config));
+            environments.Add(CreatePlatformEnvironment<IWorkInstance>(config));
         }
 
-        protected IPlatformEnvironment CreatePlatformEnvironment<T>(IStartupConfig config)
-            where T : IPlatformEnvironment
+        protected IPlatformInstance CreatePlatformEnvironment<T>(IStartupConfig config)
+            where T : IPlatformInstance
         {
             try
             {
@@ -65,12 +65,12 @@ namespace Aquila.Core.Environment
             return null;
         }
 
-        public IEnvironment GetEnvironment(string name)
+        public IInstance GetInstance(string name)
         {
             return environments.First(m => m.Name.Equals(name));
         }
 
-        public List<IEnvironment> GetEnvironmentList()
+        public List<IInstance> GetInstanceList()
         {
             return environments;
         }

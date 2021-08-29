@@ -10,7 +10,6 @@ using Aquila.Core.Sessions;
 using Aquila.Initializer;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Environment;
 using Aquila.Core.Contracts.Network;
 using Aquila.Test.Tools;
 

@@ -1,17 +1,17 @@
 ﻿using System;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Tools;
 
 namespace Aquila.Core.Network.States
 {
     public class EnvironmentManagerObserver : IConnectionObserver<IConnectionContext>
     {
-        private IPlatformEnvironmentManager _environmentManager;
+        private IPlatformInstanceManager _instanceManager;
         private IDisposable _unsbscriber;
 
-        public EnvironmentManagerObserver(IPlatformEnvironmentManager environmentManager)
+        public EnvironmentManagerObserver(IPlatformInstanceManager instanceManager)
         {
-            _environmentManager = environmentManager;
+            _instanceManager = instanceManager;
         }
 
         public bool CanObserve(Type type)
@@ -41,7 +41,7 @@ namespace Aquila.Core.Network.States
             switch (value)
             {
                 case RequestEnvironmentUseNetworkMessage msg:
-                    msg.UseEnvironment(_environmentManager, (env) =>
+                    msg.UseEnvironment(_instanceManager, (env) =>
                     {
                         _unsbscriber?.Dispose();
 
@@ -51,7 +51,7 @@ namespace Aquila.Core.Network.States
                     break;
 
                 case RequestEnvironmentListNetworkMessage msg:
-                    msg.GetEnvironmentList(_environmentManager).PipeTo(msg.Id, context.Connection.Channel);
+                    msg.GetEnvironmentList(_instanceManager).PipeTo(msg.Id, context.Connection.Channel);
                     break;
             }
         }

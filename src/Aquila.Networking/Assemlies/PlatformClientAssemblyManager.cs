@@ -31,13 +31,13 @@ namespace Aquila.Core.Assemlies
         }
 
 
-        private IEnumerable<AssemblyDescription> LoadCacheDescription()
+        private IEnumerable<AssemblyDescriptor> LoadCacheDescription()
         {
             foreach (var filePath in Directory.GetFiles(CashPath))
             {
                 using (var file = new FileStream(filePath, FileMode.Open))
                 {
-                    yield return new AssemblyDescription()
+                    yield return new AssemblyDescriptor()
                     {
                         AssemblyHash = HashHelper.HashMD5(file),
                         Name = Path.GetFileName(filePath),
@@ -62,11 +62,11 @@ namespace Aquila.Core.Assemlies
             return new FileStream(Path.Combine(CashPath, name), FileMode.Open);
         }
 
-        private void Download(AssemblyDescription assemblyDescription)
+        private void Download(AssemblyDescriptor assemblyDescriptor)
         {
-            using (var stream = _service.GetAssembly(assemblyDescription))
+            using (var stream = _service.GetAssembly(assemblyDescriptor))
             {
-                using (var file = new FileStream(Path.Combine(CashPath, assemblyDescription.Name), FileMode.Create))
+                using (var file = new FileStream(Path.Combine(CashPath, assemblyDescriptor.Name), FileMode.Create))
                 {
                     stream.CopyTo(file);
                 }

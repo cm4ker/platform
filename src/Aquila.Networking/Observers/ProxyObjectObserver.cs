@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Tools;
 
 namespace Aquila.Core.Network.States
@@ -9,12 +9,12 @@ namespace Aquila.Core.Network.States
     {
         private IDisposable _unsbscriber;
         private object _instanceService;
-        private IEnvironment _environment;
+        private IInstance _instance;
         private Guid _id;
 
-        public ProxyObjectObserver(IConnection connection, Guid Id, object instanceService, IEnvironment environment)
+        public ProxyObjectObserver(IConnection connection, Guid Id, object instanceService, IInstance instance)
         {
-            _environment = environment;
+            _instance = instance;
 
 
             _instanceService = instanceService;
@@ -55,7 +55,7 @@ namespace Aquila.Core.Network.States
                 case RequestInvokeMethodProxy methodProxy:
                     if (methodProxy.RequestId.Equals(_id))
                     {
-                        var task = _environment.InvokeService.InvokeProxy(((ServerConnectionContext)context).Session,
+                        var task = _instance.InvokeService.InvokeProxy(((ServerConnectionContext)context).Session,
                             _instanceService, methodProxy.MethodName, methodProxy.Args);
 
                         context.Connection.Channel.Send(new ResponceInvokeMethodProxy(methodProxy.Id, await task));
@@ -65,7 +65,7 @@ namespace Aquila.Core.Network.States
                 case RequestInvokeStreamProxy streamProxy:
                     if (streamProxy.RequestId.Equals(_id))
                     {
-                        var task = _environment.InvokeService.InvokeProxy(((ServerConnectionContext)context).Session,
+                        var task = _instance.InvokeService.InvokeProxy(((ServerConnectionContext)context).Session,
                             _instanceService, streamProxy.MethodName, streamProxy.Args);
 
                         var dstStream = new DataStream(streamProxy.Id, context.Connection);

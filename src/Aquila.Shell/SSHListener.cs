@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Aquila.Cli;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Environment;
 using Aquila.Core.Network;
 using Aquila.Core.Serialisers;
@@ -143,7 +143,7 @@ namespace Aquila.Shell
 
             
             services.AddScoped<ICommandLineInterface, CliInterface>();
-            services.AddSingleton(f => _serviceProvider.GetRequiredService<IPlatformEnvironmentManager>());
+            services.AddSingleton(f => _serviceProvider.GetRequiredService<IPlatformInstanceManager>());
             services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
 
 

@@ -3,7 +3,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Logging;
 
 namespace Aquila.Core.Network
@@ -99,7 +99,7 @@ namespace Aquila.Core.Network
                 _serviceProvider.GetRequiredService<ILogger<ServerConnection>>(),
                 _serviceProvider.GetRequiredService<IChannelFactory>(),
                 client,
-                _serviceProvider.GetRequiredService<IPlatformEnvironmentManager>()
+                _serviceProvider.GetRequiredService<IPlatformInstanceManager>()
             );
         }
 

@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Aquila.Core;
 using Aquila.Core.Authentication;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
 using Aquila.Core.Sessions;
 using Microsoft.AspNetCore.Builder;
@@ -40,12 +40,12 @@ namespace Aquila.WebServiceCore
         private readonly ILogger<RunnerWebService> _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly IStartupService _startupService;
-        private readonly IPlatformEnvironmentManager _mrg;
+        private readonly IPlatformInstanceManager _mrg;
         private IWebHost _host;
 
 
         public RunnerWebService(IServiceProvider serviceProvider, IStartupService startupService,
-            IPlatformEnvironmentManager mrg)
+            IPlatformInstanceManager mrg)
         {
             _serviceProvider = serviceProvider;
             _startupService = startupService;
@@ -68,6 +68,7 @@ namespace Aquila.WebServiceCore
                 .ConfigureServices(services =>
                 {
                     _startupService.ConfigureServices(services);
+
                     services.AddSoapCore();
 
                     services.AddExceptionHandler(o => o.AllowStatusCode404Response = false);
@@ -78,6 +79,8 @@ namespace Aquila.WebServiceCore
 
                     app.UseEndpoints(x =>
                         x.MapGet("dbName/api/entity/invoice", async context => { await CustomHandler(context); }));
+
+                    _startupService.Configure(app);
 
                     async Task CustomHandler(HttpContext context)
                     {
@@ -102,8 +105,8 @@ namespace Aquila.WebServiceCore
                                                   
                          */
 
-                        var env = _mrg.GetEnvironment("Library");
-                        var plContext = new PlatformContext(env.CreateSession(new Anonymous()));
+                        var env = _mrg.GetInstance("Library");
+                        var plContext = new AqContext(env.CreateSession(new Anonymous()));
 
                         var md = plContext.DataRuntimeContext.GetMetadata();
 
@@ -112,22 +115,9 @@ namespace Aquila.WebServiceCore
                         await context.Response.WriteAsJsonAsync(list, cancellationToken);
                     }
 
-                    ;
-
-
-                    // app.Use(async (context, next) =>
-                    // {
-                    //     var env = _mrg.GetEnvironment("Library");
-                    //
-                    //
-                    //     var plContext = new PlatformContext(env.CreateSession(new Anonymous()));
-                    //     PlatformContext.SetContext(plContext);
-                    //     await next.Invoke();
-                    // });
-
-                    _startupService.Configure(app);
-
-                    app.Run(context => context.Response.WriteAsync("Default"));
+                    //if we not found endpoints response this                    
+                    app.Run(context =>
+                        context.Response.WriteAsync("Path not found! Go away!", cancellationToken: cancellationToken));
                 })
                 .UseKestrel()
                 .ConfigureServices(x => x.AddRouting())

@@ -205,6 +205,8 @@ namespace Aquila.CodeAnalysis.CodeGen
     {
         readonly protected FieldSymbol _field;
         readonly protected Cci.IFieldReference _fieldref;
+        readonly protected IPlace _holder;
+
 
         internal static IFieldSymbol GetRealDefinition(IFieldSymbol field)
         {
@@ -226,15 +228,21 @@ namespace Aquila.CodeAnalysis.CodeGen
                 : (Cci.IFieldReference)field;
         }
 
+        public FieldPlace(IFieldSymbol field, IPlace holder, Emit.PEModuleBuilder module = null) : this(field, module)
+        {
+            _holder = holder;
+        }
+
         virtual protected void EmitHolder(ILBuilder il)
         {
-            // nope
+            // if (!_field.IsStatic)
+            //     _holder?.EmitLoad(il);
         }
 
         void EmitOpCode(ILBuilder il, ILOpCode code)
         {
             il.EmitOpCode(code);
-            il.EmitToken(_fieldref, null, DiagnosticBag.GetInstance()); // .{field}
+            il.EmitToken(_fieldref, null, DiagnosticBag.GetInstance());
         }
 
         public TypeSymbol Type => _field.Type;
@@ -244,6 +252,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         public TypeSymbol EmitLoad(ILBuilder il)
         {
             EmitHolder(il);
+
             EmitOpCode(il, _field.IsStatic ? ILOpCode.Ldsfld : ILOpCode.Ldfld);
             return _field.Type;
         }

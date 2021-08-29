@@ -14,6 +14,7 @@ using Aquila.Metadata;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
+using SpecialTypeExtensions = Microsoft.CodeAnalysis.SpecialTypeExtensions;
 
 namespace Aquila.Syntax.Metadata
 {
@@ -141,6 +142,8 @@ namespace Aquila.Syntax.Metadata
             var objectType =
                 _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{ObjectPostfix}", false));
 
+            #region Fields
+
             //Internal field
             var dtoField = _ps.SynthesizeField(objectType);
             dtoField
@@ -148,25 +151,46 @@ namespace Aquila.Syntax.Metadata
                 .SetAccess(Accessibility.Private)
                 .SetType(dtoType);
 
+            var ctxField = _ps.SynthesizeField(objectType);
+            ctxField
+                .SetName(SpecialParameterSymbol.ContextName)
+                .SetAccess(Accessibility.Private)
+                .SetType(_ct.AqContext);
+
+            #endregion
+
+            #region Constructor
 
             var ctor = _ps.SynthesizeConstructor(objectType);
-            var dtoParam = new SynthesizedParameterSymbol(ctor, dtoType, 0, RefKind.None, "dto");
+            var ctxParam = new SpecialParameterSymbol(ctor, _ct.AqContext, SpecialParameterSymbol.ContextName, 0);
+            var dtoParam = new SynthesizedParameterSymbol(ctor, dtoType, 1, RefKind.None, "dto");
+
 
             var thisPlace = new ArgPlace(objectType, 0);
-            var paramPlace = new ParamPlace(dtoParam);
-            var dtoFieldPlace = new FieldPlace(dtoField);
+            var dtoPS = new ParamPlace(dtoParam);
+            var ctxPS = new ParamPlace(ctxParam);
+
+            var dtoFieldPlace = new FieldPlace(dtoField, thisPlace);
+            var ctxFieldPlace = new FieldPlace(ctxField, thisPlace);
 
             ctor
-                .SetParameters(dtoParam)
+                .SetParameters(ctxParam, dtoParam)
                 .SetMethodBuilder((m, d) => (il) =>
                 {
                     thisPlace.EmitLoad(il);
-                    paramPlace.EmitLoad(il);
+                    ctxPS.EmitLoad(il);
+                    ctxFieldPlace.EmitStore(il);
+
+                    thisPlace.EmitLoad(il);
+                    dtoPS.EmitLoad(il);
                     dtoFieldPlace.EmitStore(il);
 
                     il.EmitRet(true);
                 });
 
+            #endregion
+
+            #region Props
 
             foreach (var prop in md.Properties)
             {
@@ -174,6 +198,7 @@ namespace Aquila.Syntax.Metadata
 
                 var getter = _ps.SynthesizeMethod(objectType);
                 var setter = _ps.SynthesizeMethod(objectType);
+                var property = _ps.SynthesizeProperty(objectType);
 
                 var propType = (isComplexType)
                     ? _ct.Object
@@ -185,6 +210,12 @@ namespace Aquila.Syntax.Metadata
 
                 setter.SetAccess(Accessibility.Public)
                     .SetName($"set_{prop.Name}");
+
+
+                property.SetType(propType)
+                    .SetGetMethod(getter)
+                    .SetSetMethod(setter)
+                    .SetName(prop.Name);
 
                 var param = new SynthesizedParameterSymbol(setter, propType, 0, RefKind.None);
                 setter.SetParameters(param);
@@ -319,7 +350,12 @@ namespace Aquila.Syntax.Metadata
 
                 objectType.AddMember(getter);
                 objectType.AddMember(setter);
+                objectType.AddMember(property);
             }
+
+            #endregion
+
+            #region void Save()
 
             var saveMethod = _ps.SynthesizeMethod(objectType)
                 .SetName("Save")
@@ -336,15 +372,27 @@ namespace Aquila.Syntax.Metadata
                                       throw new Exception("Method save not found in manager type");
 
                         thisPlace.EmitLoad(il);
+
+                        thisPlace.EmitLoad(il);
+                        ctxFieldPlace.EmitLoad(il);
+
+                        thisPlace.EmitLoad(il);
                         dtoFieldPlace.EmitLoad(il);
+
+
                         il.EmitCall(m, d, ILOpCode.Call, mrgSave);
                         il.EmitRet(true);
                     };
                 });
 
+            #endregion
+
             objectType.AddMember(dtoField);
+            objectType.AddMember(ctxField);
+
             objectType.AddMember(ctor);
             objectType.AddMember(saveMethod);
+
 
             return objectType;
         }
@@ -386,11 +434,16 @@ namespace Aquila.Syntax.Metadata
                 .SetAccess(Accessibility.Public)
                 .SetIsStatic(true);
 
-            var saveDtoPerameter = new SynthesizedParameterSymbol(saveMethod, dtoType, 0, RefKind.None);
+            var saveDtoPerameter = new SynthesizedParameterSymbol(saveMethod, dtoType, 1, RefKind.None);
+            var ctxParameter = //new SynthesizedParameterSymbol(saveMethod, _ct.AqContext, 0, RefKind.None);
+                new SpecialParameterSymbol(saveMethod, _ct.AqContext, SpecialParameterSymbol.ContextName, 0);
             var sdpp = new ParamPlace(saveDtoPerameter);
+            var ctx = new ParamPlace(ctxParameter);
+
+            #region Save()
 
             saveMethod
-                .SetParameters(saveDtoPerameter)
+                .SetParameters(ctxParameter, saveDtoPerameter)
                 .SetMethodBuilder((m, d) => il =>
                 {
                     var dbLoc = new LocalPlace(il.DefineSynthLocal(saveMethod, "dbCommand", _ct.DbCommand));
@@ -404,7 +457,9 @@ namespace Aquila.Syntax.Metadata
                     var paramsCollectionAdd = dbParamsProp.Symbol.Type.GetMembers("Add").OfType<MethodSymbol>()
                         .FirstOrDefault();
 
+                    ctx.EmitLoad(il);
                     il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.CreateCommand);
+
                     dbLoc.EmitStore(il);
 
                     dbLoc.EmitLoad(il);
@@ -462,18 +517,31 @@ namespace Aquila.Syntax.Metadata
                     il.EmitRet(true);
                 });
 
-            var createMethod = _ps.SynthesizeMethod(managerType)
-                .SetName("Create")
+            #endregion
+
+            #region Create()
+
+            var createMethod = _ps.SynthesizeMethod(managerType);
+
+            var ctxParam =
+                new SpecialParameterSymbol(createMethod, _ct.AqContext, SpecialParameterSymbol.ContextName, 0);
+            var ctxPS = new ParamPlace(ctxParam);
+
+            createMethod.SetName("Create")
                 .SetAccess(Accessibility.Public)
                 .SetIsStatic(true)
                 .SetReturn(objectType)
+                .SetParameters(ctxParam)
                 .SetMethodBuilder((m, d) => il =>
                 {
+                    ctxPS.EmitLoad(il);
                     il.EmitCall(m, d, ILOpCode.Newobj, dtoType.InstanceConstructors.First());
                     il.EmitCall(m, d, ILOpCode.Newobj, objectType.InstanceConstructors.First());
 
                     il.EmitRet(true);
                 });
+
+            #endregion
 
             var loadMethod = _ps.SynthesizeMethod(managerType)
                 .SetName("Load")
@@ -499,6 +567,7 @@ namespace Aquila.Syntax.Metadata
             managerType.AddMember(typeIdField);
             managerType.AddMember(saveQueryField);
             managerType.AddMember(loadQueryField);
+
 
             return managerType;
         }

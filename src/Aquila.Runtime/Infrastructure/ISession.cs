@@ -1,6 +1,6 @@
 ﻿using System;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
 using Aquila.Data;
 using Aquila.Runtime;
@@ -45,7 +45,7 @@ namespace Aquila.Core.Contracts
         /// <summary>
         /// The environment
         /// </summary>
-        IEnvironment Environment { get; }
+        IInstance Instance { get; }
 
         /// <summary>
         /// Close the session

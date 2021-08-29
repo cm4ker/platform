@@ -21,13 +21,14 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override bool IsGlobalScope => true;
 
-
         protected override IEnumerable<ParameterSymbol> BuildImplicitParams()
         {
             int index = 0;
 
-
-            yield break;
+            foreach (var param in base.BuildImplicitParams())
+            {
+                yield return param;
+            }
         }
 
         public override Accessibility DeclaredAccessibility => Accessibility.Public;

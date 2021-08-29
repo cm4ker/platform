@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Aquila.Core.Assemlies;
 using Aquila.Core.ClientServices;
 using Aquila.Core.Contracts;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
 using Aquila.Core.Test.Logging;
 using Aquila.Test.Tools;
@@ -21,7 +21,6 @@ namespace Aquila.Core.Test
 {
     public delegate void InvokeInClientServerContextDelegate(ServiceProvider clientService,
         ServiceProvider serverSerice, ClientPlatformContext clientContext);
-
 
     public class UnitTestServerClient : ClientServerTestBase
     {
@@ -40,8 +39,8 @@ namespace Aquila.Core.Test
                 var serverServices = TestEnvSetup.GetServerService(_testOutput);
                 var clientServices = TestEnvSetup.GetClientService(_testOutput);
 
-                var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
-                Assert.NotEmpty(environmentManager.GetEnvironmentList());
+                var environmentManager = serverServices.GetRequiredService<IPlatformInstanceManager>();
+                Assert.NotEmpty(environmentManager.GetInstanceList());
 
                 var accessPoint = serverServices.GetRequiredService<IAccessPoint>();
                 accessPoint.Start();
@@ -67,8 +66,8 @@ namespace Aquila.Core.Test
             var serverServices = TestEnvSetup.GetServerService(_testOutput);
             var clientServices = TestEnvSetup.GetClientService(_testOutput);
 
-            var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
-            Assert.NotEmpty(environmentManager.GetEnvironmentList());
+            var environmentManager = serverServices.GetRequiredService<IPlatformInstanceManager>();
+            Assert.NotEmpty(environmentManager.GetInstanceList());
 
 
             var accessPoint = serverServices.GetRequiredService<IAccessPoint>();
@@ -83,7 +82,6 @@ namespace Aquila.Core.Test
             platformClient.Login("admin", "admin");
             // var assembly = platformClient.LoadMainAssembly();
             // Assert.NotNull(assembly);
-
 
             //Task.Delay(1000000).Wait();
             accessPoint.Stop();

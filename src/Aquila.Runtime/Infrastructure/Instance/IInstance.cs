@@ -2,9 +2,9 @@
 using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Network;
 
-namespace Aquila.Core.Contracts.Environment
+namespace Aquila.Core.Contracts.Instance
 {
-    public interface IEnvironment
+    public interface IInstance
     {
         /// <summary>
         /// Имя среды
@@ -33,18 +33,5 @@ namespace Aquila.Core.Contracts.Environment
         /// <param name="user">Пользователь</param>
         /// <returns>Экземпляр сессии</returns>
         ISession CreateSession(IUser user);
-    }
-
-    /// <summary>
-    ///  Среда для подключения. Обеспечивает некий контекст в котором работает удаленный пользователь
-    /// </summary>
-    public interface IInitializibleEnvironment<in TConfiguration> : IEnvironment
-        where TConfiguration : class
-    {
-        /// <summary>
-        /// Инициализация
-        /// </summary>
-        /// <param name="config">Конфигурация</param>
-        void Initialize(TConfiguration config);
     }
 }

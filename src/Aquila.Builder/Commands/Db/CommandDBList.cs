@@ -1,5 +1,5 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 
 namespace Aquila.Cli.Commands.Db
 {
@@ -7,15 +7,15 @@ namespace Aquila.Cli.Commands.Db
     public class CommandDBList
     {
         private IConsole _console;
-        private IPlatformEnvironmentManager _environmentManager;
-        public CommandDBList(IConsole console, IPlatformEnvironmentManager environmentManager)
+        private IPlatformInstanceManager _instanceManager;
+        public CommandDBList(IConsole console, IPlatformInstanceManager instanceManager)
         {
             _console = console;
-            _environmentManager = environmentManager;
+            _instanceManager = instanceManager;
         }
         public void OnExecute()
         {
-            _environmentManager.GetEnvironmentList().ForEach(e => _console.WriteLine(e.Name));
+            _instanceManager.GetInstanceList().ForEach(e => _console.WriteLine(e.Name));
         }
     }
 }

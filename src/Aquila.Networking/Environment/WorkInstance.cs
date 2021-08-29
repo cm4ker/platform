@@ -7,7 +7,7 @@ using Aquila.Core.CacheService;
 using Aquila.Core.Sessions;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
 using Aquila.Data;
 using Aquila.Initializer;
@@ -18,11 +18,11 @@ namespace Aquila.Core.Environment
     /// <summary>
     /// Рабочая среда. Здесь же реализованы все плюшки  манипуляций с данными и так далее
     /// </summary>
-    public class WorkEnvironment : PlatformEnvironment, IWorkEnvironment
+    public class WorkInstance : PlatformInstance, IWorkInstance
     {
         private object _locking;
 
-        public WorkEnvironment(IInvokeService invokeService, ILinkFactory linkFactory, ILogger<WorkEnvironment> logger,
+        public WorkInstance(IInvokeService invokeService, ILinkFactory linkFactory, ILogger<WorkInstance> logger,
             IAuthenticationManager authenticationManager, IServiceProvider serviceProvider,
             DataContextManager contextManager, IUserManager userManager, ICacheService cacheService) :
             base(contextManager, cacheService)

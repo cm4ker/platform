@@ -22,7 +22,7 @@ namespace Aquila.Runtime.Tests.DB
 
             var d1 = db.CreateDescriptor(dc);
             var d2 = db.CreateDescriptor(dc);
-            Assert.NotEmpty(db.GetDescriptors());
+            Assert.NotEmpty(db.GetEntityDescriptors());
 
             d1.DatabaseName = "some_name";
             d2.DatabaseName = $"Tbl_{d2.DatabaseId}";
@@ -30,8 +30,9 @@ namespace Aquila.Runtime.Tests.DB
 
             db.Save(dc);
 
-            Assert.Equal(1, d1.DatabaseId);
-            Assert.Equal(2, d2.DatabaseId);
+            //NOTE: First 0x100 type ids are reserved 
+            Assert.Equal(257, d1.DatabaseId);
+            Assert.Equal(258, d2.DatabaseId);
 
             DatabaseRuntimeContext db2 = new DatabaseRuntimeContext();
 

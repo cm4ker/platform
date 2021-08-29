@@ -53,17 +53,29 @@ namespace Aquila.Metadata
         private List<SMProperty> _props;
         private SMProperty _idProperty;
 
-        private void CoreLazyProperties()
+        private void CoreLazyPropertiesOrdered()
         {
             _props = new List<SMProperty>();
 
             var id = new SMProperty(idProp, _cache);
+            _idProperty = id;
             AddProperty(id);
 
             foreach (var p in _md.Properties.OrderBy(x => x.Name))
             {
                 var prop = new SMProperty(p, _cache);
                 AddProperty(prop);
+            }
+        }
+
+        public SMProperty FindProperty(string name) => GetPropertiesCore().FirstOrDefault(x => x.Name == name);
+
+        public SMProperty IdProperty
+        {
+            get
+            {
+                CoreLazyPropertiesOrdered();
+                return _idProperty;
             }
         }
 
@@ -76,16 +88,15 @@ namespace Aquila.Metadata
             _props.Add(prop);
         }
 
-        public IEnumerable<SMProperty> Properties
+        IEnumerable<SMProperty> GetPropertiesCore()
         {
-            get
-            {
-                if (_props == null)
-                    CoreLazyProperties();
+            if (_props == null)
+                CoreLazyPropertiesOrdered();
 
-                return _props;
-            }
+            return _props;
         }
+
+        public IEnumerable<SMProperty> Properties => GetPropertiesCore();
 
 
         public string Name => _md.Name;

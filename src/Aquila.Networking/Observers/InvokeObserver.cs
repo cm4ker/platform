@@ -1,5 +1,5 @@
 ﻿using System;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Tools;
 using Aquila.Serializer;
 
@@ -7,12 +7,12 @@ namespace Aquila.Core.Network.States
 {
     public class InvokeObserver : IConnectionObserver<IConnectionContext>
     {
-        private IEnvironment _environment;
+        private IInstance _instance;
         private IDisposable _unsbscriber;
 
-        public InvokeObserver(IEnvironment environment)
+        public InvokeObserver(IInstance instance)
         {
-            _environment = environment;
+            _instance = instance;
         }
 
         public bool CanObserve(Type type)
@@ -44,14 +44,14 @@ namespace Aquila.Core.Network.States
             {
                 case RequestInvokeInstanceProxy instance:
                     var type = Type.GetType(instance.InterfaceName);
-                    var instanceService = _environment.InvokeService.GetRequiredService(type);
+                    var instanceService = _instance.InvokeService.GetRequiredService(type);
 
-                    new ProxyObjectObserver(context.Connection, instance.Id, instanceService, _environment);
+                    new ProxyObjectObserver(context.Connection, instance.Id, instanceService, _instance);
                     break;
                 case RequestInvokeUnaryNetworkMessage invoke:
                     if (context is ServerConnectionContext serverContext)
                     {
-                        var res = _environment.InvokeService.Invoke(invoke.Route, serverContext.Session, invoke.Args);
+                        var res = _instance.InvokeService.Invoke(invoke.Route, serverContext.Session, invoke.Args);
 
                         var responce = new ResponceInvokeUnaryNetworkMessage(invoke.Id, await res);
 
@@ -65,7 +65,7 @@ namespace Aquila.Core.Network.States
                     {
                         PlatformSerializer serializer = new PlatformSerializer();
                         var args = serializer.Deserialize(invoke.Args, false);
-                        var res = _environment.InvokeService.Invoke(invoke.Route, srvContext.Session, args);
+                        var res = _instance.InvokeService.Invoke(invoke.Route, srvContext.Session, args);
 
 
                         var result = serializer.Serialize(await res);
@@ -81,7 +81,7 @@ namespace Aquila.Core.Network.States
                     if (context is ServerConnectionContext serverContext2)
                     {
                         var stream = new DataStream(invokeStream.Id, context.Connection);
-                        await _environment.InvokeService.InvokeStream(invokeStream.Route, serverContext2.Session,
+                        await _instance.InvokeService.InvokeStream(invokeStream.Route, serverContext2.Session,
                             stream, invokeStream.Request);
                     }
 

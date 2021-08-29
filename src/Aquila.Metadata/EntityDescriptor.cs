@@ -9,16 +9,27 @@ namespace Aquila.Metadata
     {
         private string _metadataId;
         private string _databaseName;
+        private int _databaseId;
 
-        public EntityDescriptor(int dbId)
+
+        public EntityDescriptor(int id)
         {
-            DatabaseId = dbId;
+            Id = id;
 
             _metadataId = "";
             _databaseName = "";
+
+            _databaseId = Id + (int)SMTypeKind.Reference;
         }
 
-        public int DatabaseId { get; }
+        public EntityDescriptor(int id, int dbId) : this(id)
+        {
+            _databaseId = dbId;
+        }
+
+        public int Id { get; }
+
+        public int DatabaseId => _databaseId;
 
         public string MetadataId
         {

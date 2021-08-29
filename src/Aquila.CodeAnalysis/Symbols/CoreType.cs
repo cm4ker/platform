@@ -120,7 +120,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public const string AquilaPlatformQueryFullName = AquilaRuntimeNamespace + ".AqQuery";
 
-        public const string AquilaPlatformContextFullName = AquilaRuntimeNamespace + ".PlatformContext";
+        public const string AquilaPlatformContextFullName = AquilaRuntimeNamespace + ".AqContext";
 
 
         //System.Data
@@ -164,8 +164,8 @@ namespace Aquila.CodeAnalysis.Symbols
             ExtensionMethodAttribute,
 
             //Aq Runtime Types
-            PlatformQuery,
-            PlatformContext,
+            AqQuery,
+            AqContext,
 
             //System.Data.Common Types
             DbCommand,
@@ -210,8 +210,8 @@ namespace Aquila.CodeAnalysis.Symbols
 
             #region Types
 
-            PlatformQuery = CreateFromFullName(AquilaPlatformQueryFullName);
-            PlatformContext = CreateFromFullName(AquilaPlatformContextFullName);
+            AqQuery = CreateFromFullName(AquilaPlatformQueryFullName);
+            AqContext = CreateFromFullName(AquilaPlatformContextFullName);
 
             #endregion
 

@@ -1,6 +1,6 @@
 ﻿namespace Aquila.Core.Assemlies
 {
-    public class AssemblyDescription
+    public class AssemblyDescriptor
     {
         public string AssemblyHash;
         public string ConfigurationHash;

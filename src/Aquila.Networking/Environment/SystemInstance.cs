@@ -2,7 +2,7 @@
 using Aquila.Core.CacheService;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
 using Aquila.Data;
 
@@ -11,9 +11,9 @@ namespace Aquila.Core.Environment
     /// <summary>
     /// Системная среда. Позволяет проводить изменения конфигурации, изменения структуры данных
     /// </summary>
-    public class SystemEnvironment : PlatformEnvironment
+    public class SystemInstance : PlatformInstance
     {
-        public SystemEnvironment(DataContextManager dataContextManager, ICacheService cacheService) : base(
+        public SystemInstance(DataContextManager dataContextManager, ICacheService cacheService) : base(
             dataContextManager, cacheService)
         {
         }

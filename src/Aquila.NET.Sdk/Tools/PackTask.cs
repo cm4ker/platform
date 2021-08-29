@@ -38,16 +38,54 @@ namespace Aquila.NET.Sdk.Tools
         [Required]
         public string TempOutputPath { get; set; }
 
+        [Required]
+        public string ProjectDirectory { get; set; }
+
+        /// <summary>
+        /// Used for debugging purposes.
+        /// If enabled a debugger is attached to the current process upon the task execution.
+        /// </summary>
+        public bool DebuggerAttach { get; set; } = false;
+
+        public ITaskItem[] Metadata { get; set; }
 
         public override bool Execute()
         {
             DirectoryInfo info = new DirectoryInfo(OutputPath);
+
+            if (DebuggerAttach)
+            {
+                Console.WriteLine(
+                    $@"Attach information: prc='{Process.GetCurrentProcess().ProcessName}'; pid={Process.GetCurrentProcess().Id}");
+                Console.WriteLine(@"Waiting for debugger attach...");
+
+                while (!Debugger.IsAttached && !IsCanceled())
+                {
+                    Thread.Sleep(1000);
+                }
+
+                if (!IsCanceled())
+                    Console.WriteLine(@"Attached!");
+                else
+                {
+                    Console.WriteLine(@"Cancelled!");
+                }
+            }
 
             using (var package = ZipFile.Open(OutputPackageFullPath, ZipArchiveMode.Create))
             {
                 foreach (var file in info.GetFiles())
                 {
                     package.CreateEntryFromFile(file.FullName, file.Name);
+                }
+
+                foreach (var md in Metadata)
+                {
+                    var sourceFileName = Path.Combine(ProjectDirectory, md.ToString());
+                    var destinationPath = Path.Combine("Metadata", md.ToString());
+
+
+                    package.CreateEntryFromFile(sourceFileName, destinationPath);
                 }
             }
 
@@ -62,6 +100,14 @@ namespace Aquila.NET.Sdk.Tools
         public void Cancel()
         {
             _cancellation.Cancel();
+        }
+
+        /// <summary>
+        /// Gets value indicating user has canceled the task.
+        /// </summary>
+        public bool IsCanceled()
+        {
+            return _cancellation != null && _cancellation.IsCancellationRequested;
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Aquila.Data;
@@ -62,14 +63,22 @@ namespace Aquila.UIBuilder
             Output1 = o.Output1;
             Output2 = o.Output2;
 
-            var crud = new CRUDQueryGenerator();
-            var md = _drContext.GetMetadata();
-            var invoice = md.GetSemanticByName("Invoice");
+            try
+            {
+                var crud = new CRUDQueryGenerator();
+                var md = _drContext.GetMetadata();
+                var invoice = md.GetSemanticByName("Invoice");
 
-            var insert = crud.GetSaveInsert(invoice, _drContext);
-            var update = crud.GetSaveUpdate(invoice, _drContext);
+                var insert = crud.GetSaveInsert(invoice, _drContext);
+                var update = crud.GetSaveUpdate(invoice, _drContext);
+                var select = crud.GetLoad(invoice, _drContext);
 
-            Input = $"{insert}\n{update}";
+                Input = $"{insert}\n{update}\n{select}";
+            }
+            catch (Exception ex)
+            {
+                Input = ex.ToString();
+            }
         }
 
 

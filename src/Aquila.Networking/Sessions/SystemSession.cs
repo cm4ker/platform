@@ -1,7 +1,7 @@
 ﻿using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Environment;
 using Aquila.Data;
 
@@ -13,7 +13,7 @@ namespace Aquila.Core.Sessions
     /// </summary>
     public class SystemSession : Session
     {
-        public SystemSession(IEnvironment env, DataContextManager dataContextManger, ICacheService cacheService)
+        public SystemSession(IInstance env, DataContextManager dataContextManger, ICacheService cacheService)
             : base(env, dataContextManger, cacheService)
         {
             User = new SystemUser();

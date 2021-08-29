@@ -1,4 +1,4 @@
-﻿using Aquila.Core.Contracts.Environment;
+﻿using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Environment;
 using Aquila.Data;
 using Aquila.QueryBuilder;

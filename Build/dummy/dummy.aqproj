@@ -3,38 +3,6 @@
   <PropertyGroup>
     <ProjectName>Test</ProjectName>
     <TargetFramework>net5.0</TargetFramework>
-    
-    <!-- 
-        <TargetDatabase>pgsql</TargetDatabase>
-        <TargetDatabase>mssql</TargetDatabase>
-        <TargetDatabase>sqlite</TargetDatabase>
-        <TargetDatabase>oracle</TargetDatabase>
-        ... etc
-     -->
-    
-    <TargetDatabase>pg</TargetDatabase>
     <DebuggerAttach>false</DebuggerAttach>
-    <!-- this is required 
-    possible schemas: 
-    sqdb - sqlite     db file   system ex. : sqdb://file_system_path
-    pgdb - postgres   db file   system ex. : pgdb://host:port@user:password/db_name?tc=true
-    msdb - sql server db file   system ex. : msdb://host:port@user:password/db_name
-    (trusted connection) !?
-    ?? any more providers
-    -->
-    <!-- <DbConnection>sqdb://file.sqlite</DbConnection> -->
   </PropertyGroup>
-
-  <!-- If you need add custom value then you can describe it default values as below -->
-  <!-- <ItemDefinitionGroup>
-    <Extension>
-      <A>ValueA</A>
-      <B>ValueB</B>
-    </Extension>
-  </ItemDefinitionGroup> -->
-
-  <!-- Structure provider - used for create db structure  -->
-  <!-- Query provider - used for constructing the queries -->
-
-  <!-- From query provider we can get type id for clr type -->
 </Project>

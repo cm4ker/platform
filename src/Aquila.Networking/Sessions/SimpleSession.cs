@@ -4,7 +4,7 @@ using System.Text;
 using Aquila.Core.Authentication;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Environment;
 using Aquila.Data;
 using Aquila.QueryBuilder;
@@ -16,11 +16,11 @@ namespace Aquila.Core.Sessions
         private readonly Dictionary<string, object> _sessionParameters;
         private IDisposable _remover;
 
-        public SimpleSession(IEnvironment env, IUser user)
+        public SimpleSession(IInstance env, IUser user)
         {
             Id = Guid.NewGuid();
             User = user;
-            Environment = env;
+            Instance = env;
             _sessionParameters = new Dictionary<string, object>();
         }
 
@@ -35,7 +35,7 @@ namespace Aquila.Core.Sessions
         public DataConnectionContext DataContext => new DataConnectionContext(SqlDatabaseType.SqlServer,
             "Data source=(LocalDb)\\MSSQLLocalDB; Initial catalog=testdb; Integrated Security= true;");
 
-        public IEnvironment Environment { get; }
+        public IInstance Instance { get; }
 
 
         public void Dispose()

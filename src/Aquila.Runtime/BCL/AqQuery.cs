@@ -18,15 +18,15 @@ namespace Aquila.Core
         private string _text;
         private string _compiled;
         private bool _needRecompile;
-        private PlatformContext _context;
+        private AqContext _context;
         private DbCommand _command;
         private QQueryList _logicalTree;
 
         private Dictionary<string, object> _parameters = new Dictionary<string, object>();
 
-        public AqQuery()
+        public AqQuery(AqContext context)
         {
-            _context = PlatformContext.GetContext();
+            _context = context;
         }
 
         public string text

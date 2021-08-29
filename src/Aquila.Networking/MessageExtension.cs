@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
 
 namespace Aquila.Core.Network
@@ -55,12 +55,12 @@ namespace Aquila.Core.Network
         }
 
         public static async Task<INetworkMessage> GetEnvironmentList(this RequestEnvironmentListNetworkMessage request,
-            IPlatformEnvironmentManager manager)
+            IPlatformInstanceManager manager)
         {
             try
             {
                 return new ResponceEnvironmentListNetworkMessage(request.Id,
-                    manager.GetEnvironmentList().Select(env => env.Name).ToList());
+                    manager.GetInstanceList().Select(env => env.Name).ToList());
             }
             catch (Exception ex)
             {
@@ -69,11 +69,11 @@ namespace Aquila.Core.Network
         }
 
         public static async Task<INetworkMessage> UseEnvironment(this RequestEnvironmentUseNetworkMessage request,
-            IPlatformEnvironmentManager manager, Action<IEnvironment> useCallBack)
+            IPlatformInstanceManager manager, Action<IInstance> useCallBack)
         {
             try
             {
-                var env = manager.GetEnvironment(request.Name);
+                var env = manager.GetInstance(request.Name);
                 useCallBack(env);
                 return new ResponceEnvironmentUseNetworkMessage(request);
             }

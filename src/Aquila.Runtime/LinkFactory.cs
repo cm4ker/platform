@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Aquila.Core.Contracts;
-using Aquila.Core.Contracts.Environment;
 
 namespace Aquila.Core
 {

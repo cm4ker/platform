@@ -3,21 +3,21 @@ using Aquila.Core.Authentication;
 using Aquila.Core.Tools;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
 using Aquila.Core.Sessions;
 using Aquila.Logging;
 
 namespace Aquila.Core.Environment
 {
-    /// <inheritdoc cref="IAdminEnvironment"/>
-    public class AdminEnvironment : IAdminEnvironment
+    /// <inheritdoc cref="IAdminInstance"/>
+    public class AdminInstance : IAdminInstance
     {
         private ILogger _logger;
 
 
-        public AdminEnvironment(IAuthenticationManager authenticationManager, IInvokeService invokeService,
-            ILogger<AdminEnvironment> logger)
+        public AdminInstance(IAuthenticationManager authenticationManager, IInvokeService invokeService,
+            ILogger<AdminInstance> logger)
         {
             Sessions = new RemovingList<ISession>();
             AuthenticationManager = authenticationManager;

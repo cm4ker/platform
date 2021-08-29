@@ -19,7 +19,6 @@ namespace Aquila.WebServiceCore
             _logger = logger;
         }
 
-
         public void Register(Action<IApplicationBuilder> a)
         {
             _listActions.Add(a);

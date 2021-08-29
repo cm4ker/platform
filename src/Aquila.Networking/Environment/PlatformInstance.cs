@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Aquila.Core.CacheService;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
 using Aquila.Core.Sessions;
 using Aquila.Data;
@@ -11,14 +11,14 @@ using Aquila.Data;
 namespace Aquila.Core.Environment
 {
     /// <summary>
-    ///  Базовый класс среды, служит для того, чтобы описать две производные среды <see cref="WorkEnvironment"/> и <see cref="SystemEnvironment"/>
+    ///  Базовый класс среды, служит для того, чтобы описать две производные среды <see cref="WorkInstance"/> и <see cref="SystemInstance"/>
     /// </summary>
-    public abstract class PlatformEnvironment : IPlatformEnvironment
+    public abstract class PlatformInstance : IPlatformInstance
     {
         protected ICacheService CacheService;
         protected IServiceProvider ServiceProvider;
 
-        protected PlatformEnvironment(DataContextManager dataContextManager, ICacheService cacheService)
+        protected PlatformInstance(DataContextManager dataContextManager, ICacheService cacheService)
         {
             Sessions = new List<ISession>();
             DataContextManager = dataContextManager;

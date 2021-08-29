@@ -7,11 +7,11 @@ namespace Aquila.Test.Tools.Assemblies
 {
     public class TestAssemblyStorage : IAssemblyStorage
     {
-        private Dictionary<AssemblyDescription, byte[]> _assemblies;
+        private Dictionary<AssemblyDescriptor, byte[]> _assemblies;
 
         public TestAssemblyStorage()
         {
-            _assemblies = new Dictionary<AssemblyDescription, byte[]>();
+            _assemblies = new Dictionary<AssemblyDescriptor, byte[]>();
         }
 
         public void Clear()
@@ -19,14 +19,14 @@ namespace Aquila.Test.Tools.Assemblies
             throw new NotImplementedException();
         }
 
-        public IEnumerable<AssemblyDescription> GetAssemblies(string configurationHash)
+        public IEnumerable<AssemblyDescriptor> GetAssemblies(string configurationHash)
         {
             return _assemblies.Where(p => p.Key.ConfigurationHash == configurationHash).Select(p => p.Key);
         }
 
-        public byte[] GetAssembly(AssemblyDescription description)
+        public byte[] GetAssembly(AssemblyDescriptor descriptor)
         {
-            return _assemblies.First(p => p.Key.AssemblyHash.Equals(description.AssemblyHash)).Value;
+            return _assemblies.First(p => p.Key.AssemblyHash.Equals(descriptor.AssemblyHash)).Value;
         }
 
         public byte[] GetAssembly(string configurationHash, string name)
@@ -35,9 +35,9 @@ namespace Aquila.Test.Tools.Assemblies
                 .Value;
         }
 
-        public void SaveAssembly(AssemblyDescription description, byte[] blob)
+        public void SaveAssembly(AssemblyDescriptor descriptor, byte[] blob)
         {
-            _assemblies.Add(description, blob);
+            _assemblies.Add(descriptor, blob);
         }
 
         public void RemoveAssembly(string hash)

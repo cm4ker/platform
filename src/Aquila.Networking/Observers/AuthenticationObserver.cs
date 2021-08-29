@@ -1,5 +1,5 @@
 ﻿using System;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Tools;
 
 namespace Aquila.Core.Network.States
@@ -7,11 +7,11 @@ namespace Aquila.Core.Network.States
     public class AuthenticationObserver : IConnectionObserver<IConnectionContext>
     {
         private IDisposable _unsbscriber;
-        private IEnvironment _environment;
+        private IInstance _instance;
 
-        public AuthenticationObserver(IEnvironment environment)
+        public AuthenticationObserver(IInstance instance)
         {
-            _environment = environment;
+            _instance = instance;
         }
 
         public bool CanObserve(Type type)
@@ -38,14 +38,14 @@ namespace Aquila.Core.Network.States
         {
             if (value is RequestAuthenticationNetworkMessage msg)
             {
-                msg.Authentication(_environment.AuthenticationManager, (u) =>
+                msg.Authentication(_instance.AuthenticationManager, (u) =>
                 {
-                    ((ServerConnectionContext) context).Session = _environment.CreateSession(u);
+                    ((ServerConnectionContext) context).Session = _instance.CreateSession(u);
                     //context.State = new AuthenticatedState();
 
 
                     //context.Connection.Subscribe((InvokeService)_environment.InvokeService);
-                    var state = new InvokeObserver(_environment);
+                    var state = new InvokeObserver(_instance);
                     state.Subscribe(context.Connection);
                     _unsbscriber?.Dispose();
                 }).PipeTo(msg.Id, context.Connection.Channel);

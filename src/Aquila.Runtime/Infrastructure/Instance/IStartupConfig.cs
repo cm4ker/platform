@@ -1,7 +1,7 @@
 using Aquila.Data;
 using Aquila.QueryBuilder;
 
-namespace Aquila.Core.Contracts.Environment
+namespace Aquila.Core.Contracts.Instance
 {
     public interface IStartupConfig
     {

@@ -314,6 +314,8 @@ public static int Main()
         {
             var script =
                 @"
+import Entity;
+
 public static int Main() 
 {
     int|string|Invoice a = 10;

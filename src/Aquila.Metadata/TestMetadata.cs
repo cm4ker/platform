@@ -49,5 +49,7 @@
 
             return new EntityMetadataCollection(new[] { em1, em2, em3 });
         }
+
+        public static EntityMetadataCollection GetEmptyMetadata() => new EntityMetadataCollection();
     }
 }

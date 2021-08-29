@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 using Aquila.Core.Authentication;
-using Aquila.Core.Contracts.Environment;
 using Aquila.Core.Contracts.Network;
 using Aquila.Core.Test;
 

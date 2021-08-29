@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Aquila.Core.Network;
 using Aquila.Core.Environment;
 using Microsoft.Extensions.DependencyInjection;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
 using Aquila.Core.Settings;
 using Aquila.Logging;
@@ -35,9 +35,10 @@ namespace Aquila.Runner
             _logger.Info("Starting...");
 
             _accessPoint = _serviceProvider.GetRequiredService<IAccessPoint>();
-            var envManager = _serviceProvider.GetRequiredService<IPlatformEnvironmentManager>();
+            var envManager = _serviceProvider.GetRequiredService<IPlatformInstanceManager>();
             var webHost = _serviceProvider.GetRequiredService<IWebHost>();
 
+            
             _accessPoint.Start();
             webHost.StartAsync(cancellationToken);
 

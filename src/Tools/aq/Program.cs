@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.IO.Compression;
+using System.Security.Cryptography;
+using System.Text;
 using Aquila.Core.Contracts;
 using McMaster.Extensions.CommandLineUtils;
 
@@ -55,9 +57,38 @@ namespace Aquila.Tools
             using var package = ZipFile.Open(PackagePath, ZipArchiveMode.Read);
             //TODO: add manifest to the archive
 
+            var totalCrc = new StringBuilder();
+            foreach (var entry in package.Entries)
+            {
+                totalCrc.Append(entry.Crc32);
+            }
+
+            var md5 = CreateChecksum(totalCrc.ToString());
+            dpl(@$"Checksum: {md5}");
+
             dpl(@"Done!");
         }
+
+        public static string CreateChecksum(string input)
+        {
+            // Use input string to calculate MD5 hash
+            using (SHA1 md5 = SHA1.Create())
+            {
+                byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
+                byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+                // Convert the byte array to hexadecimal string
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < hashBytes.Length; i++)
+                {
+                    sb.Append(hashBytes[i].ToString("X2"));
+                }
+
+                return sb.ToString();
+            }
+        }
     }
+
 
     [Command("build")]
     public class BuildCommand

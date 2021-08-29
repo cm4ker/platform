@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 
 namespace Aquila.Core.Network
 {
@@ -9,39 +9,39 @@ namespace Aquila.Core.Network
     /// <summary>
     /// Менеджер рабочих сред с возможностью разделения доступа к ним 
     /// </summary>
-    public class FilteredEnvironmentManager : IPlatformEnvironmentManager
+    public class FilteredInstanceManager : IPlatformInstanceManager
     {
-        private IPlatformEnvironmentManager _manager;
-        private Func<IEnvironment, bool> _filter;
+        private IPlatformInstanceManager _manager;
+        private Func<IInstance, bool> _filter;
 
         /// <summary>
         /// Создает менеджер с разделенным доступом к средам
         /// </summary>
         /// <param name="manager">Менеджер сред</param>
         /// <param name="filter">Фильтр</param>
-        public FilteredEnvironmentManager(IPlatformEnvironmentManager manager,
-            Func<IEnvironment, bool> filter)
+        public FilteredInstanceManager(IPlatformInstanceManager manager,
+            Func<IInstance, bool> filter)
         {
             _manager = manager;
             _filter = filter;
         }
 
-        public void AddWorkEnvironment(IStartupConfig config)
+        public void AddWorkInstance(IStartupConfig config)
         {
-            _manager.AddWorkEnvironment(config);
+            _manager.AddWorkInstance(config);
         }
 
-        public IEnvironment GetEnvironment(string name)
+        public IInstance GetInstance(string name)
         {
-            var env = _manager.GetEnvironment(name);
+            var env = _manager.GetInstance(name);
             if (_filter(env))
                 return env;
             throw new InvalidOperationException("Access denied.");
         }
 
-        public List<IEnvironment> GetEnvironmentList()
+        public List<IInstance> GetInstanceList()
         {
-            return _manager.GetEnvironmentList().Where(e => _filter(e)).ToList();
+            return _manager.GetInstanceList().Where(e => _filter(e)).ToList();
         }
     }
 }

@@ -7,7 +7,7 @@ using Aquila.Core.Environment;
 using Xunit.Abstractions;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
 using Aquila.Core.Network;
 using Aquila.Core.Serialisers;
@@ -59,11 +59,11 @@ namespace Aquila.Core.Test
 
 
             //services.AddSingleton<ITestProxyService, TestProxyService>();
-            services.AddSingleton<IPlatformEnvironmentManager, EnvironmentManager>();
+            services.AddSingleton<IPlatformInstanceManager, InstanceManager>();
 
             //services.AddScoped<ITestEnvironment, TestEnvironment>();
             //services.AddScoped<IAdminEnvironment, AdminEnvironment>();
-            services.AddScoped<IWorkEnvironment, TestEnvironment>();
+            services.AddScoped<IWorkInstance, TestInstance>();
 
             services.AddSingleton<ICacheService, DictionaryCacheService>();
 

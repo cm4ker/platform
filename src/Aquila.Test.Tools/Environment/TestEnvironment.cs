@@ -8,7 +8,7 @@ using Aquila.Data;
 using Aquila.Core.Tools;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
 using Aquila.Logging;
 
@@ -42,7 +42,7 @@ namespace Aquila.Core.Test.Environment
     // }
 
 
-    public class TestEnvironment : IWorkEnvironment
+    public class TestInstance : IWorkInstance
     {
         private IStartupConfig _config;
 
@@ -61,8 +61,8 @@ namespace Aquila.Core.Test.Environment
 
         // public IProject Configuration => ConfigurationFactory.Create();
 
-        public TestEnvironment(IAuthenticationManager authenticationManager, IInvokeService invokeService,
-            ILogger<TestEnvironment> logger
+        public TestInstance(IAuthenticationManager authenticationManager, IInvokeService invokeService,
+            ILogger<TestInstance> logger
         )
         {
             Sessions = new RemovingList<ISession>();

@@ -1,4 +1,0 @@
-public int Proc() 
-{ 
-    return  2 * 3 + 3 * 6 * (10 + 2); 
-}

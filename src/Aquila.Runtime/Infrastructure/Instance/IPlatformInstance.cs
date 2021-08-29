@@ -1,8 +1,8 @@
 using Aquila.Data;
 
-namespace Aquila.Core.Contracts.Environment
+namespace Aquila.Core.Contracts.Instance
 {
-    public interface IPlatformEnvironment : IInitializibleEnvironment<IStartupConfig>
+    public interface IPlatformInstance : IInitializableInstance<IStartupConfig>
     {
         /// <summary>
         /// Manager of data connection contexts

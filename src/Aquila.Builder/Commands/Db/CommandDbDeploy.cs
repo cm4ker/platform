@@ -1,7 +1,7 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 using System.IO;
 using System.IO.Compression;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 
 namespace Aquila.Cli.Commands.Db
 {
@@ -15,12 +15,12 @@ namespace Aquila.Cli.Commands.Db
         public bool Zip { get; }
 
         private IConsole _console;
-        private IPlatformEnvironmentManager _environmentManager;
+        private IPlatformInstanceManager _instanceManager;
 
-        public CommandDbDeploy(IConsole console, IPlatformEnvironmentManager environmentManager)
+        public CommandDbDeploy(IConsole console, IPlatformInstanceManager instanceManager)
         {
             _console = console;
-            _environmentManager = environmentManager;
+            _instanceManager = instanceManager;
         }
 
         public async void OnExecute()

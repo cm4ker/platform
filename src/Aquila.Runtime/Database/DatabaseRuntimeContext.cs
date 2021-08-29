@@ -13,13 +13,21 @@ namespace Aquila.Runtime
     /// <summary>
     /// Database context for already running server
     /// </summary>
-    public class DatabaseRuntimeContext
+    public partial class DatabaseRuntimeContext
     {
         private const string DescriptorsTableName = "descriptors";
         private const string MetadataTableName = "metadata";
-
+        private DataConnectionContext _dcc;
         private List<EntityDescriptor> _descriptors;
         private EntityMetadataCollection _md;
+
+        public static DatabaseRuntimeContext CreateAndLoad(DataConnectionContext dcc)
+        {
+            var drc = new DatabaseRuntimeContext();
+            drc.Load(dcc);
+
+            return drc;
+        }
 
         /// <summary>
         /// Creates the instance for database runtime context
@@ -33,7 +41,7 @@ namespace Aquila.Runtime
         /// <summary>
         /// Contains translation from objects to the database
         /// </summary>
-        public IEnumerable<EntityDescriptor> GetDescriptors()
+        public IEnumerable<EntityDescriptor> GetEntityDescriptors()
         {
             return _descriptors.AsReadOnly();
         }
@@ -87,6 +95,9 @@ namespace Aquila.Runtime
                     .ld_column("id_s")
                     .ld_param("id_s")
                     .assign()
+                    .ld_column("id_n")
+                    .ld_param("id_n")
+                    .assign()
                     .ld_column("db_name")
                     .ld_param("db_name")
                     .assign()
@@ -99,7 +110,8 @@ namespace Aquila.Runtime
             {
                 cmd.AddOrSetParameterWithValue("db_name", descriptor.DatabaseName);
                 cmd.AddOrSetParameterWithValue("id_s", descriptor.MetadataId);
-                cmd.AddOrSetParameterWithValue("id", descriptor.DatabaseId);
+                cmd.AddOrSetParameterWithValue("id_n", descriptor.DatabaseId);
+                cmd.AddOrSetParameterWithValue("id", descriptor.Id);
 
                 cmd.ExecuteNonQuery();
             }
@@ -113,9 +125,10 @@ namespace Aquila.Runtime
                     .m_from()
                     .ld_table(DescriptorsTableName)
                     .m_select()
-                    .ld_column("db_name")
-                    .ld_column("id_s")
                     .ld_column("id")
+                    .ld_column("id_s")
+                    .ld_column("db_name")
+                    .ld_column("id_n")
                     .st_query();
             });
 
@@ -125,12 +138,12 @@ namespace Aquila.Runtime
 
             while (reader.Read())
             {
-                var dbId = reader.GetInt32(0);
+                var id = reader.GetInt32(0);
                 var mId = reader.GetString(1);
                 var dbName = reader.GetString(2);
+                var dbId = reader.GetInt32(3);
 
-
-                _descriptors.Add(new EntityDescriptor(dbId)
+                _descriptors.Add(new EntityDescriptor(id, dbId)
                     { DatabaseName = dbName, MetadataId = mId });
             }
         }
@@ -251,10 +264,12 @@ namespace Aquila.Runtime
                 q
                     .bg_query()
                     .m_values()
+                    .ld_const(0)
                     .ld_param("id_s")
                     .ld_param("db_name")
                     .m_insert()
                     .ld_table(DescriptorsTableName)
+                    .ld_column("id_n")
                     .ld_column("id_s")
                     .ld_column("db_name")
                     .st_query();
@@ -296,7 +311,7 @@ namespace Aquila.Runtime
         }
 
 
-        public EntityDescriptor FindDescriptor(string key)
+        public EntityDescriptor FindEntityDescriptor(string key)
         {
             return _descriptors.FirstOrDefault(x => x.MetadataId == key);
         }

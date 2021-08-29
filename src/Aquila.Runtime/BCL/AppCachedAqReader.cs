@@ -11,11 +11,11 @@ namespace Aquila.Data
     {
         private readonly DbDataReader _reader;
         private readonly QQuery _logicalQuery;
-        private readonly PlatformContext _context;
+        private readonly AqContext _context;
         private BufferedData _buffered;
         private BufferedDataReader _bufferedReader;
 
-        public AppCachedAqReader(DbDataReader reader, QQuery logicalQuery, PlatformContext context)
+        public AppCachedAqReader(DbDataReader reader, QQuery logicalQuery, AqContext context)
         {
             _reader = reader;
             _logicalQuery = logicalQuery;

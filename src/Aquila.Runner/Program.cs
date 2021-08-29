@@ -14,7 +14,7 @@ using Aquila.Core.ClientServices;
 using Aquila.Core.Assemlies;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Environment;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
 using Aquila.Logging;
 using Aquila.Migrations;
@@ -82,11 +82,11 @@ namespace Aquila.Runner
 
 
                     // services.AddSingleton<ITestProxyService, TestProxyService>();
-                    services.AddSingleton<IPlatformEnvironmentManager, EnvironmentManager>();
+                    services.AddSingleton<IPlatformInstanceManager, InstanceManager>();
 
                     //services.AddScoped<ITestEnvironment, TestEnvironment>();
-                    services.AddScoped<IAdminEnvironment, AdminEnvironment>();
-                    services.AddScoped<IWorkEnvironment, DatabaseTestEnvironment>();
+                    services.AddScoped<IAdminInstance, AdminInstance>();
+                    services.AddScoped<IWorkInstance, DatabaseTestInstance>();
 
                     services.AddSingleton<ICacheService, DictionaryCacheService>();
 
