@@ -16,6 +16,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         string _name;
         TypeSymbol _return;
         Accessibility _accessibility;
+        private ImmutableArray<AttributeData>.Builder _attributes;
         protected ImmutableArray<ParameterSymbol> _parameters;
 
         /// <summary>
@@ -51,6 +52,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             _return = returnType;
             _accessibility = accessibility;
             _final = isfinal && isvirtual && !isstatic;
+            _attributes = ImmutableArray.CreateBuilder<AttributeData>();
         }
 
         public SynthesizedMethodSymbol(TypeSymbol containingType)
@@ -62,6 +64,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
             _return = DeclaringCompilation.CoreTypes.Void;
             _parameters = ImmutableArray<ParameterSymbol>.Empty;
+            _attributes = ImmutableArray.CreateBuilder<AttributeData>();
         }
 
         public SynthesizedMethodSymbol(TypeSymbol containingType, string name, bool isstatic, bool isvirtual,
@@ -127,6 +130,12 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             return this;
         }
 
+        internal SynthesizedMethodSymbol AddAttribute(AttributeData attribute)
+        {
+            _attributes.Add(attribute);
+            return this;
+        }
+
         #endregion
 
         public override ImmutableArray<AttributeData> GetAttributes()
@@ -155,6 +164,8 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
                             System.ComponentModel.EditorBrowsableState.Never)),
                     ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty));
             }
+
+            builder.AddRange(_attributes);
 
             return builder.ToImmutable();
         }

@@ -3,7 +3,7 @@ using Xunit;
 using Xunit.Abstractions;
 using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
-using Aquila.Core.Environment;
+using Aquila.Core.Instance;
 using Aquila.Core.Network;
 
 namespace Aquila.Core.Test
@@ -24,7 +24,7 @@ namespace Aquila.Core.Test
 
 
             var environmentManager = serverServices.GetRequiredService<IPlatformInstanceManager>();
-            Assert.NotEmpty(environmentManager.GetInstanceList());
+            Assert.NotEmpty(environmentManager.GetInstances());
 
 
             var accessPoint = serverServices.GetRequiredService<IAccessPoint>();

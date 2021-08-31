@@ -122,6 +122,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public const string AquilaPlatformContextFullName = AquilaRuntimeNamespace + ".AqContext";
 
+        public const string AquilaGetEntityMethodFullName = AquilaRuntimeNamespace + ".GetEntityMethodAttribute";
 
         //System.Data
 
@@ -162,6 +163,7 @@ namespace Aquila.CodeAnalysis.Symbols
             EntityAttribute,
             LinkAttribute,
             ExtensionMethodAttribute,
+            GetEntityMethodAttribute,
 
             //Aq Runtime Types
             AqQuery,
@@ -205,6 +207,7 @@ namespace Aquila.CodeAnalysis.Symbols
             EntityAttribute = CreateFromFullName(AquilaEntityAttributeFullName);
             LinkAttribute = CreateFromFullName(AquilaLinkAttributeFullName);
             ExtensionMethodAttribute = CreateFromFullName(AquilaExtensionAqAttributeFullName);
+            GetEntityMethodAttribute = CreateFromFullName(AquilaGetEntityMethodFullName);
 
             #endregion
 

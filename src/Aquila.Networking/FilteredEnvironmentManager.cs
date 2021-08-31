@@ -5,7 +5,6 @@ using Aquila.Core.Contracts.Instance;
 
 namespace Aquila.Core.Network
 {
-    
     /// <summary>
     /// Менеджер рабочих сред с возможностью разделения доступа к ним 
     /// </summary>
@@ -36,12 +35,13 @@ namespace Aquila.Core.Network
             var env = _manager.GetInstance(name);
             if (_filter(env))
                 return env;
+            return null;
             throw new InvalidOperationException("Access denied.");
         }
 
-        public List<IInstance> GetInstanceList()
+        public IEnumerable<IPlatformInstance> GetInstances()
         {
-            return _manager.GetInstanceList().Where(e => _filter(e)).ToList();
+            return _manager.GetInstances().Where(e => _filter(e));
         }
     }
 }

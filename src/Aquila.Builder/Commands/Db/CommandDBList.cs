@@ -1,5 +1,6 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 using Aquila.Core.Contracts.Instance;
+using MoreLinq.Extensions;
 
 namespace Aquila.Cli.Commands.Db
 {
@@ -15,7 +16,7 @@ namespace Aquila.Cli.Commands.Db
         }
         public void OnExecute()
         {
-            _instanceManager.GetInstanceList().ForEach(e => _console.WriteLine(e.Name));
+            _instanceManager.GetInstances().ForEach(e => _console.WriteLine(e.Name));
         }
     }
 }

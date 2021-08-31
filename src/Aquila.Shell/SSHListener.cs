@@ -7,7 +7,7 @@ using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Aquila.Cli;
 using Aquila.Core.Contracts.Instance;
-using Aquila.Core.Environment;
+using Aquila.Core.Instance;
 using Aquila.Core.Network;
 using Aquila.Core.Serialisers;
 using Aquila.Core.Settings;
@@ -30,6 +30,7 @@ namespace Aquila.Shell
         private int _windowWidth, _windowHeight;
         private ILogger _logger;
         private IServiceProvider _serviceProvider;
+
         public SSHListener(ILogger<SSHListener> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
@@ -38,7 +39,6 @@ namespace Aquila.Shell
 
         public void Start(IPEndPoint endPoint)
         {
-          
             _server = new SshServer(new StartingInfo(endPoint.Address, endPoint.Port));
 
             _server.AddHostKey("ssh-rsa",
@@ -48,6 +48,8 @@ namespace Aquila.Shell
             _server.ConnectionAccepted += server_ConnectionAccepted;
 
             _server.Start();
+
+            _logger.Info("SSH Listening: {0}:{1}", endPoint.Address, endPoint.Port);
         }
 
         public void Stop()
@@ -74,18 +76,18 @@ namespace Aquila.Shell
 
         void e_ServiceRegistered(object sender, SshService e)
         {
-            var session = (Session) sender;
+            var session = (Session)sender;
             _logger.Info("Session {0} requesting {1}.",
                 BitConverter.ToString(session.SessionId).Replace("-", ""), e.GetType().Name);
 
             if (e is UserauthService)
             {
-                var service = (UserauthService) e;
+                var service = (UserauthService)e;
                 service.Userauth += service_Userauth;
             }
             else if (e is ConnectionService)
             {
-                var service = (ConnectionService) e;
+                var service = (ConnectionService)e;
                 service.CommandOpened += service_CommandOpened;
                 service.EnvReceived += service_EnvReceived;
                 service.PtyReceived += service_PtyReceived;
@@ -113,8 +115,8 @@ namespace Aquila.Shell
         void service_PtyReceived(object sender, PtyArgs e)
         {
             _logger.Info("Request to create a PTY received for terminal type {0}", e.Terminal);
-            _windowWidth = (int) e.WidthChars;
-            _windowHeight = (int) e.HeightRows;
+            _windowWidth = (int)e.WidthChars;
+            _windowHeight = (int)e.HeightRows;
         }
 
         void service_EnvReceived(object sender, EnvironmentArgs e)
@@ -141,7 +143,7 @@ namespace Aquila.Shell
 
             IServiceCollection services = new ServiceCollection();
 
-            
+
             services.AddScoped<ICommandLineInterface, CliInterface>();
             services.AddSingleton(f => _serviceProvider.GetRequiredService<IPlatformInstanceManager>());
             services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
@@ -172,31 +174,24 @@ namespace Aquila.Shell
             }
             else if (e.ShellType == "exec")
             {
-
-
-                
-
                 services.AddScoped<IConsole>((f) =>
                 {
                     ExecConsole execConsole = new ExecConsole();
                     e.Channel.DataReceived += (ss, ee) => execConsole.ConsumeData(ee);
-                    e.Channel.CloseReceived += (ss, ee) => 
-                    execConsole.Close();
+                    e.Channel.CloseReceived += (ss, ee) =>
+                        execConsole.Close();
                     execConsole.DataReceived += (ss, ee) => e.Channel.SendData(ee);
 
 
                     return execConsole;
                 });
-                
+
                 var serviceProvider = services.BuildServiceProvider();
 
                 var scope = serviceProvider.CreateScope();
                 var runner = scope.ServiceProvider.GetRequiredService<ICommandLineInterface>();
-           
+
                 e.Channel.SendClose((uint)runner.Execute(e.CommandText.Split(' ')));
-
-
-
             }
             else if (e.ShellType == "client")
             {

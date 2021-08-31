@@ -27,15 +27,14 @@ namespace Aquila.Networking
 
         public void Start()
         {
-            //_config.Listener.Add(new ListenerConfig() { Address = "127.0.0.1:12345", Type = ListenerType.Test });
             foreach (var lisetnercfg in _config.Listener)
             {
                 INetworkListener listener = lisetnercfg.Type switch
                 {
-                    ListenerType.User => (INetworkListener) _serviceProvider
+                    PointType.Instance => (INetworkListener)_serviceProvider
                         .GetRequiredService<IDatabaseNetworkListener>(),
-                    ListenerType.Admin => _serviceProvider.GetRequiredService<ITerminalNetworkListener>(),
-                    ListenerType.Test => _serviceProvider.GetRequiredService<IDatabaseNetworkListener>(),
+                    PointType.Admin => _serviceProvider.GetRequiredService<ITerminalNetworkListener>(),
+                    PointType.Test => _serviceProvider.GetRequiredService<IDatabaseNetworkListener>(),
                     _ => throw new InvalidOperationException()
                 };
 

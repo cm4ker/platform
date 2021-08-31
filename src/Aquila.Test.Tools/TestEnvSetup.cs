@@ -3,7 +3,7 @@ using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
 using Aquila.Core.ClientServices;
 using Aquila.Data;
-using Aquila.Core.Environment;
+using Aquila.Core.Instance;
 using Xunit.Abstractions;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;

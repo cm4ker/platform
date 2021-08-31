@@ -6,7 +6,7 @@ using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Settings;
 using Aquila.Logging;
 
-namespace Aquila.Core.Environment
+namespace Aquila.Core.Instance
 {
     /*
      * Концептуально:
@@ -23,7 +23,7 @@ namespace Aquila.Core.Environment
     public class InstanceManager : IPlatformInstanceManager
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly List<IInstance> environments = new List<IInstance>();
+        private readonly List<IPlatformInstance> environments = new List<IPlatformInstance>();
         private readonly ILogger _logger;
 
         public InstanceManager(ISettingsStorage configStorage, IServiceProvider serviceProvider,
@@ -37,12 +37,12 @@ namespace Aquila.Core.Environment
 
         private void Initialize(List<StartupConfig> list)
         {
-            list.ForEach(c => environments.Add(CreatePlatformEnvironment<IWorkInstance>(c)));
+            list.ForEach(c => environments.Add(CreatePlatformEnvironment<IPlatformInstance>(c)));
         }
 
         public void AddWorkInstance(IStartupConfig config)
         {
-            environments.Add(CreatePlatformEnvironment<IWorkInstance>(config));
+            environments.Add(CreatePlatformEnvironment<IPlatformInstance>(config));
         }
 
         protected IPlatformInstance CreatePlatformEnvironment<T>(IStartupConfig config)
@@ -67,12 +67,12 @@ namespace Aquila.Core.Environment
 
         public IInstance GetInstance(string name)
         {
-            return environments.First(m => m.Name.Equals(name));
+            return environments.FirstOrDefault(m => m.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
 
-        public List<IInstance> GetInstanceList()
+        public IEnumerable<IPlatformInstance> GetInstances()
         {
-            return environments;
+            return environments.AsReadOnly();
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Aquila.Core.Environment;
+using Aquila.Core.Instance;
 using Aquila.Core.Settings;
 
 namespace Aquila.Core
@@ -26,9 +26,9 @@ namespace Aquila.Core
         public string Address { get; set; }
     }
 
-    public enum ListenerType
+    public enum PointType
     {
-        User,
+        Instance,
         Admin,
         Test
     }
@@ -46,6 +46,6 @@ namespace Aquila.Core
     public class ListenerConfig
     {
         public string Address { get; set; }
-        public ListenerType Type { get; set; }
+        public PointType Type { get; set; }
     }
 }

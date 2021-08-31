@@ -2,105 +2,79 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
-using Aquila.Core.Sessions;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
+using Aquila.Core.Sessions;
 using Aquila.Data;
-using Aquila.Initializer;
 using Aquila.Logging;
 
-namespace Aquila.Core.Environment
+namespace Aquila.Core.Instance
 {
     /// <summary>
-    /// Рабочая среда. Здесь же реализованы все плюшки  манипуляций с данными и так далее
+    ///  Базовый класс среды, служит для того, чтобы описать две производные среды <see cref="WorkInstance"/> и <see cref="SystemInstance"/>
     /// </summary>
-    public class WorkInstance : PlatformInstance, IWorkInstance
+    public sealed class PlatformInstance : IPlatformInstance
     {
-        private object _locking;
-
-        public WorkInstance(IInvokeService invokeService, ILinkFactory linkFactory, ILogger<WorkInstance> logger,
-            IAuthenticationManager authenticationManager, IServiceProvider serviceProvider,
-            DataContextManager contextManager, IUserManager userManager, ICacheService cacheService) :
-            base(contextManager, cacheService)
-        {
-            _locking = new object();
-            _serviceProvider = serviceProvider;
-            _logger = logger;
-            _userManager = userManager;
-            InvokeService = invokeService;
-            LinkFactory = linkFactory;
-
-            Globals = new Dictionary<string, object>();
-
-            //Managers = new Dictionary<Type, IEntityManager>();
-
-            AuthenticationManager = authenticationManager;
-        }
-
-        /// <summary>
-        /// Инициализация среды.
-        /// На этом этапе происходит создание подключения к базе
-        /// Загрузка конфигурации и так далее
-        /// </summary>
-        public override void Initialize(IStartupConfig config)
-        {
-            MigrationRunner.Migrate(config.ConnectionString, config.DatabaseType);
-            //Сначала проинициализируем основные подсистемы платформы, а уже затем рабочую среду
-            base.Initialize(config);
-
-
-            // _logger.Info("Database '{0}' loaded.", Configuration.ProjectName);
-            //
-            // AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
-            //
-            // if (_assemblyManager.CheckConfiguration(Configuration))
-            //     _assemblyManager.BuildConfiguration(Configuration, StartupConfig.DatabaseType);
-
-
-            /*
-            //TODO: получить библиотеку с сгенерированными сущностями dto и так далее
-            Build = Assembly.LoadFile("");
-
-           
-
-            //Зарегистрируем все даные
-            foreach (var type in Configuration.Data.ComponentTypes)
-            {
-                var componentImpl = type.Parent.ComponentImpl;
-
-                var manager = componentImpl.Manager;
-
-                var className = componentImpl.Generator.GetEntityClassName(type);
-                var dtoClassName = componentImpl.Generator.GetDtoClassName(type);
-                var csEntityType = Build.GetType(className);
-                var csDtoType = Build.GetType(dtoClassName);
-
-                RegisterManager(csEntityType, manager);
-                RegisterEntity(new EntityMetadata(type, csEntityType, csDtoType));
-            }
-            */
-        }
-
         private ILogger _logger;
 
         private IServiceProvider _serviceProvider;
 
         private IUserManager _userManager;
 
-        public override IInvokeService InvokeService { get; }
+        private object _locking;
 
-        public override IAuthenticationManager AuthenticationManager { get; }
+        protected ICacheService CacheService;
+        protected IServiceProvider ServiceProvider;
 
+
+        protected PlatformInstance(DataContextManager dataContextManager, ICacheService cacheService,
+            IServiceProvider serviceProvider, ILogger<PlatformInstance> logger, IUserManager userManager)
+        {
+            Sessions = new List<ISession>();
+            DataContextManager = dataContextManager;
+            CacheService = cacheService;
+
+            _locking = new object();
+            _serviceProvider = serviceProvider;
+            _logger = logger;
+            _userManager = userManager;
+        }
+
+        protected SystemSession SystemSession { get; private set; }
+
+        public void Initialize(IStartupConfig config)
+        {
+            StartupConfig = config;
+
+            DataContextManager.Initialize(config.DatabaseType, config.ConnectionString);
+
+            SystemSession = new SystemSession(this, DataContextManager, CacheService);
+            Sessions.Add(SystemSession);
+        }
 
         /// <summary>
-        /// Сборка конфигурации.
-        /// В сборке хранятся все типы и бизнес логика
+        /// Сессии
         /// </summary>
-        public Assembly Build { get; set; }
+        public IList<ISession> Sessions { get; }
+
+        /// <summary>
+        /// Стартовая конфигурация
+        /// </summary>
+        public IStartupConfig StartupConfig { get; private set; }
+
+        public DataContextManager DataContextManager { get; private set; }
+
+        public Assembly BLAssembly { get; protected set; }
+
+        public IInvokeService InvokeService { get; }
+
+        public IAuthenticationManager AuthenticationManager { get; }
+
+        public string Name => throw new NotImplementedException();
+
 
         /// <summary>
         /// Глобальные объекты
@@ -118,7 +92,7 @@ namespace Aquila.Core.Environment
         /// <param name="user">Пользователь</param>
         /// <returns></returns>
         /// <exception cref="Exception">Если платформа не инициализирована</exception>
-        public override ISession CreateSession(IUser user)
+        public ISession CreateSession(IUser user)
         {
             lock (_locking)
             {

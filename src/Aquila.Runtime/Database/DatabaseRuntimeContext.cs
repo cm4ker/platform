@@ -63,6 +63,7 @@ namespace Aquila.Runtime
         {
             LoadDescriptors(context);
             LoadMetadata(context);
+            LoadPendingMetadata(context);
         }
 
 

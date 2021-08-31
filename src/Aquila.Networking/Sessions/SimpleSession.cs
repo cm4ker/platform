@@ -5,7 +5,7 @@ using Aquila.Core.Authentication;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Instance;
-using Aquila.Core.Environment;
+using Aquila.Core.Instance;
 using Aquila.Data;
 using Aquila.QueryBuilder;
 

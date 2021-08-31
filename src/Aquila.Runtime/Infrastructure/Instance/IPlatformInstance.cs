@@ -1,3 +1,4 @@
+using System.Reflection;
 using Aquila.Data;
 
 namespace Aquila.Core.Contracts.Instance
@@ -8,5 +9,7 @@ namespace Aquila.Core.Contracts.Instance
         /// Manager of data connection contexts
         /// </summary>
         DataContextManager DataContextManager { get; }
+
+        public Assembly BLAssembly { get; }
     }
 }

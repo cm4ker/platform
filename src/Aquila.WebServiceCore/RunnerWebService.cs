@@ -1,40 +1,23 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.ServiceModel;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Aquila.Core;
 using Aquila.Core.Authentication;
 using Aquila.Core.Contracts.Instance;
-using Aquila.Core.Contracts.Network;
-using Aquila.Core.Sessions;
+using Aquila.Logging;
+using Aquila.Runtime.Infrastructure.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using SoapCore;
 
 namespace Aquila.WebServiceCore
 {
-    public interface IStartupService
-    {
-        void Register(Action<IApplicationBuilder> a);
-
-        void RegisterWebServiceClass<T>() where T : class;
-
-        void Configure(IApplicationBuilder buildedr);
-
-        void ConfigureServices(IServiceCollection sc);
-    }
-
     public class RunnerWebService : IWebHost, IDisposable
     {
         private readonly ILogger<RunnerWebService> _logger;
@@ -73,16 +56,34 @@ namespace Aquila.WebServiceCore
 
                     services.AddExceptionHandler(o => o.AllowStatusCode404Response = false);
                 })
-                .Configure(app =>
+                .Configure((b, app) =>
                 {
+                    b.HostingEnvironment.EnvironmentName = "Development";
+
                     app.UseRouting();
 
+
+                    var instances = _mrg.GetInstances();
+                    
+                    foreach (var inst in instances)
+                    {
+                        var delegats = inst.BLAssembly.GetLoadMethod();
+                        _logger.Info("We catch {0} delegates", delegats.Count());
+                    }
+
+
                     app.UseEndpoints(x =>
-                        x.MapGet("dbName/api/entity/invoice", async context => { await CustomHandler(context); }));
+                    {
+                        x.MapGet("api/{instance}/getMetadata",
+                            async context => { await GetInstanceMetadata(context); });
+                        x.MapGet("api/admin/instances", async content => { await GetInstances(content); });
+                        x.MapGet("api/admin/{instance}/sessions", async content => { await GetSessions(content); });
+                    });
+
 
                     _startupService.Configure(app);
 
-                    async Task CustomHandler(HttpContext context)
+                    async Task GetInstanceMetadata(HttpContext context)
                     {
                         /*
                          1. Generate crud api
@@ -105,8 +106,13 @@ namespace Aquila.WebServiceCore
                                                   
                          */
 
-                        var env = _mrg.GetInstance("Library");
-                        var plContext = new AqContext(env.CreateSession(new Anonymous()));
+                        var instanceName = context.GetRouteData().Values["instance"]?.ToString();
+
+                        var instance = _mrg.GetInstance(instanceName);
+
+                        if (instance is null) return;
+
+                        var plContext = new AqContext(instance.CreateSession(new Anonymous()));
 
                         var md = plContext.DataRuntimeContext.GetMetadata();
 
@@ -115,6 +121,25 @@ namespace Aquila.WebServiceCore
                         await context.Response.WriteAsJsonAsync(list, cancellationToken);
                     }
 
+                    async Task GetInstances(HttpContext context)
+                    {
+                        var list = _mrg.GetInstances().Select(x => new { x.Name });
+
+                        await context.Response.WriteAsJsonAsync(list, cancellationToken);
+                    }
+
+                    async Task GetSessions(HttpContext context)
+                    {
+                        var instanceName = context.GetRouteData().Values["instance"]?.ToString();
+
+                        var env = _mrg.GetInstance(instanceName);
+
+                        if (env is null) return;
+
+                        await context.Response.WriteAsJsonAsync(env.Sessions, cancellationToken);
+                    }
+
+
                     //if we not found endpoints response this                    
                     app.Run(context =>
                         context.Response.WriteAsync("Path not found! Go away!", cancellationToken: cancellationToken));
@@ -122,7 +147,6 @@ namespace Aquila.WebServiceCore
                 .UseKestrel()
                 .ConfigureServices(x => x.AddRouting())
                 .UseContentRoot(Directory.GetCurrentDirectory());
-
 
             _host = builder.Build();
 

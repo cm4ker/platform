@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
+using Aquila.Core.Assemlies;
 using Aquila.Data;
 using Aquila.Initializer;
 using Aquila.Metadata;
@@ -22,6 +24,16 @@ namespace Aquila.Runtime.Tests.DB
 
             var d1 = db.CreateDescriptor(dc);
             var d2 = db.CreateDescriptor(dc);
+
+            db.SaveAssembly(dc,
+                new AssemblyDescriptor
+                {
+                    Name = "AssemblyName",
+                    Type = AssemblyType.Server,
+                    AssemblyHash = "AsmHash",
+                    ConfigurationHash = "Hash"
+                }, File.ReadAllBytes("C:\\test\\test_aq.dll"));
+
             Assert.NotEmpty(db.GetEntityDescriptors());
 
             d1.DatabaseName = "some_name";

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Aquila.Core.Environment;
+using Aquila.Core.Instance;
 using Aquila.Core.Settings;
 using Aquila.Data;
 
@@ -18,7 +18,7 @@ namespace Aquila.Core.Test
                     new ListenerConfig()
                     {
                         Address = "127.0.0.1:12345",
-                        Type = ListenerType.User
+                        Type = PointType.Instance
                     },
                     // new ListenerConfig()
                     // {

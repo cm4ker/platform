@@ -40,7 +40,7 @@ namespace Aquila.Core.Test
                 var clientServices = TestEnvSetup.GetClientService(_testOutput);
 
                 var environmentManager = serverServices.GetRequiredService<IPlatformInstanceManager>();
-                Assert.NotEmpty(environmentManager.GetInstanceList());
+                Assert.NotEmpty(environmentManager.GetInstances());
 
                 var accessPoint = serverServices.GetRequiredService<IAccessPoint>();
                 accessPoint.Start();
@@ -67,7 +67,7 @@ namespace Aquila.Core.Test
             var clientServices = TestEnvSetup.GetClientService(_testOutput);
 
             var environmentManager = serverServices.GetRequiredService<IPlatformInstanceManager>();
-            Assert.NotEmpty(environmentManager.GetInstanceList());
+            Assert.NotEmpty(environmentManager.GetInstances());
 
 
             var accessPoint = serverServices.GetRequiredService<IAccessPoint>();

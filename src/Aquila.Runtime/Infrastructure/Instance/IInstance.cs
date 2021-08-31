@@ -7,31 +7,31 @@ namespace Aquila.Core.Contracts.Instance
     public interface IInstance
     {
         /// <summary>
-        /// Имя среды
+        /// Instance name
         /// </summary>
         string Name { get; }
 
         /// <summary>
-        ///  Текущие сессии
+        ///  Sessions on this instance
         /// </summary>
         IList<ISession> Sessions { get; }
 
 
         /// <summary>
-        /// Сервис RPC
+        /// Service RPC
         /// </summary>
         IInvokeService InvokeService { get; }
 
         /// <summary>
-        /// Менеджер аутентификации
+        /// Auth manager
         /// </summary>
         IAuthenticationManager AuthenticationManager { get; }
 
         /// <summary>
-        /// Создать сессию
+        /// Create session
         /// </summary>
-        /// <param name="user">Пользователь</param>
-        /// <returns>Экземпляр сессии</returns>
+        /// <param name="user">User</param>
+        /// <returns>Session instance</returns>
         ISession CreateSession(IUser user);
     }
 }

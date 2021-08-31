@@ -60,7 +60,7 @@ namespace Aquila.Core.Network
             try
             {
                 return new ResponceEnvironmentListNetworkMessage(request.Id,
-                    manager.GetInstanceList().Select(env => env.Name).ToList());
+                    manager.GetInstances().Select(env => env.Name).ToList());
             }
             catch (Exception ex)
             {

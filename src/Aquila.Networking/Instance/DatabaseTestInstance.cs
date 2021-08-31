@@ -19,26 +19,27 @@ using Aquila.Metadata;
 using Aquila.Migrations;
 using Aquila.Runtime;
 
-namespace Aquila.Core.Environment
+namespace Aquila.Core.Instance
 {
     /// <summary>
     /// Рабочая среда. Здесь же реализованы все плюшки  манипуляций с данными и так далее
     /// </summary>
-    public class DatabaseTestInstance : PlatformInstance, IWorkInstance
+    public class DatabaseTestInstance : IPlatformInstance
     {
         private object _locking;
 
         public DatabaseTestInstance(IInvokeService invokeService, ILinkFactory linkFactory,
-            ILogger<WorkInstance> logger,
+            ILogger<DatabaseTestInstance> logger,
             IAuthenticationManager authenticationManager, IServiceProvider serviceProvider,
             DataContextManager contextManager, IUserManager userManager, ICacheService cacheService,
             MigrationManager manager
-        ) : base(contextManager, cacheService)
+        )
         {
             _locking = new object();
             _serviceProvider = serviceProvider;
             _logger = logger;
             _userManager = userManager;
+            _cacheService = cacheService;
 
             InvokeService = invokeService;
             LinkFactory = linkFactory;
@@ -47,11 +48,12 @@ namespace Aquila.Core.Environment
 
             Globals = new Dictionary<string, object>();
             AuthenticationManager = authenticationManager;
+            DataContextManager = contextManager;
         }
 
         public DatabaseRuntimeContext DatabaseRuntimeContext { get; private set; }
 
-        public override void Initialize(IStartupConfig config)
+        public void Initialize(IStartupConfig config)
         {
             MigrationRunner.Migrate(config.ConnectionString, config.DatabaseType);
 
@@ -70,8 +72,11 @@ namespace Aquila.Core.Environment
                 MigrationManager.Migrate(currentConfiguration, savedConfiguration);
             }
 
+            BLAssembly = Assembly.Load(DatabaseRuntimeContext.GetLastAssembly(DataContextManager.GetContext()));
+            _logger.Info("Assembly was loaded: {0}", BLAssembly.FullName);
+
             AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
-            _logger.Info("TEST Database '{0}' loaded.", Name);
+            _logger.Info("Project '{0}' was loaded.", Name);
 
             InvokeService.Register(new Route("test"), (c, a) => (int)a[0] + 1);
             InvokeService.RegisterStream(new Route("stream"), (context, stream, arg) =>
@@ -88,16 +93,19 @@ namespace Aquila.Core.Environment
         private IServiceProvider _serviceProvider;
 
         private IUserManager _userManager;
+        private readonly ICacheService _cacheService;
 
-        public override IInvokeService InvokeService { get; }
+        public IList<ISession> Sessions { get; }
+        public IInvokeService InvokeService { get; }
 
-        public override IAuthenticationManager AuthenticationManager { get; }
+        public IAuthenticationManager AuthenticationManager { get; }
 
         public MigrationManager MigrationManager { get; }
 
-        public override string Name => "Library";
+        public string Name => "Library";
 
-        public Assembly Assembly { get; private set; }
+        public DataContextManager DataContextManager { get; }
+        public Assembly BLAssembly { get; private set; }
 
         /// <summary>
         /// Глобальные объекты
@@ -111,11 +119,11 @@ namespace Aquila.Core.Environment
         /// <param name="user">Пользователь</param>
         /// <returns></returns>
         /// <exception cref="Exception">Если платформа не инициализирована</exception>
-        public override ISession CreateSession(IUser user)
+        public ISession CreateSession(IUser user)
         {
             lock (_locking)
             {
-                var session = new UserSession(this, user, DataContextManager, CacheService);
+                var session = new UserSession(this, user, DataContextManager, _cacheService);
                 Sessions.Add(session);
 
                 return session;

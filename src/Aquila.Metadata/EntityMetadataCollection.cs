@@ -12,9 +12,12 @@ namespace Aquila.Metadata
         private List<EntityMetadata> _metadata;
         private List<SMEntity> _semanticMetadata;
         private SMCache _cache;
-        private bool needUpdate;
+        private bool _needUpdate;
 
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public EntityMetadataCollection()
         {
             _metadata = new List<EntityMetadata>();
@@ -29,7 +32,7 @@ namespace Aquila.Metadata
 
         public IEnumerable<SMEntity> GetSemanticMetadata()
         {
-            if (_semanticMetadata == null || needUpdate)
+            if (_semanticMetadata == null || _needUpdate)
                 CoreLazySemanticAnalyze();
 
             return _semanticMetadata;
@@ -46,7 +49,7 @@ namespace Aquila.Metadata
                 return t;
             }).ToList();
 
-            needUpdate = false;
+            _needUpdate = false;
         }
 
         public SMEntity GetSemanticByName(string name) => GetSemanticMetadata().FirstOrDefault(x => x.Name == name);
@@ -56,7 +59,7 @@ namespace Aquila.Metadata
         public void AddMetadata(EntityMetadata metadata)
         {
             _metadata.Add(metadata);
-            needUpdate = true;
+            _needUpdate = true;
         }
 
         public void AddMetadataRange(IEnumerable<EntityMetadata> metadatas)
@@ -66,7 +69,7 @@ namespace Aquila.Metadata
                 _metadata.Add(md);
             }
 
-            needUpdate = true;
+            _needUpdate = true;
         }
 
         public bool IsEmpty()

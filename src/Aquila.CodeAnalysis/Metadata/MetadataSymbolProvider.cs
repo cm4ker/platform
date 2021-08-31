@@ -548,6 +548,8 @@ namespace Aquila.Syntax.Metadata
                 .SetAccess(Accessibility.Public)
                 .SetIsStatic(true)
                 .SetReturn(objectType)
+                .AddAttribute(new SynthesizedAttributeData(_ct.GetEntityMethodAttribute.Ctor(),
+                    ImmutableArray<TypedConstant>.Empty, ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty))
                 .SetMethodBuilder((m, d) => il =>
                 {
                     il.EmitNullConstant();

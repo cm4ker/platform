@@ -8,7 +8,7 @@ using Aquila.Core.Contracts.Network;
 using Aquila.Core.Sessions;
 using Aquila.Logging;
 
-namespace Aquila.Core.Environment
+namespace Aquila.Core.Instance
 {
     /// <inheritdoc cref="IAdminInstance"/>
     public class AdminInstance : IAdminInstance

@@ -40,4 +40,29 @@ namespace Aquila.Core
     public class ExtensionAqAttribute : Attribute
     {
     }
+
+
+    /// <summary>
+    /// This action for getting the entity 
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    public class GetEntityMethodAttribute : Attribute
+    {
+    }
+
+    /// <summary>
+    /// This action for save entity 
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    public class SaveEntityMethodAttribute : Attribute
+    {
+    }
+
+    /// <summary>
+    /// This action for delete entity 
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    public class RemoveEntityMethodAttribute : Attribute
+    {
+    }
 }

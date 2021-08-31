@@ -11,6 +11,6 @@ namespace Aquila.Core.Contracts.Instance
 
         void AddWorkInstance(IStartupConfig config);
 
-        List<IInstance> GetInstanceList();
+        IEnumerable<IPlatformInstance> GetInstances();
     }
 }

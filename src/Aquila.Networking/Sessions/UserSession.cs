@@ -4,7 +4,7 @@ using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
 using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Instance;
-using Aquila.Core.Environment;
+using Aquila.Core.Instance;
 using Aquila.Data;
 
 namespace Aquila.Core.Sessions
@@ -17,7 +17,7 @@ namespace Aquila.Core.Sessions
     {
         private readonly ConcurrentDictionary<string, object> _sessionParameters;
 
-        public UserSession(IWorkInstance env, IUser user, DataContextManager dataContextManger,
+        public UserSession(IPlatformInstance env, IUser user, DataContextManager dataContextManger,
             ICacheService cacheService)
             : base(env, dataContextManger, cacheService)
         {

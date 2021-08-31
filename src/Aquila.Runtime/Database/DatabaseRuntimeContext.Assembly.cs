@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using Aquila.Core;
 using Aquila.Core.Assemlies;
 using Aquila.Data;
@@ -85,6 +86,12 @@ namespace Aquila.Runtime
             return GetAssembly(dcc, descriptor.AssemblyHash);
         }
 
+        public byte[] GetLastAssembly(DataConnectionContext dcc)
+        {
+            var desc = GetAsmDescriptors(dcc, "Hash").FirstOrDefault();
+            return GetAssembly(dcc, desc);
+        }
+
         public void Clear(DataConnectionContext dcc)
         {
             void Gen(QueryMachine qm)
@@ -124,10 +131,12 @@ namespace Aquila.Runtime
                     .eq()
                     //.and()
                     .m_select()
-                    .ld_column("name")
-                    .ld_column("type")
-                    .ld_column("configuration_hash")
                     .ld_column("assembly_hash")
+                    .ld_column("configuration_hash")
+                    .ld_column("type")
+                    .ld_column("name")
+                                        
+                    
                     .st_query();
             }
 

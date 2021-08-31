@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Aquila.Core.Contracts.Instance;
-using Aquila.Core.Environment;
+using Aquila.Core.Instance;
 
 namespace Aquila.Core.Network
 {
@@ -18,7 +18,7 @@ namespace Aquila.Core.Network
         {
             return CreateConnection(tcpClient, new FilteredInstanceManager(
                 _serviceProvider.GetRequiredService<IPlatformInstanceManager>(),
-                env => env.GetType() == typeof(WorkInstance)));
+                env => env is PlatformInstance));
         }
     }
 }

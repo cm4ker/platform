@@ -2,7 +2,7 @@
 using Aquila.Core.CacheService;
 using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Instance;
-using Aquila.Core.Environment;
+using Aquila.Core.Instance;
 using Aquila.Data;
 
 namespace Aquila.Core.Sessions

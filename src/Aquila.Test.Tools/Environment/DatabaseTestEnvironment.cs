@@ -13,7 +13,7 @@ using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Network;
 using Aquila.Test.Tools;
 
-namespace Aquila.Core.Environment
+namespace Aquila.Core.Instance
 {
 //     /// <summary>
 //     /// Рабочая среда. Здесь же реализованы все плюшки  манипуляций с данными и так далее

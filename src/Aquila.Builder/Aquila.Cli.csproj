@@ -6,13 +6,12 @@
         <LangVersion>preview</LangVersion>
         <Configurations>Debug;Release;DebugServer</Configurations>
         <Platforms>AnyCPU</Platforms>
-        <OutputType>Exe</OutputType>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.4.1" />
+        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.4.1"/>
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\Aquila.Initializer\Aquila.Initializer.csproj" />
-      <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj" />
+        <ProjectReference Include="..\Aquila.Initializer\Aquila.Initializer.csproj"/>
+        <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj"/>
     </ItemGroup>
 </Project>
