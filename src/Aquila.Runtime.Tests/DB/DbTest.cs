@@ -49,9 +49,6 @@ namespace Aquila.Runtime.Tests.DB
             DatabaseRuntimeContext db2 = new DatabaseRuntimeContext();
 
             db2.Load(dc);
-
-            var md = db2.GetMetadata();
-            Assert.True(md.GetSemanticMetadata().Any());
         }
     }
 }

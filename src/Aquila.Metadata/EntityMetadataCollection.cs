@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -53,6 +54,8 @@ namespace Aquila.Metadata
         }
 
         public SMEntity GetSemanticByName(string name) => GetSemanticMetadata().FirstOrDefault(x => x.Name == name);
+
+        public SMEntity GetSemantic(Func<SMEntity, bool> criteria) => GetSemanticMetadata().FirstOrDefault(criteria);
 
         public IEnumerator<EntityMetadata> GetEnumerator() => _metadata.GetEnumerator();
 

@@ -12,7 +12,15 @@ namespace Aquila.Runtime.Infrastructure.Helpers
         public static IEnumerable<MethodInfo> GetLoadMethod(this Assembly asm)
         {
             return asm.GetTypes().SelectMany(x => x.GetMethods())
-                .Where(x => x.GetCustomAttribute<GetEntityMethodAttribute>() != null);
+                .Where(x => x.GetCustomAttribute<HttpHandlerAttribute>() != null);
+        }
+
+
+        public static IEnumerable<(MemberInfo m, RuntimeInitAttribute attr)> GetRuntimeInit(this Assembly asm)
+        {
+            return asm.GetTypes().SelectMany(x => x.GetMembers())
+                .Where(x => x.GetCustomAttribute<RuntimeInitAttribute>() != null)
+                .Select(x => (x, x.GetCustomAttribute<RuntimeInitAttribute>()));
         }
     }
 }

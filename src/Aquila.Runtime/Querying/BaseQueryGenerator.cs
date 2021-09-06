@@ -10,7 +10,7 @@ namespace Aquila.Runtime.Querying
 {
     public class CRUDQueryGenerator
     {
-        public string GetSaveUpdate(SMEntity entity, DatabaseRuntimeContext drc)
+        public static string GetSaveUpdate(SMEntity entity, DatabaseRuntimeContext drc)
         {
             var e_desc = drc.FindEntityDescriptor(entity.FullName);
             var qm = new QueryMachine();
@@ -45,7 +45,7 @@ namespace Aquila.Runtime.Querying
             return builder.Visit((SSyntaxNode)qm.peek());
         }
 
-        public string GetSaveInsert(SMEntity entity, DatabaseRuntimeContext drc)
+        public static string GetSaveInsert(SMEntity entity, DatabaseRuntimeContext drc)
         {
             var e_desc = drc.FindEntityDescriptor(entity.FullName);
             var qm = new QueryMachine();
@@ -81,7 +81,7 @@ namespace Aquila.Runtime.Querying
             return builder.Visit((SSyntaxNode)qm.peek());
         }
 
-        public string GetLoad(SMEntity entity, DatabaseRuntimeContext drc)
+        public static string GetLoad(SMEntity entity, DatabaseRuntimeContext drc)
         {
             var e_desc = drc.FindEntityDescriptor(entity.FullName);
             var id_desc = drc.FindEntityDescriptor(entity.IdProperty.FullName);

@@ -56,7 +56,7 @@ namespace Aquila.Tools
 
             using var package = ZipFile.Open(PackagePath, ZipArchiveMode.Read);
             //TODO: add manifest to the archive
-
+            
             var totalCrc = new StringBuilder();
             foreach (var entry in package.Entries)
             {

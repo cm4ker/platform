@@ -16,24 +16,21 @@ namespace Aquila.Core.Sessions
         private readonly Dictionary<string, object> _sessionParameters;
         private IDisposable _remover;
 
-        public SimpleSession(IInstance env, IUser user)
+        public SimpleSession(IInstance env, IUser user, DataContextManager mrg)
         {
             Id = Guid.NewGuid();
             User = user;
             Instance = env;
             _sessionParameters = new Dictionary<string, object>();
+            DataContext = mrg.GetContext();
         }
 
-        public SimpleSession(IUser user) : this(null, user)
-        {
-        }
 
         public Guid Id { get; }
 
         public IUser User { get; }
 
-        public DataConnectionContext DataContext => new DataConnectionContext(SqlDatabaseType.SqlServer,
-            "Data source=(LocalDb)\\MSSQLLocalDB; Initial catalog=testdb; Integrated Security= true;");
+        public DataConnectionContext DataContext { get; }
 
         public IInstance Instance { get; }
 

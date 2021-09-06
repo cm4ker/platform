@@ -268,9 +268,6 @@ namespace Aquila.Migrations
 
         public void Migrate(EntityMetadataCollection old, EntityMetadataCollection actual)
         {
-            // Try 
-            //_assemblyManager.BuildConfiguration(actual, _dataContextManager.DatabaseType);
-
             var context = _dataContextManager.GetContext();
 
             _logger.Info("Check last migration.");
@@ -303,10 +300,10 @@ namespace Aquila.Migrations
         /// <summary>
         /// Проверяет нужно ли выполнять миграцию, если False - то миграцию выполнять не нужно.
         /// </summary>
-        /// <param name="old"></param>
-        /// <param name="actual"></param>
+        /// <param name="current"></param>
+        /// <param name="pending"></param>
         /// <returns></returns>
-        public bool CheckMigration(EntityMetadataCollection old, EntityMetadataCollection actual)
+        public bool CheckMigration(EntityMetadataCollection current, EntityMetadataCollection pending)
         {
             //TODO: create real check
             return true;

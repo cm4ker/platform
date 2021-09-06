@@ -43,11 +43,27 @@ namespace Aquila.Core
 
 
     /// <summary>
-    /// This action for getting the entity 
+    /// Http handler attribute
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
-    public class GetEntityMethodAttribute : Attribute
+    public class HttpHandlerAttribute : Attribute
     {
+        public HttpMethodKind Kind { get; }
+        public string Route { get; }
+
+        public HttpHandlerAttribute(HttpMethodKind kind, string route)
+        {
+            Kind = kind;
+            Route = route;
+        }
+    }
+
+    public enum HttpMethodKind
+    {
+        Get = 0,
+        Post = 1,
+        Delete = 2,
+        Create = 3,
+        List = 4,
     }
 
     /// <summary>
@@ -64,5 +80,40 @@ namespace Aquila.Core
     [AttributeUsage(AttributeTargets.Class)]
     public class RemoveEntityMethodAttribute : Attribute
     {
+    }
+
+    public class RuntimeInitAttribute : Attribute
+    {
+        public RuntimeInitKind Kind { get; }
+        public object[] Parameters { get; }
+
+
+        public RuntimeInitAttribute(RuntimeInitKind kind) : this(kind, new object[] { })
+        {
+        }
+
+        public RuntimeInitAttribute(RuntimeInitKind kind, object param) : this(kind, new object[] { param })
+        {
+        }
+
+        public RuntimeInitAttribute(RuntimeInitKind kind, object param1, object param2) : this(kind,
+            new object[] { param1, param2 })
+        {
+        }
+
+        public RuntimeInitAttribute(RuntimeInitKind kind, params object[] parameters)
+        {
+            Kind = kind;
+            Parameters = parameters;
+        }
+    }
+
+    public enum RuntimeInitKind
+    {
+        TypeId = 0,
+
+        SelectQuery = 1,
+        UpdateQuery = 2,
+        InsertQuery = 3,
     }
 }

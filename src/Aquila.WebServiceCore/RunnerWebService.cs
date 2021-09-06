@@ -9,6 +9,7 @@ using Aquila.Core.Contracts.Instance;
 using Aquila.Logging;
 using Aquila.Runtime.Infrastructure.Helpers;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -64,11 +65,34 @@ namespace Aquila.WebServiceCore
 
 
                     var instances = _mrg.GetInstances();
-                    
+
                     foreach (var inst in instances)
                     {
-                        var delegats = inst.BLAssembly.GetLoadMethod();
-                        _logger.Info("We catch {0} delegates", delegats.Count());
+                        var methods = inst.BLAssembly.GetLoadMethod().ToList();
+                        _logger.Info("We catch {0} delegates", methods.Count);
+
+
+                        app.UseEndpoints(x =>
+                        {
+                            var index = 0;
+
+                            foreach (var method in methods)
+                            {
+                                if (!method.IsStatic || !method.IsPublic
+                                                     || method.GetParameters().FirstOrDefault()?.ParameterType !=
+                                                     typeof(AqContext))
+                                    throw new Exception($"Method {method.Name} marked as a CRUD but not consistent");
+
+                                x.MapGet($"api/{{instance}}/entity{index++}/get",
+                                    async context =>
+                                    {
+                                        var obj = method.Invoke(null, new[] { new AqContext(null), });
+                                        
+                                        await context.Response.WriteAsJsonAsync(obj, obj.GetType(),
+                                            cancellationToken: cancellationToken);
+                                    });
+                            }
+                        });
                     }
 
 
@@ -76,10 +100,19 @@ namespace Aquila.WebServiceCore
                     {
                         x.MapGet("api/{instance}/getMetadata",
                             async context => { await GetInstanceMetadata(context); });
-                        x.MapGet("api/admin/instances", async content => { await GetInstances(content); });
-                        x.MapGet("api/admin/{instance}/sessions", async content => { await GetSessions(content); });
+                        x.MapGet("api/admin/instances", async context => { await GetInstances(context); });
+                        x.MapGet("api/admin/{instance}/sessions", async context => { await GetSessions(context); });
                     });
 
+
+                    app.UseExceptionHandler(c => c.Run(async context =>
+                    {
+                        var exception = context.Features
+                            .Get<IExceptionHandlerPathFeature>()
+                            .Error;
+                        var response = new { error = exception.Message };
+                        await context.Response.WriteAsJsonAsync(response);
+                    }));
 
                     _startupService.Configure(app);
 

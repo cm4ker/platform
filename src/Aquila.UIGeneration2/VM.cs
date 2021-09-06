@@ -69,9 +69,9 @@ namespace Aquila.UIBuilder
                 var md = _drContext.GetMetadata();
                 var invoice = md.GetSemanticByName("Invoice");
 
-                var insert = crud.GetSaveInsert(invoice, _drContext);
-                var update = crud.GetSaveUpdate(invoice, _drContext);
-                var select = crud.GetLoad(invoice, _drContext);
+                var insert = CRUDQueryGenerator.GetSaveInsert(invoice, _drContext);
+                var update = CRUDQueryGenerator.GetSaveUpdate(invoice, _drContext);
+                var select = CRUDQueryGenerator.GetLoad(invoice, _drContext);
 
                 Input = $"{insert}\n{update}\n{select}";
             }

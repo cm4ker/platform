@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,7 +36,7 @@ namespace Aquila.Runtime
         public DatabaseRuntimeContext()
         {
             _descriptors = new List<EntityDescriptor>();
-            _md = TestMetadata.GetTestMetadata();
+            _md = new EntityMetadataCollection();
         }
 
         /// <summary>
@@ -46,12 +47,18 @@ namespace Aquila.Runtime
             return _descriptors.AsReadOnly();
         }
 
+        public EntityDescriptor GetEntityDescriptor(string s_id)
+        {
+            return _descriptors.FirstOrDefault(x => x.MetadataId == s_id);
+        }
+
         /// <summary>
         /// Returns metadata model for current database (from moment then DatabaseRuntimeContext being loaded) state
         /// </summary>
         /// <returns></returns>
         public EntityMetadataCollection GetMetadata()
         {
+            return TestMetadata.GetTestMetadata();
             return _md;
         }
 

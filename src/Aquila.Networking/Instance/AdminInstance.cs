@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Aquila.Core.Authentication;
 using Aquila.Core.Tools;
 using Aquila.Core.Contracts;
@@ -6,6 +7,7 @@ using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
 using Aquila.Core.Sessions;
+using Aquila.Data;
 using Aquila.Logging;
 
 namespace Aquila.Core.Instance
@@ -41,8 +43,7 @@ namespace Aquila.Core.Instance
 
         public ISession CreateSession(IUser user)
         {
-            var session = new SimpleSession(this, user);
-            return session;
+            throw new NotImplementedException();
         }
     }
 }

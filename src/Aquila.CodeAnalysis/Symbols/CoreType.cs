@@ -122,7 +122,13 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public const string AquilaPlatformContextFullName = AquilaRuntimeNamespace + ".AqContext";
 
-        public const string AquilaGetEntityMethodFullName = AquilaRuntimeNamespace + ".GetEntityMethodAttribute";
+        public const string AquilaHttpMethodHandlerAttributeFullName = AquilaRuntimeNamespace + ".HttpHandlerAttribute";
+
+        public const string AquilaRuntimeInitAttributeFullName = AquilaRuntimeNamespace + ".RuntimeInitAttribute";
+
+        public const string AquilaRuntimeInitKindFullName = AquilaRuntimeNamespace + ".RuntimeInitKind";
+
+        public const string AquilaHttpMethodKindFullName = AquilaRuntimeNamespace + ".HttpMethodKind";
 
         //System.Data
 
@@ -133,6 +139,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public static readonly string SDCDBCommandFullName = $"{SystemDataCommonNamespace}.DbCommand";
         public static readonly string SDCDBParameterFullName = $"{SystemDataCommonNamespace}.DbParameter";
+        public static readonly string SDCDBReaderFullName = $"{SystemDataCommonNamespace}.DbDataReader";
 
         /// <summary>
         /// Full name of Context+DllLoader&lt;&gt;.
@@ -159,11 +166,16 @@ namespace Aquila.CodeAnalysis.Symbols
             RuntimeMethodHandle,
 
             //Attributes
+            RuntimeInitAttribute,
             QueryAttribute,
             EntityAttribute,
             LinkAttribute,
             ExtensionMethodAttribute,
-            GetEntityMethodAttribute,
+            HttpHandlerAttribute,
+
+            //Enums
+            RuntimeInitKind,
+            HttpMethodKind,
 
             //Aq Runtime Types
             AqQuery,
@@ -171,7 +183,8 @@ namespace Aquila.CodeAnalysis.Symbols
 
             //System.Data.Common Types
             DbCommand,
-            DbParameter;
+            DbParameter,
+            DbReader;
 
         public CoreTypes(AquilaCompilation compilation)
         {
@@ -203,11 +216,19 @@ namespace Aquila.CodeAnalysis.Symbols
 
             #region Attributes
 
+            RuntimeInitAttribute = CreateFromFullName(AquilaRuntimeInitAttributeFullName);
             QueryAttribute = CreateFromFullName(AquilaQueryAttributeFullName);
             EntityAttribute = CreateFromFullName(AquilaEntityAttributeFullName);
             LinkAttribute = CreateFromFullName(AquilaLinkAttributeFullName);
             ExtensionMethodAttribute = CreateFromFullName(AquilaExtensionAqAttributeFullName);
-            GetEntityMethodAttribute = CreateFromFullName(AquilaGetEntityMethodFullName);
+            HttpHandlerAttribute = CreateFromFullName(AquilaHttpMethodHandlerAttributeFullName);
+
+            #endregion
+
+            #region Enums
+
+            RuntimeInitKind = CreateFromFullName(AquilaRuntimeInitKindFullName);
+            HttpMethodKind = CreateFromFullName(AquilaHttpMethodKindFullName);
 
             #endregion
 
@@ -222,6 +243,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
             DbCommand = CreateFromFullName(SDCDBCommandFullName);
             DbParameter = CreateFromFullName(SDCDBParameterFullName);
+            DbReader = CreateFromFullName(SDCDBReaderFullName);
 
             #endregion
 
