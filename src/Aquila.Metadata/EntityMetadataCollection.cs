@@ -79,5 +79,11 @@ namespace Aquila.Metadata
         {
             return !_metadata.Any();
         }
+
+        public void Clear()
+        {
+            _metadata.Clear();
+            _semanticMetadata = null;
+        }
     }
 }

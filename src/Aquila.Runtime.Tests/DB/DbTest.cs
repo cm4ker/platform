@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Data;
+using System.IO;
 using System.Linq;
 using Aquila.Core.Assemlies;
 using Aquila.Data;
@@ -20,7 +21,7 @@ namespace Aquila.Runtime.Tests.DB
             MigrationRunner.Migrate(cs, SqlDatabaseType.SqlServer);
 
             DatabaseRuntimeContext db = new DatabaseRuntimeContext();
-            DataConnectionContext dc = new DataConnectionContext(SqlDatabaseType.SqlServer, cs);
+            DataConnectionContext dc = new DataConnectionContext(SqlDatabaseType.SqlServer, cs, IsolationLevel.ReadCommitted);
 
             var d1 = db.CreateDescriptor(dc);
             var d2 = db.CreateDescriptor(dc);
@@ -40,6 +41,7 @@ namespace Aquila.Runtime.Tests.DB
             d2.DatabaseName = $"Tbl_{d2.DatabaseId}";
             d2.MetadataId = "test";
 
+            db.SetPendingMetadata(TestMetadata.GetTestMetadata());
             db.Save(dc);
 
             //NOTE: First 0x100 type ids are reserved 
@@ -49,6 +51,7 @@ namespace Aquila.Runtime.Tests.DB
             DatabaseRuntimeContext db2 = new DatabaseRuntimeContext();
 
             db2.Load(dc);
+            
         }
     }
 }

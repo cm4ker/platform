@@ -1,5 +1,6 @@
 using System.Reflection;
 using Aquila.Data;
+using Aquila.Runtime;
 
 namespace Aquila.Core.Contracts.Instance
 {
@@ -9,6 +10,11 @@ namespace Aquila.Core.Contracts.Instance
         /// Manager of data connection contexts
         /// </summary>
         DataContextManager DataContextManager { get; }
+
+        /// <summary>
+        /// Current state of database 
+        /// </summary>
+        DatabaseRuntimeContext DatabaseRuntimeContext { get; }
 
         public Assembly BLAssembly { get; }
     }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Aquila.Core;
 using Aquila.Core.Authentication;
 using Aquila.Core.Contracts.Instance;
+using Aquila.Core.Sessions;
 using Aquila.Logging;
 using Aquila.Runtime.Infrastructure.Helpers;
 using Microsoft.AspNetCore.Builder;
@@ -76,20 +77,50 @@ namespace Aquila.WebServiceCore
                         {
                             var index = 0;
 
-                            foreach (var method in methods)
+                            foreach (var item in methods.Where(x => x.attr.Kind == HttpMethodKind.Get))
                             {
+                                var method = item.m;
+
                                 if (!method.IsStatic || !method.IsPublic
                                                      || method.GetParameters().FirstOrDefault()?.ParameterType !=
                                                      typeof(AqContext))
                                     throw new Exception($"Method {method.Name} marked as a CRUD but not consistent");
 
-                                x.MapGet($"api/{{instance}}/entity{index++}/get",
+
+                                //NOTE: route in assembly starts from /
+                                var route = $"api/{{instance}}{item.attr.Route}";
+                                _logger.Info($"Add route for get = {route.Replace('{', '(').Replace('}', ')')}");
+
+                                x.MapGet(route,
                                     async context =>
                                     {
-                                        var obj = method.Invoke(null, new[] { new AqContext(null), });
-                                        
-                                        await context.Response.WriteAsJsonAsync(obj, obj.GetType(),
-                                            cancellationToken: cancellationToken);
+                                        var instanceName = context.GetRouteData().Values["instance"]?.ToString();
+
+                                        var instance = _mrg.GetInstance(instanceName);
+
+                                        if (instance is null) return;
+
+                                        var id = context.GetRouteData().Values["id"]?.ToString();
+
+                                        try
+                                        {
+                                            var session = instance.CreateSession(new Anonymous());
+
+                                            var obj = method.Invoke(null,
+                                                new object[] { new AqContext(session), Guid.Empty });
+                                            if (obj is null)
+                                                await context.Response.WriteAsync("The object is null",
+                                                    cancellationToken: cancellationToken);
+                                            else
+                                                await context.Response.WriteAsJsonAsync(obj, obj.GetType(),
+                                                    cancellationToken: cancellationToken);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            context.Response.ContentLength = ex.ToString().Length;
+                                            await context.Response.WriteAsync(ex.ToString(),
+                                                cancellationToken: cancellationToken);
+                                        }
                                     });
                             }
                         });

@@ -34,7 +34,7 @@ namespace Aquila.CodeAnalysis
         /// What framework is the compiled assembly supposed to run on,
         /// e.g. <c>.NETCoreApp,Version=v3.1</c>.
         /// </summary>
-        public string TargetFramework { get; private set; }
+        public string TargetFramework { get; private set; } = ".NETCoreApp,Version=v5.0";
 
         /// <summary>
         /// Whether to generate an embedded resource containing additional information about the source symbols.

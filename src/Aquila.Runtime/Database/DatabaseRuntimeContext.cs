@@ -58,7 +58,7 @@ namespace Aquila.Runtime
         /// <returns></returns>
         public EntityMetadataCollection GetMetadata()
         {
-            return TestMetadata.GetTestMetadata();
+            //return TestMetadata.GetTestMetadata();
             return _md;
         }
 
@@ -82,6 +82,7 @@ namespace Aquila.Runtime
         {
             SaveDescriptors(context);
             SaveMetadata(context);
+            SavePendingMetadata(context);
         }
 
         #region Descriptors
@@ -204,6 +205,17 @@ namespace Aquila.Runtime
 
         private void SaveMetadata(DataConnectionContext context)
         {
+            context.BeginTransaction();
+
+            using var clearCmd = context.CreateCommand(q =>
+            {
+                q.bg_query()
+                    .ld_table(MetadataTableName)
+                    .m_from()
+                    .m_delete()
+                    .st_query();
+            });
+
             using var cmd = context.CreateCommand(q =>
             {
                 q.bg_query()
@@ -230,6 +242,8 @@ namespace Aquila.Runtime
 
                 cmd.ExecuteNonQuery();
             }
+
+            context.CommitTransaction();
         }
 
         #endregion

@@ -10,6 +10,7 @@ using Aquila.Core.Contracts.Network;
 using Aquila.Core.Sessions;
 using Aquila.Data;
 using Aquila.Logging;
+using Aquila.Runtime;
 
 namespace Aquila.Core.Instance
 {
@@ -66,6 +67,7 @@ namespace Aquila.Core.Instance
         public IStartupConfig StartupConfig { get; private set; }
 
         public DataContextManager DataContextManager { get; private set; }
+        public DatabaseRuntimeContext DatabaseRuntimeContext { get; }
 
         public Assembly BLAssembly { get; protected set; }
 

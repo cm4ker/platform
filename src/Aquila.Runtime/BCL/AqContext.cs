@@ -18,8 +18,7 @@ namespace Aquila.Core
         {
             _session = session;
             _dcc = _session.DataContext;
-            _drc = new DatabaseRuntimeContext();
-            _drc.Load(_dcc);
+            _drc = _session.Instance.DatabaseRuntimeContext;
         }
 
         public DataConnectionContext DataContext => _dcc;

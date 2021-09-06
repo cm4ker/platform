@@ -64,16 +64,13 @@ namespace Aquila.Core.Instance
             DataContextManager.Initialize(config.DatabaseType, config.ConnectionString);
             DatabaseRuntimeContext = DatabaseRuntimeContext.CreateAndLoad(DataContextManager.GetContext());
 
-            var pending = TestMetadata.GetTestMetadata();
-            var current = DatabaseRuntimeContext.GetMetadata();
-
-
             _logger.Info("Current configuration was loaded. It contains {0} elements",
-                current.Metadata.Count());
+                DatabaseRuntimeContext.GetMetadata().Metadata.Count());
 
-            if (MigrationManager.CheckMigration(current, pending))
+            if (MigrationManager.CheckMigration())
             {
-                MigrationManager.Migrate(current, pending);
+                MigrationManager.Migrate();
+                DatabaseRuntimeContext = DatabaseRuntimeContext.CreateAndLoad(DataContextManager.GetContext());
             }
 
             BLAssembly = Assembly.Load(DatabaseRuntimeContext.GetLastAssembly(DataContextManager.GetContext()));
@@ -97,6 +94,7 @@ namespace Aquila.Core.Instance
                         var semantic = DatabaseRuntimeContext.GetMetadata().GetSemantic(x => x.FullName == mdFullName);
                         var query = CRUDQueryGenerator.GetLoad(semantic, DatabaseRuntimeContext);
                         _logger.Info($"Gen query for {mdFullName}:\n{query}");
+                        (item.m as FieldInfo).SetValue(null, query);
                         break;
                     }
                     case RuntimeInitKind.UpdateQuery:
@@ -133,7 +131,7 @@ namespace Aquila.Core.Instance
                 }
             });
 
-            Sessions.Add(new SimpleSession(this, new Anonymous(), DataContextManager));
+            Sessions.Add(new SimpleSession(this, new Anonymous()));
         }
 
         private ILogger _logger;

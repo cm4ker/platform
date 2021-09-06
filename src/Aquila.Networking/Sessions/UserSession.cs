@@ -19,7 +19,7 @@ namespace Aquila.Core.Sessions
 
         public UserSession(IPlatformInstance env, IUser user, DataContextManager dataContextManger,
             ICacheService cacheService)
-            : base(env, dataContextManger, cacheService)
+            : base(env, cacheService)
         {
             _sessionParameters = new ConcurrentDictionary<string, object>();
             User = user;

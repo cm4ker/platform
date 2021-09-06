@@ -88,7 +88,7 @@ namespace Aquila.Migrations
                 }
                 else if (property.actual == null)
                 {
-                    DeleteProperty(scope, property.old, tableName, context.OldCollectionState, context);
+                    DeleteProperty(scope, property.old, tableName, context.Current, context);
                 }
                 else
                 {
@@ -100,12 +100,12 @@ namespace Aquila.Migrations
 
         public void MigrationPlan(EntityMigrationPlan plan, EntityMigratorDataContext context)
         {
-            var oldState = context.OldCollectionState.GetSemanticMetadata();
-            var actualState = context.ActualCollectionState.GetSemanticMetadata();
+            var oldState = context.Current.GetSemanticMetadata();
+            var actualState = context.Pending.GetSemanticMetadata();
 
             if (!oldState.Any() && actualState.Any())
             {
-                var typesToCreate = context.ActualCollectionState.GetSemanticMetadata();
+                var typesToCreate = context.Pending.GetSemanticMetadata();
 
                 typesToCreate.ForEach(e =>
                     plan.AddScope(
@@ -279,8 +279,8 @@ namespace Aquila.Migrations
         public void ChangeProperty(EntityMigrationScope plan, SMProperty old, SMProperty actual,
             string tableName, EntityMigratorDataContext context)
         {
-            var oldMdCol = context.OldCollectionState;
-            var actualMdCol = context.ActualCollectionState;
+            var oldMdCol = context.Current;
+            var actualMdCol = context.Pending;
 
             //случай если в свойстве был один тип а стало много 
             if (old.Types.Count() == 1 && actual.Types.Count() > 1)

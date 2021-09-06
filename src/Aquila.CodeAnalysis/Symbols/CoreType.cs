@@ -121,6 +121,7 @@ namespace Aquila.CodeAnalysis.Symbols
         public const string AquilaPlatformQueryFullName = AquilaRuntimeNamespace + ".AqQuery";
 
         public const string AquilaPlatformContextFullName = AquilaRuntimeNamespace + ".AqContext";
+        public const string AquilaPlatformHelperFullName = AquilaRuntimeNamespace + ".AqHelper";
 
         public const string AquilaHttpMethodHandlerAttributeFullName = AquilaRuntimeNamespace + ".HttpHandlerAttribute";
 
@@ -180,6 +181,7 @@ namespace Aquila.CodeAnalysis.Symbols
             //Aq Runtime Types
             AqQuery,
             AqContext,
+            AqHelper,
 
             //System.Data.Common Types
             DbCommand,
@@ -236,6 +238,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
             AqQuery = CreateFromFullName(AquilaPlatformQueryFullName);
             AqContext = CreateFromFullName(AquilaPlatformContextFullName);
+            AqHelper = CreateFromFullName(AquilaPlatformHelperFullName);
 
             #endregion
 

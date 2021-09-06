@@ -13,8 +13,8 @@ namespace Aquila.Core.Sessions
     /// </summary>
     public class SystemSession : Session
     {
-        public SystemSession(IInstance env, DataContextManager dataContextManger, ICacheService cacheService)
-            : base(env, dataContextManger, cacheService)
+        public SystemSession(IPlatformInstance env, DataContextManager dataContextManger, ICacheService cacheService)
+            : base(env, cacheService)
         {
             User = new SystemUser();
         }

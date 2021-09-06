@@ -56,8 +56,18 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
             var builder = new ConcurrentBag<Symbol>();
 
+            var thisPlace = new ThisArgPlace(this);
+
             var ctor = new SynthesizedCtorSymbol(this)
-                .SetMethodBuilder((m, db) => { return il => { il.EmitRet(true); }; });
+                .SetMethodBuilder((m, db) =>
+                {
+                    return il =>
+                    {
+                        thisPlace.EmitLoad(il);
+                        il.EmitCall(m, db, ILOpCode.Call, DeclaringCompilation.CoreTypes.Object.Ctor());
+                        il.EmitRet(true);
+                    };
+                });
             ;
             var thisArg = new ThisArgPlace(this);
 

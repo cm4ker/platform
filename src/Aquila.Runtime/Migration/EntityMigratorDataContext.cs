@@ -13,34 +13,32 @@ namespace Aquila.Migrations
         /// Creates data context for migrator
         /// </summary>
         /// <param name="runtimeContext"></param>
-        /// <param name="oldCollectionState"></param>
-        /// <param name="actualCollectionState"></param>
-        public EntityMigratorDataContext(DatabaseRuntimeContext runtimeContext,
-            EntityMetadataCollection oldCollectionState, EntityMetadataCollection actualCollectionState
-            , DataConnectionContext connectionContext)
+        /// <param name="current"></param>
+        /// <param name="pending"></param>
+        public EntityMigratorDataContext(DatabaseRuntimeContext runtimeContext, DataConnectionContext connectionContext)
         {
             RuntimeContext = runtimeContext;
-            OldCollectionState = oldCollectionState;
-            ActualCollectionState = actualCollectionState;
             ConnectionContext = connectionContext;
         }
 
         /// <summary>
         /// For this context we create the migration plan
         /// </summary>
-        public DatabaseRuntimeContext RuntimeContext { get; set; }
+        public DatabaseRuntimeContext RuntimeContext { get; }
+
+        /// <summary>
+        /// Connection context
+        /// </summary>
+        public DataConnectionContext ConnectionContext { get; }
 
         /// <summary>
         /// We migrate form this schema
         /// </summary>
-        public EntityMetadataCollection OldCollectionState { get; set; }
-
+        public EntityMetadataCollection Current => RuntimeContext.GetMetadata();
 
         /// <summary>
         /// We migrate to this schema
         /// </summary>
-        public EntityMetadataCollection ActualCollectionState { get; set; }
-
-        public DataConnectionContext ConnectionContext { get; }
+        public EntityMetadataCollection Pending => RuntimeContext.GetPendingMetadata();
     }
 }

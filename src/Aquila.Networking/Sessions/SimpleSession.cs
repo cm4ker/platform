@@ -15,24 +15,30 @@ namespace Aquila.Core.Sessions
     {
         private readonly Dictionary<string, object> _sessionParameters;
         private IDisposable _remover;
+        private readonly DataContextManager _dataContextManger;
+        private readonly DataConnectionContext _dataContext;
 
-        public SimpleSession(IInstance env, IUser user, DataContextManager mrg)
+        public SimpleSession(IPlatformInstance env, IUser user)
         {
             Id = Guid.NewGuid();
             User = user;
             Instance = env;
-            _sessionParameters = new Dictionary<string, object>();
-            DataContext = mrg.GetContext();
-        }
 
+            _sessionParameters = new Dictionary<string, object>();
+            _dataContextManger = env.DataContextManager;
+            _dataContext = _dataContextManger.GetContext();
+        }
 
         public Guid Id { get; }
 
         public IUser User { get; }
 
-        public DataConnectionContext DataContext { get; }
+        public DataConnectionContext DataContext
+        {
+            get => _dataContext;
+        }
 
-        public IInstance Instance { get; }
+        public IPlatformInstance Instance { get; }
 
 
         public void Dispose()

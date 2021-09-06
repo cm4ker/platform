@@ -9,10 +9,11 @@ namespace Aquila.Runtime.Infrastructure.Helpers
 {
     public static class AssemblyHelper
     {
-        public static IEnumerable<MethodInfo> GetLoadMethod(this Assembly asm)
+        public static IEnumerable<(MethodInfo m, HttpHandlerAttribute attr)> GetLoadMethod(this Assembly asm)
         {
             return asm.GetTypes().SelectMany(x => x.GetMethods())
-                .Where(x => x.GetCustomAttribute<HttpHandlerAttribute>() != null);
+                .Where(x => x.GetCustomAttribute<HttpHandlerAttribute>() != null)
+                .Select(x => (x, x.GetCustomAttribute<HttpHandlerAttribute>()));
         }
 
 

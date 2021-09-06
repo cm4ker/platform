@@ -45,7 +45,7 @@ namespace Aquila.Core.Contracts
         /// <summary>
         /// The environment
         /// </summary>
-        IInstance Instance { get; }
+        IPlatformInstance Instance { get; }
 
         /// <summary>
         /// Close the session

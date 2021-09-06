@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading;
 using Aquila.QueryBuilder;
 
@@ -63,6 +64,12 @@ namespace Aquila.Data
             }
 
             return context;
+        }
+
+        public void ReleaseContext(DataConnectionContext context)
+        {
+            var key = _contexts.FirstOrDefault(x => x.Value == context).Key;
+            _contexts.TryRemove(key, out context);
         }
     }
 }

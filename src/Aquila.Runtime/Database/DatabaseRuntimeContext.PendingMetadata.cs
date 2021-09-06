@@ -28,6 +28,10 @@ namespace Aquila.Runtime
             return _pendingMd;
         }
 
+        public void SetPendingMetadata(EntityMetadataCollection pending)
+        {
+            _pendingMd = pending;
+        }
 
         #region Metadata
 
@@ -67,6 +71,19 @@ namespace Aquila.Runtime
 
         private void SavePendingMetadata(DataConnectionContext context)
         {
+            context.BeginTransaction();
+
+            using var clearCmd = context.CreateCommand(q =>
+            {
+                q.bg_query()
+                    .ld_table(PendingMetadataTableName)
+                    .m_from()
+                    .m_delete()
+                    .st_query();
+            });
+
+            clearCmd.ExecuteNonQuery();
+
             using var cmd = context.CreateCommand(q =>
             {
                 q.bg_query()
@@ -93,6 +110,14 @@ namespace Aquila.Runtime
 
                 cmd.ExecuteNonQuery();
             }
+
+            context.CommitTransaction();
+        }
+
+        public void Upgrade()
+        {
+            _md = _pendingMd;
+            _pendingMd = new EntityMetadataCollection();
         }
 
         #endregion

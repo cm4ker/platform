@@ -271,12 +271,14 @@ namespace Aquila.CodeAnalysis.Symbols
                 DataContext = ct.AqContext.Property("DataContext");
                 DataRuntimeContext = ct.AqContext.Property("DataRuntimeContext");
                 CreateCommand = ct.AqContext.Method("CreateCommand");
+                CreateParameterHelper = ct.AqHelper.Method("AddParameter", ct.DbCommand, ct.String, ct.Object);
             }
 
             public readonly CoreMethod
 
                 //Aquila.Runtime methods
-                CreateCommand;
+                CreateCommand,
+                CreateParameterHelper;
 
             public readonly CoreProperty
                 DataContext,

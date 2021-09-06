@@ -14,6 +14,7 @@ using Aquila.Metadata;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
+using Roslyn.Utilities;
 using SpecialTypeExtensions = Microsoft.CodeAnalysis.SpecialTypeExtensions;
 
 namespace Aquila.Syntax.Metadata
@@ -119,10 +120,16 @@ namespace Aquila.Syntax.Metadata
         private NamedTypeSymbol PopulateDtoType(SMEntity md)
         {
             var dtoType = _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{DtoPostfix}", false));
-
+            var thisPlace = new ThisArgPlace(dtoType);
             var ctor = _ps.SynthesizeConstructor(dtoType);
             ctor
-                .SetMethodBuilder((m, d) => (il) => { il.EmitRet(true); });
+                .SetMethodBuilder((m, d) => (il) =>
+                {
+                    thisPlace.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Call, _ct.Object.Ctor());
+
+                    il.EmitRet(true);
+                });
 
 
             foreach (var prop in md.Properties)
@@ -177,6 +184,9 @@ namespace Aquila.Syntax.Metadata
                 .SetParameters(ctxParam, dtoParam)
                 .SetMethodBuilder((m, d) => (il) =>
                 {
+                    thisPlace.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Call, _ct.Object.Ctor());
+
                     thisPlace.EmitLoad(il);
                     ctxPS.EmitLoad(il);
                     ctxFieldPlace.EmitStore(il);
@@ -518,27 +528,14 @@ namespace Aquila.Syntax.Metadata
                                     $"Clr prop with name {prop.Name}{typeInfo.postfix} not found");
 
                             dbLoc.EmitLoad(il);
-                            il.EmitCall(m, d, ILOpCode.Call, _cm.Operators.CreateParameter);
-                            paramLoc.EmitStore(il);
-
-                            paramLoc.EmitLoad(il);
                             il.EmitStringConstant($"p_{paramNumber++}");
-                            il.EmitCall(m, d, ILOpCode.Call, paramName.Setter);
 
-                            paramLoc.EmitLoad(il);
                             sdpp.EmitLoad(il);
-
                             il.EmitCall(m, d, ILOpCode.Call, clrProp.GetMethod);
                             il.EmitOpCode(ILOpCode.Box);
                             il.EmitSymbolToken(m, d, clrProp.Type, null);
 
-                            il.EmitCall(m, d, ILOpCode.Call, paramValue.Setter);
-
-
-                            dbLoc.EmitLoad(il);
-                            il.EmitCall(m, d, ILOpCode.Call, dbParamsProp.Getter);
-                            paramLoc.EmitLoad(il);
-                            il.EmitCall(m, d, ILOpCode.Call, paramsCollectionAdd);
+                            il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.CreateParameterHelper);
                         }
                     }
 
@@ -593,7 +590,8 @@ namespace Aquila.Syntax.Metadata
                         new[]
                         {
                             new TypedConstant(_ct.HttpMethodKind.Symbol, TypedConstantKind.Primitive, 0),
-                            new TypedConstant(_ct.String.Symbol, TypedConstantKind.Primitive, "/invoice/get/{id}")
+                            new TypedConstant(_ct.String.Symbol, TypedConstantKind.Primitive,
+                                $"/{md.Name.ToCamelCase()}/get/{{id}}")
                         }.ToImmutableArray(), ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty))
                     .SetMethodBuilder((m, d) => il =>
                     {
@@ -601,6 +599,8 @@ namespace Aquila.Syntax.Metadata
                         var paramLoc =
                             new LocalPlace(il.DefineSynthLocal(loadDtoMethod, "dbParameter", _ct.DbParameter));
                         var readerLoc = new LocalPlace(il.DefineSynthLocal(loadDtoMethod, "reader", _ct.DbReader));
+                        var idPlace = new ParamPlace(idParam);
+
 
                         ctxParam.EmitLoad(il);
                         il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.CreateCommand);
@@ -609,7 +609,17 @@ namespace Aquila.Syntax.Metadata
 
                         dbLoc.EmitLoad(il);
                         loadQueryFieldPlace.EmitLoad(il);
-                        il.EmitCall(m, d, ILOpCode.Call, dbTextProp.Setter);
+                        il.EmitCall(m, d, ILOpCode.Callvirt, dbTextProp.Setter);
+
+
+                        dbLoc.EmitLoad(il);
+                        il.EmitStringConstant($"@p0");
+
+                        idPlace.EmitLoad(il);
+                        il.EmitOpCode(ILOpCode.Box);
+                        il.EmitSymbolToken(m, d, idParam.Type, null);
+
+                        il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.CreateParameterHelper);
 
                         dbLoc.EmitLoad(il);
                         il.EmitCall(m, d, ILOpCode.Call, _ct.DbCommand.Method("ExecuteReader"));
@@ -617,17 +627,17 @@ namespace Aquila.Syntax.Metadata
 
                         var lbl = new NamedLabel("<return>");
 
-                        readerLoc.EmitLoad(il);
-                        il.EmitCall(m, d, ILOpCode.Call, _ct.DbReader.Method("Read"));
-
-                        // if (Read())
-                        il.EmitBranch(ILOpCode.Brfalse, lbl);
-
-
                         var dtoLoc = new LocalPlace(il.DefineSynthLocal(loadDtoMethod, "dto", dtoType));
 
                         il.EmitCall(m, d, ILOpCode.Newobj, dtoType.InstanceConstructors.First());
                         dtoLoc.EmitStore(il);
+
+                        readerLoc.EmitLoad(il);
+                        il.EmitCall(m, d, ILOpCode.Callvirt, _ct.DbReader.Method("Read"));
+
+                        // if (Read())
+                        il.EmitBranch(ILOpCode.Brfalse, lbl);
+
 
                         var getValueMethod = _ct.DbReader.Method("get_Item", _ct.Int32);
 
@@ -655,22 +665,26 @@ namespace Aquila.Syntax.Metadata
                                 dtoLoc.EmitLoad(il);
                                 readerLoc.EmitLoad(il);
                                 il.EmitIntConstant(index++);
-                                il.EmitCall(m, d, ILOpCode.Call, getValueMethod);
+                                il.EmitCall(m, d, ILOpCode.Callvirt, getValueMethod);
 
-                                il.EmitOpCode(ILOpCode.Unbox_any);
+                                if (clrProp.Type.IsValueType)
+                                    il.EmitOpCode(ILOpCode.Unbox_any);
+                                else
+                                    il.EmitOpCode(ILOpCode.Castclass);
                                 il.EmitSymbolToken(m, d, clrProp.Type, null);
 
                                 il.EmitCall(m, d, ILOpCode.Call, clrProp.SetMethod);
                             }
                         }
 
-                        dtoLoc.EmitLoad(il);
-                        il.EmitRet(false);
-
                         //else
                         il.MarkLabel(lbl);
 
-                        il.EmitNullConstant();
+
+                        readerLoc.EmitLoad(il);
+                        il.EmitCall(m, d, ILOpCode.Callvirt, _ct.DbReader.Method("Close"));
+
+                        dtoLoc.EmitLoad(il);
                         il.EmitRet(false);
                     });
             }
@@ -725,6 +739,9 @@ namespace Aquila.Syntax.Metadata
                 .SetParameters(guidParam)
                 .SetMethodBuilder((m, d) => il =>
                 {
+                    thisPlace.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Call, _ct.Object.Ctor());
+
                     thisPlace.EmitLoad(il);
                     paramPlace.EmitLoad(il);
                     fieldPlace.EmitStore(il);
