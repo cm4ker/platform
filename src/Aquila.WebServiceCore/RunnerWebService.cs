@@ -1,6 +1,9 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Aquila.Core;
@@ -91,37 +94,24 @@ namespace Aquila.WebServiceCore
                                 var route = $"api/{{instance}}{item.attr.Route}";
                                 _logger.Info($"Add route for get = {route.Replace('{', '(').Replace('}', ')')}");
 
-                                x.MapGet(route,
-                                    async context =>
-                                    {
-                                        var instanceName = context.GetRouteData().Values["instance"]?.ToString();
+                                x.MapGet(route, context => GetHandler(context, method, cancellationToken));
+                            }
 
-                                        var instance = _mrg.GetInstance(instanceName);
+                            foreach (var item in methods.Where(x => x.attr.Kind == HttpMethodKind.Post))
+                            {
+                                var method = item.m;
 
-                                        if (instance is null) return;
+                                if (!method.IsStatic || !method.IsPublic
+                                                     || method.GetParameters().FirstOrDefault()?.ParameterType !=
+                                                     typeof(AqContext))
+                                    throw new Exception($"Method {method.Name} marked as a CRUD but not consistent");
 
-                                        var id = context.GetRouteData().Values["id"]?.ToString();
 
-                                        try
-                                        {
-                                            var session = instance.CreateSession(new Anonymous());
+                                //NOTE: route in assembly starts from /
+                                var route = $"api/{{instance}}{item.attr.Route}";
+                                _logger.Info($"Add route for get = {route.Replace('{', '(').Replace('}', ')')}");
 
-                                            var obj = method.Invoke(null,
-                                                new object[] { new AqContext(session), Guid.Empty });
-                                            if (obj is null)
-                                                await context.Response.WriteAsync("The object is null",
-                                                    cancellationToken: cancellationToken);
-                                            else
-                                                await context.Response.WriteAsJsonAsync(obj, obj.GetType(),
-                                                    cancellationToken: cancellationToken);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            context.Response.ContentLength = ex.ToString().Length;
-                                            await context.Response.WriteAsync(ex.ToString(),
-                                                cancellationToken: cancellationToken);
-                                        }
-                                    });
+                                x.MapPost(route, context => PostHandler(context, method, cancellationToken));
                             }
                         });
                     }
@@ -130,9 +120,11 @@ namespace Aquila.WebServiceCore
                     app.UseEndpoints(x =>
                     {
                         x.MapGet("api/{instance}/getMetadata",
-                            async context => { await GetInstanceMetadata(context); });
-                        x.MapGet("api/admin/instances", async context => { await GetInstances(context); });
-                        x.MapGet("api/admin/{instance}/sessions", async context => { await GetSessions(context); });
+                            async context => { await GetInstanceMetadata(context, cancellationToken); });
+                        x.MapGet("api/admin/instances",
+                            async context => { await GetInstances(context, cancellationToken); });
+                        x.MapGet("api/admin/{instance}/sessions",
+                            async context => { await GetSessions(context, cancellationToken); });
                     });
 
 
@@ -147,9 +139,63 @@ namespace Aquila.WebServiceCore
 
                     _startupService.Configure(app);
 
-                    async Task GetInstanceMetadata(HttpContext context)
-                    {
-                        /*
+
+                    //if we not found endpoints response this                    
+                    app.Run(context =>
+                        context.Response.WriteAsync("Path not found! Go away!", cancellationToken: cancellationToken));
+                })
+                .UseKestrel()
+                .ConfigureServices(x => x.AddRouting())
+                .UseContentRoot(Directory.GetCurrentDirectory());
+
+            _host = builder.Build();
+
+            return _host.RunAsync(cancellationToken);
+        }
+
+        private async Task PostHandler(HttpContext context, MethodInfo method, CancellationToken cancellationToken)
+        {
+            var instanceName = context.GetRouteData().Values["instance"]?.ToString();
+            var instance = _mrg.GetInstance(instanceName);
+            if (instance is null) return;
+
+            try
+            {
+                var session = instance.CreateSession(new Anonymous());
+
+                var data = await JsonSerializer.DeserializeAsync(context.Request.Body,
+                    method.GetParameters()[1].ParameterType, cancellationToken: cancellationToken);
+
+                method.Invoke(null, new object[] { new AqContext(session), data });
+            }
+            catch (Exception ex)
+            {
+                context.Response.ContentLength = ex.ToString().Length;
+                await context.Response.WriteAsync(ex.ToString(), cancellationToken: cancellationToken);
+            }
+        }
+
+        private async Task GetSessions(HttpContext context, CancellationToken token)
+        {
+            var instanceName = context.GetRouteData().Values["instance"]?.ToString();
+
+            var env = _mrg.GetInstance(instanceName);
+
+            if (env is null) return;
+
+            await context.Response.WriteAsJsonAsync(env.Sessions, token);
+        }
+
+        private async Task GetInstances(HttpContext context, CancellationToken token)
+        {
+            var list = _mrg.GetInstances().Select(x => new { x.Name });
+
+            await context.Response.WriteAsJsonAsync(list, cancellationToken: token);
+        }
+
+        private async Task GetInstanceMetadata(HttpContext context, CancellationToken token)
+        {
+            /*
                          1. Generate crud api
                          
                          Create()                               
@@ -170,53 +216,47 @@ namespace Aquila.WebServiceCore
                                                   
                          */
 
-                        var instanceName = context.GetRouteData().Values["instance"]?.ToString();
+            var instanceName = context.GetRouteData().Values["instance"]?.ToString();
 
-                        var instance = _mrg.GetInstance(instanceName);
+            var instance = _mrg.GetInstance(instanceName);
 
-                        if (instance is null) return;
+            if (instance is null) return;
 
-                        var plContext = new AqContext(instance.CreateSession(new Anonymous()));
+            var plContext = new AqContext(instance.CreateSession(new Anonymous()));
 
-                        var md = plContext.DataRuntimeContext.GetMetadata();
+            var md = plContext.DataRuntimeContext.GetMetadata();
 
-                        var list = md.Metadata.ToList();
+            var list = md.Metadata.ToList();
 
-                        await context.Response.WriteAsJsonAsync(list, cancellationToken);
-                    }
-
-                    async Task GetInstances(HttpContext context)
-                    {
-                        var list = _mrg.GetInstances().Select(x => new { x.Name });
-
-                        await context.Response.WriteAsJsonAsync(list, cancellationToken);
-                    }
-
-                    async Task GetSessions(HttpContext context)
-                    {
-                        var instanceName = context.GetRouteData().Values["instance"]?.ToString();
-
-                        var env = _mrg.GetInstance(instanceName);
-
-                        if (env is null) return;
-
-                        await context.Response.WriteAsJsonAsync(env.Sessions, cancellationToken);
-                    }
-
-
-                    //if we not found endpoints response this                    
-                    app.Run(context =>
-                        context.Response.WriteAsync("Path not found! Go away!", cancellationToken: cancellationToken));
-                })
-                .UseKestrel()
-                .ConfigureServices(x => x.AddRouting())
-                .UseContentRoot(Directory.GetCurrentDirectory());
-
-            _host = builder.Build();
-
-            return _host.RunAsync(cancellationToken);
+            await context.Response.WriteAsJsonAsync(list, cancellationToken: token);
         }
 
+        private async Task GetHandler(HttpContext context, MethodInfo methodInfo, CancellationToken token)
+        {
+            var instanceName = context.GetRouteData().Values["instance"]?.ToString();
+
+            var instance = _mrg.GetInstance(instanceName);
+
+            if (instance is null) return;
+
+            var id = context.GetRouteData().Values["id"]?.ToString() ?? Guid.Empty.ToString();
+
+            try
+            {
+                var session = instance.CreateSession(new Anonymous());
+
+                var obj = methodInfo.Invoke(null, new object[] { new AqContext(session), Guid.Parse(id) });
+                if (obj is null)
+                    await context.Response.WriteAsync("The object is null", cancellationToken: token);
+                else
+                    await context.Response.WriteAsJsonAsync(obj, obj.GetType(), cancellationToken: token);
+            }
+            catch (Exception ex)
+            {
+                context.Response.ContentLength = ex.ToString().Length;
+                await context.Response.WriteAsync(ex.ToString(), cancellationToken: token);
+            }
+        }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {

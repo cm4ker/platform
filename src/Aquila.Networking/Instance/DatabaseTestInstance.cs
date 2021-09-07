@@ -103,6 +103,7 @@ namespace Aquila.Core.Instance
                         var semantic = DatabaseRuntimeContext.GetMetadata().GetSemantic(x => x.FullName == mdFullName);
                         var query = CRUDQueryGenerator.GetSaveUpdate(semantic, DatabaseRuntimeContext);
                         _logger.Info($"Gen query for {mdFullName}:\n{query}");
+                        (item.m as FieldInfo).SetValue(null, query);
                         break;
                     }
                     case RuntimeInitKind.InsertQuery:
@@ -111,6 +112,7 @@ namespace Aquila.Core.Instance
                         var semantic = DatabaseRuntimeContext.GetMetadata().GetSemantic(x => x.FullName == mdFullName);
                         var query = CRUDQueryGenerator.GetSaveInsert(semantic, DatabaseRuntimeContext);
                         _logger.Info($"Gen query for {mdFullName}:\n{query}");
+                        (item.m as FieldInfo).SetValue(null, query);
                         break;
                     }
                     default:

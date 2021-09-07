@@ -589,6 +589,11 @@ namespace Aquila.CodeAnalysis.CodeGen
                 code = ILOpCode.Call; // virtual dispatch is unnecessary
             }
 
+            if (code == ILOpCode.Call && method.IsAbstract)
+            {
+                code = ILOpCode.Callvirt; // you must invoke it by callvirt opcode
+            }
+
             il.EmitOpCode(code, stack);
             il.EmitToken(module.Translate(method, diagnostics, false), null, diagnostics);
             return (code == ILOpCode.Newobj) ? method.ContainingType : method.ReturnType;

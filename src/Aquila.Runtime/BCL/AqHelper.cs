@@ -66,8 +66,11 @@ namespace Aquila.Core
         {
             var param = command.CreateParameter();
             param.ParameterName = name;
-            param.DbType = typeMap[value.GetType()];
-            param.Value = value;
+            if (value != null)
+                param.DbType = typeMap[value.GetType()];
+
+            param.Value = value ?? DBNull.Value;
+
             command.Parameters.Add(param);
         }
     }

@@ -14,6 +14,7 @@ using Aquila.Metadata;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
+using MoreLinq.Extensions;
 using Roslyn.Utilities;
 using SpecialTypeExtensions = Microsoft.CodeAnalysis.SpecialTypeExtensions;
 
@@ -399,8 +400,6 @@ namespace Aquila.Syntax.Metadata
                                       throw new Exception("Method save not found in manager type");
 
                         thisPlace.EmitLoad(il);
-
-                        thisPlace.EmitLoad(il);
                         ctxFieldPlace.EmitLoad(il);
 
                         thisPlace.EmitLoad(il);
@@ -433,9 +432,9 @@ namespace Aquila.Syntax.Metadata
             MethodSymbol ctor = _ct.QueryAttribute.Ctor();
 
             //plaint entity save query text
-            var saveQueryField = _ps.SynthesizeField(managerType)
+            var updateQueryfield = _ps.SynthesizeField(managerType)
                     .SetIsStatic(true)
-                    .SetName($"{md.Name}SaveQuery")
+                    .SetName($"{md.Name}UpdateQuery")
                     .SetAccess(Accessibility.Public)
                     .SetReadOnly(false)
                     .SetType(_ct.String)
@@ -448,6 +447,24 @@ namespace Aquila.Syntax.Metadata
                                 }
                                 .ToImmutableArray(), ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty))
                 ;
+
+            //plaint entity save query text
+            var insertQueryField = _ps.SynthesizeField(managerType)
+                    .SetIsStatic(true)
+                    .SetName($"{md.Name}InsertQuery")
+                    .SetAccess(Accessibility.Public)
+                    .SetReadOnly(false)
+                    .SetType(_ct.String)
+                    .AddAttribute(
+                        new SynthesizedAttributeData(_ct.RuntimeInitAttribute.Ctor(_ct.RuntimeInitKind, _ct.Object),
+                            new[]
+                                {
+                                    new TypedConstant(_ct.RuntimeInitKind.Symbol, TypedConstantKind.Enum, 3),
+                                    new TypedConstant(_ct.String.Symbol, TypedConstantKind.Primitive, md.FullName)
+                                }
+                                .ToImmutableArray(), ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty))
+                ;
+
 
             //plaint entity save query text
             var loadQueryField = _ps.SynthesizeField(managerType)
@@ -466,8 +483,10 @@ namespace Aquila.Syntax.Metadata
                                 .ToImmutableArray(), ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty))
                 ;
 
-            var saveQueryFieldPlace = new FieldPlace(saveQueryField);
+            var updateQueryFieldPlace = new FieldPlace(updateQueryfield);
             var loadQueryFieldPlace = new FieldPlace(loadQueryField);
+            var insertQueryFieldPlace = new FieldPlace(insertQueryField);
+
 
             var saveMethod = _ps.SynthesizeMethod(managerType)
                 .SetName("Save")
@@ -492,20 +511,70 @@ namespace Aquila.Syntax.Metadata
 
             saveMethod
                 .SetParameters(ctxParameter, saveDtoPerameter)
+                .AddAttribute(new SynthesizedAttributeData(
+                    _ct.HttpHandlerAttribute.Ctor(_ct.HttpMethodKind, _ct.String),
+                    new[]
+                    {
+                        new TypedConstant(_ct.HttpMethodKind.Symbol, TypedConstantKind.Primitive, 1),
+                        new TypedConstant(_ct.String.Symbol, TypedConstantKind.Primitive,
+                            $"/{md.Name.ToCamelCase()}/post")
+                    }.ToImmutableArray(), ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty))
                 .SetMethodBuilder((m, d) => il =>
                 {
                     var dbLoc = new LocalPlace(il.DefineSynthLocal(saveMethod, "dbCommand", _ct.DbCommand));
                     var paramLoc = new LocalPlace(il.DefineSynthLocal(saveMethod, "dbParameter", _ct.DbParameter));
-
+                    var idClrProp = dtoType.GetMembers(md.IdProperty.Name).OfType<PropertySymbol>().FirstOrDefault() ??
+                                    throw new Exception("The id property is null");
 
                     ctx.EmitLoad(il);
                     il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.CreateCommand);
 
                     dbLoc.EmitStore(il);
 
+                    //_dto.Id
+                    sdpp.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Callvirt, idClrProp.GetMethod);
+
+                    //Default Guid
+                    var tmpLoc = new LocalPlace(il.DefineSynthLocal(saveMethod, "", _ct.Guid));
+                    tmpLoc.EmitLoadAddress(il);
+                    il.EmitOpCode(ILOpCode.Initobj);
+                    il.EmitSymbolToken(m, d, _ct.Guid, null);
+                    tmpLoc.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Call, _cm.Operators.op_Equality_Guid_Guid);
+
+                    // var tmpLocIfRes = new LocalPlace(il.DefineSynthLocal(saveMethod, "", _ct.Boolean));
+                    // tmpLocIfRes.EmitStore(il);
+
+                    var elseLabel = new NamedLabel("<e_o1>");
+                    var endLabel = new NamedLabel("<end>");
+
+
+                    il.EmitBranch(ILOpCode.Brfalse, elseLabel);
+
+                    //set insert query
                     dbLoc.EmitLoad(il);
-                    saveQueryFieldPlace.EmitLoad(il);
-                    il.EmitCall(m, d, ILOpCode.Call, dbTextProp.Setter);
+                    insertQueryFieldPlace.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Callvirt, dbTextProp.Setter);
+                    
+                    //set to id new value
+                    sdpp.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Call, _cm.Operators.NewGuid);
+                    il.EmitCall(m, d, ILOpCode.Callvirt, idClrProp.SetMethod);
+                    
+                    
+                    il.EmitBranch(ILOpCode.Br_s, endLabel);
+
+             
+
+
+                    il.MarkLabel(elseLabel);
+
+                    dbLoc.EmitLoad(il);
+                    updateQueryFieldPlace.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Callvirt, dbTextProp.Setter);
+
+                    il.MarkLabel(endLabel);
 
                     var paramNumber = 0;
 
@@ -541,7 +610,7 @@ namespace Aquila.Syntax.Metadata
 
                     dbLoc.EmitLoad(il);
                     il.EmitCall(m, d, ILOpCode.Call, _ct.DbCommand.Method("ExecuteNonQuery"));
-
+                    il.EmitOpCode(ILOpCode.Pop);
                     il.EmitRet(true);
                 });
 
@@ -707,8 +776,9 @@ namespace Aquila.Syntax.Metadata
             managerType.AddMember(loadDtoMethod);
 
             managerType.AddMember(typeIdField);
-            managerType.AddMember(saveQueryField);
+            managerType.AddMember(updateQueryfield);
             managerType.AddMember(loadQueryField);
+            managerType.AddMember(insertQueryField);
 
 
             return managerType;

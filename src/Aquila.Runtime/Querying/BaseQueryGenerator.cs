@@ -13,6 +13,8 @@ namespace Aquila.Runtime.Querying
         public static string GetSaveUpdate(SMEntity entity, DatabaseRuntimeContext drc)
         {
             var e_desc = drc.FindEntityDescriptor(entity.FullName);
+            var id_desc = drc.FindEntityDescriptor(entity.IdProperty.FullName);
+
             var qm = new QueryMachine();
             var paramNum = 0;
             qm.bg_query()
@@ -20,7 +22,7 @@ namespace Aquila.Runtime.Querying
                 .ld_table(e_desc.DatabaseName)
                 .@as("t")
                 .m_where()
-                .ld_column("id")
+                .ld_column(id_desc.DatabaseName)
                 .ld_param($"p_{paramNum++}")
                 .eq()
                 .m_set();
@@ -29,6 +31,10 @@ namespace Aquila.Runtime.Querying
 
             foreach (var property in props)
             {
+                //we not need update the id property
+                if (property.IsIdProperty)
+                    continue;
+
                 foreach (var column in property.GetSchema(drc))
                 {
                     qm.ld_column(column.FullName)

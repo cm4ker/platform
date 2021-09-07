@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Syntax.Parser;
 using Aquila.CodeAnalysis.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols
@@ -251,17 +252,28 @@ namespace Aquila.CodeAnalysis.Symbols
                 Concat_String_String_String_String =
                     ct.String.Method("Concat", ct.String, ct.String, ct.String, ct.String);
                 Long_ToString = ct.Int64.Method("ToString");
-                CreateParameter = ct.DbCommand.Method("CreateParameter");
+                
+                op_Equality_Guid_Guid = ct.Guid.Method("op_Equality", ct.Guid, ct.Guid);
+                NewGuid = ct.Guid.Method("NewGuid");
+                
             }
 
             public readonly CoreMethod
+                
+                //String
                 IsNullOrEmpty_String,
                 Concat_String_String,
                 Concat_String_String_String,
                 Concat_String_String_String_String,
-                //Concat_Args,
+                
+                //Long
                 Long_ToString,
-                CreateParameter;
+                
+                //Guid                    
+                op_Equality_Guid_Guid,
+                NewGuid
+                ;
+            
         }
 
         public struct RuntimeHolder
