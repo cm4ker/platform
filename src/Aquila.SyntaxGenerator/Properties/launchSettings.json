@@ -14,7 +14,7 @@
     },
     "QLangDirect": {
       "commandName": "Project",
-      "commandLineArgs": "qlang QLang.xml ..\\..\\..\\..\\Aquila.Querying\\Model\\Generated.QLang.xml.cs"
+      "commandLineArgs": "qlang QLang.xml ..\\..\\..\\Aquila.Querying\\Model\\Generated.QLang.xml.cs"
     },
     "SQL": {
       "commandName": "Project",

@@ -2,12 +2,61 @@
 using Aquila.CodeAnalysis.CodeGen;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using Aquila.CodeAnalysis.Emit;
 
 namespace Aquila.CodeAnalysis.Symbols
 {
     partial class SourceMethodSymbol
     {
+        /// <summary>
+        /// Gets place referring to <c>Aquila.Core.AqContext</c> object.
+        /// </summary>
+        internal IPlace GetContextPlace(PEModuleBuilder module)
+        {
+            if (IsStatic)
+            {
+                if (HasParamPlatformContext)
+                {
+                    return new ParamPlace(Parameters[0]); // <ctx>
+                }
+            }
+            else
+            {
+                var thisPlace = GetThisPlace();
+                if (thisPlace != null)
+                {
+                    // <this>.<ctx> in instance methods
+                    var t = this.ContainingType;
+
+                    var ctx_field = t.GetMembers(SpecialParameterSymbol.ContextName).OfType<FieldSymbol>()
+                        .FirstOrDefault();
+                    if (ctx_field != null) // might be null in interfaces
+                    {
+                        return new FieldPlace(ctx_field, thisPlace, module);
+                    }
+                    else
+                    {
+                        Debug.Assert(t.IsInterface);
+                        return null;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets place of <c>this</c> parameter in CLR corresponding to <c>current class instance</c>.
+        /// </summary>
+        internal IPlace GetThisPlace()
+        {
+            return this.HasThis
+                ? new ArgPlace(ContainingType, 0)
+                : null;
+        }
+
         /// <summary>
         /// Creates ghost stubs,
         /// i.e. methods with a different signature calling this method to comply with CLR standards.

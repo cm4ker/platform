@@ -19,6 +19,17 @@ namespace Aquila.CodeAnalysis.CodeGen
     partial class CodeGenerator
     {
         /// <summary>
+        /// Emits <c>context</c> onto the evaluation stack.
+        /// </summary>
+        public TypeSymbol EmitLoadContext()
+        {
+            if (_contextPlace == null)
+                throw new InvalidOperationException("Context is not available.");
+
+            return _contextPlace.EmitLoad(_il);
+        }
+
+        /// <summary>
         /// Gets value indicating the method has locals already inicialized. 
         /// </summary>
         public bool InitializedLocals => _localsInitialized;
@@ -66,6 +77,9 @@ namespace Aquila.CodeAnalysis.CodeGen
                 // ignores null check in method call
                 code = ILOpCode.Call;
             }
+
+            if (method.HasParamPlatformContext)
+                EmitLoadContext();
 
             // arguments
             foreach (var arg in arguments)

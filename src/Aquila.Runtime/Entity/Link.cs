@@ -4,7 +4,7 @@ using Aquila.Core.Contracts;
 namespace Aquila.Core
 {
     /// <summary>
-    /// Ссылка 
+    /// Link 
     /// </summary>
     public class Link : ILink
     {

@@ -18,14 +18,14 @@ namespace Aquila.Core.Sessions
         private readonly DataContextManager _dataContextManger;
         private readonly DataConnectionContext _dataContext;
 
-        public SimpleSession(IPlatformInstance env, IUser user) 
+        public SimpleSession(IPlatformInstance instance, IUser user) 
         {
             Id = Guid.NewGuid();
             User = user;
-            Instance = env;
+            Instance = instance;
 
             _sessionParameters = new Dictionary<string, object>();
-            _dataContextManger = env.DataContextManager;
+            _dataContextManger = instance.DataContextManager;
             _dataContext = _dataContextManger.GetContext();
         }
 

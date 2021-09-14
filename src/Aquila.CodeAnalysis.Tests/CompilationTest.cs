@@ -60,7 +60,7 @@ import Entity;
 
 static int Main() 
 { 
-    Invoice i = 0; 
+    Invoice|int i = 0; 
     return 1; 
 }";
 
@@ -207,16 +207,23 @@ component Entity
 {
     extend InvoiceObject
     {
-        public void A()
+        public void a()
         {
             // this is call from the public method
-            Save();
+            save();
         }
 
-        private void B()
+        private void b()
         {
             // this is call from the private method
-            Save();
+            save();
+        }
+
+        private void before_save()
+        {   
+            var a = 0;
+
+            Name = ""Кириллица"";
         }
     }
 }
@@ -225,6 +232,32 @@ component Entity
 
             var result = (int)this.CompileAndRun(script);
             Assert.Equal(10395, result);
+        }
+
+        [Fact]
+        public void VarDeclTest()
+        {
+            var script = @"
+public static int Main() 
+{ 
+    return 1;
+}
+
+component Entity
+{
+    extend InvoiceObject
+    {
+        private void before_save()
+        {   
+            var a = 0;
+        }
+    }
+}
+
+";
+
+            var result = (int)this.CompileAndRun(script);
+            Assert.Equal(1, result);
         }
 
         [Fact]

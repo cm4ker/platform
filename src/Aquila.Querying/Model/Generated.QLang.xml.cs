@@ -271,12 +271,18 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.orderBy;
-            yield return this.select;
-            yield return this.having;
-            yield return this.groupBy;
-            yield return this.where;
-            yield return this.from;
+            if (this.orderBy != null)
+                yield return this.orderBy;
+            if (this.select != null)
+                yield return this.select;
+            if (this.having != null)
+                yield return this.having;
+            if (this.groupBy != null)
+                yield return this.groupBy;
+            if (this.where != null)
+                yield return this.where;
+            if (this.from != null)
+                yield return this.from;
             yield break;
         }
 
@@ -312,7 +318,8 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.fields;
+            if (this.fields != null)
+                yield return this.fields;
             yield break;
         }
 
@@ -346,8 +353,10 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.joins;
-            yield return this.source;
+            if (this.joins != null)
+                yield return this.joins;
+            if (this.source != null)
+                yield return this.source;
             yield break;
         }
 
@@ -379,7 +388,8 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.expressions;
+            if (this.expressions != null)
+                yield return this.expressions;
             yield break;
         }
 
@@ -410,7 +420,8 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.expressions;
+            if (this.expressions != null)
+                yield return this.expressions;
             yield break;
         }
 
@@ -441,7 +452,8 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.expression;
+            if (this.expression != null)
+                yield return this.expression;
             yield break;
         }
 
@@ -472,7 +484,8 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.expression;
+            if (this.expression != null)
+                yield return this.expression;
             yield break;
         }
 
@@ -531,7 +544,8 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.parentSource;
+            if (this.parentSource != null)
+                yield return this.parentSource;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -568,7 +582,8 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.dataSources;
+            if (this.dataSources != null)
+                yield return this.dataSources;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -604,7 +619,8 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.nested;
+            if (this.nested != null)
+                yield return this.nested;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -700,7 +716,8 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.objectTable;
+            if (this.objectTable != null)
+                yield return this.objectTable;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -736,7 +753,8 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.element;
+            if (this.element != null)
+                yield return this.element;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -931,7 +949,8 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.expression;
+            if (this.expression != null)
+                yield return this.expression;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -1048,8 +1067,10 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.condition;
-            yield return this.joined;
+            if (this.condition != null)
+                yield return this.condition;
+            if (this.joined != null)
+                yield return this.joined;
             yield break;
         }
 
@@ -1185,8 +1206,10 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.@else;
-            yield return this.whens;
+            if (this.@else != null)
+                yield return this.@else;
+            if (this.whens != null)
+                yield return this.whens;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -1226,8 +1249,10 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.then;
-            yield return this.@when;
+            if (this.then != null)
+                yield return this.then;
+            if (this.@when != null)
+                yield return this.@when;
             yield break;
         }
 
@@ -1262,8 +1287,10 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.left;
-            yield return this.right;
+            if (this.left != null)
+                yield return this.left;
+            if (this.right != null)
+                yield return this.right;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -1297,8 +1324,10 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.left;
-            yield return this.right;
+            if (this.left != null)
+                yield return this.left;
+            if (this.right != null)
+                yield return this.right;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -1329,8 +1358,10 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.left;
-            yield return this.right;
+            if (this.left != null)
+                yield return this.left;
+            if (this.right != null)
+                yield return this.right;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -1577,7 +1608,8 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.baseExpression;
+            if (this.baseExpression != null)
+                yield return this.baseExpression;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -1614,7 +1646,8 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            yield return this.source;
+            if (this.source != null)
+                yield return this.source;
             yield break;
         }
 

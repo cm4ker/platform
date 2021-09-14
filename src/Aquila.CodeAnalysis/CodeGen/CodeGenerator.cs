@@ -174,6 +174,11 @@ namespace Aquila.CodeAnalysis.CodeGen
         readonly DynamicOperationFactory _factory;
 
         /// <summary>
+        /// Place for loading a reference to <c>Aquila.Core.AqContext</c>.
+        /// </summary>
+        readonly IPlace _contextPlace;
+
+        /// <summary>
         /// Are locals initilized externally.
         /// </summary>
         readonly bool _localsInitialized;
@@ -351,7 +356,7 @@ namespace Aquila.CodeAnalysis.CodeGen
 
         public CodeGenerator(ILBuilder il, PEModuleBuilder moduleBuilder, DiagnosticBag diagnostics,
             AquilaOptimizationLevel optimizations, bool emittingPdb,
-            NamedTypeSymbol container, MethodSymbol method = null,
+            NamedTypeSymbol container, IPlace contextPlace, MethodSymbol method = null,
             bool localsInitialized = false)
         {
             Contract.ThrowIfNull(il);
@@ -366,6 +371,8 @@ namespace Aquila.CodeAnalysis.CodeGen
             _localsInitialized = localsInitialized;
 
             _emmittedTag = 0;
+
+            _contextPlace = contextPlace;
 
             _emitPdbSequencePoints = emittingPdb;
 
@@ -385,7 +392,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         /// </summary>
         public CodeGenerator(CodeGenerator cg, SourceMethodSymbol method)
             : this(cg._il, cg._moduleBuilder, cg._diagnostics, cg._optimizations, cg._emitPdbSequencePoints,
-                method.ContainingType, method)
+                method.ContainingType, cg._contextPlace, method)
         {
             _emmittedTag = cg._emmittedTag;
             GeneratorStateLocal = cg.GeneratorStateLocal;
@@ -394,7 +401,7 @@ namespace Aquila.CodeAnalysis.CodeGen
 
         public CodeGenerator(SourceMethodSymbol method, ILBuilder il, PEModuleBuilder moduleBuilder,
             DiagnosticBag diagnostics, AquilaOptimizationLevel optimizations, bool emittingPdb)
-            : this(il, moduleBuilder, diagnostics, optimizations, emittingPdb, method.ContainingType, method)
+            : this(il, moduleBuilder, diagnostics, optimizations, emittingPdb, method.ContainingType, method.GetContextPlace(moduleBuilder), method)
         {
             Contract.ThrowIfNull(method);
 
@@ -411,20 +418,6 @@ namespace Aquila.CodeAnalysis.CodeGen
             // This setting only affects generating PDB sequence points, it shall not affect generated IL in any way.
             _emitPdbSequencePoints = emittingPdb && true; // method.GenerateDebugInfo;
         }
-
-        // static SourceFileSymbol GetContainingFile(MethodSymbol method)
-        // {
-        //     if (ReferenceEquals(method, null)) return null;
-        //     if (method is SourceMethodSymbol r) return r.ContainingFile;
-        //
-        //     for (var t = method.ContainingType; t != null; t = t.ContainingType)
-        //     {
-        //         if (t is SourceFileSymbol s) return s;
-        //         //if (t is SourceTypeSymbol st) return st.ContainingFile;
-        //     }
-        //
-        //     return null;
-        // }
 
         #endregion
 

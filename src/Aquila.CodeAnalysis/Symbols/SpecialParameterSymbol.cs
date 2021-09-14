@@ -71,12 +71,15 @@ namespace Aquila.CodeAnalysis.Symbols
         /// which is always first and of type <c>Aquila.Runtime.Context</c>.
         /// </summary>
         public static bool IsContextParameter(ParameterSymbol p)
-            => p != null &&
-               p.DeclaringCompilation != null
-                ? p.Type == null
-                : p.Type != null
-                    ? (p.Type.Name == "Context" && p.Type.ContainingAssembly.IsAquilaCorLibrary)
-                    : false;
+        {
+            if (p == null || p.DeclaringCompilation == null)
+                if (p.Type != null)
+                    return p.Type.Name == "AqContext" && p.Type.ContainingAssembly.IsAquilaCorLibrary;
+                else
+                    return false;
+            else
+                return p.Type == p.DeclaringCompilation.CoreTypes.AqContext.Symbol;
+        }
 
         /// <summary>
         /// Determines whether given parameter is treated as a special implicitly provided, by the compiler or the runtime.

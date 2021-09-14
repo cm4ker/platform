@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Syntax;
@@ -78,6 +79,8 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             Debug.Assert(!name.IsAutoGlobal);
             var locSym = new SourceLocalSymbol(Method, decl);
+
+            Method.Flags |= MethodFlags.UsesLocals;
 
             return new LocalVariableReference(kind, Method, locSym, new BoundVariableName(name, locSym.Type));
         }

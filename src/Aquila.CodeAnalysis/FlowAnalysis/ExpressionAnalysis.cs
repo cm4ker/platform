@@ -203,9 +203,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         {
             VisitCFGBlock(x);
 
-            // TODO: EdgeToCallers:
-            PingSubscribers(x);
-
             return default;
         }
 

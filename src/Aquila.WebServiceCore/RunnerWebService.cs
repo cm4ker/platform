@@ -164,7 +164,11 @@ namespace Aquila.WebServiceCore
                 var session = instance.CreateSession(new Anonymous());
 
                 var data = await JsonSerializer.DeserializeAsync(context.Request.Body,
-                    method.GetParameters()[1].ParameterType, cancellationToken: cancellationToken);
+                    method.GetParameters()[1].ParameterType, cancellationToken: cancellationToken,
+                    options: new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
 
                 method.Invoke(null, new object[] { new AqContext(session), data });
             }

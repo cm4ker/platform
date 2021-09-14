@@ -458,7 +458,7 @@ Binder
             Debug.Assert(expr != null);
 
             if (expr is LiteralEx) return BindLiteral((LiteralEx)expr).WithAccess(access);
-            if (expr is NameEx ne) return BindSimpleVarUse(ne, access);
+            if (expr is NameEx ne) return BindNameEx(ne, access);
 
             if (expr is BinaryEx bex) return BindBinaryEx(bex).WithAccess(access);
             if (expr is AssignEx aex) return BindAssignEx(aex, access);
@@ -483,14 +483,14 @@ Binder
             var array = BindExpression(ie.Expression);
             var indexer = BindExpression(ie.Indexer);
 
-            
+
             var accessIndexMethod = array.Type.GetMembers("get_Item").OfType<MethodSymbol>()
                 .FirstOrDefault(x => x.ParameterCount == 1 && x.Parameters[0].Type == indexer.Type);
 
             if (accessIndexMethod != null)
                 return new BoundArrayItemEx(DeclaringCompilation, array, indexer, accessIndexMethod.ReturnType);
 
-            
+
             throw new NotImplementedException();
         }
 
@@ -511,11 +511,11 @@ Binder
                     var query = (string)expr.ObjectiveValue;
                     var element = QLang.Parse(query, DeclaringCompilation.MetadataCollection);
 
-                    var vars = element.Find<QVar>();
+                    var vars = element.Find<QVar>().ToArray();
 
                     foreach (var @var in vars)
                     {
-                        var bVar = BindVariableName(@var.Name);
+                        var bVar = BindVariableName(@var.Name, null);
                         var vType = bVar.Type;
                         var smType = MetadataTypeProvider.Resolve(DeclaringCompilation, vType);
 
@@ -552,78 +552,87 @@ Binder
             };
         }
 
+        protected BoundExpression BindNameEx(NameEx expr, BoundAccess access)
+        {
+            var bounded = BindSimpleVarUse(expr, access);
+
+            // local variable hide the members
+            if (bounded != null)
+                return bounded;
+
+
+            //try to find property
+            //TODO: add scan fields 
+            var result = Container.GetMembers(expr.Identifier.Text).OfType<PropertySymbol>().FirstOrDefault();
+
+            var type = Container as ITypeSymbol;
+            var th = new BoundVariableRef("this", type);
+
+            return new BoundPropertyRef(result, th).WithAccess(access);
+        }
+
         protected BoundExpression BindSimpleVarUse(NameEx expr, BoundAccess access)
         {
             var varname = BindVariableName(expr);
 
-            if (true)
+            // variable not found
+            if (varname is null) return null;
+
+
+            if (Method == null)
             {
-                if (Method == null)
-                {
-                    // cannot use variables in field initializer or parameter initializer
-                    Diagnostics.Add(GetLocation(expr), ErrorCode.ERR_InvalidConstantExpression);
-                }
+                // cannot use variables in field initializer or parameter initializer
+                Diagnostics.Add(GetLocation(expr), ErrorCode.ERR_InvalidConstantExpression);
+            }
 
-                if (varname.IsDirect)
+            if (varname.IsDirect)
+            {
+                if (varname.NameValue.IsThisVariableName)
                 {
-                    if (varname.NameValue.IsThisVariableName)
+                    // $this is read-only
+                    if (access.IsEnsure)
+                        access = BoundAccess.Read;
+
+                    if (access.IsWrite || access.IsUnset)
+                        Diagnostics.Add(GetLocation(expr), ErrorCode.ERR_CannotAssignToThis);
+
+                    // $this is only valid in global code and instance methods:
+                    if (Method != null && Method.IsStatic && !Method.IsGlobalScope)
                     {
-                        // $this is read-only
-                        if (access.IsEnsure)
-                            access = BoundAccess.Read;
-
-                        if (access.IsWrite || access.IsUnset)
-                            Diagnostics.Add(GetLocation(expr), ErrorCode.ERR_CannotAssignToThis);
-
-                        // $this is only valid in global code and instance methods:
-                        if (Method != null && Method.IsStatic && !Method.IsGlobalScope)
-                        {
-                            // WARN:
-                            Diagnostics.Add(DiagnosticBagExtensions.ParserDiagnostic(expr.SyntaxTree, expr.Span,
-                                Warnings.ThisOutOfMethod));
-                            // ERR: // NOTE: causes a lot of project to not compile // CONSIDER: uncomment
-                            // Diagnostics.Add(GetLocation(expr), Errors.ErrorCode.ERR_ThisOutOfObjectContext);
-                        }
+                        // WARN:
+                        Diagnostics.Add(DiagnosticBagExtensions.ParserDiagnostic(expr.SyntaxTree, expr.Span,
+                            Warnings.ThisOutOfMethod));
+                        // ERR: // NOTE: causes a lot of project to not compile // CONSIDER: uncomment
+                        // Diagnostics.Add(GetLocation(expr), Errors.ErrorCode.ERR_ThisOutOfObjectContext);
                     }
                 }
-                else
-                {
-                    if (Method != null)
-                        Method.Flags |= MethodFlags.HasIndirectVar;
-                }
-
-                return new BoundVariableRef(varname, varname.Type).WithAccess(access);
             }
             else
             {
-                var instanceAccess = BoundAccess.Read;
-
-                if (access.IsWrite || access.EnsureObject || access.EnsureArray)
-                    instanceAccess = instanceAccess.WithEnsureObject();
-
-                if (access.IsQuiet)
-                    instanceAccess = instanceAccess.WithQuiet();
-
-                return BoundFieldRef
-                    .CreateInstanceField(BindExpression(null, instanceAccess), varname)
-                    .WithAccess(access);
+                if (Method != null)
+                    Method.Flags |= MethodFlags.HasIndirectVar;
             }
+
+            return new BoundVariableRef(varname, varname.Type).WithAccess(access);
         }
 
         protected BoundVariableName BindVariableName(NameEx nameEx)
         {
             Debug.Assert(nameEx != null);
-            return BindVariableName(nameEx.Identifier.Text).WithSyntax(nameEx);
+            return BindVariableName(nameEx.Identifier.Text, nameEx);
         }
 
-        protected BoundVariableName BindVariableName(string varName)
+        protected BoundVariableName BindVariableName(string varName, LangElement syntax)
         {
             Debug.Assert(varName != null);
             Debug.Assert(Method != null);
 
             Method.LocalsTable.TryGetVariable(new VariableName(varName), out var localVar);
+            if (localVar is null)
+                return null;
+
             var type = localVar.Type;
-            return new BoundVariableName(varName, type);
+            return new BoundVariableName(varName, type).WithSyntax(syntax);
         }
 
         protected Location GetLocation(LangElement expr) => expr.SyntaxTree.GetLocation(expr);

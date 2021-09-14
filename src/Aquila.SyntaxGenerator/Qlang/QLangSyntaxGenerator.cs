@@ -135,7 +135,10 @@ namespace Aquila.SyntaxGenerator.QLang
             foreach (var arg in syntax.Arguments)
             {
                 if (!arg.DenyChildrenFill)
+                {
+                    sb.Append($"if (this.{arg.Name.ToCamelCase()} != null)");
                     sb.Append($"yield return this.{arg.Name.ToCamelCase()};");
+                }
             }
 
             if (!string.IsNullOrEmpty(syntax.Base))

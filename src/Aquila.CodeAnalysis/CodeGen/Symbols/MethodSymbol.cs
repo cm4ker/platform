@@ -13,5 +13,21 @@ namespace Aquila.CodeAnalysis.Symbols
 {
     internal abstract partial class MethodSymbol
     {
+        internal bool HasParamPlatformContext
+        {
+            get
+            {
+                var ps = Parameters;
+
+                if (ps.Length != 0 && SpecialParameterSymbol.IsContextParameter(ps[0]))
+                {
+                    return true; // <ctx>
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
     }
 }
