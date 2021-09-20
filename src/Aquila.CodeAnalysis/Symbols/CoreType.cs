@@ -182,6 +182,7 @@ namespace Aquila.CodeAnalysis.Symbols
             AqQuery,
             AqContext,
             AqHelper,
+            AqComparison,
 
             //System.Data.Common Types
             DbCommand,
@@ -239,6 +240,7 @@ namespace Aquila.CodeAnalysis.Symbols
             AqQuery = CreateFromFullName(AquilaPlatformQueryFullName);
             AqContext = CreateFromFullName(AquilaPlatformContextFullName);
             AqHelper = CreateFromFullName(AquilaPlatformHelperFullName);
+            AqComparison = Create("AqComparison");
 
             #endregion
 

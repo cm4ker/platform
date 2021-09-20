@@ -31,6 +31,9 @@ public enum BoundKind
     ConditionalEx,
     ConversionEx,
     Literal,
+    WildcardEx,
+    MatchEx,
+    MatchArm,
     InstanceCallEx,
     StaticCallEx,
     NewEx,
@@ -1067,6 +1070,176 @@ namespace Aquila.CodeAnalysis.Semantics
             if (_value == value && ResultType == resultType)
                 return this;
             return new BoundLiteral(value, resultType);
+        }
+    }
+}
+
+namespace Aquila.CodeAnalysis.Semantics
+{
+    partial class BoundWildcardEx : BoundExpression
+    {
+        internal BoundWildcardEx(ITypeSymbol resultType): base(resultType)
+        {
+            OnCreateImpl(resultType);
+        }
+
+        partial void OnCreateImpl(ITypeSymbol resultType);
+        public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.WildcardEx;
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
+        partial void AcceptImpl(OperationVisitor visitor);
+        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
+        {
+            TRes res = default;
+            AcceptImpl(visitor, argument, ref res);
+            return res;
+        }
+
+        public override void Accept(OperationVisitor visitor)
+        {
+            AcceptImpl(visitor);
+        }
+
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        {
+            return visitor.VisitWildcardEx(this);
+        }
+
+        internal BoundWildcardEx Update(ITypeSymbol resultType)
+        {
+            if (ResultType == resultType)
+                return this;
+            return new BoundWildcardEx(resultType);
+        }
+    }
+}
+
+namespace Aquila.CodeAnalysis.Semantics
+{
+    partial class BoundMatchEx : BoundExpression
+    {
+        private BoundExpression _expression;
+        private List<BoundMatchArm> _arms;
+        internal BoundMatchEx(BoundExpression expression, List<BoundMatchArm> arms, ITypeSymbol resultType): base(resultType)
+        {
+            _expression = expression;
+            _arms = arms;
+            OnCreateImpl(expression, arms, resultType);
+        }
+
+        partial void OnCreateImpl(BoundExpression expression, List<BoundMatchArm> arms, ITypeSymbol resultType);
+        public BoundExpression Expression
+        {
+            get
+            {
+                return _expression;
+            }
+        }
+
+        public List<BoundMatchArm> Arms
+        {
+            get
+            {
+                return _arms;
+            }
+        }
+
+        public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.MatchEx;
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
+        partial void AcceptImpl(OperationVisitor visitor);
+        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
+        {
+            TRes res = default;
+            AcceptImpl(visitor, argument, ref res);
+            return res;
+        }
+
+        public override void Accept(OperationVisitor visitor)
+        {
+            AcceptImpl(visitor);
+        }
+
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        {
+            return visitor.VisitMatchEx(this);
+        }
+
+        internal BoundMatchEx Update(BoundExpression expression, List<BoundMatchArm> arms, ITypeSymbol resultType)
+        {
+            if (_expression == expression && _arms == arms && ResultType == resultType)
+                return this;
+            return new BoundMatchEx(expression, arms, resultType);
+        }
+    }
+}
+
+namespace Aquila.CodeAnalysis.Semantics
+{
+    partial class BoundMatchArm : BoundExpression
+    {
+        private BoundExpression _pattern;
+        private BoundExpression _whenGuard;
+        private BoundExpression _matchResult;
+        internal BoundMatchArm(BoundExpression pattern, BoundExpression whenGuard, BoundExpression matchResult, ITypeSymbol resultType): base(resultType)
+        {
+            _pattern = pattern;
+            _whenGuard = whenGuard;
+            _matchResult = matchResult;
+            OnCreateImpl(pattern, whenGuard, matchResult, resultType);
+        }
+
+        partial void OnCreateImpl(BoundExpression pattern, BoundExpression whenGuard, BoundExpression matchResult, ITypeSymbol resultType);
+        public BoundExpression Pattern
+        {
+            get
+            {
+                return _pattern;
+            }
+        }
+
+        public BoundExpression WhenGuard
+        {
+            get
+            {
+                return _whenGuard;
+            }
+        }
+
+        public BoundExpression MatchResult
+        {
+            get
+            {
+                return _matchResult;
+            }
+        }
+
+        public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.MatchArm;
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
+        partial void AcceptImpl(OperationVisitor visitor);
+        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
+        {
+            TRes res = default;
+            AcceptImpl(visitor, argument, ref res);
+            return res;
+        }
+
+        public override void Accept(OperationVisitor visitor)
+        {
+            AcceptImpl(visitor);
+        }
+
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        {
+            return visitor.VisitMatchArm(this);
+        }
+
+        internal BoundMatchArm Update(BoundExpression pattern, BoundExpression whenGuard, BoundExpression matchResult, ITypeSymbol resultType)
+        {
+            if (_pattern == pattern && _whenGuard == whenGuard && _matchResult == matchResult && ResultType == resultType)
+                return this;
+            return new BoundMatchArm(pattern, whenGuard, matchResult, resultType);
         }
     }
 }
@@ -2445,6 +2618,9 @@ namespace Aquila.CodeAnalysis.Semantics
         public virtual TResult VisitConditionalEx(BoundConditionalEx x) => VisitDefault(x);
         public virtual TResult VisitConversionEx(BoundConversionEx x) => VisitDefault(x);
         public virtual TResult VisitLiteral(BoundLiteral x) => VisitDefault(x);
+        public virtual TResult VisitWildcardEx(BoundWildcardEx x) => VisitDefault(x);
+        public virtual TResult VisitMatchEx(BoundMatchEx x) => VisitDefault(x);
+        public virtual TResult VisitMatchArm(BoundMatchArm x) => VisitDefault(x);
         public virtual TResult VisitCallEx(BoundCallEx x) => VisitDefault(x);
         public virtual TResult VisitInstanceCallEx(BoundInstanceCallEx x) => VisitDefault(x);
         public virtual TResult VisitStaticCallEx(BoundStaticCallEx x) => VisitDefault(x);

@@ -13,7 +13,7 @@
     <Syntax IsList="true" Base="Annotation" Name="AnnotationList"/>
     <Syntax IsList="true" Base="Argument" Name="ArgumentList"/>
     <Syntax IsList="true" Base="ModifierToken" Name="ModifierList"/>
-    <!-- <Syntax IsList="true" Base="MatchAtom" Name="MatchAtomList"/>-->
+    <Syntax IsList="true" Base="MatchArm" Name="MatchArmList"/>
 
     <Syntax IsList="true" Base="VarDeclarator" Name="DeclaratorList"/>
 
@@ -282,6 +282,24 @@
             <Single Name="ArgList" Type="TypeList"/>
         </Arguments>
     </Syntax>
+
+    <!-- #region MatchEx -->
+    <Syntax Name="MatchEx" Base="Expression" NS="Expressions">
+        <Arguments>
+            <Single Name="Expression" Type="Expression"/>
+            <Single Name="Arms" Type="MatchArmList"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="MatchArm" Base="Expression" NS="Expressions">
+        <Arguments>
+            <Single Name="Expression" Type="Expression"/>
+            <Single Name="WhenGuard" Type="Expression"/>
+            <Single Name="Result" Type="Expression"/>
+        </Arguments>
+    </Syntax>
+    <!-- #endregion-->
+
 
     <!-- #endregion-->
 

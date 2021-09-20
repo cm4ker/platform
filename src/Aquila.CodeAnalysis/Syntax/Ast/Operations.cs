@@ -100,7 +100,7 @@ namespace Aquila.Syntax.Ast
 
         // calls:
         Call,
-        
+
         // instances:
         New,
         Array,
@@ -111,7 +111,7 @@ namespace Aquila.Syntax.Ast
         Inclusion,
         Isset,
         Empty,
-        
+
         // others:
         Exit,
         ShellCommand,
@@ -119,6 +119,7 @@ namespace Aquila.Syntax.Ast
         Yield,
         Throw,
         Parenthesis,
+        Match,
 
         // lambda function:
         Closure,

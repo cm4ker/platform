@@ -199,7 +199,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         }
     }
 
-    partial class SwitchEdge
+    partial class MatchEdge
     {
         static bool IsInt32(object value) => value is int ||
                                              (value is long && (long) value <= int.MaxValue &&
@@ -214,7 +214,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// Gets case labels.
         /// </summary>
-        static KeyValuePair<ConstantValue, object>[] GetSwitchCaseLabels(IEnumerable<CaseBlock> sections)
+        static KeyValuePair<ConstantValue, object>[] GetSwitchCaseLabels(IEnumerable<MatchArmBlock> sections)
         {
             var labelsBuilder = ArrayBuilder<KeyValuePair<ConstantValue, object>>.GetInstance();
             foreach (var section in sections)
@@ -225,8 +225,8 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 }
                 else
                 {
-                    labelsBuilder.Add(new KeyValuePair<ConstantValue, object>(
-                        Int32Constant(section.CaseValue.BoundElement.ConstantValue.Value), section));
+                    // labelsBuilder.Add(new KeyValuePair<ConstantValue, object>(
+                    //     Int32Constant(section.MatchValue.BoundElement.ConstantValue.Value), section));
                 }
             }
 

@@ -220,6 +220,27 @@ namespace Aquila.Syntax.Ast
 
 namespace Aquila.Syntax.Ast
 {
+    public record MatchArmList : LangCollection<MatchArm>
+    {
+        public static MatchArmList Empty => new MatchArmList(ImmutableArray<MatchArm>.Empty);
+        public MatchArmList(ImmutableArray<MatchArm> elements): base(Span.Empty, elements)
+        {
+        }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitMatchArmList(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitMatchArmList(this);
+        }
+    }
+}
+
+namespace Aquila.Syntax.Ast
+{
     public record DeclaratorList : LangCollection<VarDeclarator>
     {
         public static DeclaratorList Empty => new DeclaratorList(ImmutableArray<VarDeclarator>.Empty);
@@ -1526,6 +1547,88 @@ namespace Aquila.Syntax.Ast.Expressions
     }
 }
 
+namespace Aquila.Syntax.Ast.Expressions
+{
+    public partial record MatchEx : Expression
+    {
+        public MatchEx(Span span, SyntaxKind syntaxKind, Operations operation, Expression expression, MatchArmList arms): base(span, syntaxKind, operation)
+        {
+            this.expression = expression;
+            this.arms = arms;
+        }
+
+        public Expression Expression { get => this.expression; init => this.expression = value; }
+
+        public MatchArmList Arms { get => this.arms; init => this.arms = value; }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitMatchEx(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitMatchEx(this);
+        }
+
+        public override IEnumerable<LangElement> GetChildren()
+        {
+            if (this.expression != null)
+                yield return this.expression;
+            if (this.arms != null)
+                yield return this.arms;
+            yield break;
+        }
+
+        private Expression expression;
+        private MatchArmList arms;
+    }
+}
+
+namespace Aquila.Syntax.Ast.Expressions
+{
+    public partial record MatchArm : Expression
+    {
+        public MatchArm(Span span, SyntaxKind syntaxKind, Operations operation, Expression expression, Expression whenGuard, Expression result): base(span, syntaxKind, operation)
+        {
+            this.expression = expression;
+            this.whenGuard = whenGuard;
+            this.result = result;
+        }
+
+        public Expression Expression { get => this.expression; init => this.expression = value; }
+
+        public Expression WhenGuard { get => this.whenGuard; init => this.whenGuard = value; }
+
+        public Expression Result { get => this.result; init => this.result = value; }
+
+        public override T Accept<T>(AstVisitorBase<T> visitor)
+        {
+            return visitor.VisitMatchArm(this);
+        }
+
+        public override void Accept(AstVisitorBase visitor)
+        {
+            visitor.VisitMatchArm(this);
+        }
+
+        public override IEnumerable<LangElement> GetChildren()
+        {
+            if (this.expression != null)
+                yield return this.expression;
+            if (this.whenGuard != null)
+                yield return this.whenGuard;
+            if (this.result != null)
+                yield return this.result;
+            yield break;
+        }
+
+        private Expression expression;
+        private Expression whenGuard;
+        private Expression result;
+    }
+}
+
 namespace Aquila.Syntax.Ast.Statements
 {
     public abstract partial record Statement : LangElement
@@ -2105,6 +2208,11 @@ namespace Aquila.Syntax
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitMatchArmList(MatchArmList arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitDeclaratorList(DeclaratorList arg)
         {
             return DefaultVisit(arg);
@@ -2275,6 +2383,16 @@ namespace Aquila.Syntax
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitMatchEx(MatchEx arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitMatchArm(MatchArm arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitBlockStmt(BlockStmt arg)
         {
             return DefaultVisit(arg);
@@ -2394,6 +2512,11 @@ namespace Aquila.Syntax
         }
 
         public virtual void VisitModifierList(ModifierList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitMatchArmList(MatchArmList arg)
         {
             DefaultVisit(arg);
         }
@@ -2564,6 +2687,16 @@ namespace Aquila.Syntax
         }
 
         public virtual void VisitNameEx(NameEx arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitMatchEx(MatchEx arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitMatchArm(MatchArm arg)
         {
             DefaultVisit(arg);
         }

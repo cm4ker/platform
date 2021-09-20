@@ -830,6 +830,32 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         #endregion
 
+        #region VisitMatch
+
+        public override T VisitMatchEx(BoundMatchEx x)
+        {
+            Accept(x.Expression);
+
+            foreach (var arm in x.Arms)
+            {
+                Accept(arm);
+            }
+
+            return default;
+        }
+
+
+        public override T VisitMatchArm(BoundMatchArm x)
+        {
+            Accept(x.Pattern);
+            Accept(x.MatchResult);
+            Accept(x.WhenGuard);
+
+            return default;
+        }
+
+        #endregion
+
         #region Visit
 
         public override T VisitListEx(BoundListEx x)

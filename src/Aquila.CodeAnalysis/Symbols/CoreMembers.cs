@@ -252,28 +252,64 @@ namespace Aquila.CodeAnalysis.Symbols
                 Concat_String_String_String_String =
                     ct.String.Method("Concat", ct.String, ct.String, ct.String, ct.String);
                 Long_ToString = ct.Int64.Method("ToString");
-                
+
                 op_Equality_Guid_Guid = ct.Guid.Method("op_Equality", ct.Guid, ct.Guid);
                 NewGuid = ct.Guid.Method("NewGuid");
-                
+
+                //Comparators
+                Ceq_long_double = ct.AqComparison.Method("Ceq", ct.Int64, ct.Double);
+                Ceq_long_bool = ct.AqComparison.Method("Ceq", ct.Int64, ct.Boolean);
+                Ceq_long_string = ct.AqComparison.Method("Ceq", ct.Int64, ct.String);
+
+                Ceq_int_double = ct.AqComparison.Method("Ceq", ct.Int32, ct.Double);
+                Ceq_int_bool = ct.AqComparison.Method("Ceq", ct.Int32, ct.Boolean);
+                Ceq_int_string = ct.AqComparison.Method("Ceq", ct.Int32, ct.String);
+
+                Ceq_double_string = ct.AqComparison.Method("Ceq", ct.Double, ct.String);
+                Ceq_string_long = ct.AqComparison.Method("Ceq", ct.String, ct.Int64);
+                Ceq_string_double = ct.AqComparison.Method("Ceq", ct.String, ct.Double);
+                Ceq_string_bool = ct.AqComparison.Method("Ceq", ct.String, ct.Boolean);
+                Ceq_string_string = ct.AqComparison.Method("Ceq", ct.String, ct.String);
+                Clt_long_double = ct.AqComparison.Method("Clt", ct.Int64, ct.Double);
+                Cgt_long_double = ct.AqComparison.Method("Cgt", ct.Int64, ct.Double);
+                Clt_int_double = ct.AqComparison.Method("Clt", ct.Int64, ct.Double);
+                Cgt_int_double = ct.AqComparison.Method("Cgt", ct.Int64, ct.Double);
+                Compare_bool_bool = ct.AqComparison.Method("Compare", ct.Boolean, ct.Boolean);
             }
 
             public readonly CoreMethod
-                
+
                 //String
                 IsNullOrEmpty_String,
                 Concat_String_String,
                 Concat_String_String_String,
                 Concat_String_String_String_String,
-                
+
                 //Long
                 Long_ToString,
-                
+
                 //Guid                    
                 op_Equality_Guid_Guid,
-                NewGuid
-                ;
-            
+                NewGuid,
+
+                //Equality
+                //
+                Ceq_long_double,
+                Ceq_long_bool,
+                Ceq_long_string,
+                Ceq_double_string,
+                Ceq_string_long,
+                Ceq_string_double,
+                Ceq_string_bool,
+                Ceq_string_string,
+                Clt_long_double,
+                Cgt_long_double,
+                Compare_bool_bool,
+                Ceq_int_double,
+                Ceq_int_bool,
+                Ceq_int_string,
+                Clt_int_double,
+                Cgt_int_double;
         }
 
         public struct RuntimeHolder

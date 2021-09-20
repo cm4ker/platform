@@ -95,7 +95,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 case TryCatchEdge edge:
                     return PickFirstSyntaxNode(edge.BodyBlock);
 
-                case SwitchEdge edge:
+                case MatchEdge edge:
                     return edge.SwitchValue.AquilaSyntax;
 
                 default:

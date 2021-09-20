@@ -298,18 +298,19 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return default;
         }
 
-        public override TResult VisitCFGCaseBlock(CaseBlock x)
+        public override TResult VisitCFGCaseBlock(MatchArmBlock x)
         {
             VisitCFGBlockInit(x);
-            if (!x.CaseValue.IsOnlyBoundElement)
-            {
-                VisitCFGBlock(x.CaseValue.PreBoundBlockFirst);
-            }
-
-            if (!x.CaseValue.IsEmpty)
-            {
-                Accept(x.CaseValue.BoundElement);
-            }
+            
+            // if (!x.MatchValue.IsOnlyBoundElement)
+            // {
+            //     VisitCFGBlock(x.MatchValue.PreBoundBlockFirst);
+            // }
+            //
+            // if (!x.MatchValue.IsEmpty)
+            // {
+            //     Accept(x.MatchValue.BoundElement);
+            // }
 
             DefaultVisitBlock(x);
 
@@ -394,18 +395,18 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return default;
         }
 
-        public override TResult VisitCFGSwitchEdge(SwitchEdge x)
+        public override TResult VisitCFGSwitchEdge(MatchEdge x)
         {
             Accept(x.SwitchValue);
 
             var state = State;
 
-            foreach (var c in x.CaseBlocks)
+            foreach (var c in x.MatchBlocks)
             {
-                if (!c.CaseValue.IsOnlyBoundElement)
-                {
-                    TraverseToBlock(x, state, c.CaseValue.PreBoundBlockFirst);
-                }
+                // if (!c.MatchValue.IsOnlyBoundElement)
+                // {
+                //     TraverseToBlock(x, state, c.MatchValue.PreBoundBlockFirst);
+                // }
 
                 //
                 TraverseToBlock(x, state, c);

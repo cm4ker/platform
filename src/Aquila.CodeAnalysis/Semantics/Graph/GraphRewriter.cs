@@ -89,7 +89,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             public sealed override object VisitCFGCatchBlock(CatchBlock x) => Repair(x);
 
-            public sealed override object VisitCFGCaseBlock(CaseBlock x) => Repair(x);
+            public sealed override object VisitCFGCaseBlock(MatchArmBlock x) => Repair(x);
         }
 
         /// <summary>
@@ -317,7 +317,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             }
         }
 
-        public sealed override object VisitCFGCaseBlock(CaseBlock x)
+        public sealed override object VisitCFGCaseBlock(MatchArmBlock x)
         {
             if (IsExplored(x))
             {
@@ -338,7 +338,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public virtual CatchBlock OnVisitCFGCatchBlock(CatchBlock x) => (CatchBlock)base.VisitCFGCatchBlock(x);
 
-        public virtual CaseBlock OnVisitCFGCaseBlock(CaseBlock x) => (CaseBlock)base.VisitCFGCaseBlock(x);
+        public virtual MatchArmBlock OnVisitCFGCaseBlock(MatchArmBlock x) => (MatchArmBlock)base.VisitCFGCaseBlock(x);
 
         #endregion
 

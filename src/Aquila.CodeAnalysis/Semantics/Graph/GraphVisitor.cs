@@ -35,7 +35,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public virtual TResult VisitCFGCatchBlock(CatchBlock x) => DefaultVisitBlock(x);
 
-        public virtual TResult VisitCFGCaseBlock(CaseBlock x) => DefaultVisitBlock(x);
+        public virtual TResult VisitCFGCaseBlock(MatchArmBlock x) => DefaultVisitBlock(x);
 
         #endregion
 
@@ -55,7 +55,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public virtual TResult VisitCFGForeachMoveNextEdge(Graph.ForeachMoveNextEdge x) => DefaultVisitEdge(x);
 
-        public virtual TResult VisitCFGSwitchEdge(Graph.SwitchEdge x) => DefaultVisitEdge(x);
+        public virtual TResult VisitCFGSwitchEdge(Graph.MatchEdge x) => DefaultVisitEdge(x);
 
         #endregion
     }

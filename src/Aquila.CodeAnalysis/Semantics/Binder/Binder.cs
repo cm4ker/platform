@@ -465,6 +465,7 @@ Binder
             if (expr is UnaryEx ue) return BindUnaryEx(ue, access).WithAccess(access);
             if (expr is IncDecEx incDec) return BindIncDec(incDec).WithAccess(access);
             if (expr is CallEx ce) return BindCallEx(ce).WithAccess(access);
+            if (expr is MatchEx me) return BindMatchEx(me).WithAccess(access);
             if (expr is MemberAccessEx mae)
                 return BindMemberAccessEx(mae, ArgumentList.Empty, false).WithAccess(access);
             if (expr is IndexerEx ie) return BindIndexerEx(ie).WithAccess(access);
@@ -476,6 +477,66 @@ Binder
             Diagnostics.Add(GetLocation(expr), ErrorCode.ERR_NotYetImplemented,
                 $"Expression of type '{expr.GetType().Name}'");
             return new BoundLiteral(null, null);
+        }
+
+        private BoundExpression BindMatchEx(MatchEx me)
+        {
+            var boundExpression = BindExpression(me.Expression);
+            TypeSymbol resultType = null;
+            var arms = new List<BoundMatchArm>();
+
+            bool takeTypeFromNext = false;
+
+            foreach (var arm in me.Arms)
+            {
+                var boundArm = BindMatchArm(arm);
+
+                arms.Add(boundArm);
+
+                var armType = (TypeSymbol)(boundArm.ResultType);
+
+                if (armType != null)
+                {
+                    // then we try to calc result type
+
+                    if (resultType != null)
+                    {
+                        if (resultType != armType)
+                        {
+                            if (resultType.IsEqualToOrDerivedFrom(armType))
+                            {
+                                //error
+                            }
+
+                            if (armType.IsEqualToOrDerivedFrom(resultType))
+                            {
+                                //cast
+                            }
+                        }
+                    }
+                    else
+                    {
+                        resultType = armType;
+                    }
+                }
+            }
+
+            if (resultType == null)
+            {
+                //error
+            }
+
+            return new BoundMatchEx(boundExpression, arms, resultType);
+        }
+
+        private BoundMatchArm BindMatchArm(MatchArm arm)
+        {
+            var pattern = BindExpression(arm.Expression);
+
+            var result = (arm.Result != null) ? BindExpression(arm.Result) : null;
+
+            return new BoundMatchArm(pattern, (arm.WhenGuard != null) ? BindExpression(arm.WhenGuard) : null, result,
+                result?.ResultType);
         }
 
         private BoundExpression BindIndexerEx(IndexerEx ie)
@@ -554,6 +615,12 @@ Binder
 
         protected BoundExpression BindNameEx(NameEx expr, BoundAccess access)
         {
+            //handle special wildcard symbol
+            if (expr.Identifier.Text == "_")
+            {
+                return new BoundWildcardEx(DeclaringCompilation.CoreTypes.Void.Symbol).WithSyntax(expr);
+            }
+
             var bounded = BindSimpleVarUse(expr, access);
 
             // local variable hide the members

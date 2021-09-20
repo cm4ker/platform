@@ -468,6 +468,15 @@ namespace Aquila.CodeAnalysis.CodeGen
         }
 
         /// <summary>
+        /// Emits "!= 0" operation. This method expects I4 value on top of evaluation stack.
+        /// </summary>
+        public void EmitLogicNegation()
+        {
+            _il.EmitOpCode(ILOpCode.Ldc_i4_0, 1);
+            _il.EmitOpCode(ILOpCode.Ceq);
+        }
+        
+        /// <summary>
         /// Emits .ret instruction with sequence point at closing brace.
         /// Eventually emits branching to closing block.
         /// </summary>

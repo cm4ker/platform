@@ -402,7 +402,42 @@ additive_expression
 	;
 
 multiplicative_expression
-	: range_expression (('*' | '/' | '%' ) range_expression)*
+	: match_expression (('*' | '/' | '%' ) match_expression)*
+	;
+/*
+
+match (expression)
+    |  (literal)  
+    |  (literal)  
+    |  (literal)                   => print( "found 1, 2 or 3" )  
+    |  (variable) when (condition) => print("even number more than 3")
+    |  _                           => print("found not even number more than 3")  
+
+
+
+match (expression)
+    |  first..tail -> print(first)   
+    | { } -> // error not allow collections
+
+
+*/
+match_expression
+     :  'match' '(' expression ')' match_expression_arms
+     |  range_expression ('match' '(' expression ')' match_expression_arms)?
+    ;
+
+match_expression_arms
+    :
+        match_expression_arm+
+    ;    
+    
+match_expression_arm
+    :
+        '|' pattern=expression when_guard? right_arrow (result=expression)?
+    ;    
+
+when_guard
+	: WHEN expression
 	;
 
 //switch_expression
@@ -444,29 +479,21 @@ primary_expression  // Null-conditional operators C# 6: https://msdn.microsoft.c
 	;
 
 primary_expression_start
-	: literal                                   #literalExpression
-	| identifier type_argument_list?            #simpleNameExpression
-	| OPEN_PARENS expression CLOSE_PARENS       #parenthesisExpressions
-	| predefined_type                           #memberAccessExpression
-	| qualified_alias_member                    #memberAccessExpression
-	| LITERAL_ACCESS                            #literalAccessExpression
-	| THIS                                      #thisReferenceExpression
-	| BASE ('.' identifier type_argument_list? | '[' expression_list ']') #baseAccessExpression
-//	| NEW (type_ (object_creation_expression
-//	             | object_or_collection_initializer
-//	             | '[' expression_list ']' rank_specifier* array_initializer?
-//	             | rank_specifier+ array_initializer)
-//	      | anonymous_object_initializer
-//	      | rank_specifier array_initializer)                       #objectCreationExpression
-	| OPEN_PARENS argument ( ',' argument )+ CLOSE_PARENS           #tupleExpression
-	| TYPEOF OPEN_PARENS (unbound_type_name | type_ | VOID) CLOSE_PARENS   #typeofExpression
-	| CHECKED OPEN_PARENS expression CLOSE_PARENS                   #checkedExpression
-	| UNCHECKED OPEN_PARENS expression CLOSE_PARENS                 #uncheckedExpression
-	| DEFAULT (OPEN_PARENS type_ CLOSE_PARENS)?                     #defaultValueExpression
-	//| ASYNC? DELEGATE (OPEN_PARENS explicit_anonymous_function_parameter_list? CLOSE_PARENS)? block #anonymousMethodExpression
-	| SIZEOF OPEN_PARENS type_ CLOSE_PARENS                          #sizeofExpression
-	// C# 6: https://msdn.microsoft.com/en-us/library/dn986596.aspx
-	| NAMEOF OPEN_PARENS (identifier '.')* identifier CLOSE_PARENS  #nameofExpression
+	: literal                                                               #literalExpression
+	| identifier type_argument_list?                                        #simpleNameExpression
+	| OPEN_PARENS expression CLOSE_PARENS                                   #parenthesisExpressions
+	| predefined_type                                                       #memberAccessExpression
+	| qualified_alias_member                                                #memberAccessExpression
+	| LITERAL_ACCESS                                                        #literalAccessExpression
+	| THIS                                                                  #thisReferenceExpression
+	| BASE ('.' identifier type_argument_list? | '[' expression_list ']')   #baseAccessExpression
+	| OPEN_PARENS argument ( ',' argument )+ CLOSE_PARENS                   #tupleExpression
+	| TYPEOF OPEN_PARENS (unbound_type_name | type_ | VOID) CLOSE_PARENS    #typeofExpression
+	| CHECKED OPEN_PARENS expression CLOSE_PARENS                           #checkedExpression
+	| UNCHECKED OPEN_PARENS expression CLOSE_PARENS                         #uncheckedExpression
+	| DEFAULT (OPEN_PARENS type_ CLOSE_PARENS)?                             #defaultValueExpression
+	| SIZEOF OPEN_PARENS type_ CLOSE_PARENS                                 #sizeofExpression
+	| NAMEOF OPEN_PARENS (identifier '.')* identifier CLOSE_PARENS          #nameofExpression
 	;
 
 throwable_expression

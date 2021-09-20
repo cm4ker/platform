@@ -78,16 +78,16 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             return default;
         }
 
-        public override T VisitCFGCaseBlock(CaseBlock x)
+        public override T VisitCFGCaseBlock(MatchArmBlock x)
         {
-            if (!x.CaseValue.IsOnlyBoundElement)
+            if (x.MatchValue == null)
             {
-                VisitCFGBlock(x.CaseValue.PreBoundBlockFirst);
+                //VisitCFGBlock(x.);
             }
 
-            if (!x.CaseValue.IsEmpty)
+            if (x.MatchValue != null)
             {
-                Accept(x.CaseValue.BoundElement);
+                Accept(x.MatchValue);
             }
 
             DefaultVisitBlock(x);
@@ -152,12 +152,12 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             return default;
         }
 
-        public override T VisitCFGSwitchEdge(SwitchEdge x)
+        public override T VisitCFGSwitchEdge(MatchEdge x)
         {
             Accept(x.SwitchValue);
 
             //
-            var arr = x.CaseBlocks;
+            var arr = x.MatchBlocks;
             for (int i = 0; i < arr.Length; i++)
                 arr[i].Accept(this);
 

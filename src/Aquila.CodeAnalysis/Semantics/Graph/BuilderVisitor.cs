@@ -663,6 +663,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             BoundBlock elseBlock = null;
 
             var cond = conditions;
+
             if (x.ElseBlock != null) // if (Condition) ...
             {
                 elseBlock = end;
@@ -672,7 +673,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             {
                 elseBlock = end; // last ConditionalStmt
                 _current = Connect(_current, NewBlock(), elseBlock, cond);
-                //_current = WithNewOrdinal(NewBlock());
             }
 
             OpenScope(_current);
@@ -764,7 +764,69 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             base.VisitThrowEx(x);
         }
 
-// public override void VisitTryStmt(TryStmt x)
+
+        public override void VisitMatchEx(MatchEx arg)
+        {
+            var items = arg.Arms.ToArray();
+            if (!items.Any())
+                return;
+
+            // get bound item for switch value & connect potential pre-switch-value blocks
+            var matchValue = _binder.BindExpression(arg.Expression, BoundAccess.Read);
+
+            var end = NewBlock();
+
+            bool hasDefault = false;
+            var arms = new List<MatchArmBlock>(items.Count());
+
+            for (int i = 0; i < items.Count(); i++)
+            {
+                var arm = new MatchArmBlock(_binder.BindExpression(items[i], BoundAccess.Read));
+                arms.Add(arm);
+
+                hasDefault |= arm.IsDefault;
+            }
+
+            // if (!hasDefault)
+            // {
+            //     // create implicit default:
+            //     cases.Add(NewBlock(new DefaultItem(x.Span, EmptyArray<Statement>.Instance)));
+            // }
+
+            // // if switch value isn't a constant & there're case values with preBoundStatements 
+            // // -> the switch value might get evaluated multiple times (see SwitchEdge.Generate) -> preemptively evaluate and cache it
+            // if (!matchValue.IsConstant() && !cases.All(c => c.CaseValue.IsOnlyBoundElement))
+            // {
+            //     var result = GeneratorSemanticsBinder.CreateAndAssignSynthesizedVariable(switchValue, BoundAccess.Read,
+            //         $"<switchValueCacher>{x.Span}");
+            //     switchValue = result.BoundExpr;
+            //     _current.Add(new BoundExpressionStatement(result.Assignment));
+            // }
+
+            // SwitchEdge // Connects _current to cases
+            var edge = new MatchEdge(matchValue, arms.ToImmutableArray(), end);
+            _current = WithNewOrdinal(arms[0]);
+
+            OpenBreakScope(end, end); // NOTE: inside switch, Continue ~ Break
+
+            for (int i = 0; i < arms.Count; i++)
+            {
+                OpenScope(_current);
+
+                if (i < items.Length)
+                    Visit(items[i].Expression); // any break will connect block to end
+
+                CloseScope();
+
+                _current = WithNewOrdinal(Connect(_current, (i == arms.Count - 1) ? end : arms[i + 1]));
+            }
+
+            CloseBreakScope();
+
+            Debug.Assert(_current == end);
+        }
+
+        // public override void VisitTryStmt(TryStmt x)
 // {
 //     // try {
 //     //   x.Body

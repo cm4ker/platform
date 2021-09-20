@@ -91,5 +91,53 @@ namespace Aquila.CodeAnalysis.CodeGen
 
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// In case expression is of type <c>Int32</c> or <c>bool</c> or <c>PhpNumber</c>,
+        /// converts it to <c>double</c> and leaves the result on evaluation stack. Otherwise
+        /// just emits expression and leaves it on evaluation stack.
+        /// </summary>
+        internal TypeSymbol EmitExprConvertNumberToDouble(BoundExpression expr)
+        {
+            // emit number literal directly as double
+            var constant = expr.ConstantValue;
+            if (constant.HasValue)
+            {
+                if (constant.Value is long)
+                {
+                    _il.EmitDoubleConstant((long)constant.Value);
+                    return this.CoreTypes.Double;
+                }
+
+                if (constant.Value is int)
+                {
+                    _il.EmitDoubleConstant((int)constant.Value);
+                    return this.CoreTypes.Double;
+                }
+
+                if (constant.Value is bool)
+                {
+                    _il.EmitDoubleConstant((bool)constant.Value ? 1.0 : 0.0);
+                    return this.CoreTypes.Double;
+                }
+            }
+
+            // emit fast ToDouble() in case of a PhpNumber variable
+            var place = PlaceOrNull(expr);
+            var type = (TypeSymbol)expr.Type;
+
+            Debug.Assert(type != null);
+
+            if (type.SpecialType == SpecialType.System_Int32 ||
+                type.SpecialType == SpecialType.System_Int64 ||
+                type.SpecialType == SpecialType.System_Boolean)
+            {
+                _il.EmitOpCode(ILOpCode.Conv_r8); // int|bool -> long
+                type = this.CoreTypes.Double;
+            }
+
+            //
+            return type;
+        }
     }
 }

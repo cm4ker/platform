@@ -591,18 +591,66 @@ namespace Aquila.Syntax.Parser
             }
         }
 
+        public override LangElement VisitMatch_expression(ZSharpParser.Match_expressionContext context)
+        {
+            if (context.expression() != null)
+            {
+                VisitExpression(context.expression());
+
+                PushStack();
+                VisitMatch_expression_arms(context.match_expression_arms());
+                var arms = PopStack().ToCollection<MatchArmList, MatchArm>();
+
+                Stack.Push(new MatchEx(context.ToLineInfo(), SyntaxKind.MatchExpression, Operations.Match,
+                    Stack.PopExpression(), arms));
+                return Stack.PeekNode();
+            }
+            else
+            {
+                base.VisitMatch_expression(context);
+            }
+
+            return null;
+        }
+
+        public override LangElement VisitMatch_expression_arm(ZSharpParser.Match_expression_armContext context)
+        {
+            Expression guard = null;
+            Expression exp = null;
+            Expression result = null;
+
+            VisitExpression(context.pattern);
+
+            if (context.result != null)
+            {
+                VisitExpression(context.result);
+                result = Stack.PopExpression();
+            }
+
+            if (context.when_guard() != null)
+            {
+                VisitExpression(context.when_guard().expression());
+                guard = Stack.PopExpression();
+            }
+
+            exp = Stack.PopExpression();
+            Stack.Push(new MatchArm(context.ToLineInfo(), SyntaxKind.MatchArm, Operations.Unknown, exp, guard, result));
+            return Stack.PeekNode();
+        }
+
         public override LangElement VisitMultiplicative_expression(
             ZSharpParser.Multiplicative_expressionContext context)
         {
             base.VisitMultiplicative_expression(context);
 
-            CreateBinaryOp(context, context.range_expression(), i => (i) switch
-            {
-                ZSharpLexer.PERCENT => Operations.Mod,
-                ZSharpLexer.DIV => Operations.Div,
-                ZSharpLexer.STAR => Operations.Mul,
-                _ => throw new InvalidOperationException("Unknown operator")
-            });
+            CreateBinaryOp(context, context.match_expression(), i =>
+                (i) switch
+                {
+                    ZSharpLexer.PERCENT => Operations.Mod,
+                    ZSharpLexer.DIV => Operations.Div,
+                    ZSharpLexer.STAR => Operations.Mul,
+                    _ => throw new InvalidOperationException("Unknown operator")
+                });
             return null;
         }
 

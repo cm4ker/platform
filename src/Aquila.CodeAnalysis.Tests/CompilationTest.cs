@@ -476,5 +476,50 @@ public static int Main()
             var result = (int)this.CompileAndRun(script);
             var da = DateTime.Now.Day;
         }
+
+
+        [Fact]
+        public void MatchTest()
+        {
+            var script =
+                @"
+public static int Main() 
+{
+
+    var a = 10;
+       
+    return match(a)
+            | 10 => 1
+            | 20 => 2
+            | 30 => 3
+            | 40 => 4
+            |  _ => 100;
+}";
+
+            var d = DateTime.Now.Day;
+
+            var result = (int)this.CompileAndRun(script);
+            Assert.Equal(1, result);
+        }
+
+        [Fact]
+        public void Match2Test()
+        {
+            var script =
+                @"
+public static int Main() 
+{
+    var a = false;
+       
+    return match(a)
+            | true => 0
+            | false => 1;
+}";
+
+            var d = DateTime.Now.Day;
+
+            var result = (int)this.CompileAndRun(script);
+            Assert.Equal(1, result);
+        }
     }
 }

@@ -116,6 +116,8 @@ namespace Aquila.Syntax
         NameExpression,
         UnaryExpression,
         BinaryExpression,
+        MatchExpression,
+        MatchArm,
         CompoundAssignmentExpression,
         ParenthesizedExpression,
         AssignmentExpression,

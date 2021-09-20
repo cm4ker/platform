@@ -98,7 +98,6 @@
         </Arguments>
     </Syntax>
 
-
     <Syntax Name="UnaryEx" Base="Expression" OperationKind="UnaryOperator">
         <Arguments>
             <Single Name="Operand" Type="BoundExpression" IsUpdatable="true"/>
@@ -128,7 +127,6 @@
         </Arguments>
     </Syntax>
 
-
     <Syntax Name="ConversionEx" Base="Expression">
         <Arguments>
             <Single Name="Operand" Type="BoundExpression" IsUpdatable="true"/>
@@ -137,9 +135,36 @@
                     IsInternal="true"/>
         </Arguments>
     </Syntax>
+
     <Syntax Name="Literal" Base="Expression">
         <Arguments>
             <Single Name="Value" Type="object" IsUpdatable="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="WildcardEx" Base="Expression" OperationKind="None">
+        <Arguments>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="MatchEx" Base="Expression" OperationKind="None">
+        <Arguments>
+            <Single Name="Expression" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="Arms" Type="List&lt;BoundMatchArm&gt;" IsUpdatable="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="MatchArm" Base="Expression" OperationKind="None">
+        <Arguments>
+            <Single Name="Pattern" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="WhenGuard" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="MatchResult" Type="BoundExpression" IsUpdatable="true"/>
             <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
                     IsInternal="true"/>
         </Arguments>

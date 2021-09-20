@@ -2106,4 +2106,17 @@ namespace Aquila.CodeAnalysis.Semantics
     }
 
     #endregion
+
+
+    public partial class BoundWildcardEx
+    {
+    }
+
+    public partial class BoundMatchEx
+    {
+    }
+
+    public partial class BoundMatchArm
+    {
+    }
 }

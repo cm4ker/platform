@@ -48,6 +48,8 @@ IF : 'if';
 ELSE : 'else';
 FOR : 'for';
 WHILE : 'while';
+MATCH : 'match';
+WHEN : 'when';
 DOLLAR:                   '$';
 
 TRUE: 'true';

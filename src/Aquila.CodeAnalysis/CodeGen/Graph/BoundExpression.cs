@@ -162,10 +162,13 @@ namespace Aquila.CodeAnalysis.Semantics
         internal override TypeSymbol Emit(CodeGenerator cg)
         {
             var il = cg.Builder;
-            TypeSymbol res;
+            TypeSymbol res = null;
 
-            res = cg.Emit(Left);
-            cg.Emit(Right);
+            if (Operation != Operations.Equal)
+            {
+                res = cg.Emit(Left);
+                cg.Emit(Right);
+            }
 
             switch (Operation)
             {
@@ -188,12 +191,280 @@ namespace Aquila.CodeAnalysis.Semantics
                     res = cg.DeclaringCompilation.CoreTypes.Boolean;
                     break;
 
-
+                case Operations.Equal:
+                    bool negation = false;
+                    res = EmitEquality(cg, ref negation);
+                    Debug.Assert(negation == false);
+                    break;
                 default: throw new Exception("Op not supported");
             }
 
 
             return res;
+        }
+
+        /// <summary>
+        /// Emits check for values equality.
+        /// Lefts <c>bool</c> on top of evaluation stack.
+        /// </summary>
+        TypeSymbol EmitEquality(CodeGenerator cg, ref bool negation)
+        {
+            // x == y
+            return EmitEquality(cg, Left, Right, ref negation);
+        }
+
+        /// <summary>
+        /// Emits check for values equality.
+        /// Lefts <c>bool</c> on top of evaluation stack.
+        /// </summary>
+        internal static TypeSymbol EmitEquality(CodeGenerator cg, BoundExpression left, BoundExpression right,
+            ref bool negation)
+        {
+            if (left.ConstantValue.IsNull())
+            {
+                // null == right
+                return EmitEqualityToNull(cg, right, ref negation);
+            }
+            else if (right.ConstantValue.IsNull())
+            {
+                // left == null
+                return EmitEqualityToNull(cg, left, ref negation);
+            }
+            else
+            {
+                // left == right
+                return EmitEquality(cg, cg.Emit(left), right, ref negation);
+            }
+        }
+
+        static TypeSymbol EmitEqualityToNull(CodeGenerator cg, BoundExpression expr, ref bool negation)
+        {
+            // Template: <expr> == null
+
+            var il = cg.Builder;
+            var t = cg.Emit(expr);
+
+            //
+            switch (t.SpecialType)
+            {
+                case SpecialType.System_Object:
+                    il.EmitNullConstant();
+                    if (negation)
+                    {
+                        // object != null
+                        il.EmitOpCode(ILOpCode.Cgt_un);
+                        negation = false; // handled
+                    }
+                    else
+                    {
+                        // object == null
+                        il.EmitOpCode(ILOpCode.Ceq);
+                    }
+
+                    return cg.CoreTypes.Boolean;
+
+                case SpecialType.System_Double:
+                    // r8 == 0
+                    il.EmitDoubleConstant(0.0);
+                    il.EmitOpCode(ILOpCode.Ceq);
+                    return cg.CoreTypes.Boolean;
+
+                case SpecialType.System_Int32:
+                    // i4 == 0
+                    cg.EmitLogicNegation();
+                    return cg.CoreTypes.Boolean;
+
+                case SpecialType.System_Int64:
+                    // i8 == 0
+                    il.EmitLongConstant(0);
+                    if (negation)
+                    {
+                        il.EmitOpCode(ILOpCode.Cgt_un);
+                        negation = false; // handled
+                    }
+                    else
+                    {
+                        il.EmitOpCode(ILOpCode.Ceq);
+                    }
+
+                    return cg.CoreTypes.Boolean;
+
+                case SpecialType.System_String:
+                    // string.IsNullOrEmpty(string)
+                    cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.IsNullOrEmpty_String);
+                    return cg.CoreTypes.Boolean;
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+
+        internal static TypeSymbol EmitEquality(CodeGenerator cg, TypeSymbol xtype, BoundExpression right,
+            ref bool negation)
+        {
+            TypeSymbol ytype;
+
+            switch (xtype.SpecialType)
+            {
+                case SpecialType.System_Boolean:
+
+                    // bool == y.ToBoolean()
+                    cg.EmitConvert(right, cg.CoreTypes.Boolean);
+                    cg.Builder.EmitOpCode(ILOpCode.Ceq);
+
+                    return cg.CoreTypes.Boolean;
+
+                case SpecialType.System_Int32:
+
+                    ytype = cg.Emit(right);
+
+                    //
+                    if (ytype.SpecialType == SpecialType.System_Int32)
+                    {
+                        cg.Builder.EmitOpCode(ILOpCode.Ceq);
+                        ytype = cg.CoreTypes.Int32;
+                    }
+
+                    //
+                    if (ytype.SpecialType == SpecialType.System_Int64)
+                    {
+                        // i4 == i8
+                        cg.Builder.EmitOpCode(ILOpCode.Conv_i8); // i4 -> i8
+                        cg.Builder.EmitOpCode(ILOpCode.Ceq);
+                        return cg.CoreTypes.Boolean;
+                    }
+                    else if (ytype.SpecialType == SpecialType.System_Double)
+                    {
+                        // i4 == r8
+                        return cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.Ceq_int_double)
+                            .Expect(SpecialType.System_Boolean);
+                    }
+                    else if (ytype.SpecialType == SpecialType.System_Boolean)
+                    {
+                        // i4 == bool
+                        return cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.Ceq_int_bool)
+                            .Expect(SpecialType.System_Boolean);
+                    }
+                    else if (ytype.SpecialType == SpecialType.System_String)
+                    {
+                        // i4 == string
+                        return cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.Ceq_int_string)
+                            .Expect(SpecialType.System_Boolean);
+                    }
+                    else
+                    {
+                        return cg.CoreTypes.Boolean;
+                    }
+
+
+                case SpecialType.System_Int64:
+
+                    ytype = cg.Emit(right);
+
+                    //
+                    if (ytype.SpecialType == SpecialType.System_Int32)
+                    {
+                        cg.Builder.EmitOpCode(ILOpCode.Conv_i8); // i4 -> i8
+                        ytype = cg.CoreTypes.Int64;
+                    }
+
+                    //
+                    if (ytype.SpecialType == SpecialType.System_Int64)
+                    {
+                        // i8 == i8
+                        cg.Builder.EmitOpCode(ILOpCode.Ceq);
+                        return cg.CoreTypes.Boolean;
+                    }
+                    else if (ytype.SpecialType == SpecialType.System_Double)
+                    {
+                        // i8 == r8
+                        return cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.Ceq_long_double)
+                            .Expect(SpecialType.System_Boolean);
+                    }
+                    else if (ytype.SpecialType == SpecialType.System_Boolean)
+                    {
+                        // i8 == bool
+                        return cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.Ceq_long_bool)
+                            .Expect(SpecialType.System_Boolean);
+                    }
+                    else if (ytype.SpecialType == SpecialType.System_String)
+                    {
+                        // i8 == string
+                        return cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.Ceq_long_string)
+                            .Expect(SpecialType.System_Boolean);
+                    }
+                    else
+                    {
+                        return cg.CoreTypes.Boolean;
+                    }
+
+
+                case SpecialType.System_Double:
+
+                    ytype = cg.EmitExprConvertNumberToDouble(right); // bool|long|int -> double
+
+                    if (ytype.SpecialType == SpecialType.System_Double)
+                    {
+                        // r8 == r8
+                        cg.Builder.EmitOpCode(ILOpCode.Ceq);
+                        return cg.CoreTypes.Boolean;
+                    }
+                    else if (ytype.SpecialType == SpecialType.System_String)
+                    {
+                        // r8 == string
+                        return cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.Ceq_double_string)
+                            .Expect(SpecialType.System_Boolean);
+                    }
+                    else
+                    {
+                        return cg.CoreTypes.Boolean;
+                    }
+
+
+                case SpecialType.System_String:
+
+                    ytype = cg.Emit(right);
+
+                    if (ytype.SpecialType == SpecialType.System_Int32)
+                    {
+                        // i4 -> i8
+                        cg.Builder.EmitOpCode(ILOpCode.Conv_i8);
+                        ytype = cg.CoreTypes.Int64;
+                    }
+
+                    if (ytype.SpecialType == SpecialType.System_Int64)
+                    {
+                        // string == i8
+                        return cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.Ceq_string_long)
+                            .Expect(SpecialType.System_Boolean);
+                    }
+                    else if (ytype.SpecialType == SpecialType.System_Boolean)
+                    {
+                        // string == bool
+                        return cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.Ceq_string_bool)
+                            .Expect(SpecialType.System_Boolean);
+                    }
+                    else if (ytype.SpecialType == SpecialType.System_Double)
+                    {
+                        // string == r8
+                        return cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.Ceq_string_double)
+                            .Expect(SpecialType.System_Boolean);
+                    }
+                    else if (ytype.SpecialType == SpecialType.System_String)
+                    {
+                        // Ceq(string, string)
+                        return cg.EmitCall(ILOpCode.Call, cg.CoreMethods.Operators.Ceq_string_string)
+                            .Expect(SpecialType.System_Boolean);
+                    }
+                    else
+                    {
+                        return cg.CoreTypes.Boolean;
+                    }
+
+                default:
+                    throw new NotImplementedException();
+            }
         }
     }
 
@@ -364,6 +635,86 @@ namespace Aquila.CodeAnalysis.Semantics
         internal override TypeSymbol Emit(CodeGenerator cg)
         {
             return cg.EmitCall(ILOpCode.Call, this.MethodSymbol, Instance, Arguments);
+        }
+    }
+
+    partial class BoundWildcardEx
+    {
+        internal override TypeSymbol Emit(CodeGenerator cg)
+        {
+            return (TypeSymbol)ResultType;
+        }
+    }
+
+    partial class BoundMatchEx
+    {
+        enum MatchKind
+        {
+            Unknown,
+            Value,
+            Type,
+            Collection
+        }
+
+        internal override TypeSymbol Emit(CodeGenerator cg)
+        {
+            /*
+             Match kinds :
+             1) Value - arms is literals
+             2) Type - arms is Types 
+             3) Ranged - arms is Array init ( extra work ) 
+             
+             */
+
+            MatchKind matchKind = MatchKind.Unknown;
+
+            //1. get kind of match from the first contained value arm
+
+            BoundMatchArm firstValuableArm = null;
+
+            foreach (var arm in Arms)
+            {
+                if (arm.MatchResult != null)
+                {
+                    firstValuableArm = arm;
+                    break;
+                }
+            }
+
+            var endLabel = new NamedLabel("<endMatch>");
+            var resultLoc = cg.Builder.DefineSynthLocal(cg.Method, "", (NamedTypeSymbol)ResultType);
+            var locPlace = new LocalPlace(resultLoc);
+
+            foreach (var arm in Arms)
+            {
+                var nextLabel = new NamedLabel("<nextArm>");
+
+
+                if (arm.Pattern is BoundWildcardEx)
+                {
+                    arm.MatchResult.Emit(cg);
+                    locPlace.EmitStore(cg.Builder);
+
+                    break;
+                }
+
+                arm.Pattern.Emit(cg);
+                cg.Builder.EmitBranch(ILOpCode.Brfalse, nextLabel);
+
+
+                arm.MatchResult.Emit(cg);
+                locPlace.EmitStore(cg.Builder);
+
+                cg.Builder.EmitBranch(ILOpCode.Br, endLabel);
+
+
+                cg.Builder.MarkLabel(nextLabel);
+            }
+
+            cg.Builder.MarkLabel(endLabel);
+            locPlace.EmitLoad(cg.Builder);
+
+            return (TypeSymbol)ResultType;
         }
     }
 

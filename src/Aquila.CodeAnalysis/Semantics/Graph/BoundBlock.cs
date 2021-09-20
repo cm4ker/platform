@@ -306,57 +306,53 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
     }
 
     /// <summary>
-    /// Represents control flow block of case item.
+    /// Represents control flow block of match item.
     /// </summary>
     [DebuggerDisplay("CaseBlock")]
-    public partial class CaseBlock : BoundBlock
+    public partial class MatchArmBlock : BoundBlock
     {
         /// <summary>
         /// Internal name of the block.
         /// </summary>
         protected override string DebugName => IsDefault ? "default:" : "case:";
 
-        /// <summary>
-        /// Gets case value expression bag.
-        /// In case of default case, it is set <see cref="BoundItemsBag{BoundExpression}.Empty"/>.
-        /// </summary>
-        public BoundItemsBag<BoundExpression> CaseValue => _caseValue;
+        public BoundExpression MatchValue => _matchValue;
 
-        private readonly BoundItemsBag<BoundExpression> _caseValue;
+        private readonly BoundExpression _matchValue;
 
         /// <summary>
         /// Gets value indicating whether the case represents a default.
         /// </summary>
-        public bool IsDefault => _caseValue.IsEmpty;
+        public bool IsDefault => _matchValue is BoundWildcardEx;
 
-        public CaseBlock(BoundItemsBag<BoundExpression> caseValue)
-            : this(caseValue, new List<BoundStatement>())
+        public MatchArmBlock(BoundExpression matchValue)
+            : this(matchValue, new List<BoundStatement>())
         {
         }
 
-        private CaseBlock(BoundItemsBag<BoundExpression> caseValue, List<BoundStatement> statements)
+        private MatchArmBlock(BoundExpression matchValue, List<BoundStatement> statements)
             : base(statements)
         {
-            _caseValue = caseValue;
+            _matchValue = matchValue;
         }
 
-        internal CaseBlock Update(BoundItemsBag<BoundExpression> caseValue, List<BoundStatement> statements,
+        internal MatchArmBlock Update(BoundExpression matchValue, List<BoundStatement> statements,
             Edge nextEdge)
         {
-            if (caseValue == _caseValue && statements == Statements && nextEdge == NextEdge)
+            if (matchValue == _matchValue && statements == Statements && nextEdge == NextEdge)
             {
                 return this;
             }
             else
             {
-                return new CaseBlock(caseValue, statements).WithEdge(NextEdge)
+                return new MatchArmBlock(matchValue, statements).WithEdge(NextEdge)
                     .WithLocalPropertiesFrom(this);
             }
         }
 
         internal override BoundBlock Clone()
         {
-            return new CaseBlock(_caseValue, new List<BoundStatement>(Statements)).WithEdge(NextEdge)
+            return new MatchArmBlock(_matchValue, new List<BoundStatement>(Statements)).WithEdge(NextEdge)
                 .WithLocalPropertiesFrom(this);
         }
 

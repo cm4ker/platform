@@ -304,10 +304,10 @@ namespace Aquila.CodeAnalysis.CodeGen
         /// </summary>
         public CoreTypes CoreTypes => DeclaringCompilation.CoreTypes;
 
-        // /// <summary>
-        // /// Well known methods.
-        // /// </summary>
-        // public CoreMethods CoreMethods => DeclaringCompilation.CoreMethods;
+        /// <summary>
+        /// Well known methods.
+        /// </summary>
+        public CoreMethods CoreMethods => DeclaringCompilation.CoreMethods;
 
         /// <summary>
         /// Factory for dynamic and anonymous types.

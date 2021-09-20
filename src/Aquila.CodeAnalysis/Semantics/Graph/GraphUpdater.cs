@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Aquila.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Utilities;
+using Aquila.Syntax.Ast.Expressions;
 using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis.Semantics.Graph
@@ -193,10 +194,10 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 AcceptEdge(x, x.NextEdge));
         }
 
-        public override object VisitCFGCaseBlock(CaseBlock x)
+        public override object VisitCFGCaseBlock(MatchArmBlock x)
         {
             return x.Update(
-                x.CaseValue, // TODO: Visit also the expressions
+                x.MatchValue, // TODO: Visit also the expressions
                 VisitList(x.Statements),
                 AcceptEdge(x, x.NextEdge));
         }
@@ -277,13 +278,13 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 x.MoveNextSpan);
         }
 
-        public override object VisitCFGSwitchEdge(Graph.SwitchEdge x)
+        public override object VisitCFGSwitchEdge(Graph.MatchEdge x)
         {
             IsConditional = true;
 
             return x.Update(
                 (BoundExpression)Accept(x.SwitchValue),
-                VisitBlockImmutableArray(x.CaseBlocks),
+                VisitBlockImmutableArray(x.MatchBlocks),
                 (BoundBlock)Accept(x.NextBlock));
         }
 
@@ -320,6 +321,35 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 , right
                 , x.Operation
                 , x.Left.ResultType);
+        }
+
+
+        public override object VisitMatchArm(BoundMatchArm x)
+        {
+            var pattern = (BoundExpression)Accept(x.Pattern);
+            var when = (BoundExpression)Accept(x.WhenGuard);
+            var result = (BoundExpression)Accept(x.MatchResult);
+
+            return x.Update(pattern, when, result, result.ResultType);
+        }
+
+        public override object VisitMatchEx(BoundMatchEx x)
+        {
+            var expression = (BoundExpression)Accept(x.Expression);
+
+            List<BoundMatchArm> updatedArms = new List<BoundMatchArm>();
+
+            BoundMatchArm lastArm = null;
+
+            foreach (var arm in x.Arms)
+            {
+                var newArm = (BoundMatchArm)Accept(arm);
+                updatedArms.Add(newArm);
+
+                lastArm = newArm;
+            }
+
+            return x.Update(expression, updatedArms, lastArm.ResultType);
         }
 
         public override object VisitUnaryEx(BoundUnaryEx x)

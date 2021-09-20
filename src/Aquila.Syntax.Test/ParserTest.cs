@@ -203,7 +203,7 @@ namespace Aquila.Compiler.Test2
             Assert.NotEmpty(unit.Types);
             Assert.Equal(4, unit.Types.Count());
         }
-        
+
         [Fact]
         public void UnitonTypeTest2()
         {
@@ -214,6 +214,18 @@ namespace Aquila.Compiler.Test2
             Assert.Equal(4, unit.Types.Count());
         }
 
+
+        [Fact]
+        public void MatchTest()
+        {
+            var parser = Parse("match (a) | 10 => | 20 => | 30 => call() | _ => call2()");
+            var result = _v.Visit(parser.match_expression());
+            var matchEx = Assert.IsAssignableFrom<MatchEx>(result);
+
+            Assert.NotNull(matchEx.Expression);
+            Assert.NotEmpty(matchEx.Arms);
+            Assert.Equal(4, matchEx.Arms.Count());
+        }
 
         #region Helpers
 

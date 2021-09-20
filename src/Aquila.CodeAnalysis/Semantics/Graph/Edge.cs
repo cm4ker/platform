@@ -99,7 +99,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// Enumeration with single case blocks.
         /// </summary>
-        public virtual ImmutableArray<CaseBlock> CaseBlocks => ImmutableArray<CaseBlock>.Empty;
+        public virtual ImmutableArray<MatchArmBlock> MatchBlocks => ImmutableArray<MatchArmBlock>.Empty;
 
         internal Edge()
         {
@@ -466,10 +466,10 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
     /// Represents switch edge.
     /// </summary>
     [DebuggerDisplay("SwitchEdge")]
-    public sealed partial class SwitchEdge : Edge
+    public sealed partial class MatchEdge : Edge
     {
         readonly BoundExpression _switchValue;
-        readonly ImmutableArray<CaseBlock> _caseBlocks;
+        readonly ImmutableArray<MatchArmBlock> _matchBlocks;
 
         readonly BoundBlock _end;
 
@@ -480,34 +480,34 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// </summary>
         public BoundExpression SwitchValue => _switchValue;
 
-        public override IEnumerable<BoundBlock> Targets => _caseBlocks;
+        public override IEnumerable<BoundBlock> Targets => _matchBlocks;
 
         public override bool IsSwitch => true;
 
-        public override ImmutableArray<CaseBlock> CaseBlocks => _caseBlocks;
+        public override ImmutableArray<MatchArmBlock> MatchBlocks => _matchBlocks;
 
         /// <summary>
         /// Gets the case blocks representing a default section.
         /// </summary>
-        public CaseBlock DefaultBlock => _caseBlocks.FirstOrDefault(c => c.IsDefault);
+        public MatchArmBlock DefaultBlock => _matchBlocks.FirstOrDefault(c => c.IsDefault);
 
-        internal SwitchEdge(BoundExpression switchValue, ImmutableArray<CaseBlock> caseBlocks, BoundBlock endBlock)
+        internal MatchEdge(BoundExpression switchValue, ImmutableArray<MatchArmBlock> matchBlocks, BoundBlock endBlock)
         {
-            Contract.ThrowIfDefault(caseBlocks);
+            Contract.ThrowIfDefault(matchBlocks);
             _switchValue = switchValue;
-            _caseBlocks = caseBlocks;
+            _matchBlocks = matchBlocks;
             _end = endBlock;
         }
 
-        public SwitchEdge Update(BoundExpression switchValue, ImmutableArray<CaseBlock> caseBlocks, BoundBlock endBlock)
+        public MatchEdge Update(BoundExpression switchValue, ImmutableArray<MatchArmBlock> caseBlocks, BoundBlock endBlock)
         {
-            if (switchValue == _switchValue && caseBlocks == _caseBlocks && endBlock == _end)
+            if (switchValue == _switchValue && caseBlocks == _matchBlocks && endBlock == _end)
             {
                 return this;
             }
             else
             {
-                return new SwitchEdge(switchValue, caseBlocks, endBlock);
+                return new MatchEdge(switchValue, caseBlocks, endBlock);
             }
         }
 
