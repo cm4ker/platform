@@ -816,10 +816,10 @@ Binder
 
             value = BindExpression(expr.RValue, BoundAccess.Read);
 
-            if (expr.Operation == Operations.AssignValue && !(target is BoundListEx))
-            {
-                value = BindCopyValue(value);
-            }
+            // if (expr.Operation == Operations.AssignValue && !(target is BoundListEx))
+            // {
+            //     value = BindCopyValue(value);
+            // }
 
             if (expr.Operation == Operations.AssignValue || expr.Operation == Operations.AssignRef)
             {

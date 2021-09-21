@@ -149,6 +149,7 @@ namespace Aquila.Syntax.Metadata
         {
             var objectType =
                 _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{ObjectPostfix}", false));
+            var linkType = _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{LinkPostfix}", false));
 
             #region Fields
 
@@ -297,6 +298,8 @@ namespace Aquila.Syntax.Metadata
 
                     setter.SetMethodBuilder((m, d) => (il) =>
                     {
+                        var doneLbl = new NamedLabel("<done>");
+
                         var types = prop.Types.GetOrderedFlattenTypes().ToImmutableArray();
 
                         foreach (var typeInfo in types.Where(x => !x.isType))
@@ -326,21 +329,53 @@ namespace Aquila.Syntax.Metadata
                             il.EmitOpCode(ILOpCode.Unbox_any);
                             il.EmitSymbolToken(m, d, underlyingPropType, null);
 
+                            {
+                                if (typeInfo.type.IsReference)
+                                {
+                                    var referenceIdField =
+                                        underlyingPropType.GetMembers("id").OfType<FieldSymbol>().FirstOrDefault() ??
+                                        throw new Exception("the Id property not found");
+
+                                    var referenceIdFieldPlace = new FieldPlace(referenceIdField);
+
+                                    referenceIdFieldPlace.EmitLoad(il);
+                                }
+                            }
+
                             //TODO: We must set the identifier to the dto if this is link
                             //Add the condition for Link type and handle
                             il.EmitCall(m, d, ILOpCode.Call, dtoMember.SetMethod);
 
                             thisPlace.EmitLoad(il);
                             dtoFieldPlace.EmitLoad(il);
-                            il.EmitIntConstant(1);
-                            il.EmitCall(m, d, ILOpCode.Call, dtoTypeMember.SetMethod);
 
+
+                            if (typeInfo.type.IsPrimitive)
+                            {
+                                il.EmitIntConstant((int)typeInfo.type.Kind);
+                            }
+                            else
+                            {
+                                var managerType =
+                                    _ps.GetType(QualifiedName.Parse(
+                                        $"{Namespace}.{typeInfo.type.GetSemantic().Name}{ManagerPostfix}",
+                                        true));
+                                var typeIDField = managerType.GetMembers("TypeId").OfType<FieldSymbol>()
+                                    .FirstOrDefault();
+                                var fieldPlace = new FieldPlace(typeIDField, m);
+                                fieldPlace.EmitLoad(il);
+                            }
+
+
+                            il.EmitCall(m, d, ILOpCode.Call, dtoTypeMember.SetMethod);
+                            il.EmitBranch(ILOpCode.Br, doneLbl);
                             il.MarkLabel(lbl);
                         }
 
                         il.EmitCall(m, d, ILOpCode.Newobj, _ct.Exception.Ctor());
                         il.EmitThrow(false);
 
+                        il.MarkLabel(doneLbl);
 
                         il.EmitRet(true);
                     });
@@ -370,6 +405,19 @@ namespace Aquila.Syntax.Metadata
                                 thisPlace.EmitLoad(il);
                                 dtoFieldPlace.EmitLoad(il);
                                 setValueParam.EmitLoad(il);
+
+                                if (prop.Types.First().IsReference)
+                                {
+                                    var referenceIdField =
+                                        setValueParam.Type.GetMembers("id").OfType<FieldSymbol>()
+                                            .FirstOrDefault() ??
+                                        throw new Exception("the Id property not found");
+
+                                    var referenceIdFieldPlace = new FieldPlace(referenceIdField);
+
+                                    referenceIdFieldPlace.EmitLoad(il);
+                                }
+
                                 il.EmitCall(m, d, ILOpCode.Call, dtoProperty.SetMethod);
                                 il.EmitRet(true);
                             };
@@ -380,6 +428,34 @@ namespace Aquila.Syntax.Metadata
                 objectType.AddMember(setter);
                 objectType.AddMember(property);
             }
+
+            var linkGetMethod = _ps.SynthesizeMethod(objectType)
+                .SetName($"get_link")
+                .SetReturn(linkType)
+                .SetMethodBuilder((m, d) => il =>
+                {
+                    var dtoIdProp = dtoType.GetMembers("Id").OfType<PropertySymbol>().First();
+                    var dtoPropPlace = new PropertyPlace(dtoFieldPlace, dtoIdProp);
+
+
+                    thisPlace.EmitLoad(il);
+                    ctxFieldPlace.EmitLoad(il);
+
+                    thisPlace.EmitLoad(il);
+                    //dtoFieldPlace.EmitLoad(il);
+
+                    dtoPropPlace.EmitLoad(il);
+
+                    il.EmitCall(m, d, ILOpCode.Newobj, linkType.Ctor(_ct.AqContext, _ct.Guid));
+
+                    il.EmitRet(false);
+                });
+
+            var linkProperty = _ps.SynthesizeProperty(objectType);
+            linkProperty
+                .SetName("link")
+                .SetType(linkType)
+                .SetGetMethod(linkGetMethod);
 
             #endregion
 
@@ -428,6 +504,9 @@ namespace Aquila.Syntax.Metadata
 
             objectType.AddMember(ctor);
             objectType.AddMember(saveMethod);
+
+            objectType.AddMember(linkGetMethod);
+            objectType.AddMember(linkProperty);
 
 
             return objectType;

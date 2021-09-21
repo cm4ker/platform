@@ -89,6 +89,13 @@ namespace Aquila.CodeAnalysis.CodeGen
                 }
             }
 
+            if (to.SpecialType == SpecialType.System_Object)
+            {
+                EmitOpCode(ILOpCode.Box);
+                EmitSymbolToken(from, null);
+                return;
+            }
+
             throw new NotImplementedException();
         }
 

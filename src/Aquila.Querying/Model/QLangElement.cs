@@ -96,6 +96,11 @@ namespace Aquila.Core.Querying.Model
             _elements = elements;
         }
 
+        public T this[int index]
+        {
+            get { return _elements[index]; }
+        }
+
         public ImmutableArray<T> Elements
         {
             get => _elements;

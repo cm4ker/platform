@@ -1,0 +1,5 @@
+public static bool Main() 
+{
+    var d = get_date();
+    return d.Day != 0;
+}

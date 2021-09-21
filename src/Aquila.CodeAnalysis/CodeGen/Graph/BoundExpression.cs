@@ -744,11 +744,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return new PropertyPlace(null, (PropertySymbol)_property);
         }
 
-        // internal override TypeSymbol Emit(CodeGenerator cg)
-        // {
-        //     return cg.EmitCall(ILOpCode.Call, (MethodSymbol)Property.GetMethod, this.Instance,
-        //         ImmutableArray<BoundArgument>.Empty);
-        // }
+        internal override TypeSymbol Emit(CodeGenerator cg)
+        {
+            return cg.EmitCall(ILOpCode.Call, (MethodSymbol)Property.GetMethod, this.Instance,
+                ImmutableArray<BoundArgument>.Empty);
+        }
     }
 }
 

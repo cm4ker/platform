@@ -1,0 +1,4 @@
+static string Main() 
+{ 
+    return "Hello " + "world!"; 
+}

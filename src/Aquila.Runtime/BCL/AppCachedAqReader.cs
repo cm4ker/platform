@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 using Aquila.Core;
@@ -33,7 +34,21 @@ namespace Aquila.Data
 
         public object GetValue(string colName)
         {
-            throw new NotImplementedException();
+            var fields = _logicalQuery.Select.Fields.Elements;
+
+            var columnIndex = 0;
+
+            for (int i = 0; i < fields.Length; i++)
+            {
+                var currentField = fields[i];
+
+                if (currentField.GetName() == colName)
+                {
+                    return _bufferedReader.GetValue(i);
+                }
+            }
+
+            throw new Exception($"Column {colName} not found");
         }
 
         private void Analyze()
@@ -45,6 +60,7 @@ namespace Aquila.Data
                 var computedTypes = fieldResult.GetExpressionType().ToList();
             }
         }
+
 
         public override bool read()
         {

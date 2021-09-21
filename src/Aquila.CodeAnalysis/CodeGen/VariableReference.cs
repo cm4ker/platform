@@ -211,9 +211,6 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public static LhsStack EmitReceiver(CodeGenerator cg, ref LhsStack lhs, Symbol symbol, BoundExpression receiver)
         {
-            // TODO: try load Receiver address directly if necessary, otherwise cg.EmitStructAddr
-            // TODO: use LhsStack
-
             var receiverType = receiver != null ? lhs.EmitReceiver(cg, receiver) : null;
 
             return EmitReceiver(cg, symbol, receiverType);
@@ -834,8 +831,6 @@ namespace Aquila.CodeAnalysis.Semantics
 
             var getter = Property.GetMethod;
             return cg.EmitCall(getter.IsVirtual ? ILOpCode.Callvirt : ILOpCode.Call, getter);
-
-            // TODO: ACCESS
         }
 
         public TypeSymbol EmitLoadAddress(CodeGenerator cg, ref LhsStack lhsStack)

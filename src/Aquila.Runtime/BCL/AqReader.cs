@@ -12,9 +12,7 @@ namespace Aquila.Core
         /// <param name="value"></param>
         public abstract object this[string value] { get; }
 
-        public virtual bool read()
-        {
-            return false;
-        }
+        public abstract bool read();
+
     }
 }

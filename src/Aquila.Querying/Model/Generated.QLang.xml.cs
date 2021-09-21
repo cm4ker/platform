@@ -10,6 +10,8 @@ namespace Aquila.Core.Querying.Model
     public class QFieldList : QLangCollection<QField>
     {
         public static QFieldList Empty => new QFieldList(ImmutableArray<QField>.Empty);
+        
+        
         public QFieldList(ImmutableArray<QField> elements): base(elements)
         {
         }

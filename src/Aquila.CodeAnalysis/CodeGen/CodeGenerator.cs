@@ -453,7 +453,7 @@ namespace Aquila.CodeAnalysis.CodeGen
             // close scope
             _scope = _scope.Parent;
 
-            //
+            
             _il.AssertStackEmpty();
         }
 

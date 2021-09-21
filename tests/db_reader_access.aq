@@ -1,0 +1,34 @@
+import Entity;
+
+public static int Main()
+{
+    var store = StoreManager.create();
+    store.Name = "My store";
+    store.save();
+
+
+    var obj = InvoiceManager.create();
+    obj.Name = "test";
+    obj.ComplexProperty = "Complex";
+    obj.ComplexProperty = 10;
+    obj.Store = store.link;
+    obj.save();
+
+
+
+
+    var q = query();
+    q.text = "FROM Entity.Invoice SELECT Id";
+    q.set_param("p0", 1);
+
+    var r = q.exec();
+
+    if(r.read())
+    {
+        var id = r["Id"];
+
+        return 1;
+    }
+
+    return 0;
+}
