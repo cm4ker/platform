@@ -5,7 +5,7 @@ using Aquila.Core.Assemlies;
 
 namespace Aquila.Test.Tools.Assemblies
 {
-    public class TestAssemblyStorage : IAssemblyStorage
+    public class TestAssemblyStorage 
     {
         private Dictionary<AssemblyDescriptor, byte[]> _assemblies;
 

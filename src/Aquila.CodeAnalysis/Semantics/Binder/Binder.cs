@@ -616,7 +616,9 @@ Binder
         protected BoundExpression BindNameEx(NameEx expr, BoundAccess access)
         {
             //handle special wildcard symbol
-            if (expr.Identifier.Text == "_")
+            var identifier = expr.Identifier.Text;
+
+            if (identifier == "_")
             {
                 return new BoundWildcardEx(DeclaringCompilation.CoreTypes.Void.Symbol).WithSyntax(expr);
             }
@@ -630,12 +632,19 @@ Binder
 
             //try to find property
             //TODO: add scan fields 
-            var result = Container.GetMembers(expr.Identifier.Text).OfType<PropertySymbol>().FirstOrDefault();
+            var result = Container.GetMembers(identifier).OfType<PropertySymbol>().FirstOrDefault();
+            if (result != null)
+            {
+                var type = Container as ITypeSymbol;
+                var th = new BoundVariableRef("this", type);
 
-            var type = Container as ITypeSymbol;
-            var th = new BoundVariableRef("this", type);
+                return new BoundPropertyRef(result, th).WithAccess(access);
+            }
 
-            return new BoundPropertyRef(result, th).WithAccess(access);
+            //try to find type name
+            var foundedType = BindType(new NamedTypeRef(expr.Span, SyntaxKind.Type, identifier));
+
+            return new BoundClassTypeRef(QualifiedName.Object, Method, foundedType);
         }
 
         protected BoundExpression BindSimpleVarUse(NameEx expr, BoundAccess access)

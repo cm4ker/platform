@@ -658,19 +658,28 @@ namespace Aquila.Syntax.Parser
         {
             base.VisitEquality_expression(context);
 
-            if (context.relational_expression().Length > 1)
-            {
-                Operations opType;
 
-                if (context.OP_EQ() != null) opType = Operations.Equal;
-                else if (context.OP_NE() != null) opType = Operations.NotEqual;
-                else throw new Exception();
-                Stack.Push(new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression,
-                    opType, Stack.PopExpression(),
-                    Stack.PopExpression()));
-            }
+            CreateBinaryOp(context, context.relational_expression(), i =>
+                (i) switch
+                {
+                    ZSharpLexer.OP_EQ => Operations.Equal,
+                    ZSharpLexer.OP_NE => Operations.NotEqual,
+                    _ => throw new InvalidOperationException("Unknown operator")
+                });
 
-            return null;
+            // if (context.relational_expression().Length > 1)
+            // {
+            //     Operations opType;
+            //
+            //     if (context.OP_EQ() != null) opType = Operations.Equal;
+            //     else if (context.OP_NE() != null) opType = Operations.NotEqual;
+            //     else throw new Exception();
+            //     Stack.Push(new BinaryEx(context.ToLineInfo(), SyntaxKind.BinaryExpression,
+            //         opType, Stack.PopExpression(),
+            //         Stack.PopExpression()));
+            // }
+
+            return Stack.PeekNode();
         }
 
         public override LangElement VisitRelational_expression(ZSharpParser.Relational_expressionContext context)

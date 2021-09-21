@@ -57,12 +57,22 @@ namespace Aquila.Core.Instance
 
         public DatabaseRuntimeContext DatabaseRuntimeContext { get; private set; }
 
+        private void UpdateDBRContext()
+        {
+            DatabaseRuntimeContext = DatabaseRuntimeContext.CreateAndLoad(DataContextManager.GetContext());
+        }
+
+        private byte[] GetCurrentAssembly()
+        {
+            return DatabaseRuntimeContext.GetLastAssembly(DataContextManager.GetContext());
+        }
+
         public void Initialize(IStartupConfig config)
         {
             MigrationRunner.Migrate(config.ConnectionString, config.DatabaseType);
 
             DataContextManager.Initialize(config.DatabaseType, config.ConnectionString);
-            DatabaseRuntimeContext = DatabaseRuntimeContext.CreateAndLoad(DataContextManager.GetContext());
+            UpdateDBRContext();
 
             _logger.Info("Current configuration was loaded. It contains {0} elements",
                 DatabaseRuntimeContext.GetMetadata().Metadata.Count());
@@ -70,13 +80,39 @@ namespace Aquila.Core.Instance
             if (MigrationManager.CheckMigration())
             {
                 MigrationManager.Migrate();
-                DatabaseRuntimeContext = DatabaseRuntimeContext.CreateAndLoad(DataContextManager.GetContext());
+                UpdateDBRContext();
             }
 
-            BLAssembly = Assembly.Load(DatabaseRuntimeContext.GetLastAssembly(DataContextManager.GetContext()));
-            _logger.Info("Assembly was loaded: {0}", BLAssembly.FullName);
+            AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
+            _logger.Info("Auth provider was registered");
 
-            _logger.Info("Start init assembly");
+            LoadAssembly(Assembly.Load(GetCurrentAssembly()));
+
+            _logger.Info("Project '{0}' was loaded.", Name);
+
+            // InvokeService.Register(new Route("test"), (c, a) => (int)a[0] + 1);
+            // InvokeService.RegisterStream(new Route("stream"), (context, stream, arg) =>
+            // {
+            //     using (StreamWriter writer = new StreamWriter(stream))
+            //     {
+            //         writer.WriteLine("dsadsdasdasdasdsadasdsadsd");
+            //     }
+            // });
+
+            Sessions.Add(new SimpleSession(this, new Anonymous()));
+        }
+
+        public void UpdateAssembly(Assembly asm)
+        {
+            LoadAssembly(asm);
+        }
+
+        private void LoadAssembly(Assembly asm)
+        {
+            BLAssembly = asm;
+            _logger.Info("[Assembly] Starting init: {0}", BLAssembly.FullName);
+
+            _logger.Info("[Assembly] Get tasks for runtime initialization");
             var r = BLAssembly.GetRuntimeInit();
 
             foreach (var item in r)
@@ -86,14 +122,14 @@ namespace Aquila.Core.Instance
                     case RuntimeInitKind.TypeId:
                         var desc = DatabaseRuntimeContext.GetEntityDescriptor(item.attr.Parameters[0] as string);
                         ((FieldInfo)item.m).SetValue(null, desc.DatabaseId);
-                        _logger.Info($"Type id = {desc.DatabaseId}");
+                        _logger.Info($"[Assembly] Set type id for {desc.DatabaseName} = {desc.DatabaseId}");
                         break;
                     case RuntimeInitKind.SelectQuery:
                     {
                         var mdFullName = item.attr.Parameters[0] as string;
                         var semantic = DatabaseRuntimeContext.GetMetadata().GetSemantic(x => x.FullName == mdFullName);
                         var query = CRUDQueryGenerator.GetLoad(semantic, DatabaseRuntimeContext);
-                        _logger.Info($"Gen query for {mdFullName}:\n{query}");
+                        _logger.Info($"[Assembly] Generate select query for {mdFullName}:\n{query}");
                         (item.m as FieldInfo).SetValue(null, query);
                         break;
                     }
@@ -102,7 +138,7 @@ namespace Aquila.Core.Instance
                         var mdFullName = item.attr.Parameters[0] as string;
                         var semantic = DatabaseRuntimeContext.GetMetadata().GetSemantic(x => x.FullName == mdFullName);
                         var query = CRUDQueryGenerator.GetSaveUpdate(semantic, DatabaseRuntimeContext);
-                        _logger.Info($"Gen query for {mdFullName}:\n{query}");
+                        _logger.Info($"[Assembly] Generate update query for {mdFullName}:\n{query}");
                         (item.m as FieldInfo).SetValue(null, query);
                         break;
                     }
@@ -111,7 +147,7 @@ namespace Aquila.Core.Instance
                         var mdFullName = item.attr.Parameters[0] as string;
                         var semantic = DatabaseRuntimeContext.GetMetadata().GetSemantic(x => x.FullName == mdFullName);
                         var query = CRUDQueryGenerator.GetSaveInsert(semantic, DatabaseRuntimeContext);
-                        _logger.Info($"Gen query for {mdFullName}:\n{query}");
+                        _logger.Info($"[Assembly] Generate insert query for {mdFullName}:\n{query}");
                         (item.m as FieldInfo).SetValue(null, query);
                         break;
                     }
@@ -119,21 +155,6 @@ namespace Aquila.Core.Instance
                         throw new ArgumentOutOfRangeException();
                 }
             }
-
-
-            AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
-            _logger.Info("Project '{0}' was loaded.", Name);
-
-            InvokeService.Register(new Route("test"), (c, a) => (int)a[0] + 1);
-            InvokeService.RegisterStream(new Route("stream"), (context, stream, arg) =>
-            {
-                using (StreamWriter writer = new StreamWriter(stream))
-                {
-                    writer.WriteLine("dsadsdasdasdasdsadasdsadsd");
-                }
-            });
-
-            Sessions.Add(new SimpleSession(this, new Anonymous()));
         }
 
         private ILogger _logger;
@@ -153,6 +174,7 @@ namespace Aquila.Core.Instance
         public string Name => "Library";
 
         public DataContextManager DataContextManager { get; }
+
         public Assembly BLAssembly { get; private set; }
 
         /// <summary>

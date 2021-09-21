@@ -80,12 +80,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// </summary>
         internal TypeSymbol ResolvedType { get; set; }
 
-        /// <summary>
-        /// Alias to <see cref="ResolvedType"/>.
-        /// </summary>
-        public override ITypeSymbol Type => ResolvedType;
-
-
+    
         partial void AcceptImpl(OperationVisitor visitor)
         {
             visitor.DefaultVisit(this);

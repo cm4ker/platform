@@ -1,8 +1,0 @@
-﻿<!-- use our own building system-->
-<Project Sdk="Aquila.NET.Sdk/1.0.0">
-  <PropertyGroup>
-    <ProjectName>Test</ProjectName>
-    <TargetFramework>net5.0</TargetFramework>
-    <DebuggerAttach>false</DebuggerAttach>
-  </PropertyGroup>
-</Project>

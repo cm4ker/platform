@@ -527,9 +527,6 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             }
         }
 
-        public override ITypeSymbol Type => ResultType;
-
-
         partial void OnCreateImpl(ITypeSymbol symbol)
         {
             Debug.Assert(((TypeSymbol)symbol).IsValidType());

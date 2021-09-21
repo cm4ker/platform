@@ -14,6 +14,7 @@ using Microsoft.CodeAnalysis.Collections;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
+using YamlDotNet.Serialization;
 
 namespace Aquila.CodeAnalysis.CommandLine
 {
@@ -121,26 +122,25 @@ namespace Aquila.CodeAnalysis.CommandLine
             {
                 var mdList = new EntityMetadata[metadataFiles.Length];
 
-                var d = new YamlDotNet.Serialization.DeserializerBuilder()
+                var d = new DeserializerBuilder()
                     .IgnoreUnmatchedProperties()
                     .Build();
 
 
                 if (Arguments.CompilationOptions.ConcurrentBuild)
                 {
-                    Parallel.For(0, sourceFiles.Length,
-                        new Action<int>(i =>
+                    Parallel.For(0, metadataFiles.Length,
+                        i =>
                         {
-                            using TextReader tr = new StreamReader(metadataFiles[i]);
-                            mdList[i] = d.Deserialize<EntityMetadata>(tr);
-                        }));
+                            mdList[i] = ParseMetadataFile(metadataFiles[i], consoleOutput, ref hadErrors, errorLogger,
+                                d);
+                        });
                 }
                 else
                 {
                     for (int i = 0; i < sourceFiles.Length; i++)
                     {
-                        using TextReader tr = new StreamReader(metadataFiles[i]);
-                        mdList[i] = d.Deserialize<EntityMetadata>(tr);
+                        mdList[i] = ParseMetadataFile(metadataFiles[i], consoleOutput, ref hadErrors, errorLogger, d);
                     }
                 }
 
@@ -187,6 +187,30 @@ namespace Aquila.CodeAnalysis.CommandLine
             );
 
             return compilation;
+        }
+
+        private EntityMetadata ParseMetadataFile(string filePath, TextWriter consoleOutput, ref bool hadErrors,
+            ErrorLogger errorLogger, IDeserializer d)
+        {
+            var diagnosticInfos = new List<DiagnosticInfo>();
+
+            try
+            {
+                using TextReader tr = new StreamReader(filePath);
+                return d.Deserialize<EntityMetadata>(tr);
+            }
+            catch (Exception ex)
+            {
+                diagnosticInfos.Add(ToFileReadDiagnostics(MessageProvider, ex, filePath));
+            }
+
+            if (diagnosticInfos.Count != 0)
+            {
+                ReportDiagnostics(diagnosticInfos, consoleOutput, errorLogger);
+                hadErrors = true;
+            }
+
+            return null;
         }
 
         private ParsedSource ParseFile(

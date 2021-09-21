@@ -333,9 +333,10 @@
     <!-- endregion -->
 
     <!-- region TypeRef -->
-    <Syntax Name="TypeRef" IsAbstract="true">
+    <Syntax Name="TypeRef" IsAbstract="true" Base="Expression">
         <Arguments>
-            <Single Name="ResultType" Type="ITypeSymbol" IsInternal="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
         </Arguments>
     </Syntax>
     <Syntax Name="ArrayTypeRef" Base="TypeRef" NS="TypeRef">

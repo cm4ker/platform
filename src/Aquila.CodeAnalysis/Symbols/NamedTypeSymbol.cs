@@ -567,5 +567,27 @@ namespace Aquila.CodeAnalysis.Symbols
         }
 
         #endregion
+
+        #region Helpers
+
+        public MethodSymbol Ctor(params TypeSymbol[] types)
+        {
+            bool MatchesSignature(MethodSymbol m)
+            {
+                var ps = m.Parameters;
+                if (ps.Length != types.Length)
+                    return false;
+
+                for (int i = 0; i < ps.Length; i++)
+                    if (types[i] != ps[i].Type)
+                        return false;
+
+                return true;
+            }
+
+            return InstanceConstructors.FirstOrDefault(MatchesSignature);
+        }
+
+        #endregion
     }
 }

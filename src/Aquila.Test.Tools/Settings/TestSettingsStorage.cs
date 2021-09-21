@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Instance;
 using Aquila.Core.Settings;
 using Aquila.Data;
@@ -27,12 +28,11 @@ namespace Aquila.Core.Test
                     // }
                 }
             },
-            Environments = new List<StartupConfig>()
+            Environments = new List<IStartupConfig>()
             {
                 new StartupConfig()
                 {
-                    ConnectionString =
-                        "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=testdb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
+                    ConnectionString = "Data Source=.;Initial Catalog=TestDb;Integrated Security=true",
                     DatabaseType = SqlDatabaseType.SqlServer
                 }
             }

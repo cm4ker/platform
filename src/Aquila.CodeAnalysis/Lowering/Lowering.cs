@@ -57,7 +57,8 @@ namespace Aquila.CodeAnalysis.Lowering
                 //TODO: more advanced logic for Expr + Expr + Expr + ...etc
                 var transLeft = BoundArgument.Create((BoundExpression)VisitExpression(x.Left));
                 var transRight = BoundArgument.Create((BoundExpression)VisitExpression(x.Right));
-                var args = new ImmutableArray<BoundArgument> { transLeft, transRight };
+
+                var args = new[] { transLeft, transRight }.ToImmutableArray();
                 var typeArgs = ImmutableArray<ITypeSymbol>.Empty;
 
                 return new BoundStaticCallEx(_cm.Operators.Concat_String_String, null, args, typeArgs,

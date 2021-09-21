@@ -89,8 +89,8 @@ namespace Aquila.Syntax.Metadata
             {
                 var dtoType = PopulateDtoType(md);
                 var objectType = PopulateObjectType(md, dtoType);
-                var managerType = PopulateManagerType(md, dtoType, objectType);
                 var linkType = PopulateLinkType(md);
+                var managerType = PopulateManagerType(md, dtoType, objectType, linkType);
             }
         }
 
@@ -434,7 +434,7 @@ namespace Aquila.Syntax.Metadata
         }
 
         private NamedTypeSymbol PopulateManagerType(SMEntity md, NamedTypeSymbol dtoType,
-            NamedTypeSymbol objectType)
+            NamedTypeSymbol objectType, NamedTypeSymbol linkType)
         {
             var managerType =
                 _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{ManagerPostfix}", false));
@@ -536,6 +536,8 @@ namespace Aquila.Syntax.Metadata
             }
             var dbTextProp = _ct.DbCommand.Property("CommandText");
 
+            #region Save()
+
             var saveMethod = _ps.SynthesizeMethod(managerType)
                 .SetName("save")
                 .SetAccess(Accessibility.Public)
@@ -547,7 +549,6 @@ namespace Aquila.Syntax.Metadata
                 var sdpp = new ParamPlace(saveDtoPerameter);
                 var ctx = new ParamPlace(ctxParameter);
 
-                #region Save()
 
                 var paramName = _ct.DbParameter.Property("ParameterName");
                 var paramValue = _ct.DbParameter.Property("Value");
@@ -665,7 +666,7 @@ namespace Aquila.Syntax.Metadata
                     new SpecialParameterSymbol(createMethod, _ct.AqContext, SpecialParameterSymbol.ContextName, 0);
                 var ctxPS = new ParamPlace(ctxParam);
 
-                createMethod.SetName("Create")
+                createMethod.SetName("create")
                     .SetAccess(Accessibility.Public)
                     .SetIsStatic(true)
                     .SetReturn(objectType)
@@ -682,6 +683,38 @@ namespace Aquila.Syntax.Metadata
 
             #endregion
 
+            #region LoadDto
+
+            var getLink = _ps.SynthesizeMethod(managerType);
+
+            getLink.SetName("get_link")
+                .SetAccess(Accessibility.Public)
+                .SetIsStatic(true)
+                ;
+
+            {
+                var idParameter = new SynthesizedParameterSymbol(getLink, _ct.Guid, 1, RefKind.None, "id");
+                var ctxParameter =
+                    new SpecialParameterSymbol(getLink, _ct.AqContext, SpecialParameterSymbol.ContextName, 0);
+                var idP = new ParamPlace(idParameter);
+                var ctx = new ParamPlace(ctxParameter);
+
+                getLink
+                    .SetParameters(ctxParameter, idParameter)
+                    .SetReturn(linkType)
+                    .SetMethodBuilder((m, d) => il =>
+                    {
+                        ctx.EmitLoad(il);
+                        idP.EmitLoad(il);
+
+                        il.EmitCall(m, d, ILOpCode.Newobj, linkType.Ctor(_ct.AqContext, _ct.Guid));
+
+                        il.EmitRet(false);
+                    });
+            }
+
+            #endregion
+
             var loadDtoMethod = _ps.SynthesizeMethod(managerType);
             {
                 var ctxParam =
@@ -690,7 +723,7 @@ namespace Aquila.Syntax.Metadata
                 var ctxPS = new ParamPlace(ctxParam);
 
                 loadDtoMethod
-                    .SetName("LoadDto")
+                    .SetName("load_dto")
                     .SetAccess(Accessibility.Public)
                     .SetIsStatic(true)
                     .SetReturn(dtoType)
@@ -815,7 +848,7 @@ namespace Aquila.Syntax.Metadata
             managerType.AddMember(saveMethod);
             managerType.AddMember(createMethod);
             managerType.AddMember(loadDtoMethod);
-            managerType.AddMember(saveApiMethod);
+            managerType.AddMember(getLink);
 
 
             managerType.AddMember(typeIdField);
@@ -830,12 +863,25 @@ namespace Aquila.Syntax.Metadata
         private NamedTypeSymbol PopulateLinkType(SMEntity md)
         {
             var linkType = _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{LinkPostfix}", false));
+            var managerType = _ps.GetType(QualifiedName.Parse($"{Namespace}.{md.Name}{ManagerPostfix}", true));
+            var dtoType = _ps.GetType(QualifiedName.Parse($"{Namespace}.{md.Name}{DtoPostfix}", true));
+
 
             var idField = _ps.SynthesizeField(linkType)
                 .SetName("id")
                 .SetAccess(Accessibility.Private)
                 .SetType(_ct.Guid);
 
+            var dtoField = _ps.SynthesizeField(linkType)
+                .SetName("_dto")
+                .SetAccess(Accessibility.Private)
+                .SetType(dtoType);
+
+            var ctxField = _ps.SynthesizeField(linkType);
+            ctxField
+                .SetName(SpecialParameterSymbol.ContextName)
+                .SetAccess(Accessibility.Private)
+                .SetType(_ct.AqContext);
 
             var thisPlace = new ArgPlace(linkType, 0);
 
@@ -843,13 +889,19 @@ namespace Aquila.Syntax.Metadata
             var ctor = _ps.SynthesizeConstructor(linkType)
                 .SetAccess(Accessibility.Public);
 
-            var guidParam = new SynthesizedParameterSymbol(ctor, _ct.Guid, 0, RefKind.None);
-            var paramPlace = new ParamPlace(guidParam);
+            var ctxParam = new SynthesizedParameterSymbol(ctor, _ct.AqContext, 0, RefKind.None);
+            var guidParam = new SynthesizedParameterSymbol(ctor, _ct.Guid, 1, RefKind.None);
 
-            var fieldPlace = new FieldPlace(idField);
+            var paramPlace = new ParamPlace(guidParam);
+            var ctxPlace = new ParamPlace(ctxParam);
+
+
+            var idPlace = new FieldPlace(idField);
+            var ctxFieldPlace = new FieldPlace(ctxField);
+            var dtoPlace = new FieldPlace(dtoField);
 
             ctor
-                .SetParameters(guidParam)
+                .SetParameters(ctxParam, guidParam)
                 .SetMethodBuilder((m, d) => il =>
                 {
                     thisPlace.EmitLoad(il);
@@ -857,12 +909,47 @@ namespace Aquila.Syntax.Metadata
 
                     thisPlace.EmitLoad(il);
                     paramPlace.EmitLoad(il);
-                    fieldPlace.EmitStore(il);
+                    idPlace.EmitStore(il);
+
+                    thisPlace.EmitLoad(il);
+                    ctxPlace.EmitLoad(il);
+                    ctxFieldPlace.EmitStore(il);
 
                     il.EmitRet(true);
                 });
 
+
+            #region Reload
+
+            var reload = _ps.SynthesizeMethod(linkType)
+                .SetName("reload")
+                .SetAccess(Accessibility.Public)
+                .SetMethodBuilder((m, d) => il =>
+                {
+                    var loadMethod = managerType.GetMembers("load_dto").OfType<MethodSymbol>().FirstOrDefault();
+
+                    thisPlace.EmitLoad(il);
+
+                    thisPlace.EmitLoad(il);
+                    ctxFieldPlace.EmitLoad(il);
+
+                    thisPlace.EmitLoad(il);
+                    idPlace.EmitLoad(il);
+
+                    il.EmitCall(m, d, ILOpCode.Call, loadMethod)
+                        .Expect(dtoType);
+                    dtoPlace.EmitStore(il);
+
+                    il.EmitRet(true);
+                });
+
+            #endregion
+
             linkType.AddMember(idField);
+            linkType.AddMember(ctxField);
+            linkType.AddMember(dtoField);
+
+            linkType.AddMember(reload);
             linkType.AddMember(ctor);
 
             return linkType;

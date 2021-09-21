@@ -7,9 +7,9 @@ namespace Aquila.Core.Contracts.Instance
     /// </summary>
     public interface IPlatformInstanceManager
     {
-        IInstance GetInstance(string name);
+        IPlatformInstance GetInstance(string name);
 
-        void AddWorkInstance(IStartupConfig config);
+        void AddInstance(IStartupConfig config);
 
         IEnumerable<IPlatformInstance> GetInstances();
     }

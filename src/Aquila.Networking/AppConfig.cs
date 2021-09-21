@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Instance;
 using Aquila.Core.Settings;
 
@@ -12,11 +13,11 @@ namespace Aquila.Core
         public AccessPointConfig AccessPoint { get; set; }
 
         public CacheServiceConfig CacheService { get; set; }
-        public List<StartupConfig> Environments { get; set; }
+        public List<IStartupConfig> Environments { get; set; }
 
         public AppConfig()
         {
-            Environments = new List<StartupConfig>();
+            Environments = new List<IStartupConfig>();
             AccessPoint = new AccessPointConfig();
         }
     }

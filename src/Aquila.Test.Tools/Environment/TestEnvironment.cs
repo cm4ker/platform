@@ -10,6 +10,7 @@ using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
+using Aquila.Core.Instance;
 using Aquila.Logging;
 
 
@@ -42,91 +43,48 @@ namespace Aquila.Core.Test.Environment
     // }
 
 
-    public class TestInstance : IWorkInstance
-    {
-        private IStartupConfig _config;
-
-        private ILogger _logger;
-        //private IAssemblyManager _assemblyManager;
-
-        public IList<ISession> Sessions { get; }
-
-        public IInvokeService InvokeService { get; }
-
-        public IAuthenticationManager AuthenticationManager { get; }
-
-        public string Name => "Library";
-
-        public DataContextManager DataContextManager => throw new NotImplementedException();
-
-        // public IProject Configuration => ConfigurationFactory.Create();
-
-        public TestInstance(IAuthenticationManager authenticationManager, IInvokeService invokeService,
-            ILogger<TestInstance> logger
-        )
-        {
-            Sessions = new RemovingList<ISession>();
-            AuthenticationManager = authenticationManager;
-            AuthenticationManager.RegisterProvider(new AnonymousAuthenticationProvider());
-            InvokeService = invokeService;
-
-
-            _logger = logger;
-        }
-
-        public ISession CreateSession(IUser user)
-        {
-            var session = new SimpleSession(this, user);
-            return session;
-        }
-
-        public void Initialize(IStartupConfig config)
-        {
-            _config = config;
-            _logger.Info("TEST ENVIRONMENT START.");
-
-            // var asms = _assemblyManager.GetAssemblies(Configuration).First(x => x.Type == AssemblyType.Server);
-            //
-            // var bytes = _assemblyManager.GetAssemblyBytes(asms);
-            // var serverAssembly = Assembly.Load(bytes);
-            //
-            // var serviceType = serverAssembly.GetType("EntryPoint") ?? throw new NullReferenceException("Entry point");
-            // var initializerInstance =
-            //     serviceType.GetMethod("Main")?.Invoke(null, new[] { new Object[] { InvokeService, LinkFactory } });
-            //
-            // InvokeService.Register(new Route("test"), (c, a) => { return (int)a[0] + 1; });
-            //
-            // InvokeService.Register(new Route("Test_GetInvoice"),
-            //     (c, a) =>
-            //     {
-            //         return new ViewBag { { "Id", Guid.Parse("8b888935-895d-4806-beaf-0f9e9217ad1b") }, { "Type", 10 } };
-            //     });
-            //
-            // InvokeService.Register(new Route("Test_GetProperty"),
-            //     (c, a) =>
-            //     {
-            //         var typeId = (int)a[0];
-            //         var propName = (string)a[1];
-            //         var id = (Guid)a[2];
-            //
-            //         if (typeId == 10 && propName == "Store" && id == Guid.Parse("8b888935-895d-4806-beaf-0f9e9217ad1b"))
-            //         {
-            //             return new ViewBag
-            //                 { { "Id", Guid.Parse("9de86d2e-1597-4518-b24c-8bfe7f25bf50") }, { "Type", 11 } };
-            //         }
-            //
-            //         return new ViewBag { { "Id", Guid.Empty }, { "Type", 11 } };
-            //     });
-
-            InvokeService.RegisterStream(new Route("stream"), (context, stream, arg) =>
-            {
-                using (StreamWriter writer = new StreamWriter(stream))
-                {
-                    writer.WriteLine("dsadsdasdasdasdsadasdsadsd");
-                }
-            });
-        }
-
-        public ILinkFactory LinkFactory { get; }
-    }
+    // public class TestInstance : IPlatformInstance
+    // {
+    //     private IStartupConfig _config;
+    //
+    //     private ILogger _logger;
+    //     //private IAssemblyManager _assemblyManager;
+    //
+    //     public IList<ISession> Sessions { get; }
+    //
+    //     public IInvokeService InvokeService { get; }
+    //
+    //     public IAuthenticationManager AuthenticationManager { get; }
+    //
+    //     public string Name => "Library";
+    //
+    //     public DataContextManager DataContextManager => throw new NotImplementedException();
+    //
+    //     // public IProject Configuration => ConfigurationFactory.Create();
+    //
+    //     public TestInstance(IAuthenticationManager authenticationManager, IInvokeService invokeService,
+    //         ILogger<TestInstance> logger
+    //     )
+    //     {
+    //         Sessions = new RemovingList<ISession>();
+    //         AuthenticationManager = authenticationManager;
+    //         AuthenticationManager.RegisterProvider(new AnonymousAuthenticationProvider());
+    //         InvokeService = invokeService;
+    //
+    //
+    //         _logger = logger;
+    //     }
+    //
+    //     public ISession CreateSession(IUser user)
+    //     {
+    //         var session = new SimpleSession(this, user);
+    //         return session;
+    //     }
+    //
+    //     public void Initialize(IStartupConfig config)
+    //     {
+    //     }
+    //
+    //     public ILinkFactory LinkFactory { get; }
+    // }
 }

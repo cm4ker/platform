@@ -35,14 +35,17 @@ namespace Aquila.Core.Instance
             Initialize(configStorage.Get<AppConfig>().Environments);
         }
 
-        private void Initialize(List<StartupConfig> list)
+        private void Initialize(List<IStartupConfig> list)
         {
-            list.ForEach(c => environments.Add(CreatePlatformEnvironment<IPlatformInstance>(c)));
+            list.ForEach(AddInstance);
         }
 
-        public void AddWorkInstance(IStartupConfig config)
+        public void AddInstance(IStartupConfig config)
         {
-            environments.Add(CreatePlatformEnvironment<IPlatformInstance>(config));
+            var instance = CreatePlatformEnvironment<IPlatformInstance>(config);
+
+            if (instance != null)
+                environments.Add(instance);
         }
 
         protected IPlatformInstance CreatePlatformEnvironment<T>(IStartupConfig config)
@@ -65,7 +68,7 @@ namespace Aquila.Core.Instance
             return null;
         }
 
-        public IInstance GetInstance(string name)
+        public IPlatformInstance GetInstance(string name)
         {
             return environments.FirstOrDefault(m => m.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }

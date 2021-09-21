@@ -485,7 +485,6 @@ public static int Main()
                 @"
 public static int Main() 
 {
-
     var a = 10;
        
     return match(a)
@@ -494,6 +493,15 @@ public static int Main()
             | 30 => 3
             | 40 => 4
             |  _ => 100;
+
+    return match(a)
+            | int         => 1
+            | InvoiceLink => 2
+            | BookLink    => 3
+            | AuthorLink  => 4
+            | _ => 100;
+
+
 }";
 
             var d = DateTime.Now.Day;

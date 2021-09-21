@@ -54,6 +54,7 @@ namespace Aquila.Metadata
                 SMTypeKind.Reference => "R",
                 SMTypeKind.Decimal => "N",
                 SMTypeKind.Long => "L",
+                SMTypeKind.Unknown => throw new Exception($"Type is unknown: {type.Name}"),
                 _ => throw new NotImplementedException()
             };
             return postfix;

@@ -2026,24 +2026,14 @@ namespace Aquila.CodeAnalysis.Semantics
 
 namespace Aquila.CodeAnalysis.Semantics
 {
-    abstract partial class BoundTypeRef : BoundOperation
+    abstract partial class BoundTypeRef : BoundExpression
     {
-        private ITypeSymbol _resultType;
-        internal BoundTypeRef(ITypeSymbol resultType)
+        internal BoundTypeRef(ITypeSymbol resultType): base(resultType)
         {
-            _resultType = resultType;
             OnCreateImpl(resultType);
         }
 
         partial void OnCreateImpl(ITypeSymbol resultType);
-        internal ITypeSymbol ResultType
-        {
-            get
-            {
-                return _resultType;
-            }
-        }
-
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)

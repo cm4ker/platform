@@ -162,11 +162,11 @@ namespace Aquila.CodeAnalysis.Semantics
         internal override TypeSymbol Emit(CodeGenerator cg)
         {
             var il = cg.Builder;
-            TypeSymbol res = null;
+            TypeSymbol returnedType = null;
 
-            if (Operation != Operations.Equal)
+            if (Operation != Operations.Equal && Operation != Operations.NotEqual)
             {
-                res = cg.Emit(Left);
+                returnedType = cg.Emit(Left);
                 cg.Emit(Right);
             }
 
@@ -184,23 +184,37 @@ namespace Aquila.CodeAnalysis.Semantics
 
                 case Operations.GreaterThan:
                     cg.EmitOpCode(ILOpCode.Cgt);
-                    res = cg.DeclaringCompilation.CoreTypes.Boolean;
+                    returnedType = cg.DeclaringCompilation.CoreTypes.Boolean;
                     break;
                 case Operations.LessThan:
                     cg.EmitOpCode(ILOpCode.Clt);
-                    res = cg.DeclaringCompilation.CoreTypes.Boolean;
+                    returnedType = cg.DeclaringCompilation.CoreTypes.Boolean;
                     break;
 
                 case Operations.Equal:
+                {
                     bool negation = false;
-                    res = EmitEquality(cg, ref negation);
+                    returnedType = EmitEquality(cg, ref negation);
                     Debug.Assert(negation == false);
                     break;
+                }
+                case Operations.NotEqual:
+                {
+                    bool negation = true;
+                    returnedType = EmitEquality(cg, ref negation);
+                    if (negation)
+                    {
+                        cg.EmitLogicNegation();
+                    }
+
+                    break;
+                }
+
                 default: throw new Exception("Op not supported");
             }
 
 
-            return res;
+            return returnedType;
         }
 
         /// <summary>
@@ -735,5 +749,16 @@ namespace Aquila.CodeAnalysis.Semantics
         //     return cg.EmitCall(ILOpCode.Call, (MethodSymbol)Property.GetMethod, this.Instance,
         //         ImmutableArray<BoundArgument>.Empty);
         // }
+    }
+}
+
+namespace Aquila.CodeAnalysis.Semantics.TypeRef
+{
+    public partial class BoundClassTypeRef
+    {
+        internal override TypeSymbol Emit(CodeGenerator cg)
+        {
+            return (TypeSymbol)ResultType;
+        }
     }
 }

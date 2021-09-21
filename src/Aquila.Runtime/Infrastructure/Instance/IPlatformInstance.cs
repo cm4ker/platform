@@ -17,5 +17,7 @@ namespace Aquila.Core.Contracts.Instance
         DatabaseRuntimeContext DatabaseRuntimeContext { get; }
 
         public Assembly BLAssembly { get; }
+
+        void UpdateAssembly(Assembly asm);
     }
 }

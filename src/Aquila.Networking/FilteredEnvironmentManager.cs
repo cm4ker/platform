@@ -25,12 +25,12 @@ namespace Aquila.Core.Network
             _filter = filter;
         }
 
-        public void AddWorkInstance(IStartupConfig config)
+        public void AddInstance(IStartupConfig config)
         {
-            _manager.AddWorkInstance(config);
+            _manager.AddInstance(config);
         }
 
-        public IInstance GetInstance(string name)
+        public IPlatformInstance GetInstance(string name)
         {
             var env = _manager.GetInstance(name);
             if (_filter(env))

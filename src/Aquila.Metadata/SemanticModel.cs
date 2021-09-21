@@ -46,7 +46,7 @@ namespace Aquila.Metadata
 
         internal SMEntity(EntityMetadata md, SMCache cache)
         {
-            _md = md;
+            _md = md ?? throw new NullReferenceException("Unknown metadata");
             _cache = cache;
         }
 

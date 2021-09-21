@@ -18,6 +18,7 @@
     <!--  well known compile items -->
     <ItemGroup>
         <Metadata Include="**/*.md" Exclude="obj/**;bin/**;.*/**"/>
+        <Metadata Include="**/*.yaml" Exclude="obj/**;bin/**;.*/**"/>
         <Compile Include="**/*.aq" Exclude="obj/**;bin/**;.*/**"/>
     </ItemGroup>
 

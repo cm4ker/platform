@@ -44,34 +44,18 @@ namespace Aquila.Core.Test
             services.AddTransient<UserConnectionFactory>();
             services.AddTransient<ServerConnectionFactory>();
             services.AddTransient<IChannelFactory, ChannelFactory>();
-            //services.AddScoped<IAdminToolsClientService, AdminToolsClientService>();
-            //services.AddScoped<IAssemblyManagerClientService, AssemblyManagerClientService>();
-            //services.AddSingleton<IConfigurationManipulator, XCConfManipulator>();
-            //services.AddScoped<IAssemblyManager, TestAsmManager>();
+
             services.AddSingleton<ISettingsStorage, TestSettingsStorage>();
-            //services.AddSingleton<IFileSystem, MemoryFileSystem>();
-            services.AddSingleton<IAssemblyStorage, TestAssemblyStorage>();
-
-            //services.AddScoped<IAssemblyPlatform, DnlibAssemblyPlatform>();
-            //services.AddScoped<IConfigurationManager, ConfigurationManager>();
-            //services.AddScoped<IXCCompiller, XCCompiler>();
-            //services.AddScoped<ILinkFactory, LinkFactory>();
-
-
-            //services.AddSingleton<ITestProxyService, TestProxyService>();
             services.AddSingleton<IPlatformInstanceManager, InstanceManager>();
-
-            //services.AddScoped<ITestEnvironment, TestEnvironment>();
-            //services.AddScoped<IAdminEnvironment, AdminEnvironment>();
-            services.AddScoped<IWorkInstance, TestInstance>();
-
+            services.AddScoped<ILinkFactory, LinkFactory>();
+            services.AddScoped<IPlatformInstance, DatabaseTestInstance>();
+            services.AddScoped<MigrationManager>();
+            
             services.AddSingleton<ICacheService, DictionaryCacheService>();
 
-            //services.AddTransient<IUserMessageHandler, UserMessageHandler>();
             services.AddScoped<IAuthenticationManager, AuthenticationManager>();
-            //services.AddScoped<IDataContextManager, DataContextManager>();
             services.AddScoped<IUserManager, UserManager>();
-
+            services.AddScoped<DataContextManager>();
 
             return services.BuildServiceProvider();
         }

@@ -71,6 +71,11 @@ namespace Aquila.Core.Instance
 
         public Assembly BLAssembly { get; protected set; }
 
+        public void UpdateAssembly(Assembly asm)
+        {
+            throw new NotImplementedException();
+        }
+
         public IInvokeService InvokeService { get; }
 
         public IAuthenticationManager AuthenticationManager { get; }

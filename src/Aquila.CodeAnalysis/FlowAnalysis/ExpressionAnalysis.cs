@@ -580,6 +580,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             {
                 bool isStrict = (cmpExpr.Operation == Operations.Identical ||
                                  cmpExpr.Operation == Operations.NotIdentical);
+                
                 bool isPositive = (cmpExpr.Operation == Operations.Equal || cmpExpr.Operation == Operations.Identical);
 
                 // We cannot say much about the type of $x in the true branch of ($x == null) and the false branch of ($x != null),

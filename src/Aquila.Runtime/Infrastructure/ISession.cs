@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;

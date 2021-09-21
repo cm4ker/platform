@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Aquila.CodeAnalysis\Aquila.CodeAnalysis.csproj" />
+      <ProjectReference Include="..\Aquila.Library\Aquila.Library.csproj" />
+      <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj" />
+    </ItemGroup>
+
+</Project>

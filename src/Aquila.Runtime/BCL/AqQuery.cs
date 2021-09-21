@@ -27,6 +27,7 @@ namespace Aquila.Core
         public AqQuery(AqContext context)
         {
             _context = context;
+            _command = _context.DataContext.CreateCommand();
         }
 
         public string text
