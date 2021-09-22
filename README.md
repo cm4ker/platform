@@ -2,7 +2,7 @@
   <br>
   <img src="./logo.png" alt="Aquila"/>
   <br>
-  🔮⚡️Aquila platform⚡️🔮
+  ⚡️Aquila platform⚡️
   <br>
 </h1>
 

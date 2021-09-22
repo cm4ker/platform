@@ -184,39 +184,39 @@ namespace BufferedDataReaderDotNet.Infrastructure
             return _bufferedResult.Names.IndexOf(name);
         }
 
-        public override bool GetBoolean(int ordinal) => (bool) _values[ordinal];
+        public override bool GetBoolean(int ordinal) => (bool)_values[ordinal];
 
-        public override byte GetByte(int ordinal) => (byte) _values[ordinal];
+        public override byte GetByte(int ordinal) => (byte)_values[ordinal];
 
         public override long GetBytes(int ordinal, long dataOffset, byte[] buffer, int bufferOffset, int length)
         {
             throw new NotImplementedException();
         }
 
-        public override char GetChar(int ordinal) => (char) _values[ordinal];
+        public override char GetChar(int ordinal) => (char)_values[ordinal];
 
         public override long GetChars(int ordinal, long dataOffset, char[] buffer, int bufferOffset, int length)
         {
             throw new NotImplementedException();
         }
 
-        public override Guid GetGuid(int ordinal) => (Guid) _values[ordinal];
+        public override Guid GetGuid(int ordinal) => (Guid)_values[ordinal];
 
-        public override short GetInt16(int ordinal) => (short) _values[ordinal];
+        public override short GetInt16(int ordinal) => (short)_values[ordinal];
 
-        public override int GetInt32(int ordinal) => (int) _values[ordinal];
+        public override int GetInt32(int ordinal) => (int)_values[ordinal];
 
-        public override long GetInt64(int ordinal) => (long) _values[ordinal];
+        public override long GetInt64(int ordinal) => (long)_values[ordinal];
 
-        public override DateTime GetDateTime(int ordinal) => (DateTime) _values[ordinal];
+        public override DateTime GetDateTime(int ordinal) => (DateTime)_values[ordinal];
 
-        public override string GetString(int ordinal) => (string) _values[ordinal];
+        public override string GetString(int ordinal) => (string)_values[ordinal];
 
-        public override decimal GetDecimal(int ordinal) => (decimal) _values[ordinal];
+        public override decimal GetDecimal(int ordinal) => (decimal)_values[ordinal];
 
-        public override double GetDouble(int ordinal) => (double) _values[ordinal];
+        public override double GetDouble(int ordinal) => (double)_values[ordinal];
 
-        public override float GetFloat(int ordinal) => (float) _values[ordinal];
+        public override float GetFloat(int ordinal) => (float)_values[ordinal];
 
         public override string GetDataTypeName(int ordinal) => _bufferedResult.DataTypeNames[ordinal];
 

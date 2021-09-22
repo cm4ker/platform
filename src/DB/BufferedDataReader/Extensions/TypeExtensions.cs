@@ -14,19 +14,21 @@ namespace BufferedDataReaderDotNet.Extensions
         private static readonly IDictionary<Type, Func<BinaryReader, object>> ReadFuncs =
             new Dictionary<Type, Func<BinaryReader, object>>
             {
-                {typeof(byte[]), br => br.ReadBytes()},
-                {typeof(DateTime), br => br.ReadDateTime()},
-                {typeof(Guid), br => br.ReadGuid()},
-                {typeof(TimeSpan), br => br.ReadTimeSpan()}
+                { typeof(byte[]), br => br.ReadBytes() },
+                { typeof(DateTime), br => br.ReadDateTime() },
+                { typeof(Guid), br => br.ReadGuid() },
+                { typeof(int), br => br.ReadInt32() },
+                { typeof(TimeSpan), br => br.ReadTimeSpan() }
             };
 
         private static readonly IDictionary<Type, Action<object, BinaryWriter>> WriteActions =
             new Dictionary<Type, Action<object, BinaryWriter>>
             {
-                {typeof(byte[]), (o, bw) => bw.WriteBytes((byte[]) o)},
-                {typeof(DateTime), (o, bw) => bw.WriteDateTime((DateTime) o)},
-                {typeof(Guid), (o, bw) => bw.WriteGuid((Guid) o)},
-                {typeof(TimeSpan), (o, bw) => bw.WriteTimeSpan((TimeSpan) o)}
+                { typeof(byte[]), (o, bw) => bw.WriteBytes((byte[])o) },
+                { typeof(int), (o, bw) => bw.Write((int)o) },
+                { typeof(DateTime), (o, bw) => bw.WriteDateTime((DateTime)o) },
+                { typeof(Guid), (o, bw) => bw.WriteGuid((Guid)o) },
+                { typeof(TimeSpan), (o, bw) => bw.WriteTimeSpan((TimeSpan)o) }
             };
 
         static TypeExtensions()
@@ -69,7 +71,7 @@ namespace BufferedDataReaderDotNet.Extensions
             var methodInfos = typeof(BinaryWriter)
                 .GetMethods(DefaultBindingFlags)
                 .Where(mi => mi.Name == nameof(BinaryWriter.Write))
-                .Select(mi => new {Parameters = mi.GetParameters(), MethodInfo = mi})
+                .Select(mi => new { Parameters = mi.GetParameters(), MethodInfo = mi })
                 .Where(x => x.Parameters.Length == 1)
                 .ToDictionary(x => x.Parameters[0].ParameterType, x => x.MethodInfo);
 
@@ -105,7 +107,7 @@ namespace BufferedDataReaderDotNet.Extensions
                     // TODO: methodInfo is a misnomer
                     var methodInfo = fieldType.GetMethods(BindingFlags.Public | BindingFlags.Static)
                         .Where(mi => mi.Name == "Parse")
-                        .Select(mi => new {Parameters = mi.GetParameters(), MethodInfo = mi})
+                        .Select(mi => new { Parameters = mi.GetParameters(), MethodInfo = mi })
                         .Where(x => x.Parameters.Length == 1)
                         // If there's any ambiguity we'll prefer Parse(String).
                         .OrderByDescending(x => x.Parameters[0].ParameterType == typeof(string))

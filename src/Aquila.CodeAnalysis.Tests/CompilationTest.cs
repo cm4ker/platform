@@ -494,14 +494,6 @@ public static int Main()
             | 40 => 4
             |  _ => 100;
 
-    return match(a)
-            | int         => 1
-            | InvoiceLink => 2
-            | BookLink    => 3
-            | AuthorLink  => 4
-            | _ => 100;
-
-
 }";
 
             var d = DateTime.Now.Day;

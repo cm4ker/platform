@@ -77,7 +77,7 @@ namespace Aquila.Core
 
             FillParametersCore();
 
-            return new AppCachedAqReader(_command.ExecuteReader(), _logicalTree.Last(), _context);
+            return new AqCachedReader(_command.ExecuteReader(), _logicalTree.Last(), _context);
         }
 
         private void FillParametersCore()

@@ -129,6 +129,8 @@ namespace Aquila.Core.Querying.Model
         {
             return "Unknown";
         }
+
+        public bool IsComplexExprType => GetExpressionType().Count() > 1;
     }
 
     /// <summary>
