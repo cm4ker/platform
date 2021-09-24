@@ -85,8 +85,7 @@ namespace Aquila.Migrations
             }
 
             var drc = DatabaseRuntimeContext.CreateAndLoad(context);
-            drc.Upgrade();
-            drc.Save(context);
+            drc.ApplyPendingChanges(context);
         }
 
         /// <summary>
@@ -99,7 +98,7 @@ namespace Aquila.Migrations
         {
             var context = _dataContextManager.GetContext();
             var drc = DatabaseRuntimeContext.CreateAndLoad(context);
-            return drc.GetPendingMetadata().Metadata.Any();
+            return drc.PendingMetadata.GetMetadata().Metadata.Any();
         }
 
         public void Migrate()

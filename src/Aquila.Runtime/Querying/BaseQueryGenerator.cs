@@ -12,8 +12,8 @@ namespace Aquila.Runtime.Querying
     {
         public static string GetSaveUpdate(SMEntity entity, DatabaseRuntimeContext drc)
         {
-            var e_desc = drc.FindEntityDescriptor(entity.FullName);
-            var id_desc = drc.FindEntityDescriptor(entity.IdProperty.FullName);
+            var e_desc = drc.Descriptors.FindEntityDescriptor(entity.FullName);
+            var id_desc = drc.Descriptors.FindEntityDescriptor(entity.IdProperty.FullName);
 
             var qm = new QueryMachine();
             var paramNum = 0;
@@ -53,7 +53,7 @@ namespace Aquila.Runtime.Querying
 
         public static string GetSaveInsert(SMEntity entity, DatabaseRuntimeContext drc)
         {
-            var e_desc = drc.FindEntityDescriptor(entity.FullName);
+            var e_desc = drc.Descriptors.FindEntityDescriptor(entity.FullName);
             var qm = new QueryMachine();
             var paramNum = 0;
 
@@ -89,8 +89,8 @@ namespace Aquila.Runtime.Querying
 
         public static string GetLoad(SMEntity entity, DatabaseRuntimeContext drc)
         {
-            var e_desc = drc.FindEntityDescriptor(entity.FullName);
-            var id_desc = drc.FindEntityDescriptor(entity.IdProperty.FullName);
+            var e_desc = drc.Descriptors.FindEntityDescriptor(entity.FullName);
+            var id_desc = drc.Descriptors.FindEntityDescriptor(entity.IdProperty.FullName);
 
             var qm = new QueryMachine();
             var paramNum = 0;

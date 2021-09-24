@@ -1,9 +1,12 @@
-﻿namespace Aquila.Core.Assemlies
+﻿using System;
+
+namespace Aquila.Core.Assemlies
 {
-    public enum AssemblyType
+    [Flags]
+    public enum FileType
     {
-        Server = 0,
-        Client = 1,
-        ServerClient = 3,
+        Unknown = 0,
+        Assembly = 1 << 0,
+        MainAssembly = 1 << 1,
     }
 }

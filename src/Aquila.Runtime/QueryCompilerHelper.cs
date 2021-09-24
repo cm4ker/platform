@@ -13,7 +13,7 @@ namespace Aquila.ServerRuntime
         public static (string sql, QQueryList logicalTree) Compile(DatabaseRuntimeContext drc, string sql)
         {
             //need compile sql expression!
-            var _m = new QLang(drc.GetMetadata());
+            var _m = new QLang(drc.Metadata.GetMetadata());
 
 
             AntlrInputStream inputStream = new AntlrInputStream(sql);

@@ -48,7 +48,7 @@ namespace Aquila.Core.Test
             services.AddSingleton<ISettingsStorage, TestSettingsStorage>();
             services.AddSingleton<IPlatformInstanceManager, InstanceManager>();
             services.AddScoped<ILinkFactory, LinkFactory>();
-            services.AddScoped<IPlatformInstance, DatabaseTestInstance>();
+            services.AddScoped<IPlatformInstance, PlatformInstance>();
             services.AddScoped<MigrationManager>();
             
             services.AddSingleton<ICacheService, DictionaryCacheService>();

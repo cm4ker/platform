@@ -5,24 +5,20 @@ using System.Text;
 
 namespace Aquila.Initializer.InternalDatabaseStructureMigrations
 {
-    [Migration(201908041708)]
-    public class AddAssemblyTableMigration : Migration
+    [Migration(202109242113)]
+    public class AddDeploysTableMigration : Migration
     {
         public override void Up()
         {
-            Create.Table("assemblies")
+            Create.Table("deploys")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
-                .WithColumn("assembly_hash").AsString(200).Unique()
-                .WithColumn("configuration_hash").AsString(200)
-                .WithColumn("type").AsInt32()
-                .WithColumn("name").AsString(200)
                 .WithColumn("create_datetime").AsDateTime().WithDefault(SystemMethods.CurrentDateTime)
                 .WithColumn("data").AsCustom("VARBINARY(MAX)");
         }
 
         public override void Down()
         {
-            Delete.Table("assemblies");
+            Delete.Table("deploys");
         }
     }
 }

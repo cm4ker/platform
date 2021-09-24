@@ -302,7 +302,7 @@ namespace Aquila.NET.Sdk.Tools
             // save the arguments as .rsp file for debugging purposes:
             try
             {
-                System.IO.File.WriteAllText(Path.Combine(TempOutputPath, "dotnet-php.rsp"),
+                System.IO.File.WriteAllText(Path.Combine(TempOutputPath, "dotnet-aq.rsp"),
                     string.Join(Environment.NewLine, args));
             }
             catch (Exception ex)

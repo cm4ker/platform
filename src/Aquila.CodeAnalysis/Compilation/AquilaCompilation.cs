@@ -29,9 +29,6 @@ using Microsoft.Cci;
 using Roslyn.Utilities;
 using ExceptionUtilities = Aquila.CodeAnalysis.Utilities.ExceptionUtilities;
 
-// using SourceFieldSymbol = Aquila.CodeAnalysis.Symbols.SourceFieldSymbol;
-// using SourceMethodSymbol = Aquila.CodeAnalysis.Symbols.SourceMethodSymbol;
-
 namespace Aquila.CodeAnalysis
 {
     public sealed partial class AquilaCompilation : Compilation
@@ -1105,7 +1102,7 @@ namespace Aquila.CodeAnalysis
         {
             var corAssembly = SourceAssembly.CorLibrary as PEAssemblySymbol;
 
-            if ((object)corAssembly != null)
+            if ((object)corAssembly != null) 
             {
                 return corAssembly.Assembly.ManifestModule.MetadataVersion;
             }
@@ -1141,30 +1138,7 @@ namespace Aquila.CodeAnalysis
             return new ResourceDescription(".source.metadata.resources", () =>
             {
                 var table = this.SourceSymbolCollection;
-                // var symbols =
-                //     // global functions
-                //     table.GetFunctions().OfType<SourceMethodSymbol>();
-                // // classes, interfaces, traits
-                // .Concat<Aquila.CodeAnalysis.Symbols.Symbol>(table.GetDeclaredTypes())
-                // // type members - properties, constants
-                // .Concat<Aquila.CodeAnalysis.Symbols.Symbol>(table.GetDeclaredTypes().SelectMany(t =>
-                //     t.GetMembers().Where(m => m is SourceMethodSymbol || m is SourceFieldSymbol)));
-
                 var resources = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-                // foreach (var symbol in symbols)
-                // {
-                //     var metadata = symbol.GetSymbolMetadataResource();
-                //     if (!string.IsNullOrEmpty(metadata))
-                //     {
-                //         var id = //symbol is SourceTypeSymbol type
-                //             //? type.GetFullName()
-                //             //: 
-                //             symbol.ContainingType.GetFullName() + "." + symbol.MetadataName;
-                //
-                //         resources[id] = metadata;
-                //     }
-                // }
 
                 var stream = new MemoryStream();
                 var writer = new System.Resources.ResourceWriter(stream);

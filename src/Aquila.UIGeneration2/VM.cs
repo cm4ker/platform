@@ -25,7 +25,7 @@ namespace Aquila.UIBuilder
             _connectionString = TestMetadata.DefaultConnetionString;
             _dcContext = new DataConnectionContext(SqlDatabaseType.SqlServer, _connectionString);
             _drContext = new DatabaseRuntimeContext();
-            _drContext.Load(_dcContext);
+            _drContext.LoadAll(_dcContext);
         }
 
         public string Input

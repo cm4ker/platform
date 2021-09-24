@@ -7,11 +7,11 @@ namespace Aquila.Test.Tools.Assemblies
 {
     public class TestAssemblyStorage 
     {
-        private Dictionary<AssemblyDescriptor, byte[]> _assemblies;
+        private Dictionary<FileDescriptor, byte[]> _assemblies;
 
         public TestAssemblyStorage()
         {
-            _assemblies = new Dictionary<AssemblyDescriptor, byte[]>();
+            _assemblies = new Dictionary<FileDescriptor, byte[]>();
         }
 
         public void Clear()
@@ -19,12 +19,12 @@ namespace Aquila.Test.Tools.Assemblies
             throw new NotImplementedException();
         }
 
-        public IEnumerable<AssemblyDescriptor> GetAssemblies(string configurationHash)
+        public IEnumerable<FileDescriptor> GetAssemblies(string configurationHash)
         {
             return _assemblies.Where(p => p.Key.ConfigurationHash == configurationHash).Select(p => p.Key);
         }
 
-        public byte[] GetAssembly(AssemblyDescriptor descriptor)
+        public byte[] GetAssembly(FileDescriptor descriptor)
         {
             return _assemblies.First(p => p.Key.AssemblyHash.Equals(descriptor.AssemblyHash)).Value;
         }
@@ -35,7 +35,7 @@ namespace Aquila.Test.Tools.Assemblies
                 .Value;
         }
 
-        public void SaveAssembly(AssemblyDescriptor descriptor, byte[] blob)
+        public void SaveAssembly(FileDescriptor descriptor, byte[] blob)
         {
             _assemblies.Add(descriptor, blob);
         }

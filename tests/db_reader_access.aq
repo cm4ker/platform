@@ -24,7 +24,6 @@ public static int Main()
     if(r.read())
     {
         var id = r["ComplexProperty"];
-
         return 1;
     }
 

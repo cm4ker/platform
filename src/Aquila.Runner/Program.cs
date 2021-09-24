@@ -88,7 +88,7 @@ namespace Aquila.Runner
 
                     //services.AddScoped<ITestEnvironment, TestEnvironment>();
                     services.AddScoped<IAdminInstance, AdminInstance>();
-                    services.AddScoped<IPlatformInstance, DatabaseTestInstance>();
+                    services.AddScoped<IPlatformInstance, PlatformInstance>();
 
                     services.AddSingleton<ICacheService, DictionaryCacheService>();
 
@@ -97,8 +97,8 @@ namespace Aquila.Runner
                     services.AddScoped<DataContextManager>();
                     services.AddScoped<IUserManager, UserManager>();
 
-                    services.AddSingleton<IHostedService, RunnerService>();
-                    services.AddSingleton<IWebHost, RunnerWebService>();
+                    services.AddSingleton<IHostedService, PlatformService>();
+                    services.AddSingleton<IWebHost, PlatformWebService>();
                 });
 
             await builder.RunConsoleAsync();

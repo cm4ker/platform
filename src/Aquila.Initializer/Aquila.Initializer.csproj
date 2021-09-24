@@ -3,13 +3,13 @@
         <OutputType>Library</OutputType>
     </PropertyGroup>
 
-    <Import Project="..\Props\target.props"/>
+    <Import Project="..\Props\target.props" />
 
     <ItemGroup>
-        <PackageReference Include="FluentMigrator" Version="3.2.16"/>
-        <PackageReference Include="FluentMigrator.Runner" Version="3.2.16"/>
+        <PackageReference Include="FluentMigrator" Version="3.2.16" />
+        <PackageReference Include="FluentMigrator.Runner" Version="3.2.16" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj"/>
+        <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj" />
     </ItemGroup>
 </Project>

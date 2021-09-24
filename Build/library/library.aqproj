@@ -3,6 +3,6 @@
   <PropertyGroup>
     <ProjectName>Library</ProjectName>
     <TargetFramework>net5.0</TargetFramework>
-    <DebuggerAttach>false</DebuggerAttach>
+    <DebuggerAttach>true</DebuggerAttach>
   </PropertyGroup>
 </Project>

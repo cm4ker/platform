@@ -99,167 +99,168 @@ namespace Aquila.Data
         {
             return _bufferedReader.Read();
         }
-    }
 
 
-    public class ComplexColumnReader : IColumnReader
-    {
-        private readonly AqContext _context;
-        private readonly QField _column;
-
-        private Dictionary<int, Type> _runtimeTypes = new Dictionary<int, Type>();
-
-        public ComplexColumnReader(AqContext context, QField column)
+        private class ComplexColumnReader : IColumnReader
         {
-            _context = context;
-            _column = column;
+            private readonly AqContext _context;
+            private readonly QField _column;
 
-            Init();
-        }
+            private Dictionary<int, Type> _runtimeTypes = new Dictionary<int, Type>();
 
-        private void Init()
-        {
-            var types = _column.GetExpressionType().GetOrderedFlattenTypes();
-            foreach (var type in types)
+            public ComplexColumnReader(AqContext context, QField column)
             {
-                var colName = _column.GetDbName() + type.postfix;
+                _context = context;
+                _column = column;
 
-                if (type.isType)
+                Init();
+            }
+
+            private void Init()
+            {
+                var types = _column.GetExpressionType().GetOrderedFlattenTypes();
+                foreach (var type in types)
                 {
-                    _typeCol = colName;
-                    continue;
+                    var colName = _column.GetDbName() + type.postfix;
+
+                    if (type.isType)
+                    {
+                        _typeCol = colName;
+                        continue;
+                    }
+
+                    switch (type.type.Kind)
+                    {
+                        case SMTypeKind.Unknown:
+                            throw new Exception("Unknown type");
+                            break;
+                        case SMTypeKind.String:
+                            _stringCol = colName;
+                            break;
+                        case SMTypeKind.Int:
+                            _intCol = colName;
+                            break;
+                        case SMTypeKind.Long:
+                            break;
+                        case SMTypeKind.Bool:
+                            _boolCol = colName;
+                            break;
+                        case SMTypeKind.Double:
+                            break;
+                        case SMTypeKind.Decimal:
+                            break;
+                        case SMTypeKind.DateTime:
+                            _dateTimeCol = colName;
+                            break;
+                        case SMTypeKind.Numeric:
+                            break;
+                        case SMTypeKind.Binary:
+                            break;
+                        case SMTypeKind.Guid:
+                            break;
+                        case SMTypeKind.Reference:
+                            if (string.IsNullOrEmpty(_refCol))
+                                _refCol = colName;
+
+                            var runtimeType =
+                                _context.Session.Instance.BLAssembly.GetType(type.type.GetSemantic().ReferenceName);
+                            var descriptor =
+                                _context.DataRuntimeContext.Descriptors.GetEntityDescriptor(type.type.GetSemantic().FullName);
+                            _runtimeTypes.Add(descriptor.DatabaseId, runtimeType);
+
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
                 }
+            }
 
-                switch (type.type.Kind)
+            private string _typeCol;
+            private string _refCol;
+            private string _intCol;
+            private string _boolCol;
+            private string _stringCol;
+            private string _dateTimeCol;
+
+            public string ColumnName => _column.GetName();
+
+            public object ReadValue(BufferedDataReader dataReader)
+            {
+                var typeId = (int)dataReader[_typeCol];
+
+                if (typeId >= (int)SMTypeKind.Reference)
                 {
-                    case SMTypeKind.Unknown:
-                        throw new Exception("Unknown type");
-                        break;
-                    case SMTypeKind.String:
-                        _stringCol = colName;
-                        break;
-                    case SMTypeKind.Int:
-                        _intCol = colName;
-                        break;
-                    case SMTypeKind.Long:
-                        break;
-                    case SMTypeKind.Bool:
-                        _boolCol = colName;
-                        break;
-                    case SMTypeKind.Double:
-                        break;
-                    case SMTypeKind.Decimal:
-                        break;
-                    case SMTypeKind.DateTime:
-                        _dateTimeCol = colName;
-                        break;
-                    case SMTypeKind.Numeric:
-                        break;
-                    case SMTypeKind.Binary:
-                        break;
-                    case SMTypeKind.Guid:
-                        break;
-                    case SMTypeKind.Reference:
-                        if (string.IsNullOrEmpty(_refCol))
-                            _refCol = colName;
-
-                        var runtimeType =
-                            _context.Session.Instance.BLAssembly.GetType(type.type.GetSemantic().ReferenceName);
-                        var descriptor =
-                            _context.DataRuntimeContext.GetEntityDescriptor(type.type.GetSemantic().FullName);
-                        _runtimeTypes.Add(descriptor.DatabaseId, runtimeType);
-
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    var runtimeType = _runtimeTypes[typeId];
+                    return Activator.CreateInstance(runtimeType, _context, (Guid)dataReader[_refCol]);
+                }
+                else
+                {
+                    var prType = (SMTypeKind)typeId;
+                    return prType switch
+                    {
+                        SMTypeKind.String => dataReader[_stringCol],
+                        SMTypeKind.Int => dataReader[_intCol],
+                        SMTypeKind.Long => dataReader[_stringCol],
+                        SMTypeKind.Bool => dataReader[_boolCol],
+                        SMTypeKind.Double => dataReader[_stringCol],
+                        SMTypeKind.Decimal => dataReader[_stringCol],
+                        SMTypeKind.DateTime => dataReader[_dateTimeCol],
+                        SMTypeKind.Numeric => dataReader[_stringCol],
+                        SMTypeKind.Binary => dataReader[_stringCol],
+                        SMTypeKind.Guid => dataReader[_stringCol],
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
                 }
             }
         }
 
-        private string _typeCol;
-        private string _refCol;
-        private string _intCol;
-        private string _boolCol;
-        private string _stringCol;
-        private string _dateTimeCol;
-
-        public string ColumnName => _column.GetName();
-
-        public object ReadValue(BufferedDataReader dataReader)
+        private class SimpleColumnReader : IColumnReader
         {
-            var typeId = (int)dataReader[_typeCol];
+            private readonly AqContext _context;
+            private readonly QField _column;
 
-            if (typeId >= (int)SMTypeKind.Reference)
+            public SimpleColumnReader(AqContext context, QField column)
             {
-                var runtimeType = _runtimeTypes[typeId];
-                return Activator.CreateInstance(runtimeType, _context, (Guid)dataReader[_refCol]);
+                _context = context;
+                _column = column;
+
+                Init();
             }
-            else
+
+            private string _colName;
+            private int _typeId;
+            private bool _isReference;
+            private Type _runtimeType;
+
+            private void Init()
             {
-                var prType = (SMTypeKind)typeId;
-                return prType switch
+                _colName = _column.GetDbName();
+                var colType = _column.GetExpressionType().FirstOrDefault() ??
+                              throw new Exception("Result type is empty");
+                if (colType.IsReference)
                 {
-                    SMTypeKind.String => dataReader[_stringCol],
-                    SMTypeKind.Int => dataReader[_intCol],
-                    SMTypeKind.Long => dataReader[_stringCol],
-                    SMTypeKind.Bool => dataReader[_boolCol],
-                    SMTypeKind.Double => dataReader[_stringCol],
-                    SMTypeKind.Decimal => dataReader[_stringCol],
-                    SMTypeKind.DateTime => dataReader[_dateTimeCol],
-                    SMTypeKind.Numeric => dataReader[_stringCol],
-                    SMTypeKind.Binary => dataReader[_stringCol],
-                    SMTypeKind.Guid => dataReader[_stringCol],
-                    _ => throw new ArgumentOutOfRangeException()
-                };
+                    _runtimeType = _context.Session.Instance.BLAssembly.GetType(colType.GetSemantic().ReferenceName);
+                }
+                else
+                {
+                }
             }
-        }
-    }
 
-    public class SimpleColumnReader : IColumnReader
-    {
-        private readonly AqContext _context;
-        private readonly QField _column;
+            public string ColumnName => _column.GetName();
 
-        public SimpleColumnReader(AqContext context, QField column)
-        {
-            _context = context;
-            _column = column;
-
-            Init();
-        }
-
-        private string _colName;
-        private int _typeId;
-        private bool _isReference;
-        private Type _runtimeType;
-
-        private void Init()
-        {
-            _colName = _column.GetDbName();
-            var colType = _column.GetExpressionType().FirstOrDefault() ?? throw new Exception("Result type is empty");
-            if (colType.IsReference)
+            public object ReadValue(BufferedDataReader dataReader)
             {
-                _runtimeType = _context.Session.Instance.BLAssembly.GetType(colType.GetSemantic().ReferenceName);
-            }
-            else
-            {
+                if (_isReference)
+                    return Activator.CreateInstance(_runtimeType, _context, (Guid)dataReader[_colName]);
+
+                return dataReader[_colName];
             }
         }
 
-        public string ColumnName => _column.GetName();
-
-        public object ReadValue(BufferedDataReader dataReader)
+        private interface IColumnReader
         {
-            if (_isReference)
-                return Activator.CreateInstance(_runtimeType, _context, (Guid)dataReader[_colName]);
-
-            return dataReader[_colName];
+            string ColumnName { get; }
+            object ReadValue(BufferedDataReader dataReader);
         }
-    }
-
-    public interface IColumnReader
-    {
-        string ColumnName { get; }
-        object ReadValue(BufferedDataReader dataReader);
     }
 }

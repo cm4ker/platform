@@ -1,10 +1,11 @@
-﻿namespace Aquila.Core.Assemlies
+﻿using System;
+
+namespace Aquila.Core.Assemlies
 {
-    public class AssemblyDescriptor
+    public class FileDescriptor
     {
-        public string AssemblyHash;
-        public string ConfigurationHash;
         public string Name;
-        public AssemblyType Type;
+        public DateTime CreateDateTime;
+        public FileType Type;
     }
 }

@@ -21,28 +21,27 @@ namespace Aquila.Runtime.Tests.DB
             MigrationRunner.Migrate(cs, SqlDatabaseType.SqlServer);
 
             DatabaseRuntimeContext db = new DatabaseRuntimeContext();
-            DataConnectionContext dc = new DataConnectionContext(SqlDatabaseType.SqlServer, cs, IsolationLevel.ReadCommitted);
+            DataConnectionContext dc =
+                new DataConnectionContext(SqlDatabaseType.SqlServer, cs, IsolationLevel.ReadCommitted);
 
-            var d1 = db.CreateDescriptor(dc);
-            var d2 = db.CreateDescriptor(dc);
+            var d1 = db.Descriptors.CreateDescriptor(dc);
+            var d2 = db.Descriptors.CreateDescriptor(dc);
 
-            db.SaveAssembly(dc,
-                new AssemblyDescriptor
+            db.Files.SaveAssembly(dc,
+                new FileDescriptor
                 {
                     Name = "AssemblyName",
-                    Type = AssemblyType.Server,
-                    AssemblyHash = "AsmHash",
-                    ConfigurationHash = "Hash"
+                    Type = FileType.MainAssembly,
                 }, File.ReadAllBytes("C:\\test\\test_aq.dll"));
 
-            Assert.NotEmpty(db.GetEntityDescriptors());
+            Assert.NotEmpty(db.Descriptors.GetEntityDescriptors());
 
             d1.DatabaseName = "some_name";
             d2.DatabaseName = $"Tbl_{d2.DatabaseId}";
             d2.MetadataId = "test";
 
-            db.SetPendingMetadata(TestMetadata.GetTestMetadata());
-            db.Save(dc);
+            db.PendingMetadata.SetMetadata(TestMetadata.GetTestMetadata());
+            db.SaveAll(dc);
 
             //NOTE: First 0x100 type ids are reserved 
             Assert.Equal(257, d1.DatabaseId);
@@ -50,8 +49,7 @@ namespace Aquila.Runtime.Tests.DB
 
             DatabaseRuntimeContext db2 = new DatabaseRuntimeContext();
 
-            db2.Load(dc);
-            
+            db2.LoadAll(dc);
         }
     }
 }

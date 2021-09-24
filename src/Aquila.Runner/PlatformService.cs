@@ -13,18 +13,17 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace Aquila.Runner
 {
-    class RunnerService : IHostedService, IDisposable
+    class PlatformService : IHostedService, IDisposable
     {
-        private readonly ILogger<RunnerService> _logger;
+        private readonly ILogger<PlatformService> _logger;
         private readonly IServiceProvider _serviceProvider;
         private IAccessPoint _accessPoint;
 
-        public RunnerService(IServiceProvider serviceProvider)
+        public PlatformService(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _logger = _serviceProvider.GetRequiredService<ILogger<RunnerService>>();
+            _logger = _serviceProvider.GetRequiredService<ILogger<PlatformService>>();
         }
-
 
         public void Dispose()
         {
@@ -38,7 +37,7 @@ namespace Aquila.Runner
             var envManager = _serviceProvider.GetRequiredService<IPlatformInstanceManager>();
             var webHost = _serviceProvider.GetRequiredService<IWebHost>();
 
-            
+
             _accessPoint.Start();
             webHost.StartAsync(cancellationToken);
 

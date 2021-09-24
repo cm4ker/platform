@@ -35,7 +35,7 @@ namespace Aquila.Core.Instance
             Initialize(configStorage.Get<AppConfig>().Environments);
         }
 
-        private void Initialize(List<IStartupConfig> list)
+        private void Initialize(List<StartupConfig> list)
         {
             list.ForEach(AddInstance);
         }

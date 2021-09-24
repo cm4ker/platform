@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis.Symbols;
 using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
@@ -13,6 +17,16 @@ using SourceFieldSymbol = Aquila.CodeAnalysis.Symbols.SourceFieldSymbol;
 
 namespace Aquila.CodeAnalysis.DocumentationComments
 {
+    public class AquilaProjectManifest
+    {
+        public string ProjectName { get; set; }
+
+        public string RuntimeVersion { get; set; }
+
+        public List<string> References { get; set; } = new List<string>();
+    }
+
+
     internal class DocumentationCommentCompiler
     {
         internal static void WriteDocumentationCommentXml(AquilaCompilation compilation, string assemblyName,
@@ -84,22 +98,17 @@ namespace Aquila.CodeAnalysis.DocumentationComments
 
         DocumentationCommentCompiler WriteCompilation(AquilaCompilation compilation, string assemblyName)
         {
-            _writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            _writer.WriteLine("<doc>");
-            _writer.WriteLine("<assembly><name>{0}</name></assembly>", assemblyName);
-            _writer.WriteLine("<members>");
+            //Aquila uses document writer for the manifest
 
-            // TODO: implement Symbol.GetDocumentationCommentId
-            // TODO: implement Symbol.GetDocumentationCommentXml
+            var manifest = new AquilaProjectManifest()
+            {
+                ProjectName = assemblyName,
+                RuntimeVersion = compilation.AquilaCorLibrary.Identity.Version.ToString()
+            };
 
-            var tables = compilation.SourceSymbolCollection;
-            //tables.GetFiles().ForEach(WriteFile);
-            //tables.GetTypes().ForEach(WriteType);
-            // tables.AllMethods.ForEach(WriteMethod);
+            XmlSerializer s = new XmlSerializer(typeof(AquilaProjectManifest));
 
-            _writer.WriteLine("</members>");
-            _writer.WriteLine("</doc>");
-
+            s.Serialize(_writer, manifest);
 
             //
             return this;

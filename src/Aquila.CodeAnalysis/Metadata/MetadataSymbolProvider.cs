@@ -280,13 +280,38 @@ namespace Aquila.Syntax.Metadata
                                 var lbl = new NamedLabel("<return>");
                                 il.EmitBranch(ILOpCode.Bne_un_s, lbl);
 
-                                thisPlace.EmitLoad(il);
-                                dtoFieldPlace.EmitLoad(il);
+                                if (type.type.IsReference)
+                                {
+                                    var linkType = _ps.GetType(QualifiedName.Parse(
+                                        $"{Namespace}.{type.type.GetSemantic().Name}{LinkPostfix}", true));
 
-                                //TODO: Here we need create link (or get it from the cache)
-                                il.EmitCall(m, d, ILOpCode.Call, dtoMember.GetMethod);
-                                il.EmitOpCode(ILOpCode.Box);
-                                il.EmitSymbolToken(m, d, dtoMember.GetMethod.ReturnType, null);
+                                    var linkCtor = linkType.Ctor(_ct.AqContext, _ct.Guid);
+
+                                    thisPlace.EmitLoad(il);
+                                    ctxFieldPlace.EmitLoad(il);
+
+                                    thisPlace.EmitLoad(il);
+                                    dtoFieldPlace.EmitLoad(il);
+
+                                    //TODO: Here we need create link (or get it from the cache)
+                                    il.EmitCall(m, d, ILOpCode.Call, dtoMember.GetMethod);
+
+                                    il.EmitCall(m, d, ILOpCode.Newobj, linkCtor);
+                                    il.EmitOpCode(ILOpCode.Box);
+                                    il.EmitSymbolToken(m, d, linkType, null);
+                                }
+                                else
+                                {
+                                    thisPlace.EmitLoad(il);
+                                    dtoFieldPlace.EmitLoad(il);
+
+                                    //TODO: Here we need create link (or get it from the cache)
+                                    il.EmitCall(m, d, ILOpCode.Call, dtoMember.GetMethod);
+
+                                    il.EmitOpCode(ILOpCode.Box);
+                                    il.EmitSymbolToken(m, d, dtoMember.GetMethod.ReturnType, null);
+                                }
+                                
                                 il.EmitRet(false);
                                 il.MarkLabel(lbl);
                             }
@@ -1023,6 +1048,189 @@ namespace Aquila.Syntax.Metadata
                 });
 
             #endregion
+
+
+            #region Props
+
+            foreach (var prop in md.Properties)
+            {
+                var isComplexType = prop.Types.Count() > 1;
+
+                var getter = _ps.SynthesizeMethod(linkType);
+                var property = _ps.SynthesizeProperty(linkType);
+
+                var propType = (isComplexType)
+                    ? _ct.Object
+                    : MetadataTypeProvider.Resolve(_declaredCompilation, prop.Types.First());
+
+                getter.SetAccess(Accessibility.Public)
+                    .SetName($"get_{prop.Name}")
+                    .SetReturn(propType);
+
+
+                property.SetType(propType)
+                    .SetGetMethod(getter)
+                    .SetName(prop.Name);
+
+
+                if (isComplexType)
+                {
+                    getter.SetMethodBuilder((m, d) =>
+                    {
+                        return (il) =>
+                        {
+                            var types = prop.Types.GetOrderedFlattenTypes().OrderBy(x => x.type.Kind)
+                                .ToImmutableArray();
+
+                            foreach (var type in types)
+                            {
+                                if (type.isType)
+                                    continue;
+
+                                var underlyingPropType = MetadataTypeProvider.Resolve(_declaredCompilation, type.type);
+
+                                var dtoMemberName = $"{prop.Name}{type.postfix}";
+                                var dtoTypeMemberName = prop.Name + types.FirstOrDefault(x => x.isType).postfix;
+
+                                var dtoMember = dtoType.GetMembers(dtoMemberName).OfType<PropertySymbol>().First();
+                                var dtoTypeMember = dtoType.GetMembers(dtoTypeMemberName).OfType<PropertySymbol>()
+                                    .First();
+
+                                var reloadLabel = new NamedLabel("<reload>");
+
+                                thisPlace.EmitLoad(il);
+                                dtoPlace.EmitLoad(il);
+                                il.EmitBranch(ILOpCode.Brtrue_s, reloadLabel);
+                                thisPlace.EmitLoad(il);
+                                il.EmitCall(m, d, ILOpCode.Call, reload);
+
+                                il.MarkLabel(reloadLabel);
+
+                                thisPlace.EmitLoad(il);
+                                dtoPlace.EmitLoad(il);
+                                il.EmitCall(m, d, ILOpCode.Call, dtoTypeMember.GetMethod);
+
+                                if (type.type.IsPrimitive)
+                                {
+                                    il.EmitIntConstant((int)type.type.Kind);
+                                }
+                                else
+                                {
+                                    var managerType =
+                                        _ps.GetType(QualifiedName.Parse(
+                                            $"{Namespace}.{type.type.GetSemantic().Name}{ManagerPostfix}",
+                                            true));
+                                    var typeIDField = managerType.GetMembers("TypeId").OfType<FieldSymbol>()
+                                        .FirstOrDefault();
+                                    var fieldPlace = new FieldPlace(typeIDField, m);
+                                    fieldPlace.EmitLoad(il);
+                                }
+
+                                var lbl = new NamedLabel("<return>");
+                                il.EmitBranch(ILOpCode.Bne_un_s, lbl);
+
+                                if (type.type.IsReference)
+                                {
+                                    var linkType = _ps.GetType(QualifiedName.Parse(
+                                        $"{Namespace}.{type.type.GetSemantic().Name}{LinkPostfix}", true));
+
+                                    var linkCtor = linkType.Ctor(_ct.AqContext, _ct.Guid);
+
+                                    thisPlace.EmitLoad(il);
+                                    ctxFieldPlace.EmitLoad(il);
+
+                                    thisPlace.EmitLoad(il);
+                                    dtoPlace.EmitLoad(il);
+
+                                    //TODO: Here we need create link (or get it from the cache)
+                                    il.EmitCall(m, d, ILOpCode.Call, dtoMember.GetMethod);
+
+                                    il.EmitCall(m, d, ILOpCode.Newobj, linkCtor);
+                                    il.EmitOpCode(ILOpCode.Box);
+                                    il.EmitSymbolToken(m, d, linkType, null);
+                                }
+                                else
+                                {
+                                    thisPlace.EmitLoad(il);
+                                    dtoPlace.EmitLoad(il);
+
+                                    //TODO: Here we need create link (or get it from the cache)
+                                    il.EmitCall(m, d, ILOpCode.Call, dtoMember.GetMethod);
+
+                                    il.EmitOpCode(ILOpCode.Box);
+                                    il.EmitSymbolToken(m, d, dtoMember.GetMethod.ReturnType, null);
+                                }
+
+                                il.EmitRet(false);
+                                il.MarkLabel(lbl);
+                            }
+
+                            il.EmitCall(m, d, ILOpCode.Newobj, _ct.Exception.Ctor());
+                            il.EmitThrow(false);
+                        };
+                    });
+                }
+                else
+                {
+                    var dtoProperty = dtoType.GetMembers(prop.Name).OfType<PropertySymbol>().First();
+
+
+                    getter.SetMethodBuilder((m, d) =>
+                    {
+                        return (il) =>
+                        {
+                            var reloadLabel = new NamedLabel("<reload>");
+
+                            thisPlace.EmitLoad(il);
+                            dtoPlace.EmitLoad(il);
+                            il.EmitBranch(ILOpCode.Brtrue_s, reloadLabel);
+                            thisPlace.EmitLoad(il);
+                            il.EmitCall(m, d, ILOpCode.Call, reload);
+
+                            il.MarkLabel(reloadLabel);
+                            
+                            thisPlace.EmitLoad(il);
+                            dtoPlace.EmitLoad(il);
+                            il.EmitCall(m, d, ILOpCode.Call, dtoProperty.GetMethod);
+                            il.EmitRet(false);
+                        };
+                    });
+                }
+
+                linkType.AddMember(getter);
+                linkType.AddMember(property);
+            }
+
+            // var linkGetMethod = _ps.SynthesizeMethod(linkType)
+            //     .SetName($"get_link")
+            //     .SetReturn(linkType)
+            //     .SetMethodBuilder((m, d) => il =>
+            //     {
+            //         var dtoIdProp = dtoType.GetMembers("Id").OfType<PropertySymbol>().First();
+            //         var dtoPropPlace = new PropertyPlace(dtoFieldPlace, dtoIdProp);
+            //
+            //
+            //         thisPlace.EmitLoad(il);
+            //         ctxFieldPlace.EmitLoad(il);
+            //
+            //         thisPlace.EmitLoad(il);
+            //         //dtoFieldPlace.EmitLoad(il);
+            //
+            //         dtoPropPlace.EmitLoad(il);
+            //
+            //         il.EmitCall(m, d, ILOpCode.Newobj, linkType.Ctor(_ct.AqContext, _ct.Guid));
+            //
+            //         il.EmitRet(false);
+            //     });
+            //
+            // var linkProperty = _ps.SynthesizeProperty(objectType);
+            // linkProperty
+            //     .SetName("link")
+            //     .SetType(linkType)
+            //     .SetGetMethod(linkGetMethod);
+
+            #endregion
+
 
             linkType.AddMember(idField);
             linkType.AddMember(ctxField);

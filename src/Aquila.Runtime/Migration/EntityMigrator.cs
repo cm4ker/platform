@@ -31,14 +31,14 @@ namespace Aquila.Migrations
         private string GetDbName(SMEntity md, EntityMigratorDataContext context)
         {
             var mdId = md.FullName;
-            var descriptor = context.RuntimeContext.FindEntityDescriptor(mdId);
+            var descriptor = context.RuntimeContext.Descriptors.FindEntityDescriptor(mdId);
 
             if (descriptor == null)
             {
-                descriptor = context.RuntimeContext.CreateDescriptor(context.ConnectionContext);
+                descriptor = context.RuntimeContext.Descriptors.CreateDescriptor(context.ConnectionContext);
                 descriptor.DatabaseName = $"Tbl_{descriptor.DatabaseId}";
                 descriptor.MetadataId = mdId;
-                context.RuntimeContext.Save(context.ConnectionContext);
+                context.RuntimeContext.SaveAll(context.ConnectionContext);
             }
 
             return descriptor.DatabaseName;

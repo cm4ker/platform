@@ -13,11 +13,11 @@ namespace Aquila.Core
         public AccessPointConfig AccessPoint { get; set; }
 
         public CacheServiceConfig CacheService { get; set; }
-        public List<IStartupConfig> Environments { get; set; }
+        public List<StartupConfig> Environments { get; set; }
 
         public AppConfig()
         {
-            Environments = new List<IStartupConfig>();
+            Environments = new List<StartupConfig>();
             AccessPoint = new AccessPointConfig();
         }
     }

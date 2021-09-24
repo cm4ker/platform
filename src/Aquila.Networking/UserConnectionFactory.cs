@@ -18,7 +18,7 @@ namespace Aquila.Core.Network
         {
             return CreateConnection(tcpClient, new FilteredInstanceManager(
                 _serviceProvider.GetRequiredService<IPlatformInstanceManager>(),
-                env => env is PlatformInstance));
+                env => env is IPlatformInstance));
         }
     }
 }

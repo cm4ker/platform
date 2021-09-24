@@ -222,8 +222,8 @@
     <!-- performs pack   -->
     <Target
             Name="CorePack"
-            DependsOnTargets="CoreCompile"
-            AfterTargets="CoreCompile"
+            DependsOnTargets="CopyFilesToOutputDirectory"
+            AfterTargets="CopyFilesToOutputDirectory"
     >
         <PropertyGroup>
             <TempOutputDir>%(IntermediateAssembly.RelativeDir)</TempOutputDir>
@@ -237,7 +237,7 @@
         <PackTask OutputPath="$(OutputPath)"
                   OutputPackagePath="$(OutputPackagePath)"
                   OutputPackageFullPath="$(OutputPackageFullPath)"
-                  OutputName="%(IntermediateAssembly.Filename)"
+                  OutputName="$(MSBuildProjectName)"
                   TempOutputPath="$(TempOutputDir)"
                   Metadata="@(Metadata)"
                   ProjectDirectory="$(MSBuildProjectDirectory)"/>

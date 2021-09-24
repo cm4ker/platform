@@ -199,6 +199,30 @@ namespace Aquila.Runtime.Tests
                 res =
                     "INSERT INTO table2(column1)\nSELECT t1.column1\nFROM\ntable1 as t1\nWHERE\n@value1 = t1.column1\n");
         }
+        
+        [Fact]
+        public void InsertIntoSelectTest2()
+        {
+            var machine = new QueryMachine();
+            machine.bg_query()
+                .m_from()
+                .ld_table("source")
+                .@as("t1")
+                .m_select()
+                .ld_column("*", "t1")
+                .m_insert()
+                .ld_table("destenation")
+                //.ld_column("column1")
+                .st_query();
+
+
+            var visitor = new MsSqlBuilder();
+
+            var res = visitor.Visit((SSyntaxNode)machine.pop());
+            Assert.Equal(res,
+                res =
+                    "INSERT INTO destenation\nSELECT t1.*\nFROM\nsource as t1\n");
+        }
 
         [Fact]
         public void InsertIntoValuesTest()

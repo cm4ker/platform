@@ -6,8 +6,8 @@ namespace Aquila.Core.ClientServices
 {
     public interface IAssemblyManagerClientService
     {
-        List<AssemblyDescriptor> GetDiffAssemblies(List<AssemblyDescriptor> assemblies);
+        List<FileDescriptor> GetDiffAssemblies(List<FileDescriptor> assemblies);
 
-        Stream GetAssembly(AssemblyDescriptor assembly);
+        Stream GetAssembly(FileDescriptor file);
     }
 }

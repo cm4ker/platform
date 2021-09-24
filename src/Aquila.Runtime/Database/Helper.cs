@@ -50,14 +50,14 @@ namespace Aquila.Runtime
         {
             var mdId = prop.FullName;
 
-            var descriptor = context.RuntimeContext.FindEntityDescriptor(mdId);
+            var descriptor = context.RuntimeContext.Descriptors.FindEntityDescriptor(mdId);
 
             if (descriptor == null)
             {
-                descriptor = context.RuntimeContext.CreateDescriptor(context.ConnectionContext);
+                descriptor = context.RuntimeContext.Descriptors.CreateDescriptor(context.ConnectionContext);
                 descriptor.DatabaseName = $"Fld_{descriptor.DatabaseId}";
                 descriptor.MetadataId = mdId;
-                context.RuntimeContext.Save(context.ConnectionContext);
+                context.RuntimeContext.SaveAll(context.ConnectionContext);
             }
 
             return GetPropertySchemas(descriptor.DatabaseName, prop.Types);
@@ -69,7 +69,7 @@ namespace Aquila.Runtime
         {
             var mdId = prop.FullName;
 
-            var descriptor = drContext.FindEntityDescriptor(mdId);
+            var descriptor = drContext.Descriptors.FindEntityDescriptor(mdId);
 
             if (descriptor == null)
             {
@@ -83,7 +83,7 @@ namespace Aquila.Runtime
         public static EntityDescriptor GetDescriptor(this SMProperty prop, DatabaseRuntimeContext runtimeContext)
         {
             var mdId = prop.FullName;
-            var descriptor = runtimeContext.FindEntityDescriptor(mdId);
+            var descriptor = runtimeContext.Descriptors.FindEntityDescriptor(mdId);
 
             return descriptor;
         }
@@ -91,7 +91,7 @@ namespace Aquila.Runtime
         public static EntityDescriptor GetDescriptor(this SMEntity metadata, DatabaseRuntimeContext runtimeContext)
         {
             var mdId = metadata.FullName;
-            var descriptor = runtimeContext.FindEntityDescriptor(mdId);
+            var descriptor = runtimeContext.Descriptors.FindEntityDescriptor(mdId);
             return descriptor;
         }
 

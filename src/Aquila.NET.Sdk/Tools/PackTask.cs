@@ -76,6 +76,10 @@ namespace Aquila.NET.Sdk.Tools
             {
                 foreach (var file in info.GetFiles())
                 {
+                    if (Path.GetFileName(file.Name) == OutputName)
+                    {
+                    }
+
                     package.CreateEntryFromFile(file.FullName, file.Name);
                 }
 
@@ -83,7 +87,6 @@ namespace Aquila.NET.Sdk.Tools
                 {
                     var sourceFileName = Path.Combine(ProjectDirectory, md.ToString());
                     var destinationPath = Path.Combine("Metadata", md.ToString());
-
 
                     package.CreateEntryFromFile(sourceFileName, destinationPath);
                 }
