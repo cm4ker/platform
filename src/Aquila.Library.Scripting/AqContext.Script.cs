@@ -99,7 +99,7 @@ namespace Aquila.Library.Scripting
                 if (t.Name != "<Constants>")
                     continue;
 
-                _entryPoint = (AqContext ctx) =>
+                _entryPoint = ctx =>
                 {
                     ctx.Session.Instance.UpdateAssembly(ass);
                     return ((MethodInfo)t.GetMember("Main").FirstOrDefault()).Invoke(null, new object[] { ctx });

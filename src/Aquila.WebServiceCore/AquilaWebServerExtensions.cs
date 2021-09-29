@@ -24,8 +24,15 @@ namespace Aquila.WebServiceCore
         {
             var instances = mrg.GetInstances();
 
+
             foreach (var inst in instances)
             {
+                if (inst.BLAssembly is null)
+                {
+                    _logger.Info("[Platform] Instance {0} haven't assembly", inst.Name);
+                    continue;
+                }
+
                 var methods = inst.BLAssembly.GetLoadMethod().ToList();
                 _logger.Info("[Web service] Load {0} delegates", methods.Count);
 
@@ -69,21 +76,22 @@ namespace Aquila.WebServiceCore
                 });
             }
 
-
             app.UseEndpoints(x =>
             {
                 x.MapGet("api/{instance}/getMetadata",
                     async context => { await GetInstanceMetadata(context, mrg, ct); });
                 x.MapPost("api/{instance}/deploy",
-                    async context => { await DeployConfig(context, mrg, ct); });
-                x.MapGet("api/admin/instances",
+                    async context => { await Deploy(context, mrg, ct); });
+                x.MapPost("api/{instance}/migrate",
+                    async context => { await Migrate(context, mrg, ct); });
+                x.MapGet("api/instances",
                     async context => { await GetInstances(context, mrg, ct); });
-                x.MapGet("api/admin/{instance}/sessions",
+                x.MapGet("api/{instance}/sessions",
                     async context => { await GetSessions(context, mrg, ct); });
             });
         }
 
-        private static async Task DeployConfig(HttpContext context, IPlatformInstanceManager mrg, CancellationToken ct)
+        private static async Task Deploy(HttpContext context, IPlatformInstanceManager mrg, CancellationToken ct)
         {
             var instanceName = context.GetRouteData().Values["instance"]?.ToString();
 
@@ -91,13 +99,30 @@ namespace Aquila.WebServiceCore
 
             if (instance is null) return;
 
-            var zipStream = context.Request.Body;
+            try
+            {
+                var zipStream = context.Request.Body;
 
-            ZipArchive s = new ZipArchive(zipStream, ZipArchiveMode.Read);
-
-            var e = s.Entries.ToList();
+                instance.Deploy(zipStream);
+            }
+            catch (Exception ex)
+            {
+                //Do smth package is corrupted
+                throw;
+            }
         }
 
+
+        private static async Task Migrate(HttpContext context, IPlatformInstanceManager mrg, CancellationToken ct)
+        {
+            var instanceName = context.GetRouteData().Values["instance"]?.ToString();
+
+            var instance = mrg.GetInstance(instanceName);
+
+            if (instance is null) return;
+
+            instance.Migrate();
+        }
 
         private static async Task PostHandler(HttpContext context, MethodInfo method, IPlatformInstanceManager mrg,
             CancellationToken cancellationToken)
@@ -150,25 +175,25 @@ namespace Aquila.WebServiceCore
             CancellationToken token)
         {
             /*
-                         1. Generate crud api
-                         
-                         Create()                               
-                         
-                         Get()                                GET       GetList
-                         
-                         FROM Invoice SELECT *
-                         
-                         Get(lookup_fields, condition)        GET       advanced GetList
-                         
-                         FROM Invoice WHERE condition SELECT lookup_fields
-                         
-                         Get(id)                              GET       GetById
-                         
-                         Post(object)                         POST      Update object or store
-                         
-                         Delete(id)                           DELETE    Delete object
-                                                  
-                         */
+             1. Generate crud api
+             
+             Create()                               
+             
+             Get()                                GET       GetList
+             
+             FROM Invoice SELECT *
+             
+             Get(lookup_fields, condition)        GET       advanced GetList
+             
+             FROM Invoice WHERE condition SELECT lookup_fields
+             
+             Get(id)                              GET       GetById
+             
+             Post(object)                         POST      Update object or store
+             
+             Delete(id)                           DELETE    Delete object
+                                      
+             */
 
             var instanceName = context.GetRouteData().Values["instance"]?.ToString();
 

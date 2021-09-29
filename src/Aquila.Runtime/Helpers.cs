@@ -104,7 +104,7 @@ namespace Aquila.Data
     public static class DatabaseFactory
     {
         /// <summary>
-        /// Получить базу данных по её типу
+        /// Get db connection by the type
         /// </summary>
         /// <param name="dbType">Тип базы данных</param>
         /// <param name="connectionString">Строка подключения</param>

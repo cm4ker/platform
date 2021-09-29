@@ -104,6 +104,8 @@ namespace Aquila.Migrations
         public void Migrate()
         {
             var context = _dataContextManager.GetContext();
+            var runtimeContext = DatabaseRuntimeContext.CreateAndLoad(context);
+
 
             _logger.Info("Check last migration.");
 
@@ -114,7 +116,7 @@ namespace Aquila.Migrations
                 {
                     ClearMigrationStatus(last_fail_migration_id, context);
                     _logger.Info($"Restart migration '{last_fail_migration_id}'.");
-                    RunMigration(last_fail_migration_id, context);
+                    RunMigration(last_fail_migration_id, runtimeContext, context);
 
                     CompliteMigration(context, last_fail_migration_id);
                     _logger.Info($"Migration '{last_fail_migration_id}' complite.");
@@ -126,11 +128,13 @@ namespace Aquila.Migrations
                 _logger.Info($"Create migration '{id}'");
 
                 _logger.Info($"Run migration '{id}'.");
-                RunMigration(id, context);
+                RunMigration(id, runtimeContext, context);
 
                 CompliteMigration(context, id);
                 _logger.Info($"Migration '{id}' complite.");
             }
+
+            runtimeContext.ApplyPendingChanges(context);
         }
 
         private void ClearMigrationStatus(Guid id, DataConnectionContext context)
@@ -188,13 +192,10 @@ namespace Aquila.Migrations
             }
         }
 
-        private void RunMigration(Guid id, DataConnectionContext context)
+        private void RunMigration(Guid id, DatabaseRuntimeContext runtimeContext, DataConnectionContext context)
         {
             var migrator = new EntityMigratorContext();
             var plan = new EntityMigrationPlan();
-
-            //load instance of DatabaseRuntimeContext
-            var runtimeContext = DatabaseRuntimeContext.CreateAndLoad(context);
 
             var migrationContext = new EntityMigratorDataContext(runtimeContext, context);
 

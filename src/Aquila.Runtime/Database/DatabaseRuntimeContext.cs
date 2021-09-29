@@ -20,7 +20,7 @@ namespace Aquila.Runtime
         private const string MetadataTableName = "metadata";
         private const string PendingMetadataTableName = "metadata_pending";
         private const string FileTableName = "files";
-        private const string PendingFileTableName = "pending_files";
+        private const string PendingFileTableName = "files_pending";
 
         public static DatabaseRuntimeContext CreateAndLoad(DataConnectionContext dcc)
         {
@@ -36,7 +36,7 @@ namespace Aquila.Runtime
         public DatabaseRuntimeContext()
         {
             _filesRC = new FilesRC(FileTableName);
-            _pendingFilesRC = new FilesRC(FileTableName);
+            _pendingFilesRC = new FilesRC(PendingFileTableName);
 
             _descriptorsRC = new DescriptorsRC();
             _metadataRC = new MetadataRC(MetadataTableName);
@@ -55,7 +55,7 @@ namespace Aquila.Runtime
 
         public DescriptorsRC Descriptors => _descriptorsRC;
         public MetadataRC Metadata => _metadataRC;
-        public MetadataRC PendingMetadata => _metadataRC;
+        public MetadataRC PendingMetadata => _pendingMetadataRC;
 
         /// <summary>
         /// Load runtime information from DB. If db version is not in sync with in-memory then the table rewrite version from db

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using Aquila.Core.Assemlies;
@@ -77,18 +78,81 @@ namespace Aquila.Core.Instance
             _logger.Info("Current configuration was loaded. It contains {0} elements",
                 DatabaseRuntimeContext.Metadata.GetMetadata().Metadata.Count());
 
-            if (MigrationManager.CheckMigration())
+            AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
+            _logger.Info("Auth provider was registered");
+
+            var currentAssembly = GetCurrentAssembly();
+
+            if (currentAssembly != null)
+            {
+                LoadAssembly(Assembly.Load(currentAssembly));
+                _logger.Info("Project '{0}' was loaded.", Name);
+            }
+            else
+                _logger.Info("Assembly is empty");
+        }
+
+
+        public bool PendingChanges => MigrationManager.CheckMigration();
+
+        public void Migrate()
+        {
+            if (PendingChanges)
             {
                 MigrationManager.Migrate();
                 UpdateDBRContext();
             }
+        }
 
-            AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
-            _logger.Info("Auth provider was registered");
+        public void Deploy(Stream packageStream)
+        {
+            byte[] ReadFully(Stream input)
+            {
+                byte[] buffer = new byte[16 * 1024];
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    int read;
+                    while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        ms.Write(buffer, 0, read);
+                    }
 
-            LoadAssembly(Assembly.Load(GetCurrentAssembly()));
+                    return ms.ToArray();
+                }
+            }
 
-            _logger.Info("Project '{0}' was loaded.", Name);
+            ZipArchive arch = new ZipArchive(packageStream, ZipArchiveMode.Read);
+
+            var dc = DataContextManager.GetContext();
+
+            DatabaseRuntimeContext.PendingMetadata.Clear(dc);
+            DatabaseRuntimeContext.PendingFiles.Clear(dc);
+
+            foreach (var item in arch.Entries)
+            {
+                if (item.FullName.StartsWith("Metadata\\"))
+                {
+                    using var stream = item.Open();
+                    using StreamReader sr = new StreamReader(stream);
+                    var content = sr.ReadToEnd();
+                    DatabaseRuntimeContext.PendingMetadata.GetMetadata().AddMetadata(EntityMetadata.FromYaml(content));
+                }
+                else
+                {
+                    var descr = new FileDescriptor
+                    {
+                        Name = item.FullName,
+                        Type = FileType.Unknown,
+                        CreateDateTime = DateTime.Now
+                    };
+
+                    using var stream = item.Open();
+                    DatabaseRuntimeContext.PendingFiles.SaveFile(dc, descr,
+                        ReadFully(stream));
+                }
+            }
+
+            DatabaseRuntimeContext.PendingMetadata.SaveMetadata(dc);
         }
 
         public void UpdateAssembly(Assembly asm)
@@ -110,14 +174,16 @@ namespace Aquila.Core.Instance
                 switch (item.attr.Kind)
                 {
                     case RuntimeInitKind.TypeId:
-                        var desc = DatabaseRuntimeContext.Descriptors.GetEntityDescriptor(item.attr.Parameters[0] as string);
+                        var desc = DatabaseRuntimeContext.Descriptors.GetEntityDescriptor(
+                            item.attr.Parameters[0] as string);
                         ((FieldInfo)item.m).SetValue(null, desc.DatabaseId);
                         _logger.Info($"[Assembly] Set type id for {desc.DatabaseName} = {desc.DatabaseId}");
                         break;
                     case RuntimeInitKind.SelectQuery:
                     {
                         var mdFullName = item.attr.Parameters[0] as string;
-                        var semantic = DatabaseRuntimeContext.Metadata.GetMetadata().GetSemantic(x => x.FullName == mdFullName);
+                        var semantic = DatabaseRuntimeContext.Metadata.GetMetadata()
+                            .GetSemantic(x => x.FullName == mdFullName);
                         var query = CRUDQueryGenerator.GetLoad(semantic, DatabaseRuntimeContext);
                         _logger.Info($"[Assembly] Generate select query for {mdFullName}:\n{query}");
                         (item.m as FieldInfo).SetValue(null, query);
@@ -126,7 +192,8 @@ namespace Aquila.Core.Instance
                     case RuntimeInitKind.UpdateQuery:
                     {
                         var mdFullName = item.attr.Parameters[0] as string;
-                        var semantic = DatabaseRuntimeContext.Metadata.GetMetadata().GetSemantic(x => x.FullName == mdFullName);
+                        var semantic = DatabaseRuntimeContext.Metadata.GetMetadata()
+                            .GetSemantic(x => x.FullName == mdFullName);
                         var query = CRUDQueryGenerator.GetSaveUpdate(semantic, DatabaseRuntimeContext);
                         _logger.Info($"[Assembly] Generate update query for {mdFullName}:\n{query}");
                         (item.m as FieldInfo).SetValue(null, query);
@@ -135,7 +202,8 @@ namespace Aquila.Core.Instance
                     case RuntimeInitKind.InsertQuery:
                     {
                         var mdFullName = item.attr.Parameters[0] as string;
-                        var semantic = DatabaseRuntimeContext.Metadata.GetMetadata().GetSemantic(x => x.FullName == mdFullName);
+                        var semantic = DatabaseRuntimeContext.Metadata.GetMetadata()
+                            .GetSemantic(x => x.FullName == mdFullName);
                         var query = CRUDQueryGenerator.GetSaveInsert(semantic, DatabaseRuntimeContext);
                         _logger.Info($"[Assembly] Generate insert query for {mdFullName}:\n{query}");
                         (item.m as FieldInfo).SetValue(null, query);
@@ -167,11 +235,11 @@ namespace Aquila.Core.Instance
 
         public Assembly BLAssembly { get; private set; }
 
+
         /// <summary>
-        /// Глобальные объекты
+        /// Global objects
         /// </summary>
         public Dictionary<string, object> Globals { get; set; }
-
 
         /// <summary>
         /// Создаёт сессию для пользователя
@@ -191,7 +259,7 @@ namespace Aquila.Core.Instance
         }
 
         /// <summary>
-        /// Убить сессию
+        /// Force end session
         /// </summary>
         /// <param name="session"></param>
         public void KillSession(ISession session)

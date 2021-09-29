@@ -27,7 +27,7 @@ namespace Aquila.Runtime.Tests.DB
             var d1 = db.Descriptors.CreateDescriptor(dc);
             var d2 = db.Descriptors.CreateDescriptor(dc);
 
-            db.Files.SaveAssembly(dc,
+            db.Files.SaveFile(dc,
                 new FileDescriptor
                 {
                     Name = "AssemblyName",

@@ -7,7 +7,7 @@ namespace Aquila.Initializer.InternalDatabaseStructureMigrations
     {
         public override void Up()
         {
-            Create.Table("pending_files")
+            Create.Table("files_pending")
                 .WithColumn("type").AsInt32()
                 .WithColumn("name").AsString(200)
                 .WithColumn("create_datetime").AsDateTime().WithDefault(SystemMethods.CurrentDateTime)
@@ -16,7 +16,7 @@ namespace Aquila.Initializer.InternalDatabaseStructureMigrations
 
         public override void Down()
         {
-            Delete.Table("pending_files");
+            Delete.Table("files_pending");
         }
     }
 }

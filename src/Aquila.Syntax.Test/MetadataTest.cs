@@ -18,25 +18,42 @@ namespace Aquila.Compiler.Test2
         {
             var yaml =
                 @"
-ComponentName: Custom component
-SomeProp: Add value
+Name: Author
+Properties:
+
+#Name field
+- Name: Name
+  Types:
+  - Name : string
+    Size : 100
+
+#SecondName field
+- Name: SecondName
+  Types:
+  - Name : string
+    Size : 100
+
+#BirthDay field
+- Name: Birthday
+  Types: 
+    - Name: datetime
+
+- Name: Country
+  Types:
+  - Name: Entity.CountryLink
+
 ";
-            var d = new YamlDotNet.Serialization.DeserializerBuilder()
-                .IgnoreUnmatchedProperties()
-                .Build();
-            var instance = d.Deserialize<MetadataBase>(yaml);
 
+            var instance = EntityMetadata.FromYaml(yaml);
+            var text = EntityMetadata.ToYaml(instance);
 
-            Assert.Equal("Custom component", instance.ComponentName);
+            Assert.Equal("Author", instance.Name);
         }
 
         [Fact]
-        public void SerTest()
+        public void MdLoadTest()
         {
-            var i = TestMetadata.GetTestMetadata().GetSemanticByName("Invoice");
-            var d = new YamlDotNet.Serialization.SerializerBuilder()
-                .Build();
-            var str = d.Serialize(i.Metadata);
+            
         }
     }
 }

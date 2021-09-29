@@ -50,16 +50,13 @@ namespace Aquila.Runtime
 
                 var list = new List<EntityMetadata>();
 
-                var deserializer = new DeserializerBuilder()
-                    .WithNamingConvention(CamelCaseNamingConvention.Instance)
-                    .Build();
 
                 while (reader.Read())
                 {
                     var data = (byte[])reader["data"];
 
                     var yaml = Encoding.UTF8.GetString(data);
-                    var md = deserializer.Deserialize<EntityMetadata>(yaml);
+                    var md = EntityMetadata.FromYaml(yaml);
 
                     list.Add(md);
                 }
@@ -95,10 +92,7 @@ namespace Aquila.Runtime
 
                 foreach (var md in _md)
                 {
-                    var serializer = new SerializerBuilder()
-                        .WithNamingConvention(CamelCaseNamingConvention.Instance)
-                        .Build();
-                    var yaml = serializer.Serialize(md);
+                    var yaml = EntityMetadata.ToYaml(md);
 
                     //TODO: remove this static
                     cmd.AddOrSetParameterWithValue("blob_name", $"Entity.{md.Name}");
@@ -112,6 +106,9 @@ namespace Aquila.Runtime
 
             public void TransferTo(DataConnectionContext dcc, MetadataRC destenation)
             {
+                dcc.BeginTransaction();
+
+                Clear(dcc);
                 dcc.CreateCommand((qm) =>
                     qm.bg_query()
                         .m_from()
@@ -121,7 +118,9 @@ namespace Aquila.Runtime
                         .ld_column("*", "t1")
                         .m_insert()
                         .ld_table(destenation._tableName)
-                        .st_query());
+                        .st_query()).ExecuteNonQuery();
+
+                dcc.CommitTransaction();
             }
 
             public void SetMetadata(EntityMetadataCollection md)

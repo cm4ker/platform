@@ -11,8 +11,14 @@ namespace Aquila.Cli.Commands.Db
         [Argument(0, Name = "name", Description = "Database name")]
         public string Name { get; }
 
-        [Option("-z ", "if file 7Zip", CommandOptionType.NoValue)]
-        public bool Zip { get; }
+        [Option("-pkg ", "Package for deploy", CommandOptionType.NoValue)]
+        public bool Package { get; }
+
+        [Option("-s ", "Server", CommandOptionType.NoValue)]
+        public string Server { get; }
+
+        [Option("-i ", "Instance", CommandOptionType.NoValue)]
+        public string Insatnce { get; }
 
         private IConsole _console;
         private IPlatformInstanceManager _instanceManager;
@@ -33,23 +39,6 @@ namespace Aquila.Cli.Commands.Db
             }
 
             var pathTo = Path.GetTempFileName();
-
-            if (Zip)
-            {
-                ZipFile.ExtractToDirectory(downloadFilePath, pathTo);
-            }
-
-            // var storage = new PhysicalFileSystem(pathTo);
-            //
-            //
-            // var env = _environmentManager.GetEnvironment(Name);
-            // if (env is IPlatformEnvironment platform)
-            // {
-            //     var databaseStorage = new DatabaseFileSystem(DatabaseConstantNames.SAVE_CONFIG_TABLE_NAME,
-            //         platform.DataContextManager.GetContext());
-            //
-            //     //TODO: Save the configuration
-            // }
         }
     }
 }

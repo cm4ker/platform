@@ -27,12 +27,12 @@ namespace Aquila.Runtime
             {
                 return new FileDescriptor()
                 {
-                    Type = (FileType)reader.GetInt32(2),
-                    Name = reader.GetString(3),
+                    Type = (FileType)reader.GetInt32(0),
+                    Name = reader.GetString(1),
                 };
             }
 
-            public byte[] GetAssembly(DataConnectionContext dcc, string name)
+            public byte[] GetFile(DataConnectionContext dcc, string name)
             {
                 void Gen(QueryMachine qm)
                 {
@@ -44,10 +44,6 @@ namespace Aquila.Runtime
                         .ld_column("name")
                         .ld_param("name")
                         .eq()
-                        .ld_column("configuration_hash")
-                        .ld_param("configuration_hash")
-                        .eq()
-                        .and()
                         .m_select()
                         .ld_column("data")
                         .st_query();
@@ -62,15 +58,19 @@ namespace Aquila.Runtime
                 }
             }
 
-            public byte[] GetAssembly(DataConnectionContext dcc, FileDescriptor descriptor)
+            public byte[] GetFile(DataConnectionContext dcc, FileDescriptor descriptor)
             {
-                return GetAssembly(dcc, descriptor.Name);
+                return GetFile(dcc, descriptor.Name);
             }
 
             public byte[] GetMainAssembly(DataConnectionContext dcc)
             {
-                var desc = GetAsmDescriptors(dcc).FirstOrDefault(x => (x.Type & FileType.MainAssembly) > 0);
-                return GetAssembly(dcc, desc);
+                var desc = GetFileDescriptors(dcc).FirstOrDefault(x => (x.Type & FileType.MainAssembly) > 0);
+
+                if (desc == null)
+                    return null;
+
+                return GetFile(dcc, desc);
             }
 
             public void Clear(DataConnectionContext dcc)
@@ -95,7 +95,7 @@ namespace Aquila.Runtime
                 }
             }
 
-            public IEnumerable<FileDescriptor> GetAsmDescriptors(DataConnectionContext dcc)
+            public IEnumerable<FileDescriptor> GetFileDescriptors(DataConnectionContext dcc)
             {
                 var list = new List<FileDescriptor>();
 
@@ -106,7 +106,7 @@ namespace Aquila.Runtime
                         .bg_query()
                         .m_from()
                         .ld_table(_tableName)
-                        .eq()
+                        //.eq()
                         //.and()
                         .m_select()
                         .ld_column("type")
@@ -129,7 +129,7 @@ namespace Aquila.Runtime
                 }
             }
 
-            public void SaveAssembly(DataConnectionContext dcc, FileDescriptor descriptor, byte[] blob)
+            public void SaveFile(DataConnectionContext dcc, FileDescriptor descriptor, byte[] blob)
             {
                 void Gen(QueryMachine qm)
                 {
@@ -159,13 +159,16 @@ namespace Aquila.Runtime
                 }
             }
 
-            public void RemoveAssembly(DataConnectionContext dcc, string hash)
+            public void RemoveFile(DataConnectionContext dcc, string hash)
             {
                 throw new NotImplementedException();
             }
 
             public void TransferTo(DataConnectionContext dcc, FilesRC destenation)
             {
+                dcc.BeginTransaction();
+                
+                Clear(dcc);
                 dcc.CreateCommand((qm) =>
                     qm.bg_query()
                         .m_from()
@@ -175,11 +178,9 @@ namespace Aquila.Runtime
                         .ld_column("*", "t1")
                         .m_insert()
                         .ld_table(destenation._tableName)
-                        .st_query());
-            }
-
-            public void Clear()
-            {
+                        .st_query()).ExecuteNonQuery();
+                
+                dcc.CommitTransaction();
             }
         }
     }

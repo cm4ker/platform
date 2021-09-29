@@ -1,3 +1,4 @@
+using System.IO;
 using System.Reflection;
 using Aquila.Data;
 using Aquila.Runtime;
@@ -19,5 +20,11 @@ namespace Aquila.Core.Contracts.Instance
         public Assembly BLAssembly { get; }
 
         void UpdateAssembly(Assembly asm);
+
+        void Deploy(Stream packageStream);
+
+        bool PendingChanges { get; }
+
+        void Migrate();
     }
 }

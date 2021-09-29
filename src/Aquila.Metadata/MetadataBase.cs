@@ -25,15 +25,6 @@ namespace Aquila.Metadata
     /// </summary>
     public abstract class MetadataBase
     {
-        /// <summary>
-        /// Describes the component name
-        /// </summary>
-        public string ComponentName { get; set; }
-
-        /// <summary>
-        /// Describes component version
-        /// </summary>
-        public string ComponentVersion { get; set; }
     }
 
     /*
