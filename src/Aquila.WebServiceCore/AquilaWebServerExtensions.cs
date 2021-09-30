@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
@@ -7,34 +6,46 @@ using System.Threading;
 using System.Threading.Tasks;
 using Aquila.Core;
 using Aquila.Core.Authentication;
+using Aquila.Core.CacheService;
+using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Instance;
+using Aquila.Core.Contracts.Network;
+using Aquila.Core.Instance;
+using Aquila.Core.Network;
+using Aquila.Core.Serialisers;
+using Aquila.Core.Settings;
+using Aquila.Data;
 using Aquila.Logging;
+using Aquila.Migrations;
+using Aquila.Networking;
 using Aquila.Runtime.Infrastructure.Helpers;
+using Aquila.Shell;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Aquila.WebServiceCore
 {
     public static class AquilaWebServerExtensions
     {
-        public static void UseAquilaPlatform(this IApplicationBuilder app, IPlatformInstanceManager mrg,
-            ILogger _logger,
-            CancellationToken ct = default)
+        public static void UseAquilaPlatform(this IApplicationBuilder app, CancellationToken ct = default)
         {
-            var instances = mrg.GetInstances();
+            var mrg = app.ApplicationServices.GetService<IPlatformInstanceManager>();
+            var logger = app.ApplicationServices.GetService<ILogger<PlatformInstance>>();
 
+            var instances = mrg.GetInstances();
 
             foreach (var inst in instances)
             {
                 if (inst.BLAssembly is null)
                 {
-                    _logger.Info("[Platform] Instance {0} haven't assembly", inst.Name);
+                    logger.Info("[Platform] Instance {0} haven't assembly", inst.Name);
                     continue;
                 }
 
                 var methods = inst.BLAssembly.GetLoadMethod().ToList();
-                _logger.Info("[Web service] Load {0} delegates", methods.Count);
+                logger.Info("[Web service] Load {0} delegates", methods.Count);
 
                 app.UseEndpoints(x =>
                 {
@@ -49,10 +60,9 @@ namespace Aquila.WebServiceCore
                                              typeof(AqContext))
                             throw new Exception($"Method {method.Name} marked as a CRUD but not consistent");
 
-
                         //NOTE: route in assembly starts from /
                         var route = $"api/{{instance}}{item.attr.Route}";
-                        _logger.Info($"Add route for get = {route.Replace('{', '(').Replace('}', ')')}");
+                        logger.Info($"Add route for get = {route.Replace('{', '(').Replace('}', ')')}");
 
                         x.MapGet(route, context => GetHandler(context, method, mrg, ct));
                     }
@@ -69,7 +79,7 @@ namespace Aquila.WebServiceCore
 
                         //NOTE: route in assembly starts from /
                         var route = $"api/{{instance}}{item.attr.Route}";
-                        _logger.Info($"Add route for get = {route.Replace('{', '(').Replace('}', ')')}");
+                        logger.Info($"Add route for get = {route.Replace('{', '(').Replace('}', ')')}");
 
                         x.MapPost(route, context => PostHandler(context, method, mrg, ct));
                     }
@@ -89,6 +99,43 @@ namespace Aquila.WebServiceCore
                 x.MapGet("api/{instance}/sessions",
                     async context => { await GetSessions(context, mrg, ct); });
             });
+        }
+
+        public static void AddAquilaPlatform(this IServiceCollection services)
+        {
+            services.AddScoped<DataContextManager>();
+            services.AddScoped<IUserManager, UserManager>();
+
+            services.AddSingleton<IPlatformInstanceManager, InstanceManager>();
+            services.AddScoped<IPlatformInstance, PlatformInstance>();
+            services.AddScoped<MigrationManager>();
+
+            services.AddSingleton<IPlatformInstanceManager, InstanceManager>();
+
+            services.AddScoped<IPlatformInstance, PlatformInstance>();
+
+
+            services.AddSingleton<ISettingsStorage, FileSettingsStorage>();
+
+            services.AddTransient<IConnectionManager, ConnectionManager>();
+            services.AddTransient(typeof(ILogger<>), typeof(SimpleConsoleLogger<>));
+            services.AddTransient<IDatabaseNetworkListener, TCPListener>();
+
+            services.AddScoped<IInvokeService, InvokeService>();
+            services.AddTransient<INetworkListener, TCPListener>();
+            services.AddTransient<ITerminalNetworkListener, SSHListener>();
+            services.AddTransient<IChannel, Channel>();
+            services.AddSingleton<IAccessPoint, UserAccessPoint>();
+            services.AddSingleton<ITaskManager, TaskManager>();
+            services.AddTransient<IMessagePackager, SimpleMessagePackager>();
+            services.AddTransient<ISerializer, ApexSerializer>();
+            services.AddTransient<UserConnectionFactory>();
+            services.AddTransient<ServerConnectionFactory>();
+            services.AddTransient<IChannelFactory, ChannelFactory>();
+
+            services.AddSingleton<ICacheService, DictionaryCacheService>();
+
+            services.AddScoped<IAuthenticationManager, AuthenticationManager>();
         }
 
         private static async Task Deploy(HttpContext context, IPlatformInstanceManager mrg, CancellationToken ct)
@@ -111,7 +158,6 @@ namespace Aquila.WebServiceCore
                 throw;
             }
         }
-
 
         private static async Task Migrate(HttpContext context, IPlatformInstanceManager mrg, CancellationToken ct)
         {

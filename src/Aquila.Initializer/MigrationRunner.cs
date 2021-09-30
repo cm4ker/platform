@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Net.Sockets;
 using System.Threading;
 using System.Transactions;
 using Aquila.Data;
@@ -6,6 +8,7 @@ using FluentMigrator.Runner;
 using Microsoft.Extensions.DependencyInjection;
 using Aquila.QueryBuilder;
 using Microsoft.Data.SqlClient;
+using Npgsql;
 
 
 namespace Aquila.Initializer
@@ -68,7 +71,7 @@ namespace Aquila.Initializer
         }
     }
 
-    public class DatabaseWorking
+    public class DatabaseHelper
     {
         // Login failed is thrown when database does not exist (See Issue #776)
         // Unable to attach database file is thrown when file does not exist (See Issue #2810)
@@ -76,20 +79,23 @@ namespace Aquila.Initializer
         private static bool IsDoesNotExist(SqlException exception)
             => exception.Number == 4060 || exception.Number == 1832 || exception.Number == 5120;
 
-        private bool ExistsSqlServer(string cString)
+        // Login failed is thrown when database does not exist (See Issue #776)
+        private static bool IsDoesNotExist(PostgresException exception) => exception.SqlState == "3D000";
+
+        public static bool ExistsSqlServer(string connectionString)
         {
             while (true)
             {
                 var opened = false;
-                var _connection = DatabaseFactory.Get(SqlDatabaseType.SqlServer, cString);
+                var connection = DatabaseFactory.Get(SqlDatabaseType.SqlServer, connectionString);
                 try
                 {
                     using var _ = new TransactionScope(TransactionScopeOption.Suppress);
 
-                    _connection.Open();
+                    connection.Open();
                     opened = true;
 
-                    var cmd = _connection.CreateCommand();
+                    var cmd = connection.CreateCommand();
                     cmd.CommandText = "SELECT 1";
                     cmd.ExecuteNonQuery();
                     return true;
@@ -107,10 +113,68 @@ namespace Aquila.Initializer
                 {
                     if (opened)
                     {
-                        _connection.Close();
+                        connection.Close();
                     }
                 }
             }
+        }
+
+        public static bool ExistsPostgres(string connectionString)
+        {
+            // When checking whether a database exists, pooling must be off, otherwise we may
+            // attempt to reuse a pooled connection, which may be broken (this happened in the tests).
+            // If Pooling is off, but Multiplexing is on - NpgsqlConnectionStringBuilder.Validate will throw,
+            // so we turn off Multiplexing as well.
+            var unpooledCsb = new NpgsqlConnectionStringBuilder(connectionString)
+            {
+                Pooling = false,
+                Multiplexing = false
+            };
+
+            using var _ =
+                new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled);
+            var unpooledRelationalConnection = new NpgsqlConnection(unpooledCsb.ToString());
+            try
+            {
+                unpooledRelationalConnection.Open();
+
+
+                return true;
+            }
+            catch (PostgresException e)
+            {
+                if (IsDoesNotExist(e))
+                {
+                    return false;
+                }
+
+                throw;
+            }
+            catch (NpgsqlException e) when (
+                e.InnerException is IOException &&
+                e.InnerException.InnerException is SocketException socketException &&
+                socketException.SocketErrorCode == SocketError.ConnectionReset
+            )
+            {
+                // Pretty awful hack around #104
+                return false;
+            }
+            finally
+            {
+                unpooledRelationalConnection.Close();
+                unpooledRelationalConnection.Dispose();
+            }
+        }
+
+        public static bool Exists(string connectionString, SqlDatabaseType dbType)
+        {
+            return dbType switch
+            {
+                SqlDatabaseType.Unknown => throw new Exception("Db is UNKNOWN"),
+                SqlDatabaseType.SqlServer => ExistsSqlServer(connectionString),
+                SqlDatabaseType.Postgres => ExistsPostgres(connectionString),
+                _ => throw new NotImplementedException()
+            };
         }
     }
 }

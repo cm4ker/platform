@@ -17,7 +17,8 @@ namespace Aquila.Tools
     [Subcommand(
         typeof(DeployCommand),
         typeof(BuildCommand),
-        typeof(MigrateCommand))]
+        typeof(MigrateCommand),
+        typeof(CreateCommand))]
     internal class Program
     {
         public static int Main(string[] args)
@@ -28,12 +29,9 @@ namespace Aquila.Tools
         }
     }
 
+    [Command("create")]
     public class CreateCommand
     {
-        [Option("--project_name", "Name of new project", CommandOptionType.SingleValue)]
-        [Required]
-        public string ProjectName { get; }
-
         [Option("-s|--server", "Database server", CommandOptionType.SingleValue)]
         public string Server { get; }
 
@@ -52,7 +50,7 @@ namespace Aquila.Tools
         [Option("--port ", "Database server port", CommandOptionType.SingleValue)]
         public int Port { get; }
 
-        [Option("--connString", "Connection string", CommandOptionType.SingleValue)]
+        [Option("-cs|--connectionString", "Connection string", CommandOptionType.SingleValue)]
         public string ConnectionString { get; }
 
         [Option("-c|--create", "Create database if not exists", CommandOptionType.NoValue)]
@@ -60,53 +58,32 @@ namespace Aquila.Tools
 
         public void OnExecute()
         {
+            var cstr = "";
+
             if (string.IsNullOrEmpty(ConnectionString))
-                OnCreateDbCommand(ProjectName, DatabaseType, Server,
-                    Port, Database, Username, Password,
-                    Create);
+            {
+                var cb = new UniversalConnectionStringBuilder(DatabaseType);
+
+                cb.Database = Database;
+                cb.Server = Server;
+                cb.Password = Password;
+                cb.Username = Username;
+                cb.Port = Port;
+
+                cstr = cb.GetConnectionString();
+            }
             else
-                OnCreateDbCommand(ProjectName, DatabaseType, ConnectionString, Create);
-        }
+            {
+                cstr = ConnectionString;
+            }
 
-        private void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType,
-            UniversalConnectionStringBuilder stringBuilder, bool createIfNotExists)
-        {
-            var connectionString = stringBuilder.GetConnectionString();
-
-            MigrationRunner.Migrate(connectionString, databaseType);
-
-            var dataContext = new DataConnectionContext(databaseType, connectionString);
+            if (DatabaseHelper.Exists(cstr, DatabaseType))
+            {
+                MigrationRunner.Migrate(cstr, DatabaseType);
+            }
+            else throw new Exception("Database not found");
 
             Console.WriteLine($"Done!");
-        }
-
-        private void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string connectionString,
-            bool createIfNotExists)
-        {
-            OnCreateDbCommand(projectName, databaseType,
-                UniversalConnectionStringBuilder.FromConnectionString(databaseType, connectionString),
-                createIfNotExists);
-        }
-
-        private void OnCreateDbCommand(string projectName, SqlDatabaseType databaseType, string server, int port,
-            string database, string userName, string password, bool createIfNotExists)
-        {
-            Console.WriteLine($"Start creating new project {projectName}");
-            Console.WriteLine(
-                $"DatabaseType: {databaseType}\nServer: {server}\nDatabase {database}\nUsername {userName}\nPassword {password}");
-            var cb = new UniversalConnectionStringBuilder(databaseType);
-
-            //После успешного созадания базы пробуем к ней подключиться, провести миграции и 
-            //создать новую конфигурацию
-            cb.Database = database;
-            cb.Server = server;
-            cb.Password = password;
-            cb.Username = userName;
-            cb.Port = port;
-
-            Console.WriteLine(cb.GetConnectionString());
-
-            OnCreateDbCommand(projectName, databaseType, cb, createIfNotExists);
         }
     }
 

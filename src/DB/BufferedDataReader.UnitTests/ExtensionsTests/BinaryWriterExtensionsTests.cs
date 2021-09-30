@@ -11,7 +11,6 @@ namespace BufferedDataReaderDotNet.UnitTests.ExtensionsTests
         [Fact]
         public void WriteBytes_WriteBytes()
         {
-           
             var bytes = new byte[byte.MaxValue];
             var random = new Random();
 
@@ -20,7 +19,7 @@ namespace BufferedDataReaderDotNet.UnitTests.ExtensionsTests
             using (var memoryStream = new MemoryStream())
             {
                 using (var binaryWriter = new BinaryWriter(memoryStream, Encoding.UTF8, true))
-                    binaryWriter.WriteBytes(bytes);
+                    binaryWriter.Write(bytes);
 
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
@@ -41,7 +40,7 @@ namespace BufferedDataReaderDotNet.UnitTests.ExtensionsTests
             using (var memoryStream = new MemoryStream())
             {
                 using (var binaryWriter = new BinaryWriter(memoryStream, Encoding.UTF8, true))
-                    binaryWriter.WriteDateTime(dateTime);
+                    binaryWriter.Write(dateTime.ToBinary());
 
                 Assert.Equal(dateTime.ToBinary(), BitConverter.ToInt64(memoryStream.ToArray(), 0));
                 Assert.Equal(memoryStream.Length, memoryStream.Position);
@@ -56,7 +55,7 @@ namespace BufferedDataReaderDotNet.UnitTests.ExtensionsTests
             using (var memoryStream = new MemoryStream())
             {
                 using (var binaryWriter = new BinaryWriter(memoryStream, Encoding.UTF8, true))
-                    binaryWriter.WriteGuid(guid);
+                    binaryWriter.Write(guid.ToByteArray());
 
                 Assert.Equal(guid, new Guid(memoryStream.ToArray()));
                 Assert.Equal(memoryStream.Length, memoryStream.Position);

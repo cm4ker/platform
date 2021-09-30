@@ -28,7 +28,7 @@ namespace Aquila.Core.Test
                     // }
                 }
             },
-            Environments = new List<IStartupConfig>()
+            Environments = new List<StartupConfig>()
             {
                 new StartupConfig()
                 {

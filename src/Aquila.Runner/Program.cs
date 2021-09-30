@@ -29,79 +29,22 @@ namespace Aquila.Runner
     {
         public static async Task Main(string[] args)
         {
-            var builder = new HostBuilder()
-                .ConfigureAppConfiguration((hostContext, config) =>
-                {
-                    //config.AddEnvironmentVariables();
-                    config.AddXmlFile("App.config", false, true);
-                })
-                /*
-                .ConfigureLogging((hostContext, loggingBuilder) =>
-                {
-                    loggingBuilder.ClearProviders();
-                    loggingBuilder.SetMinimumLevel(LogLevel.Trace);
-                    loggingBuilder.AddNLog(hostContext.Configuration);
-                })
-                */
+            await CreateHostBuilder(args).RunConsoleAsync();
+        }
 
-                //.UseServiceProviderFactory<IContainer>(new DryIocServiceProviderFactory())
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            var builder = new HostBuilder()
+                .ConfigureAppConfiguration((hostContext, config) => { config.AddXmlFile("App.config", false, true); })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    //AppConfig config = new AppConfig();
-                    //hostContext.Configuration.GetSection("Runner").Bind(config);
-
-                    //services.AddConfig(config.AccessPoint);
-                    //services.AddConfig(config.Environments);
-
-                    services.AddSingleton<ISettingsStorage, FileSettingsStorage>();
-
-                    services.AddTransient<IConnectionManager, ConnectionManager>();
                     services.AddTransient(typeof(ILogger<>), typeof(SimpleConsoleLogger<>));
-                    services.AddTransient<IDatabaseNetworkListener, TCPListener>();
-
-                    services.AddScoped<IInvokeService, InvokeService>();
-                    services.AddTransient<INetworkListener, TCPListener>();
-                    services.AddTransient<ITerminalNetworkListener, SSHListener>();
-                    services.AddTransient<IChannel, Channel>();
-                    services.AddSingleton<IAccessPoint, UserAccessPoint>();
-                    services.AddSingleton<ITaskManager, TaskManager>();
-                    services.AddTransient<IMessagePackager, SimpleMessagePackager>();
-                    services.AddTransient<ISerializer, ApexSerializer>();
-                    services.AddTransient<UserConnectionFactory>();
-                    services.AddTransient<ServerConnectionFactory>();
-                    services.AddTransient<IChannelFactory, ChannelFactory>();
-                    // services.AddScoped<IAdminToolsClientService, AdminToolsClientService>();
-                    // services.AddScoped<IAssemblyManagerClientService, AssemblyManagerClientService>();
-                    // services.AddScoped<IAssemblyManager, AssemblyManager>();
-                    // services.AddScoped<IConfigurationManager, ConfigurationManager>();
-                    //services.AddScoped<IXCCompiller, XCCompiler>();
-                    services.AddScoped<ILinkFactory, LinkFactory>();
-                    //services.AddScoped<IAssemblyPlatform, DnlibAssemblyPlatform>();
-                    // services.AddScoped<IAssemblyStorage, DatabaseAssemblyStorage>();
-                    //services.AddSingleton<IConfigurationManipulator, XCConfManipulator>();
-                    services.AddSingleton<IStartupService, StartupServiceImpl>();
-                    services.AddScoped<MigrationManager>();
-
-
-                    // services.AddSingleton<ITestProxyService, TestProxyService>();
-                    services.AddSingleton<IPlatformInstanceManager, InstanceManager>();
-
-                    //services.AddScoped<ITestEnvironment, TestEnvironment>();
-                    services.AddScoped<IAdminInstance, AdminInstance>();
-                    services.AddScoped<IPlatformInstance, PlatformInstance>();
-
-                    services.AddSingleton<ICacheService, DictionaryCacheService>();
-
-                    //services.AddTransient<IUserMessageHandler, UserMessageHandler>();
-                    services.AddScoped<IAuthenticationManager, AuthenticationManager>();
-                    services.AddScoped<DataContextManager>();
-                    services.AddScoped<IUserManager, UserManager>();
-
-                    services.AddSingleton<IHostedService, PlatformService>();
-                    services.AddSingleton<IWebHost, PlatformWebService>();
+                    services.AddSingleton<IHostedService, AquilaHostedService>();
+                    services.AddSingleton<IWebHost, AquilaWebHost>();
                 });
 
-            await builder.RunConsoleAsync();
+
+            return builder;
         }
     }
 }

@@ -31,8 +31,7 @@ namespace Aquila.Core.Instance
     {
         private object _locking;
 
-        public PlatformInstance(IInvokeService invokeService, ILinkFactory linkFactory,
-            ILogger<PlatformInstance> logger,
+        public PlatformInstance(IInvokeService invokeService, ILogger<PlatformInstance> logger,
             IAuthenticationManager authenticationManager, IServiceProvider serviceProvider,
             DataContextManager contextManager, IUserManager userManager, ICacheService cacheService,
             MigrationManager manager
@@ -45,7 +44,6 @@ namespace Aquila.Core.Instance
             _cacheService = cacheService;
 
             InvokeService = invokeService;
-            LinkFactory = linkFactory;
 
             MigrationManager = manager;
 
@@ -176,6 +174,10 @@ namespace Aquila.Core.Instance
                     case RuntimeInitKind.TypeId:
                         var desc = DatabaseRuntimeContext.Descriptors.GetEntityDescriptor(
                             item.attr.Parameters[0] as string);
+
+                        if (desc is null)
+                            break;
+
                         ((FieldInfo)item.m).SetValue(null, desc.DatabaseId);
                         _logger.Info($"[Assembly] Set type id for {desc.DatabaseName} = {desc.DatabaseId}");
                         break;
@@ -184,6 +186,10 @@ namespace Aquila.Core.Instance
                         var mdFullName = item.attr.Parameters[0] as string;
                         var semantic = DatabaseRuntimeContext.Metadata.GetMetadata()
                             .GetSemantic(x => x.FullName == mdFullName);
+
+                        if (semantic is null)
+                            break;
+
                         var query = CRUDQueryGenerator.GetLoad(semantic, DatabaseRuntimeContext);
                         _logger.Info($"[Assembly] Generate select query for {mdFullName}:\n{query}");
                         (item.m as FieldInfo).SetValue(null, query);
@@ -194,6 +200,10 @@ namespace Aquila.Core.Instance
                         var mdFullName = item.attr.Parameters[0] as string;
                         var semantic = DatabaseRuntimeContext.Metadata.GetMetadata()
                             .GetSemantic(x => x.FullName == mdFullName);
+
+                        if (semantic is null)
+                            break;
+
                         var query = CRUDQueryGenerator.GetSaveUpdate(semantic, DatabaseRuntimeContext);
                         _logger.Info($"[Assembly] Generate update query for {mdFullName}:\n{query}");
                         (item.m as FieldInfo).SetValue(null, query);
@@ -204,6 +214,9 @@ namespace Aquila.Core.Instance
                         var mdFullName = item.attr.Parameters[0] as string;
                         var semantic = DatabaseRuntimeContext.Metadata.GetMetadata()
                             .GetSemantic(x => x.FullName == mdFullName);
+                        if (semantic is null)
+                            break;
+
                         var query = CRUDQueryGenerator.GetSaveInsert(semantic, DatabaseRuntimeContext);
                         _logger.Info($"[Assembly] Generate insert query for {mdFullName}:\n{query}");
                         (item.m as FieldInfo).SetValue(null, query);

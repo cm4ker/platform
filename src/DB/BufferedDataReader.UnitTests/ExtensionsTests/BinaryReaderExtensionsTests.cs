@@ -28,7 +28,8 @@ namespace BufferedDataReaderDotNet.UnitTests.ExtensionsTests
 
                 using (var binaryReader = new BinaryReader(memoryStream))
                 {
-                    Assert.Equal(bytes, binaryReader.ReadBytes());
+                    var length = binaryReader.ReadInt32();
+                    Assert.Equal(bytes, binaryReader.ReadBytes(length));
                     Assert.Equal(memoryStream.Length, memoryStream.Position);
                 }
             }
@@ -49,7 +50,7 @@ namespace BufferedDataReaderDotNet.UnitTests.ExtensionsTests
 
                 using (var binaryReader = new BinaryReader(memoryStream))
                 {
-                    Assert.Equal(dateTime, binaryReader.ReadDateTime());
+                    Assert.Equal(dateTime, DateTime.FromBinary(binaryReader.ReadInt64()));
                     Assert.Equal(memoryStream.Length, memoryStream.Position);
                 }
             }
@@ -70,7 +71,7 @@ namespace BufferedDataReaderDotNet.UnitTests.ExtensionsTests
 
                 using (var binaryReader = new BinaryReader(memoryStream))
                 {
-                    Assert.Equal(guid, binaryReader.ReadGuid());
+                    Assert.Equal(guid, new Guid(binaryReader.ReadBytes(16)));
                     Assert.Equal(memoryStream.Length, memoryStream.Position);
                 }
             }

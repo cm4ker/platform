@@ -14,26 +14,20 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using SoapCore;
 
 namespace Aquila.WebServiceCore
 {
-    public class PlatformWebService : IWebHost, IDisposable
+    public class AquilaWebHost : IWebHost, IDisposable
     {
-        private readonly ILogger<PlatformWebService> _logger;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IStartupService _startupService;
-        private readonly IPlatformInstanceManager _mrg;
         private IWebHost _host;
 
 
-        public PlatformWebService(IServiceProvider serviceProvider, IStartupService startupService,
-            IPlatformInstanceManager mrg, ILogger<PlatformWebService> looger)
+        public AquilaWebHost(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _startupService = startupService;
-            _mrg = mrg;
-            _logger = looger;
         }
 
         public void Dispose()
@@ -48,21 +42,22 @@ namespace Aquila.WebServiceCore
         public Task StartAsync(CancellationToken ct)
         {
             var builder = new WebHostBuilder()
-                .ConfigureServices(services =>
-                {
-                    _startupService.ConfigureServices(services);
-                    services.AddSoapCore();
-                    services.AddExceptionHandler(o => o.AllowStatusCode404Response = false);
-
-                    // If using Kestrel:
-                    services.Configure<KestrelServerOptions>(options => { options.AllowSynchronousIO = true; });
-                })
                 .Configure((b, app) =>
                 {
-                    b.HostingEnvironment.EnvironmentName = "Development";
+                    b.HostingEnvironment.EnvironmentName = Environments.Development;
 
                     app.UseRouting();
-                    app.UseAquilaPlatform(_mrg, _logger, ct);
+                    app.UseAquilaPlatform(ct);
+
+                    if (b.HostingEnvironment.IsDevelopment())
+                    {
+                        app.UseDeveloperExceptionPage();
+                    }
+                    else
+                    {
+                        app.UseExceptionHandler("/error");
+                        app.UseHsts();
+                    }
 
                     app.UseExceptionHandler(c => c.Run(async context =>
                     {
@@ -73,11 +68,19 @@ namespace Aquila.WebServiceCore
                         await context.Response.WriteAsJsonAsync(response, cancellationToken: ct);
                     }));
 
-                    _startupService.Configure(app);
-
                     //if we not found endpoints response this                    
                     app.Run(context =>
                         context.Response.WriteAsync("Path not found! Go away!", cancellationToken: ct));
+                })
+                .ConfigureServices(services =>
+                {
+                    services.AddSoapCore();
+                    services.AddExceptionHandler(o => o.AllowStatusCode404Response = false);
+
+                    services.AddAquilaPlatform();
+
+                    // If using Kestrel:
+                    services.Configure<KestrelServerOptions>(options => { options.AllowSynchronousIO = true; });
                 })
                 .UseKestrel()
                 .ConfigureServices(x => x.AddRouting())

@@ -6,7 +6,7 @@ using Aquila.Logging;
 
 namespace Aquila.WebServiceCore
 {
-    public class StartupServiceImpl : IStartupService
+    public class StartupServiceImpl
     {
         private readonly ILogger<StartupServiceImpl> _logger;
 
