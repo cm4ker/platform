@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 //using System.Collections.Generic;
 using Aquila.Core;
+using Aquila.Core.Contracts.Authentication;
 
 namespace Aquila.Library
 {
@@ -21,6 +22,15 @@ namespace Aquila.Library
         public static DateTime get_date()
         {
             return DateTime.Now;
+        }
+    }
+
+    [ExtensionAq]
+    public static class UserExtensions
+    {
+        public static IUser get_user(AqContext context)
+        {
+            return context.Session.User;
         }
     }
 

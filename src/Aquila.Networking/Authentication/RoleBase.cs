@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using Aquila.Core.Contracts.Authentication;
 
 namespace Aquila.Core.Authentication
 {
-    public abstract class RoleBase
+    public abstract class RoleBase : IRole
     {
         protected RoleBase()
         {

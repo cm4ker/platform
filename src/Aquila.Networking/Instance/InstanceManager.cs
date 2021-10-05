@@ -8,18 +8,9 @@ using Aquila.Logging;
 
 namespace Aquila.Core.Instance
 {
-    /*
-     * Концептуально:
-     *     У нас есть сервер приложений
-     *     На сервере приложений поднят IAdminEnvirnoment, который следует переименовать в IServerAppEnvironment
-     *     
-     */
-
     /// <summary>
-    /// Менеджер сред для платформы.
-    ///
-    /// <br /> Возжможно, потом, топологически каждая отдельная среда - это отдельный процесс
-    ///  </summary>
+    /// Instance manager for host
+    /// </summary>
     public class InstanceManager : IPlatformInstanceManager
     {
         private readonly IServiceProvider _serviceProvider;

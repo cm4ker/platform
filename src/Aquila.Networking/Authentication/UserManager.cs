@@ -23,12 +23,12 @@ namespace Aquila.Core.Authentication
             _logger = logger;
         }
 
-        public IPlatformUser Create()
+        public IUser Create()
         {
-            return new PlatformUser();
+            return new User();
         }
 
-        public void Update(IPlatformUser user)
+        public void Update(IUser user)
         {
             var cmd = _dataContextManager.GetContext().CreateCommand();
 
@@ -47,7 +47,7 @@ namespace Aquila.Core.Authentication
             cmd.ExecuteNonQuery();
         }
 
-        public void Delete(IPlatformUser user)
+        public void Delete(IUser user)
         {
             var cmd = _dataContextManager.GetContext().CreateCommand();
 
@@ -95,7 +95,7 @@ namespace Aquila.Core.Authentication
 
             if (reader.Read())
             {
-                var user = new PlatformUser
+                var user = new User
                 {
                     Id = id,
                     Name = reader.GetString(0)
@@ -135,7 +135,7 @@ namespace Aquila.Core.Authentication
                 {
                     if (reader.Read())
                     {
-                        var user = new PlatformUser
+                        var user = new User
                         {
                             Id = reader.GetGuid(0),
                             Name = reader.GetString(1),

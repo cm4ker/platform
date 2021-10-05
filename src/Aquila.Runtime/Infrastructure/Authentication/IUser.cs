@@ -4,24 +4,15 @@ using System.Collections.Generic;
 namespace Aquila.Core.Contracts.Authentication
 {
     /// <summary>
-    /// Презентация пользователя в системе на всех уровнях платформы
-    /// <br /> Пользователь может быть как администратором сервера, так и пользователь конкретной базы данных
+    /// Platform user
     /// </summary>
     public interface IUser
     {
-        //TODO: Должен ли администратор системы наследовать идиный интерфейс с пользователем прикладного решения
-
         /// <summary>
         /// Имя пользователя
         /// </summary>
         string Name { get; }
-    }
 
-    /// <summary>
-    /// Пользователь прикладного решения
-    /// </summary>
-    public interface IPlatformUser : IUser
-    {
         Guid Id { get; }
 
         /// <summary>

@@ -9,13 +9,17 @@ namespace Aquila.Core.Authentication
     {
         public Anonymous()
         {
-            Roles = new List<RoleBase>();
+            Roles = new List<IRole>();
             Id = Guid.NewGuid();
         }
 
         public Guid Id { get; }
-        public string Name { get => "Anonymous"; }
 
-        public List<RoleBase> Roles { get; }
+        public string Name
+        {
+            get => "Anonymous";
+        }
+
+        public List<IRole> Roles { get; }
     }
 }

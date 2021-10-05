@@ -9,9 +9,9 @@ namespace Aquila.Core.Authentication
     /// Пользователь в системе.
     /// Обязателен для работы, потому что все манипуляции с данными будут всегда выполняться в контексте данного пользователя
     /// </summary>
-    public class PlatformUser : IPlatformUser
+    public class User : IUser
     {
-        public PlatformUser()
+        public User()
         {
             Roles = new List<IRole>();
         }
@@ -25,7 +25,6 @@ namespace Aquila.Core.Authentication
         /// Роли пользователя
         /// </summary>
 
-
         public List<IRole> Roles { get; }
 
 
@@ -33,16 +32,5 @@ namespace Aquila.Core.Authentication
         {
             return Name;
         }
-    }
-
-    /// <summary>
-    /// Пользователь сервера. Позволяет производить процесс администрирования сервера
-    /// </summary>
-    public class ServerUser : IUser
-    {
-        /// <inheritdoc cref="Name"/>
-        public string Name { get; }
-
-        public string PasswordHash { get; set; }
     }
 }
