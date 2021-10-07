@@ -1,20 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using Aquila.Core.Authentication;
-using Aquila.Core.Sessions;
-using Aquila.Data;
-using Aquila.Core.Tools;
-using Aquila.Core.Contracts;
-using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Instance;
-using Aquila.Core.Contracts.Network;
-using Aquila.Core.Instance;
-using Aquila.Logging;
-
-
-namespace Aquila.Core.Test.Environment
+﻿namespace Aquila.Core.Test.Environment
 {
     // public class TestAsmManager : IAssemblyManager
     // {

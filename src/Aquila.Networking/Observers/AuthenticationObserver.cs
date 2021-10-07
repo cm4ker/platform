@@ -1,5 +1,5 @@
 ﻿using System;
-using Aquila.Core.Contracts.Instance;
+using Aquila.Core.Instance;
 using Aquila.Core.Tools;
 
 namespace Aquila.Core.Network.States
@@ -7,9 +7,9 @@ namespace Aquila.Core.Network.States
     public class AuthenticationObserver : IConnectionObserver<IConnectionContext>
     {
         private IDisposable _unsbscriber;
-        private IInstance _instance;
+        private AqInstance _instance;
 
-        public AuthenticationObserver(IInstance instance)
+        public AuthenticationObserver(AqInstance instance)
         {
             _instance = instance;
         }

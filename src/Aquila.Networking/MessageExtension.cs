@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
+using Aquila.Core.Instance;
 
 namespace Aquila.Core.Network
 {
@@ -55,7 +55,7 @@ namespace Aquila.Core.Network
         }
 
         public static async Task<INetworkMessage> GetEnvironmentList(this RequestEnvironmentListNetworkMessage request,
-            IPlatformInstanceManager manager)
+            IAqInstanceManager manager)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace Aquila.Core.Network
         }
 
         public static async Task<INetworkMessage> UseEnvironment(this RequestEnvironmentUseNetworkMessage request,
-            IPlatformInstanceManager manager, Action<IInstance> useCallBack)
+            IAqInstanceManager manager, Action<AqInstance> useCallBack)
         {
             try
             {

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
-using Aquila.Core.Authentication;
+﻿using System.Collections.Concurrent;
 using Aquila.Core.CacheService;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Instance;
 using Aquila.Data;
 
@@ -17,7 +14,7 @@ namespace Aquila.Core.Sessions
     {
         private readonly ConcurrentDictionary<string, object> _sessionParameters;
 
-        public UserSession(IPlatformInstance env, IUser user, DataContextManager dataContextManger,
+        public UserSession(AqInstance env, IUser user, DataContextManager dataContextManger,
             ICacheService cacheService)
             : base(env, cacheService)
         {
@@ -26,11 +23,6 @@ namespace Aquila.Core.Sessions
         }
 
         public override IUser User { get; protected set; }
-
-        // Задача ниже V - не пойму для чего она. У сессии есть доступ к среде, не понятно, зачем для каждой сессии генерировать свой набор компонент.
-        // Это скажется на потреблении памяти, это раз а два - это необходимость переинициализировать все компоненты в случае динамического обновления.
-        // Легче держать все компоненты в одном месте, т.е. в среде и обращаться к ним из сессии. Я подумаю над этим...
-        //TODO: Все компоненты инициализируются для сессии, так что необходимо, чтобы компоненты были доступны из сессии, либо на уровне ниже
 
 
         /// <summary>

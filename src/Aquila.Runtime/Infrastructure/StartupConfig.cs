@@ -1,14 +1,11 @@
-﻿using Aquila.Core.Contracts.Instance;
-using Aquila.Core.Instance;
-using Aquila.Data;
-using Aquila.QueryBuilder;
+﻿using Aquila.Data;
 
 namespace Aquila.Core
 {
     /// <summary>
     /// Минимально необходимый набор параметров, чтобы всё заработало
     /// </summary>
-    public class StartupConfig : IStartupConfig
+    public class StartupConfig
     {
         /// <summary>
         /// Строка подключения к базе

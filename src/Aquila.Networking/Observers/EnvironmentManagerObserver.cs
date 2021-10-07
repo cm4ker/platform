@@ -1,15 +1,15 @@
 ﻿using System;
-using Aquila.Core.Contracts.Instance;
+using Aquila.Core.Instance;
 using Aquila.Core.Tools;
 
 namespace Aquila.Core.Network.States
 {
     public class EnvironmentManagerObserver : IConnectionObserver<IConnectionContext>
     {
-        private IPlatformInstanceManager _instanceManager;
+        private IAqInstanceManager _instanceManager;
         private IDisposable _unsbscriber;
 
-        public EnvironmentManagerObserver(IPlatformInstanceManager instanceManager)
+        public EnvironmentManagerObserver(IAqInstanceManager instanceManager)
         {
             _instanceManager = instanceManager;
         }

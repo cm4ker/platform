@@ -1,11 +1,10 @@
-using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using Aquila.Core;
 using Aquila.Core.Authentication;
-using Aquila.Core.Contracts.Instance;
+using Aquila.Core.Instance;
 using Aquila.Core.Sessions;
 using Aquila.Core.Test;
 using Aquila.Library.Scripting;
@@ -48,7 +47,7 @@ namespace ScriptsTest
             Skip.If(isSkipTest.IsMatch(fname));
 
             var service = TestEnvSetup.GetServerService(_output);
-            var manager = service.GetService<IPlatformInstanceManager>();
+            var manager = service.GetService<IAqInstanceManager>();
             var instance = manager.GetInstance("Library");
 
             _output.WriteLine("Testing {0} ...", fname);

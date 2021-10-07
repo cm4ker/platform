@@ -7,16 +7,13 @@ using Aquila.Core.Instance;
 using Xunit.Abstractions;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
 using Aquila.Core.Network;
 using Aquila.Core.Serialisers;
 using Aquila.Core.Settings;
-using Aquila.Core.Test.Environment;
 using Aquila.Logging;
 using Aquila.Migrations;
 using Aquila.Networking;
-using Aquila.Test.Tools.Assemblies;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Aquila.Core.Test
@@ -46,11 +43,11 @@ namespace Aquila.Core.Test
             services.AddTransient<IChannelFactory, ChannelFactory>();
 
             services.AddSingleton<ISettingsStorage, TestSettingsStorage>();
-            services.AddSingleton<IPlatformInstanceManager, InstanceManager>();
+            services.AddSingleton<IAqInstanceManager, AqInstanceManager>();
             services.AddScoped<ILinkFactory, LinkFactory>();
-            services.AddScoped<IPlatformInstance, PlatformInstance>();
+            services.AddScoped<AqInstance>();
             services.AddScoped<MigrationManager>();
-            
+
             services.AddSingleton<ICacheService, DictionaryCacheService>();
 
             services.AddScoped<IAuthenticationManager, AuthenticationManager>();

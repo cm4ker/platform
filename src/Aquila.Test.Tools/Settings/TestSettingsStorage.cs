@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Aquila.Core.Contracts.Instance;
-using Aquila.Core.Instance;
+﻿using System.Collections.Generic;
 using Aquila.Core.Settings;
 using Aquila.Data;
 

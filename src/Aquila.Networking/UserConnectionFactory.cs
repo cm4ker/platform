@@ -1,7 +1,6 @@
 using System;
-using Microsoft.Extensions.DependencyInjection;
-using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Instance;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Aquila.Core.Network
 {
@@ -16,9 +15,9 @@ namespace Aquila.Core.Network
 
         public override Connection CreateConnection(ITransportClient tcpClient)
         {
-            return CreateConnection(tcpClient, new FilteredInstanceManager(
-                _serviceProvider.GetRequiredService<IPlatformInstanceManager>(),
-                env => env is IPlatformInstance));
+            return CreateConnection(tcpClient, new AqFilteredInstanceManager(
+                _serviceProvider.GetRequiredService<AqInstanceManager>(),
+                env => env is AqInstance));
         }
     }
 }

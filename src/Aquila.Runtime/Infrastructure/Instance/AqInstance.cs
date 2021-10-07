@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using Aquila.Core.Assemlies;
-using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
 using Aquila.Core.Sessions;
 using Aquila.Data;
 using Aquila.Initializer;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
 using Aquila.Logging;
 using Aquila.Metadata;
@@ -27,11 +24,11 @@ namespace Aquila.Core.Instance
     /// <summary>
     /// Platfrom instace
     /// </summary>
-    public class PlatformInstance : IPlatformInstance
+    public class AqInstance
     {
         private object _locking;
 
-        public PlatformInstance(IInvokeService invokeService, ILogger<PlatformInstance> logger,
+        public AqInstance(IInvokeService invokeService, ILogger<AqInstance> logger,
             IAuthenticationManager authenticationManager, IServiceProvider serviceProvider,
             DataContextManager contextManager, IUserManager userManager, ICacheService cacheService,
             MigrationManager manager
@@ -66,7 +63,7 @@ namespace Aquila.Core.Instance
             return DatabaseRuntimeContext.Files.GetMainAssembly(DataContextManager.GetContext());
         }
 
-        public void Initialize(IStartupConfig config)
+        public void Initialize(StartupConfig config)
         {
             MigrationRunner.Migrate(config.ConnectionString, config.DatabaseType);
 
@@ -76,8 +73,8 @@ namespace Aquila.Core.Instance
             _logger.Info("Current configuration was loaded. It contains {0} elements",
                 DatabaseRuntimeContext.Metadata.GetMetadata().Metadata.Count());
 
-            AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
-            _logger.Info("Auth provider was registered");
+            // AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
+            // _logger.Info("Auth provider was registered");
 
             var currentAssembly = GetCurrentAssembly();
 

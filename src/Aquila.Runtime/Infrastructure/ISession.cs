@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Reflection;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
+using Aquila.Core.Instance;
 using Aquila.Data;
-using Aquila.Runtime;
 
 namespace Aquila.Core.Contracts
 {
@@ -46,7 +44,7 @@ namespace Aquila.Core.Contracts
         /// <summary>
         /// The environment
         /// </summary>
-        IPlatformInstance Instance { get; }
+        AqInstance Instance { get; }
 
         /// <summary>
         /// Close the session

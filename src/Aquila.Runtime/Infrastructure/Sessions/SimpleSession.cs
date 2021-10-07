@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Aquila.Core.Authentication;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Instance;
 using Aquila.Data;
-using Aquila.QueryBuilder;
 
 namespace Aquila.Core.Sessions
 {
@@ -18,7 +14,7 @@ namespace Aquila.Core.Sessions
         private readonly DataContextManager _dataContextManger;
         private readonly DataConnectionContext _dataContext;
 
-        public SimpleSession(IPlatformInstance instance, IUser user) 
+        public SimpleSession(AqInstance instance, IUser user) 
         {
             Id = Guid.NewGuid();
             User = user;
@@ -38,7 +34,7 @@ namespace Aquila.Core.Sessions
             get => _dataContext;
         }
 
-        public IPlatformInstance Instance { get; }
+        public AqInstance Instance { get; }
 
 
         public void Dispose()

@@ -32,7 +32,7 @@ namespace Aquila.WebServiceCore
         public static void UseAquilaPlatform(this IApplicationBuilder app, CancellationToken ct = default)
         {
             var mrg = app.ApplicationServices.GetService<IPlatformInstanceManager>();
-            var logger = app.ApplicationServices.GetService<ILogger<PlatformInstance>>();
+            var logger = app.ApplicationServices.GetService<ILogger<AqInstance>>();
 
             var instances = mrg.GetInstances();
 
@@ -106,13 +106,13 @@ namespace Aquila.WebServiceCore
             services.AddScoped<DataContextManager>();
             services.AddScoped<IUserManager, UserManager>();
 
-            services.AddSingleton<IPlatformInstanceManager, InstanceManager>();
-            services.AddScoped<IPlatformInstance, PlatformInstance>();
+            services.AddSingleton<IPlatformInstanceManager, AqInstanceManager>();
+            services.AddScoped<IPlatformInstance, AqInstance>();
             services.AddScoped<MigrationManager>();
 
-            services.AddSingleton<IPlatformInstanceManager, InstanceManager>();
+            services.AddSingleton<IPlatformInstanceManager, AqInstanceManager>();
 
-            services.AddScoped<IPlatformInstance, PlatformInstance>();
+            services.AddScoped<IPlatformInstance, AqInstance>();
 
 
             services.AddSingleton<ISettingsStorage, FileSettingsStorage>();

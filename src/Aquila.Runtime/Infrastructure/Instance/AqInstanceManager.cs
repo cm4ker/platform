@@ -1,24 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
-using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Settings;
 using Aquila.Logging;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Aquila.Core.Instance
 {
     /// <summary>
     /// Instance manager for host
     /// </summary>
-    public class InstanceManager : IPlatformInstanceManager
+    public class AqInstanceManager : IAqInstanceManager
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly List<IPlatformInstance> environments = new List<IPlatformInstance>();
+        private readonly List<AqInstance> environments = new List<AqInstance>();
         private readonly ILogger _logger;
 
-        public InstanceManager(ISettingsStorage configStorage, IServiceProvider serviceProvider,
-            ILogger<InstanceManager> logger)
+        public AqInstanceManager(ISettingsStorage configStorage, IServiceProvider serviceProvider,
+            ILogger<AqInstanceManager> logger)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
@@ -31,16 +30,16 @@ namespace Aquila.Core.Instance
             list.ForEach(AddInstance);
         }
 
-        public void AddInstance(IStartupConfig config)
+        public void AddInstance(StartupConfig config)
         {
-            var instance = CreatePlatformEnvironment<IPlatformInstance>(config);
+            var instance = CreatePlatformEnvironment<AqInstance>(config);
 
             if (instance != null)
                 environments.Add(instance);
         }
 
-        protected IPlatformInstance CreatePlatformEnvironment<T>(IStartupConfig config)
-            where T : IPlatformInstance
+        protected AqInstance CreatePlatformEnvironment<T>(StartupConfig config)
+            where T : AqInstance
         {
             try
             {
@@ -59,12 +58,12 @@ namespace Aquila.Core.Instance
             return null;
         }
 
-        public IPlatformInstance GetInstance(string name)
+        public AqInstance GetInstance(string name)
         {
             return environments.FirstOrDefault(m => m.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
 
-        public IEnumerable<IPlatformInstance> GetInstances()
+        public IEnumerable<AqInstance> GetInstances()
         {
             return environments.AsReadOnly();
         }

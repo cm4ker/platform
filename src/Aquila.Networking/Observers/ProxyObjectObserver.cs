@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Aquila.Core.Contracts.Instance;
+using Aquila.Core.Instance;
 using Aquila.Core.Tools;
 
 namespace Aquila.Core.Network.States
@@ -9,10 +9,10 @@ namespace Aquila.Core.Network.States
     {
         private IDisposable _unsbscriber;
         private object _instanceService;
-        private IInstance _instance;
+        private AqInstance _instance;
         private Guid _id;
 
-        public ProxyObjectObserver(IConnection connection, Guid Id, object instanceService, IInstance instance)
+        public ProxyObjectObserver(IConnection connection, Guid Id, object instanceService, AqInstance instance)
         {
             _instance = instance;
 

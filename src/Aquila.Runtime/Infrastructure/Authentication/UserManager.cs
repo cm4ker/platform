@@ -12,7 +12,7 @@ namespace Aquila.Core.Authentication
     /// Менеджер работы с пользователем
     /// Создание/Сохранение/Изменение
     /// </summary>
-    public class UserManager : IUserManager
+    public class UserManager
     {
         private readonly DataContextManager _dataContextManager;
         private readonly ILogger<UserManager> _logger;
@@ -107,7 +107,7 @@ namespace Aquila.Core.Authentication
             throw new UserNotFoundException();
         }
 
-        public IUser FindUserByName(string name)
+        public IUser FindUserByName(string name)`   3N
         {
             void Gen(QueryMachine m)
             {

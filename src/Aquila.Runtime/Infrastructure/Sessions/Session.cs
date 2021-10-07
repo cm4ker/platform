@@ -1,13 +1,9 @@
-﻿using System.Collections.Generic;
-using Aquila.Core.Authentication;
-using Aquila.Core.Instance;
-using Aquila.Data;
-using System.Linq;
+﻿using Aquila.Data;
 using System;
 using Aquila.Core.CacheService;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Instance;
+using Aquila.Core.Instance;
 
 namespace Aquila.Core.Sessions
 {
@@ -16,7 +12,7 @@ namespace Aquila.Core.Sessions
     /// </summary>
     public abstract class Session : ISession
     {
-        protected Session(IPlatformInstance env, ICacheService cacheService)
+        protected Session(AqInstance env, ICacheService cacheService)
         {
             Instance = env;
             Id = Guid.NewGuid();
@@ -30,7 +26,7 @@ namespace Aquila.Core.Sessions
 
         protected DataContextManager _dataContextManger;
 
-        public IPlatformInstance Instance { get; }
+        public AqInstance Instance { get; }
 
         public abstract IUser User { get; protected set; }
 

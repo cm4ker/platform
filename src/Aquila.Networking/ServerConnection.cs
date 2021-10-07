@@ -1,6 +1,6 @@
 ﻿using System;
 using Aquila.Core.Network.States;
-using Aquila.Core.Contracts.Instance;
+using Aquila.Core.Instance;
 using Aquila.Logging;
 
 namespace Aquila.Core.Network
@@ -18,7 +18,7 @@ namespace Aquila.Core.Network
         private ServerConnectionContext _connectionContext;
 
         public ServerConnection(ILogger<ServerConnection> logger, IChannelFactory channelFactory,
-            ITransportClient tcpClient, IPlatformInstanceManager instanceManager)
+            ITransportClient tcpClient, IAqInstanceManager instanceManager)
             : base(logger, tcpClient, channelFactory)
         {
             _logger = logger;

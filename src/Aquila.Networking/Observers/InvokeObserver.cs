@@ -1,5 +1,5 @@
 ﻿using System;
-using Aquila.Core.Contracts.Instance;
+using Aquila.Core.Instance;
 using Aquila.Core.Tools;
 using Aquila.Serializer;
 
@@ -7,10 +7,10 @@ namespace Aquila.Core.Network.States
 {
     public class InvokeObserver : IConnectionObserver<IConnectionContext>
     {
-        private IInstance _instance;
+        private AqInstance _instance;
         private IDisposable _unsbscriber;
 
-        public InvokeObserver(IInstance instance)
+        public InvokeObserver(AqInstance instance)
         {
             _instance = instance;
         }

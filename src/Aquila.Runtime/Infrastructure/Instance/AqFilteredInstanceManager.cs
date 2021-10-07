@@ -1,36 +1,36 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Aquila.Core.Contracts.Instance;
+using Aquila.Core.Instance;
 
 namespace Aquila.Core.Network
 {
     /// <summary>
     /// Менеджер рабочих сред с возможностью разделения доступа к ним 
     /// </summary>
-    public class FilteredInstanceManager : IPlatformInstanceManager
+    public class AqFilteredInstanceManager : IAqInstanceManager
     {
-        private IPlatformInstanceManager _manager;
-        private Func<IInstance, bool> _filter;
+        private AqInstanceManager _manager;
+        private Func<AqInstance, bool> _filter;
 
         /// <summary>
         /// Создает менеджер с разделенным доступом к средам
         /// </summary>
         /// <param name="manager">Менеджер сред</param>
         /// <param name="filter">Фильтр</param>
-        public FilteredInstanceManager(IPlatformInstanceManager manager,
-            Func<IInstance, bool> filter)
+        public AqFilteredInstanceManager(AqInstanceManager manager,
+            Func<AqInstance, bool> filter)
         {
             _manager = manager;
             _filter = filter;
         }
 
-        public void AddInstance(IStartupConfig config)
+        public void AddInstance(StartupConfig config)
         {
             _manager.AddInstance(config);
         }
 
-        public IPlatformInstance GetInstance(string name)
+        public AqInstance GetInstance(string name)
         {
             var env = _manager.GetInstance(name);
             if (_filter(env))
@@ -39,7 +39,7 @@ namespace Aquila.Core.Network
             throw new InvalidOperationException("Access denied.");
         }
 
-        public IEnumerable<IPlatformInstance> GetInstances()
+        public IEnumerable<AqInstance> GetInstances()
         {
             return _manager.GetInstances().Where(e => _filter(e));
         }
