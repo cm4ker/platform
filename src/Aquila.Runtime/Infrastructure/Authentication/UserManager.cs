@@ -107,7 +107,7 @@ namespace Aquila.Core.Authentication
             throw new UserNotFoundException();
         }
 
-        public IUser FindUserByName(string name)`   3N
+        public IUser FindUserByName(string name)
         {
             void Gen(QueryMachine m)
             {
