@@ -1,7 +1,7 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 using System.IO;
 using System.IO.Compression;
-using Aquila.Core.Contracts.Instance;
+using Aquila.Core.Instance;
 
 namespace Aquila.Cli.Commands.Db
 {
@@ -21,9 +21,9 @@ namespace Aquila.Cli.Commands.Db
         public string Insatnce { get; }
 
         private IConsole _console;
-        private IPlatformInstanceManager _instanceManager;
+        private AqInstanceManager _instanceManager;
 
-        public CommandDbDeploy(IConsole console, IPlatformInstanceManager instanceManager)
+        public CommandDbDeploy(IConsole console, AqInstanceManager instanceManager)
         {
             _console = console;
             _instanceManager = instanceManager;

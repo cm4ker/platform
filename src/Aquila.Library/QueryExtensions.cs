@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 //using System.Collections.Generic;
 using Aquila.Core;
+using Aquila.Core.Authentication;
 using Aquila.Core.Contracts.Authentication;
 
 namespace Aquila.Library
@@ -28,7 +29,7 @@ namespace Aquila.Library
     [ExtensionAq]
     public static class UserExtensions
     {
-        public static IUser get_user(AqContext context)
+        public static AqUser get_user(AqContext context)
         {
             return context.Session.User;
         }

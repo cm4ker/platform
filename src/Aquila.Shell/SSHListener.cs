@@ -1,25 +1,15 @@
 ﻿using System;
-using System.ComponentModel.Design;
 using System.Net;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Aquila.Cli;
-using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Instance;
 using Aquila.Core.Network;
-using Aquila.Core.Serialisers;
-using Aquila.Core.Settings;
-using Aquila.Core.Tools;
-using Aquila.Data;
 using Aquila.Logging;
 using Aquila.Shell.Contracts;
 using Aquila.Shell.Terminal;
 using Aquila.SSH;
 using Aquila.SSH.Services;
-using AuthenticationManager = Aquila.Core.Authentication.AuthenticationManager;
-using Channel = Aquila.Core.Network.Channel;
 
 namespace Aquila.Shell
 {
@@ -145,7 +135,7 @@ namespace Aquila.Shell
 
 
             services.AddScoped<ICommandLineInterface, CliInterface>();
-            services.AddSingleton(f => _serviceProvider.GetRequiredService<IPlatformInstanceManager>());
+            services.AddSingleton(f => _serviceProvider.GetRequiredService<AqInstanceManager>());
             services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
 
 

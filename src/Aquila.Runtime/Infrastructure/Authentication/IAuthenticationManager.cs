@@ -1,4 +1,6 @@
-﻿namespace Aquila.Core.Contracts.Authentication
+﻿using Aquila.Core.Authentication;
+
+namespace Aquila.Core.Contracts.Authentication
 {
     /// <summary>
     /// Менеджер аутентификации
@@ -10,7 +12,7 @@
         /// </summary>
         /// <param name="token">Токен</param>
         /// <returns></returns>
-        IUser Authenticate(IAuthenticationToken token);
+        AqUser Authenticate(IAuthenticationToken token);
 
 
         void RegisterProvider(IAuthenticationProvider provider);

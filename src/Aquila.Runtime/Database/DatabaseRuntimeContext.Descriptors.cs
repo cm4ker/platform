@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Aquila.Data;
+using Aquila.Initializer;
 using Aquila.Metadata;
+using DBConsts = Aquila.Initializer.DBConstNames.Descriptors;
 
 namespace Aquila.Runtime
 {
@@ -72,19 +74,19 @@ namespace Aquila.Runtime
                         .bg_query()
                         .m_values()
                         .ld_const(0)
-                        .ld_param("id_s")
-                        .ld_param("db_name")
+                        .ld_param(DBConsts.MD_NAME_COLUMN)
+                        .ld_param(DBConsts.DB_NAME_COLUMN)
                         .m_insert()
-                        .ld_table(DescriptorsTableName)
-                        .ld_column("id_n")
-                        .ld_column("id_s")
-                        .ld_column("db_name")
+                        .ld_table(DBConsts.DESCRIPTORS_TABLE)
+                        .ld_column(DBConsts.DB_ID_COLUMN)
+                        .ld_column(DBConsts.MD_NAME_COLUMN)
+                        .ld_column(DBConsts.DB_NAME_COLUMN)
                         .st_query();
                 });
 
 
-                cmd.AddOrSetParameterWithValue("db_name", "Unknown");
-                cmd.AddOrSetParameterWithValue("id_s", mdId);
+                cmd.AddOrSetParameterWithValue(DBConsts.DB_NAME_COLUMN, "Unknown");
+                cmd.AddOrSetParameterWithValue(DBConsts.MD_NAME_COLUMN, mdId);
 
                 cmd.ExecuteNonQuery();
 
@@ -92,17 +94,17 @@ namespace Aquila.Runtime
                 {
                     q.bg_query()
                         .m_from()
-                        .ld_table(DescriptorsTableName)
+                        .ld_table(DBConsts.DESCRIPTORS_TABLE)
                         .m_where()
-                        .ld_column("id_s")
-                        .ld_param("id_s")
+                        .ld_column(DBConsts.MD_NAME_COLUMN)
+                        .ld_param(DBConsts.MD_NAME_COLUMN)
                         .eq()
                         .m_select()
                         .ld_column("*")
                         .st_query();
                 });
 
-                cmdLoad.AddOrSetParameterWithValue("id_s", mdId);
+                cmdLoad.AddOrSetParameterWithValue(DBConsts.MD_NAME_COLUMN, mdId);
                 using var reader = cmdLoad.ExecuteReader();
 
                 if (reader.Read())
@@ -131,21 +133,21 @@ namespace Aquila.Runtime
                     q
                         .bg_query()
                         .m_from()
-                        .ld_table(DescriptorsTableName)
+                        .ld_table(DBConsts.DESCRIPTORS_TABLE)
                         .@as("t")
                         .m_where()
-                        .ld_column("id")
-                        .ld_param("id")
+                        .ld_column(DBConsts.ID_COLUMN)
+                        .ld_param(DBConsts.ID_COLUMN)
                         .eq()
                         .m_set()
-                        .ld_column("id_s")
-                        .ld_param("id_s")
+                        .ld_column(DBConsts.MD_NAME_COLUMN)
+                        .ld_param(DBConsts.MD_NAME_COLUMN)
                         .assign()
-                        .ld_column("id_n")
-                        .ld_param("id_n")
+                        .ld_column(DBConsts.DB_ID_COLUMN)
+                        .ld_param(DBConsts.DB_ID_COLUMN)
                         .assign()
-                        .ld_column("db_name")
-                        .ld_param("db_name")
+                        .ld_column(DBConsts.DB_NAME_COLUMN)
+                        .ld_param(DBConsts.DB_NAME_COLUMN)
                         .assign()
                         .m_update()
                         .ld_table("t")
@@ -154,10 +156,10 @@ namespace Aquila.Runtime
 
                 foreach (var descriptor in _descriptors)
                 {
-                    cmd.AddOrSetParameterWithValue("db_name", descriptor.DatabaseName);
-                    cmd.AddOrSetParameterWithValue("id_s", descriptor.MetadataId);
-                    cmd.AddOrSetParameterWithValue("id_n", descriptor.DatabaseId);
-                    cmd.AddOrSetParameterWithValue("id", descriptor.Id);
+                    cmd.AddOrSetParameterWithValue(DBConsts.DB_NAME_COLUMN, descriptor.DatabaseName);
+                    cmd.AddOrSetParameterWithValue(DBConsts.MD_NAME_COLUMN, descriptor.MetadataId);
+                    cmd.AddOrSetParameterWithValue(DBConsts.DB_ID_COLUMN, descriptor.DatabaseId);
+                    cmd.AddOrSetParameterWithValue(DBConsts.ID_COLUMN, descriptor.Id);
 
                     cmd.ExecuteNonQuery();
                 }
@@ -169,12 +171,12 @@ namespace Aquila.Runtime
                 {
                     q.bg_query()
                         .m_from()
-                        .ld_table(DescriptorsTableName)
+                        .ld_table(DBConsts.DESCRIPTORS_TABLE)
                         .m_select()
-                        .ld_column("id")
-                        .ld_column("id_s")
-                        .ld_column("db_name")
-                        .ld_column("id_n")
+                        .ld_column(DBConsts.ID_COLUMN)
+                        .ld_column(DBConsts.MD_NAME_COLUMN)
+                        .ld_column(DBConsts.DB_NAME_COLUMN)
+                        .ld_column(DBConsts.DB_ID_COLUMN)
                         .st_query();
                 });
 

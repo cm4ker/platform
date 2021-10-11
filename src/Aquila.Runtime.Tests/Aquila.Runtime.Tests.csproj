@@ -15,7 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Aquila.Initializer\Aquila.Initializer.csproj"/>
         <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj"/>
     </ItemGroup>
 

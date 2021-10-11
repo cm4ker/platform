@@ -7,16 +7,16 @@ namespace Aquila.Initializer.InternalDatabaseStructureMigrations
     {
         public override void Up()
         {
-            Create.Table("descriptors")
-                .WithColumn("id").AsInt32().PrimaryKey().Identity()
-                .WithColumn("id_s").AsString(300)
-                .WithColumn("id_n").AsInt32()
-                .WithColumn("db_name").AsString(150);
+            Create.Table(DBConstNames.Descriptors.DESCRIPTORS_TABLE)
+                .WithColumn(DBConstNames.Descriptors.ID_COLUMN).AsInt32().PrimaryKey().Identity()
+                .WithColumn(DBConstNames.Descriptors.MD_NAME_COLUMN).AsString(300)
+                .WithColumn(DBConstNames.Descriptors.DB_ID_COLUMN).AsInt32()
+                .WithColumn(DBConstNames.Descriptors.DB_NAME_COLUMN).AsString(150);
         }
 
         public override void Down()
         {
-            Delete.Table("descriptors");
+            Delete.Table(DBConstNames.Descriptors.DESCRIPTORS_TABLE);
         }
     }
 }

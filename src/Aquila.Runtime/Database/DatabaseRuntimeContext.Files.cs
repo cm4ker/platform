@@ -6,6 +6,8 @@ using Aquila.Core;
 using Aquila.Core.Assemlies;
 using Aquila.Data;
 using Aquila.QueryBuilder;
+using DBConsts = Aquila.Initializer.DBConstNames.Files;
+
 
 namespace Aquila.Runtime
 {
@@ -41,18 +43,18 @@ namespace Aquila.Runtime
                         .m_from()
                         .ld_table(_tableName)
                         .m_where()
-                        .ld_column("name")
-                        .ld_param("name")
+                        .ld_column(DBConsts.NAME_COLUMN)
+                        .ld_param(DBConsts.NAME_COLUMN)
                         .eq()
                         .m_select()
-                        .ld_column("data")
+                        .ld_column(DBConsts.DATA_COLUMN)
                         .st_query();
                 }
 
 
                 using (var cmd = dcc.CreateCommand(Gen))
                 {
-                    cmd.AddParameterWithValue("name", name);
+                    cmd.AddParameterWithValue(DBConsts.NAME_COLUMN, name);
 
                     return (byte[])cmd.ExecuteScalar();
                 }
@@ -109,8 +111,8 @@ namespace Aquila.Runtime
                         //.eq()
                         //.and()
                         .m_select()
-                        .ld_column("type")
-                        .ld_column("name")
+                        .ld_column(DBConsts.TYPE_COLUMN)
+                        .ld_column(DBConsts.NAME_COLUMN)
                         .st_query();
                 }
 
@@ -136,24 +138,24 @@ namespace Aquila.Runtime
                     qm
                         .bg_query()
                         .m_values()
-                        .ld_param("type")
-                        .ld_param("name")
-                        .ld_param("data")
+                        .ld_param(DBConsts.TYPE_COLUMN)
+                        .ld_param(DBConsts.NAME_COLUMN)
+                        .ld_param(DBConsts.DATA_COLUMN)
                         .m_insert()
                         .ld_table(_tableName)
-                        .ld_column("type")
-                        .ld_column("name")
-                        .ld_column("data")
+                        .ld_column(DBConsts.TYPE_COLUMN)
+                        .ld_column(DBConsts.NAME_COLUMN)
+                        .ld_column(DBConsts.DATA_COLUMN)
                         .st_query();
                 }
 
                 using (var cmd = dcc.CreateCommand(Gen))
                 {
-                    cmd.AddParameterWithValue("name", descriptor.Name);
-                    cmd.AddParameterWithValue("type", descriptor.Type);
+                    cmd.AddParameterWithValue(DBConsts.NAME_COLUMN, descriptor.Name);
+                    cmd.AddParameterWithValue(DBConsts.TYPE_COLUMN, descriptor.Type);
 
 
-                    cmd.AddParameterWithValue("data", blob);
+                    cmd.AddParameterWithValue(DBConsts.DATA_COLUMN, blob);
 
                     cmd.ExecuteNonQuery();
                 }

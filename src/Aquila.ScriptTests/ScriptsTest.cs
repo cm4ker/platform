@@ -53,7 +53,8 @@ namespace ScriptsTest
             _output.WriteLine("Testing {0} ...", fname);
 
             // test script compilation and run it
-            var result = CompileAndRun(path, new AqContext(new SimpleSession(instance, new Anonymous())));
+            var result = CompileAndRun(path,
+                new AqContext(new SimpleSession(instance, new AqUser { Name = "Anonymous" })));
 
             // Skip if platform wants it to
             Skip.If(result == SkippedTestReturn);

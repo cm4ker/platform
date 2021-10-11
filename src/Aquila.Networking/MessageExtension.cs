@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Aquila.Core.Authentication;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Network;
@@ -40,7 +41,7 @@ namespace Aquila.Core.Network
         }
 
         public static async Task<INetworkMessage> Authentication(this RequestAuthenticationNetworkMessage request,
-            IAuthenticationManager manager, Action<IUser> AuthCallback)
+            IAuthenticationManager manager, Action<AqUser> AuthCallback)
         {
             try
             {

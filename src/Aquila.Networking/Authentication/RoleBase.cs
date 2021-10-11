@@ -3,7 +3,7 @@ using Aquila.Core.Contracts.Authentication;
 
 namespace Aquila.Core.Authentication
 {
-    public abstract class RoleBase : IRole
+    public abstract class RoleBase
     {
         protected RoleBase()
         {

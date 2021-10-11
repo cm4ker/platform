@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using Aquila.Core.Assemlies;
+using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
 using Aquila.Core.Sessions;
 using Aquila.Data;
@@ -30,7 +31,7 @@ namespace Aquila.Core.Instance
 
         public AqInstance(IInvokeService invokeService, ILogger<AqInstance> logger,
             IAuthenticationManager authenticationManager, IServiceProvider serviceProvider,
-            DataContextManager contextManager, IUserManager userManager, ICacheService cacheService,
+            DataContextManager contextManager, UserManager userManager, ICacheService cacheService,
             MigrationManager manager
         )
         {
@@ -229,7 +230,7 @@ namespace Aquila.Core.Instance
 
         private IServiceProvider _serviceProvider;
 
-        private IUserManager _userManager;
+        private UserManager _userManager;
         private readonly ICacheService _cacheService;
 
         public IList<ISession> Sessions { get; }
@@ -257,7 +258,7 @@ namespace Aquila.Core.Instance
         /// <param name="user">Пользователь</param>
         /// <returns></returns>
         /// <exception cref="Exception">Если платформа не инициализирована</exception>
-        public ISession CreateSession(IUser user)
+        public ISession CreateSession(AqUser user)
         {
             lock (_locking)
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using Aquila.Core.Authentication;
 using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Network;
 using Aquila.Core.Instance;
@@ -16,7 +17,7 @@ namespace Aquila.Core.Contracts
         /// <summary>
         /// The user
         /// </summary>
-        IUser User { get; }
+        AqUser User { get; }
 
 
         /// <summary>

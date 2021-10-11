@@ -1,5 +1,5 @@
-﻿using McMaster.Extensions.CommandLineUtils;
-using Aquila.Core.Contracts.Instance;
+﻿using Aquila.Core.Instance;
+using McMaster.Extensions.CommandLineUtils;
 using MoreLinq.Extensions;
 
 namespace Aquila.Cli.Commands.Db
@@ -8,12 +8,14 @@ namespace Aquila.Cli.Commands.Db
     public class CommandDBList
     {
         private IConsole _console;
-        private IPlatformInstanceManager _instanceManager;
-        public CommandDBList(IConsole console, IPlatformInstanceManager instanceManager)
+        private AqInstanceManager _instanceManager;
+
+        public CommandDBList(IConsole console, AqInstanceManager instanceManager)
         {
             _console = console;
             _instanceManager = instanceManager;
         }
+
         public void OnExecute()
         {
             _instanceManager.GetInstances().ForEach(e => _console.WriteLine(e.Name));

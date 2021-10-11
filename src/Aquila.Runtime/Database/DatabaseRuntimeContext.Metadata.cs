@@ -5,6 +5,7 @@ using Aquila.Metadata;
 using Aquila.QueryBuilder;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
+using DBConsts = Aquila.Initializer.DBConstNames.Metadata;
 
 namespace Aquila.Runtime
 {
@@ -41,8 +42,8 @@ namespace Aquila.Runtime
                         .m_from()
                         .ld_table(_tableName)
                         .m_select()
-                        .ld_column("blob_name")
-                        .ld_column("data")
+                        .ld_column(DBConsts.BLOB_NAME_COLUMN)
+                        .ld_column(DBConsts.DATA_COLUMN)
                         .st_query();
                 });
 
@@ -53,7 +54,7 @@ namespace Aquila.Runtime
 
                 while (reader.Read())
                 {
-                    var data = (byte[])reader["data"];
+                    var data = (byte[])reader[DBConsts.DATA_COLUMN];
 
                     var yaml = Encoding.UTF8.GetString(data);
                     var md = EntityMetadata.FromYaml(yaml);
@@ -81,12 +82,12 @@ namespace Aquila.Runtime
                 {
                     q.bg_query()
                         .m_values()
-                        .ld_param("blob_name")
-                        .ld_param("data")
+                        .ld_param(DBConsts.BLOB_NAME_COLUMN)
+                        .ld_param(DBConsts.DATA_COLUMN)
                         .m_insert()
                         .ld_table(_tableName)
-                        .ld_column("blob_name")
-                        .ld_column("data")
+                        .ld_column(DBConsts.BLOB_NAME_COLUMN)
+                        .ld_column(DBConsts.DATA_COLUMN)
                         .st_query();
                 });
 
@@ -95,8 +96,8 @@ namespace Aquila.Runtime
                     var yaml = EntityMetadata.ToYaml(md);
 
                     //TODO: remove this static
-                    cmd.AddOrSetParameterWithValue("blob_name", $"Entity.{md.Name}");
-                    cmd.AddOrSetParameterWithValue("data", Encoding.UTF8.GetBytes(yaml));
+                    cmd.AddOrSetParameterWithValue(DBConsts.BLOB_NAME_COLUMN, $"Entity.{md.Name}");
+                    cmd.AddOrSetParameterWithValue(DBConsts.DATA_COLUMN, Encoding.UTF8.GetBytes(yaml));
 
                     cmd.ExecuteNonQuery();
                 }

@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 using Aquila.Core.Assemlies;
 using Aquila.Core.ClientServices;
 using Aquila.Core.Contracts;
-using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
+using Aquila.Core.Instance;
 using Aquila.Core.Test.Logging;
 using Aquila.Test.Tools;
 using Aquila.Test.Tools.Assemblies;
@@ -39,7 +39,7 @@ namespace Aquila.Core.Test
                 var serverServices = TestEnvSetup.GetServerService(_testOutput);
                 var clientServices = TestEnvSetup.GetClientService(_testOutput);
 
-                var environmentManager = serverServices.GetRequiredService<IPlatformInstanceManager>();
+                var environmentManager = serverServices.GetRequiredService<AqInstanceManager>();
                 Assert.NotEmpty(environmentManager.GetInstances());
 
                 var accessPoint = serverServices.GetRequiredService<IAccessPoint>();
@@ -66,7 +66,7 @@ namespace Aquila.Core.Test
             var serverServices = TestEnvSetup.GetServerService(_testOutput);
             var clientServices = TestEnvSetup.GetClientService(_testOutput);
 
-            var environmentManager = serverServices.GetRequiredService<IPlatformInstanceManager>();
+            var environmentManager = serverServices.GetRequiredService<AqInstanceManager>();
             Assert.NotEmpty(environmentManager.GetInstances());
 
 

@@ -65,7 +65,7 @@ namespace Aquila.Migrations
                     .ld_column("migration_id")
                     .eq()
                     .m_set()
-                    .ld_column("complited")
+                    .ld_column("completed")
                     .ld_const(true)
                     .assign()
                     .m_update()
@@ -286,7 +286,7 @@ namespace Aquila.Migrations
                     .ld_table("migrations")
                     .m_where()
                     .ld_const(false)
-                    .ld_column("complited")
+                    .ld_column("completed")
                     .eq()
                     .m_order_by()
                     .ld_column("datetime")
@@ -306,7 +306,7 @@ namespace Aquila.Migrations
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error(ex, "Migration error, check complited");
+                    _logger.Error(ex, "Migration error, check completed");
                     throw ex;
                 }
             }

@@ -1,73 +1,114 @@
 ﻿namespace Aquila.Initializer
 {
-    public static class DatabaseConstantNames
+    public static class DBConstNames
     {
-        #region User table
+        public static class Metadata
+        {
+            /// <summary>
+            /// Metadata table name
+            /// </summary>
+            public const string MD_TABLE = "metadata";
 
-        /// <summary>
-        /// User table name
-        /// </summary>
-        public const string USER_TABLE_NAME = "users";
+            /// <summary>
+            /// Pending configuration for migration
+            /// </summary>
+            public const string PENDING_MD_TABLE = MD_TABLE + "_pending";
 
-        /// <summary>
-        /// User id field
-        /// </summary>
-        public const string USER_TABLE_ID_FIELD = "user_id";
+            /// <summary>
+            /// Column witch contains name of blob
+            /// </summary>
+            public const string BLOB_NAME_COLUMN = "blob_name";
 
-        /// <summary>
-        /// User name field
-        /// </summary>
-        public const string USER_TABLE_NAME_FIELD = "user_name";
+            /// <summary>
+            /// Column with data
+            /// </summary>
+            public const string DATA_COLUMN = "data";
+        }
 
-        /// <summary>
-        /// user password
-        /// </summary>
-        public const string USER_TABLE_PASSWORD_FIELD = "user_password";
+        public static class Files
+        {
+            /// <summary>
+            /// Files table name
+            /// </summary>
+            public const string FILES_TABLE = "metadata";
 
-        #endregion
+            /// <summary>
+            /// Pending files table name
+            /// </summary>
+            public const string PENDING_FILES_TABLE = FILES_TABLE + "_pending";
 
-        #region Config table
+            /// <summary>
+            /// Pending files table name
+            /// </summary>
+            public const string TYPE_COLUMN = "type";
 
-        /// <summary>
-        /// Metadata table name
-        /// </summary>
-        public const string MD_TABLE_NAME = "metadata";
+            /// <summary>
+            /// Pending files table name
+            /// </summary>
+            public const string NAME_COLUMN = "name";
 
+            /// <summary>
+            /// Pending files table name
+            /// </summary>
+            public const string CREATE_DATETIME_COLUMN = "create_datetime";
 
-        /// <summary>
-        /// Column witch contains name of blob
-        /// </summary>
-        public const string MD_TABLE_BLOB_NAME_FIELD = "blob_name";
+            /// <summary>
+            /// Pending files table name
+            /// </summary>
+            public const string DATA_COLUMN = "data";
+        }
 
-        /// <summary>
-        /// Column with data
-        /// </summary>
-        public const string MD_TABLE_DATA_FIELD = "data";
+        public static class Descriptors
+        {
+            /// <summary>
+            /// Descriptors table name
+            /// </summary>
+            public const string DESCRIPTORS_TABLE = "descriptors";
 
-        #endregion
+            /// <summary>
+            /// Id column
+            /// </summary>
+            public const string ID_COLUMN = "id";
 
+            /// <summary>
+            /// Metadata name
+            /// </summary>
+            public const string MD_NAME_COLUMN = "id_s";
 
-        #region SaveConfig table
+            /// <summary>
+            /// Database id
+            /// </summary>
+            public const string DB_ID_COLUMN = "id_n";
 
-        /// <summary>
-        /// Pending configuration for migration
-        /// </summary>
-        public const string PEND_MD_TABLE_NAME = "metadata_pending";
+            /// <summary>
+            /// Database name column
+            /// </summary>
+            public const string DB_NAME_COLUMN = "db_name";
+        }
 
-        #endregion
+        public static class MigrationStatus
+        {
+            public const string MIGRATION_STATUS_TABLE = "migration_status";
 
-        #region Migration status table
+            public const string ID_COLUMN = Migration.ID_COLUMN;
 
-        public const string MIGRATION_STATUS_TABLE_NAME = "migration_status";
+            public const string CHANGE_TABLE_COLUMN = "change_table";
+            public const string RENAME_TABLE_COLUMN = "rename_table";
+            public const string DELETE_TABLE_COLUMN = "delete_table";
+            public const string COPY_TABLE_COLUMN = "copy_table";
+            public const string DATETIME_COLUMN = "datetime";
 
-        public const string MIGRATION_STATUS_TABLE_CHANGE_NAME_FIELD = "change_table";
-        public const string MIGRATION_STATUS_TABLE_RENAME_NAME_FIELD = "rename_table";
-        public const string MIGRATION_STATUS_TABLE_DELETE_NAME_FIELD = "delete_table";
-        public const string MIGRATION_STATUS_TABLE_COPY_NAME_FIELD = "copy_table";
+            public const string ORIGINAL_TABLE_COLUMN = "original_table";
+            public const string TEMP_TABLE_COLUMN = "temp_table";
+        }
 
-        public const string MIGRATION_STATUS_TABLE_ORIGINAL_NAME_FIELD = "original_table";
-        public const string MIGRATION_STATUS_TABLE_TEMP_NAME_FIELD = "temp_table";
+        public static class Migration
+        {
+            public const string MIGRATION_TABLE = "migration";
 
-        #endregion
+            public const string ID_COLUMN = "migration_id";
+            public const string COMPLETED_COLUMN = "completed";
+            public const string DATETIME_COLUMN = "datetime";
+        }
     }
 }

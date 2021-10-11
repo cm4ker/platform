@@ -1,5 +1,6 @@
 ﻿using Aquila.Data;
 using System;
+using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
@@ -28,7 +29,7 @@ namespace Aquila.Core.Sessions
 
         public AqInstance Instance { get; }
 
-        public abstract IUser User { get; protected set; }
+        public abstract AqUser User { get; protected set; }
 
         public ICacheService CacheService { get; }
 

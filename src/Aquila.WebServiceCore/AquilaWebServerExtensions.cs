@@ -8,7 +8,6 @@ using Aquila.Core;
 using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
 using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
 using Aquila.Core.Instance;
 using Aquila.Core.Network;
@@ -31,7 +30,7 @@ namespace Aquila.WebServiceCore
     {
         public static void UseAquilaPlatform(this IApplicationBuilder app, CancellationToken ct = default)
         {
-            var mrg = app.ApplicationServices.GetService<IPlatformInstanceManager>();
+            var mrg = app.ApplicationServices.GetService<AqInstanceManager>();
             var logger = app.ApplicationServices.GetService<ILogger<AqInstance>>();
 
             var instances = mrg.GetInstances();
@@ -104,17 +103,13 @@ namespace Aquila.WebServiceCore
         public static void AddAquilaPlatform(this IServiceCollection services)
         {
             services.AddScoped<DataContextManager>();
-            services.AddScoped<IUserManager, UserManager>();
+            services.AddScoped<UserManager>();
 
-            services.AddSingleton<IPlatformInstanceManager, AqInstanceManager>();
-            services.AddScoped<IPlatformInstance, AqInstance>();
+            services.AddSingleton<AqInstanceManager, AqInstanceManager>();
+            services.AddScoped<AqInstance>();
             services.AddScoped<MigrationManager>();
 
-            services.AddSingleton<IPlatformInstanceManager, AqInstanceManager>();
-
-            services.AddScoped<IPlatformInstance, AqInstance>();
-
-
+            services.AddSingleton<AqInstanceManager, AqInstanceManager>();
             services.AddSingleton<ISettingsStorage, FileSettingsStorage>();
 
             services.AddTransient<IConnectionManager, ConnectionManager>();
@@ -138,7 +133,7 @@ namespace Aquila.WebServiceCore
             services.AddScoped<IAuthenticationManager, AuthenticationManager>();
         }
 
-        private static async Task Deploy(HttpContext context, IPlatformInstanceManager mrg, CancellationToken ct)
+        private static async Task Deploy(HttpContext context, AqInstanceManager mrg, CancellationToken ct)
         {
             var instanceName = context.GetRouteData().Values["instance"]?.ToString();
 
@@ -159,7 +154,7 @@ namespace Aquila.WebServiceCore
             }
         }
 
-        private static async Task Migrate(HttpContext context, IPlatformInstanceManager mrg, CancellationToken ct)
+        private static async Task Migrate(HttpContext context, AqInstanceManager mrg, CancellationToken ct)
         {
             var instanceName = context.GetRouteData().Values["instance"]?.ToString();
 
@@ -170,7 +165,7 @@ namespace Aquila.WebServiceCore
             instance.Migrate();
         }
 
-        private static async Task PostHandler(HttpContext context, MethodInfo method, IPlatformInstanceManager mrg,
+        private static async Task PostHandler(HttpContext context, MethodInfo method, AqInstanceManager mrg,
             CancellationToken cancellationToken)
         {
             var instanceName = context.GetRouteData().Values["instance"]?.ToString();
@@ -179,7 +174,7 @@ namespace Aquila.WebServiceCore
 
             try
             {
-                var session = instance.CreateSession(new Anonymous());
+                var session = instance.CreateSession(new AqUser { Name = "Anonymous" });
 
                 var data = await JsonSerializer.DeserializeAsync(context.Request.Body,
                     method.GetParameters()[1].ParameterType, cancellationToken: cancellationToken,
@@ -197,7 +192,7 @@ namespace Aquila.WebServiceCore
             }
         }
 
-        private static async Task GetSessions(HttpContext context, IPlatformInstanceManager mrg,
+        private static async Task GetSessions(HttpContext context, AqInstanceManager mrg,
             CancellationToken token)
         {
             var instanceName = context.GetRouteData().Values["instance"]?.ToString();
@@ -209,7 +204,7 @@ namespace Aquila.WebServiceCore
             await context.Response.WriteAsJsonAsync(env.Sessions, token);
         }
 
-        private static async Task GetInstances(HttpContext context, IPlatformInstanceManager mrg,
+        private static async Task GetInstances(HttpContext context, AqInstanceManager mrg,
             CancellationToken token)
         {
             var list = mrg.GetInstances().Select(x => new { x.Name });
@@ -217,7 +212,7 @@ namespace Aquila.WebServiceCore
             await context.Response.WriteAsJsonAsync(list, cancellationToken: token);
         }
 
-        private static async Task GetInstanceMetadata(HttpContext context, IPlatformInstanceManager mrg,
+        private static async Task GetInstanceMetadata(HttpContext context, AqInstanceManager mrg,
             CancellationToken token)
         {
             /*
@@ -247,7 +242,7 @@ namespace Aquila.WebServiceCore
 
             if (instance is null) return;
 
-            var plContext = new AqContext(instance.CreateSession(new Anonymous()));
+            var plContext = new AqContext(instance.CreateSession(new AqUser { Name = "Anonymous" }));
 
             var md = plContext.DataRuntimeContext.Metadata.GetMetadata();
 
@@ -256,7 +251,7 @@ namespace Aquila.WebServiceCore
             await context.Response.WriteAsJsonAsync(list, cancellationToken: token);
         }
 
-        private static async Task GetHandler(HttpContext context, MethodInfo methodInfo, IPlatformInstanceManager mrg,
+        private static async Task GetHandler(HttpContext context, MethodInfo methodInfo, AqInstanceManager mrg,
             CancellationToken token)
         {
             var instanceName = context.GetRouteData().Values["instance"]?.ToString();
@@ -269,7 +264,7 @@ namespace Aquila.WebServiceCore
 
             try
             {
-                var session = instance.CreateSession(new Anonymous());
+                var session = instance.CreateSession(new AqUser { Name = "Anonymous" });
 
                 var obj = methodInfo.Invoke(null, new object[] { new AqContext(session), Guid.Parse(id) });
                 if (obj is null)

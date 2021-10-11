@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Unicode;
 using Aquila.Data;
+using Aquila.Initializer;
 using Aquila.Metadata;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -16,12 +17,6 @@ namespace Aquila.Runtime
     /// </summary>
     public partial class DatabaseRuntimeContext
     {
-        private const string DescriptorsTableName = "descriptors";
-        private const string MetadataTableName = "metadata";
-        private const string PendingMetadataTableName = "metadata_pending";
-        private const string FileTableName = "files";
-        private const string PendingFileTableName = "files_pending";
-
         public static DatabaseRuntimeContext CreateAndLoad(DataConnectionContext dcc)
         {
             var drc = new DatabaseRuntimeContext();
@@ -35,12 +30,12 @@ namespace Aquila.Runtime
         /// </summary>
         public DatabaseRuntimeContext()
         {
-            _filesRC = new FilesRC(FileTableName);
-            _pendingFilesRC = new FilesRC(PendingFileTableName);
+            _filesRC = new FilesRC(DBConstNames.Files.FILES_TABLE);
+            _pendingFilesRC = new FilesRC(DBConstNames.Files.PENDING_FILES_TABLE);
 
             _descriptorsRC = new DescriptorsRC();
-            _metadataRC = new MetadataRC(MetadataTableName);
-            _pendingMetadataRC = new MetadataRC(PendingMetadataTableName);
+            _metadataRC = new MetadataRC(DBConstNames.Metadata.MD_TABLE);
+            _pendingMetadataRC = new MetadataRC(DBConstNames.Metadata.PENDING_MD_TABLE);
         }
 
         private FilesRC _filesRC;

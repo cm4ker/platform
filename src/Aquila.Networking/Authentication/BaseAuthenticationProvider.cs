@@ -8,15 +8,15 @@ namespace Aquila.Core.Authentication
 {
     public class BaseAuthenticationProvider : IAuthenticationProvider
     {
-        private readonly IUserManager _userManager;
+        private readonly UserManager _userManager;
         private readonly ILogger<BaseAuthenticationProvider> _logger;
 
-        public BaseAuthenticationProvider(IUserManager userManager)
+        public BaseAuthenticationProvider(UserManager userManager)
         {
             _userManager = userManager;
         }
 
-        public IUser Authenticate(IAuthenticationToken token)
+        public AqUser Authenticate(IAuthenticationToken token)
         {
             if (!CanAuthenticate(token)) throw new NotSupportedException("Type of token not supported.");
 

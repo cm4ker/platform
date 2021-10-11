@@ -1,8 +1,10 @@
-﻿namespace Aquila.Core.Contracts.Authentication
+﻿using Aquila.Core.Authentication;
+
+namespace Aquila.Core.Contracts.Authentication
 {
     public interface IAuthenticationProvider
     {
-        IUser Authenticate(IAuthenticationToken token);
+        AqUser Authenticate(IAuthenticationToken token);
 
         bool CanAuthenticate(IAuthenticationToken token);
     }

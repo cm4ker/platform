@@ -1,12 +1,7 @@
 using System;
 using System.IO;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using Aquila.Core.Contracts.Instance;
-using Aquila.Core.Instance;
-using Aquila.Core.Sessions;
-using Aquila.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;

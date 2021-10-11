@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
-using Aquila.Core.Contracts.Instance;
 using Aquila.Core.Contracts.Network;
 using Aquila.Core.Instance;
 using Aquila.Core.Network;
@@ -23,7 +22,7 @@ namespace Aquila.Core.Test
             var clientServices = TestEnvSetup.GetClientService(_testOutput);
 
 
-            var environmentManager = serverServices.GetRequiredService<IPlatformInstanceManager>();
+            var environmentManager = serverServices.GetRequiredService<AqInstanceManager>();
             Assert.NotEmpty(environmentManager.GetInstances());
 
 

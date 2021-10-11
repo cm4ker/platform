@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Aquila.Core.Authentication;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Instance;
@@ -14,7 +15,7 @@ namespace Aquila.Core.Sessions
         private readonly DataContextManager _dataContextManger;
         private readonly DataConnectionContext _dataContext;
 
-        public SimpleSession(AqInstance instance, IUser user) 
+        public SimpleSession(AqInstance instance, AqUser user)
         {
             Id = Guid.NewGuid();
             User = user;
@@ -27,7 +28,7 @@ namespace Aquila.Core.Sessions
 
         public Guid Id { get; }
 
-        public IUser User { get; }
+        public AqUser User { get; }
 
         public DataConnectionContext DataContext
         {

@@ -7,16 +7,25 @@ namespace Aquila.Initializer.InternalDatabaseStructureMigrations
     {
         public override void Up()
         {
-            Create.Table("files")
-                .WithColumn("type").AsInt32()
-                .WithColumn("name").AsString(200)
-                .WithColumn("create_datetime").AsDateTime().WithDefault(SystemMethods.CurrentDateTime)
-                .WithColumn("data").AsCustom("VARBINARY(MAX)");
+            Create.Table(DBConstNames.Files.FILES_TABLE)
+                .WithColumn(DBConstNames.Files.TYPE_COLUMN).AsInt32()
+                .WithColumn(DBConstNames.Files.NAME_COLUMN).AsString(200)
+                .WithColumn(DBConstNames.Files.CREATE_DATETIME_COLUMN).AsDateTime()
+                .WithDefault(SystemMethods.CurrentDateTime)
+                .WithColumn(DBConstNames.Files.DATA_COLUMN).AsCustom("VARBINARY(MAX)");
+
+            Create.Table(DBConstNames.Files.PENDING_FILES_TABLE)
+                .WithColumn(DBConstNames.Files.TYPE_COLUMN).AsInt32()
+                .WithColumn(DBConstNames.Files.NAME_COLUMN).AsString(200)
+                .WithColumn(DBConstNames.Files.CREATE_DATETIME_COLUMN).AsDateTime()
+                .WithDefault(SystemMethods.CurrentDateTime)
+                .WithColumn(DBConstNames.Files.DATA_COLUMN).AsCustom("VARBINARY(MAX)");
         }
 
         public override void Down()
         {
-            Delete.Table("files");
+            Delete.Table(DBConstNames.Files.FILES_TABLE);
+            Delete.Table(DBConstNames.Files.PENDING_FILES_TABLE);
         }
     }
 }

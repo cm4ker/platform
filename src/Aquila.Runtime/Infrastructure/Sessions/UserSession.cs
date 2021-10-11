@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
 using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Instance;
@@ -14,7 +15,7 @@ namespace Aquila.Core.Sessions
     {
         private readonly ConcurrentDictionary<string, object> _sessionParameters;
 
-        public UserSession(AqInstance env, IUser user, DataContextManager dataContextManger,
+        public UserSession(AqInstance env, AqUser user, DataContextManager dataContextManger,
             ICacheService cacheService)
             : base(env, cacheService)
         {
@@ -22,7 +23,7 @@ namespace Aquila.Core.Sessions
             User = user;
         }
 
-        public override IUser User { get; protected set; }
+        public override AqUser User { get; protected set; }
 
 
         /// <summary>

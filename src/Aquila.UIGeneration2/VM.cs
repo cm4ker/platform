@@ -66,7 +66,7 @@ namespace Aquila.UIBuilder
             try
             {
                 var crud = new CRUDQueryGenerator();
-                var md = _drContext.GetMetadata();
+                var md = _drContext.Metadata.GetMetadata();
                 var invoice = md.GetSemanticByName("Invoice");
 
                 var insert = CRUDQueryGenerator.GetSaveInsert(invoice, _drContext);
