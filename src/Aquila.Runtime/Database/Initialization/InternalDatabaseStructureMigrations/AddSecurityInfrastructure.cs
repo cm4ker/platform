@@ -7,9 +7,10 @@ namespace Aquila.Initializer.InternalDatabaseStructureMigrations
     {
         public override void Up()
         {
-            Create.Table("sec")
-                .WithColumn("id").AsInt32()
-                .WithColumn("desc_id_s").AsString(1000);
+            Create.Table(DBConstNames.Security.SECURITY_TABLE)
+                .WithColumn(DBConstNames.Security.ID_COLUMN).AsInt32()
+                .WithColumn(DBConstNames.Security.MD_NAME_COLUMN).AsString(1000)
+                .WithColumn(DBConstNames.Security.RIGHTS_COLUMN).AsInt32();
         }
 
         public override void Down()

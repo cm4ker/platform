@@ -1,0 +1,5 @@
+static int Main() 
+{ 
+    string a = "HELLO " + "WORLD"; 
+    return a.Length; 
+}

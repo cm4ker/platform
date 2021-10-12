@@ -30,7 +30,7 @@
             /// <summary>
             /// Files table name
             /// </summary>
-            public const string FILES_TABLE = "metadata";
+            public const string FILES_TABLE = "files";
 
             /// <summary>
             /// Pending files table name
@@ -68,17 +68,17 @@
             /// <summary>
             /// Id column
             /// </summary>
-            public const string ID_COLUMN = "id";
+            public const string ID_COLUMN = "desc_id";
 
             /// <summary>
             /// Metadata name
             /// </summary>
-            public const string MD_NAME_COLUMN = "id_s";
+            public const string MD_NAME_COLUMN = "md_name";
 
             /// <summary>
             /// Database id
             /// </summary>
-            public const string DB_ID_COLUMN = "id_n";
+            public const string DB_ID_COLUMN = "db_id";
 
             /// <summary>
             /// Database name column
@@ -109,6 +109,15 @@
             public const string ID_COLUMN = "migration_id";
             public const string COMPLETED_COLUMN = "completed";
             public const string DATETIME_COLUMN = "datetime";
+        }
+
+        public static class Security
+        {
+            public const string SECURITY_TABLE = "sec";
+
+            public const string ID_COLUMN = "sec_id";
+            public const string MD_NAME_COLUMN = Descriptors.MD_NAME_COLUMN;
+            public const string RIGHTS_COLUMN = "sec_right";
         }
     }
 }
