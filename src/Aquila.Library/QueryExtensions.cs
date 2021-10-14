@@ -29,9 +29,9 @@ namespace Aquila.Library
     [ExtensionAq]
     public static class UserExtensions
     {
-        public static AqUser get_user(AqContext context)
+        public static string get_user_name(AqContext context)
         {
-            return context.Session.User;
+            return context.User;
         }
     }
 

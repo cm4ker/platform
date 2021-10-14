@@ -57,6 +57,20 @@ namespace Aquila.Core
         }
     }
 
+
+    public class CrudHandlerAttribute : Attribute
+    {
+        public CrudHandlerAttribute(HttpMethodKind kind, string objectName)
+        {
+            Kind = kind;
+            ObjectName = objectName;
+        }
+
+        public HttpMethodKind Kind { get; }
+
+        public string ObjectName { get; }
+    }
+
     public enum HttpMethodKind
     {
         Get = 0,

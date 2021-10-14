@@ -16,6 +16,12 @@ namespace Aquila.Runtime.Infrastructure.Helpers
                 .Select(x => (x, x.GetCustomAttribute<HttpHandlerAttribute>()));
         }
 
+        public static IEnumerable<(MethodInfo m, CrudHandlerAttribute attr)> GetCrudMethods(this Assembly asm)
+        {
+            return asm.GetTypes().SelectMany(x => x.GetMethods())
+                .Where(x => x.GetCustomAttribute<CrudHandlerAttribute>() != null)
+                .Select(x => (x, x.GetCustomAttribute<CrudHandlerAttribute>()));
+        }
 
         public static IEnumerable<(MemberInfo m, RuntimeInitAttribute attr)> GetRuntimeInit(this Assembly asm)
         {

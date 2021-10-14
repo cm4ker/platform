@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text;
 
-namespace Peachpie.NET.Sdk.Versioning
+namespace Aquila.NET.Sdk.Versioning
 {
     /// <summary>
     /// Single composer version.

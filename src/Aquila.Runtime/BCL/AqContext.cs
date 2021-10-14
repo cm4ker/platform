@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Data.Common;
 using System.Reflection;
 using System.Threading;
+using Aquila.Core.Authentication;
 using Aquila.Core.Contracts;
+using Aquila.Core.Instance;
 using Aquila.Data;
 using Aquila.Metadata;
 using Aquila.Runtime;
@@ -11,20 +14,20 @@ using Aquila.Runtime;
 namespace Aquila.Core
 {
     //Context. Not static. Immutable. Thread safe
-    public class AqContext
+    public partial class AqContext : IDisposable
     {
-        private readonly ISession _session;
+        private readonly AqInstance _instance;
         private readonly DataConnectionContext _dcc;
         private readonly DatabaseRuntimeContext _drc;
 
-        public AqContext(ISession session)
+        public AqContext(AqInstance instance)
         {
-            _session = session;
-            _dcc = _session.DataContext;
-            _drc = _session.Instance.DatabaseRuntimeContext;
+            _instance = instance;
+            _dcc = instance.DataContextManager.GetContext();
+            _drc = instance.DatabaseRuntimeContext;
         }
 
-        public ISession Session => _session;
+        public AqInstance Instance => _instance;
 
         public DataConnectionContext DataContext => _dcc;
 
@@ -32,74 +35,12 @@ namespace Aquila.Core
 
         public DbCommand CreateCommand() => DataContext.CreateCommand();
 
-        /// <summary>
-        /// Script options.
-        /// </summary>
-        public sealed class ScriptOptions
+        public virtual string User => "Anonymous";
+
+        public virtual IEnumerable<string> Roles => ImmutableArray<string>.Empty;
+
+        public virtual void Dispose()
         {
-            /// <summary>
-            /// Script context.
-            /// </summary>
-            public AqContext Context { get; set; }
-
-            /// <summary>
-            /// The path and location within the script source if it originated from a file, empty otherwise.
-            /// </summary>
-            public Location Location;
-
-            /// <summary>
-            /// Specifies whether debugging symbols should be emitted.
-            /// </summary>
-            public bool EmitDebugInformation { get; set; }
-
-            /// <summary>
-            /// Value indicating the script is a submission (without opening PHP tag).
-            /// </summary>
-            public bool IsSubmission { get; set; }
-
-            /// <summary>
-            /// Optional. Collection of additional metadata references.
-            /// </summary>
-            public string[] AdditionalReferences { get; set; }
-
-            /// <summary>
-            /// Optional.
-            /// Sets the language version.
-            /// By default, it uses the version of currently running scripts, or the latest version available.
-            /// </summary>
-            public Version LanguageVersion { get; set; }
-        }
-
-        /// <summary>
-        /// Provides dynamic scripts compilation in current context.
-        /// </summary>
-        public interface IScriptingProvider
-        {
-            /// <summary>
-            /// Gets compiled code.
-            /// </summary>
-            /// <param name="options">Compilation options.</param>
-            /// <param name="code">Script source code.</param>
-            /// <returns>Compiled script instance.</returns>
-            IScript CreateScript(ScriptOptions options, string code, EntityMetadataCollection metadata);
-        }
-
-        /// <summary>
-        /// Encapsulates a compiled script that can be evaluated.
-        /// </summary>
-        public interface IScript
-        {
-            /// <summary>
-            /// Evaluates the script.
-            /// </summary>
-            /// <param name="ctx">Current runtime context.</param>
-            /// <returns>Return value of the script.</returns>
-            object Evaluate(AqContext ctx);
-
-            /// <summary>
-            /// Resolves global function handle(s).
-            /// </summary>
-            IEnumerable<MethodInfo> GetGlobalRoutineHandle(string name);
         }
     }
 }

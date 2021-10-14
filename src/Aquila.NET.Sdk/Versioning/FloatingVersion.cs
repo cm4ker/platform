@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-namespace Peachpie.NET.Sdk.Versioning
+namespace Aquila.NET.Sdk.Versioning
 {
     /// <summary>
     /// Package reference floating version.

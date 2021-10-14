@@ -54,7 +54,7 @@
             [OUT]
             @(EmbeddedResource) - EmbeddedResource items with metadata         
             
-        Peachpie reuses the mechanism from C#, hence:
+        Aquila reuses the mechanism from C#, hence:
         
           Resources1.resx => RootNamespace.Resources1 => Build into main assembly
           SubFolder\Resources1.resx => RootNamespace.SubFolder.Resources1 => Build into main assembly
@@ -143,14 +143,14 @@
             <_DotNetHostExecutablePath>$(_DotNetHostExecutableDirectory)/$(_DotNetHostExecutableName)</_DotNetHostExecutablePath>
         </PropertyGroup>
 
-        <PropertyGroup Condition=" '$(DontRunPeachpieCompileWithDotnet)' == '' ">
+        <PropertyGroup Condition=" '$(DontRunAquilaCompileWithDotnet)' == '' ">
             <!-- default: -->
             <_FscTask_FscToolExe>$(_DotNetHostExecutableName)</_FscTask_FscToolExe>
             <_FscTask_FscToolPath>$(_DotNetHostExecutableDirectory)</_FscTask_FscToolPath>
             <_FscTask_DotnetFscCompilerPath>"$(FscToolPath)/$(FscToolExe)"</_FscTask_DotnetFscCompilerPath>
         </PropertyGroup>
 
-        <PropertyGroup Condition=" '$(DontRunPeachpieCompileWithDotnet)' != '' ">
+        <PropertyGroup Condition=" '$(DontRunAquilaCompileWithDotnet)' != '' ">
             <_FscTask_FscToolExe>$(FscToolExe)</_FscTask_FscToolExe>
             <_FscTask_FscToolPath>$(FscToolPath)</_FscTask_FscToolPath>
         </PropertyGroup>

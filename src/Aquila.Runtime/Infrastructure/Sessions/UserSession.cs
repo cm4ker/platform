@@ -7,17 +7,13 @@ using Aquila.Data;
 
 namespace Aquila.Core.Sessions
 {
-    /// <summary>
-    /// Пользовательская сессия - по виду этой сессии мы можем запрещать незакконные операции - например мигрирование базы данных
-    /// Пользователь не может выполнять инструкции связанные с изменением схемы, он лишь манипулирует данными
-    /// </summary>
     public class UserSession : Session
     {
         private readonly ConcurrentDictionary<string, object> _sessionParameters;
 
-        public UserSession(AqInstance env, AqUser user, DataContextManager dataContextManger,
+        public UserSession(AqInstance instance, AqUser user, DataContextManager dataContextManger,
             ICacheService cacheService)
-            : base(env, cacheService)
+            : base(instance, cacheService)
         {
             _sessionParameters = new ConcurrentDictionary<string, object>();
             User = user;

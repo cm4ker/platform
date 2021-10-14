@@ -69,14 +69,14 @@ namespace Aquila.Runtime
             {
                 context.BeginTransaction();
 
-                using var clearCmd = context.CreateCommand(q =>
+                context.CreateCommand(q =>
                 {
                     q.bg_query()
                         .ld_table(_tableName)
                         .m_from()
                         .m_delete()
                         .st_query();
-                });
+                }).ExecuteNonQuery();
 
                 using var cmd = context.CreateCommand(q =>
                 {
@@ -109,7 +109,7 @@ namespace Aquila.Runtime
             {
                 dcc.BeginTransaction();
 
-                Clear(dcc);
+                destenation.Clear(dcc);
                 dcc.CreateCommand((qm) =>
                     qm.bg_query()
                         .m_from()

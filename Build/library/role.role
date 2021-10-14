@@ -1,0 +1,15 @@
+- Name : SecPolicy1
+  Subjects:
+    - Entity.Book
+    - Entity.Genre
+    - Entity.Country
+  Permissons:
+    - Type: Create
+      RLS: Subject s
+            JOIN Entity.Genre g on s.Genre = g.Id
+            WHERE g.Name = "Test"
+    - Type: Read
+    - Type: Update
+    - Type: Delete
+
+

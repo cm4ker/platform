@@ -101,7 +101,7 @@ namespace Aquila.Library.Scripting
 
                 _entryPoint = ctx =>
                 {
-                    ctx.Session.Instance.UpdateAssembly(ass);
+                    ctx.Instance.UpdateAssembly(ass);
                     return ((MethodInfo)t.GetMember("Main").FirstOrDefault()).Invoke(null, new object[] { ctx });
                 };
             }

@@ -173,6 +173,7 @@ namespace Aquila.CodeAnalysis.Symbols
             LinkAttribute,
             ExtensionMethodAttribute,
             HttpHandlerAttribute,
+            CrudHandlerAttribute,
 
             //Enums
             RuntimeInitKind,
@@ -225,6 +226,7 @@ namespace Aquila.CodeAnalysis.Symbols
             LinkAttribute = CreateFromFullName(AquilaLinkAttributeFullName);
             ExtensionMethodAttribute = CreateFromFullName(AquilaExtensionAqAttributeFullName);
             HttpHandlerAttribute = CreateFromFullName(AquilaHttpMethodHandlerAttributeFullName);
+            CrudHandlerAttribute = Create("CrudHandlerAttribute");
 
             #endregion
 

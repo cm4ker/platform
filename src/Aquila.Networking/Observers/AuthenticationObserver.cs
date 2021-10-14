@@ -40,11 +40,6 @@ namespace Aquila.Core.Network.States
             {
                 msg.Authentication(_instance.AuthenticationManager, (u) =>
                 {
-                    ((ServerConnectionContext) context).Session = _instance.CreateSession(u);
-                    //context.State = new AuthenticatedState();
-
-
-                    //context.Connection.Subscribe((InvokeService)_environment.InvokeService);
                     var state = new InvokeObserver(_instance);
                     state.Subscribe(context.Connection);
                     _unsbscriber?.Dispose();

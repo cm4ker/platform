@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 
-namespace Peachpie.NET.Sdk.Versioning
+namespace Aquila.NET.Sdk.Versioning
 {
     /// <summary>
     /// Version expression operators.
@@ -143,7 +143,7 @@ namespace Peachpie.NET.Sdk.Versioning
                 if (ComposerVersion.TryParse(value.Slice(0, range), out var fromversion) &&
                     ComposerVersion.TryParse(value.Slice(range + Tokens.Range.Length), out var toversion))
                 {
-                    expression = new RangeExpression {From = fromversion, To = toversion,};
+                    expression = new RangeExpression { From = fromversion, To = toversion, };
                     return true;
                 }
                 else
@@ -166,7 +166,7 @@ namespace Peachpie.NET.Sdk.Versioning
                 if (TryParse(value.Slice(0, cap.Index), out var leftexpr) &&
                     TryParse(value.Slice(cap.Index + cap.Length), out var rightexpr))
                 {
-                    expression = new AndExpression {Left = leftexpr, Right = rightexpr,};
+                    expression = new AndExpression { Left = leftexpr, Right = rightexpr, };
                     return true;
                 }
             }
@@ -179,7 +179,7 @@ namespace Peachpie.NET.Sdk.Versioning
                 if (TryParse(value.Slice(0, or.index), out var left) &&
                     TryParse(value.Slice(or.index + or.length), out var right))
                 {
-                    expression = new OrExpression {Left = left, Right = right,};
+                    expression = new OrExpression { Left = left, Right = right, };
                     return true;
                 }
                 else
@@ -246,11 +246,11 @@ namespace Peachpie.NET.Sdk.Versioning
             {
                 if (op == Operation.Exact)
                 {
-                    expression = new ExactVersionExpression {Version = version};
+                    expression = new ExactVersionExpression { Version = version };
                 }
                 else
                 {
-                    expression = new UnaryExpression(op) {Version = version,};
+                    expression = new UnaryExpression(op) { Version = version, };
                 }
 
                 return true;
@@ -296,9 +296,9 @@ namespace Peachpie.NET.Sdk.Versioning
                             .WithStabilityFlag(Version.Stability ?? ComposerVersion.StabilityDev),
                         UpperBound = Version.IsAnyBuild
                             ? new ComposerVersion(Version.Major + 1, 0, 0)
-                                {Stability = Version.Stability ?? ComposerVersion.StabilityDev}
+                                { Stability = Version.Stability ?? ComposerVersion.StabilityDev }
                             : new ComposerVersion(Version.Major, Version.Minor + 1, 0)
-                                {Stability = Version.Stability ?? ComposerVersion.StabilityDev},
+                                { Stability = Version.Stability ?? ComposerVersion.StabilityDev },
                         UpperBoundExclusive = true,
                     };
 
@@ -307,8 +307,9 @@ namespace Peachpie.NET.Sdk.Versioning
                     {
                         LowerBound = Version.AnyToZero(),
                         UpperBound = Version.Major >= 1 || Version.IsAnyMinor
-                            ? new ComposerVersion(Version.Major + 1, 0, 0) {Stability = Version.Stability}
-                            : new ComposerVersion(Version.Major, Version.Minor + 1, 0) {Stability = Version.Stability},
+                            ? new ComposerVersion(Version.Major + 1, 0, 0) { Stability = Version.Stability }
+                            : new ComposerVersion(Version.Major, Version.Minor + 1, 0)
+                                { Stability = Version.Stability },
                         UpperBoundExclusive = true,
                     };
 

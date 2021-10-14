@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Linq;
-using System.Reflection;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using Aquila.Core;
+using Aquila.AspNetCore.Web;
 using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
 using Aquila.Core.Contracts.Authentication;
@@ -13,95 +8,64 @@ using Aquila.Core.Instance;
 using Aquila.Core.Network;
 using Aquila.Core.Serialisers;
 using Aquila.Core.Settings;
+using Aquila.Core.Utilities;
 using Aquila.Data;
 using Aquila.Logging;
 using Aquila.Migrations;
 using Aquila.Networking;
-using Aquila.Runtime.Infrastructure.Helpers;
 using Aquila.Shell;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Aquila.WebServiceCore
 {
     public static class AquilaWebServerExtensions
     {
-        public static void UseAquilaPlatform(this IApplicationBuilder app, CancellationToken ct = default)
+        public static IApplicationBuilder UseAquila(this IApplicationBuilder builder)
         {
-            var mrg = app.ApplicationServices.GetService<AqInstanceManager>();
-            var logger = app.ApplicationServices.GetService<ILogger<AqInstance>>();
+            builder.MapMiddleware<AquilaHandlerMiddleware>("default", "migrate",
+                "api/{instance}/migrate");
 
-            var instances = mrg.GetInstances();
-
-            foreach (var inst in instances)
-            {
-                if (inst.BLAssembly is null)
-                {
-                    logger.Info("[Platform] Instance {0} haven't assembly", inst.Name);
-                    continue;
-                }
-
-                var methods = inst.BLAssembly.GetLoadMethod().ToList();
-                logger.Info("[Web service] Load {0} delegates", methods.Count);
-
-                app.UseEndpoints(x =>
-                {
-                    var index = 0;
-
-                    foreach (var item in methods.Where(x => x.attr.Kind == HttpMethodKind.Get))
-                    {
-                        var method = item.m;
-
-                        if (!method.IsStatic || !method.IsPublic
-                                             || method.GetParameters().FirstOrDefault()?.ParameterType !=
-                                             typeof(AqContext))
-                            throw new Exception($"Method {method.Name} marked as a CRUD but not consistent");
-
-                        //NOTE: route in assembly starts from /
-                        var route = $"api/{{instance}}{item.attr.Route}";
-                        logger.Info($"Add route for get = {route.Replace('{', '(').Replace('}', ')')}");
-
-                        x.MapGet(route, context => GetHandler(context, method, mrg, ct));
-                    }
-
-                    foreach (var item in methods.Where(x => x.attr.Kind == HttpMethodKind.Post))
-                    {
-                        var method = item.m;
-
-                        if (!method.IsStatic || !method.IsPublic
-                                             || method.GetParameters().FirstOrDefault()?.ParameterType !=
-                                             typeof(AqContext))
-                            throw new Exception($"Method {method.Name} marked as a CRUD but not consistent");
-
-
-                        //NOTE: route in assembly starts from /
-                        var route = $"api/{{instance}}{item.attr.Route}";
-                        logger.Info($"Add route for get = {route.Replace('{', '(').Replace('}', ')')}");
-
-                        x.MapPost(route, context => PostHandler(context, method, mrg, ct));
-                    }
-                });
-            }
-
-            app.UseEndpoints(x =>
-            {
-                x.MapGet("api/{instance}/getMetadata",
-                    async context => { await GetInstanceMetadata(context, mrg, ct); });
-                x.MapPost("api/{instance}/deploy",
-                    async context => { await Deploy(context, mrg, ct); });
-                x.MapPost("api/{instance}/migrate",
-                    async context => { await Migrate(context, mrg, ct); });
-                x.MapGet("api/instances",
-                    async context => { await GetInstances(context, mrg, ct); });
-                x.MapGet("api/{instance}/sessions",
-                    async context => { await GetSessions(context, mrg, ct); });
-            });
+            return builder.MapMiddleware<AquilaHandlerMiddleware>("default", "crud",
+                "api/{instance}/{object}/{method}/{id?}");
         }
 
-        public static void AddAquilaPlatform(this IServiceCollection services)
+        private static IApplicationBuilder MapMiddleware<T>(this IApplicationBuilder builder, string name,
+            string areaName, string template)
         {
+            var routeBuilder = new RouteBuilder(builder);
+
+            var defaultsDictionary = new RouteValueDictionary() { { "area", areaName } };
+            var constraintsDictionary = new RouteValueDictionary() { { "area", areaName } };
+
+            var nested = builder.New();
+            nested.UseMiddleware<AquilaHandlerMiddleware>();
+
+            var route = new Route(
+                new RouteHandler(nested.Build()),
+                name,
+                template,
+                defaults: defaultsDictionary,
+                constraints: constraintsDictionary,
+                dataTokens: null,
+                inlineConstraintResolver: routeBuilder.ServiceProvider.GetRequiredService<IInlineConstraintResolver>());
+
+            routeBuilder.Routes.Add(route);
+            builder.UseRouter(routeBuilder.Build());
+
+            return builder;
+        }
+
+        public static IServiceCollection AddAquila(this IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
             services.AddScoped<DataContextManager>();
             services.AddScoped<UserManager>();
 
@@ -131,152 +95,14 @@ namespace Aquila.WebServiceCore
             services.AddSingleton<ICacheService, DictionaryCacheService>();
 
             services.AddScoped<IAuthenticationManager, AuthenticationManager>();
-        }
 
-        private static async Task Deploy(HttpContext context, AqInstanceManager mrg, CancellationToken ct)
-        {
-            var instanceName = context.GetRouteData().Values["instance"]?.ToString();
+            services.AddSingleton<AquilaHandlerMiddleware>();
 
-            var instance = mrg.GetInstance(instanceName);
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            ContextExtensions.CurrentContextProvider = () => HttpContextExtension.GetOrCreateContext();
 
-            if (instance is null) return;
 
-            try
-            {
-                var zipStream = context.Request.Body;
-
-                instance.Deploy(zipStream);
-            }
-            catch (Exception ex)
-            {
-                //Do smth package is corrupted
-                throw;
-            }
-        }
-
-        private static async Task Migrate(HttpContext context, AqInstanceManager mrg, CancellationToken ct)
-        {
-            var instanceName = context.GetRouteData().Values["instance"]?.ToString();
-
-            var instance = mrg.GetInstance(instanceName);
-
-            if (instance is null) return;
-
-            instance.Migrate();
-        }
-
-        private static async Task PostHandler(HttpContext context, MethodInfo method, AqInstanceManager mrg,
-            CancellationToken cancellationToken)
-        {
-            var instanceName = context.GetRouteData().Values["instance"]?.ToString();
-            var instance = mrg.GetInstance(instanceName);
-            if (instance is null) return;
-
-            try
-            {
-                var session = instance.CreateSession(new AqUser { Name = "Anonymous" });
-
-                var data = await JsonSerializer.DeserializeAsync(context.Request.Body,
-                    method.GetParameters()[1].ParameterType, cancellationToken: cancellationToken,
-                    options: new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
-
-                method.Invoke(null, new object[] { new AqContext(session), data });
-            }
-            catch (Exception ex)
-            {
-                context.Response.ContentLength = ex.ToString().Length;
-                await context.Response.WriteAsync(ex.ToString(), cancellationToken: cancellationToken);
-            }
-        }
-
-        private static async Task GetSessions(HttpContext context, AqInstanceManager mrg,
-            CancellationToken token)
-        {
-            var instanceName = context.GetRouteData().Values["instance"]?.ToString();
-
-            var env = mrg.GetInstance(instanceName);
-
-            if (env is null) return;
-
-            await context.Response.WriteAsJsonAsync(env.Sessions, token);
-        }
-
-        private static async Task GetInstances(HttpContext context, AqInstanceManager mrg,
-            CancellationToken token)
-        {
-            var list = mrg.GetInstances().Select(x => new { x.Name });
-
-            await context.Response.WriteAsJsonAsync(list, cancellationToken: token);
-        }
-
-        private static async Task GetInstanceMetadata(HttpContext context, AqInstanceManager mrg,
-            CancellationToken token)
-        {
-            /*
-             1. Generate crud api
-             
-             Create()                               
-             
-             Get()                                GET       GetList
-             
-             FROM Invoice SELECT *
-             
-             Get(lookup_fields, condition)        GET       advanced GetList
-             
-             FROM Invoice WHERE condition SELECT lookup_fields
-             
-             Get(id)                              GET       GetById
-             
-             Post(object)                         POST      Update object or store
-             
-             Delete(id)                           DELETE    Delete object
-                                      
-             */
-
-            var instanceName = context.GetRouteData().Values["instance"]?.ToString();
-
-            var instance = mrg.GetInstance(instanceName);
-
-            if (instance is null) return;
-
-            var plContext = new AqContext(instance.CreateSession(new AqUser { Name = "Anonymous" }));
-
-            var md = plContext.DataRuntimeContext.Metadata.GetMetadata();
-
-            var list = md.Metadata.ToList();
-
-            await context.Response.WriteAsJsonAsync(list, cancellationToken: token);
-        }
-
-        private static async Task GetHandler(HttpContext context, MethodInfo methodInfo, AqInstanceManager mrg,
-            CancellationToken token)
-        {
-            var instanceName = context.GetRouteData().Values["instance"]?.ToString();
-
-            var instance = mrg.GetInstance(instanceName);
-
-            if (instance is null) return;
-
-            var id = context.GetRouteData().Values["id"]?.ToString() ?? Guid.Empty.ToString();
-
-            try
-            {
-                var session = instance.CreateSession(new AqUser { Name = "Anonymous" });
-
-                var obj = methodInfo.Invoke(null, new object[] { new AqContext(session), Guid.Parse(id) });
-                if (obj is null)
-                    await context.Response.WriteAsync("The object is null", cancellationToken: token);
-                else
-                    await context.Response.WriteAsJsonAsync(obj, obj.GetType(), cancellationToken: token);
-            }
-            catch (Exception ex)
-            {
-                context.Response.ContentLength = ex.ToString().Length;
-                await context.Response.WriteAsync(ex.ToString(), cancellationToken: token);
-            }
+            return services;
         }
     }
 }

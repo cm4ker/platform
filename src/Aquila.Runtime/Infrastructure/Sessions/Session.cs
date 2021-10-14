@@ -13,12 +13,12 @@ namespace Aquila.Core.Sessions
     /// </summary>
     public abstract class Session : ISession
     {
-        protected Session(AqInstance env, ICacheService cacheService)
+        protected Session(AqInstance instance, ICacheService cacheService)
         {
-            Instance = env;
+            Instance = instance;
             Id = Guid.NewGuid();
             CacheService = cacheService;
-            _dataContextManger = env.DataContextManager;
+            _dataContextManger = instance.DataContextManager;
         }
 
         private IDisposable _remover;

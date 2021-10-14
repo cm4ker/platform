@@ -311,7 +311,7 @@ namespace Aquila.Syntax.Metadata
                                     il.EmitOpCode(ILOpCode.Box);
                                     il.EmitSymbolToken(m, d, dtoMember.GetMethod.ReturnType, null);
                                 }
-                                
+
                                 il.EmitRet(false);
                                 il.MarkLabel(lbl);
                             }
@@ -614,7 +614,15 @@ namespace Aquila.Syntax.Metadata
                         new TypedConstant(_ct.HttpMethodKind.Symbol, TypedConstantKind.Primitive, 1),
                         new TypedConstant(_ct.String.Symbol, TypedConstantKind.Primitive,
                             $"/{md.Name.ToCamelCase()}/post")
+                    }.ToImmutableArray(), ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty))
+                .AddAttribute(new SynthesizedAttributeData(
+                    _ct.CrudHandlerAttribute.Ctor(_ct.HttpMethodKind, _ct.String),
+                    new[]
+                    {
+                        new TypedConstant(_ct.HttpMethodKind.Symbol, TypedConstantKind.Primitive, 1),
+                        new TypedConstant(_ct.String.Symbol, TypedConstantKind.Primitive, md.Name.ToCamelCase())
                     }.ToImmutableArray(), ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty));
+
 
             {
                 var saveDtoPerameter = new SynthesizedParameterSymbol(saveApiMethod, dtoType, 1, RefKind.None);
@@ -840,6 +848,13 @@ namespace Aquila.Syntax.Metadata
                             new TypedConstant(_ct.String.Symbol, TypedConstantKind.Primitive,
                                 $"/{md.Name.ToCamelCase()}/get/{{id}}")
                         }.ToImmutableArray(), ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty))
+                    .AddAttribute(new SynthesizedAttributeData(
+                        _ct.CrudHandlerAttribute.Ctor(_ct.HttpMethodKind, _ct.String),
+                        new[]
+                        {
+                            new TypedConstant(_ct.HttpMethodKind.Symbol, TypedConstantKind.Primitive, 0),
+                            new TypedConstant(_ct.String.Symbol, TypedConstantKind.Primitive, md.Name.ToCamelCase())
+                        }.ToImmutableArray(), ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty))
                     .SetMethodBuilder((m, d) => il =>
                     {
                         var dbLoc = new LocalPlace(il.DefineSynthLocal(loadDtoMethod, "dbCommand", _ct.DbCommand));
@@ -950,6 +965,7 @@ namespace Aquila.Syntax.Metadata
                 .SetType(_ct.Int32);
 
             managerType.AddMember(saveMethod);
+            managerType.AddMember(saveApiMethod);
             managerType.AddMember(createMethod);
             managerType.AddMember(loadDtoMethod);
             managerType.AddMember(getLink);
@@ -1188,7 +1204,7 @@ namespace Aquila.Syntax.Metadata
                             il.EmitCall(m, d, ILOpCode.Call, reload);
 
                             il.MarkLabel(reloadLabel);
-                            
+
                             thisPlace.EmitLoad(il);
                             dtoPlace.EmitLoad(il);
                             il.EmitCall(m, d, ILOpCode.Call, dtoProperty.GetMethod);

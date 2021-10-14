@@ -17,7 +17,7 @@ namespace Aquila.Library.Scripting
         readonly ReaderWriterLockSlim _scriptsLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
         readonly AquilaCompilationFactory _builder = new AquilaCompilationFactory();
 
-        Script /*!*/ TryGetOrCreateScript(string code, EntityMetadataCollection metadata,
+        Script TryGetOrCreateScript(string code, EntityMetadataCollection metadata,
             AqContext.ScriptOptions options, ScriptingContext context)
         {
             var script = default(Script);

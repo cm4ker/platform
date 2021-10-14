@@ -4,7 +4,7 @@
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
   </PropertyGroup>
 
-  <!--Import Project="$(MSBuildThisFileDirectory)..\build\Peachpie.NET.Current.Sdk.targets"/-->
+  <!--Import Project="$(MSBuildThisFileDirectory)..\build\Aquila.NET.Current.Sdk.targets"/-->
   
   <Import Project="$(CustomBeforeSdkTargets)" Condition="'$(CustomBeforeSdkTargets)' != ''"/>
   <!-- Commont targets including LanguageTargets (Peachpie.NET.Current.Sdk.targets) -->

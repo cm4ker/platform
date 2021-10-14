@@ -1,9 +1,13 @@
 ﻿using System.Data;
 using System.IO;
 using System.Linq;
+using Aquila.Core;
 using Aquila.Core.Assemlies;
+using Aquila.Core.Authentication;
+using Aquila.Core.Sessions;
 using Aquila.Data;
 using Aquila.Initializer;
+using Aquila.Library.Scripting;
 using Aquila.Metadata;
 using SqlInMemory;
 using Xunit;
@@ -27,12 +31,23 @@ namespace Aquila.Runtime.Tests.DB
             var d1 = db.Descriptors.CreateDescriptor(dc);
             var d2 = db.Descriptors.CreateDescriptor(dc);
 
-            db.Files.SaveFile(dc,
+            AqContext.IScriptingProvider provider = new ScriptingProvider();
+
+
+            var script = provider.CreateScript(new AqContext.ScriptOptions()
+            {
+                IsSubmission = false,
+                EmitDebugInformation = true,
+                Location = new Location("unknown", 0, 0),
+                //AdditionalReferences = AdditionalReferences,
+            }, "", TestMetadata.GetTestMetadata());
+
+            db.PendingFiles.SaveFile(dc,
                 new FileDescriptor
                 {
                     Name = "AssemblyName",
                     Type = FileType.MainAssembly,
-                }, File.ReadAllBytes("C:\\test\\test_aq.dll"));
+                }, script.Image.ToArray());
 
             Assert.NotEmpty(db.Descriptors.GetEntityDescriptors());
 
@@ -50,6 +65,7 @@ namespace Aquila.Runtime.Tests.DB
             DatabaseRuntimeContext db2 = new DatabaseRuntimeContext();
 
             db2.LoadAll(dc);
+            Assert.True(db.PendingMetadata.GetMetadata().Metadata.Any());
         }
     }
 }

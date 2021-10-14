@@ -163,9 +163,10 @@ namespace Aquila.Data
                                 _refCol = colName;
 
                             var runtimeType =
-                                _context.Session.Instance.BLAssembly.GetType(type.type.GetSemantic().ReferenceName);
+                                _context.Instance.BLAssembly.GetType(type.type.GetSemantic().ReferenceName);
                             var descriptor =
-                                _context.DataRuntimeContext.Descriptors.GetEntityDescriptor(type.type.GetSemantic().FullName);
+                                _context.DataRuntimeContext.Descriptors.GetEntityDescriptor(type.type.GetSemantic()
+                                    .FullName);
                             _runtimeTypes.Add(descriptor.DatabaseId, runtimeType);
 
                             break;
@@ -239,7 +240,7 @@ namespace Aquila.Data
                               throw new Exception("Result type is empty");
                 if (colType.IsReference)
                 {
-                    _runtimeType = _context.Session.Instance.BLAssembly.GetType(colType.GetSemantic().ReferenceName);
+                    _runtimeType = _context.Instance.BLAssembly.GetType(colType.GetSemantic().ReferenceName);
                 }
                 else
                 {

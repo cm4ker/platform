@@ -169,8 +169,8 @@ namespace Aquila.Runtime
             public void TransferTo(DataConnectionContext dcc, FilesRC destenation)
             {
                 dcc.BeginTransaction();
-                
-                Clear(dcc);
+
+                destenation.Clear(dcc);
                 dcc.CreateCommand((qm) =>
                     qm.bg_query()
                         .m_from()
@@ -181,7 +181,7 @@ namespace Aquila.Runtime
                         .m_insert()
                         .ld_table(destenation._tableName)
                         .st_query()).ExecuteNonQuery();
-                
+
                 dcc.CommitTransaction();
             }
         }

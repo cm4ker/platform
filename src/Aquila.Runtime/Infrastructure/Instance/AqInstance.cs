@@ -268,32 +268,5 @@ namespace Aquila.Core.Instance
                 return session;
             }
         }
-
-        /// <summary>
-        /// Force end session
-        /// </summary>
-        /// <param name="session"></param>
-        public void KillSession(ISession session)
-        {
-            lock (_locking)
-            {
-                Sessions.Remove(session);
-            }
-        }
-
-        /// <summary>
-        /// Убить сессию
-        /// </summary>
-        /// <param name="id"></param>
-        public void KillSession(Guid id)
-        {
-            lock (_locking)
-            {
-                var session = Sessions.FirstOrDefault(x => x.Id == id) ?? throw new Exception("Session not found");
-                Sessions.Remove(session);
-            }
-        }
-
-        public ILinkFactory LinkFactory { get; }
     }
 }

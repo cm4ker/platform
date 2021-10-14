@@ -6,6 +6,9 @@ using Aquila.Logging;
 using Aquila.Metadata;
 using Aquila.QueryBuilder.Builders;
 using Aquila.Runtime;
+using DBConstantsM = Aquila.Initializer.DBConstNames.Migration;
+using DBConstantsMS = Aquila.Initializer.DBConstNames.MigrationStatus;
+
 
 namespace Aquila.Migrations
 {
@@ -35,8 +38,8 @@ namespace Aquila.Migrations
                     .m_values()
                     .ld_const(id)
                     .m_insert()
-                    .ld_table("migrations")
-                    .ld_column("migration_id")
+                    .ld_table(DBConstantsM.MIGRATION_TABLE)
+                    .ld_column(DBConstantsM.ID_COLUMN)
                     .st_query();
             }))
             {
@@ -62,14 +65,14 @@ namespace Aquila.Migrations
                     .bg_query()
                     .m_where()
                     .ld_const(id)
-                    .ld_column("migration_id")
+                    .ld_column(DBConstantsM.ID_COLUMN)
                     .eq()
                     .m_set()
-                    .ld_column("completed")
+                    .ld_column(DBConstantsM.COMPLETED_COLUMN)
                     .ld_const(true)
                     .assign()
                     .m_update()
-                    .ld_table("migrations")
+                    .ld_table(DBConstantsM.MIGRATION_TABLE)
                     .st_query();
             }))
             {
@@ -106,7 +109,6 @@ namespace Aquila.Migrations
             var context = _dataContextManager.GetContext();
             var runtimeContext = DatabaseRuntimeContext.CreateAndLoad(context);
 
-
             _logger.Info("Check last migration.");
 
             if (IfLastMigrationFail(out var last_fail_migration_id, context))
@@ -133,8 +135,6 @@ namespace Aquila.Migrations
                 CompliteMigration(context, id);
                 _logger.Info($"Migration '{id}' complite.");
             }
-
-            runtimeContext.ApplyPendingChanges(context);
         }
 
         private void ClearMigrationStatus(Guid id, DataConnectionContext context)
@@ -144,10 +144,10 @@ namespace Aquila.Migrations
                 qm
                     .bg_query()
                     .m_from()
-                    .ld_table("migration_status")
+                    .ld_table(DBConstantsMS.MIGRATION_STATUS_TABLE)
                     .m_where()
                     .ld_const(id)
-                    .ld_column("migration_id")
+                    .ld_column(DBConstantsMS.ID_COLUMN)
                     .eq()
                     .m_delete()
                     .st_query();
@@ -218,18 +218,18 @@ namespace Aquila.Migrations
                 qm
                     .bg_query()
                     .m_from()
-                    .ld_table("migration_status")
+                    .ld_table(DBConstantsMS.MIGRATION_STATUS_TABLE)
                     .m_where()
                     .ld_const(true)
-                    .ld_column("delete_table")
+                    .ld_column(DBConstantsMS.DELETE_TABLE_COLUMN)
                     .eq()
                     .ld_const(false)
-                    .ld_column("rename_table")
+                    .ld_column(DBConstantsMS.RENAME_TABLE_COLUMN)
                     .eq()
                     .and()
                     .m_select()
-                    .ld_column("original_table")
-                    .ld_column("temp_table")
+                    .ld_column(DBConstantsMS.ORIGINAL_TABLE_COLUMN)
+                    .ld_column(DBConstantsMS.TEMP_TABLE_COLUMN)
                     .st_query();
             }))
             {
@@ -283,16 +283,16 @@ namespace Aquila.Migrations
                 qm
                     .bg_query()
                     .m_from()
-                    .ld_table("migrations")
+                    .ld_table(DBConstantsM.MIGRATION_TABLE)
                     .m_where()
                     .ld_const(false)
-                    .ld_column("completed")
+                    .ld_column(DBConstantsM.COMPLETED_COLUMN)
                     .eq()
                     .m_order_by()
-                    .ld_column("datetime")
+                    .ld_column(DBConstantsM.DATETIME_COLUMN)
                     .desc()
                     .m_select()
-                    .ld_column("migration_id")
+                    .ld_column(DBConstantsM.ID_COLUMN)
                     .st_query();
             }))
             {

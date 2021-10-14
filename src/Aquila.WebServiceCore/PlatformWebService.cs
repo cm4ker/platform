@@ -37,13 +37,26 @@ namespace Aquila.WebServiceCore
         public Task StartAsync(CancellationToken ct)
         {
             var builder = new WebHostBuilder()
+                .ConfigureServices(services =>
+                {
+                    services.AddDistributedMemoryCache();
+                    services.AddSession();
+
+                    services.AddSoapCore();
+                    services.AddExceptionHandler(o => o.AllowStatusCode404Response = false);
+
+                    services.AddAquila();
+                    services.AddRouting();
+                    
+                    //services.Configure<KestrelServerOptions>(options => { options.AllowSynchronousIO = true; });
+                })
                 .Configure((b, app) =>
                 {
                     b.HostingEnvironment.EnvironmentName = Environments.Development;
 
-                    app.UseRouting();
-                    app.UseAquilaPlatform(ct);
-
+                    app.UseSession();
+                    app.UseAquila();
+                    
                     if (b.HostingEnvironment.IsDevelopment())
                     {
                         app.UseDeveloperExceptionPage();
@@ -54,31 +67,20 @@ namespace Aquila.WebServiceCore
                         app.UseHsts();
                     }
 
-                    app.UseExceptionHandler(c => c.Run(async context =>
-                    {
-                        var exception = context.Features
-                            .Get<IExceptionHandlerPathFeature>()
-                            .Error;
-                        var response = new { error = exception.Message };
-                        await context.Response.WriteAsJsonAsync(response, cancellationToken: ct);
-                    }));
+                    // app.UseExceptionHandler(c => c.Run(async context =>
+                    // {
+                    //     var exception = context.Features
+                    //         .Get<IExceptionHandlerPathFeature>()
+                    //         .Error;
+                    //     var response = new { error = exception.Message };
+                    //     await context.Response.WriteAsJsonAsync(response, cancellationToken: ct);
+                    // }));
 
                     //if we not found endpoints response this                    
                     app.Run(context =>
                         context.Response.WriteAsync("Path not found! Go away!", cancellationToken: ct));
                 })
-                .ConfigureServices(services =>
-                {
-                    services.AddSoapCore();
-                    services.AddExceptionHandler(o => o.AllowStatusCode404Response = false);
-
-                    services.AddAquilaPlatform();
-
-                    // If using Kestrel:
-                    services.Configure<KestrelServerOptions>(options => { options.AllowSynchronousIO = true; });
-                })
                 .UseKestrel()
-                .ConfigureServices(x => x.AddRouting())
                 .UseContentRoot(Directory.GetCurrentDirectory());
 
             _host = builder.Build();
