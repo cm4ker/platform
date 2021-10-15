@@ -31,6 +31,23 @@ namespace Aquila.AspNetCore.Web
             Init();
         }
 
+        public Task InvokeAsync(HttpContext context, RequestDelegate next)
+        {
+            var area = context.GetRouteValue("area");
+
+            switch (area)
+            {
+                case "crud": return InvokeCrud(context);
+                case "migrate": return InvokeMigrate(context);
+                case "deploy": return InvokeDeploy(context);
+                case "metadata": return InvokeGetMetadata(context);
+                case "user": return InvokeGetCurrentUser(context);
+
+                //in that case we not handle this and just invoke next delegate
+                default: return next(context);
+            }
+        }
+
         private void Init()
         {
             foreach (var insatnce in _instanceManager.GetInstances())
@@ -74,6 +91,8 @@ namespace Aquila.AspNetCore.Web
             }
         }
 
+        #region Handlers
+
         private async Task GetHandler(AqContext aqContext, HttpContext context, MethodInfo methodInfo)
         {
             var id = context.GetRouteValue("id")?.ToString() ?? Guid.Empty.ToString();
@@ -110,23 +129,6 @@ namespace Aquila.AspNetCore.Web
             {
                 context.Response.ContentLength = ex.ToString().Length;
                 await context.Response.WriteAsync(ex.ToString());
-            }
-        }
-
-
-        public Task InvokeAsync(HttpContext context, RequestDelegate next)
-        {
-            var area = context.GetRouteValue("area");
-
-            switch (area)
-            {
-                case "crud": return InvokeCrud(context);
-                case "migrate": return InvokeMigrate(context);
-                case "deploy": return InvokeDeploy(context);
-                case "metadata": return InvokeGetMetadata(context);
-
-                //in that case we not handle this and just invoke next delegate
-                default: return next(context);
             }
         }
 
@@ -189,7 +191,6 @@ namespace Aquila.AspNetCore.Web
             }
         }
 
-
         private async Task InvokeGetSessions(HttpContext context)
         {
             var instanceName = context.GetRouteValue("instance")?.ToString();
@@ -207,6 +208,23 @@ namespace Aquila.AspNetCore.Web
             await context.Response.WriteAsJsonAsync(list);
         }
 
+        private async Task InvokeGetCurrentUser(HttpContext context)
+        {
+            var instanceName = context.GetRouteValue("instance")?.ToString();
+            var instance = _instanceManager.GetInstance(instanceName);
+
+            var aqctx = new AqHttpContext(context, instance);
+
+            var result = aqctx.User;
+
+            foreach (var role in aqctx.Roles)
+            {
+                result += "\n" + role;
+            }
+
+            await context.Response.WriteAsJsonAsync(result);
+        }
+
         private async Task InvokeGetMetadata(HttpContext context)
         {
             var instanceName = context.GetRouteValue("instance")?.ToString();
@@ -222,5 +240,7 @@ namespace Aquila.AspNetCore.Web
 
             await context.Response.WriteAsJsonAsync(list);
         }
+
+        #endregion
     }
 }

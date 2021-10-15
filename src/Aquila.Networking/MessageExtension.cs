@@ -40,13 +40,12 @@ namespace Aquila.Core.Network
             }
         }
 
-        public static async Task<INetworkMessage> Authentication(this RequestAuthenticationNetworkMessage request,
-            IAuthenticationManager manager, Action<AqUser> AuthCallback)
+        public static async Task<INetworkMessage> Authentication(this RequestAuthenticationNetworkMessage request, Action<AqUser> AuthCallback)
         {
             try
             {
-                var user = manager.Authenticate(request.Token);
-                AuthCallback(user);
+                // var user = manager.Authenticate(request.Token);
+                // AuthCallback(user);
                 return new ResponceAuthenticationNetworkMessage(request);
             }
             catch (Exception ex)

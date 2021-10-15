@@ -29,8 +29,7 @@ namespace Aquila.Core.Instance
     {
         private object _locking;
 
-        public AqInstance(IInvokeService invokeService, ILogger<AqInstance> logger,
-            IAuthenticationManager authenticationManager, IServiceProvider serviceProvider,
+        public AqInstance(IInvokeService invokeService, ILogger<AqInstance> logger, IServiceProvider serviceProvider,
             DataContextManager contextManager, UserManager userManager, ICacheService cacheService,
             MigrationManager manager
         )
@@ -46,7 +45,6 @@ namespace Aquila.Core.Instance
             MigrationManager = manager;
 
             Globals = new Dictionary<string, object>();
-            AuthenticationManager = authenticationManager;
             DataContextManager = contextManager;
 
             Sessions = new List<ISession>();
@@ -235,8 +233,6 @@ namespace Aquila.Core.Instance
 
         public IList<ISession> Sessions { get; }
         public IInvokeService InvokeService { get; }
-
-        public IAuthenticationManager AuthenticationManager { get; }
 
         public MigrationManager MigrationManager { get; }
 

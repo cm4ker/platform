@@ -38,7 +38,7 @@ namespace Aquila.Core.Network.States
         {
             if (value is RequestAuthenticationNetworkMessage msg)
             {
-                msg.Authentication(_instance.AuthenticationManager, (u) =>
+                msg.Authentication((u) =>
                 {
                     var state = new InvokeObserver(_instance);
                     state.Subscribe(context.Connection);

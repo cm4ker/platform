@@ -46,6 +46,7 @@ namespace Aquila.AspNetCore.Web
         protected override string DebugDisplay => $"{_httpctx.Request.Path.Value}{_httpctx.Request.QueryString.Value}";
 
         public override string User => _httpctx.User.Identity?.Name ?? base.User;
+        public override IEnumerable<string> Roles => _httpctx.User.Claims.Select(x => x.Value);
 
         #endregion
 

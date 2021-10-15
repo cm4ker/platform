@@ -5,7 +5,7 @@ using Aquila.Core.Contracts.Authentication;
 
 namespace Aquila.Core.Authentication
 {
-    public class AuthenticationManager : IAuthenticationManager
+    public class AuthenticationManager 
     {
         private readonly List<IAuthenticationProvider> _providers = new List<IAuthenticationProvider>();
 

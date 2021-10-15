@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace Aquila.WebServiceCore
@@ -41,7 +42,6 @@ namespace Aquila.WebServiceCore
             });
 
             builder.UseAuthentication();
-            builder.UseAuthorization();
 
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "metadata",
                 "api/{instance}/metadata");
@@ -49,12 +49,22 @@ namespace Aquila.WebServiceCore
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "migrate",
                 "api/{instance}/migrate");
 
+            builder.MapMiddleware<AquilaHandlerMiddleware>("default", "user",
+                "api/{instance}/user");
+
             return builder.MapMiddleware<AquilaHandlerMiddleware>("default", "crud",
-                "api/{instance}/{object}/{method}/{id?}");
+                "api/{instance}/{object}/{method}/{id?}",
+                options => options.AddAuthorizeData(policy: "UserRequired"));
         }
 
         private static IApplicationBuilder MapMiddleware<T>(this IApplicationBuilder builder, string name,
             string areaName, string template)
+        {
+            return builder.MapMiddleware<T>(name, areaName, template, options => { });
+        }
+
+        private static IApplicationBuilder MapMiddleware<T>(this IApplicationBuilder builder, string name,
+            string areaName, string template, Action<AquilaAuthorizationOptions> configureAuthorisation)
         {
             var routeBuilder = new RouteBuilder(builder);
 
@@ -62,7 +72,16 @@ namespace Aquila.WebServiceCore
             var constraintsDictionary = new RouteValueDictionary() { { "area", areaName } };
 
             var nested = builder.New();
+
+            var authOpt = new AquilaAuthorizationOptions();
+            configureAuthorisation(authOpt);
+            nested.UseAuthorization(authOpt);
+
+
             nested.UseMiddleware<T>();
+            nested.UseRouting();
+            nested.UseEndpoints(o => { });
+
 
             var route = new Route(
                 new RouteHandler(nested.Build()),
@@ -78,6 +97,27 @@ namespace Aquila.WebServiceCore
             builder.UseRouter(routeBuilder.Build());
 
             return builder;
+        }
+
+        public static IApplicationBuilder UseAuthorization(this IApplicationBuilder app)
+        {
+            return app.UseAuthorization(new AquilaAuthorizationOptions());
+        }
+
+        public static IApplicationBuilder UseAuthorization(this IApplicationBuilder app,
+            AquilaAuthorizationOptions authorizationOptions)
+        {
+            if (app == null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
+            if (authorizationOptions == null)
+            {
+                throw new ArgumentNullException(nameof(authorizationOptions));
+            }
+
+            return app.UseMiddleware<AuthorizationMiddleware>(Options.Create(authorizationOptions));
         }
 
         public static IServiceCollection AddAquila(this IServiceCollection services)
@@ -115,23 +155,19 @@ namespace Aquila.WebServiceCore
 
             services.AddSingleton<ICacheService, DictionaryCacheService>();
 
-            services.AddScoped<IAuthenticationManager, AuthenticationManager>();
-
             services.AddSingleton<AquilaHandlerMiddleware>();
 
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            
-            
+
             services.AddRouting();
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("AdminOnly", policy => policy.RequireClaim("Admin"));
-
-                options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
+                options.AddPolicy("UserRequired", policy => policy.RequireAuthenticatedUser());
+                // options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                //     .RequireAuthenticatedUser()
+                //     .Build();
             });
-            
+
             services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -174,13 +210,13 @@ namespace Aquila.WebServiceCore
                     options.TokenValidationParameters.NameClaimType = "name";
                     options.TokenValidationParameters.RoleClaimType = "role";
                 });
-            
+
             services.AddControllersWithViews();
-            
+
             services.AddHttpClient();
-            
+
             ContextExtensions.CurrentContextProvider = () => HttpContextExtension.GetOrCreateContext();
-            
+
             return services;
         }
     }
