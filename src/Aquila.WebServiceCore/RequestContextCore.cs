@@ -21,8 +21,33 @@ namespace Aquila.AspNetCore.Web
     /// </summary>
     sealed class AqHttpContext : AqContext, IHttpAqContext
     {
+        readonly HttpContext _httpctx;
+
+        public AqHttpContext(HttpContext httpcontext, AqInstance instance) : base(instance)
+        {
+            Debug.Assert(httpcontext != null);
+
+            _httpctx = httpcontext;
+
+            httpcontext.Items[HttpContextItemKey] = this;
+            var bodyControl = httpcontext.Features.Get<IHttpBodyControlFeature>();
+            if (bodyControl != null)
+            {
+                bodyControl.AllowSynchronousIO = true;
+            }
+
+            this.SetupHeaders();
+        }
+
+
+        #region Overrided
+
         /// <summary>Debug display string.</summary>
         protected override string DebugDisplay => $"{_httpctx.Request.Path.Value}{_httpctx.Request.QueryString.Value}";
+
+        public override string User => _httpctx.User.Identity?.Name ?? base.User;
+
+        #endregion
 
         #region IHttpPhpContext
 
@@ -216,8 +241,7 @@ namespace Aquila.AspNetCore.Web
         /// <remarks>
         /// End may occur when request finishes its processing or when event explicitly requested by user's code (See <see cref="IHttpAqContext.Flush(bool)"/>).
         /// </remarks>
-        public TaskCompletionSource<RequestCompletionReason> RequestCompletionSource { get; } =
-            new TaskCompletionSource<RequestCompletionReason>();
+        public TaskCompletionSource<RequestCompletionReason> RequestCompletionSource { get; } = new();
 
         /// <summary>
         /// Internal timer used to signalize the request has timeouted.
@@ -303,23 +327,6 @@ namespace Aquila.AspNetCore.Web
         /// </summary>
         public HttpContext HttpContext => _httpctx;
 
-        readonly HttpContext _httpctx;
-
-        public AqHttpContext(HttpContext httpcontext, AqInstance instance) : base(instance)
-        {
-            Debug.Assert(httpcontext != null);
-
-            _httpctx = httpcontext;
-
-            httpcontext.Items[HttpContextItemKey] = this;
-            var bodyControl = httpcontext.Features.Get<IHttpBodyControlFeature>();
-            if (bodyControl != null)
-            {
-                bodyControl.AllowSynchronousIO = true;
-            }
-
-            this.SetupHeaders();
-        }
 
         /// <summary>
         /// Gets (non disposed) context associated to given <see cref="HttpContext"/>.

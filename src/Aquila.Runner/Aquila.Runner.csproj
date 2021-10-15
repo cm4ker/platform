@@ -45,5 +45,8 @@
         <None Update="Settings\Instance.config">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+        <None Update="hosting.json">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 </Project>

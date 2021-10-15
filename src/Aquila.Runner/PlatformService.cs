@@ -39,8 +39,6 @@ namespace Aquila.Runner
         public Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.Info("Stoping...");
-
-            _serviceProvider.GetRequiredService<ISettingsStorage>().Save();
             return Task.CompletedTask;
         }
     }
