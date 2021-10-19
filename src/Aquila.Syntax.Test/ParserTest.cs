@@ -103,6 +103,18 @@ namespace Aquila.Compiler.Test2
         }
 
         [Fact]
+        public void MethodDeclWithAnnotationTest()
+        {
+            var parser = Parse(@"[endpoint] public int CustomProc() 
+            { 
+                return 2 * 3 / 3 * 6 * (10 + 2); 
+            }");
+            var result = _v.Visit(parser.global_method_declaration());
+            var expr = Assert.IsAssignableFrom<MethodDecl>(result);
+            Assert.Single(expr.Annotations);
+        }
+
+        [Fact]
         public void UnaryExpressionTest()
         {
             var parser = Parse("!a");

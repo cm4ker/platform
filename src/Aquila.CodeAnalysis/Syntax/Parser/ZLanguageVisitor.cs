@@ -387,9 +387,34 @@ namespace Aquila.Syntax.Parser
         //     return result;
         // }
 
+        public override LangElement VisitAttributes(ZSharpParser.AttributesContext context)
+        {
+            PushStack();
+            base.VisitAttributes(context);
+            var coll = PopStack().ToCollection<AnnotationList, Annotation>();
+            Stack.Push(coll);
+
+            return Stack.PeekNode();
+        }
+
+        public override LangElement VisitAttribute(ZSharpParser.AttributeContext context)
+        {
+            base.VisitAttribute(context);
+
+            Stack.Push(new Annotation(context.ToLineInfo(), SyntaxKind.Attribute, ArgumentList.Empty,
+                Stack.PopIdentifier()));
+
+            return Stack.PeekNode();
+        }
+
         public override LangElement VisitGlobal_method_declaration(
             ZSharpParser.Global_method_declarationContext context)
         {
+            if (context.attributes() != null)
+                VisitAttributes(context.attributes());
+            else
+                Stack.Push(AnnotationList.Empty);
+
             VisitAll_member_modifiers(context.all_member_modifiers());
             _isGlobal = true;
             VisitMethod_declaration(context.method_declaration());
@@ -439,10 +464,12 @@ namespace Aquila.Syntax.Parser
             var type = Stack.PopType();
 
             var funcName = context.IDENTIFIER().Identifier();
-
+            
+            var modList = Stack.Pop<ModifierList>();
+            var annList = Stack.Pop<AnnotationList>();
+            
             Stack.Push(new MethodDecl(context.ToLineInfo(), SyntaxKind.MethodDeclaration, body, pc, //gpc,
-                ac,
-                funcName, type, Stack.Pop<ModifierList>(), _isGlobal));
+                annList, funcName, type, modList, _isGlobal));
 
             return Stack.PeekNode();
         }

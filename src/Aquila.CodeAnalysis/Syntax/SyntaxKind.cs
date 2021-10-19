@@ -83,6 +83,7 @@ namespace Aquila.Syntax
         CharKeyword = 8317,
         VoidKeyword = 8318,
         ObjectKeyword = 8319,
+        DatetimeKeyword = 8320,
 
         // Nodes
         CompilationUnit,

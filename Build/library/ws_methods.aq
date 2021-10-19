@@ -1,0 +1,5 @@
+[url("get_books_count")]
+public static int get_books_count()
+{
+    return 0;
+}

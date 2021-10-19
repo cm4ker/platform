@@ -8,18 +8,18 @@ namespace Aquila.AspNetCore.Web.Session
     /// <summary>
     /// Session handler for ASP.NET Core.
     /// </summary>
-    sealed class AspNetCoreSessionHandler : AquilaSessionHandler
+    sealed class AspNetCoreSessionHandler : AqSessionHandler
     {
-        public static readonly AquilaSessionHandler Default = new AspNetCoreSessionHandler();
+        public static readonly AqSessionHandler Default = new AspNetCoreSessionHandler();
 
         private AspNetCoreSessionHandler() { }
 
-        static HttpContext GeHttpContext(IHttpAqContext webctx) => ((AqHttpContext)webctx).HttpContext;
+        static HttpContext GeHttpContext(IAqHttpContext webctx) => ((AqHttpContext)webctx).HttpContext;
 
         /// <summary>
         /// Gets the session name.
         /// </summary>
-        public override string GetSessionName(IHttpAqContext webctx)
+        public override string GetSessionName(IAqHttpContext webctx)
         {
             // TODO: SessionOptions.CookieName
             // var config = ((Context)webctx).GetService<IConfigureOptions<Microsoft.AspNetCore.Builder.SessionOptions>>();
@@ -30,14 +30,14 @@ namespace Aquila.AspNetCore.Web.Session
         /// <summary>
         /// Sets the session name.
         /// </summary>
-        public override bool SetSessionName(IHttpAqContext webctx, string name) => false; // throw new NotSupportedException();
+        public override bool SetSessionName(IAqHttpContext webctx, string name) => false; // throw new NotSupportedException();
 
         public override string HandlerName => "AspNetCore";
 
         /// <summary>
         /// Checks if sessions were configured.
         /// </summary>
-        public override bool IsEnabled(IHttpAqContext webctx)
+        public override bool IsEnabled(IAqHttpContext webctx)
         {
             var httpctx = GeHttpContext(webctx);
             try
@@ -51,7 +51,7 @@ namespace Aquila.AspNetCore.Web.Session
             }
         }
 
-        public override void Abandon(IHttpAqContext webctx)
+        public override void Abandon(IAqHttpContext webctx)
         {
             // abandon asp.net core session
             var isession = GeHttpContext(webctx).Session;
@@ -64,7 +64,7 @@ namespace Aquila.AspNetCore.Web.Session
             }
         }
 
-        public override string GetSessionId(IHttpAqContext webctx)
+        public override string GetSessionId(IAqHttpContext webctx)
         {
             var isession = GeHttpContext(webctx).Session;
             if (isession != null)
@@ -80,7 +80,7 @@ namespace Aquila.AspNetCore.Web.Session
         /// <summary>
         /// Initiates the session.
         /// </summary>
-        public override bool StartSession(AqContext ctx, IHttpAqContext webctx)
+        public override bool StartSession(AqContext ctx, IAqHttpContext webctx)
         {
             if (base.StartSession(ctx, webctx))
             {
@@ -108,7 +108,7 @@ namespace Aquila.AspNetCore.Web.Session
         /// <summary>
         /// Close the session (either abandon or persist).
         /// </summary>
-        public override void CloseSession(AqContext ctx, IHttpAqContext webctx, bool abandon)
+        public override void CloseSession(AqContext ctx, IAqHttpContext webctx, bool abandon)
         {
             base.CloseSession(ctx, webctx, abandon);
 

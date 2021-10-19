@@ -11,7 +11,7 @@ namespace Aquila.Core
     /// <summary>
     /// Interface providing web features.
     /// </summary>
-    public interface IHttpAqContext
+    public interface IAqHttpContext
     {
         #region headers
 
@@ -85,12 +85,12 @@ namespace Aquila.Core
         /// <summary>
         /// Gets or sets session handler for current context.
         /// </summary>
-        AquilaSessionHandler SessionHandler { get; set; }
+        AqSessionHandler SessionHandler { get; set; }
 
         /// <summary>
         /// Gets or sets session state.
         /// </summary>
-        AquilaSessionState SessionState { get; set; }
+        AqSessionState SessionState { get; set; }
 
         #endregion
     }

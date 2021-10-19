@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 using Aquila.Core.Assemlies;
 using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
@@ -79,7 +80,11 @@ namespace Aquila.Core.Instance
 
             if (currentAssembly != null)
             {
-                LoadAssembly(Assembly.Load(currentAssembly));
+                var asm = Assembly.Load(currentAssembly);
+                var loadContext = AssemblyLoadContext.GetLoadContext(asm);
+                loadContext.LoadFromAssemblyPath(
+                    @"C:\projects\ThePlatform\SqlPlusDbSync\SqlPlusDbSync\src\Aquila.Runner\bin\Debug\net5.0\Aquila.Library.dll");
+                LoadAssembly(asm);
                 _logger.Info("Project '{0}' was loaded.", Name);
             }
             else

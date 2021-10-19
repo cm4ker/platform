@@ -130,4 +130,18 @@ namespace Aquila.Core
         UpdateQuery = 2,
         InsertQuery = 3,
     }
+
+    public class AqUserVisibleAttribute : Attribute
+    {
+    }
+
+    [AqUserVisible]
+    public class endpoint : Attribute
+    {
+        public string Uri { get; set; }
+
+        public endpoint()
+        {
+        }
+    }
 }

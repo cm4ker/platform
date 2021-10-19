@@ -9,7 +9,7 @@ namespace Aquila.Core
     /// <summary>
     /// A session state.
     /// </summary>
-    public enum AquilaSessionState
+    public enum AqSessionState
     {
         /// <summary>
         /// The default, closed, state.
@@ -35,7 +35,7 @@ namespace Aquila.Core
     /// <summary>
     /// A PHP session handler providing basic session operations.
     /// </summary>
-    public abstract class AquilaSessionHandler
+    public abstract class AqSessionHandler
     {
         /// <summary>
         /// Dummy session item keeping .NET session object alive.
@@ -51,12 +51,12 @@ namespace Aquila.Core
         /// <summary>
         /// Gets or sets the session name.
         /// </summary>
-        public abstract string GetSessionName(IHttpAqContext webctx);
+        public abstract string GetSessionName(IAqHttpContext webctx);
 
         /// <summary>
         /// Gets or sets the session name.
         /// </summary>
-        public abstract bool SetSessionName(IHttpAqContext webctx, string name);
+        public abstract bool SetSessionName(IAqHttpContext webctx, string name);
 
         /// <summary>
         /// Gets this handler name.
@@ -68,44 +68,44 @@ namespace Aquila.Core
         /// Next time a new (empty) sesison should be created.
         /// </summary>
         /// <param name="webctx">Current web context.</param>
-        public abstract void Abandon(IHttpAqContext webctx);
+        public abstract void Abandon(IAqHttpContext webctx);
 
         /// <summary>
         /// Gets the session ID (SID constant).
         /// </summary>
-        public abstract string GetSessionId(IHttpAqContext webctx);
+        public abstract string GetSessionId(IAqHttpContext webctx);
 
         /// <summary>
         /// Sets the session ID (SID constant).
         /// </summary>
-        public virtual bool SetSessionId(IHttpAqContext webctx, string newid) => false;
+        public virtual bool SetSessionId(IAqHttpContext webctx, string newid) => false;
 
         /// <summary>
         /// Gets value indicating the sessions are configured and available to use.
         /// </summary>
-        public virtual bool IsEnabled(IHttpAqContext webctx) => true;
+        public virtual bool IsEnabled(IAqHttpContext webctx) => true;
 
         /// <summary>
         /// Starts the session if it is not started yet.
         /// </summary>
-        public virtual bool StartSession(AqContext ctx, IHttpAqContext webctx)
+        public virtual bool StartSession(AqContext ctx, IAqHttpContext webctx)
         {
             // checks and changes session state:
-            if (webctx.SessionState != AquilaSessionState.Closed) return false;
-            webctx.SessionState = AquilaSessionState.InProgress;
+            if (webctx.SessionState != AqSessionState.Closed) return false;
+            webctx.SessionState = AqSessionState.InProgress;
 
             try
             {
             }
             catch
             {
-                webctx.SessionState = AquilaSessionState.Closed;
+                webctx.SessionState = AqSessionState.Closed;
                 return false;
             }
             finally
             {
                 //
-                webctx.SessionState = AquilaSessionState.Started;
+                webctx.SessionState = AqSessionState.Started;
             }
 
             //
@@ -115,10 +115,10 @@ namespace Aquila.Core
         /// <summary>
         /// Discard session array changes and finish session.
         /// </summary>
-        public virtual void AbortSession(AqContext ctx, IHttpAqContext webctx)
+        public virtual void AbortSession(AqContext ctx, IAqHttpContext webctx)
         {
-            if (webctx.SessionState != AquilaSessionState.Started) return;
-            webctx.SessionState = AquilaSessionState.InProgress;
+            if (webctx.SessionState != AqSessionState.Started) return;
+            webctx.SessionState = AqSessionState.InProgress;
 
             try
             {
@@ -126,17 +126,17 @@ namespace Aquila.Core
             }
             finally
             {
-                webctx.SessionState = AquilaSessionState.Closed;
+                webctx.SessionState = AqSessionState.Closed;
             }
         }
 
         /// <summary>
         /// Closes the session and either persists the session data or abandons the session.
         /// </summary>
-        public virtual void CloseSession(AqContext ctx, IHttpAqContext webctx, bool abandon)
+        public virtual void CloseSession(AqContext ctx, IAqHttpContext webctx, bool abandon)
         {
-            if (webctx.SessionState != AquilaSessionState.Started) return;
-            webctx.SessionState = AquilaSessionState.InProgress;
+            if (webctx.SessionState != AqSessionState.Started) return;
+            webctx.SessionState = AqSessionState.InProgress;
 
             //
             try
@@ -152,7 +152,7 @@ namespace Aquila.Core
             }
             finally
             {
-                webctx.SessionState = AquilaSessionState.Closed;
+                webctx.SessionState = AqSessionState.Closed;
             }
         }
     }

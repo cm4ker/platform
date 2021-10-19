@@ -112,6 +112,9 @@ namespace Aquila.CodeAnalysis.Symbols
         public const string AquilaExtensionAqAttributeFullName =
             AquilaRuntimeNamespace + ".ExtensionAqAttribute";
 
+        public const string AquilaUserVisibleAttributeFullName =
+            AquilaRuntimeNamespace + ".AqUserVisibleAttribute";
+
         public const string AquilaEntityAttributeFullName = AquilaRuntimeNamespace + ".EntityAttribute";
 
         public const string AquilaLinkAttributeFullName = AquilaRuntimeNamespace + ".LinkAttribute";
@@ -174,6 +177,7 @@ namespace Aquila.CodeAnalysis.Symbols
             ExtensionMethodAttribute,
             HttpHandlerAttribute,
             CrudHandlerAttribute,
+            EndpointAttribute,
 
             //Enums
             RuntimeInitKind,
@@ -227,6 +231,7 @@ namespace Aquila.CodeAnalysis.Symbols
             ExtensionMethodAttribute = CreateFromFullName(AquilaExtensionAqAttributeFullName);
             HttpHandlerAttribute = CreateFromFullName(AquilaHttpMethodHandlerAttributeFullName);
             CrudHandlerAttribute = Create("CrudHandlerAttribute");
+            EndpointAttribute = Create("endpoint");
 
             #endregion
 

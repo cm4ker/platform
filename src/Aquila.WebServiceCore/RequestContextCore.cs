@@ -19,7 +19,7 @@ namespace Aquila.AspNetCore.Web
     /// <summary>
     /// Runtime context for ASP.NET Core request.
     /// </summary>
-    sealed class AqHttpContext : AqContext, IHttpAqContext
+    sealed class AqHttpContext : AqContext, IAqHttpContext
     {
         readonly HttpContext _httpctx;
 
@@ -53,12 +53,12 @@ namespace Aquila.AspNetCore.Web
         #region IHttpPhpContext
 
         /// <summary>Gets value indicating HTTP headers were already sent.</summary>
-        bool IHttpAqContext.HeadersSent
+        bool IAqHttpContext.HeadersSent
         {
             get { return _httpctx.Response.HasStarted; }
         }
 
-        void IHttpAqContext.SetHeader(string name, string value, bool append)
+        void IAqHttpContext.SetHeader(string name, string value, bool append)
         {
             if (name.EqualsOrdinalIgnoreCase("content-length"))
             {
@@ -87,24 +87,24 @@ namespace Aquila.AspNetCore.Web
             }
         }
 
-        void IHttpAqContext.RemoveHeader(string name)
+        void IAqHttpContext.RemoveHeader(string name)
         {
             _httpctx.Response.Headers.Remove(name);
         }
 
-        void IHttpAqContext.RemoveHeaders()
+        void IAqHttpContext.RemoveHeaders()
         {
             _httpctx.Response.Headers.Clear();
         }
 
         /// <summary>Enumerates HTTP headers in current response.</summary>
-        IEnumerable<KeyValuePair<string, string>> IHttpAqContext.GetHeaders()
+        IEnumerable<KeyValuePair<string, string>> IAqHttpContext.GetHeaders()
         {
             return _httpctx.Response.Headers.Select(pair =>
                 new KeyValuePair<string, string>(pair.Key, pair.Value.ToString()));
         }
 
-        IEnumerable<KeyValuePair<string, IEnumerable<string>>> IHttpAqContext.RequestHeaders
+        IEnumerable<KeyValuePair<string, IEnumerable<string>>> IAqHttpContext.RequestHeaders
         {
             get
             {
@@ -151,9 +151,9 @@ namespace Aquila.AspNetCore.Web
         /// <summary>
         /// Stream with contents of the incoming HTTP entity body.
         /// </summary>
-        Stream IHttpAqContext.InputStream => _httpctx.Request.Body;
+        Stream IAqHttpContext.InputStream => _httpctx.Request.Body;
 
-        void IHttpAqContext.AddCookie(string name, string value, DateTimeOffset? expires, string path, string domain,
+        void IAqHttpContext.AddCookie(string name, string value, DateTimeOffset? expires, string path, string domain,
             bool secure, bool httpOnly, string samesite)
         {
             var cookie = new CookieOptions
@@ -175,7 +175,7 @@ namespace Aquila.AspNetCore.Web
             _httpctx.Response.Cookies.Append(name, value ?? string.Empty, cookie);
         }
 
-        void IHttpAqContext.Flush(bool endRequest)
+        void IAqHttpContext.Flush(bool endRequest)
         {
             _httpctx.Response.Body.Flush();
 
@@ -211,7 +211,7 @@ namespace Aquila.AspNetCore.Web
         /// <summary>
         /// Gets or sets session handler for current context.
         /// </summary>
-        AquilaSessionHandler IHttpAqContext.SessionHandler
+        AqSessionHandler IAqHttpContext.SessionHandler
         {
             get => _sessionhandler ?? AspNetCoreSessionHandler.Default;
             set
@@ -225,12 +225,12 @@ namespace Aquila.AspNetCore.Web
             }
         }
 
-        AquilaSessionHandler _sessionhandler;
+        AqSessionHandler _sessionhandler;
 
         /// <summary>
         /// Gets or sets session state.
         /// </summary>
-        AquilaSessionState IHttpAqContext.SessionState { get; set; }
+        AqSessionState IAqHttpContext.SessionState { get; set; }
 
         #endregion
 
@@ -240,7 +240,7 @@ namespace Aquila.AspNetCore.Web
         /// Event signaling the request processing has been finished or cancelled.
         /// </summary>
         /// <remarks>
-        /// End may occur when request finishes its processing or when event explicitly requested by user's code (See <see cref="IHttpAqContext.Flush(bool)"/>).
+        /// End may occur when request finishes its processing or when event explicitly requested by user's code (See <see cref="IAqHttpContext.Flush(bool)"/>).
         /// </remarks>
         public TaskCompletionSource<RequestCompletionReason> RequestCompletionSource { get; } = new();
 
@@ -304,8 +304,6 @@ namespace Aquila.AspNetCore.Web
         }
 
         #endregion
-
-        public IHttpAqContext HttpAqContext => this;
 
         /// <summary>
         /// Name of the server software as it appears in <c>$_SERVER[SERVER_SOFTWARE]</c> variable.

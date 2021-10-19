@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
@@ -12,6 +13,9 @@ using Aquila.Runtime.Infrastructure.Helpers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Aquila.AspNetCore.Web
 {
@@ -20,7 +24,9 @@ namespace Aquila.AspNetCore.Web
         private readonly AqInstanceManager _instanceManager;
         private readonly ILogger<AqInstance> _logger;
 
-        private Dictionary<(string instance, string objectName, string method), MethodInfo> _handlers = new();
+        private Dictionary<(string instance, string objectName, string method), MethodInfo> _crudHandlers = new();
+        private Dictionary<(string instance, string methodName), MethodInfo> _endpointsHandlers = new();
+
 
         public AquilaHandlerMiddleware(AqInstanceManager instanceManager,
             ILogger<AqInstance> logger)
@@ -42,7 +48,7 @@ namespace Aquila.AspNetCore.Web
                 case "deploy": return InvokeDeploy(context);
                 case "metadata": return InvokeGetMetadata(context);
                 case "user": return InvokeGetCurrentUser(context);
-
+                case "endpoints": return InvokeEndpoints(context);
                 //in that case we not handle this and just invoke next delegate
                 default: return next(context);
             }
@@ -50,24 +56,24 @@ namespace Aquila.AspNetCore.Web
 
         private void Init()
         {
-            foreach (var insatnce in _instanceManager.GetInstances())
+            foreach (var instance in _instanceManager.GetInstances())
             {
-                if (insatnce.BLAssembly is null)
+                if (instance.BLAssembly is null)
                 {
-                    _logger.Info("[Platform] Instance {0} haven't assembly", insatnce.Name);
+                    _logger.Info("[Platform] Instance {0} haven't assembly", instance.Name);
                     return;
                 }
 
-                if (insatnce.PendingChanges)
+                if (instance.PendingChanges)
                 {
                     _logger.Info("[Platform] Instance {0} has pending changes. Invoke /api/[instance]/migrate",
-                        insatnce.Name);
+                        instance.Name);
                 }
 
-                var methods = insatnce.BLAssembly.GetCrudMethods().ToList();
-                _logger.Info("[Web service] Load {0} delegates", methods.Count);
+                var crudMethods = instance.BLAssembly.GetCrudMethods().ToList();
 
-                foreach (var item in methods)
+                _logger.Info("[Web service] Load {0} delegates", crudMethods.Count);
+                foreach (var item in crudMethods)
                 {
                     var method = item.m;
 
@@ -86,7 +92,14 @@ namespace Aquila.AspNetCore.Web
                         _ => throw new ArgumentOutOfRangeException()
                     };
 
-                    _handlers.Add((insatnce.Name.ToLower(), item.attr.ObjectName, methodName), method);
+                    _crudHandlers.Add((instance.Name.ToLower(), item.attr.ObjectName, methodName), method);
+                }
+
+                var endpointMethods = instance.BLAssembly.GetEndpoints();
+
+                foreach (var item in endpointMethods)
+                {
+                    _endpointsHandlers.Add((instance.Name.ToLower(), item.m.Name.ToLower()), item.m);
                 }
             }
         }
@@ -101,7 +114,7 @@ namespace Aquila.AspNetCore.Web
             {
                 var obj = methodInfo.Invoke(null, new object[] { aqContext, Guid.Parse(id) });
                 if (obj is null)
-                    await context.Response.WriteAsync("The object is null");
+                    await context.Response.WriteAsync("null");
                 else
                     await context.Response.WriteAsJsonAsync(obj, obj.GetType());
             }
@@ -174,18 +187,18 @@ namespace Aquila.AspNetCore.Web
 
             var aqctx = new AqHttpContext(context, instance);
 
-            if (_handlers.TryGetValue((instanceName, objectName, method), out var mi))
+            if (_crudHandlers.TryGetValue((instanceName, objectName, method), out var mi))
             {
                 switch (method)
                 {
                     case "get":
-                        GetHandler(aqctx, context, mi);
+                        await GetHandler(aqctx, context, mi);
                         break;
                     case "post":
-                        PostHandler(aqctx, context, mi);
+                        await PostHandler(aqctx, context, mi);
                         break;
                     case "delete":
-                        GetHandler(aqctx, context, mi);
+                        await GetHandler(aqctx, context, mi);
                         break;
                 }
             }
@@ -239,6 +252,50 @@ namespace Aquila.AspNetCore.Web
             var list = md.Metadata.ToList();
 
             await context.Response.WriteAsJsonAsync(list);
+        }
+
+        private async Task InvokeEndpoints(HttpContext context)
+        {
+            var instanceName = context.GetRouteValue("instance")?.ToString();
+            var method = context.GetRouteValue("method")?.ToString();
+
+            var instance = _instanceManager.GetInstance(instanceName);
+            var aqctx = new AqHttpContext(context, instance);
+
+            var parametersStream = context.Request.Body;
+
+
+            if (_endpointsHandlers.TryGetValue((instanceName, method), out var m))
+            {
+                StreamReader sr = new StreamReader(parametersStream);
+
+                var json = await sr.ReadToEndAsync();
+
+                var methodParams = m.GetParameters();
+                var args = new object[methodParams.Length];
+                args[0] = aqctx;
+
+                if (!string.IsNullOrEmpty(json))
+                {
+                    var jobj = JObject.Parse(json);
+                    var jsonParameters = jobj.Properties().ToArray();
+
+                    foreach (var jsonParam in jsonParameters)
+                    {
+                        var realParam = methodParams.FirstOrDefault(x => x.Name == jsonParam.Name);
+
+                        if (realParam != null)
+                            args[realParam.Position] =
+                                JsonConvert.DeserializeObject(jsonParam.Value.ToString(), realParam.ParameterType);
+                    }
+                }
+
+                var obj = m.Invoke(null, args);
+                if (obj is null)
+                    await context.Response.WriteAsync("null");
+                else
+                    await context.Response.WriteAsJsonAsync(obj, obj.GetType());
+            }
         }
 
         #endregion

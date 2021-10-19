@@ -10,7 +10,7 @@ using Xunit.Sdk;
 namespace ScriptsTest
 {
     /// <summary>
-    /// Provides enumeration of php test files to be used by xUnit.
+    /// Provides enumeration of aquila test files to be used by xUnit.
     /// </summary>
     sealed class ScriptsListDataAttribute : DataAttribute
     {

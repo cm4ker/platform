@@ -189,6 +189,42 @@ type_argument_list
 	;
 // #endregion
 
+// #region Attributes
+global_attribute_section
+	: '[' global_attribute_target ':' attribute_list ','? ']'
+	;
+
+global_attribute_target
+	: 
+	 identifier
+	;
+
+attributes
+	: attribute_section+
+	;
+
+attribute_section
+	: '[' (attribute_target ':')? attribute_list ','? ']'
+	;
+
+attribute_target
+	: identifier
+	;
+
+attribute_list
+	: attribute (','  attribute)*
+	;
+
+attribute
+	: namespace_or_type_name (OPEN_PARENS (attribute_argument (','  attribute_argument)*)? CLOSE_PARENS)?
+	;
+
+attribute_argument
+	: (identifier ':')? expression
+	;
+// #endregion
+
+
 // #region Arrays
 rank_specifier
 	: '[' ','* ']'
@@ -264,7 +300,7 @@ method_declaration:
     return_type IDENTIFIER '(' parameters? ')' method_body;
 
 global_method_declaration:
-    all_member_modifiers? method_declaration;
+    attributes? all_member_modifiers? method_declaration;
 
 parameters: parameter (',' parameter)*
 ;

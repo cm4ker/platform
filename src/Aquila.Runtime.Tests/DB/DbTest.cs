@@ -34,13 +34,20 @@ namespace Aquila.Runtime.Tests.DB
             AqContext.IScriptingProvider provider = new ScriptingProvider();
 
 
+            var code =
+                @"
+[endpoint] public static int endpoint_test() { return 100500; }
+[endpoint] public static datetime current_time() { return get_date(); }
+[endpoint] public static int echo(int ping) { return ping; }
+";
+
             var script = provider.CreateScript(new AqContext.ScriptOptions()
             {
                 IsSubmission = false,
                 EmitDebugInformation = true,
                 Location = new Location("unknown", 0, 0),
                 //AdditionalReferences = AdditionalReferences,
-            }, "", TestMetadata.GetTestMetadata());
+            }, code, TestMetadata.GetTestMetadata());
 
             db.PendingFiles.SaveFile(dc,
                 new FileDescriptor

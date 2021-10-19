@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Reflection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
@@ -18,10 +19,7 @@ namespace Aquila.Runner
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             var builder = new HostBuilder()
-                .ConfigureAppConfiguration((hostContext, config) =>
-                {
-                    config.AddXmlFile("App.config", false, true);
-                })
+                .ConfigureAppConfiguration((hostContext, config) => { config.AddXmlFile("App.config", false, true); })
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddTransient(typeof(ILogger<>), typeof(SimpleConsoleLogger<>));
@@ -29,7 +27,8 @@ namespace Aquila.Runner
                     services.AddSingleton<IWebHost, AquilaWebHost>();
                 });
 
-
+           
+            
             return builder;
         }
     }

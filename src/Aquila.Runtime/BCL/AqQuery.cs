@@ -46,28 +46,6 @@ namespace Aquila.Core
             {
                 var result = QueryCompilerHelper.Compile(_context.DataRuntimeContext, _text);
 
-                /*
-                 
-                 SELECT 
-                    A1, A2, A3, A4, A5 ....
-                    ^   ^   ^   ^   ^
-                   MappedTo O1  MappedTo O2
-                 FROM
-                    T1 ....
-                 
-                 1) Link (StoreLink, InvoiceLink ... etc)
-                 2) Literal (Guid, String, int, Double ... etc)
-                 
-                 => {
-                 
-                    Reader.Invoice => Manager.Invoice.Get((Guid)Reader["Fld_255"]);
-                    
-                    Reader.Link => 
- 
-                 }
-                                
-                 */
-
                 _compiled = result.sql;
                 _logicalTree = result.logicalTree;
             }
@@ -107,11 +85,11 @@ namespace Aquila.Core
 
                             if (dbSchema.SchemaType == ColumnSchemaType.Type)
                             {
-                                p.Value = GetTypeId(pr.Real);
+                                p.Value = GetTypeIdFromValue(pr.Real);
                             }
                             else
                             {
-                                p.Value = GetValue(pr.Real, dbSchema.Type);
+                                p.Value = GetValueForParameter(pr.Real, dbSchema.Type);
                             }
 
                             _command.Parameters.Add(p);
@@ -121,7 +99,7 @@ namespace Aquila.Core
                     {
                         var p = _command.CreateParameter();
                         p.ParameterName = pr.Name;
-                        p.Value = GetValue(pr.Real, expType.First());
+                        p.Value = GetValueForParameter(pr.Real, expType.First());
                         _command.Parameters.Add(p);
                     }
                 }
@@ -132,7 +110,7 @@ namespace Aquila.Core
             }
         }
 
-        private int GetTypeId(object value)
+        private int GetTypeIdFromValue(object value)
         {
             return value switch
             {
@@ -166,7 +144,7 @@ namespace Aquila.Core
             };
         }
 
-        private object GetValue(object value, SMType type)
+        private object GetValueForParameter(object value, SMType type)
         {
             if (type.IsPrimitive)
             {

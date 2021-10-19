@@ -1,0 +1,110 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "aqlang",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#builtin"
+		},
+		{
+			"include": "#member-modifier"
+		},
+		{
+			"include": "#import-decl"
+		},
+		{
+			"include": "#strings"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [{
+				"name": "keyword.control.aqlang",
+				"match": "\\b(if|while|for|return|match|var)\\b"
+			}]
+		},
+		"member-modifier": {
+			"name": "keyword.definition.aqlang",
+			"match": "\\b(static|public|private)\\b"
+		},
+		"strings": {
+			"name": "string.quoted.double.aqlang",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.aqlang",
+					"match": "\\\\."
+				}
+			]
+		},
+		"builtin": {
+			"patterns": [
+				{
+					"patterns": [
+						{
+							"name": "storage.modifier.aqlang",
+							"match": "(const)(?=\\s*\\()"
+						},
+						{
+							"name": "keyword.$1.aqlang",
+							"match": "\\b(type|enum|struct|union|interface|map|assert|sizeof|typeof|__offsetof)\\b(?=\\s*\\()"
+						}
+					]
+				},
+				{
+					"patterns": [
+						{
+							"name": "keyword.control.aqlang",
+							"match": "(\\$if|\\$else)(?=\\s*\\()"
+						},
+						{
+							"name": "keyword.control.aqlang",
+							"match": "\\b(as|in|is|or|break|continue|default|unsafe|match|if|else|for|go|goto|defer|return|shared|select|rlock|lock|atomic|asm)\\b(?=\\s*\\()"
+						}
+					]
+				},
+				{
+					"patterns": [
+						{
+							"match": "(i?(?:8|16|nt|64|128)|u?(?:16|32|64|128)|f?(?:32|64))(?=\\s*\\()",
+							"captures": {
+								"1": {
+									"name": "storage.type.numeric.aqlang"
+								}
+							},
+							"name": "meta.expr.numeric.cast.aqlang"
+						},
+						{
+							"match": "(bool|byte|byteptr|charptr|voidptr|string|rune|size_t)(?=\\s*\\()",
+							"captures": {
+								"1": {
+									"name": "storage.type.$1.aqlang"
+								}
+							},
+							"name": "meta.expr.bool.cast.aqlang"
+						}
+					]
+				}
+			]
+		},
+		"import-decl": {
+			"name": "meta.import.aqlang",
+			"begin": "^\\s*(import)\\s+",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.import.aqlang"
+				}
+			},
+			"end": "([\\w.]+)",
+			"endCaptures": {
+				"1": {
+					"name": "entity.name.import.aqlang"
+				}
+			}
+		}
+	},
+	"scopeName": "source.aqlang"
+}

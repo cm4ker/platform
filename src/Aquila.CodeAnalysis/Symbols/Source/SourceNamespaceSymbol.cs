@@ -72,6 +72,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
     {
         readonly SourceModuleSymbol _sourceModule;
         private ImmutableArray<MethodSymbol> _exntensionMethods;
+        private ImmutableArray<NamedTypeSymbol> _userVisibleTypes;
 
 
         public SourceGlobalNamespaceSymbol(SourceModuleSymbol module)
@@ -147,6 +148,44 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             _exntensionMethods = builder.ToImmutableAndFree();
         }
 
+        private void EnsureUserVisibleTypes()
+        {
+            if (!_userVisibleTypes.IsDefault)
+                return;
+
+            var builder = new ArrayBuilder<NamedTypeSymbol>();
+
+            var syms = DeclaringCompilation.GetBoundReferenceManager().ExplicitReferencesSymbols;
+            foreach (AssemblySymbol sym in syms)
+            {
+                var gns = sym.Modules[0].GlobalNamespace;
+
+                HandleNs(gns);
+
+                void HandleNs(NamespaceSymbol ns)
+                {
+                    var members = ns.GetMembers();
+
+                    foreach (var member in members)
+                    {
+                        if (member.Kind == SymbolKind.Namespace)
+                        {
+                            var nestedNs = (NamespaceSymbol)member;
+                            HandleNs(nestedNs);
+                        }
+
+                        if (member.Kind == SymbolKind.NamedType &&
+                            member.GetAttribute(CoreTypes.AquilaUserVisibleAttributeFullName) != null)
+                        {
+                            builder.AddRange((NamedTypeSymbol)member);
+                        }
+                    }
+                }
+            }
+
+            _userVisibleTypes = builder.ToImmutableAndFree();
+        }
+
         public override ImmutableArray<Symbol> GetMembers()
         {
             return DeclaringCompilation.PlatformSymbolCollection.GetNamespaces().OfType<Symbol>().ToImmutableArray();
@@ -156,6 +195,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         public override ImmutableArray<Symbol> GetMembers(string name)
         {
             EnsureExtensionMethods();
+            EnsureUserVisibleTypes();
 
             var arr = new ArrayBuilder<Symbol>();
 
@@ -172,11 +212,14 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public override ImmutableArray<NamedTypeSymbol> GetTypeMembers()
         {
+            EnsureUserVisibleTypes();
             return _sourceModule.DeclaringCompilation.PlatformSymbolCollection.GetAllCreatedTypes().AsImmutable();
         }
 
         public override ImmutableArray<NamedTypeSymbol> GetTypeMembers(string name)
         {
+            EnsureUserVisibleTypes();
+
             var x = _sourceModule.SymbolCollection.GetType(NameUtils.MakeQualifiedName(name, true));
             if (x != null)
             {
@@ -195,12 +238,21 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             }
 
             var builder = new ArrayBuilder<NamedTypeSymbol>();
+            var types = _userVisibleTypes.Where(t => t.Name == name).ToList();
+
+            //force return result
+            if (types.Any())
+            {
+                builder.AddRange(types);
+                return builder.ToImmutableArray();
+            }
 
             var type = _sourceModule.DeclaringCompilation.PlatformSymbolCollection
                 .GetType(QualifiedName.Parse(name, false));
 
             if (type != null)
                 builder.Add(type);
+
 
             return builder.ToImmutableAndFree();
         }

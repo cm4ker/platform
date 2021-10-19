@@ -12,9 +12,11 @@ using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Semantics.Graph;
+using Aquila.CodeAnalysis.Symbols.Attributes;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.Syntax;
+using Aquila.Syntax.Text;
 
 namespace Aquila.CodeAnalysis.Symbols
 {
@@ -450,6 +452,22 @@ namespace Aquila.CodeAnalysis.Symbols
         internal override ObsoleteAttributeData ObsoleteAttributeData
         {
             get { return null; }
+        }
+
+        public override ImmutableArray<AttributeData> GetAttributes()
+        {
+            var builder = ImmutableArray.CreateBuilder<AttributeData>();
+            builder.AddRange(base.GetAttributes());
+
+            foreach (var annotation in _syntax.Annotations)
+            {
+                var tref = new NamedTypeRef(Span.Empty, SyntaxKind.Type, annotation.Identifier.Text);
+                var type = (NamedTypeSymbol)DeclaringCompilation.GetBinder(_syntax).BindType(tref);
+                builder.Add(new SourceAttributeData(null, type, type.Ctor(), false));
+            }
+
+
+            return builder.ToImmutable();
         }
 
         internal override bool IsMetadataNewSlot(bool ignoreInterfaceImplementationChanges = false) =>
