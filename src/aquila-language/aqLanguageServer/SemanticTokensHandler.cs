@@ -13,33 +13,36 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 namespace Aquila.LanguageServer
 {
 #pragma warning disable 618
+    /// <summary>
+    /// 
+    /// </summary>
     public class SemanticTokensHandler : SemanticTokensHandlerBase
     {
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="logger"></param>
         public SemanticTokensHandler(ILogger<SemanticTokensHandler> logger) =>
             _logger = logger;
 
-        public override async Task<SemanticTokens?> Handle(
-            SemanticTokensParams request, CancellationToken cancellationToken
-        )
+        public override async Task<SemanticTokens?> Handle(SemanticTokensParams request,
+            CancellationToken cancellationToken)
         {
             var result = await base.Handle(request, cancellationToken).ConfigureAwait(false);
             return result;
         }
 
-        public override async Task<SemanticTokens?> Handle(
-            SemanticTokensRangeParams request, CancellationToken cancellationToken
-        )
+        public override async Task<SemanticTokens?> Handle(SemanticTokensRangeParams request,
+            CancellationToken cancellationToken)
         {
             var result = await base.Handle(request, cancellationToken).ConfigureAwait(false);
             return result;
         }
 
-        public override async Task<SemanticTokensFullOrDelta?> Handle(
-            SemanticTokensDeltaParams request,
-            CancellationToken cancellationToken
-        )
+        public override async Task<SemanticTokensFullOrDelta?> Handle(SemanticTokensDeltaParams request,
+            CancellationToken cancellationToken)
         {
             var result = await base.Handle(request, cancellationToken).ConfigureAwait(false);
             return result;
@@ -53,7 +56,8 @@ namespace Aquila.LanguageServer
             using var typesEnumerator = RotateEnum(SemanticTokenType.Defaults).GetEnumerator();
             using var modifiersEnumerator = RotateEnum(SemanticTokenModifier.Defaults).GetEnumerator();
             // you would normally get this from a common source that is managed by current open editor, current active editor, etc.
-            var content = await File.ReadAllTextAsync(DocumentUri.GetFileSystemPath(identifier) ?? string.Empty, cancellationToken)
+            var content = await File
+                .ReadAllTextAsync(DocumentUri.GetFileSystemPath(identifier) ?? string.Empty, cancellationToken)
                 .ConfigureAwait(false);
             await Task.Yield();
 
@@ -72,8 +76,8 @@ namespace Aquila.LanguageServer
             }
         }
 
-        protected override Task<SemanticTokensDocument>
-            GetSemanticTokensDocument(ITextDocumentIdentifierParams @params, CancellationToken cancellationToken) =>
+        protected override Task<SemanticTokensDocument> GetSemanticTokensDocument(ITextDocumentIdentifierParams @params,
+            CancellationToken cancellationToken) =>
             Task.FromResult(new SemanticTokensDocument(RegistrationOptions.Legend));
 
 

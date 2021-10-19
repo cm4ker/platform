@@ -83,7 +83,7 @@ namespace Aquila.Core.Instance
                 var asm = Assembly.Load(currentAssembly);
                 var loadContext = AssemblyLoadContext.GetLoadContext(asm);
                 loadContext.LoadFromAssemblyPath(
-                    @"C:\projects\ThePlatform\SqlPlusDbSync\SqlPlusDbSync\src\Aquila.Runner\bin\Debug\net5.0\Aquila.Library.dll");
+                    @"C:\projects\AquilaPlatform\src\Aquila.Runner\bin\Debug\net5.0\Aquila.Library.dll");
                 LoadAssembly(asm);
                 _logger.Info("Project '{0}' was loaded.", Name);
             }

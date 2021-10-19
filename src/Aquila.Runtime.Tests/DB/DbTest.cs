@@ -36,9 +36,38 @@ namespace Aquila.Runtime.Tests.DB
 
             var code =
                 @"
+import Entity;
+
 [endpoint] public static int endpoint_test() { return 100500; }
 [endpoint] public static datetime current_time() { return get_date(); }
 [endpoint] public static int echo(int ping) { return ping; }
+[endpoint] public static int create_invoice_with_store() 
+{
+    var store = StoreManager.create();
+    store.Name = ""My store"";
+    store.save();
+    var obj = InvoiceManager.create();
+    obj.Name = ""test"";
+    obj.ComplexProperty = ""Complex"";
+    obj.ComplexProperty = 10;
+    obj.ComplexProperty = store.link;
+    obj.Store = store.link;
+    obj.save();
+    
+    var q = query();
+    q.text = ""FROM Entity.Invoice SELECT ComplexProperty"";
+    q.set_param(""p0"", 1);
+
+    var r = q.exec();
+
+    if(r.read())
+    {
+        var id = r[""ComplexProperty""];
+        return 1;
+    }
+
+    return 0;
+}
 ";
 
             var script = provider.CreateScript(new AqContext.ScriptOptions()

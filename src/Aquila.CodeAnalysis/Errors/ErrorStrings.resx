@@ -421,4 +421,7 @@
   <data name="ERR_MethodNotFound" xml:space="preserve">
     <value>Method '{0}' not found for type {1}.</value>
   </data>
+  <data name="FTL_InternalCompilerError" xml:space="preserve">
+    <value>Unrecoverable error : '{0}'</value>
+  </data>
 </root>

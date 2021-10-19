@@ -628,6 +628,15 @@ namespace Aquila.CodeAnalysis.Errors {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unrecoverable error : &apos;{0}&apos;.
+        /// </summary>
+        internal static string FTL_InternalCompilerError {
+            get {
+                return ResourceManager.GetString("FTL_InternalCompilerError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File name &apos;{0}&apos; is empty, contains invalid characters, has a drive specification without an absolute path, or is too long.
         /// </summary>
         internal static string FTL_InvalidInputFileName {

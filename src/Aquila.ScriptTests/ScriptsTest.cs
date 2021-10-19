@@ -84,7 +84,6 @@ namespace ScriptsTest
             var actual = script.Evaluate(ctx);
             Assert.Equal(expected, actual.ToString());
 
-
             //
             outputStream.Position = 0;
             return new StreamReader(outputStream, Encoding.UTF8).ReadToEnd();

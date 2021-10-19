@@ -56,8 +56,8 @@ namespace Aquila.WebServiceCore
                 "api/{instance}/endpoints/{method}");
 
             return builder.MapMiddleware<AquilaHandlerMiddleware>("default", "crud",
-                "api/{instance}/{object}/{method}/{id?}",
-                options => options.AddAuthorizeData(policy: "UserRequired"));
+                "api/{instance}/{object}/{method}/{id?}");
+            //options => options.AddAuthorizeData(policy: "UserRequired"));
         }
 
         private static IApplicationBuilder MapMiddleware<T>(this IApplicationBuilder builder, string name,

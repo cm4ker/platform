@@ -45,7 +45,7 @@ namespace Aquila.CodeAnalysis.Public
 
         public SynthesizedNamespaceSymbol SynthesizeNamespace(INamespaceSymbol container, string name)
         {
-            EnsureLazyMetadata();
+            EnsureMetadataPopulated();
             var ns = new SynthesizedNamespaceSymbol(container, name);
             _lazySynthesizedNamespaces.Add(ns);
 
@@ -62,7 +62,7 @@ namespace Aquila.CodeAnalysis.Public
                 ns.AddType(type);
             }
 
-            EnsureLazyMetadata();
+            EnsureMetadataPopulated();
 
             _lazySynthesizedTypes.Add(type);
 
@@ -73,7 +73,7 @@ namespace Aquila.CodeAnalysis.Public
         public SynthesizedUnionTypeSymbol SynthesizeUnionType(NamespaceOrTypeSymbol container,
             IEnumerable<TypeSymbol> types)
         {
-            EnsureLazyMetadata();
+            EnsureMetadataPopulated();
 
             var symbol = _lazySynthesizedTypes.OfType<SynthesizedUnionTypeSymbol>()
                 .FirstOrDefault(x =>
@@ -123,24 +123,23 @@ namespace Aquila.CodeAnalysis.Public
             return prop;
         }
 
-        private void EnsureLazyMetadata()
-        {
-            if (_lazySynthesizedTypes == null || _lazySynthesizedNamespaces == null)
-            {
-                Interlocked.CompareExchange(ref _lazySynthesizedTypes, new ConcurrentBag<SynthesizedTypeSymbol>(),
-                    null);
-
-                Interlocked.CompareExchange(ref _lazySynthesizedNamespaces,
-                    new ConcurrentBag<SynthesizedNamespaceSymbol>(),
-                    null);
-
-                EnsureMetadataPopulated();
-            }
-        }
+        private object _lock = new object();
 
         private void EnsureMetadataPopulated()
         {
-            AddMetadata(Compilation.MetadataCollection.GetSemanticMetadata());
+            //Lock metadata caching because it 
+            //TODO: remove lock and rewrite it like get collections with types manner
+            lock (_lock)
+                if (_lazySynthesizedTypes == null && _lazySynthesizedNamespaces == null)
+                {
+                    var types = new ConcurrentBag<SynthesizedTypeSymbol>();
+                    var namespaces = new ConcurrentBag<SynthesizedNamespaceSymbol>();
+
+                    Interlocked.CompareExchange(ref _lazySynthesizedTypes, types, null);
+                    Interlocked.CompareExchange(ref _lazySynthesizedNamespaces, namespaces, null);
+
+                    PopulateMetadata(Compilation.MetadataCollection.GetSemanticMetadata());
+                }
         }
 
         #endregion
@@ -148,7 +147,7 @@ namespace Aquila.CodeAnalysis.Public
         internal NamedTypeSymbol GetType(QualifiedName name,
             Dictionary<QualifiedName, INamedTypeSymbol> resolved = null)
         {
-            EnsureLazyMetadata();
+            EnsureMetadataPopulated();
 
             NamedTypeSymbol first = null;
             List<NamedTypeSymbol> alternatives = null;
@@ -187,12 +186,12 @@ namespace Aquila.CodeAnalysis.Public
 
         internal NamespaceSymbol GetNamespace(string name)
         {
-            EnsureLazyMetadata();
-            return _lazySynthesizedNamespaces.FirstOrDefault(x => x.Name == name);
+            return GetNamespaces().FirstOrDefault(x => x.Name == name);
         }
 
         internal ImmutableArray<NamespaceSymbol> GetNamespaces()
         {
+            EnsureMetadataPopulated();
             return _lazySynthesizedNamespaces.OfType<NamespaceSymbol>().ToImmutableArray();
         }
 
@@ -214,14 +213,14 @@ namespace Aquila.CodeAnalysis.Public
 
         internal IEnumerable<NamedTypeSymbol> GetAllCreatedTypes()
         {
-            EnsureLazyMetadata();
+            EnsureMetadataPopulated();
             return _lazySynthesizedTypes;
         }
 
         public IEnumerable<SynthesizedTypeSymbol> SynthesizedTypes =>
             GetAllCreatedTypes().OfType<SynthesizedTypeSymbol>();
 
-        private void AddMetadata(IEnumerable<SMEntity> entityMetadata)
+        private void PopulateMetadata(IEnumerable<SMEntity> entityMetadata)
         {
             MetadataSymbolProvider mp = new MetadataSymbolProvider(Compilation);
 

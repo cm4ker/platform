@@ -1,4 +1,4 @@
-[url("get_books_count")]
+[endpoint]
 public static int get_books_count()
 {
     return 0;

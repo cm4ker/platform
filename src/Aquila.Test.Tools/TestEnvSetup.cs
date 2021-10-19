@@ -50,7 +50,6 @@ namespace Aquila.Core.Test
 
             services.AddSingleton<ICacheService, DictionaryCacheService>();
 
-            services.AddScoped<IAuthenticationManager, AuthenticationManager>();
             services.AddScoped<UserManager>();
             services.AddScoped<DataContextManager>();
 

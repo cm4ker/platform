@@ -36,13 +36,13 @@ export function activate(context: ExtensionContext) {
         // run: { command: serverExe, args: ['-lsp', '-d'] },
         run: {
             command: serverExe,
-            args: ["C:/projects/aquila-language/Build/Debug/Aquila.LanguageServer.dll"],
+            args: ["C:/projects/AquilaPlatform/src/aquila-language/Build/Debug/Aquila.LanguageServer.dll"],
             transport: TransportKind.pipe,
         },
         // debug: { command: serverExe, args: ['-lsp', '-d'] }
         debug: {
             command: serverExe,
-            args: ["C:/projects/aquila-language/Build/Debug/Aquila.LanguageServer.dll"],
+            args: ["C:/projects/AquilaPlatform/src/aquila-language/Build/Debug/Aquila.LanguageServer.dll"],
             transport: TransportKind.pipe,
             runtime: "",
         },

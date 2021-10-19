@@ -20,8 +20,8 @@
         // Fatal errors
         //
         FTL_InvalidInputFileName = 3000,
-
         FTL_BadCodepage = 3016,
+        FTL_InternalCompilerError = 3017,
 
         //
         // Errors

@@ -15,6 +15,7 @@ using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.FlowAnalysis.Passes;
 using Aquila.CodeAnalysis.Utilities;
 using Aquila.Syntax.Parser;
+using Aquila.Syntax.Text;
 using SyntaxToken = Microsoft.CodeAnalysis.SyntaxToken;
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 
@@ -105,10 +106,26 @@ namespace Aquila.CodeAnalysis.Syntax
             {
                 throw ExceptionUtilities.ArgumentNull(nameof(fname));
             }
-            // TODO: new parser implementation based on Roslyn
 
-            SourceUnit unit = ParserHelper.ParseUnit(sourceText.ToString(), fname);
-            return Create(unit, fname);
+            try
+            {
+                SourceUnit unit = ParserHelper.ParseUnit(sourceText.ToString(), fname);
+                return Create(unit, fname);
+            }
+            catch (Exception e)
+            {
+                var syntaxTree = new AquilaSyntaxTree(new SourceUnit(Span.Empty, SyntaxKind.CompilationUnit, "", fname,
+                    ImportList.Empty, MethodList.Empty, ExtendList.Empty, ComponentList.Empty));
+
+                var diags = ImmutableArray.CreateBuilder<Diagnostic>();
+
+                diags.Add(MessageProvider.Instance.CreateDiagnostic(ErrorCode.FTL_InvalidInputFileName,
+                    Location.None, fname));
+                diags.Add(MessageProvider.Instance.CreateDiagnostic(ErrorCode.FTL_InternalCompilerError, Location.None,
+                    e.ToString()));
+                syntaxTree.Diagnostics = diags.ToImmutable();
+                return syntaxTree;
+            }
         }
 
         public static AquilaSyntaxTree Create(
