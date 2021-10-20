@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using Aquila.CodeAnalysis.Emit;
 using Aquila.CodeAnalysis.Symbols.Source;
+using Microsoft.CodeAnalysis.Symbols;
 using Cci = Microsoft.Cci;
 
 namespace Aquila.CodeAnalysis.Symbols
@@ -42,6 +43,11 @@ namespace Aquila.CodeAnalysis.Symbols
             throw new NotSupportedException();
         }
 
+        public ISymbolInternal? GetInternalSymbol()
+        {
+            return this;
+        }
+
         void Cci.IReference.Dispatch(Cci.MetadataVisitor visitor)
         {
             throw new NotSupportedException();
@@ -59,6 +65,13 @@ namespace Aquila.CodeAnalysis.Symbols
                 .CompilationState).Cast<Cci.ICustomAttribute>();
 
             return attrs;
+        }
+
+        public int MetadataToken { get; }
+
+        public Cci.IReference GetCciAdapter()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Aquila.CodeAnalysis.Emit
             var builder = ArrayBuilder<Cci.ITypeReference>.GetInstance();
             foreach (TypeSymbol type in UnderlyingNamedType.TypeArguments)//TypeArgumentsNoUseSiteDiagnostics)
             {
-                builder.Add(moduleBeingBuilt.Translate(type, syntaxNodeOpt: context.SyntaxNodeOpt, diagnostics: context.Diagnostics));
+                builder.Add(moduleBeingBuilt.Translate(type, syntaxNodeOpt: context.SyntaxNode, diagnostics: context.Diagnostics));
             }
 
             return builder.ToImmutableAndFree();

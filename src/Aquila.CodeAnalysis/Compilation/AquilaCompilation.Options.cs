@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
+using System.Threading;
 using Aquila.CodeAnalysis;
 using Roslyn.Utilities;
 
@@ -209,7 +210,8 @@ namespace Aquila.CodeAnalysis
                 platform, generalDiagnosticOption, warningLevel,
                 specificDiagnosticOptions.ToImmutableDictionaryOrEmpty(),
                 concurrentBuild, deterministic, currentLocalTime, debugPlusMode, xmlReferenceResolver,
-                sourceReferenceResolver, metadataReferenceResolver, assemblyIdentityComparer,
+                sourceReferenceResolver, syntaxTreeOptionsProvider: null, metadataReferenceResolver,
+                assemblyIdentityComparer,
                 strongNameProvider, metadataImportOptions, referencesSupersedeLowerVersions)
         {
             this.BaseDirectory = baseDirectory;
@@ -484,7 +486,7 @@ namespace Aquila.CodeAnalysis
                 return this;
             }
 
-            return new AquilaCompilationOptions(this) { DebugPlusMode_internal_protected_set = debugPlusMode };
+            return new AquilaCompilationOptions(this) { DebugPlusMode = debugPlusMode };
         }
 
         public AquilaCompilationOptions WithDefines(ImmutableDictionary<string, string> defines)
@@ -579,6 +581,11 @@ namespace Aquila.CodeAnalysis
 
         protected override CompilationOptions CommonWithSourceReferenceResolver(SourceReferenceResolver resolver) =>
             WithSourceReferenceResolver(resolver);
+
+        protected override CompilationOptions CommonWithSyntaxTreeOptionsProvider(SyntaxTreeOptionsProvider? resolver)
+        {
+            throw new NotImplementedException();
+        }
 
         protected override CompilationOptions CommonWithMetadataReferenceResolver(MetadataReferenceResolver resolver) =>
             WithMetadataReferenceResolver(resolver);
@@ -730,7 +737,7 @@ namespace Aquila.CodeAnalysis
             return base.GetHashCodeHelper();
         }
 
-        internal override Diagnostic FilterDiagnostic(Diagnostic diagnostic)
+        internal override Diagnostic FilterDiagnostic(Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             if (diagnostic == null)
             {

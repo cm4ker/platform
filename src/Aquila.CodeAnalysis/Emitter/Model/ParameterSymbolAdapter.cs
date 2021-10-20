@@ -65,7 +65,7 @@ namespace Aquila.CodeAnalysis.Symbols
             }
 
             return ((PEModuleBuilder)context.Module).CreateConstant(type, constant.Value,
-                                                           syntaxNodeOpt: context.SyntaxNodeOpt,
+                                                           syntaxNodeOpt: context.SyntaxNode,
                                                            diagnostics: context.Diagnostics);
         }
 

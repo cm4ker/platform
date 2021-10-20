@@ -57,7 +57,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// primitive types and the owning assembly cannot be used as the source too. Otherwise, it is one of 
         /// the referenced assemblies returned by GetReferencedAssemblySymbols() method or the owning assembly.
         /// </summary>
-        internal AssemblySymbol CorLibrary
+        public IAssemblySymbolInternal CorLibrary
         {
             get { return _corLibrary; }
         }
@@ -115,8 +115,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// <returns>The symbol for the pre-defined type or an error type if the type is not defined in the core library.</returns>
         internal NamedTypeSymbol GetSpecialType(SpecialType type)
         {
-            return CorLibrary.GetDeclaredSpecialType(type);
-            //return GetDeclaredSpecialType(type);
+            return ((AssemblySymbol)CorLibrary).GetDeclaredSpecialType(type);
         }
 
         public virtual bool MightContainExtensionMethods

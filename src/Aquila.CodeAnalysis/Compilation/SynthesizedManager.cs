@@ -81,8 +81,8 @@ namespace Aquila.CodeAnalysis.Emit
                 var cctor = members.OfType<SynthesizedCctorSymbol>().FirstOrDefault();
                 if (cctor == null)
                 {
-                    cctor = new SynthesizedCctorSymbol(container, DeclaringCompilation.SourceModule);
-                    members.Add(cctor);
+                    // cctor = new SynthesizedCctorSymbol(container, DeclaringCompilation.SourceModule);
+                    // members.Add(cctor);
                 }
 
                 return cctor;

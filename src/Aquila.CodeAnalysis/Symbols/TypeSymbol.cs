@@ -36,6 +36,7 @@ namespace Aquila.CodeAnalysis.Symbols
         bool ITypeSymbol.IsUnmanagedType => false;
 
         bool ITypeSymbol.IsReadOnly => false;
+        public bool IsRecord { get; }
 
         NullableAnnotation ITypeSymbol.NullableAnnotation => NullableAnnotation.None;
 

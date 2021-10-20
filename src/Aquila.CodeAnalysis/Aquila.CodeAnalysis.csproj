@@ -12,7 +12,7 @@
         </PackageReference>
 
         <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
-        <PackageReference Include="Aquila.Microsoft.CodeAnalysis" Version="3.7.4" />
+        <PackageReference Include="Aquila.Microsoft.CodeAnalysis" Version="4.1.0-dev" />
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.4" />
         <PackageReference Include="morelinq" Version="3.3.2" />
         <PackageReference Include="System.ServiceModel.Primitives" Version="4.7.0" />

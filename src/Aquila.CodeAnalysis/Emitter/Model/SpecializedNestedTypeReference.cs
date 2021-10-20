@@ -30,7 +30,7 @@ namespace Aquila.CodeAnalysis.Emit
 
         Cci.ITypeReference Cci.ITypeMemberReference.GetContainingType(EmitContext context)
         {
-            return ((PEModuleBuilder)context.Module).Translate(UnderlyingNamedType.ContainingType, context.SyntaxNodeOpt, context.Diagnostics);
+            return ((PEModuleBuilder)context.Module).Translate(UnderlyingNamedType.ContainingType, context.SyntaxNode, context.Diagnostics);
         }
 
         public override Cci.IGenericTypeInstanceReference AsGenericTypeInstanceReference

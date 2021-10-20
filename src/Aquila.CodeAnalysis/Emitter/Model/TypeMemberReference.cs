@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.CodeAnalysis.Emit;
+using Microsoft.CodeAnalysis.Symbols;
 using Roslyn.Utilities;
 using Cci = Microsoft.Cci;
 
@@ -12,15 +13,12 @@ namespace Aquila.CodeAnalysis.Emit
         public virtual Cci.ITypeReference GetContainingType(EmitContext context)
         {
             PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
-            return moduleBeingBuilt.Translate(UnderlyingSymbol.ContainingType, context.SyntaxNodeOpt, context.Diagnostics);
+            return moduleBeingBuilt.Translate(UnderlyingSymbol.ContainingType, context.SyntaxNode, context.Diagnostics);
         }
 
         string Cci.INamedEntity.Name
         {
-            get
-            {
-                return UnderlyingSymbol.MetadataName;
-            }
+            get { return UnderlyingSymbol.MetadataName; }
         }
 
         ///// <remarks>
@@ -41,6 +39,11 @@ namespace Aquila.CodeAnalysis.Emit
         Cci.IDefinition Cci.IReference.AsDefinition(EmitContext context)
         {
             return null;
+        }
+
+        public ISymbolInternal? GetInternalSymbol()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -55,7 +55,7 @@ namespace Aquila.CodeAnalysis.Emit
         Cci.ITypeReference Cci.IFieldReference.GetType(EmitContext context)
         {
             var customModifiers = _underlyingField.CustomModifiers;
-            var type = ((PEModuleBuilder)context.Module).Translate(_underlyingField.Type, syntaxNodeOpt: /*(CSharpSyntaxNode)context.SyntaxNodeOpt*/null, diagnostics: context.Diagnostics);
+            var type = ((PEModuleBuilder)context.Module).Translate(_underlyingField.Type, syntaxNodeOpt: /*(CSharpSyntaxNode)context.SyntaxNode*/null, diagnostics: context.Diagnostics);
 
             if (customModifiers.Length == 0)
             {

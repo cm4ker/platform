@@ -226,6 +226,11 @@ namespace Aquila.CodeAnalysis.Syntax
             return GetLineSpan(span, cancellationToken);
         }
 
+        public override IEnumerable<LineMapping> GetLineMappings(CancellationToken cancellationToken = new CancellationToken())
+        {
+            throw new NotImplementedException();
+        }
+
         public override SyntaxReference GetReference(SyntaxNode node)
         {
             throw new NotImplementedException();

@@ -26,7 +26,7 @@ namespace Aquila.CodeAnalysis.Symbols
             var customModifiers = this.CustomModifiers;
             var isFixed = this.IsFixed;
             var implType = isFixed ? this.FixedImplementationType(moduleBeingBuilt) : this.Type;
-            var type = moduleBeingBuilt.Translate(implType, context.SyntaxNodeOpt, context.Diagnostics);
+            var type = moduleBeingBuilt.Translate(implType, context.SyntaxNode, context.Diagnostics);
 
             if (isFixed || customModifiers.Length == 0)
             {
@@ -79,7 +79,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
             if (!this.IsDefinition)
             {
-                return moduleBeingBuilt.Translate(this.ContainingType, context.SyntaxNodeOpt, context.Diagnostics);
+                return moduleBeingBuilt.Translate(this.ContainingType, context.SyntaxNode, context.Diagnostics);
             }
 
             return (Cci.ITypeReference)this.ContainingType;
@@ -140,7 +140,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 // (and we specifically don't want to prevent metadata-only emit because of a bad
                 // constant).  If the constant value is bad, we'll end up exposing null to CCI.
                 return ((PEModuleBuilder)context.Module).CreateConstant(this.Type, this.ConstantValue,
-                    syntaxNodeOpt: context.SyntaxNodeOpt,
+                    syntaxNodeOpt: context.SyntaxNode,
                     diagnostics: context.Diagnostics);
             }
 

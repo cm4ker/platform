@@ -34,7 +34,8 @@ namespace Aquila.CodeAnalysis.CommandLine
 
         public AquilaCompiler(CommandLineParser parser, string responseFile, string[] args, BuildPaths buildPaths,
             string additionalReferenceDirectories, IAnalyzerAssemblyLoader analyzerLoader)
-            : base(parser, responseFile, args, buildPaths, additionalReferenceDirectories, analyzerLoader)
+            : base(parser, responseFile, args, buildPaths, additionalReferenceDirectories, analyzerLoader,
+                new GeneratorDriverCache())
         {
             _tempDirectory = buildPaths.TempDirectory;
             _diagnosticFormatter =
@@ -64,8 +65,10 @@ namespace Aquila.CodeAnalysis.CommandLine
             public ResourceDescription Resources;
         }
 
+
         public override Compilation CreateCompilation(TextWriter consoleOutput, TouchedFileLogger touchedFilesLogger,
-            ErrorLogger errorLogger, ImmutableArray<AnalyzerConfigOptionsResult> analyzerConfigOptions)
+            ErrorLogger errorLogger, ImmutableArray<AnalyzerConfigOptionsResult> analyzerConfigOptions,
+            AnalyzerConfigOptionsResult globalConfigOptions)
         {
             bool hadErrors = false;
             var sourceFiles = Arguments.SourceFiles;
@@ -166,7 +169,7 @@ namespace Aquila.CodeAnalysis.CommandLine
             MetadataReferenceResolver referenceDirectiveResolver;
             var resolvedReferences =
                 ResolveMetadataReferences(diagnostics, touchedFilesLogger, out referenceDirectiveResolver);
-            if (ReportDiagnostics(diagnostics, consoleOutput, errorLogger))
+            if (ReportDiagnostics(diagnostics, consoleOutput, errorLogger, null))
             {
                 return null;
             }
@@ -207,7 +210,7 @@ namespace Aquila.CodeAnalysis.CommandLine
 
             if (diagnosticInfos.Count != 0)
             {
-                ReportDiagnostics(diagnosticInfos, consoleOutput, errorLogger);
+                ReportDiagnostics(diagnosticInfos, consoleOutput, errorLogger, null);
                 hadErrors = true;
             }
 
@@ -229,7 +232,7 @@ namespace Aquila.CodeAnalysis.CommandLine
 
             if (diagnosticInfos.Count != 0)
             {
-                ReportDiagnostics(diagnosticInfos, consoleOutput, errorLogger);
+                ReportDiagnostics(diagnosticInfos, consoleOutput, errorLogger, null);
                 hadErrors = true;
             }
 
@@ -242,7 +245,7 @@ namespace Aquila.CodeAnalysis.CommandLine
 
             if (result != null && result.Diagnostics.HasAnyErrors())
             {
-                ReportDiagnostics(result.Diagnostics, consoleOutput, errorLogger);
+                ReportDiagnostics(result.Diagnostics, consoleOutput, errorLogger, null);
                 hadErrors = true;
             }
 
@@ -277,12 +280,13 @@ namespace Aquila.CodeAnalysis.CommandLine
 
         internal new string GetAssemblyFileVersion() => GetVersion();
 
+
         protected override void ResolveAnalyzersFromArguments(List<DiagnosticInfo> diagnostics,
-            CommonMessageProvider messageProvider, out ImmutableArray<DiagnosticAnalyzer> analyzers,
+            CommonMessageProvider messageProvider, bool skipAnalyzers, out ImmutableArray<DiagnosticAnalyzer> analyzers,
             out ImmutableArray<ISourceGenerator> generators)
         {
             Arguments.ResolveAnalyzersFromArguments(Constants.AquilaLanguageName, diagnostics, messageProvider,
-                AssemblyLoader, out analyzers, out generators);
+                AssemblyLoader, skipAnalyzers, out analyzers, out generators);
         }
 
         protected override bool TryGetCompilerDiagnosticCode(string diagnosticId, out uint code)
@@ -304,6 +308,18 @@ namespace Aquila.CodeAnalysis.CommandLine
             SourceReferenceResolver resolver, OrderedSet<string> embeddedFiles, DiagnosticBag diagnostics)
         {
             // We don't use any source mapping directives in Aq
+        }
+
+        private protected override GeneratorDriver CreateGeneratorDriver(ParseOptions parseOptions,
+            ImmutableArray<ISourceGenerator> generators,
+            AnalyzerConfigOptionsProvider analyzerConfigOptionsProvider, ImmutableArray<AdditionalText> additionalTexts)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override string GetOutputFileName(Compilation compilation, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }

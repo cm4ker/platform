@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection.Metadata;
 using Aquila.CodeAnalysis.Symbols;
 using Microsoft.CodeAnalysis.Emit;
+using Microsoft.CodeAnalysis.Symbols;
 using Roslyn.Utilities;
 using Cci = Microsoft.Cci;
 using NamedTypeSymbol = Aquila.CodeAnalysis.Symbols.NamedTypeSymbol;
@@ -22,42 +24,27 @@ namespace Aquila.CodeAnalysis.Emit
 
         ushort Cci.INamedTypeReference.GenericParameterCount
         {
-            get
-            {
-                return (ushort)UnderlyingNamedType.Arity;
-            }
+            get { return (ushort)UnderlyingNamedType.Arity; }
         }
 
         bool Cci.INamedTypeReference.MangleName
         {
-            get
-            {
-                return UnderlyingNamedType.MangleName;
-            }
+            get { return UnderlyingNamedType.MangleName; }
         }
 
         string Cci.INamedEntity.Name
         {
-            get
-            {
-                return UnderlyingNamedType.MetadataName;
-            }
+            get { return UnderlyingNamedType.MetadataName; }
         }
 
         bool Cci.ITypeReference.IsEnum
         {
-            get
-            {
-                return UnderlyingNamedType.IsEnumType();
-            }
+            get { return UnderlyingNamedType.IsEnumType(); }
         }
 
         bool Cci.ITypeReference.IsValueType
         {
-            get
-            {
-                return UnderlyingNamedType.IsValueType;
-            }
+            get { return UnderlyingNamedType.IsValueType; }
         }
 
         Cci.ITypeDefinition Cci.ITypeReference.GetResolvedType(EmitContext context)
@@ -69,31 +56,19 @@ namespace Aquila.CodeAnalysis.Emit
 
         TypeDefinitionHandle Cci.ITypeReference.TypeDef
         {
-            get
-            {
-                return default(TypeDefinitionHandle);
-            }
+            get { return default(TypeDefinitionHandle); }
         }
 
         Cci.IGenericMethodParameterReference Cci.ITypeReference.AsGenericMethodParameterReference
         {
-            get
-            {
-                return null;
-            }
+            get { return null; }
         }
 
-        public abstract Cci.IGenericTypeInstanceReference AsGenericTypeInstanceReference
-        {
-            get;
-        }
+        public abstract Cci.IGenericTypeInstanceReference AsGenericTypeInstanceReference { get; }
 
         Cci.IGenericTypeParameterReference Cci.ITypeReference.AsGenericTypeParameterReference
         {
-            get
-            {
-                return null;
-            }
+            get { return null; }
         }
 
         Cci.INamespaceTypeDefinition Cci.ITypeReference.AsNamespaceTypeDefinition(EmitContext context)
@@ -101,25 +76,16 @@ namespace Aquila.CodeAnalysis.Emit
             return null;
         }
 
-        public abstract Cci.INamespaceTypeReference AsNamespaceTypeReference
-        {
-            get;
-        }
+        public abstract Cci.INamespaceTypeReference AsNamespaceTypeReference { get; }
 
         Cci.INestedTypeDefinition Cci.ITypeReference.AsNestedTypeDefinition(EmitContext context)
         {
             return null;
         }
 
-        public abstract Cci.INestedTypeReference AsNestedTypeReference
-        {
-            get;
-        }
+        public abstract Cci.INestedTypeReference AsNestedTypeReference { get; }
 
-        public abstract Cci.ISpecializedNestedTypeReference AsSpecializedNestedTypeReference
-        {
-            get;
-        }
+        public abstract Cci.ISpecializedNestedTypeReference AsSpecializedNestedTypeReference { get; }
 
         Cci.ITypeDefinition Cci.ITypeReference.AsTypeDefinition(EmitContext context)
         {
@@ -141,6 +107,11 @@ namespace Aquila.CodeAnalysis.Emit
         Cci.IDefinition Cci.IReference.AsDefinition(EmitContext context)
         {
             return null;
+        }
+
+        public ISymbolInternal? GetInternalSymbol()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -177,7 +177,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             CheckDefinitionInvariant();
             return ((PEModuleBuilder)context.Module).Translate(this.Type,
-                syntaxNodeOpt: context.SyntaxNodeOpt,
+                syntaxNodeOpt: context.SyntaxNode,
                 diagnostics: context.Diagnostics);
         }
 

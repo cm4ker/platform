@@ -8,6 +8,7 @@ using System.Text;
 using Aquila.CodeAnalysis.Utilities;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Emit;
+using Microsoft.CodeAnalysis.PooledObjects;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
 
@@ -23,31 +24,6 @@ namespace Aquila.CodeAnalysis.CommandLine
         internal AquilaCommandLineParser()
             : base(Errors.MessageProvider.Instance, false)
         {
-        }
-
-        static bool TryParseOption2(string arg, out string name, out string value)
-        {
-            // additional support for "--argument:value"
-            // TODO: remove once implemented in CodeAnalysis
-            if (arg.StartsWith("--"))
-            {
-                var colon = arg.IndexOf(':');
-                if (colon > 0)
-                {
-                    name = arg.Substring(2, colon - 2).ToLowerInvariant();
-                    value = arg.Substring(colon + 1);
-                }
-                else
-                {
-                    name = arg.Substring(2).ToLowerInvariant();
-                    value = null;
-                }
-
-                return true;
-            }
-
-            //
-            return TryParseOption(arg, out name, out value);
         }
 
         /// <summary>
@@ -72,96 +48,11 @@ namespace Aquila.CodeAnalysis.CommandLine
             return CommandLineParser.TryParseEncodingName(arg);
         }
 
-        IEnumerable<CommandLineSourceFile> ExpandFileArgument(string path, string baseDirectory,
-            List<Diagnostic> diagnostics)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                return Array.Empty<CommandLineSourceFile>();
-            }
-
-            var gindex = path.IndexOf('*');
-            if (gindex < 0)
-            {
-                return ParseFileArgument(path, baseDirectory, diagnostics)
-                    .Select(file => ToCommandLineSourceFile(file));
-            }
-
-            var dir = baseDirectory;
-
-            // root
-            if (PathUtilities.IsDirectorySeparator(path[0])) // unix root
-            {
-                dir = "/";
-            }
-            else if (path[1] == ':') // windows root
-            {
-                dir = path.Substring(0, 3); // C:\
-                path = path.Substring(3);
-            }
-
-            // process the path parts and go through the directory
-            var parts = path.Split(new char[] { '\\', '/' }, StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i < parts.Length; i++)
-            {
-                var p = parts[i];
-                if (p == ".")
-                {
-                    // do nothing
-                }
-                else if (p == "..")
-                {
-                    // parent dir
-                    dir = PathUtilities.GetDirectoryName(dir);
-                }
-                else if (p == "**")
-                {
-                    // all subdirs
-                    return new[] { dir }
-                        .Concat(System.IO.Directory.GetDirectories(dir, "*", System.IO.SearchOption.AllDirectories))
-                        .SelectMany((subdir) =>
-                            ExpandFileArgument(string.Join("/", parts.Skip(i + 1)), subdir, diagnostics));
-                }
-                else
-                {
-                    if (i == parts.Length - 1)
-                    {
-                        return ParseFileArgumentWithoutFileNotFound(p, dir, diagnostics);
-                    }
-                    else
-                    {
-                        return System.IO.Directory.GetDirectories(dir, p, System.IO.SearchOption.TopDirectoryOnly)
-                            .SelectMany((subdir) =>
-                                ExpandFileArgument(string.Join("/", parts.Skip(i)), subdir, diagnostics));
-                    }
-                }
-            }
-
-            //return ParseFileArgument(path, baseDirectory, diagnostics);
-            throw new ArgumentException();
-        }
-
-        /// <summary>
-        /// Enumerates files in the directory and ignores diagnostics about missing files.
-        /// <c>ERR_FileNotFound</c> is reported in case files are not found in the given directory, however,
-        /// since we call this function repetitiously for more directories this error makes no sense just for one of them.
-        /// </summary>
-        IEnumerable<CommandLineSourceFile> ParseFileArgumentWithoutFileNotFound(string path, string dir,
-            IList<Diagnostic> errors)
-        {
-            // we don't care about empty folders reported as file not found,
-            // this error is ment for cases where no files are enumerated at all
-
-            return ParseFileArgument(path, dir,
-                    new ConditionalList<Diagnostic>(errors, (err) => err.Code != MessageProvider.ERR_FileNotFound))
-                .Select(file => ToCommandLineSourceFile(file));
-        }
-
         internal override CommandLineArguments CommonParse(IEnumerable<string> args, string baseDirectory,
             string sdkDirectoryOpt, string additionalReferenceDirectories)
         {
             List<Diagnostic> diagnostics = new List<Diagnostic>();
-            List<string> flattenedArgs = new List<string>();
+            var flattenedArgs = ArrayBuilder<string>.GetInstance();
             List<string> scriptArgs = IsScriptCommandLineParser ? new List<string>() : null;
             FlattenArgs(args, diagnostics, flattenedArgs, scriptArgs, baseDirectory);
 
@@ -216,14 +107,28 @@ namespace Aquila.CodeAnalysis.CommandLine
 
             foreach (string arg in flattenedArgs)
             {
+                ArrayBuilder<string> filePathBuilder;
                 Debug.Assert(optionsEnded || !arg.StartsWith("@", StringComparison.Ordinal));
 
-                string name, value;
-                if (optionsEnded || !TryParseOption2(arg, out name, out value))
+                ReadOnlyMemory<char> nameMemory;
+                ReadOnlyMemory<char>? valueMemory;
+                if (optionsEnded || !TryParseOption(arg, out nameMemory, out valueMemory))
                 {
-                    sourceFiles.AddRange(ExpandFileArgument(arg, baseDirectory, diagnostics));
+                    filePathBuilder = ArrayBuilder<string>.GetInstance();
+                    ParseFileArgument(arg.AsMemory(), baseDirectory, filePathBuilder, diagnostics);
+                    foreach (var path in filePathBuilder)
+                    {
+                        sourceFiles.Add(ToCommandLineSourceFile(path));
+                    }
+
+                    filePathBuilder.Free();
+
+
                     continue;
                 }
+
+                string value = valueMemory is { } m ? m.Span.ToString() : null ?? "";
+                string name = nameMemory.Span.ToString().ToLowerInvariant();
 
                 switch (name)
                 {
@@ -706,7 +611,7 @@ namespace Aquila.CodeAnalysis.CommandLine
                         }
 
                         var embeddedResource =
-                            ParseResourceDescription(arg, value, baseDirectory, diagnostics, embedded: true);
+                            ParseResourceDescription(arg, valueMemory.Value, baseDirectory, diagnostics, embedded: true);
                         if (embeddedResource != null)
                         {
                             managedResources.Add(embeddedResource);
@@ -723,7 +628,7 @@ namespace Aquila.CodeAnalysis.CommandLine
                         }
 
                         var linkedResource =
-                            ParseResourceDescription(arg, value, baseDirectory, diagnostics, embedded: false);
+                            ParseResourceDescription(arg, valueMemory.Value, baseDirectory, diagnostics, embedded: false);
                         if (linkedResource != null)
                         {
                             managedResources.Add(linkedResource);
@@ -1181,7 +1086,7 @@ namespace Aquila.CodeAnalysis.CommandLine
 
         internal static ResourceDescription ParseResourceDescription(
             string arg,
-            string resourceDescriptor,
+            ReadOnlyMemory<char> resourceDescriptor,
             string baseDirectory,
             IList<Diagnostic> diagnostics,
             bool embedded)

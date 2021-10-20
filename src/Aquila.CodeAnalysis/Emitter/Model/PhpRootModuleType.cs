@@ -10,6 +10,7 @@ using Roslyn.Utilities;
 using EmitContext = Microsoft.CodeAnalysis.Emit.EmitContext;
 using TypeDefinitionHandle = System.Reflection.Metadata.TypeDefinitionHandle;
 using Aquila.CodeAnalysis.Emit;
+using Microsoft.CodeAnalysis.Symbols;
 
 namespace Aquila.CodeAnalysis.Emit
 {
@@ -17,8 +18,7 @@ namespace Aquila.CodeAnalysis.Emit
     /// Special type &lt;Module&gt;.
     /// See https://github.com/dotnet/roslyn/blob/master/src/Compilers/Core/Portable/PEWriter/RootModuleType.cs for original implementation.
     /// </summary>
-    internal class
-        AquilaRootModuleType : INamespaceTypeDefinition // TODO: override Microsoft.Cci.RootModuleType once they make the methods virtual (https://github.com/dotnet/roslyn/issues/40526)
+    internal class AquilaRootModuleType : INamespaceTypeDefinition
     {
         public TypeDefinitionHandle TypeDef
         {
@@ -278,6 +278,11 @@ namespace Aquila.CodeAnalysis.Emit
         IDefinition IReference.AsDefinition(EmitContext context)
         {
             return this;
+        }
+
+        public ISymbolInternal? GetInternalSymbol()
+        {
+            throw new NotImplementedException();
         }
     }
 }

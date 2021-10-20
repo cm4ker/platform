@@ -43,10 +43,13 @@ namespace Aquila.CodeAnalysis.Symbols.PE
         {
         }
 
-        private MetadataDecoder(PEModuleSymbol moduleSymbol, PENamedTypeSymbol typeContextOpt, PEMethodSymbol methodContextOpt)
+        private MetadataDecoder(PEModuleSymbol moduleSymbol, PENamedTypeSymbol typeContextOpt,
+                PEMethodSymbol methodContextOpt)
             // TODO (tomat): if the containing assembly is a source assembly and we are about to decode assembly level attributes, we run into a cycle,
             // so for now ignore the assembly identity.
-            : base(moduleSymbol.Module, (moduleSymbol.ContainingAssembly is PEAssemblySymbol) ? moduleSymbol.ContainingAssembly.Identity : null, SymbolFactory.Instance, moduleSymbol)
+            : base(moduleSymbol.Module,
+                (moduleSymbol.ContainingAssembly is PEAssemblySymbol) ? moduleSymbol.ContainingAssembly.Identity : null,
+                SymbolFactory.Instance, moduleSymbol)
         {
             Debug.Assert((object)moduleSymbol != null);
 
@@ -125,10 +128,11 @@ namespace Aquila.CodeAnalysis.Symbols.PE
         {
             try
             {
-                AssemblySymbol assembly = (AssemblySymbol)moduleSymbol.ReferencedAssemblySymbols[referencedAssemblyIndex];
+                AssemblySymbol assembly =
+                    (AssemblySymbol)moduleSymbol.ReferencedAssemblySymbols[referencedAssemblyIndex];
                 return assembly.LookupTopLevelMetadataType(ref emittedName, digThroughForwardedTypes: true);
             }
-            catch (Exception e) when (FatalError.Report(e)) // Trying to get more useful Watson dumps.
+            catch (Exception e) when (FatalError.ReportAndPropagate(e)) // Trying to get more useful Watson dumps.
             {
                 throw ExceptionUtilities.Unreachable;
             }
@@ -137,7 +141,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
         /// <summary>
         /// Lookup a type defined in a module of a multi-module assembly.
         /// </summary>
-        protected override TypeSymbol LookupTopLevelTypeDefSymbol(string moduleName, ref MetadataTypeName emittedName, out bool isNoPiaLocalType)
+        protected override TypeSymbol LookupTopLevelTypeDefSymbol(string moduleName, ref MetadataTypeName emittedName,
+            out bool isNoPiaLocalType)
         {
             throw new NotImplementedException();
             //foreach (ModuleSymbol m in moduleSymbol.ContainingAssembly.Modules)
@@ -167,7 +172,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
         /// would have found the type in TypeDefRowIdToTypeMap based on its 
         /// TypeDef row id. 
         /// </summary>
-        protected override TypeSymbol LookupTopLevelTypeDefSymbol(ref MetadataTypeName emittedName, out bool isNoPiaLocalType)
+        protected override TypeSymbol LookupTopLevelTypeDefSymbol(ref MetadataTypeName emittedName,
+            out bool isNoPiaLocalType)
         {
             isNoPiaLocalType = false;
             return moduleSymbol.LookupTopLevelMetadataType(ref emittedName); //, out isNoPiaLocalType);
@@ -186,6 +192,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                     return i;
                 }
             }
+
             return -1;
         }
 
@@ -302,11 +309,12 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             return newresult;
         }
 
-        protected override MethodSymbol FindMethodSymbolInType(TypeSymbol typeSymbol, MethodDefinitionHandle targetMethodDef)
+        protected override MethodSymbol FindMethodSymbolInType(TypeSymbol typeSymbol,
+            MethodDefinitionHandle targetMethodDef)
         {
             Debug.Assert(typeSymbol is PENamedTypeSymbol || typeSymbol is ErrorTypeSymbol);
 
-            foreach (Symbol member in typeSymbol.GetMembers())//.GetMembersUnordered())
+            foreach (Symbol member in typeSymbol.GetMembers()) //.GetMembersUnordered())
             {
                 PEMethodSymbol method = member as PEMethodSymbol;
                 if ((object)method != null && method.Handle == targetMethodDef)
@@ -322,7 +330,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
         {
             Debug.Assert(typeSymbol is PENamedTypeSymbol || typeSymbol is ErrorTypeSymbol);
 
-            foreach (Symbol member in typeSymbol.GetMembers())//.GetMembersUnordered())
+            foreach (Symbol member in typeSymbol.GetMembers()) //.GetMembersUnordered())
             {
                 PEFieldSymbol field = member as PEFieldSymbol;
                 if ((object)field != null && field.Handle == fieldDef)
@@ -334,7 +342,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             return null;
         }
 
-        internal override Symbol GetSymbolForMemberRef(MemberReferenceHandle memberRef, TypeSymbol scope = null, bool methodsOnly = false)
+        internal override Symbol GetSymbolForMemberRef(MemberReferenceHandle memberRef, TypeSymbol scope = null,
+            bool methodsOnly = false)
         {
             TypeSymbol targetTypeSymbol = GetMemberRefTypeSymbol(memberRef);
 
@@ -347,7 +356,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 if (scope != targetTypeSymbol &&
                     !(targetTypeSymbol.IsInterfaceType()
                         ? scope.AllInterfaces.Contains((NamedTypeSymbol)targetTypeSymbol)
-                        : scope.IsDerivedFrom(targetTypeSymbol, ignoreDynamic: false, useSiteDiagnostics: ref useSiteDiagnostics)))
+                        : scope.IsDerivedFrom(targetTypeSymbol, ignoreDynamic: false,
+                            useSiteDiagnostics: ref useSiteDiagnostics)))
                 {
                     return null;
                 }
@@ -360,7 +370,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             return memberRefDecoder.FindMember(targetTypeSymbol, memberRef, methodsOnly);
         }
 
-        protected override void EnqueueTypeSymbolInterfacesAndBaseTypes(Queue<TypeDefinitionHandle> typeDefsToSearch, Queue<TypeSymbol> typeSymbolsToSearch, TypeSymbol typeSymbol)
+        protected override void EnqueueTypeSymbolInterfacesAndBaseTypes(Queue<TypeDefinitionHandle> typeDefsToSearch,
+            Queue<TypeSymbol> typeSymbolsToSearch, TypeSymbol typeSymbol)
         {
             throw new NotImplementedException();
             //foreach (NamedTypeSymbol @interface in typeSymbol.InterfacesNoUseSiteDiagnostics())
@@ -371,7 +382,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             //EnqueueTypeSymbol(typeDefsToSearch, typeSymbolsToSearch, typeSymbol.BaseTypeNoUseSiteDiagnostics);
         }
 
-        protected override void EnqueueTypeSymbol(Queue<TypeDefinitionHandle> typeDefsToSearch, Queue<TypeSymbol> typeSymbolsToSearch, TypeSymbol typeSymbol)
+        protected override void EnqueueTypeSymbol(Queue<TypeDefinitionHandle> typeDefsToSearch,
+            Queue<TypeSymbol> typeSymbolsToSearch, TypeSymbol typeSymbol)
         {
             if ((object)typeSymbol != null)
             {

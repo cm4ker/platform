@@ -1164,7 +1164,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 foreach (var methodHandle in module.GetMethodsOfTypeOrThrow(_handle))
                 {
                     if (isOrdinaryEmbeddableStruct ||
-                        module.ShouldImportMethod(methodHandle, moduleSymbol.ImportOptions))
+                        module.ShouldImportMethod(_handle, methodHandle, moduleSymbol.ImportOptions))
                     {
                         var method = new PEMethodSymbol(moduleSymbol, this, methodHandle);
                         members.Add(method);
@@ -1257,7 +1257,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
 
             PEMethodSymbol method;
             bool found = methodHandleToSymbol.TryGetValue(methodDef, out method);
-            Debug.Assert(found || !module.ShouldImportMethod(methodDef, this.ContainingPEModule.ImportOptions));
+            Debug.Assert(found ||
+                         !module.ShouldImportMethod(_handle, methodDef, this.ContainingPEModule.ImportOptions));
             return method;
         }
 

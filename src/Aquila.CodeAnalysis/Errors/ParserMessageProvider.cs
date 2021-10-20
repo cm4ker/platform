@@ -44,6 +44,7 @@ namespace Aquila.CodeAnalysis.Errors
 
         public override int ERR_CantReadResource => throw new NotImplementedException();
 
+        public override int WRN_AnalyzerReferencesFramework { get; }
         public override int ERR_CantReadRulesetFile => throw new NotImplementedException();
 
         public override int ERR_CompileCancelled => throw new NotImplementedException();
@@ -223,13 +224,13 @@ namespace Aquila.CodeAnalysis.Errors
             return _errorInfos[code].FormatString;
         }
 
-        public override void ReportAttributeParameterRequired(DiagnosticBag diagnostics, SyntaxNode attributeSyntax,
+        protected override void ReportAttributeParameterRequired(DiagnosticBag diagnostics, SyntaxNode attributeSyntax,
             string parameterName)
         {
             throw new NotImplementedException();
         }
 
-        public override void ReportAttributeParameterRequired(DiagnosticBag diagnostics, SyntaxNode attributeSyntax,
+        protected override void ReportAttributeParameterRequired(DiagnosticBag diagnostics, SyntaxNode attributeSyntax,
             string parameterName1, string parameterName2)
         {
             throw new NotImplementedException();
@@ -249,31 +250,31 @@ namespace Aquila.CodeAnalysis.Errors
             throw new NotImplementedException();
         }
 
-        public override void ReportInvalidAttributeArgument(DiagnosticBag diagnostics, SyntaxNode attributeSyntax,
+        protected override void ReportInvalidAttributeArgument(DiagnosticBag diagnostics, SyntaxNode attributeSyntax,
             int parameterIndex, AttributeData attribute)
         {
             throw new NotImplementedException();
         }
 
-        public override void ReportInvalidNamedArgument(DiagnosticBag diagnostics, SyntaxNode attributeSyntax,
+        protected override void ReportInvalidNamedArgument(DiagnosticBag diagnostics, SyntaxNode attributeSyntax,
             int namedArgumentIndex, ITypeSymbol attributeClass, string parameterName)
         {
             throw new NotImplementedException();
         }
 
-        public override void ReportMarshalUnmanagedTypeNotValidForFields(DiagnosticBag diagnostics,
+        protected override void ReportMarshalUnmanagedTypeNotValidForFields(DiagnosticBag diagnostics,
             SyntaxNode attributeSyntax, int parameterIndex, string unmanagedTypeName, AttributeData attribute)
         {
             throw new NotImplementedException();
         }
 
-        public override void ReportMarshalUnmanagedTypeOnlyValidForFields(DiagnosticBag diagnostics,
+        protected override void ReportMarshalUnmanagedTypeOnlyValidForFields(DiagnosticBag diagnostics,
             SyntaxNode attributeSyntax, int parameterIndex, string unmanagedTypeName, AttributeData attribute)
         {
             throw new NotImplementedException();
         }
 
-        public override void ReportParameterNotValidForType(DiagnosticBag diagnostics, SyntaxNode attributeSyntax,
+        protected override void ReportParameterNotValidForType(DiagnosticBag diagnostics, SyntaxNode attributeSyntax,
             int namedArgumentIndex)
         {
             throw new NotImplementedException();

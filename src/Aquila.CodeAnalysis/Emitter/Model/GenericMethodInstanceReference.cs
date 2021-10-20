@@ -27,7 +27,7 @@ namespace Aquila.CodeAnalysis.Emit
 
             foreach (var arg in UnderlyingMethod.TypeArguments)
             {
-                yield return moduleBeingBuilt.Translate(arg, syntaxNodeOpt: context.SyntaxNodeOpt, diagnostics: context.Diagnostics);
+                yield return moduleBeingBuilt.Translate(arg, syntaxNodeOpt: context.SyntaxNode, diagnostics: context.Diagnostics);
             }
         }
 
@@ -36,7 +36,7 @@ namespace Aquila.CodeAnalysis.Emit
             // NoPia method might come through here.
             return ((PEModuleBuilder)context.Module).Translate(
                 UnderlyingMethod.OriginalDefinition,
-                syntaxNodeOpt: context.SyntaxNodeOpt,
+                syntaxNodeOpt: context.SyntaxNode,
                 diagnostics: context.Diagnostics,
                 needDeclaration: true);
         }

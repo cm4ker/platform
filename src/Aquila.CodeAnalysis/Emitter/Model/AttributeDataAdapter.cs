@@ -34,7 +34,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
             return (Cci.IMethodReference)moduleBeingBuilt.Translate(
-                this.AttributeConstructor, /*context.SyntaxNodeOpt, */context.Diagnostics, false);
+                this.AttributeConstructor, /*context.SyntaxNode, */context.Diagnostics, false);
         }
 
         ImmutableArray<Cci.IMetadataNamedArgument> Cci.ICustomAttribute.GetNamedArguments(EmitContext context)
@@ -67,7 +67,7 @@ namespace Aquila.CodeAnalysis.Symbols
         Cci.ITypeReference Cci.ICustomAttribute.GetType(EmitContext context)
         {
             PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
-            return moduleBeingBuilt.Translate(this.AttributeClass, syntaxNodeOpt: context.SyntaxNodeOpt,
+            return moduleBeingBuilt.Translate(this.AttributeClass, syntaxNodeOpt: context.SyntaxNode,
                 diagnostics: context.Diagnostics);
         }
 
@@ -124,7 +124,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             Debug.Assert(argument.Value != null);
             var moduleBeingBuilt = (PEModuleBuilder)context.Module;
-            var syntaxNodeOpt = (SyntaxNode)context.SyntaxNodeOpt;
+            var syntaxNodeOpt = (SyntaxNode)context.SyntaxNode;
             var diagnostics = context.Diagnostics;
             return new MetadataTypeOf(
                 moduleBeingBuilt.Translate((TypeSymbol)argument.Value, syntaxNodeOpt, diagnostics),
@@ -134,7 +134,7 @@ namespace Aquila.CodeAnalysis.Symbols
         private static MetadataConstant CreateMetadataConstant(ITypeSymbol type, object value, EmitContext context)
         {
             PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
-            return moduleBeingBuilt.CreateConstant((TypeSymbol)type, value, syntaxNodeOpt: context.SyntaxNodeOpt,
+            return moduleBeingBuilt.CreateConstant((TypeSymbol)type, value, syntaxNodeOpt: context.SyntaxNode,
                 diagnostics: context.Diagnostics);
         }
 
@@ -156,7 +156,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
             PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
             return new MetadataNamedArgument(symbol,
-                moduleBeingBuilt.Translate(type, syntaxNodeOpt: context.SyntaxNodeOpt,
+                moduleBeingBuilt.Translate(type, syntaxNodeOpt: context.SyntaxNode,
                     diagnostics: context.Diagnostics), value);
         }
 

@@ -19,7 +19,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder) context.Module;
 
-            var type = moduleBeingBuilt.Translate(this.ElementType, syntaxNodeOpt: context.SyntaxNodeOpt,
+            var type = moduleBeingBuilt.Translate(this.ElementType, syntaxNodeOpt: context.SyntaxNode,
                 diagnostics: context.Diagnostics);
 
             if (this.CustomModifiers.Length == 0)

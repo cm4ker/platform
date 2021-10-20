@@ -14,10 +14,7 @@ namespace Aquila.CodeAnalysis.Errors
 
         public override string CodePrefix
         {
-            get
-            {
-                return "AQ";
-            }
+            get { return "AQ"; }
         }
 
         public override Type ErrorCodeType
@@ -43,6 +40,7 @@ namespace Aquila.CodeAnalysis.Errors
 
         public override int ERR_CantReadResource => (int)ErrorCode.ERR_CantReadResource;
 
+        public override int WRN_AnalyzerReferencesFramework { get; }
         public override int ERR_CantReadRulesetFile => (int)ErrorCode.ERR_CantReadRulesetFile;
 
         public override int ERR_CompileCancelled => (int)ErrorCode.ERR_CompileCancelled;
@@ -75,7 +73,8 @@ namespace Aquila.CodeAnalysis.Errors
 
         public override int ERR_InvalidSubsystemVersion => (int)ErrorCode.ERR_InvalidSubsystemVersion;
 
-        public override int ERR_LinkedNetmoduleMetadataMustProvideFullPEImage => (int)ErrorCode.ERR_LinkedNetmoduleMetadataMustProvideFullPEImage;
+        public override int ERR_LinkedNetmoduleMetadataMustProvideFullPEImage =>
+            (int)ErrorCode.ERR_LinkedNetmoduleMetadataMustProvideFullPEImage;
 
         public override int ERR_MetadataFileNotAssembly => (int)ErrorCode.ERR_MetadataFileNotAssembly;
 
@@ -95,7 +94,8 @@ namespace Aquila.CodeAnalysis.Errors
 
         public override int ERR_PdbWritingFailed => (int)ErrorCode.ERR_PdbWritingFailed;
 
-        public override int ERR_PermissionSetAttributeFileReadError => (int)ErrorCode.ERR_PermissionSetAttributeFileReadError;
+        public override int ERR_PermissionSetAttributeFileReadError =>
+            (int)ErrorCode.ERR_PermissionSetAttributeFileReadError;
 
         public override int ERR_PublicKeyContainerFailure => (int)ErrorCode.ERR_PublicKeyContainerFailure;
 
@@ -134,7 +134,7 @@ namespace Aquila.CodeAnalysis.Errors
         public override int ERR_BadAssemblyName => (int)ErrorCode.ERR_BadAssemblyName;
 
         public override int ERR_MultipleAnalyzerConfigsInSameDir => (int)ErrorCode.ERR_MultipleAnalyzerConfigsInSameDir;
-        
+
         public override int FTL_InvalidInputFileName => (int)ErrorCode.FTL_InvalidInputFileName;
 
         public override int INF_UnableToLoadSomeTypesInAnalyzer => (int)ErrorCode.INF_UnableToLoadSomeTypesInAnalyzer;
@@ -151,10 +151,11 @@ namespace Aquila.CodeAnalysis.Errors
 
         public override int WRN_UnableToLoadAnalyzer => (int)ErrorCode.WRN_UnableToLoadAnalyzer;
 
-        public override int WRN_GeneratorFailedDuringInitialization => (int)ErrorCode.WRN_GeneratorFailedDuringInitialization;
+        public override int WRN_GeneratorFailedDuringInitialization =>
+            (int)ErrorCode.WRN_GeneratorFailedDuringInitialization;
 
         public override int WRN_GeneratorFailedDuringGeneration => (int)ErrorCode.WRN_GeneratorFailedDuringGeneration;
-        
+
         public override string GetErrorDisplayString(ISymbol symbol)
         {
             // show extra info for assembly if possible such as version, public key token etc.
@@ -205,7 +206,8 @@ namespace Aquila.CodeAnalysis.Errors
             throw new NotImplementedException();
         }
 
-        public override string GetMessagePrefix(string id, DiagnosticSeverity severity, bool isWarningAsError, CultureInfo culture)
+        public override string GetMessagePrefix(string id, DiagnosticSeverity severity, bool isWarningAsError,
+            CultureInfo culture)
         {
             return string.Format(culture, "{0} {1}",
                 severity == DiagnosticSeverity.Error || isWarningAsError ? "error" : "warning",
@@ -236,47 +238,58 @@ namespace Aquila.CodeAnalysis.Errors
             return ErrorFacts.GetFormatString((ErrorCode)code, language);
         }
 
-        public override void ReportAttributeParameterRequired(DiagnosticBag diagnostics, SyntaxNode attributeSyntax, string parameterName)
+        protected override void ReportAttributeParameterRequired(DiagnosticBag diagnostics, SyntaxNode attributeSyntax,
+            string parameterName)
         {
             throw new NotImplementedException();
         }
 
-        public override void ReportAttributeParameterRequired(DiagnosticBag diagnostics, SyntaxNode attributeSyntax, string parameterName1, string parameterName2)
+        protected override void ReportAttributeParameterRequired(DiagnosticBag diagnostics, SyntaxNode attributeSyntax,
+            string parameterName1, string parameterName2)
         {
             throw new NotImplementedException();
         }
 
-        public override void ReportDuplicateMetadataReferenceStrong(DiagnosticBag diagnostics, Location location, MetadataReference reference, AssemblyIdentity identity, MetadataReference equivalentReference, AssemblyIdentity equivalentIdentity)
+        public override void ReportDuplicateMetadataReferenceStrong(DiagnosticBag diagnostics, Location location,
+            MetadataReference reference, AssemblyIdentity identity, MetadataReference equivalentReference,
+            AssemblyIdentity equivalentIdentity)
         {
             throw new NotImplementedException();
         }
 
-        public override void ReportDuplicateMetadataReferenceWeak(DiagnosticBag diagnostics, Location location, MetadataReference reference, AssemblyIdentity identity, MetadataReference equivalentReference, AssemblyIdentity equivalentIdentity)
+        public override void ReportDuplicateMetadataReferenceWeak(DiagnosticBag diagnostics, Location location,
+            MetadataReference reference, AssemblyIdentity identity, MetadataReference equivalentReference,
+            AssemblyIdentity equivalentIdentity)
         {
             throw new NotImplementedException();
         }
 
-        public override void ReportInvalidAttributeArgument(DiagnosticBag diagnostics, SyntaxNode attributeSyntax, int parameterIndex, AttributeData attribute)
+        protected override void ReportInvalidAttributeArgument(DiagnosticBag diagnostics, SyntaxNode attributeSyntax,
+            int parameterIndex, AttributeData attribute)
         {
             throw new NotImplementedException();
         }
 
-        public override void ReportInvalidNamedArgument(DiagnosticBag diagnostics, SyntaxNode attributeSyntax, int namedArgumentIndex, ITypeSymbol attributeClass, string parameterName)
+        protected override void ReportInvalidNamedArgument(DiagnosticBag diagnostics, SyntaxNode attributeSyntax,
+            int namedArgumentIndex, ITypeSymbol attributeClass, string parameterName)
         {
             throw new NotImplementedException();
         }
 
-        public override void ReportMarshalUnmanagedTypeNotValidForFields(DiagnosticBag diagnostics, SyntaxNode attributeSyntax, int parameterIndex, string unmanagedTypeName, AttributeData attribute)
+        protected override void ReportMarshalUnmanagedTypeNotValidForFields(DiagnosticBag diagnostics,
+            SyntaxNode attributeSyntax, int parameterIndex, string unmanagedTypeName, AttributeData attribute)
         {
             throw new NotImplementedException();
         }
 
-        public override void ReportMarshalUnmanagedTypeOnlyValidForFields(DiagnosticBag diagnostics, SyntaxNode attributeSyntax, int parameterIndex, string unmanagedTypeName, AttributeData attribute)
+        protected override void ReportMarshalUnmanagedTypeOnlyValidForFields(DiagnosticBag diagnostics,
+            SyntaxNode attributeSyntax, int parameterIndex, string unmanagedTypeName, AttributeData attribute)
         {
             throw new NotImplementedException();
         }
 
-        public override void ReportParameterNotValidForType(DiagnosticBag diagnostics, SyntaxNode attributeSyntax, int namedArgumentIndex)
+        protected override void ReportParameterNotValidForType(DiagnosticBag diagnostics, SyntaxNode attributeSyntax,
+            int namedArgumentIndex)
         {
             throw new NotImplementedException();
         }

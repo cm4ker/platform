@@ -176,6 +176,8 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         public virtual IFieldSymbol CorrespondingTupleField => null;
 
+        public bool IsExplicitlyNamedTupleElement { get; }
+
         /// <summary>
         /// Returns false because field can't be abstract.
         /// </summary>

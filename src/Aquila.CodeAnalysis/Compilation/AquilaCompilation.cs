@@ -144,7 +144,7 @@ namespace Aquila.CodeAnalysis
             AsyncQueue<CompilationEvent> eventQueue = null
         )
             : base(assemblyName, references, SyntaxTreeCommonFeatures(ImmutableArray<SyntaxTree>.Empty), isSubmission,
-                eventQueue)
+                semanticModelProvider: null, eventQueue)
         {
             _wellKnownMemberSignatureComparer = new WellKnownMembersSignatureComparer(this);
 
@@ -550,7 +550,12 @@ namespace Aquila.CodeAnalysis
 
             // Before returning diagnostics, we filter warnings
             // to honor the compiler options (e.g., /nowarn, /warnaserror and /warn) and the pragmas.
-            FilterAndAppendAndFreeDiagnostics(diagnostics, ref builder);
+            FilterAndAppendAndFreeDiagnostics(diagnostics, ref builder, cancellationToken);
+        }
+
+        public override ImmutableArray<MetadataReference> GetUsedAssemblyReferences(CancellationToken cancellationToken = new CancellationToken())
+        {
+            throw new NotImplementedException();
         }
 
         public override IEnumerable<ISymbol> GetSymbolsWithName(Func<string, bool> predicate,
@@ -646,7 +651,9 @@ namespace Aquila.CodeAnalysis
 
         protected override IFunctionPointerTypeSymbol CommonCreateFunctionPointerTypeSymbol(ITypeSymbol returnType,
             RefKind returnRefKind,
-            ImmutableArray<ITypeSymbol> parameterTypes, ImmutableArray<RefKind> parameterRefKinds)
+            ImmutableArray<ITypeSymbol> parameterTypes, ImmutableArray<RefKind> parameterRefKinds,
+            SignatureCallingConvention callingConvention,
+            ImmutableArray<INamedTypeSymbol> callingConventionTypes)
         {
             throw new NotImplementedException();
         }
@@ -716,7 +723,8 @@ namespace Aquila.CodeAnalysis
             return null;
         }
 
-        protected override IEnumerable<SyntaxTree> CommonSyntaxTrees => SyntaxTrees;
+        protected override ImmutableArray<SyntaxTree> CommonSyntaxTrees =>
+            SyntaxTrees.Cast<SyntaxTree>().ToImmutableArray();
 
         public new ImmutableArray<AquilaSyntaxTree> SyntaxTrees => this.SourceSymbolCollection.SyntaxTrees;
 
@@ -728,6 +736,11 @@ namespace Aquila.CodeAnalysis
         }
 
         protected override SemanticModel CommonGetSemanticModel(SyntaxTree syntaxTree, bool ignoreAccessibility)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal override SemanticModel CreateSemanticModel(SyntaxTree syntaxTree, bool ignoreAccessibility)
         {
             throw new NotImplementedException();
         }
@@ -908,6 +921,11 @@ namespace Aquila.CodeAnalysis
             return loc1.Span.Start - loc2.Span.Start;
         }
 
+        internal override int CompareSourceLocations(SyntaxNode loc1, SyntaxNode loc2)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Ensures semantic binding and flow analysis.
         /// </summary>
@@ -967,7 +985,7 @@ namespace Aquila.CodeAnalysis
                     cancellationToken);
 
                 bool hasMethodBodyErrorOrWarningAsError =
-                    !FilterAndAppendAndFreeDiagnostics(diagnostics, ref methodBodyDiagnosticBag);
+                    !FilterAndAppendAndFreeDiagnostics(diagnostics, ref methodBodyDiagnosticBag, cancellationToken);
 
                 if (hasDeclarationErrors || hasMethodBodyErrorOrWarningAsError)
                 {
@@ -1004,8 +1022,11 @@ namespace Aquila.CodeAnalysis
             yield break;
         }
 
+
         internal override bool GenerateResourcesAndDocumentationComments(CommonPEModuleBuilder moduleBuilder,
-            Stream xmlDocStream, Stream win32Resources, string outputNameOverride, DiagnosticBag diagnostics,
+            Stream? xmlDocumentationStream,
+            Stream? win32ResourcesStream, bool useRawWin32Resources, string? outputNameOverride,
+            DiagnosticBag diagnostics,
             CancellationToken cancellationToken)
         {
             // Use a temporary bag so we don't have to refilter pre-existing diagnostics.
@@ -1015,7 +1036,7 @@ namespace Aquila.CodeAnalysis
 
             try
             {
-                SetupWin32Resources(moduleBeingBuilt, win32Resources, methodBodyDiagnosticBag);
+                SetupWin32Resources(moduleBeingBuilt, win32ResourcesStream, methodBodyDiagnosticBag);
 
                 ReportManifestResourceDuplicates(
                     moduleBeingBuilt.ManifestResources,
@@ -1023,7 +1044,7 @@ namespace Aquila.CodeAnalysis
                     AddedModulesResourceNames(methodBodyDiagnosticBag),
                     methodBodyDiagnosticBag);
 
-                if (!FilterAndAppendAndFreeDiagnostics(diagnostics, ref methodBodyDiagnosticBag))
+                if (!FilterAndAppendAndFreeDiagnostics(diagnostics, ref methodBodyDiagnosticBag, cancellationToken))
                 {
                     return false;
                 }
@@ -1041,10 +1062,11 @@ namespace Aquila.CodeAnalysis
 
             string assemblyName =
                 FileNameUtilities.ChangeExtension(moduleBeingBuilt.EmitOptions.OutputNameOverride, extension: null);
-            DocumentationCommentCompiler.WriteDocumentationCommentXml(this, assemblyName, xmlDocStream, xmlDiagnostics,
+            DocumentationCommentCompiler.WriteDocumentationCommentXml(this, assemblyName, xmlDocumentationStream,
+                xmlDiagnostics,
                 cancellationToken);
 
-            if (!FilterAndAppendAndFreeDiagnostics(diagnostics, ref xmlDiagnostics))
+            if (!FilterAndAppendAndFreeDiagnostics(diagnostics, ref xmlDiagnostics, cancellationToken))
             {
                 return false;
             }
@@ -1102,7 +1124,7 @@ namespace Aquila.CodeAnalysis
         {
             var corAssembly = SourceAssembly.CorLibrary as PEAssemblySymbol;
 
-            if ((object)corAssembly != null) 
+            if ((object)corAssembly != null)
             {
                 return corAssembly.Assembly.ManifestModule.MetadataVersion;
             }
@@ -1230,10 +1252,10 @@ namespace Aquila.CodeAnalysis
             return moduleBeingBuilt;
         }
 
+
         internal override EmitDifferenceResult EmitDifference(EmitBaseline baseline, IEnumerable<SemanticEdit> edits,
-            Func<ISymbol, bool> isAddedSymbol, Stream metadataStream, Stream ilStream, Stream pdbStream,
-            ICollection<MethodDefinitionHandle> updatedMethodHandles, CompilationTestData testData,
-            CancellationToken cancellationToken)
+            Func<ISymbol, bool> isAddedSymbol, Stream metadataStream,
+            Stream ilStream, Stream pdbStream, CompilationTestData? testData, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -1242,14 +1264,15 @@ namespace Aquila.CodeAnalysis
         /// Filter out warnings based on the compiler options (/nowarn, /warn and /warnaserror) and the pragma warning directives.
         /// </summary>
         /// <returns>True when there is no error.</returns>
-        private bool FilterAndAppendDiagnostics(DiagnosticBag accumulator, IEnumerable<Diagnostic> incoming)
+        private bool FilterAndAppendDiagnostics(DiagnosticBag accumulator, IEnumerable<Diagnostic> incoming,
+            CancellationToken cancellationToken)
         {
             bool hasError = false;
             bool reportSuppressedDiagnostics = Options.ReportSuppressedDiagnostics;
 
             foreach (Diagnostic d in incoming)
             {
-                var filtered = _options.FilterDiagnostic(d);
+                var filtered = _options.FilterDiagnostic(d, cancellationToken);
                 if (filtered == null ||
                     (!reportSuppressedDiagnostics && filtered.IsSuppressed))
                 {
@@ -1293,14 +1316,18 @@ namespace Aquila.CodeAnalysis
             throw new NotImplementedException();
         }
 
+        internal override Compilation WithSemanticModelProvider(SemanticModelProvider semanticModelProvider)
+        {
+            throw new NotImplementedException();
+        }
+
         internal override void AddDebugSourceDocumentsForChecksumDirectives(DebugDocumentsBuilder documentsBuilder,
             SyntaxTree tree, DiagnosticBag diagnostics)
         {
             //throw new NotImplementedException();
         }
 
-        internal override void ReportUnusedImports(SyntaxTree filterTree, DiagnosticBag diagnostics,
-            CancellationToken cancellationToken)
+        internal override void ReportUnusedImports(DiagnosticBag diagnostics, CancellationToken cancellationToken)
         {
             //throw new NotImplementedException();
         }

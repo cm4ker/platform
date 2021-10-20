@@ -230,7 +230,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 }
 
                 var typeRef = moduleBeingBuilt.Translate(type,
-                    syntaxNodeOpt: context.SyntaxNodeOpt,
+                    syntaxNodeOpt: context.SyntaxNode,
                     diagnostics: context.Diagnostics);
                 yield return new Cci.TypeReferenceWithAttributes(typeRef);
             }
@@ -239,7 +239,7 @@ namespace Aquila.CodeAnalysis.Symbols
             {
                 // Add System.ValueType constraint to comply with Dev11 output
                 var typeRef = moduleBeingBuilt.GetSpecialType(SpecialType.System_ValueType,
-                    syntaxNodeOpt: context.SyntaxNodeOpt,
+                    syntaxNodeOpt: context.SyntaxNode,
                     diagnostics: context.Diagnostics);
                 yield return new Cci.TypeReferenceWithAttributes(typeRef);
             }

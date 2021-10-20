@@ -388,7 +388,7 @@ namespace Aquila.CodeAnalysis
         {
             WalkMethods(f => f.SynthesizeStubs(_moduleBuilder, _diagnostics));
             WalkSynthesizedTypes(t => t.Init(_moduleBuilder, _diagnostics));
-            _moduleBuilder.RealizeStaticCtors();
+//            _moduleBuilder.RealizeStaticCtors();
         }
 
         /// <summary>

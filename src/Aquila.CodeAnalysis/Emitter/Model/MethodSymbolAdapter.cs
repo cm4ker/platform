@@ -72,7 +72,7 @@ namespace Aquila.CodeAnalysis.Symbols
             {
                 PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
                 return moduleBeingBuilt.Translate(this.ContainingType,
-                    syntaxNodeOpt: context.SyntaxNodeOpt,
+                    syntaxNodeOpt: context.SyntaxNode,
                     diagnostics: context.Diagnostics);
             }
 
@@ -222,7 +222,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 (TypeSymbol)context.Module.CommonCompilation
                     .GetSpecialType(SpecialType
                         .System_Void), // (object)byRefType == null ? this.ReturnType : byRefType.ReferencedType,
-                syntaxNodeOpt: context.SyntaxNodeOpt,
+                syntaxNodeOpt: context.SyntaxNode,
                 diagnostics: context.Diagnostics);
         }
 
@@ -235,7 +235,7 @@ namespace Aquila.CodeAnalysis.Symbols
             foreach (var arg in this.TypeArguments)
             {
                 yield return moduleBeingBuilt.Translate(arg,
-                    syntaxNodeOpt: context.SyntaxNodeOpt,
+                    syntaxNodeOpt: context.SyntaxNode,
                     diagnostics: context.Diagnostics);
             }
 

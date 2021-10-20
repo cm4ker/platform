@@ -235,7 +235,7 @@ namespace Aquila.CodeAnalysis.Symbols
             }
 
             return ((object)baseType != null)
-                ? moduleBeingBuilt.Translate(baseType, null /* (SyntaxNode)context.SyntaxNodeOpt */,
+                ? moduleBeingBuilt.Translate(baseType, null /* (SyntaxNode)context.SyntaxNode */,
                     context.Diagnostics)
                 : null;
         }
@@ -285,7 +285,7 @@ namespace Aquila.CodeAnalysis.Symbols
                     foreach (var implemented in explicitImplementations)
                     {
                         yield return new Cci.MethodImplementation(method,
-                            moduleBeingBuilt.TranslateOverriddenMethodReference(implemented, context.SyntaxNodeOpt,
+                            moduleBeingBuilt.TranslateOverriddenMethodReference(implemented, context.SyntaxNode,
                                 context.Diagnostics));
                     }
                 }
@@ -297,7 +297,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 //    // specify the override explicitly.
                 //    // This mostly affects accessors - C# ignores method interactions
                 //    // between accessors and non-accessors, whereas the runtime does not.
-                //    yield return new Microsoft.Cci.MethodImplementation(method, moduleBeingBuilt.TranslateOverriddenMethodReference((MethodSymbol)method.OverriddenMethod, context.SyntaxNodeOpt, context.Diagnostics));
+                //    yield return new Microsoft.Cci.MethodImplementation(method, moduleBeingBuilt.TranslateOverriddenMethodReference((MethodSymbol)method.OverriddenMethod, context.SyntaxNode, context.Diagnostics));
                 //}
                 //else if (method.MethodKind == MethodKind.Destructor && this.SpecialType != SpecialType.System_Object)
                 //{
@@ -312,7 +312,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 //        MethodSymbol objectMethod = objectMember as MethodSymbol;
                 //        if ((object)objectMethod != null && objectMethod.MethodKind == MethodKind.Destructor)
                 //        {
-                //            yield return new Microsoft.Cci.MethodImplementation(method, moduleBeingBuilt.TranslateOverriddenMethodReference(objectMethod, context.SyntaxNodeOpt, context.Diagnostics));
+                //            yield return new Microsoft.Cci.MethodImplementation(method, moduleBeingBuilt.TranslateOverriddenMethodReference(objectMethod, context.SyntaxNode, context.Diagnostics));
                 //        }
                 //    }
                 //}
@@ -771,7 +771,7 @@ namespace Aquila.CodeAnalysis.Symbols
             if (!this.IsDefinition)
             {
                 return moduleBeingBuilt.Translate(this.ContainingType,
-                    syntaxNodeOpt: context.SyntaxNodeOpt,
+                    syntaxNodeOpt: context.SyntaxNode,
                     diagnostics: context.Diagnostics);
             }
 
@@ -817,7 +817,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
             for (int i = 0; i < arguments.Length; i++)
             {
-                var arg = moduleBeingBuilt.Translate(arguments[i], syntaxNodeOpt: context.SyntaxNodeOpt,
+                var arg = moduleBeingBuilt.Translate(arguments[i], syntaxNodeOpt: context.SyntaxNode,
                     diagnostics: context.Diagnostics);
 
                 if (!modifiers.IsDefault && !modifiers[i].IsDefaultOrEmpty)

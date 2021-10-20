@@ -155,8 +155,6 @@ namespace Aquila.CodeAnalysis.Emit
             get { throw new NotImplementedException(); }
         }
 
-        public override int CurrentGenerationOrdinal => 0; // used for EditAndContinue
-
         public sealed override IEnumerable<Cci.ICustomAttribute> GetSourceAssemblyAttributes(bool isRefAssembly)
         {
             // [Debuggable(DebuggableAttribute.DebuggingModes.Default | DebuggableAttribute.DebuggingModes.DisableOptimizations)]
@@ -794,7 +792,8 @@ namespace Aquila.CodeAnalysis.Emit
 
         static void AddTopLevelType(HashSet<string> names, Cci.INamespaceTypeDefinition type)
         {
-            names?.Add(MetadataHelpers.BuildQualifiedName(type.NamespaceName, Cci.MetadataWriter.GetMangledName(type)));
+            names?.Add(MetadataHelpers.BuildQualifiedName(type.NamespaceName,
+                Cci.MetadataWriter.GetMangledName(type, 0)));
         }
 
         static void VisitTopLevelType(Cci.TypeReferenceIndexer noPiaIndexer, Cci.INamespaceTypeDefinition type)
@@ -1309,5 +1308,13 @@ namespace Aquila.CodeAnalysis.Emit
 
             return false;
         }
+        
+        public override IEnumerable<(Cci.ITypeDefinition, ImmutableArray<Cci.DebugSourceDocument>)> GetTypeToDebugDocumentMap(EmitContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override SymbolChanges? EncSymbolChanges { get; }
+        public override EmitBaseline? PreviousGeneration { get; }
     }
 }

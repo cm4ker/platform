@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata;
 using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Semantics.Graph;
@@ -20,10 +21,14 @@ namespace Aquila.CodeAnalysis.Symbols
     {
         public virtual int Arity => 0;
 
+        public bool IsPartialDefinition { get; }
+
         public INamedTypeSymbol AssociatedAnonymousDelegate
         {
             get { throw new NotImplementedException(); }
         }
+
+        public ImmutableArray<INamedTypeSymbol> UnmanagedCallingConventionTypes { get; }
 
         public virtual ISymbol AssociatedSymbol
         {
@@ -119,6 +124,7 @@ namespace Aquila.CodeAnalysis.Symbols
         public IMethodSymbol PartialDefinitionPart => null;
 
         public IMethodSymbol PartialImplementationPart => null;
+        public MethodImplAttributes MethodImplementationFlags { get; }
 
         /// <summary>
         /// If this method can be applied to an object, returns the type of object it is applied to.
@@ -160,6 +166,8 @@ namespace Aquila.CodeAnalysis.Symbols
 
         ImmutableArray<CustomModifier> IMethodSymbol.RefCustomModifiers => ImmutableArray<CustomModifier>.Empty;
 
+        SignatureCallingConvention IMethodSymbol.CallingConvention => _callingConvention;
+
         IMethodSymbol IMethodSymbol.Construct(params ITypeSymbol[] typeArguments) => Construct(typeArguments);
 
         public MethodSymbol Construct(params ITypeSymbol[] typeArguments)
@@ -168,6 +176,7 @@ namespace Aquila.CodeAnalysis.Symbols
         }
 
         internal static readonly Func<TypeSymbol, bool> TypeSymbolIsNullFunction = type => (object)type == null;
+        private SignatureCallingConvention _callingConvention;
 
         /// <summary>
         /// Apply type substitution to a generic method to create an method symbol with the given type parameters supplied.

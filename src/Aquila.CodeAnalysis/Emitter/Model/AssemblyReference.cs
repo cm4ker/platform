@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Aquila.CodeAnalysis.Symbols;
+using Microsoft.CodeAnalysis.Symbols;
 using Cci = Microsoft.Cci;
 
 namespace Aquila.CodeAnalysis.Emitter
@@ -59,6 +60,11 @@ namespace Aquila.CodeAnalysis.Emitter
         Cci.IDefinition Cci.IReference.AsDefinition(EmitContext context)
         {
             return null;
+        }
+
+        public ISymbolInternal? GetInternalSymbol()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
