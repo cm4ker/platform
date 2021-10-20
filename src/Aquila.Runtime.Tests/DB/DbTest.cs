@@ -33,7 +33,6 @@ namespace Aquila.Runtime.Tests.DB
 
             AqContext.IScriptingProvider provider = new ScriptingProvider();
 
-
             var code =
                 @"
 import Entity;
