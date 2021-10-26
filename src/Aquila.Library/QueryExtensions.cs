@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 //using System.Collections.Generic;
 using Aquila.Core;
 using Aquila.Core.Authentication;
@@ -46,6 +47,15 @@ namespace Aquila.Library
         public static List<T> list<T>()
         {
             return new List<T>();
+        }
+    }
+
+    [ExtensionAq]
+    public static class SystemExtensions
+    {
+        public static string get_tmp_path()
+        {
+            return Path.GetTempPath();
         }
     }
 }

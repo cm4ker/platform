@@ -1,12 +1,21 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using OmniSharp;
+using OmniSharp.Eventing;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Server;
+using OmniSharp.LanguageServerProtocol.Eventing;
+using OmniSharp.LanguageServerProtocol.Handlers;
+using OmniSharp.Options;
+using OmniSharp.Services;
 using Serilog;
 
 namespace Aquila.LanguageServer
@@ -17,14 +26,14 @@ namespace Aquila.LanguageServer
 
         private static async Task MainAsync(string[] args)
         {
-            if (args.Length > 0 && args[0] == "debug")
-            {
+            // if (args.Length > 0 && args[0] == "debug")
+            // {
                 Debugger.Launch();
                 while (!Debugger.IsAttached)
                 {
                     await Task.Delay(100).ConfigureAwait(false);
                 }
-            }
+            // }
 
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
@@ -37,7 +46,8 @@ namespace Aquila.LanguageServer
 
             IObserver<WorkDoneProgressReport> workDone = null!;
 
-            var server = await OmniSharp.Extensions.LanguageServer.Server.LanguageServer.From(
+
+            var server = OmniSharp.Extensions.LanguageServer.Server.LanguageServer.Create(
                 options =>
                     options
                         .WithInput(Console.OpenStandardInput())
@@ -55,6 +65,12 @@ namespace Aquila.LanguageServer
                         .WithHandler<MyDocumentSymbolHandler>()
                         .WithHandler<SemanticTokensHandler>()
                         .WithServices(x => x.AddLogging(b => b.SetMinimumLevel(LogLevel.Trace)))
+                        .WithServices(x =>
+                        {
+                            x.AddSingleton<IEventEmitter, LanguageServerEventEmitter>();
+                            x.AddSingleton<IOmniSharpEnvironment, OmniSharpEnvironment>();
+                            x.AddSingleton<DocumentVersions>();
+                        })
                         .WithServices(
                             services =>
                             {
@@ -147,7 +163,10 @@ namespace Aquila.LanguageServer
                                 }
                             }
                         )
-            ).ConfigureAwait(false);
+            );
+            //var opt = new OptionsWrapper<DotNetCliOptions>(new DotNetCliOptions { LocationPaths = new[] { "" } });
+
+            await server.Initialize(CancellationToken.None).ConfigureAwait(false);
 
             await server.WaitForExit.ConfigureAwait(false);
         }

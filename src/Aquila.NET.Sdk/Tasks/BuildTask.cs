@@ -15,7 +15,7 @@ namespace Aquila.NET.Sdk.Tools
     /// <summary>
     /// Compilation task.
     /// </summary>
-    public class BuildTask : Task, ICancelableTask // TODO: ToolTask
+    public class BuildTask : Task, ICancelableTask
     {
         /// <summary></summary>
         [Required]
@@ -302,7 +302,7 @@ namespace Aquila.NET.Sdk.Tools
             // save the arguments as .rsp file for debugging purposes:
             try
             {
-                System.IO.File.WriteAllText(Path.Combine(TempOutputPath, "dotnet-aq.rsp"),
+                System.IO.File.WriteAllText(Path.Combine(TempOutputPath, "dotnet-aq.args"),
                     string.Join(Environment.NewLine, args));
             }
             catch (Exception ex)

@@ -35,12 +35,16 @@ export function activate(context: ExtensionContext) {
     let serverOptions: ServerOptions = {
         // run: { command: serverExe, args: ['-lsp', '-d'] },
         run: {
-            command: serverExe,
-            args: ["C:/projects/AquilaPlatform/src/aquila-language/Build/Debug/Aquila.LanguageServer.dll"],
+            command: "C:/projects/omnisharp-roslyn/bin/Debug/OmniSharp.Stdio.Driver/net472/OmniSharp.exe",
+            args: ["-lsp"],
+            //command: serverExe,
+            //args: ["C:/projects/AquilaPlatform/src/aquila-language/Build/Debug/Aquila.LanguageServer.dll"],
             transport: TransportKind.pipe,
         },
         // debug: { command: serverExe, args: ['-lsp', '-d'] }
         debug: {
+            // command: "C:/projects/omnisharp-roslyn/bin/Debug/OmniSharp.Stdio.Driver/net472/OmniSharp.exe",
+            // args: ["-lsp"],
             command: serverExe,
             args: ["C:/projects/AquilaPlatform/src/aquila-language/Build/Debug/Aquila.LanguageServer.dll"],
             transport: TransportKind.pipe,

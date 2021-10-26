@@ -16,7 +16,6 @@
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.4" />
         <PackageReference Include="morelinq" Version="3.3.2" />
         <PackageReference Include="System.ServiceModel.Primitives" Version="4.7.0" />
-
     </ItemGroup>
 
     <ItemGroup>
@@ -68,6 +67,10 @@
     <ItemGroup>
         <ProjectReference Include="..\Aquila.Metadata\Aquila.Metadata.csproj" />
         <ProjectReference Include="..\Aquila.Querying\Aquila.Querying.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Syntax2" />
     </ItemGroup>
 
 </Project>

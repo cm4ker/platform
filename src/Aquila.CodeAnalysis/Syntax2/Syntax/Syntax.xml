@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Licensed to the .NET Foundation under one or more agreements. The .NET Foundation licenses this file to you under the MIT license. See the LICENSE file in the project root for more information. -->
+
+<!-- 
+ To re-generate source from this file, run eng/generate-compiler-code.cmd
+-->
+
+<Tree Root="SyntaxNode">
+    <PredefinedNode Name="CSharpSyntaxNode" Base="SyntaxNode"/>
+    <PredefinedNode Name="SyntaxToken" Base="CSharpSyntaxNode"/>
+    <PredefinedNode Name="StructuredTriviaSyntax" Base="CSharpSyntaxNode"/>
+    <!-- Names -->
+    <AbstractNode Name="NameSyntax" Base="TypeSyntax">
+        <TypeComment>
+            <summary>Provides the base class from which the classes that represent name syntax nodes are derived. This
+                is an abstract class.
+            </summary>
+        </TypeComment>
+    </AbstractNode>
+    <AbstractNode Name="SimpleNameSyntax" Base="NameSyntax">
+        <Field Name="Identifier" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>SyntaxToken representing the identifier of the simple name.</summary>
+            </PropertyComment>
+            <Kind Name="IdentifierToken"/>
+        </Field>
+        <TypeComment>
+            <summary>Provides the base class from which the classes that represent simple name syntax nodes are derived.
+                This is an abstract class.
+            </summary>
+        </TypeComment>
+    </AbstractNode>
+    <Node Name="IdentifierNameSyntax" Base="SimpleNameSyntax">
+        <Kind Name="IdentifierName"/>
+        <Field Name="Identifier" Type="SyntaxToken" Override="true">
+            <Kind Name="IdentifierToken"/>
+            <Kind Name="GlobalKeyword"/>
+            <PropertyComment>
+                <summary>SyntaxToken representing the keyword for the kind of the identifier name.</summary>
+            </PropertyComment>
+        </Field>
+        <TypeComment>
+            <summary>Class which represents the syntax node for identifier name.</summary>
+        </TypeComment>
+        <FactoryComment>
+            <summary>Creates an IdentifierNameSyntax node.</summary>
+        </FactoryComment>
+    </Node>
+    <Node Name="QualifiedNameSyntax" Base="NameSyntax">
+        <Kind Name="QualifiedName"/>
+        <Field Name="Left" Type="NameSyntax">
+            <PropertyComment>
+                <summary>NameSyntax node representing the name on the left side of the dot token of the qualified
+                    name.
+                </summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="DotToken" Type="SyntaxToken">
+            <Kind Name="DotToken"/>
+            <PropertyComment>
+                <summary>SyntaxToken representing the dot.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Right" Type="SimpleNameSyntax">
+            <PropertyComment>
+                <summary>SimpleNameSyntax node representing the name on the right side of the dot token of the qualified
+                    name.
+                </summary>
+            </PropertyComment>
+        </Field>
+        <TypeComment>
+            <summary>Class which represents the syntax node for qualified name.</summary>
+        </TypeComment>
+        <FactoryComment>
+            <summary>Creates a QualifiedNameSyntax node.</summary>
+        </FactoryComment>
+    </Node>
+    <Node Name="GenericNameSyntax" Base="SimpleNameSyntax">
+        <Kind Name="GenericName"/>
+        <Field Name="Identifier" Type="SyntaxToken" Override="true">
+            <Kind Name="IdentifierToken"/>
+            <PropertyComment>
+                <summary>SyntaxToken representing the name of the identifier of the generic name.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="TypeArgumentList" Type="TypeArgumentListSyntax">
+            <PropertyComment>
+                <summary>TypeArgumentListSyntax node representing the list of type arguments of the generic name.
+                </summary>
+            </PropertyComment>
+        </Field>
+        <TypeComment>
+            <summary>Class which represents the syntax node for generic name.</summary>
+        </TypeComment>
+        <FactoryComment>
+            <summary>Creates a GenericNameSyntax node.</summary>
+        </FactoryComment>
+    </Node>
+    <Node Name="TypeArgumentListSyntax" Base="CSharpSyntaxNode">
+        <Kind Name="TypeArgumentList"/>
+        <Field Name="LessThanToken" Type="SyntaxToken">
+            <Kind Name="LessThanToken"/>
+            <PropertyComment>
+                <summary>SyntaxToken representing less than.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Arguments" Type="SeparatedSyntaxList&lt;TypeSyntax&gt;">
+            <PropertyComment>
+                <summary>SeparatedSyntaxList of TypeSyntax node representing the type arguments.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="GreaterThanToken" Type="SyntaxToken">
+            <Kind Name="GreaterThanToken"/>
+            <PropertyComment>
+                <summary>SyntaxToken representing greater than.</summary>
+            </PropertyComment>
+        </Field>
+        <TypeComment>
+            <summary>Class which represents the syntax node for type argument list.</summary>
+        </TypeComment>
+        <FactoryComment>
+            <summary>Creates a TypeArgumentListSyntax node.</summary>
+        </FactoryComment>
+    </Node>
+    <Node Name="AliasQualifiedNameSyntax" Base="NameSyntax">
+        <Kind Name="AliasQualifiedName"/>
+        <Field Name="Alias" Type="IdentifierNameSyntax">
+            <PropertyComment>
+                <summary>IdentifierNameSyntax node representing the name of the alias</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="ColonColonToken" Type="SyntaxToken">
+            <Kind Name="ColonColonToken"/>
+            <PropertyComment>
+                <summary>SyntaxToken representing colon colon.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Name" Type="SimpleNameSyntax">
+            <PropertyComment>
+                <summary>SimpleNameSyntax node representing the name that is being alias qualified.</summary>
+            </PropertyComment>
+        </Field>
+        <TypeComment>
+            <summary>Class which represents the syntax node for alias qualified name.</summary>
+        </TypeComment>
+        <FactoryComment>
+            <summary>Creates an AliasQualifiedNameSyntax node.</summary>
+        </FactoryComment>
+    </Node>
+    <!-- Type names -->
+    <AbstractNode Name="TypeSyntax" Base="ExpressionSyntax">
+        <TypeComment>
+            <summary>Provides the base class from which the classes that represent type syntax nodes are derived. This
+                is an abstract class.
+            </summary>
+        </TypeComment>
+    </AbstractNode>
+    <Node Name="PredefinedTypeSyntax" Base="TypeSyntax">
+        <Kind Name="PredefinedType"/>
+        <Field Name="Keyword" Type="SyntaxToken">
+            <Kind Name="BoolKeyword"/>
+            <Kind Name="ByteKeyword"/>
+            <Kind Name="SByteKeyword"/>
+            <Kind Name="IntKeyword"/>
+            <Kind Name="UIntKeyword"/>
+            <Kind Name="ShortKeyword"/>
+            <Kind Name="UShortKeyword"/>
+            <Kind Name="LongKeyword"/>
+            <Kind Name="ULongKeyword"/>
+            <Kind Name="FloatKeyword"/>
+            <Kind Name="DoubleKeyword"/>
+            <Kind Name="DecimalKeyword"/>
+            <Kind Name="StringKeyword"/>
+            <Kind Name="CharKeyword"/>
+            <Kind Name="ObjectKeyword"/>
+            <Kind Name="VoidKeyword"/>
+            <PropertyComment>
+                <summary>SyntaxToken which represents the keyword corresponding to the predefined type.</summary>
+            </PropertyComment>
+        </Field>
+        <TypeComment>
+            <summary>Class which represents the syntax node for predefined types.</summary>
+        </TypeComment>
+        <FactoryComment>
+            <summary>Creates a PredefinedTypeSyntax node.</summary>
+        </FactoryComment>
+    </Node>
+    <!-- Expressions -->
+</Tree>

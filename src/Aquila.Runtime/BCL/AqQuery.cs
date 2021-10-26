@@ -9,7 +9,6 @@ using Aquila.Data;
 using Aquila.Metadata;
 using Aquila.Migrations;
 using Aquila.Runtime;
-using Aquila.ServerRuntime;
 
 namespace Aquila.Core
 {
@@ -44,7 +43,7 @@ namespace Aquila.Core
         {
             if (_needRecompile)
             {
-                var result = QueryCompilerHelper.Compile(_context.DataRuntimeContext, _text);
+                var result = QueryCompilerHelper.Compile(_context, _text);
 
                 _compiled = result.sql;
                 _logicalTree = result.logicalTree;
