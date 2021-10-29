@@ -83,7 +83,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
 
         public override bool IsDirective
         {
-            get { return this is DirectiveTriviaSyntax; }
+            get { return false; } //this is DirectiveTriviaSyntax; }
         }
 
         public override bool IsSkippedTokensTrivia => this.Kind == SyntaxKind.SkippedTokensTrivia;
@@ -146,6 +146,45 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
         public abstract TResult Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor);
 
         public abstract void Accept(CSharpSyntaxVisitor visitor);
+
+        internal virtual DirectiveStack ApplyDirectives(DirectiveStack stack)
+        {
+            return ApplyDirectives(this, stack);
+        }
+
+        internal static DirectiveStack ApplyDirectives(GreenNode node, DirectiveStack stack)
+        {
+            if (node.ContainsDirectives)
+            {
+                for (int i = 0, n = node.SlotCount; i < n; i++)
+                {
+                    var child = node.GetSlot(i);
+                    if (child != null)
+                    {
+                        stack = ApplyDirectivesToListOrNode(child, stack);
+                    }
+                }
+            }
+
+            return stack;
+        }
+
+        internal static DirectiveStack ApplyDirectivesToListOrNode(GreenNode listOrNode, DirectiveStack stack)
+        {
+            // If we have a list of trivia, then that node is not actually a CSharpSyntaxNode.
+            // Just defer to our standard ApplyDirectives helper as it will do the appropriate
+            // walking of this list to ApplyDirectives to the children.
+            if (listOrNode.RawKind == GreenNode.ListKind)
+            {
+                return ApplyDirectives(listOrNode, stack);
+            }
+            else
+            {
+                // Otherwise, we must have an actual piece of C# trivia.  Just apply the stack
+                // to that node directly.
+                return ((CSharpSyntaxNode)listOrNode).ApplyDirectives(stack);
+            }
+        }
 
         /// <summary>
         /// Should only be called during construction.

@@ -12,7 +12,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax
 
     internal static class SyntaxEquivalence
     {
-        internal static bool AreEquivalent(SyntaxTree? before, SyntaxTree? after, Func<SyntaxKind, bool>? ignoreChildNode, bool topLevel)
+        internal static bool AreEquivalent(SyntaxTree? before, SyntaxTree? after,
+            Func<SyntaxKind, bool>? ignoreChildNode, bool topLevel)
         {
             if (before == after)
             {
@@ -27,7 +28,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax
             return AreEquivalent(before.GetRoot(), after.GetRoot(), ignoreChildNode, topLevel);
         }
 
-        public static bool AreEquivalent(SyntaxNode? before, SyntaxNode? after, Func<SyntaxKind, bool>? ignoreChildNode, bool topLevel)
+        public static bool AreEquivalent(SyntaxNode? before, SyntaxNode? after, Func<SyntaxKind, bool>? ignoreChildNode,
+            bool topLevel)
         {
             Debug.Assert(!topLevel || ignoreChildNode == null);
 
@@ -46,10 +48,13 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax
 
         public static bool AreEquivalent(SyntaxToken before, SyntaxToken after)
         {
-            return before.RawKind == after.RawKind && (before.Node == null || AreTokensEquivalent(before.Node, after.Node, ignoreChildNode: null));
+            return before.RawKind == after.RawKind && (before.Node == null ||
+                                                       AreTokensEquivalent(before.Node, after.Node,
+                                                           ignoreChildNode: null));
         }
 
-        private static bool AreTokensEquivalent(GreenNode? before, GreenNode? after, Func<SyntaxKind, bool>? ignoreChildNode)
+        private static bool AreTokensEquivalent(GreenNode? before, GreenNode? after,
+            Func<SyntaxKind, bool>? ignoreChildNode)
         {
             if (before is null || after is null)
             {
@@ -77,6 +82,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax
                     {
                         return false;
                     }
+
                     break;
 
                 case SyntaxKind.NumericLiteralToken:
@@ -87,13 +93,16 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax
                     {
                         return false;
                     }
+
                     break;
             }
 
-            return AreNullableDirectivesEquivalent(before, after, ignoreChildNode);
+            return true;
+            //return AreNullableDirectivesEquivalent(before, after, ignoreChildNode);
         }
 
-        private static bool AreEquivalentRecursive(GreenNode? before, GreenNode? after, Func<SyntaxKind, bool>? ignoreChildNode, bool topLevel)
+        private static bool AreEquivalentRecursive(GreenNode? before, GreenNode? after,
+            Func<SyntaxKind, bool>? ignoreChildNode, bool topLevel)
         {
             if (before == after)
             {
@@ -124,7 +133,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax
                 {
                     case SyntaxKind.Block:
                     case SyntaxKind.ArrowExpressionClause:
-                        return AreNullableDirectivesEquivalent(before, after, ignoreChildNode);
+                        return true;
+                    //return AreNullableDirectivesEquivalent(before, after, ignoreChildNode);
                 }
 
                 // If we're only checking top level equivalence, then we don't have to go down into
@@ -133,16 +143,18 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax
                 // changing them can affect binding results.
                 if ((SyntaxKind)before.RawKind == SyntaxKind.FieldDeclaration)
                 {
-                    var fieldBefore = (Green.FieldDeclarationSyntax)before;
-                    var fieldAfter = (Green.FieldDeclarationSyntax)after;
-
-                    var isConstBefore = fieldBefore.Modifiers.Any((int)SyntaxKind.ConstKeyword);
-                    var isConstAfter = fieldAfter.Modifiers.Any((int)SyntaxKind.ConstKeyword);
-
-                    if (!isConstBefore && !isConstAfter)
-                    {
-                        ignoreChildNode = childKind => childKind == SyntaxKind.EqualsValueClause;
-                    }
+                    throw new NotImplementedException();
+                    
+                    // var fieldBefore = (Green.FieldDeclarationSyntax)before;
+                    // var fieldAfter = (Green.FieldDeclarationSyntax)after;
+                    //
+                    // var isConstBefore = fieldBefore.Modifiers.Any((int)SyntaxKind.ConstKeyword);
+                    // var isConstAfter = fieldAfter.Modifiers.Any((int)SyntaxKind.ConstKeyword);
+                    //
+                    // if (!isConstBefore && !isConstAfter)
+                    // {
+                    //     ignoreChildNode = childKind => childKind == SyntaxKind.EqualsValueClause;
+                    // }
                 }
 
                 // NOTE(cyrusn): Do we want to avoid going down into attribute expressions?  I don't

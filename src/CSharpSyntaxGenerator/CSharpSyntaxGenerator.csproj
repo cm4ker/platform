@@ -8,22 +8,19 @@
     <RootNamespace>CSharpSyntaxGenerator</RootNamespace>
     <OutputType Condition="'$(TargetFramework)' != 'netstandard2.0'">Exe</OutputType>
     <AutoGenerateBindingRedirects>True</AutoGenerateBindingRedirects>
-    <!-- We build this against net6.0 to build the console app version, and against netstandard2.0 for
-         the Source Generator version. -->
     <TargetFrameworks>net5.0;netstandard2.0</TargetFrameworks>
-    <RuntimeIdentifiers>$(RoslynPortableRuntimeIdentifiers)</RuntimeIdentifiers>
     <IsShipping>false</IsShipping>
     <ExcludeFromSourceBuild>false</ExcludeFromSourceBuild>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <!-- Make sure to reference the same version of Microsoft.CodeAnalysis.Analyzers as the rest of the build -->
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" PrivateAssets="all" />
-    <PackageReference Include="Aquila.Microsoft.CodeAnalysis" Version="4.1.0-dev" PrivateAssets="all" />
+<!--    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" PrivateAssets="all" />-->
+    <PackageReference Include="Aquila.Microsoft.CodeAnalysis" Version="4.1.0-dev" />
   </ItemGroup>
   <ItemGroup>
     <!-- If we're building the command line tool, we have to include some dependencies used for grammar generation -->
-    <Compile Include="..\..\..\Aquila.Microsoft.CodeAnalysis\src\Compilers\Core\Portable\Symbols\WellKnownMemberNames.cs" Link="Grammar\WellKnownMemberNames.cs" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
+<!--    <Compile Include="..\..\..\Aquila.Microsoft.CodeAnalysis\src\Compilers\Core\Portable\Symbols\WellKnownMemberNames.cs" Link="Grammar\WellKnownMemberNames.cs" Condition="'$(TargetFramework)' != 'netstandard2.0'" />-->
     <Compile Include="..\Aquila.CodeAnalysis\Declarations\DeclarationModifiers.cs" Link="Grammar\DeclarationModifiers.cs" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
     <Compile Include="..\Aquila.CodeAnalysis\Syntax2\Syntax\SyntaxKind.cs" Link="Grammar\SyntaxKind.cs" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
     <Compile Include="..\Aquila.CodeAnalysis\Syntax2\Syntax\SyntaxKindFacts.cs" Link="Grammar\SyntaxKindFacts.cs" Condition="'$(TargetFramework)' != 'netstandard2.0'" />

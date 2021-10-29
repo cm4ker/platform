@@ -320,6 +320,32 @@ namespace Microsoft.CodeAnalysis.CSharp
             return Syntax.SyntaxReplacer.Replace(token, trivia: new[] { oldTrivia },
                 computeReplacementTrivia: (o, r) => newTrivia);
         }
+        
+        internal static Syntax.InternalSyntax.DirectiveStack ApplyDirectives(this SyntaxNode node, Syntax.InternalSyntax.DirectiveStack stack)
+        {
+            return ((Syntax.InternalSyntax.CSharpSyntaxNode)node.Green).ApplyDirectives(stack);
+        }
+
+        internal static Syntax.InternalSyntax.DirectiveStack ApplyDirectives(this SyntaxToken token, Syntax.InternalSyntax.DirectiveStack stack)
+        {
+            return ((Syntax.InternalSyntax.CSharpSyntaxNode)token.Node!).ApplyDirectives(stack);
+        }
+
+        internal static Syntax.InternalSyntax.DirectiveStack ApplyDirectives(this SyntaxNodeOrToken nodeOrToken, Syntax.InternalSyntax.DirectiveStack stack)
+        {
+            if (nodeOrToken.IsToken)
+            {
+                return nodeOrToken.AsToken().ApplyDirectives(stack);
+            }
+
+            if (nodeOrToken.AsNode(out var node))
+            {
+                return node.ApplyDirectives(stack);
+            }
+
+            return stack;
+        }
+
 
         /// <summary>
         /// Returns this list as a <see cref="Microsoft.CodeAnalysis.SeparatedSyntaxList&lt;TNode&gt;"/>.

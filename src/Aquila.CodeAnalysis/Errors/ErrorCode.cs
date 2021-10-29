@@ -26,7 +26,25 @@
         //
         // Errors
         //
-        ERR_BadCompilationOptionValue = 4000,
+
+        //Syntax
+        ERR_SyntaxError = 4000,
+        ERR_IdentifierExpectedKW,
+        ERR_IdentifierExpected,
+        ERR_SemicolonExpected,
+        ERR_CloseParenExpected,
+        ERR_LbraceExpected,
+        ERR_RbraceExpected,
+        ERR_IllegalEscape,
+        ERR_NewlineInConst,
+        ERR_BadDirectivePlacement,
+        WRN_ErrorOverride,
+        WRN_BadXMLRefSyntax,
+        ERR_TypeParamMustBeIdentifier,
+        ERR_OvlOperatorExpected,
+
+        //Compilation
+        ERR_BadCompilationOptionValue,
         ERR_BadWin32Resource,
         ERR_BinaryFile,
         ERR_CantOpenFileWrite,
@@ -195,7 +213,12 @@
         //
         // Warnings
         //
-        WRN_AnalyzerCannotBeCreated = 5000,
+        //Parse
+        WRN_XMLParseError = 5000,
+
+
+        //Compilation
+        WRN_AnalyzerCannotBeCreated,
         WRN_NoAnalyzerInAssembly,
         WRN_NoConfigNotOnCommandLine,
         WRN_PdbLocalNameTooLong,

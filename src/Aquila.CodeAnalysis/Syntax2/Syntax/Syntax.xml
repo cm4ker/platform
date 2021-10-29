@@ -9,153 +9,115 @@
     <PredefinedNode Name="CSharpSyntaxNode" Base="SyntaxNode"/>
     <PredefinedNode Name="SyntaxToken" Base="CSharpSyntaxNode"/>
     <PredefinedNode Name="StructuredTriviaSyntax" Base="CSharpSyntaxNode"/>
-    <!-- Names -->
-    <AbstractNode Name="NameSyntax" Base="TypeSyntax">
-        <TypeComment>
-            <summary>Provides the base class from which the classes that represent name syntax nodes are derived. This
-                is an abstract class.
-            </summary>
-        </TypeComment>
+
+    <AbstractNode Name="ExprSyntax" Base="CSharpSyntaxNode">
     </AbstractNode>
-    <AbstractNode Name="SimpleNameSyntax" Base="NameSyntax">
+
+    <AbstractNode Name="ImportDeclBase" Base="CSharpSyntaxNode"/>
+    <Node Name="ImportDecl" Base="ImportDeclBase">
+        <Kind Name="ImportDecl"/>
         <Field Name="Identifier" Type="SyntaxToken">
             <PropertyComment>
-                <summary>SyntaxToken representing the identifier of the simple name.</summary>
+                <summary>Gets the identifier.</summary>
             </PropertyComment>
             <Kind Name="IdentifierToken"/>
         </Field>
-        <TypeComment>
-            <summary>Provides the base class from which the classes that represent simple name syntax nodes are derived.
-                This is an abstract class.
-            </summary>
-        </TypeComment>
-    </AbstractNode>
-    <Node Name="IdentifierNameSyntax" Base="SimpleNameSyntax">
-        <Kind Name="IdentifierName"/>
-        <Field Name="Identifier" Type="SyntaxToken" Override="true">
-            <Kind Name="IdentifierToken"/>
-            <Kind Name="GlobalKeyword"/>
+        <Field Name="SemicolonToken" Type="SyntaxToken">
+            <Kind Name="SemicolonToken"/>
             <PropertyComment>
-                <summary>SyntaxToken representing the keyword for the kind of the identifier name.</summary>
+                <summary>SyntaxToken representing the semicolon token.</summary>
             </PropertyComment>
         </Field>
-        <TypeComment>
-            <summary>Class which represents the syntax node for identifier name.</summary>
-        </TypeComment>
-        <FactoryComment>
-            <summary>Creates an IdentifierNameSyntax node.</summary>
-        </FactoryComment>
     </Node>
-    <Node Name="QualifiedNameSyntax" Base="NameSyntax">
-        <Kind Name="QualifiedName"/>
-        <Field Name="Left" Type="NameSyntax">
+    <Node Name="BinaryEx" Base="ExprSyntax">
+        <Kind Name="AddExpression"/>
+        <Kind Name="SubtractExpression"/>
+        <Kind Name="MultiplyExpression"/>
+        <Kind Name="DivideExpression"/>
+        <Kind Name="ModuloExpression"/>
+        <Kind Name="LeftShiftExpression"/>
+        <Kind Name="RightShiftExpression"/>
+        <Kind Name="LogicalOrExpression"/>
+        <Kind Name="LogicalAndExpression"/>
+        <Kind Name="BitwiseOrExpression"/>
+        <Kind Name="BitwiseAndExpression"/>
+        <Kind Name="ExclusiveOrExpression"/>
+        <Kind Name="EqualsExpression"/>
+        <Kind Name="NotEqualsExpression"/>
+        <Kind Name="LessThanExpression"/>
+        <Kind Name="LessThanOrEqualExpression"/>
+        <Kind Name="GreaterThanExpression"/>
+        <Kind Name="GreaterThanOrEqualExpression"/>
+        <Kind Name="IsExpression"/>
+        <Kind Name="AsExpression"/>
+        <Kind Name="CoalesceExpression"/>
+        <Field Name="Left" Type="ExprSyntax">
             <PropertyComment>
-                <summary>NameSyntax node representing the name on the left side of the dot token of the qualified
-                    name.
-                </summary>
+                <summary>ExpressionSyntax node representing the expression on the left of the binary operator.</summary>
             </PropertyComment>
         </Field>
-        <Field Name="DotToken" Type="SyntaxToken">
-            <Kind Name="DotToken"/>
-            <PropertyComment>
-                <summary>SyntaxToken representing the dot.</summary>
-            </PropertyComment>
-        </Field>
-        <Field Name="Right" Type="SimpleNameSyntax">
-            <PropertyComment>
-                <summary>SimpleNameSyntax node representing the name on the right side of the dot token of the qualified
-                    name.
-                </summary>
-            </PropertyComment>
-        </Field>
-        <TypeComment>
-            <summary>Class which represents the syntax node for qualified name.</summary>
-        </TypeComment>
-        <FactoryComment>
-            <summary>Creates a QualifiedNameSyntax node.</summary>
-        </FactoryComment>
-    </Node>
-    <Node Name="GenericNameSyntax" Base="SimpleNameSyntax">
-        <Kind Name="GenericName"/>
-        <Field Name="Identifier" Type="SyntaxToken" Override="true">
-            <Kind Name="IdentifierToken"/>
-            <PropertyComment>
-                <summary>SyntaxToken representing the name of the identifier of the generic name.</summary>
-            </PropertyComment>
-        </Field>
-        <Field Name="TypeArgumentList" Type="TypeArgumentListSyntax">
-            <PropertyComment>
-                <summary>TypeArgumentListSyntax node representing the list of type arguments of the generic name.
-                </summary>
-            </PropertyComment>
-        </Field>
-        <TypeComment>
-            <summary>Class which represents the syntax node for generic name.</summary>
-        </TypeComment>
-        <FactoryComment>
-            <summary>Creates a GenericNameSyntax node.</summary>
-        </FactoryComment>
-    </Node>
-    <Node Name="TypeArgumentListSyntax" Base="CSharpSyntaxNode">
-        <Kind Name="TypeArgumentList"/>
-        <Field Name="LessThanToken" Type="SyntaxToken">
+        <Field Name="OperatorToken" Type="SyntaxToken">
+            <Kind Name="PlusToken"/>
+            <Kind Name="MinusToken"/>
+            <Kind Name="AsteriskToken"/>
+            <Kind Name="SlashToken"/>
+            <Kind Name="PercentToken"/>
+            <Kind Name="LessThanLessThanToken"/>
+            <Kind Name="GreaterThanGreaterThanToken"/>
+            <Kind Name="BarBarToken"/>
+            <Kind Name="AmpersandAmpersandToken"/>
+            <Kind Name="BarToken"/>
+            <Kind Name="AmpersandToken"/>
+            <Kind Name="CaretToken"/>
+            <Kind Name="EqualsEqualsToken"/>
+            <Kind Name="ExclamationEqualsToken"/>
             <Kind Name="LessThanToken"/>
-            <PropertyComment>
-                <summary>SyntaxToken representing less than.</summary>
-            </PropertyComment>
-        </Field>
-        <Field Name="Arguments" Type="SeparatedSyntaxList&lt;TypeSyntax&gt;">
-            <PropertyComment>
-                <summary>SeparatedSyntaxList of TypeSyntax node representing the type arguments.</summary>
-            </PropertyComment>
-        </Field>
-        <Field Name="GreaterThanToken" Type="SyntaxToken">
+            <Kind Name="LessThanEqualsToken"/>
             <Kind Name="GreaterThanToken"/>
+            <Kind Name="GreaterThanEqualsToken"/>
+            <Kind Name="IsKeyword"/>
+            <Kind Name="AsKeyword"/>
+            <Kind Name="QuestionQuestionToken"/>
             <PropertyComment>
-                <summary>SyntaxToken representing greater than.</summary>
+                <summary>SyntaxToken representing the operator of the binary expression.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Right" Type="ExprSyntax">
+            <PropertyComment>
+                <summary>ExpressionSyntax node representing the expression on the right of the binary operator.
+                </summary>
             </PropertyComment>
         </Field>
         <TypeComment>
-            <summary>Class which represents the syntax node for type argument list.</summary>
+            <summary>Class which represents an expression that has a binary operator.</summary>
         </TypeComment>
         <FactoryComment>
-            <summary>Creates a TypeArgumentListSyntax node.</summary>
+            <summary>Creates a BinaryExpressionSyntax node.</summary>
         </FactoryComment>
     </Node>
-    <Node Name="AliasQualifiedNameSyntax" Base="NameSyntax">
-        <Kind Name="AliasQualifiedName"/>
-        <Field Name="Alias" Type="IdentifierNameSyntax">
+
+    <AbstractNode Name="NameEx" Base="ExprSyntax"/>
+    <Node Name="IdentifierNameSyntax" Base="NameEx">
+        <Kind Name="IdentifierEx"/>
+        <Field Name="Identifier" Type="SyntaxToken">
             <PropertyComment>
-                <summary>IdentifierNameSyntax node representing the name of the alias</summary>
+                <summary>Gets the identifier.</summary>
             </PropertyComment>
+            <Kind Name="IdentifierToken"/>
         </Field>
-        <Field Name="ColonColonToken" Type="SyntaxToken">
-            <Kind Name="ColonColonToken"/>
-            <PropertyComment>
-                <summary>SyntaxToken representing colon colon.</summary>
-            </PropertyComment>
-        </Field>
-        <Field Name="Name" Type="SimpleNameSyntax">
-            <PropertyComment>
-                <summary>SimpleNameSyntax node representing the name that is being alias qualified.</summary>
-            </PropertyComment>
-        </Field>
-        <TypeComment>
-            <summary>Class which represents the syntax node for alias qualified name.</summary>
-        </TypeComment>
-        <FactoryComment>
-            <summary>Creates an AliasQualifiedNameSyntax node.</summary>
-        </FactoryComment>
     </Node>
-    <!-- Type names -->
-    <AbstractNode Name="TypeSyntax" Base="ExpressionSyntax">
-        <TypeComment>
-            <summary>Provides the base class from which the classes that represent type syntax nodes are derived. This
-                is an abstract class.
-            </summary>
-        </TypeComment>
-    </AbstractNode>
-    <Node Name="PredefinedTypeSyntax" Base="TypeSyntax">
+
+    <AbstractNode Name="TypeSyntax" Base="NameEx"/>
+    <Node Name="NamedTypeEx" Base="TypeSyntax">
+        <Kind Name="NamedTypeEx"/>
+        <Field Name="Identifier" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>Gets the identifier.</summary>
+            </PropertyComment>
+            <Kind Name="IdentifierToken"/>
+        </Field>
+    </Node>
+    <Node Name="PredefinedTypeEx" Base="TypeSyntax">
         <Kind Name="PredefinedType"/>
         <Field Name="Keyword" Type="SyntaxToken">
             <Kind Name="BoolKeyword"/>
@@ -185,5 +147,390 @@
             <summary>Creates a PredefinedTypeSyntax node.</summary>
         </FactoryComment>
     </Node>
-    <!-- Expressions -->
+
+    <Node Name="CompilationUnitSyntax" Base="CSharpSyntaxNode">
+        <Kind Name="CompilationUnit"/>
+        <Field Name="ImportDecl" Type="SyntaxList&lt;ImportDeclBase&gt;"/>
+        <Field Name="EndOfFileToken" Type="SyntaxToken">
+            <Kind Name="EndOfFileToken"/>
+        </Field>
+    </Node>
+
+
+    <!-- Xml -->
+    <Node Name="DocumentationCommentTriviaSyntax" Base="StructuredTriviaSyntax">
+        <Kind Name="SingleLineDocumentationCommentTrivia"/>
+        <Kind Name="MultiLineDocumentationCommentTrivia"/>
+        <Field Name="Content" Type="SyntaxList&lt;XmlNodeSyntax&gt;"/>
+        <Field Name="EndOfComment" Type="SyntaxToken">
+            <!-- should be renamed to EndOfCommentToken -->
+            <Kind Name="EndOfDocumentationCommentToken"/>
+        </Field>
+    </Node>
+    <AbstractNode Name="CrefSyntax" Base="CSharpSyntaxNode">
+        <TypeComment>
+            <summary>
+                A symbol referenced by a cref attribute (e.g. in a &lt;see&gt; or &lt;seealso&gt; documentation comment
+                tag).
+                For example, the M in &lt;see cref="M" /&gt;.
+            </summary>
+        </TypeComment>
+    </AbstractNode>
+    <Node Name="TypeCrefSyntax" Base="CrefSyntax">
+        <TypeComment>
+            <summary>
+                A symbol reference that definitely refers to a type.
+                For example, "int", "A::B", "A.B", "A&lt;T&gt;", but not "M()" (has parameter list) or "this" (indexer).
+                NOTE: TypeCrefSyntax, QualifiedCrefSyntax, and MemberCrefSyntax overlap. The syntax in a TypeCrefSyntax
+                will always be bound as type, so it's safer to use QualifiedCrefSyntax or MemberCrefSyntax if the symbol
+                might be a non-type member.
+            </summary>
+        </TypeComment>
+        <Kind Name="TypeCref"/>
+        <Field Name="Type" Type="TypeSyntax"/>
+    </Node>
+    <Node Name="QualifiedCrefSyntax" Base="CrefSyntax">
+        <TypeComment>
+            <summary>
+                A symbol reference to a type or non-type member that is qualified by an enclosing type or namespace.
+                For example, cref="System.String.ToString()".
+                NOTE: TypeCrefSyntax, QualifiedCrefSyntax, and MemberCrefSyntax overlap. The syntax in a TypeCrefSyntax
+                will always be bound as type, so it's safer to use QualifiedCrefSyntax or MemberCrefSyntax if the symbol
+                might be a non-type member.
+            </summary>
+        </TypeComment>
+        <Kind Name="QualifiedCref"/>
+        <Field Name="Container" Type="TypeSyntax"/>
+        <Field Name="DotToken" Type="SyntaxToken">
+            <Kind Name="DotToken"/>
+        </Field>
+        <Field Name="Member" Type="MemberCrefSyntax"/>
+    </Node>
+    <AbstractNode Name="MemberCrefSyntax" Base="CrefSyntax">
+        <TypeComment>
+            <summary>
+                The unqualified part of a CrefSyntax.
+                For example, "ToString()" in "object.ToString()".
+                NOTE: TypeCrefSyntax, QualifiedCrefSyntax, and MemberCrefSyntax overlap. The syntax in a TypeCrefSyntax
+                will always be bound as type, so it's safer to use QualifiedCrefSyntax or MemberCrefSyntax if the symbol
+                might be a non-type member.
+            </summary>
+        </TypeComment>
+    </AbstractNode>
+    <Node Name="NameMemberCrefSyntax" Base="MemberCrefSyntax">
+        <TypeComment>
+            <summary>
+                A MemberCrefSyntax specified by a name (an identifier, predefined type keyword, or an alias-qualified
+                name,
+                with an optional type parameter list) and an optional parameter list.
+                For example, "M", "M&lt;T&gt;" or "M(int)".
+                Also, "A::B()" or "string()".
+            </summary>
+        </TypeComment>
+        <Kind Name="NameMemberCref"/>
+        <Field Name="Name" Type="TypeSyntax"/>
+        <Field Name="Parameters" Type="CrefParameterListSyntax" Optional="true"/>
+    </Node>
+    <Node Name="IndexerMemberCrefSyntax" Base="MemberCrefSyntax">
+        <TypeComment>
+            <summary>
+                A MemberCrefSyntax specified by a this keyword and an optional parameter list.
+                For example, "this" or "this[int]".
+            </summary>
+        </TypeComment>
+        <Kind Name="IndexerMemberCref"/>
+        <Field Name="ThisKeyword" Type="SyntaxToken">
+            <Kind Name="ThisKeyword"/>
+        </Field>
+        <Field Name="Parameters" Type="CrefBracketedParameterListSyntax" Optional="true"/>
+    </Node>
+    <Node Name="OperatorMemberCrefSyntax" Base="MemberCrefSyntax">
+        <TypeComment>
+            <summary>
+                A MemberCrefSyntax specified by an operator keyword, an operator symbol and an optional parameter list.
+                For example, "operator +" or "operator -[int]".
+                NOTE: the operator must be overloadable.
+            </summary>
+        </TypeComment>
+        <Kind Name="OperatorMemberCref"/>
+        <Field Name="OperatorKeyword" Type="SyntaxToken">
+            <Kind Name="OperatorKeyword"/>
+        </Field>
+        <Field Name="OperatorToken" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>Gets the operator token.</summary>
+            </PropertyComment>
+            <Kind Name="PlusToken"/>
+            <Kind Name="MinusToken"/>
+            <Kind Name="ExclamationToken"/>
+            <Kind Name="TildeToken"/>
+            <Kind Name="PlusPlusToken"/>
+            <Kind Name="MinusMinusToken"/>
+            <Kind Name="AsteriskToken"/>
+            <Kind Name="SlashToken"/>
+            <Kind Name="PercentToken"/>
+            <Kind Name="LessThanLessThanToken"/>
+            <Kind Name="GreaterThanGreaterThanToken"/>
+            <Kind Name="BarToken"/>
+            <Kind Name="AmpersandToken"/>
+            <Kind Name="CaretToken"/>
+            <Kind Name="EqualsEqualsToken"/>
+            <Kind Name="ExclamationEqualsToken"/>
+            <Kind Name="LessThanToken"/>
+            <Kind Name="LessThanEqualsToken"/>
+            <Kind Name="GreaterThanToken"/>
+            <Kind Name="GreaterThanEqualsToken"/>
+            <Kind Name="FalseKeyword"/>
+            <Kind Name="TrueKeyword"/>
+        </Field>
+        <Field Name="Parameters" Type="CrefParameterListSyntax" Optional="true"/>
+    </Node>
+    <Node Name="ConversionOperatorMemberCrefSyntax" Base="MemberCrefSyntax">
+        <TypeComment>
+            <summary>
+                A MemberCrefSyntax specified by an implicit or explicit keyword, an operator keyword, a destination
+                type, and an optional parameter list.
+                For example, "implicit operator int" or "explicit operator MyType(int)".
+            </summary>
+        </TypeComment>
+        <Kind Name="ConversionOperatorMemberCref"/>
+        <Field Name="ImplicitOrExplicitKeyword" Type="SyntaxToken">
+            <Kind Name="ImplicitKeyword"/>
+            <Kind Name="ExplicitKeyword"/>
+        </Field>
+        <Field Name="OperatorKeyword" Type="SyntaxToken">
+            <Kind Name="OperatorKeyword"/>
+        </Field>
+        <Field Name="Type" Type="TypeSyntax"/>
+        <Field Name="Parameters" Type="CrefParameterListSyntax" Optional="true"/>
+    </Node>
+    <AbstractNode Name="BaseCrefParameterListSyntax" Base="CSharpSyntaxNode">
+        <TypeComment>
+            <summary>
+                A list of cref parameters with surrounding punctuation.
+                Unlike regular parameters, cref parameters do not have names.
+            </summary>
+        </TypeComment>
+        <Field Name="Parameters" Type="SeparatedSyntaxList&lt;CrefParameterSyntax&gt;">
+            <PropertyComment>
+                <summary>Gets the parameter list.</summary>
+            </PropertyComment>
+        </Field>
+    </AbstractNode>
+    <Node Name="CrefParameterListSyntax" Base="BaseCrefParameterListSyntax">
+        <TypeComment>
+            <summary>
+                A parenthesized list of cref parameters.
+            </summary>
+        </TypeComment>
+        <Kind Name="CrefParameterList"/>
+        <Field Name="OpenParenToken" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>Gets the open paren token.</summary>
+            </PropertyComment>
+            <Kind Name="OpenParenToken"/>
+        </Field>
+        <Field Name="Parameters" Type="SeparatedSyntaxList&lt;CrefParameterSyntax&gt;" Override="true"/>
+        <Field Name="CloseParenToken" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>Gets the close paren token.</summary>
+            </PropertyComment>
+            <Kind Name="CloseParenToken"/>
+        </Field>
+    </Node>
+    <Node Name="CrefBracketedParameterListSyntax" Base="BaseCrefParameterListSyntax">
+        <TypeComment>
+            <summary>
+                A bracketed list of cref parameters.
+            </summary>
+        </TypeComment>
+        <Kind Name="CrefBracketedParameterList"/>
+        <Field Name="OpenBracketToken" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>Gets the open bracket token.</summary>
+            </PropertyComment>
+            <Kind Name="OpenBracketToken"/>
+        </Field>
+        <Field Name="Parameters" Type="SeparatedSyntaxList&lt;CrefParameterSyntax&gt;" Override="true" MinCount="1"/>
+        <Field Name="CloseBracketToken" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>Gets the close bracket token.</summary>
+            </PropertyComment>
+            <Kind Name="CloseBracketToken"/>
+        </Field>
+    </Node>
+    <Node Name="CrefParameterSyntax" Base="CSharpSyntaxNode">
+        <TypeComment>
+            <summary>
+                An element of a BaseCrefParameterListSyntax.
+                Unlike a regular parameter, a cref parameter has only an optional ref or out keyword and a type -
+                there is no name and there are no attributes or other modifiers.
+            </summary>
+        </TypeComment>
+        <Kind Name="CrefParameter"/>
+        <Field Name="RefKindKeyword" Type="SyntaxToken" Optional="true">
+            <Kind Name="RefKeyword"/>
+            <Kind Name="OutKeyword"/>
+            <Kind Name="InKeyword"/>
+        </Field>
+        <Field Name="Type" Type="TypeSyntax"/>
+    </Node>
+    <AbstractNode Name="XmlNodeSyntax" Base="CSharpSyntaxNode">
+    </AbstractNode>
+    <Node Name="XmlElementSyntax" Base="XmlNodeSyntax">
+        <Kind Name="XmlElement"/>
+        <Field Name="StartTag" Type="XmlElementStartTagSyntax"/>
+        <Field Name="Content" Type="SyntaxList&lt;XmlNodeSyntax&gt;"/>
+        <Field Name="EndTag" Type="XmlElementEndTagSyntax"/>
+    </Node>
+    <Node Name="XmlElementStartTagSyntax" Base="CSharpSyntaxNode">
+        <Kind Name="XmlElementStartTag"/>
+        <Field Name="LessThanToken" Type="SyntaxToken">
+            <Kind Name="LessThanToken"/>
+        </Field>
+        <Field Name="Name" Type="XmlNameSyntax"/>
+        <Field Name="Attributes" Type="SyntaxList&lt;XmlAttributeSyntax&gt;"/>
+        <Field Name="GreaterThanToken" Type="SyntaxToken">
+            <Kind Name="GreaterThanToken"/>
+        </Field>
+    </Node>
+    <Node Name="XmlElementEndTagSyntax" Base="CSharpSyntaxNode">
+        <Kind Name="XmlElementEndTag"/>
+        <Field Name="LessThanSlashToken" Type="SyntaxToken">
+            <Kind Name="LessThanSlashToken"/>
+        </Field>
+        <Field Name="Name" Type="XmlNameSyntax"/>
+        <Field Name="GreaterThanToken" Type="SyntaxToken">
+            <Kind Name="GreaterThanToken"/>
+        </Field>
+    </Node>
+    <Node Name="XmlEmptyElementSyntax" Base="XmlNodeSyntax">
+        <Kind Name="XmlEmptyElement"/>
+        <Field Name="LessThanToken" Type="SyntaxToken">
+            <Kind Name="LessThanToken"/>
+        </Field>
+        <Field Name="Name" Type="XmlNameSyntax"/>
+        <Field Name="Attributes" Type="SyntaxList&lt;XmlAttributeSyntax&gt;"/>
+        <Field Name="SlashGreaterThanToken" Type="SyntaxToken">
+            <Kind Name="SlashGreaterThanToken"/>
+        </Field>
+    </Node>
+    <Node Name="XmlNameSyntax" Base="CSharpSyntaxNode">
+        <Kind Name="XmlName"/>
+        <Field Name="Prefix" Type="XmlPrefixSyntax" Optional="true"/>
+        <Field Name="LocalName" Type="SyntaxToken">
+            <Kind Name="IdentifierToken"/>
+        </Field>
+    </Node>
+    <Node Name="XmlPrefixSyntax" Base="CSharpSyntaxNode">
+        <Kind Name="XmlPrefix"/>
+        <Field Name="Prefix" Type="SyntaxToken">
+            <Kind Name="IdentifierToken"/>
+        </Field>
+        <Field Name="ColonToken" Type="SyntaxToken">
+            <Kind Name="ColonToken"/>
+        </Field>
+    </Node>
+    <AbstractNode Name="XmlAttributeSyntax" Base="CSharpSyntaxNode">
+        <Field Name="Name" Type="XmlNameSyntax"/>
+        <Field Name="EqualsToken" Type="SyntaxToken">
+            <Kind Name="EqualsToken"/>
+        </Field>
+        <Field Name="StartQuoteToken" Type="SyntaxToken">
+            <Kind Name="SingleQuoteToken"/>
+            <Kind Name="DoubleQuoteToken"/>
+        </Field>
+        <Field Name="EndQuoteToken" Type="SyntaxToken">
+            <Kind Name="SingleQuoteToken"/>
+            <Kind Name="DoubleQuoteToken"/>
+        </Field>
+    </AbstractNode>
+    <Node Name="XmlTextAttributeSyntax" Base="XmlAttributeSyntax">
+        <Kind Name="XmlTextAttribute"/>
+        <Field Name="Name" Type="XmlNameSyntax" Override="true"/>
+        <Field Name="EqualsToken" Type="SyntaxToken" Override="true">
+            <Kind Name="EqualsToken"/>
+        </Field>
+        <Field Name="StartQuoteToken" Type="SyntaxToken" Override="true">
+            <Kind Name="SingleQuoteToken"/>
+            <Kind Name="DoubleQuoteToken"/>
+        </Field>
+        <Field Name="TextTokens" Type="SyntaxList&lt;SyntaxToken&gt;"/>
+        <!-- XmlTextLiteralToken or XmlEntityLiteralToken-->
+        <Field Name="EndQuoteToken" Type="SyntaxToken" Override="true">
+            <Kind Name="SingleQuoteToken"/>
+            <Kind Name="DoubleQuoteToken"/>
+        </Field>
+    </Node>
+    <Node Name="XmlCrefAttributeSyntax" Base="XmlAttributeSyntax">
+        <Kind Name="XmlCrefAttribute"/>
+        <Field Name="Name" Type="XmlNameSyntax" Override="true"/>
+        <Field Name="EqualsToken" Type="SyntaxToken" Override="true">
+            <Kind Name="EqualsToken"/>
+        </Field>
+        <Field Name="StartQuoteToken" Type="SyntaxToken" Override="true">
+            <Kind Name="SingleQuoteToken"/>
+            <Kind Name="DoubleQuoteToken"/>
+        </Field>
+        <Field Name="Cref" Type="CrefSyntax"/>
+        <Field Name="EndQuoteToken" Type="SyntaxToken" Override="true">
+            <Kind Name="SingleQuoteToken"/>
+            <Kind Name="DoubleQuoteToken"/>
+        </Field>
+    </Node>
+    <Node Name="XmlNameAttributeSyntax" Base="XmlAttributeSyntax">
+        <Kind Name="XmlNameAttribute"/>
+        <Field Name="Name" Type="XmlNameSyntax" Override="true"/>
+        <Field Name="EqualsToken" Type="SyntaxToken" Override="true">
+            <Kind Name="EqualsToken"/>
+        </Field>
+        <Field Name="StartQuoteToken" Type="SyntaxToken" Override="true">
+            <Kind Name="SingleQuoteToken"/>
+            <Kind Name="DoubleQuoteToken"/>
+        </Field>
+        <Field Name="Identifier" Type="IdentifierNameSyntax"/>
+        <Field Name="EndQuoteToken" Type="SyntaxToken" Override="true">
+            <Kind Name="SingleQuoteToken"/>
+            <Kind Name="DoubleQuoteToken"/>
+        </Field>
+    </Node>
+    <Node Name="XmlTextSyntax" Base="XmlNodeSyntax">
+        <Kind Name="XmlText"/>
+        <Field Name="TextTokens" Type="SyntaxList&lt;SyntaxToken&gt;"/>
+        <!-- XmlTextLiteralToken or XmlEntityLiteralToken-->
+    </Node>
+    <Node Name="XmlCDataSectionSyntax" Base="XmlNodeSyntax">
+        <Kind Name="XmlCDataSection"/>
+        <Field Name="StartCDataToken" Type="SyntaxToken">
+            <Kind Name="XmlCDataStartToken"/>
+        </Field>
+        <Field Name="TextTokens" Type="SyntaxList&lt;SyntaxToken&gt;"/>
+        <!-- XmlTextLiteralToken only -->
+        <Field Name="EndCDataToken" Type="SyntaxToken">
+            <Kind Name="XmlCDataEndToken"/>
+        </Field>
+    </Node>
+    <Node Name="XmlProcessingInstructionSyntax" Base="XmlNodeSyntax">
+        <Kind Name="XmlProcessingInstruction"/>
+        <Field Name="StartProcessingInstructionToken" Type="SyntaxToken">
+            <Kind Name="XmlProcessingInstructionStartToken"/>
+        </Field>
+        <Field Name="Name" Type="XmlNameSyntax"/>
+        <Field Name="TextTokens" Type="SyntaxList&lt;SyntaxToken&gt;"/>
+        <!-- XmlTextLiteralToken only -->
+        <Field Name="EndProcessingInstructionToken" Type="SyntaxToken">
+            <Kind Name="XmlProcessingInstructionEndToken"/>
+        </Field>
+    </Node>
+    <Node Name="XmlCommentSyntax" Base="XmlNodeSyntax">
+        <Kind Name="XmlComment"/>
+        <Field Name="LessThanExclamationMinusMinusToken" Type="SyntaxToken">
+            <Kind Name="XmlCommentStartToken"/>
+        </Field>
+        <Field Name="TextTokens" Type="SyntaxList&lt;SyntaxToken&gt;"/>
+        <!-- XmlTextLiteralToken only -->
+        <Field Name="MinusMinusGreaterThanToken" Type="SyntaxToken">
+            <Kind Name="XmlCommentEndToken"/>
+        </Field>
+    </Node>
 </Tree>

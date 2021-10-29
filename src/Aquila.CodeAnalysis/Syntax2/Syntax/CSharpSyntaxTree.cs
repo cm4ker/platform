@@ -112,10 +112,12 @@ namespace Microsoft.CodeAnalysis.CSharp
         {
             get
             {
-                Debug.Assert(HasCompilationUnitRoot);
+                return true;
 
-                return Options.Kind == SourceCodeKind.Script &&
-                       GetCompilationUnitRoot().GetReferenceDirectives().Count > 0;
+                // Debug.Assert(HasCompilationUnitRoot);
+                //
+                // return Options.Kind == SourceCodeKind.Script &&
+                //        GetCompilationUnitRoot().GetReferenceDirectives().Count > 0;
             }
         }
 
@@ -127,9 +129,9 @@ namespace Microsoft.CodeAnalysis.CSharp
 
                 if (Options.Kind == SourceCodeKind.Script)
                 {
-                    var compilationUnitRoot = GetCompilationUnitRoot();
-                    return compilationUnitRoot.GetReferenceDirectives().Count > 0 ||
-                           compilationUnitRoot.GetLoadDirectives().Count > 0;
+                    // var compilationUnitRoot = GetCompilationUnitRoot();
+                    // return compilationUnitRoot.GetReferenceDirectives().Count > 0 ||
+                    //        compilationUnitRoot.GetLoadDirectives().Count > 0;
                 }
 
                 return false;
@@ -178,10 +180,10 @@ namespace Microsoft.CodeAnalysis.CSharp
             {
                 throw new ArgumentNullException(nameof(root));
             }
-
-            var directives = root.Kind() == SyntaxKind.CompilationUnit
-                ? ((CompilationUnitSyntax)root).GetConditionalDirectivesStack()
-                : InternalSyntax.DirectiveStack.Empty;
+            //
+            // var directives = root.Kind() == SyntaxKind.CompilationUnit
+            //     ? ((CompilationUnitSyntax)root).GetConditionalDirectivesStack()
+            //     : InternalSyntax.DirectiveStack.Empty;
 
             return new ParsedSyntaxTree(
                 textOpt: null,
@@ -190,7 +192,7 @@ namespace Microsoft.CodeAnalysis.CSharp
                 path: path,
                 options: options ?? AquilaParseOptions.Default,
                 root: root,
-                directives: directives,
+                directives: null, //directives,
                 diagnosticOptions,
                 cloneRoot: true);
         }
@@ -329,22 +331,23 @@ namespace Microsoft.CodeAnalysis.CSharp
 
             options = options ?? AquilaParseOptions.Default;
 
-            using var lexer = new InternalSyntax.Lexer(text, options);
-            using var parser = new InternalSyntax.LanguageParser(lexer, oldTree: null, changes: null,
-                cancellationToken: cancellationToken);
-            var compilationUnit = (CompilationUnitSyntax)parser.ParseCompilationUnit().CreateRed();
-            var tree = new ParsedSyntaxTree(
-                text,
-                text.Encoding,
-                text.ChecksumAlgorithm,
-                path,
-                options,
-                compilationUnit,
-                parser.Directives,
-                diagnosticOptions: diagnosticOptions,
-                cloneRoot: true);
-            tree.VerifySource();
-            return tree;
+            throw new NotImplementedException();
+            // using var lexer = new InternalSyntax.Lexer(text, options);
+            // using var parser = new InternalSyntax.LanguageParser(lexer, oldTree: null, changes: null,
+            //     cancellationToken: cancellationToken);
+            // var compilationUnit = (CompilationUnitSyntax)parser.ParseCompilationUnit().CreateRed();
+            // var tree = new ParsedSyntaxTree(
+            //     text,
+            //     text.Encoding,
+            //     text.ChecksumAlgorithm,
+            //     path,
+            //     options,
+            //     compilationUnit,
+            //     parser.Directives,
+            //     diagnosticOptions: diagnosticOptions,
+            //     cloneRoot: true);
+            // tree.VerifySource();
+            // return tree;
         }
 
         #endregion
@@ -398,24 +401,26 @@ namespace Microsoft.CodeAnalysis.CSharp
                 oldTree = null;
             }
 
-            using var lexer = new InternalSyntax.Lexer(newText, this.Options);
-            using var parser = new InternalSyntax.LanguageParser(lexer, oldTree?.GetRoot(), workingChanges);
-
-            var compilationUnit = (CompilationUnitSyntax)parser.ParseCompilationUnit().CreateRed();
-            var tree = new ParsedSyntaxTree(
-                newText,
-                newText.Encoding,
-                newText.ChecksumAlgorithm,
-                FilePath,
-                Options,
-                compilationUnit,
-                parser.Directives,
-#pragma warning disable CS0618
-                DiagnosticOptions,
-#pragma warning restore CS0618
-                cloneRoot: true);
-            tree.VerifySource(changes);
-            return tree;
+            throw new NotImplementedException();
+            
+//             using var lexer = new InternalSyntax.Lexer(newText, this.Options);
+//             using var parser = new InternalSyntax.LanguageParser(lexer, oldTree?.GetRoot(), workingChanges);
+//
+//             var compilationUnit = (CompilationUnitSyntax)parser.ParseCompilationUnit().CreateRed();
+//             var tree = new ParsedSyntaxTree(
+//                 newText,
+//                 newText.Encoding,
+//                 newText.ChecksumAlgorithm,
+//                 FilePath,
+//                 Options,
+//                 compilationUnit,
+//                 parser.Directives,
+// #pragma warning disable CS0618
+//                 DiagnosticOptions,
+// #pragma warning restore CS0618
+//                 cloneRoot: true);
+//             tree.VerifySource(changes);
+//             return tree;
         }
 
         /// <summary>
@@ -508,25 +513,25 @@ namespace Microsoft.CodeAnalysis.CSharp
             throw new NotImplementedException();
         }
 
-        private NullableContextStateMap GetNullableContextStateMap()
-        {
-            if (_lazyNullableContextStateMap == null)
-            {
-                // Create the #nullable directive map on demand.
-                Interlocked.CompareExchange(
-                    ref _lazyNullableContextStateMap,
-                    new StrongBox<NullableContextStateMap>(NullableContextStateMap.Create(this)),
-                    null);
-            }
+        // private NullableContextStateMap GetNullableContextStateMap()
+        // {
+        //     if (_lazyNullableContextStateMap == null)
+        //     {
+        //         // Create the #nullable directive map on demand.
+        //         Interlocked.CompareExchange(
+        //             ref _lazyNullableContextStateMap,
+        //             new StrongBox<NullableContextStateMap>(NullableContextStateMap.Create(this)),
+        //             null);
+        //     }
+        //
+        //     return _lazyNullableContextStateMap.Value;
+        // }
 
-            return _lazyNullableContextStateMap.Value;
-        }
-
-        internal NullableContextState GetNullableContextState(int position)
-            => GetNullableContextStateMap().GetContextState(position);
-
-        internal bool? IsNullableAnalysisEnabled(TextSpan span) =>
-            GetNullableContextStateMap().IsNullableAnalysisEnabled(span);
+        // internal NullableContextState GetNullableContextState(int position)
+        //     => GetNullableContextStateMap().GetContextState(position);
+        //
+        // internal bool? IsNullableAnalysisEnabled(TextSpan span) =>
+        //     GetNullableContextStateMap().IsNullableAnalysisEnabled(span);
 
         internal bool IsGeneratedCode(SyntaxTreeOptionsProvider? provider, CancellationToken cancellationToken)
         {
@@ -554,7 +559,7 @@ namespace Microsoft.CodeAnalysis.CSharp
             }
         }
 
-        private StrongBox<NullableContextStateMap>? _lazyNullableContextStateMap;
+        // private StrongBox<NullableContextStateMap>? _lazyNullableContextStateMap;
 
         private GeneratedKind _lazyIsGeneratedCode = GeneratedKind.Unknown;
 

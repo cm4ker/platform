@@ -1,8 +1,9 @@
 ﻿using System;
+using Microsoft.CodeAnalysis;
 
 namespace Aquila.NET.Sdk
 {
-    class SimpleAnalyzerAssemblyLoader : Microsoft.CodeAnalysis.IAnalyzerAssemblyLoader
+    class SimpleAnalyzerAssemblyLoader : IAnalyzerAssemblyLoader
     {
         public void AddDependencyLocation(string fullPath)
         {

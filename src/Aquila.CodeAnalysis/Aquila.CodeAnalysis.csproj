@@ -6,13 +6,21 @@
     <Import Project="..\Props\target.props" />
 
     <ItemGroup>
+        <ProjectReference Include="..\CSharpSyntaxGenerator\CSharpSyntaxGenerator.csproj">
+            <OutputItemType>Analyzer</OutputItemType>
+            <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+            <SetTargetFramework>TargetFramework=netstandard2.0</SetTargetFramework>
+        </ProjectReference>
+        
         <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
 
         <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
-        <PackageReference Include="Aquila.Microsoft.CodeAnalysis" Version="4.1.0-dev" />
+        <PackageReference Include="Aquila.Microsoft.CodeAnalysis" Version="4.1.0-dev">
+            <SetTargetFramework>TargetFramework=netstandard2.0</SetTargetFramework>
+        </PackageReference>
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.4" />
         <PackageReference Include="morelinq" Version="3.3.2" />
         <PackageReference Include="System.ServiceModel.Primitives" Version="4.7.0" />
@@ -71,6 +79,7 @@
 
     <ItemGroup>
       <Folder Include="Syntax2" />
+      <Folder Include="Syntax2\Syntax\InternalSyntax" />
     </ItemGroup>
 
 </Project>
