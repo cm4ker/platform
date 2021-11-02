@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Aquila.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace Aquila.CodeAnalysis
 {
@@ -146,10 +147,10 @@ namespace Aquila.CodeAnalysis
 
         public override string Language => Constants.AquilaLanguageName;
 
-        //internal bool IsFeatureEnabled(Syntax.LanguageFeatures feature)
-        //{
-        //    return true;
-        //}
+        internal bool IsFeatureEnabled(MessageID feature)
+        {
+            return true;
+        }
 
         public override bool Equals(object obj)
         {

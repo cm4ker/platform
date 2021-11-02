@@ -82,7 +82,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
 
         private int _identLen;
 
-        //private DirectiveStack _directives;
+        private DirectiveStack _directives;
         private readonly LexerCache _cache;
         private readonly bool _allowPreprocessorDirectives;
         private readonly bool _interpolationFollowedByColon;
@@ -142,7 +142,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             get { return _options.DocumentationMode < DocumentationMode.Parse; }
         }
 
-        public CSharpParseOptions Options
+        public AquilaParseOptions Options
         {
             get { return _options; }
         }
@@ -2362,8 +2362,9 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                     case '#':
                         if (_allowPreprocessorDirectives)
                         {
-                            this.LexDirectiveAndExcludedTrivia(afterFirstToken, isTrailing || !onlyWhitespaceOnLine,
-                                ref triviaList);
+                            throw new NotImplementedException();
+                            // this.LexDirectiveAndExcludedTrivia(afterFirstToken, isTrailing || !onlyWhitespaceOnLine,
+                            //     ref triviaList);
                             break;
                         }
                         else
@@ -2692,50 +2693,50 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             return SyntaxFactory.Whitespace(TextWindow.GetText(intern: true));
         }
 
-        private void LexDirectiveAndExcludedTrivia(
-            bool afterFirstToken,
-            bool afterNonWhitespaceOnLine,
-            ref SyntaxListBuilder triviaList)
-        {
-            var directive =
-                this.LexSingleDirective(true, true, afterFirstToken, afterNonWhitespaceOnLine, ref triviaList);
+        // private void LexDirectiveAndExcludedTrivia(
+        //     bool afterFirstToken,
+        //     bool afterNonWhitespaceOnLine,
+        //     ref SyntaxListBuilder triviaList)
+        // {
+        //     var directive =
+        //         this.LexSingleDirective(true, true, afterFirstToken, afterNonWhitespaceOnLine, ref triviaList);
+        //
+        //     // also lex excluded stuff            
+        //     var branching = directive as BranchingDirectiveTriviaSyntax;
+        //     if (branching != null && !branching.BranchTaken)
+        //     {
+        //         this.LexExcludedDirectivesAndTrivia(true, ref triviaList);
+        //     }
+        // }
 
-            // also lex excluded stuff            
-            var branching = directive as BranchingDirectiveTriviaSyntax;
-            if (branching != null && !branching.BranchTaken)
-            {
-                this.LexExcludedDirectivesAndTrivia(true, ref triviaList);
-            }
-        }
-
-        private void LexExcludedDirectivesAndTrivia(bool endIsActive, ref SyntaxListBuilder triviaList)
-        {
-            while (true)
-            {
-                bool hasFollowingDirective;
-                var text = this.LexDisabledText(out hasFollowingDirective);
-                if (text != null)
-                {
-                    this.AddTrivia(text, ref triviaList);
-                }
-
-                if (!hasFollowingDirective)
-                {
-                    break;
-                }
-
-                var directive = this.LexSingleDirective(false, endIsActive, false, false, ref triviaList);
-                var branching = directive as BranchingDirectiveTriviaSyntax;
-                if (directive.Kind == SyntaxKind.EndIfDirectiveTrivia || (branching != null && branching.BranchTaken))
-                {
-                    break;
-                }
-                else if (directive.Kind == SyntaxKind.IfDirectiveTrivia)
-                {
-                    this.LexExcludedDirectivesAndTrivia(false, ref triviaList);
-                }
-            }
-        }
+        // private void LexExcludedDirectivesAndTrivia(bool endIsActive, ref SyntaxListBuilder triviaList)
+        // {
+        //     while (true)
+        //     {
+        //         bool hasFollowingDirective;
+        //         var text = this.LexDisabledText(out hasFollowingDirective);
+        //         if (text != null)
+        //         {
+        //             this.AddTrivia(text, ref triviaList);
+        //         }
+        //
+        //         if (!hasFollowingDirective)
+        //         {
+        //             break;
+        //         }
+        //
+        //         var directive = this.LexSingleDirective(false, endIsActive, false, false, ref triviaList);
+        //         var branching = directive as BranchingDirectiveTriviaSyntax;
+        //         if (directive.Kind == SyntaxKind.EndIfDirectiveTrivia || (branching != null && branching.BranchTaken))
+        //         {
+        //             break;
+        //         }
+        //         else if (directive.Kind == SyntaxKind.IfDirectiveTrivia)
+        //         {
+        //             this.LexExcludedDirectivesAndTrivia(false, ref triviaList);
+        //         }
+        //     }
+        // }
 
         private CSharpSyntaxNode LexSingleDirective(
             bool isActive,

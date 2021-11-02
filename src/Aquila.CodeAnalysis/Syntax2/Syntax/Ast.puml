@@ -41,12 +41,11 @@ ExprSyntax <|-- IncDecEx
 ExprSyntax <|-- ThrowEx
 
 TypeEx <|-- NameEx
-NameEx <|-- IdentifierEx
-'NameEx <|-- TypeEx
-NameEx <|-- NamedTypeEx
-NameEx <|-- PredefinedTypeEx
-NameEx <|-- ArrayTypeEx
-NameEx <|-- UnionTypeEx
+    NameEx <|-- IdentifierEx
+    NameEx <|-- NamedTypeEx
+TypeEx <|-- PredefinedTypeEx
+TypeEx <|-- ArrayTypeEx
+TypeEx <|-- UnionTypeEx
 
 StmtSyntax <|-- ExprStmt
 StmtSyntax <|-- BlockStmt

@@ -35,7 +35,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             return (last > s.Length || len <= 0) ? string.Empty : s.Substring(first, len);
         }
 
-        private ExpressionSyntax ParseInterpolatedStringToken()
+        private ExprSyntax ParseInterpolatedStringToken()
         {
             // We don't want to make the scanner stateful (between tokens) if we can possibly avoid it.
             // The approach implemented here is
@@ -155,7 +155,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
         private InterpolationSyntax ParseInterpolation(string text, Lexer.Interpolation interpolation, bool isVerbatim)
         {
             SyntaxToken openBraceToken;
-            ExpressionSyntax expression;
+            ExprSyntax expression;
             InterpolationAlignmentClauseSyntax alignment = null;
             InterpolationFormatClauseSyntax format = null;
             var closeBraceToken = interpolation.CloseBraceMissing
@@ -169,7 +169,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                 using (var tempParser = new LanguageParser(tempLexer, null, null))
                 {
                     SyntaxToken commaToken = null;
-                    ExpressionSyntax alignmentExpression = null;
+                    ExprSyntax alignmentExpression = null;
                     tempParser.ParseInterpolationStart(out openBraceToken, out expression, out commaToken, out alignmentExpression);
                     if (alignmentExpression != null)
                     {
@@ -235,7 +235,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             return builder.ToArrayAndFree();
         }
 
-        private void ParseInterpolationStart(out SyntaxToken openBraceToken, out ExpressionSyntax expr, out SyntaxToken commaToken, out ExpressionSyntax alignmentExpression)
+        private void ParseInterpolationStart(out SyntaxToken openBraceToken, out ExprSyntax expr, out SyntaxToken commaToken, out ExpressionSyntax alignmentExpression)
         {
             openBraceToken = this.EatToken(SyntaxKind.OpenBraceToken);
             expr = this.ParseExpressionCore();

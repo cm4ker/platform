@@ -498,7 +498,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                          DocumentationCommentXmlNames.NameAttributeName) &&
                      XmlElementSupportsNameAttribute(elementName))
             {
-                IdentifierNameSyntax identifier;
+                IdentifierEx identifier;
                 this.ParseNameAttribute(out startQuote, out identifier, out endQuote);
                 return SyntaxFactory.XmlNameAttribute(attrName, equals, startQuote, identifier, endQuote);
             }
@@ -591,7 +591,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             endQuote = ParseXmlAttributeEndQuote(quoteKind);
         }
 
-        private void ParseNameAttribute(out SyntaxToken startQuote, out IdentifierNameSyntax identifier,
+        private void ParseNameAttribute(out SyntaxToken startQuote, out IdentifierEx identifier,
             out SyntaxToken endQuote)
         {
             startQuote = ParseXmlAttributeStartQuote();
@@ -923,7 +923,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
         {
             CrefSyntax result;
 
-            TypeSyntax type = ParseCrefType(typeArgumentsMustBeIdentifiers: true, checkForMember: true);
+            TypeEx type = ParseCrefType(typeArgumentsMustBeIdentifiers: true, checkForMember: true);
             if (type == null)
             {
                 result = ParseMemberCref();
@@ -1117,7 +1117,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
 
             SyntaxToken operatorKeyword = EatToken(SyntaxKind.OperatorKeyword);
 
-            TypeSyntax type = ParseCrefType(typeArgumentsMustBeIdentifiers: false);
+            TypeEx type = ParseCrefType(typeArgumentsMustBeIdentifiers: false);
 
             CrefParameterListSyntax parameters = ParseCrefParameterList();
 
@@ -1229,7 +1229,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                     break;
             }
 
-            TypeSyntax type = ParseCrefType(typeArgumentsMustBeIdentifiers: false);
+            TypeEx type = ParseCrefType(typeArgumentsMustBeIdentifiers: false);
             return SyntaxFactory.CrefParameter(refKindOpt, type);
         }
 
@@ -1244,17 +1244,17 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
 
             if (CurrentToken.Kind != SyntaxKind.LessThanToken)
             {
-                return SyntaxFactory.IdentifierName(identifierToken);
+                return SyntaxFactory.IdentifierEx(identifierToken);
             }
 
             var open = EatToken();
 
-            var list = _pool.AllocateSeparated<TypeSyntax>();
+            var list = _pool.AllocateSeparated<TypeEx>();
             try
             {
                 while (true)
                 {
-                    TypeSyntax typeSyntax = ParseCrefType(typeArgumentsMustBeIdentifiers);
+                    TypeEx typeSyntax = ParseCrefType(typeArgumentsMustBeIdentifiers);
 
                     if (typeArgumentsMustBeIdentifiers && typeSyntax.Kind != SyntaxKind.IdentifierName)
                     {
@@ -1303,9 +1303,9 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
         /// type argument is seen, false to accept.  No change in the shape of the tree.</param>
         /// <param name="checkForMember">True means that the last name should not be consumed
         /// if it is followed by a parameter list.</param>
-        private TypeSyntax ParseCrefType(bool typeArgumentsMustBeIdentifiers, bool checkForMember = false)
+        private TypeEx ParseCrefType(bool typeArgumentsMustBeIdentifiers, bool checkForMember = false)
         {
-            TypeSyntax typeWithoutSuffix = ParseCrefTypeHelper(typeArgumentsMustBeIdentifiers, checkForMember);
+            TypeEx typeWithoutSuffix = ParseCrefTypeHelper(typeArgumentsMustBeIdentifiers, checkForMember);
             return typeArgumentsMustBeIdentifiers
                 ? typeWithoutSuffix
                 : ParseCrefTypeSuffix(typeWithoutSuffix);
@@ -1323,7 +1323,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
         /// type argument is seen, false to accept.  No change in the shape of the tree.</param>
         /// <param name="checkForMember">True means that the last name should not be consumed
         /// if it is followed by a parameter list.</param>
-        private TypeSyntax ParseCrefTypeHelper(bool typeArgumentsMustBeIdentifiers, bool checkForMember = false)
+        private TypeEx ParseCrefTypeHelper(bool typeArgumentsMustBeIdentifiers, bool checkForMember = false)
         {
             NameEx leftName;
 
@@ -1378,7 +1378,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
 
                 SyntaxToken dot = EatToken();
 
-                SimpleNameSyntax rightName = ParseCrefName(typeArgumentsMustBeIdentifiers);
+                NameEx rightName = ParseCrefName(typeArgumentsMustBeIdentifiers);
 
                 if (checkForMember && (rightName.IsMissing || CurrentToken.Kind != SyntaxKind.DotToken))
                 {
@@ -1390,7 +1390,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
 
                 this.Release(ref resetPoint);
 
-                leftName = SyntaxFactory.QualifiedName(leftName, dot, rightName);
+                leftName = SyntaxFactory.QualifiedNameEx(leftName, dot, rightName);
             }
 
             return leftName;
@@ -1400,22 +1400,22 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
         /// Once the name part of a type (including type parameter/argument lists) is parsed,
         /// we need to consume ?, *, and rank specifiers.
         /// </summary>
-        private TypeSyntax ParseCrefTypeSuffix(TypeSyntax type)
+        private TypeEx ParseCrefTypeSuffix(TypeEx type)
         {
-            if (CurrentToken.Kind == SyntaxKind.QuestionToken)
-            {
-                type = SyntaxFactory.NullableType(type, EatToken());
-            }
+            // if (CurrentToken.Kind == SyntaxKind.QuestionToken)
+            // {
+            //     type = SyntaxFactory.NullableType(type, EatToken());
+            // }
 
-            while (CurrentToken.Kind == SyntaxKind.AsteriskToken)
-            {
-                type = SyntaxFactory.PointerType(type, EatToken());
-            }
+            // while (CurrentToken.Kind == SyntaxKind.AsteriskToken)
+            // {
+            //     type = SyntaxFactory.PointerType(type, EatToken());
+            // }
 
             if (CurrentToken.Kind == SyntaxKind.OpenBracketToken)
             {
                 var omittedArraySizeExpressionInstance =
-                    SyntaxFactory.OmittedArraySizeExpression(
+                    SyntaxFactory.OmittedArraySizeEx(
                         SyntaxFactory.Token(SyntaxKind.OmittedArraySizeExpressionToken));
                 var rankList = _pool.Allocate<ArrayRankSpecifierSyntax>();
                 try
@@ -1423,7 +1423,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                     while (CurrentToken.Kind == SyntaxKind.OpenBracketToken)
                     {
                         SyntaxToken open = EatToken();
-                        var dimensionList = _pool.AllocateSeparated<ExpressionSyntax>();
+                        var dimensionList = _pool.AllocateSeparated<ExprSyntax>();
                         try
                         {
                             while (this.CurrentToken.Kind != SyntaxKind.CloseBracketToken)
@@ -1461,7 +1461,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                         }
                     }
 
-                    type = SyntaxFactory.ArrayType(type, rankList);
+                    type = SyntaxFactory.ArrayTypeEx(type, rankList);
                 }
                 finally
                 {
@@ -1521,7 +1521,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
 
         #region Name attribute values
 
-        private IdentifierNameSyntax ParseNameAttributeValue()
+        private IdentifierEx ParseNameAttributeValue()
         {
             // Never report a parse error - just fail to bind the name later on.
             SyntaxToken identifierToken = this.EatToken(SyntaxKind.IdentifierToken, reportError: false);
@@ -1538,7 +1538,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                 _pool.Free(badTokens);
             }
 
-            return SyntaxFactory.IdentifierName(identifierToken);
+            return SyntaxFactory.IdentifierEx(identifierToken);
         }
 
         /// <summary>

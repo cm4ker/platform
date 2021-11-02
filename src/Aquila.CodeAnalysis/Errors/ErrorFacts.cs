@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
+using System.Reflection;
+using System.Resources;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace Aquila.CodeAnalysis.Errors
 {
@@ -31,6 +35,38 @@ namespace Aquila.CodeAnalysis.Errors
                     return DiagnosticSeverity.Hidden;
                 default:
                     throw new ArgumentException(nameof(code));
+            }
+        }
+
+        /// <remarks>Don't call this during a parse--it loads resources</remarks>
+        public static string GetMessage(MessageID code, CultureInfo culture)
+        {
+            string message = ResourceManager.GetString(code.ToString(), culture);
+            Debug.Assert(!string.IsNullOrEmpty(message), code.ToString());
+            return message;
+        }
+
+        /// <remarks>Don't call this during a parse--it loads resources</remarks>
+        public static string GetMessage(ErrorCode code, CultureInfo culture)
+        {
+            string message = ResourceManager.GetString(code.ToString(), culture);
+            Debug.Assert(!string.IsNullOrEmpty(message), code.ToString());
+            return message;
+        }
+
+        private static System.Resources.ResourceManager s_resourceManager;
+
+        private static System.Resources.ResourceManager ResourceManager
+        {
+            get
+            {
+                if (s_resourceManager == null)
+                {
+                    s_resourceManager = new System.Resources.ResourceManager(typeof(AquilaResources).FullName,
+                        typeof(ErrorCode).GetTypeInfo().Assembly);
+                }
+
+                return s_resourceManager;
             }
         }
 

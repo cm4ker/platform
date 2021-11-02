@@ -1,4 +1,6 @@
-﻿namespace Aquila.CodeAnalysis.Errors
+﻿using Microsoft.CodeAnalysis;
+
+namespace Aquila.CodeAnalysis.Errors
 {
     /// <summary>
     /// A database of all possible diagnostics used by Aquila compiler. The severity can be determined by the prefix:
@@ -15,6 +17,9 @@
         // 0xxx: reserved
         // 1xxx: reserved
         // 2xxx: reserved
+
+        Void = InternalErrorCode.Void,
+        Unknown = InternalErrorCode.Unknown,
 
         // 
         // Fatal errors
@@ -42,6 +47,24 @@
         WRN_BadXMLRefSyntax,
         ERR_TypeParamMustBeIdentifier,
         ERR_OvlOperatorExpected,
+        ERR_TripleDotNotAllowed,
+        ERR_ExpectedVerbatimLiteral,
+        ERR_EndifDirectiveExpected,
+        ERR_EndRegionDirectiveExpected,
+        ERR_UnexpectedCharacter,
+        ERR_InternalError,
+        ERR_FeatureIsExperimental,
+        ERR_FeatureInPreview,
+        WRN_LowercaseEllSuffix,
+        ERR_LegacyObjectIdSyntax,
+        ERR_InvalidReal,
+        ERR_InvalidNumber,
+        ERR_IntOverflow,
+        ERR_FloatOverflow,
+        ERR_OpenEndedComment,
+        ERR_Merge_conflict_marker_encountered,
+        ERR_InsufficientStack,
+        ERR_NamespaceNotAllowedInScript,
 
         //Compilation
         ERR_BadCompilationOptionValue,

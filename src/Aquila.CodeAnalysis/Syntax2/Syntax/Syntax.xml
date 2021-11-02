@@ -12,6 +12,19 @@
 
     <AbstractNode Name="ExprSyntax" Base="CSharpSyntaxNode">
     </AbstractNode>
+    <AbstractNode Name="StmtSyntax" Base="CSharpSyntaxNode">
+    </AbstractNode>
+
+    <Node Name="CompilationUnitSyntax" Base="CSharpSyntaxNode">
+        <Kind Name="CompilationUnit"/>
+        <Field Name="Imports" Type="SyntaxList&lt;ImportDeclBase&gt;"/>
+        <Field Name="Methods" Type="SyntaxList&lt;MethodDecl&gt;"/>
+        <Field Name="Extends" Type="SyntaxList&lt;ExtendDecl&gt;"/>
+        <Field Name="Components" Type="SyntaxList&lt;ComponentDecl&gt;"/>
+        <Field Name="EndOfFileToken" Type="SyntaxToken">
+            <Kind Name="EndOfFileToken"/>
+        </Field>
+    </Node>
 
     <AbstractNode Name="ImportDeclBase" Base="CSharpSyntaxNode"/>
     <Node Name="ImportDecl" Base="ImportDeclBase">
@@ -29,6 +42,162 @@
             </PropertyComment>
         </Field>
     </Node>
+
+    <AbstractNode Name="MemberDecl" Base="CSharpSyntaxNode">
+        <TypeComment>
+            <summary>Member declaration syntax.</summary>
+        </TypeComment>
+        <Field Name="AttributeLists" Type="SyntaxList&lt;AttributeListSyntax&gt;">
+            <PropertyComment>
+                <summary>Gets the attribute declaration list.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Modifiers" Type="SyntaxList&lt;SyntaxToken&gt;">
+            <PropertyComment>
+                <summary>Gets the modifier list.</summary>
+            </PropertyComment>
+        </Field>
+    </AbstractNode>
+
+    <Node Name="MethodDecl" Base="MemberDecl">
+        <Kind Name="MethodDecl"/>
+
+        <TypeComment>
+            <summary>Base type for method declaration syntax.</summary>
+        </TypeComment>
+
+        <Field Name="AttributeLists" Type="SyntaxList&lt;AttributeListSyntax&gt;" Override="true"/>
+        <Field Name="Modifiers" Type="SyntaxList&lt;SyntaxToken&gt;" Override="true"/>
+        <Field Name="ReturnType" Type="TypeEx">
+            <PropertyComment>
+                <summary>Gets the return type syntax.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Identifier" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>Gets the identifier.</summary>
+            </PropertyComment>
+            <Kind Name="IdentifierToken"/>
+        </Field>
+        <Field Name="ParameterList" Type="ParameterListSyntax">
+            <PropertyComment>
+                <summary>Gets the parameter list.</summary>
+            </PropertyComment>
+        </Field>
+        <Choice>
+            <Field Name="Body" Type="BlockStmt"/>
+        </Choice>
+    </Node>
+
+    <Node Name="ExtendDecl" Base="CSharpSyntaxNode">
+        <Kind Name="ExtendDecl"/>
+        <Field Name="ExtendKeyword" Type="SyntaxToken">
+            <Kind Name="ExtendKeyword"/>
+        </Field>
+        <Field Name="Name" Type="NameEx"/>
+        <Field Name="Methods" Type="SyntaxList&lt;MethodDecl&gt;"/>
+    </Node>
+    <Node Name="ComponentDecl" Base="CSharpSyntaxNode">
+        <Kind Name="ComponentDecl"/>
+        <Field Name="ComponentKeyword" Type="SyntaxToken">
+            <Kind Name="ComponentKeyword"/>
+        </Field>
+        <Field Name="Name" Type="NameEx"/>
+        <Field Name="Extends" Type="SyntaxList&lt;ExtendDecl&gt;"/>
+    </Node>
+
+    <!--region Attributes-->
+    <Node Name="AttributeListSyntax" Base="CSharpSyntaxNode">
+        <TypeComment>
+            <summary>Class representing one or more attributes applied to a language construct.</summary>
+        </TypeComment>
+        <Kind Name="AttributeList"/>
+        <Field Name="OpenBracketToken" Type="SyntaxToken">
+            <Kind Name="OpenBracketToken"/>
+            <PropertyComment>
+                <summary>Gets the open bracket token.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Attributes" Type="SeparatedSyntaxList&lt;AttributeSyntax&gt;" MinCount="1">
+            <PropertyComment>
+                <summary>Gets the attribute declaration list.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="CloseBracketToken" Type="SyntaxToken">
+            <Kind Name="CloseBracketToken"/>
+            <PropertyComment>
+                <summary>Gets the close bracket token.</summary>
+            </PropertyComment>
+        </Field>
+    </Node>
+    <Node Name="AttributeSyntax" Base="CSharpSyntaxNode">
+        <TypeComment>
+            <summary>Attribute syntax.</summary>
+        </TypeComment>
+        <Kind Name="Attribute"/>
+        <Field Name="Name" Type="NameEx">
+            <PropertyComment>
+                <summary>Gets the name.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="ArgumentList" Type="AttributeArgumentListSyntax" Optional="true"/>
+    </Node>
+    <Node Name="AttributeArgumentListSyntax" Base="CSharpSyntaxNode">
+        <TypeComment>
+            <summary>Attribute argument list syntax.</summary>
+        </TypeComment>
+        <Kind Name="AttributeArgumentList"/>
+        <Field Name="OpenParenToken" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>Gets the open paren token.</summary>
+            </PropertyComment>
+            <Kind Name="OpenParenToken"/>
+        </Field>
+        <Field Name="Arguments" Type="SeparatedSyntaxList&lt;AttributeArgumentSyntax&gt;">
+            <PropertyComment>
+                <summary>Gets the arguments syntax list.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="CloseParenToken" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>Gets the close paren token.</summary>
+            </PropertyComment>
+            <Kind Name="CloseParenToken"/>
+        </Field>
+    </Node>
+    <Node Name="AttributeArgumentSyntax" Base="CSharpSyntaxNode">
+        <TypeComment>
+            <summary>Attribute argument syntax.</summary>
+        </TypeComment>
+        <Kind Name="AttributeArgument"/>
+        <Choice>
+            <Field Name="NameEquals" Type="NameEqualsSyntax" Optional="true"/>
+            <!--            <Field Name="NameColon" Type="NameColonSyntax" Optional="true"/>-->
+        </Choice>
+        <Field Name="Expression" Type="ExprSyntax">
+            <PropertyComment>
+                <summary>Gets the expression.</summary>
+            </PropertyComment>
+        </Field>
+    </Node>
+    <Node Name="NameEqualsSyntax" Base="CSharpSyntaxNode">
+        <TypeComment>
+            <summary>Class representing an identifier name followed by an equals token.</summary>
+        </TypeComment>
+        <Kind Name="NameEquals"/>
+        <Field Name="Name" Type="IdentifierEx">
+            <PropertyComment>
+                <summary>Gets the identifier name.</summary>
+            </PropertyComment>
+            <Kind Name="IdentifierName"/>
+        </Field>
+        <Field Name="EqualsToken" Type="SyntaxToken">
+            <Kind Name="EqualsToken"/>
+        </Field>
+    </Node>
+    <!--endregion Attributes-->
+
+    <!--region Expressions-->
     <Node Name="BinaryEx" Base="ExprSyntax">
         <Kind Name="AddExpression"/>
         <Kind Name="SubtractExpression"/>
@@ -95,9 +264,42 @@
             <summary>Creates a BinaryExpressionSyntax node.</summary>
         </FactoryComment>
     </Node>
+    <!--endregion Expressions-->
 
-    <AbstractNode Name="NameEx" Base="ExprSyntax"/>
-    <Node Name="IdentifierNameSyntax" Base="NameEx">
+    <!--region Type-->
+    <AbstractNode Name="TypeEx" Base="ExprSyntax"/>
+    <AbstractNode Name="NameEx" Base="TypeEx"/>
+
+    <Node Name="QualifiedNameEx" Base="NameEx">
+        <Kind Name="QualifiedName"/>
+        <Field Name="Left" Type="NameEx">
+            <PropertyComment>
+                <summary>NameSyntax node representing the name on the left side of the dot token of the qualified
+                    name.
+                </summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="DotToken" Type="SyntaxToken">
+            <Kind Name="DotToken"/>
+            <PropertyComment>
+                <summary>SyntaxToken representing the dot.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Right" Type="NameEx">
+            <PropertyComment>
+                <summary>SimpleNameSyntax node representing the name on the right side of the dot token of the qualified
+                    name.
+                </summary>
+            </PropertyComment>
+        </Field>
+        <TypeComment>
+            <summary>Class which represents the syntax node for qualified name.</summary>
+        </TypeComment>
+        <FactoryComment>
+            <summary>Creates a QualifiedNameSyntax node.</summary>
+        </FactoryComment>
+    </Node>
+    <Node Name="IdentifierEx" Base="NameEx">
         <Kind Name="IdentifierEx"/>
         <Field Name="Identifier" Type="SyntaxToken">
             <PropertyComment>
@@ -106,9 +308,7 @@
             <Kind Name="IdentifierToken"/>
         </Field>
     </Node>
-
-    <AbstractNode Name="TypeSyntax" Base="NameEx"/>
-    <Node Name="NamedTypeEx" Base="TypeSyntax">
+    <Node Name="NamedTypeEx" Base="NameEx">
         <Kind Name="NamedTypeEx"/>
         <Field Name="Identifier" Type="SyntaxToken">
             <PropertyComment>
@@ -117,7 +317,8 @@
             <Kind Name="IdentifierToken"/>
         </Field>
     </Node>
-    <Node Name="PredefinedTypeEx" Base="TypeSyntax">
+
+    <Node Name="PredefinedTypeEx" Base="TypeEx">
         <Kind Name="PredefinedType"/>
         <Field Name="Keyword" Type="SyntaxToken">
             <Kind Name="BoolKeyword"/>
@@ -147,17 +348,228 @@
             <summary>Creates a PredefinedTypeSyntax node.</summary>
         </FactoryComment>
     </Node>
+    <Node Name="ArrayTypeEx" Base="TypeEx">
+        <Kind Name="ArrayType"/>
+        <Field Name="ElementType" Type="TypeEx">
+            <PropertyComment>
+                <summary>TypeSyntax node representing the type of the element of the array.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="RankSpecifiers" Type="SyntaxList&lt;ArrayRankSpecifierSyntax&gt;" MinCount="1">
+            <PropertyComment>
+                <summary>SyntaxList of ArrayRankSpecifierSyntax nodes representing the list of rank specifiers for the
+                    array.
+                </summary>
+            </PropertyComment>
+        </Field>
+        <TypeComment>
+            <summary>Class which represents the syntax node for the array type.</summary>
+        </TypeComment>
+        <FactoryComment>
+            <summary>Creates an ArrayTypeSyntax node.</summary>
+        </FactoryComment>
+    </Node>
+    <Node Name="UnionTypeEx" Base="TypeEx">
+        <Kind Name="PredefinedType"/>
+        <Field Name="Keyword" Type="SyntaxToken">
+            <Kind Name="BoolKeyword"/>
+            <Kind Name="ByteKeyword"/>
+            <Kind Name="SByteKeyword"/>
+            <Kind Name="IntKeyword"/>
+            <Kind Name="UIntKeyword"/>
+            <Kind Name="ShortKeyword"/>
+            <Kind Name="UShortKeyword"/>
+            <Kind Name="LongKeyword"/>
+            <Kind Name="ULongKeyword"/>
+            <Kind Name="FloatKeyword"/>
+            <Kind Name="DoubleKeyword"/>
+            <Kind Name="DecimalKeyword"/>
+            <Kind Name="StringKeyword"/>
+            <Kind Name="CharKeyword"/>
+            <Kind Name="ObjectKeyword"/>
+            <Kind Name="VoidKeyword"/>
+            <PropertyComment>
+                <summary>SyntaxToken which represents the keyword corresponding to the predefined type.</summary>
+            </PropertyComment>
+        </Field>
+        <TypeComment>
+            <summary>Class which represents the syntax node for predefined types.</summary>
+        </TypeComment>
+        <FactoryComment>
+            <summary>Creates a PredefinedTypeSyntax node.</summary>
+        </FactoryComment>
+    </Node>
+    <!--endregion Type-->
 
-    <Node Name="CompilationUnitSyntax" Base="CSharpSyntaxNode">
-        <Kind Name="CompilationUnit"/>
-        <Field Name="ImportDecl" Type="SyntaxList&lt;ImportDeclBase&gt;"/>
-        <Field Name="EndOfFileToken" Type="SyntaxToken">
-            <Kind Name="EndOfFileToken"/>
+    <Node Name="ArrayRankSpecifierSyntax" Base="CSharpSyntaxNode">
+        <Kind Name="ArrayRankSpecifier"/>
+        <Field Name="OpenBracketToken" Type="SyntaxToken">
+            <Kind Name="OpenBracketToken"/>
+        </Field>
+        <Field Name="Sizes" Type="SeparatedSyntaxList&lt;ExprSyntax&gt;"/>
+        <Field Name="CloseBracketToken" Type="SyntaxToken">
+            <Kind Name="CloseBracketToken"/>
         </Field>
     </Node>
+    <Node Name="OmittedArraySizeEx" Base="ExprSyntax">
+        <Kind Name="OmittedArraySizeExpression"/>
+        <Field Name="OmittedArraySizeExpressionToken" Type="SyntaxToken">
+            <Kind Name="OmittedArraySizeExpressionToken"/>
+            <PropertyComment>
+                <summary>SyntaxToken representing the omitted array size expression.</summary>
+            </PropertyComment>
+        </Field>
+        <TypeComment>
+            <summary>Class which represents a placeholder in an array size list.</summary>
+        </TypeComment>
+        <FactoryComment>
+            <summary>Creates an OmittedArraySizeExpressionSyntax node.</summary>
+        </FactoryComment>
+    </Node>
 
+    <!--region Parameters-->
+    <AbstractNode Name="BaseParameterListSyntax" Base="CSharpSyntaxNode">
+        <TypeComment>
+            <summary>Base type for parameter list syntax.</summary>
+        </TypeComment>
+        <Field Name="Parameters" Type="SeparatedSyntaxList&lt;ParameterSyntax&gt;">
+            <PropertyComment>
+                <summary>Gets the parameter list.</summary>
+            </PropertyComment>
+        </Field>
+    </AbstractNode>
+    <Node Name="ParameterListSyntax" Base="BaseParameterListSyntax">
+        <TypeComment>
+            <summary>Parameter list syntax.</summary>
+        </TypeComment>
+        <Kind Name="ParameterList"/>
+        <Field Name="OpenParenToken" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>Gets the open paren token.</summary>
+            </PropertyComment>
+            <Kind Name="OpenParenToken"/>
+        </Field>
+        <Field Name="Parameters" Type="SeparatedSyntaxList&lt;ParameterSyntax&gt;" Override="true"/>
+        <Field Name="CloseParenToken" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>Gets the close paren token.</summary>
+            </PropertyComment>
+            <Kind Name="CloseParenToken"/>
+        </Field>
+    </Node>
+    <Node Name="BracketedParameterListSyntax" Base="BaseParameterListSyntax">
+        <TypeComment>
+            <summary>Parameter list syntax with surrounding brackets.</summary>
+        </TypeComment>
+        <Kind Name="BracketedParameterList"/>
+        <Field Name="OpenBracketToken" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>Gets the open bracket token.</summary>
+            </PropertyComment>
+            <Kind Name="OpenBracketToken"/>
+        </Field>
+        <Field Name="Parameters" Type="SeparatedSyntaxList&lt;ParameterSyntax&gt;" Override="true" MinCount="1"/>
+        <Field Name="CloseBracketToken" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>Gets the close bracket token.</summary>
+            </PropertyComment>
+            <Kind Name="CloseBracketToken"/>
+        </Field>
+    </Node>
+    <AbstractNode Name="BaseParameterSyntax" Base="CSharpSyntaxNode">
+        <TypeComment>
+            <summary>Base parameter syntax.</summary>
+        </TypeComment>
+        <Field Name="AttributeLists" Type="SyntaxList&lt;AttributeListSyntax&gt;">
+            <PropertyComment>
+                <summary>Gets the attribute declaration list.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Modifiers" Type="SyntaxList&lt;SyntaxToken&gt;">
+            <PropertyComment>
+                <summary>Gets the modifier list.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Type" Type="TypeEx" Optional="true"/>
+    </AbstractNode>
+    <Node Name="ParameterSyntax" Base="BaseParameterSyntax">
+        <TypeComment>
+            <summary>Parameter syntax.</summary>
+        </TypeComment>
+        <Kind Name="Parameter"/>
+        <Field Name="AttributeLists" Type="SyntaxList&lt;AttributeListSyntax&gt;" Override="true">
+            <PropertyComment>
+                <summary>Gets the attribute declaration list.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Modifiers" Type="SyntaxList&lt;SyntaxToken&gt;" Override="true">
+            <PropertyComment>
+                <summary>Gets the modifier list.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Type" Type="TypeEx" Optional="true" Override="true"/>
+        <Field Name="Identifier" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>Gets the identifier.</summary>
+            </PropertyComment>
+            <Kind Name="IdentifierToken"/>
+            <Kind Name="ArgListKeyword"/>
+        </Field>
+        <Field Name="Default" Type="EqualsValueClauseSyntax" Optional="true"/>
+    </Node>
+    <Node Name="FunctionPointerParameterSyntax" Base="BaseParameterSyntax">
+        <TypeComment>
+            <summary>Parameter syntax.</summary>
+        </TypeComment>
+        <Kind Name="FunctionPointerParameter"/>
+        <Field Name="AttributeLists" Type="SyntaxList&lt;AttributeListSyntax&gt;" Override="true">
+            <PropertyComment>
+                <summary>Gets the attribute declaration list.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Modifiers" Type="SyntaxList&lt;SyntaxToken&gt;" Override="true">
+            <PropertyComment>
+                <summary>Gets the modifier list.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Type" Type="TypeEx" Optional="false" Override="true"/>
+    </Node>
+    <Node Name="IncompleteMemberSyntax" Base="MemberDecl">
+        <Kind Name="IncompleteMember"/>n
+        <Field Name="AttributeLists" Type="SyntaxList&lt;AttributeListSyntax&gt;" Override="true"/>
+        <Field Name="Modifiers" Type="SyntaxList&lt;SyntaxToken&gt;" Override="true"/>
+        <Field Name="Type" Type="TypeEx" Optional="true"/>
+    </Node>
+    <Node Name="SkippedTokensTriviaSyntax" Base="StructuredTriviaSyntax">
+        <Kind Name="SkippedTokensTrivia"/>
+        <Field Name="Tokens" Type="SyntaxList&lt;SyntaxToken&gt;"/>
+    </Node>
+    <!--endregion parameters-->
 
-    <!-- Xml -->
+    <!--region Variables-->
+    <Node Name="EqualsValueClauseSyntax" Base="CSharpSyntaxNode">
+        <Kind Name="EqualsValueClause"/>
+        <Field Name="EqualsToken" Type="SyntaxToken">
+            <Kind Name="EqualsToken"/>
+        </Field>
+        <Field Name="Value" Type="ExprSyntax"/>
+    </Node>
+    <!--endregion Variables-->
+
+    <!--region Statements-->
+    <Node Name="BlockStmt" Base="StmtSyntax">
+        <Kind Name="Block"/>
+        <Field Name="OpenBraceToken" Type="SyntaxToken">
+            <Kind Name="OpenBraceToken"/>
+        </Field>
+        <Field Name="Statements" Type="SyntaxList&lt;StmtSyntax&gt;"/>
+        <Field Name="CloseBraceToken" Type="SyntaxToken">
+            <Kind Name="CloseBraceToken"/>
+        </Field>
+    </Node>
+    <!--endregion Statements-->
+
+    <!--region Xml -->
     <Node Name="DocumentationCommentTriviaSyntax" Base="StructuredTriviaSyntax">
         <Kind Name="SingleLineDocumentationCommentTrivia"/>
         <Kind Name="MultiLineDocumentationCommentTrivia"/>
@@ -187,7 +599,7 @@
             </summary>
         </TypeComment>
         <Kind Name="TypeCref"/>
-        <Field Name="Type" Type="TypeSyntax"/>
+        <Field Name="Type" Type="TypeEx"/>
     </Node>
     <Node Name="QualifiedCrefSyntax" Base="CrefSyntax">
         <TypeComment>
@@ -200,7 +612,7 @@
             </summary>
         </TypeComment>
         <Kind Name="QualifiedCref"/>
-        <Field Name="Container" Type="TypeSyntax"/>
+        <Field Name="Container" Type="TypeEx"/>
         <Field Name="DotToken" Type="SyntaxToken">
             <Kind Name="DotToken"/>
         </Field>
@@ -228,7 +640,7 @@
             </summary>
         </TypeComment>
         <Kind Name="NameMemberCref"/>
-        <Field Name="Name" Type="TypeSyntax"/>
+        <Field Name="Name" Type="TypeEx"/>
         <Field Name="Parameters" Type="CrefParameterListSyntax" Optional="true"/>
     </Node>
     <Node Name="IndexerMemberCrefSyntax" Base="MemberCrefSyntax">
@@ -301,7 +713,7 @@
         <Field Name="OperatorKeyword" Type="SyntaxToken">
             <Kind Name="OperatorKeyword"/>
         </Field>
-        <Field Name="Type" Type="TypeSyntax"/>
+        <Field Name="Type" Type="TypeEx"/>
         <Field Name="Parameters" Type="CrefParameterListSyntax" Optional="true"/>
     </Node>
     <AbstractNode Name="BaseCrefParameterListSyntax" Base="CSharpSyntaxNode">
@@ -373,7 +785,7 @@
             <Kind Name="OutKeyword"/>
             <Kind Name="InKeyword"/>
         </Field>
-        <Field Name="Type" Type="TypeSyntax"/>
+        <Field Name="Type" Type="TypeEx"/>
     </Node>
     <AbstractNode Name="XmlNodeSyntax" Base="CSharpSyntaxNode">
     </AbstractNode>
@@ -488,7 +900,7 @@
             <Kind Name="SingleQuoteToken"/>
             <Kind Name="DoubleQuoteToken"/>
         </Field>
-        <Field Name="Identifier" Type="IdentifierNameSyntax"/>
+        <Field Name="Identifier" Type="IdentifierEx"/>
         <Field Name="EndQuoteToken" Type="SyntaxToken" Override="true">
             <Kind Name="SingleQuoteToken"/>
             <Kind Name="DoubleQuoteToken"/>
@@ -533,4 +945,6 @@
             <Kind Name="XmlCommentEndToken"/>
         </Field>
     </Node>
+
+    <!--endregion Xml-->
 </Tree>

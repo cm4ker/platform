@@ -82,4 +82,8 @@
       <Folder Include="Syntax2\Syntax\InternalSyntax" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="test.txt" />
+    </ItemGroup>
+
 </Project>
