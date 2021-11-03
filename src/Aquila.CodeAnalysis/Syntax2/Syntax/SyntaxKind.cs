@@ -1070,6 +1070,14 @@ namespace Microsoft.CodeAnalysis.CSharp
         LineSpanDirectiveTrivia = 9071,
 
         ExtendKeyword,
-        ComponentKeyword
+        ComponentKeyword,
+        ImportKeyword,
+        MethodDecl,
+        ComponentDecl,
+        ExtendDecl,
+        
+        IdentifierEx,
+        NamedTypeEx,
+        
     }
 }

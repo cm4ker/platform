@@ -27,9 +27,9 @@ ExprSyntax <|-- MemberAccessEx
 ExprSyntax <|-- MatchEx
 ExprSyntax <|-- MatchArm
 ExprSyntax <|-- UnaryExBase
-    UnaryExBase <|-- CastEx
-    UnaryExBase <|-- IndexerEx
-    UnaryExBase <|-- UnaryEx
+ExprSyntax <|-- CastEx
+ExprSyntax <|-- IndexerEx
+ExprSyntax <|-- UnaryEx
 ExprSyntax <|-- BinaryEx
 ExprSyntax <|-- TypeEx
 ExprSyntax <|-- MissingEx

@@ -331,23 +331,22 @@ namespace Microsoft.CodeAnalysis.CSharp
 
             options = options ?? AquilaParseOptions.Default;
 
-            throw new NotImplementedException();
-            // using var lexer = new InternalSyntax.Lexer(text, options);
-            // using var parser = new InternalSyntax.LanguageParser(lexer, oldTree: null, changes: null,
-            //     cancellationToken: cancellationToken);
-            // var compilationUnit = (CompilationUnitSyntax)parser.ParseCompilationUnit().CreateRed();
-            // var tree = new ParsedSyntaxTree(
-            //     text,
-            //     text.Encoding,
-            //     text.ChecksumAlgorithm,
-            //     path,
-            //     options,
-            //     compilationUnit,
-            //     parser.Directives,
-            //     diagnosticOptions: diagnosticOptions,
-            //     cloneRoot: true);
-            // tree.VerifySource();
-            // return tree;
+            using var lexer = new InternalSyntax.Lexer(text, options);
+            using var parser = new InternalSyntax.LanguageParser(lexer, oldTree: null, changes: null,
+                cancellationToken: cancellationToken);
+            var compilationUnit = (CompilationUnitSyntax)parser.ParseCompilationUnit().CreateRed();
+            var tree = new ParsedSyntaxTree(
+                text,
+                text.Encoding,
+                text.ChecksumAlgorithm,
+                path,
+                options,
+                compilationUnit,
+                parser.Directives,
+                diagnosticOptions: diagnosticOptions,
+                cloneRoot: true);
+            tree.VerifySource();
+            return tree;
         }
 
         #endregion

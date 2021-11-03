@@ -1099,29 +1099,29 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
         protected TNode CheckFeatureAvailability<TNode>(TNode node, MessageID feature, bool forceWarning = false)
             where TNode : GreenNode
         {
-            LanguageVersion availableVersion = this.Options.LanguageVersion;
-            LanguageVersion requiredVersion = feature.RequiredVersion();
-
-            // There are special error codes for some features, so handle those separately.
-            switch (feature)
-            {
-                case MessageID.IDS_FeatureModuleAttrLoc:
-                    return availableVersion >= LanguageVersion.CSharp2
-                        ? node
-                        : this.AddError(node, ErrorCode.WRN_NonECMAFeature, feature.Localize());
-            }
-
-            var info = feature.GetFeatureAvailabilityDiagnosticInfo(this.Options);
-            if (info != null)
-            {
-                if (forceWarning)
-                {
-                    return AddError(node, ErrorCode.WRN_ErrorOverride, info, (int)info.Code);
-                }
-
-                return AddError(node, info.Code, info.Arguments);
-            }
-
+            // LanguageVersion availableVersion = this.Options.LanguageVersion;
+            // LanguageVersion requiredVersion = feature.RequiredVersion();
+            //
+            // // There are special error codes for some features, so handle those separately.
+            // switch (feature)
+            // {
+            //     case MessageID.IDS_FeatureModuleAttrLoc:
+            //         return availableVersion >= LanguageVersion.CSharp2
+            //             ? node
+            //             : this.AddError(node, ErrorCode.WRN_NonECMAFeature, feature.Localize());
+            // }
+            //
+            // var info = feature.GetFeatureAvailabilityDiagnosticInfo(this.Options);
+            // if (info != null)
+            // {
+            //     if (forceWarning)
+            //     {
+            //         return AddError(node, ErrorCode.WRN_ErrorOverride, info, (int)info.Code);
+            //     }
+            //
+            //     return AddError(node, info.Code, info.Arguments);
+            // }
+            throw new NotImplementedException();
             return node;
         }
 #nullable disable

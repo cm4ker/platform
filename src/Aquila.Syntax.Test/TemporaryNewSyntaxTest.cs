@@ -8,7 +8,7 @@ namespace Aquila.Compiler.Test2
         [Fact]
         public void Syntax2Test()
         {
-            CSharpSyntaxTree.ParseText("test");
+            CSharpSyntaxTree.ParseText("public void test() {} ");
         }
     }
 }

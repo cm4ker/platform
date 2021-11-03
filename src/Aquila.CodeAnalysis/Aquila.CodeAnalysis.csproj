@@ -79,7 +79,6 @@
 
     <ItemGroup>
       <Folder Include="Syntax2" />
-      <Folder Include="Syntax2\Syntax\InternalSyntax" />
     </ItemGroup>
 
     <ItemGroup>

@@ -481,5 +481,14 @@ namespace Microsoft.CodeAnalysis.CSharp
         {
             return new SyntaxToken(Syntax.InternalSyntax.SyntaxFactory.Identifier(ElasticMarker.UnderlyingNode, text, ElasticMarker.UnderlyingNode));
         }
+        
+        /// <summary>
+        /// Creates an IdentifierNameSyntax node.
+        /// </summary>
+        /// <param name="name">The identifier name.</param>
+        public static IdentifierEx IdentifierName(string name)
+        {
+            return IdentifierEx(Identifier(name));
+        }
     }
 }
