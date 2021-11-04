@@ -11,6 +11,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.PooledObjects;
 using Roslyn.Utilities;
+using MemberDecl = Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax.MemberDecl;
 
 namespace Microsoft.CodeAnalysis.CSharp
 {
@@ -467,11 +468,10 @@ namespace Microsoft.CodeAnalysis.CSharp
             {
                 var parent = this.Parent;
 
-                throw new NotImplementedException();
-                // if (parent is MemberDeclarationSyntax || parent is AccessorDeclarationSyntax)
-                // {
-                //     return true;
-                // }
+                if (parent is MemberDecl)
+                {
+                    return true;
+                }
             }
 
             return false;

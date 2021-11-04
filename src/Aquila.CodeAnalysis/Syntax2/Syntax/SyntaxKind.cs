@@ -674,8 +674,14 @@ namespace Microsoft.CodeAnalysis.CSharp
         /// <summary>Represents the end of a triple-slash documentation comment.</summary>
         EndOfDocumentationCommentToken = 8495,
 
+        
+        ExtendKeyword = 8496,
+        ComponentKeyword = 8497,
+        ImportKeyword = 8498,
+        MatchKeyword = 8499,
+        
         /// <summary>Represents the end of a file.</summary>
-        EndOfFileToken = 8496, //NB: this is assumed to be the last textless token
+        EndOfFileToken = 8506, //NB: this is assumed to be the last textless token
 
         // tokens with text
         BadToken = 8507,
@@ -1069,15 +1075,14 @@ namespace Microsoft.CodeAnalysis.CSharp
         LineDirectivePosition = 9070,
         LineSpanDirectiveTrivia = 9071,
 
-        ExtendKeyword,
-        ComponentKeyword,
-        ImportKeyword,
         MethodDecl,
         ComponentDecl,
         ExtendDecl,
         
         IdentifierEx,
         NamedTypeEx,
+        MatchExpression,
+        MatchArm
         
     }
 }

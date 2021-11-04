@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using Aquila.CodeAnalysis.Errors;
+using Aquila.Syntax.Ast;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
 
@@ -365,6 +366,11 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                             this.AddSkippedFileText(ref openBraceOrSemicolon, ref body, ref initialBadNodes,
                                 token);
                             reportUnexpectedToken = true;
+                            break;
+                        case SyntaxKind.ImportKeyword:
+                            var import = ParseImport();
+                            body.Imports.Add(import);
+
                             break;
                         case SyntaxKind.EndOfFileToken:
                             // This token marks the end of a namespace body
@@ -2276,6 +2282,60 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             return this.CurrentToken.Kind == SyntaxKind.SemicolonToken;
         }
 
+        private void ParseVariableDeclarators(
+            TypeEx type,
+            VariableFlags flags,
+            SeparatedSyntaxListBuilder<VariableInit> variables,
+            bool variableDeclarationsExpected,
+            bool allowLocalFunctions,
+            SyntaxList<AttributeListSyntax> attributes,
+            SyntaxList<SyntaxToken> mods)
+        {
+            variables.Add(
+                this.ParseVariableDeclarator(
+                    type,
+                    flags,
+                    isFirst: true,
+                    allowLocalFunctions: allowLocalFunctions,
+                    attributes: attributes,
+                    mods: mods));
+
+            while (true)
+            {
+                if (this.CurrentToken.Kind == SyntaxKind.SemicolonToken)
+                {
+                    break;
+                }
+                else if (this.CurrentToken.Kind == SyntaxKind.CommaToken)
+                {
+                    variables.AddSeparator(this.EatToken(SyntaxKind.CommaToken));
+                    variables.Add(
+                        this.ParseVariableDeclarator(
+                            type,
+                            flags,
+                            isFirst: false,
+                            allowLocalFunctions: false,
+                            attributes: attributes,
+                            mods: mods));
+                }
+                else if (!variableDeclarationsExpected ||
+                         this.SkipBadVariableListTokens(variables, SyntaxKind.CommaToken) == PostSkipAction.Abort)
+                {
+                    break;
+                }
+            }
+        }
+
+        private PostSkipAction SkipBadVariableListTokens(SeparatedSyntaxListBuilder<VariableInit> list,
+            SyntaxKind expected)
+        {
+            CSharpSyntaxNode tmp = null;
+            Debug.Assert(list.Count > 0);
+            return this.SkipBadSeparatedListTokensWithExpectedKind(ref tmp, list,
+                p => p.CurrentToken.Kind != SyntaxKind.CommaToken,
+                p => p.CurrentToken.Kind == SyntaxKind.SemicolonToken || p.IsTerminator(),
+                expected);
+        }
 
         [Flags]
         private enum VariableFlags
@@ -2283,6 +2343,358 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             Fixed = 0x01,
             Const = 0x02,
             Local = 0x04
+        }
+
+        private static SyntaxTokenList GetOriginalModifiers(CSharp.CSharpSyntaxNode decl)
+        {
+            if (decl != null)
+            {
+                switch (decl.Kind())
+                {
+                    // case SyntaxKind.FieldDeclaration:
+                    //     return ((CSharp.Syntax.FieldDeclarationSyntax)decl).Modifiers;
+                    case SyntaxKind.MethodDeclaration:
+                        return ((CSharp.Syntax.MethodDecl)decl).Modifiers;
+                    // case SyntaxKind.ConstructorDeclaration:
+                    //     return ((CSharp.Syntax.ConstructorDeclarationSyntax)decl).Modifiers;
+                    // case SyntaxKind.DestructorDeclaration:
+                    //     return ((CSharp.Syntax.DestructorDeclarationSyntax)decl).Modifiers;
+                    // case SyntaxKind.PropertyDeclaration:
+                    //     return ((CSharp.Syntax.PropertyDeclarationSyntax)decl).Modifiers;
+                    // case SyntaxKind.EventFieldDeclaration:
+                    //     return ((CSharp.Syntax.EventFieldDeclarationSyntax)decl).Modifiers;
+                    // case SyntaxKind.AddAccessorDeclaration:
+                    // case SyntaxKind.RemoveAccessorDeclaration:
+                    // case SyntaxKind.GetAccessorDeclaration:
+                    // case SyntaxKind.SetAccessorDeclaration:
+                    // case SyntaxKind.InitAccessorDeclaration:
+                    //     return ((CSharp.Syntax.AccessorDeclarationSyntax)decl).Modifiers;
+                    // case SyntaxKind.ClassDeclaration:
+                    // case SyntaxKind.StructDeclaration:
+                    // case SyntaxKind.InterfaceDeclaration:
+                    // case SyntaxKind.RecordDeclaration:
+                    // case SyntaxKind.RecordStructDeclaration:
+                    //     return ((CSharp.Syntax.TypeDeclarationSyntax)decl).Modifiers;
+                    // case SyntaxKind.DelegateDeclaration:
+                    //     return ((CSharp.Syntax.DelegateDeclarationSyntax)decl).Modifiers;
+                }
+            }
+
+            return default(SyntaxTokenList);
+        }
+
+        private static bool WasFirstVariable(CSharp.Syntax.VariableInit variable)
+        {
+            var parent = GetOldParent(variable) as CSharp.Syntax.VariableDecl;
+            if (parent != null)
+            {
+                return parent.Variables[0] == variable;
+            }
+
+            return false;
+        }
+
+        private static VariableFlags GetOriginalVariableFlags(CSharp.Syntax.VariableInit old)
+        {
+            var parent = GetOldParent(old);
+            var mods = GetOriginalModifiers(parent);
+            VariableFlags flags = default(VariableFlags);
+            if (mods.Any(SyntaxKind.FixedKeyword))
+            {
+                flags |= VariableFlags.Fixed;
+            }
+
+            if (mods.Any(SyntaxKind.ConstKeyword))
+            {
+                flags |= VariableFlags.Const;
+            }
+
+            if (parent != null && (parent.Kind() == SyntaxKind.VariableDeclaration ||
+                                   parent.Kind() == SyntaxKind.LocalDeclarationStatement))
+            {
+                flags |= VariableFlags.Local;
+            }
+
+            return flags;
+        }
+
+        private static bool CanReuseVariableDeclarator(CSharp.Syntax.VariableInit old, VariableFlags flags,
+            bool isFirst)
+        {
+            if (old == null)
+            {
+                return false;
+            }
+
+            SyntaxKind oldKind;
+
+            return (flags == GetOriginalVariableFlags(old))
+                   && (isFirst == WasFirstVariable(old))
+                   && old.Initializer == null // can't reuse node that possibly ends in an expression
+                   && (oldKind = GetOldParent(old).Kind()) != SyntaxKind.VariableDeclaration // or in a method body
+                   && oldKind != SyntaxKind.LocalDeclarationStatement;
+        }
+
+        private VariableInit ParseVariableDeclarator(
+            TypeEx parentType,
+            VariableFlags flags,
+            bool isFirst,
+            bool allowLocalFunctions,
+            SyntaxList<AttributeListSyntax> attributes,
+            SyntaxList<SyntaxToken> mods,
+            bool isExpressionContext = false)
+        {
+            if (this.IsIncrementalAndFactoryContextMatches &&
+                CanReuseVariableDeclarator(this.CurrentNode as CSharp.Syntax.VariableInit, flags, isFirst))
+            {
+                return (VariableInit)this.EatNode();
+            }
+
+            if (!isExpressionContext)
+            {
+                // Check for the common pattern of:
+                //
+                // C                    //<-- here
+                // Console.WriteLine();
+                //
+                // Standard greedy parsing will assume that this should be parsed as a variable
+                // declaration: "C Console".  We want to avoid that as it can confused parts of the
+                // system further up.  So, if we see certain things following the identifier, then we can
+                // assume it's not the actual name.  
+                // 
+                // So, if we're after a newline and we see a name followed by the list below, then we
+                // assume that we're accidentally consuming too far into the next statement.
+                //
+                // <dot>, <arrow>, any binary operator (except =), <question>.  None of these characters
+                // are allowed in a normal variable declaration.  This also provides a more useful error
+                // message to the user.  Instead of telling them that a semicolon is expected after the
+                // following token, then instead get a useful message about an identifier being missing.
+                // The above list prevents:
+                //
+                // C                    //<-- here
+                // Console.WriteLine();
+                //
+                // C                    //<-- here 
+                // Console->WriteLine();
+                //
+                // C 
+                // A + B;
+                //
+                // C 
+                // A ? B : D;
+                //
+                // C 
+                // A()
+                var resetPoint = this.GetResetPoint();
+                try
+                {
+                    var currentTokenKind = this.CurrentToken.Kind;
+                    if (currentTokenKind == SyntaxKind.IdentifierToken && !parentType.IsMissing)
+                    {
+                        var isAfterNewLine = parentType.GetLastToken().TrailingTrivia
+                            .Any((int)SyntaxKind.EndOfLineTrivia);
+                        if (isAfterNewLine)
+                        {
+                            int offset, width;
+                            this.GetDiagnosticSpanForMissingToken(out offset, out width);
+
+                            this.EatToken();
+                            currentTokenKind = this.CurrentToken.Kind;
+
+                            var isNonEqualsBinaryToken =
+                                currentTokenKind != SyntaxKind.EqualsToken &&
+                                SyntaxFacts.IsBinaryExpressionOperatorToken(currentTokenKind);
+
+                            if (currentTokenKind == SyntaxKind.DotToken ||
+                                currentTokenKind == SyntaxKind.OpenParenToken ||
+                                currentTokenKind == SyntaxKind.MinusGreaterThanToken ||
+                                isNonEqualsBinaryToken)
+                            {
+                                var isPossibleLocalFunctionToken =
+                                    currentTokenKind == SyntaxKind.OpenParenToken ||
+                                    currentTokenKind == SyntaxKind.LessThanToken;
+
+                                // Make sure this isn't a local function
+                                if (!isPossibleLocalFunctionToken)
+                                {
+                                    var missingIdentifier = CreateMissingIdentifierToken();
+                                    missingIdentifier = this.AddError(missingIdentifier, offset, width,
+                                        ErrorCode.ERR_IdentifierExpected);
+
+                                    return _syntaxFactory.VariableInit(missingIdentifier, null, null);
+                                }
+                            }
+                        }
+                    }
+                }
+                finally
+                {
+                    this.Reset(ref resetPoint);
+                    this.Release(ref resetPoint);
+                }
+            }
+
+            // NOTE: Diverges from Dev10.
+            //
+            // When we see parse an identifier and we see the partial contextual keyword, we check
+            // to see whether it is already attached to a partial class or partial method
+            // declaration.  However, in the specific case of variable declarators, Dev10
+            // specifically treats it as a variable name, even if it could be interpreted as a
+            // keyword.
+            var name = this.ParseIdentifierToken();
+            BracketedArgumentListSyntax argumentList = null;
+            EqualsValueClauseSyntax initializer = null;
+            TerminatorState saveTerm = _termState;
+            bool isFixed = (flags & VariableFlags.Fixed) != 0;
+            bool isConst = (flags & VariableFlags.Const) != 0;
+            bool isLocal = (flags & VariableFlags.Local) != 0;
+
+            // Give better error message in the case where the user did something like:
+            //
+            // X x = 1, Y y = 2; 
+            // using (X x = expr1, Y y = expr2) ...
+            //
+            // The superfluous type name is treated as variable (it is an identifier) and a missing ',' is injected after it.
+            if (!isFirst && this.IsTrueIdentifier())
+            {
+                name = this.AddError(name, ErrorCode.ERR_MultiTypeInDeclaration);
+            }
+
+            switch (this.CurrentToken.Kind)
+            {
+                case SyntaxKind.EqualsToken:
+                    if (isFixed)
+                    {
+                        goto default;
+                    }
+
+                    var equals = this.EatToken();
+
+                    SyntaxToken refKeyword = null;
+                    if (isLocal && !isConst &&
+                        this.CurrentToken.Kind == SyntaxKind.RefKeyword
+                       )
+                    {
+                        refKeyword = this.EatToken();
+                        refKeyword = CheckFeatureAvailability(refKeyword, MessageID.IDS_FeatureRefLocalsReturns);
+                    }
+
+                    var init = this.ParseVariableInitializer();
+                    // if (refKeyword != null)
+                    // {
+                    //     init = _syntaxFactory.RefExpression(refKeyword, init);
+                    // }
+
+                    initializer = _syntaxFactory.EqualsValueClause(equals, init);
+                    break;
+
+                // case SyntaxKind.LessThanToken:
+                //     if (allowLocalFunctions && isFirst)
+                //     {
+                //         localFunction = TryParseLocalFunctionStatementBody(attributes, mods, parentType, name);
+                //         if (localFunction != null)
+                //         {
+                //             return null;
+                //         }
+                //     }
+                //
+                //     goto default;
+                //
+                // case SyntaxKind.OpenParenToken:
+                //     if (allowLocalFunctions && isFirst)
+                //     {
+                //         localFunction = TryParseLocalFunctionStatementBody(attributes, mods, parentType, name);
+                //         if (localFunction != null)
+                //         {
+                //             return null;
+                //         }
+                //     }
+                //
+                //     // Special case for accidental use of C-style constructors
+                //     // Fake up something to hold the arguments.
+                //     _termState |= TerminatorState.IsPossibleEndOfVariableDeclaration;
+                //     argumentList = this.ParseBracketedArgumentList();
+                //     _termState = saveTerm;
+                //     argumentList = this.AddError(argumentList, ErrorCode.ERR_BadVarDecl);
+                //     break;
+
+                case SyntaxKind.OpenBracketToken:
+                    bool sawNonOmittedSize;
+                    _termState |= TerminatorState.IsPossibleEndOfVariableDeclaration;
+                    var specifier = this.ParseArrayRankSpecifier(sawNonOmittedSize: out sawNonOmittedSize);
+                    _termState = saveTerm;
+                    var open = specifier.OpenBracketToken;
+                    var sizes = specifier.Sizes;
+                    var close = specifier.CloseBracketToken;
+                    if (isFixed && !sawNonOmittedSize)
+                    {
+                        close = this.AddError(close, ErrorCode.ERR_ValueExpected);
+                    }
+
+                    var args = _pool.AllocateSeparated<ArgumentSyntax>();
+                    try
+                    {
+                        var withSeps = sizes.GetWithSeparators();
+                        foreach (var item in withSeps)
+                        {
+                            var expression = item as ExprSyntax;
+                            if (expression != null)
+                            {
+                                bool isOmitted = expression.Kind == SyntaxKind.OmittedArraySizeExpression;
+                                if (!isFixed && !isOmitted)
+                                {
+                                    expression = this.AddError(expression, ErrorCode.ERR_ArraySizeInDeclaration);
+                                }
+
+                                args.Add(_syntaxFactory.Argument(null, refKindKeyword: null, expression));
+                            }
+                            else
+                            {
+                                args.AddSeparator((SyntaxToken)item);
+                            }
+                        }
+
+                        argumentList = _syntaxFactory.BracketedArgumentList(open, args, close);
+                        if (!isFixed)
+                        {
+                            argumentList = this.AddError(argumentList, ErrorCode.ERR_CStyleArray);
+                            // If we have "int x[] = new int[10];" then parse the initializer.
+                            if (this.CurrentToken.Kind == SyntaxKind.EqualsToken)
+                            {
+                                goto case SyntaxKind.EqualsToken;
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        _pool.Free(args);
+                    }
+
+                    break;
+
+                default:
+                    if (isConst)
+                    {
+                        name = this.AddError(name,
+                            ErrorCode.ERR_ConstValueRequired); // Error here for missing constant initializers
+                    }
+                    else if (isFixed)
+                    {
+                        if (parentType.Kind == SyntaxKind.ArrayType)
+                        {
+                            // They accidentally put the array before the identifier
+                            name = this.AddError(name, ErrorCode.ERR_FixedDimsRequired);
+                        }
+                        else
+                        {
+                            goto case SyntaxKind.OpenBracketToken;
+                        }
+                    }
+
+                    break;
+            }
+
+            return _syntaxFactory.VariableInit(name, argumentList, initializer);
         }
 
         private bool IsPossibleEndOfVariableDeclaration()
@@ -2294,6 +2706,17 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                     return true;
                 default:
                     return false;
+            }
+        }
+
+        private ExprSyntax ParseVariableInitializer()
+        {
+            switch (this.CurrentToken.Kind)
+            {
+                case SyntaxKind.OpenBraceToken:
+                    return this.ParseArrayInitializer();
+                default:
+                    return this.ParseExpressionCore();
             }
         }
 
@@ -3990,8 +4413,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                     //     return this.ParseMisplacedElse(attributes);
                     // case SyntaxKind.LockKeyword:
                     //     return this.ParseLockStatement(attributes);
-                    // case SyntaxKind.ReturnKeyword:
-                    //     return this.ParseReturnStatement(attributes);
+                    case SyntaxKind.ReturnKeyword:
+                        return this.ParseReturnStatement(attributes);
                     // case SyntaxKind.SwitchKeyword:
                     //     return this.ParseSwitchStatement(attributes);
                     // case SyntaxKind.ThrowKeyword:
@@ -4009,15 +4432,17 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                     //     return this.ParseBlock(attributes);
                     // case SyntaxKind.SemicolonToken:
                     //     return _syntaxFactory.EmptyStatement(attributes, this.EatToken());
-                    // case SyntaxKind.IdentifierToken:
-                    //     result = TryParseStatementStartingWithIdentifier(attributes, isGlobal);
-                    //     if (result != null)
-                    //         return result;
-                    //     break;
+                    case SyntaxKind.IdentifierToken:
+                        result = TryParseStatementStartingWithIdentifier(attributes, isGlobal);
+                        if (result != null)
+                            return result;
+                        break;
+                    // default:
+                    //     throw new Exception();
                 }
 
-                throw new Exception();
-                // return ParseStatementCoreRest(attributes, isGlobal, ref resetPointBeforeStatement);
+
+                return ParseStatementCoreRest(attributes, isGlobal, ref resetPointBeforeStatement);
             }
             finally
             {
@@ -4035,6 +4460,94 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
         }
 
 
+        private StmtSyntax ParseStatementCoreRest(SyntaxList<AttributeListSyntax> attributes, bool isGlobal,
+            ref ResetPoint resetPointBeforeStatement)
+        {
+            isGlobal = isGlobal && IsScript;
+
+            if (!this.IsPossibleLocalDeclarationStatement(isGlobal))
+            {
+                return this.ParseExpressionStatement(attributes);
+            }
+
+            if (isGlobal)
+            {
+                // if we're at the global script level, then we don't support local-decls or
+                // local-funcs. The caller instead will look for those and parse them as
+                // fields/methods in the global script scope.
+                return null;
+            }
+
+            bool beginsWithAwait = this.CurrentToken.ContextualKind == SyntaxKind.AwaitKeyword;
+            var result = ParseLocalDeclarationStatement(attributes);
+
+            // didn't get any sort of statement.  This was something else entirely
+            // (like just a `}`).  No need to retry anything here.  Just reset back
+            // to where we started from and bail entirely from parsing a statement.
+            if (result == null)
+            {
+                this.Reset(ref resetPointBeforeStatement);
+                return null;
+            }
+
+            if (result.ContainsDiagnostics &&
+                beginsWithAwait &&
+                !IsInAsync)
+            {
+                // Local decl had issues.  We were also starting with 'await' in a non-async
+                // context. Retry parsing this as if we were in an 'async' context as it's much
+                // more likely that this was a misplace await-expr' than a local decl.
+                //
+                // The user will still get a later binding error about an await-expr in a non-async
+                // context.
+                this.Reset(ref resetPointBeforeStatement);
+
+                IsInAsync = true;
+                result = ParseExpressionStatement(attributes);
+                IsInAsync = false;
+            }
+
+            // Didn't want to retry as an `await expr`.  Just return what we actually
+            // produced.
+            return result;
+        }
+
+        private StmtSyntax TryParseStatementStartingWithIdentifier(SyntaxList<AttributeListSyntax> attributes,
+            bool isGlobal)
+        {
+            if (this.CurrentToken.ContextualKind == SyntaxKind.AwaitKeyword &&
+                this.PeekToken(1).Kind == SyntaxKind.ForEachKeyword)
+            {
+                //  return this.ParseForEachStatement(attributes, ParseAwaitKeyword(MessageID.IDS_FeatureAsyncStreams));
+            }
+            else if (IsPossibleAwaitUsing())
+            {
+                // if (PeekToken(2).Kind == SyntaxKind.OpenParenToken)
+                // {
+                //     // `await using Type ...` is handled below in ParseLocalDeclarationStatement
+                //     return this.ParseUsingStatement(attributes, ParseAwaitKeyword(MessageID.IDS_FeatureAsyncUsing));
+                // }
+            }
+            // else if (this.IsPossibleLabeledStatement())
+            // {
+            //     return this.ParseLabeledStatement(attributes);
+            // }
+            // else if (this.IsPossibleYieldStatement())
+            // {
+            //     return this.ParseYieldStatement(attributes);
+            // }
+            else if (this.IsPossibleAwaitExpressionStatement())
+            {
+                return this.ParseExpressionStatement(attributes);
+            }
+            // else if (this.IsQueryExpression(mayBeVariableDeclaration: true, mayBeMemberDeclaration: isGlobal && IsScript))
+            // {
+            //     return this.ParseExpressionStatement(attributes, this.ParseQueryExpression(0));
+            // }
+
+            return null;
+        }
+
         private SyntaxToken ParseAwaitKeyword(MessageID feature)
         {
             Debug.Assert(this.CurrentToken.ContextualKind == SyntaxKind.AwaitKeyword);
@@ -4044,6 +4557,138 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
 
         private bool IsPossibleAwaitUsing()
             => CurrentToken.ContextualKind == SyntaxKind.AwaitKeyword && PeekToken(1).Kind == SyntaxKind.UsingKeyword;
+
+        private bool IsPossibleLocalDeclarationStatement(bool isGlobalScriptLevel)
+        {
+            // This method decides whether to parse a statement as a
+            // declaration or as an expression statement. In the old
+            // compiler it would simply call IsLocalDeclaration.
+
+            var tk = this.CurrentToken.Kind;
+            if (tk == SyntaxKind.RefKeyword ||
+                IsDeclarationModifier(tk) || // treat `static int x = 2;` as a local variable declaration
+                (SyntaxFacts.IsPredefinedType(tk) &&
+                 this.PeekToken(1).Kind != SyntaxKind.DotToken && // e.g. `int.Parse()` is an expression
+                 this.PeekToken(1).Kind != SyntaxKind.OpenParenToken)) // e.g. `int (x, y)` is an error decl expression
+            {
+                return true;
+            }
+
+            // note: `using (` and `await using (` are already handled in ParseStatementCore.
+            if (tk == SyntaxKind.UsingKeyword)
+            {
+                Debug.Assert(PeekToken(1).Kind != SyntaxKind.OpenParenToken);
+                return true;
+            }
+
+            if (IsPossibleAwaitUsing())
+            {
+                Debug.Assert(PeekToken(2).Kind != SyntaxKind.OpenParenToken);
+                return true;
+            }
+
+            tk = this.CurrentToken.ContextualKind;
+
+            var isPossibleAttributeOrModifier =
+                (IsAdditionalLocalFunctionModifier(tk) || tk == SyntaxKind.OpenBracketToken)
+                && (tk != SyntaxKind.AsyncKeyword ||
+                    ShouldAsyncBeTreatedAsModifier(parsingStatementNotDeclaration: true));
+            if (isPossibleAttributeOrModifier)
+            {
+                return true;
+            }
+
+            return IsPossibleFirstTypedIdentifierInLocaDeclarationStatement(isGlobalScriptLevel);
+        }
+
+        private bool IsPossibleFirstTypedIdentifierInLocaDeclarationStatement(bool isGlobalScriptLevel)
+        {
+            bool? typedIdentifier =
+                IsPossibleTypedIdentifierStart(this.CurrentToken, this.PeekToken(1), allowThisKeyword: false);
+            if (typedIdentifier != null)
+            {
+                return typedIdentifier.Value;
+            }
+
+            // It's common to have code like the following:
+            // 
+            //      Task.
+            //      await Task.Delay()
+            //
+            // In this case we don't want to parse this as a local declaration like:
+            //
+            //      Task.await Task
+            //
+            // This does not represent user intent, and it causes all sorts of problems to higher 
+            // layers.  This is because both the parse tree is strange, and the symbol tables have
+            // entries that throw things off (like a bogus 'Task' local).
+            //
+            // Note that we explicitly do this check when we see that the code spreads over multiple 
+            // lines.  We don't want this if the user has actually written "X.Y z"
+            var tk = this.CurrentToken.ContextualKind;
+
+            if (tk == SyntaxKind.IdentifierToken)
+            {
+                var token1 = PeekToken(1);
+                if (token1.Kind == SyntaxKind.DotToken &&
+                    token1.TrailingTrivia.Any((int)SyntaxKind.EndOfLineTrivia))
+                {
+                    if (PeekToken(2).Kind == SyntaxKind.IdentifierToken &&
+                        PeekToken(3).Kind == SyntaxKind.IdentifierToken)
+                    {
+                        // We have something like:
+                        //
+                        //      X.
+                        //      Y z
+                        //
+                        // This is only a local declaration if we have:
+                        //
+                        //      X.Y z;
+                        //      X.Y z = ...
+                        //      X.Y z, ...  
+                        //      X.Y z( ...      (local function) 
+                        //      X.Y z<W...      (local function)
+                        //
+                        var token4Kind = PeekToken(4).Kind;
+                        if (token4Kind != SyntaxKind.SemicolonToken &&
+                            token4Kind != SyntaxKind.EqualsToken &&
+                            token4Kind != SyntaxKind.CommaToken &&
+                            token4Kind != SyntaxKind.OpenParenToken &&
+                            token4Kind != SyntaxKind.LessThanToken)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            var resetPoint = this.GetResetPoint();
+            try
+            {
+                ScanTypeFlags st = this.ScanType();
+
+                // We could always return true for st == AliasQualName in addition to MustBeType on the first line, however, we want it to return false in the case where
+                // CurrentToken.Kind != SyntaxKind.Identifier so that error cases, like: A::N(), are not parsed as variable declarations and instead are parsed as A.N() where we can give
+                // a better error message saying "did you meant to use a '.'?"
+                if (st == ScanTypeFlags.MustBeType && this.CurrentToken.Kind != SyntaxKind.DotToken &&
+                    this.CurrentToken.Kind != SyntaxKind.OpenParenToken)
+                {
+                    return true;
+                }
+
+                if (st == ScanTypeFlags.NotType || this.CurrentToken.Kind != SyntaxKind.IdentifierToken)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            finally
+            {
+                this.Reset(ref resetPoint);
+                this.Release(ref resetPoint);
+            }
+        }
 
         private bool IsPossibleNewExpression()
         {
@@ -4438,6 +5083,19 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             }
         }
 
+        private ReturnStmt ParseReturnStatement(SyntaxList<AttributeListSyntax> attributes)
+        {
+            Debug.Assert(this.CurrentToken.Kind == SyntaxKind.ReturnKeyword);
+            var @return = this.EatToken(SyntaxKind.ReturnKeyword);
+            ExprSyntax arg = null;
+            if (this.CurrentToken.Kind != SyntaxKind.SemicolonToken)
+            {
+                arg = this.ParsePossibleRefExpression();
+            }
+
+            var semicolon = this.EatToken(SyntaxKind.SemicolonToken);
+            return _syntaxFactory.ReturnStmt(@return, arg, semicolon);
+        }
 
         private bool IsPossibleSwitchSection()
         {
@@ -4458,6 +5116,121 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             return condition1 || (condition2 && condition3);
         }
 
+
+        /// <summary>
+        /// Parses any kind of local declaration statement: local variable or local function.
+        /// </summary>
+        private StmtSyntax ParseLocalDeclarationStatement(SyntaxList<AttributeListSyntax> attributes)
+        {
+            SyntaxToken awaitKeyword, usingKeyword;
+            bool canParseAsLocalFunction = false;
+            if (IsPossibleAwaitUsing())
+            {
+                awaitKeyword = ParseAwaitKeyword(MessageID.None);
+                usingKeyword = EatToken();
+            }
+            else if (this.CurrentToken.Kind == SyntaxKind.UsingKeyword)
+            {
+                awaitKeyword = null;
+                usingKeyword = EatToken();
+            }
+            else
+            {
+                awaitKeyword = null;
+                usingKeyword = null;
+                canParseAsLocalFunction = true;
+            }
+
+            if (usingKeyword != null)
+            {
+                usingKeyword = CheckFeatureAvailability(usingKeyword, MessageID.IDS_FeatureUsingDeclarations);
+            }
+
+            var mods = _pool.Allocate();
+            this.ParseDeclarationModifiers(mods);
+
+            var variables = _pool.AllocateSeparated<VariableInit>();
+            try
+            {
+                this.ParseLocalDeclaration(variables,
+                    allowLocalFunctions: canParseAsLocalFunction,
+                    attributes: attributes,
+                    mods: mods.ToList(),
+                    type: out var type);
+
+
+                if (canParseAsLocalFunction)
+                {
+                    // If we find an accessibility modifier but no local function it's likely
+                    // the user forgot a closing brace. Let's back out of statement parsing.
+                    // We check just for a leading accessibility modifier in the syntax because
+                    // SkipBadStatementListTokens will not skip attribute lists.
+                    if (attributes.Count == 0 && mods.Count > 0 &&
+                        IsAccessibilityModifier(((SyntaxToken)mods[0]).ContextualKind))
+                    {
+                        return null;
+                    }
+                }
+
+                for (int i = 0; i < mods.Count; i++)
+                {
+                    var mod = (SyntaxToken)mods[i];
+
+                    if (IsAdditionalLocalFunctionModifier(mod.ContextualKind))
+                    {
+                        mods[i] = this.AddError(mod, ErrorCode.ERR_BadMemberFlag, mod.Text);
+                    }
+                }
+
+                var semicolon = this.EatToken(SyntaxKind.SemicolonToken);
+                return _syntaxFactory.LocalDeclStmt(
+                    attributes,
+                    mods.ToList(),
+                    _syntaxFactory.VariableDecl(type, variables),
+                    semicolon);
+            }
+            finally
+            {
+                _pool.Free(variables);
+                _pool.Free(mods);
+            }
+        }
+
+
+        private void ParseLocalDeclaration(
+            SeparatedSyntaxListBuilder<VariableInit> variables,
+            bool allowLocalFunctions,
+            SyntaxList<AttributeListSyntax> attributes,
+            SyntaxList<SyntaxToken> mods,
+            out TypeEx type)
+        {
+            type = allowLocalFunctions ? ParseReturnType() : this.ParseType();
+
+            VariableFlags flags = VariableFlags.Local;
+            if (mods.Any((int)SyntaxKind.ConstKeyword))
+            {
+                flags |= VariableFlags.Const;
+            }
+
+            var saveTerm = _termState;
+            _termState |= TerminatorState.IsEndOfDeclarationClause;
+            this.ParseVariableDeclarators(
+                type,
+                flags,
+                variables,
+                variableDeclarationsExpected: true,
+                allowLocalFunctions: allowLocalFunctions,
+                attributes: attributes,
+                mods: mods);
+            _termState = saveTerm;
+
+            if (allowLocalFunctions && (type as PredefinedTypeEx)?.Keyword.Kind == SyntaxKind.VoidKeyword)
+            {
+                type = this.AddError(type, ErrorCode.ERR_NoVoidHere);
+            }
+        }
+
+
         private bool IsEndOfDeclarationClause()
         {
             switch (this.CurrentToken.Kind)
@@ -4471,6 +5244,57 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             }
         }
 
+        private void ParseDeclarationModifiers(SyntaxListBuilder list)
+        {
+            SyntaxKind k;
+            while (IsDeclarationModifier(k = this.CurrentToken.ContextualKind) || IsAdditionalLocalFunctionModifier(k))
+            {
+                SyntaxToken mod;
+                if (k == SyntaxKind.AsyncKeyword)
+                {
+                    // check for things like "async async()" where async is the type and/or the function name
+                    {
+                        var resetPoint = this.GetResetPoint();
+
+                        var invalid = !IsPossibleStartOfTypeDeclaration(this.EatToken().Kind) &&
+                                      !IsDeclarationModifier(this.CurrentToken.Kind) &&
+                                      !IsAdditionalLocalFunctionModifier(this.CurrentToken.Kind) &&
+                                      (ScanType() == ScanTypeFlags.NotType ||
+                                       this.CurrentToken.Kind != SyntaxKind.IdentifierToken);
+
+                        this.Reset(ref resetPoint);
+                        this.Release(ref resetPoint);
+
+                        if (invalid)
+                        {
+                            break;
+                        }
+                    }
+
+                    mod = this.EatContextualToken(k);
+                    if (k == SyntaxKind.AsyncKeyword)
+                    {
+                        mod = CheckFeatureAvailability(mod, MessageID.IDS_FeatureAsync);
+                    }
+                }
+                else
+                {
+                    mod = this.EatToken();
+                }
+
+                if (k == SyntaxKind.ReadOnlyKeyword || k == SyntaxKind.VolatileKeyword)
+                {
+                    mod = this.AddError(mod, ErrorCode.ERR_BadMemberFlag, mod.Text);
+                }
+                else if (list.Any(mod.RawKind))
+                {
+                    // check for duplicates, can only be const
+                    mod = this.AddError(mod, ErrorCode.ERR_TypeExpected, mod.Text);
+                }
+
+                list.Add(mod);
+            }
+        }
 
         private static bool IsDeclarationModifier(SyntaxKind kind)
         {
@@ -4523,6 +5347,30 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                     return false;
             }
         }
+
+        private ExpressionStmt ParseExpressionStatement(SyntaxList<AttributeListSyntax> attributes)
+        {
+            return ParseExpressionStatement(attributes, this.ParseExpressionCore());
+        }
+
+        private ExpressionStmt ParseExpressionStatement(SyntaxList<AttributeListSyntax> attributes,
+            ExprSyntax expression)
+        {
+            SyntaxToken semicolon;
+            if (IsScript && this.CurrentToken.Kind == SyntaxKind.EndOfFileToken)
+            {
+                semicolon = SyntaxFactory.MissingToken(SyntaxKind.SemicolonToken);
+            }
+            else
+            {
+                // Do not report an error if the expression is not a statement expression.
+                // The error is reported in semantic analysis.
+                semicolon = this.EatToken(SyntaxKind.SemicolonToken);
+            }
+
+            return _syntaxFactory.ExpressionStmt(expression, semicolon);
+        }
+
 
         public ExprSyntax ParseExpression()
         {
@@ -4730,6 +5578,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                 case SyntaxKind.AsExpression:
                 case SyntaxKind.IsPatternExpression:
                     return Precedence.Relational;
+                case SyntaxKind.MatchExpression:
                 case SyntaxKind.SwitchExpression:
                 case SyntaxKind.WithExpression:
                     return Precedence.Switch;
@@ -4783,6 +5632,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                 case SyntaxKind.FalseLiteralExpression:
                 case SyntaxKind.GenericName:
                 case SyntaxKind.IdentifierName:
+                case SyntaxKind.IdentifierEx:
                 case SyntaxKind.ImplicitArrayCreationExpression:
                 case SyntaxKind.ImplicitStackAllocArrayCreationExpression:
                 case SyntaxKind.ImplicitObjectCreationExpression:
@@ -5225,6 +6075,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                 //         return this.AddError(this.CreateMissingIdentifierName(), ErrorCode.ERR_InvalidExprTerm,
                 //             this.CurrentToken.Text);
                 //     }
+                case SyntaxKind.MatchKeyword:
+                    return this.ParseMatch();
                 case SyntaxKind.IdentifierToken:
                     if (this.IsTrueIdentifier())
                     {
@@ -6068,6 +6920,81 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             _pool.Free(modifiers);
             return result;
         }
+
+        private InitializerEx ParseArrayInitializer()
+        {
+            var openBrace = this.EatToken(SyntaxKind.OpenBraceToken);
+
+            // NOTE:  This loop allows " { <initexpr>, } " but not " { , } "
+            var list = _pool.AllocateSeparated<ExprSyntax>();
+            try
+            {
+                if (this.CurrentToken.Kind != SyntaxKind.CloseBraceToken)
+                {
+                    tryAgain:
+                    if (this.IsPossibleVariableInitializer() || this.CurrentToken.Kind == SyntaxKind.CommaToken)
+                    {
+                        list.Add(this.ParseVariableInitializer());
+
+                        int lastTokenPosition = -1;
+                        while (IsMakingProgress(ref lastTokenPosition))
+                        {
+                            if (this.CurrentToken.Kind == SyntaxKind.CloseBraceToken)
+                            {
+                                break;
+                            }
+                            else if (this.IsPossibleVariableInitializer() ||
+                                     this.CurrentToken.Kind == SyntaxKind.CommaToken)
+                            {
+                                list.AddSeparator(this.EatToken(SyntaxKind.CommaToken));
+
+                                // check for exit case after legal trailing comma
+                                if (this.CurrentToken.Kind == SyntaxKind.CloseBraceToken)
+                                {
+                                    break;
+                                }
+                                else if (!this.IsPossibleVariableInitializer())
+                                {
+                                    goto tryAgain;
+                                }
+
+                                list.Add(this.ParseVariableInitializer());
+                                continue;
+                            }
+                            else if (SkipBadArrayInitializerTokens(ref openBrace, list, SyntaxKind.CommaToken) ==
+                                     PostSkipAction.Abort)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    else if (SkipBadArrayInitializerTokens(ref openBrace, list, SyntaxKind.CommaToken) ==
+                             PostSkipAction.Continue)
+                    {
+                        goto tryAgain;
+                    }
+                }
+
+                var closeBrace = this.EatToken(SyntaxKind.CloseBraceToken);
+
+                return _syntaxFactory.InitializerEx(SyntaxKind.ArrayInitializerExpression, openBrace, list,
+                    closeBrace);
+            }
+            finally
+            {
+                _pool.Free(list);
+            }
+        }
+
+        private PostSkipAction SkipBadArrayInitializerTokens(ref SyntaxToken openBrace,
+            SeparatedSyntaxListBuilder<ExprSyntax> list, SyntaxKind expected)
+        {
+            return this.SkipBadSeparatedListTokensWithExpectedKind(ref openBrace, list,
+                p => p.CurrentToken.Kind != SyntaxKind.CommaToken && !p.IsPossibleVariableInitializer(),
+                p => p.CurrentToken.Kind == SyntaxKind.CloseBraceToken || p.IsTerminator(),
+                expected);
+        }
+
 
         private bool IsAnonymousFunctionAsyncModifier()
         {

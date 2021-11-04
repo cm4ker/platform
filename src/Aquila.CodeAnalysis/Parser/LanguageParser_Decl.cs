@@ -1,30 +1,29 @@
-﻿namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+﻿using System.Diagnostics;
+
+namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
 {
     partial class LanguageParser
     {
-        // MemberDecl ParseMemberDecl()
-        // {
-        //     var type = ParseType();
-        //     var modifiers = _pool.Allocate();
-        //
-        //     ParseModifiers(modifiers, false);
-        //     var paramList = this.ParseParenthesizedParameterList();
-        //     var attrs = _pool.Allocate<AttributeListSyntax>();
-        //     return SyntaxFactory.MethodDecl(attrs.ToList(), modifiers.ToList(),
-        //         new PredefinedTypeEx(SyntaxKind.IntKeyword, SyntaxToken.Identifier("int")),
-        //         SyntaxToken.StringLiteral("test"), null, null);
-        // }
-        //
-        // TypeEx ParseType()
-        // {
-        //     var token = EatToken();
-        //     switch (token.Kind)
-        //     {
-        //         case SyntaxKind.IntKeyword:
-        //             return SyntaxFactory.PredefinedTypeEx(token);
-        //         default:
-        //             return SyntaxFactory.NamedTypeEx(token);
-        //     }
-        // }
+        ImportDecl ParseImport()
+        {
+            Debug.Assert(CurrentToken.Kind == SyntaxKind.ImportKeyword);
+
+            var importKeyword = EatToken(SyntaxKind.ImportKeyword);
+            NameEx name = this.ParseQualifiedName();
+            if (name.IsMissing && this.PeekToken(1).Kind == SyntaxKind.SemicolonToken)
+            {
+                //if we can see a semicolon ahead, then the current token was
+                //probably supposed to be an identifier
+                name = AddTrailingSkippedSyntax(name, this.EatToken());
+            }
+
+            SyntaxToken semicolon = this.EatToken(SyntaxKind.SemicolonToken);
+            return SyntaxFactory.ImportDecl(importKeyword, name, semicolon);
+        }
+    }
+
+    partial class LanguageParser
+    {
+        
     }
 }

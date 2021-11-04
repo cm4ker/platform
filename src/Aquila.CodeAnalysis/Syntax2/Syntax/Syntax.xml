@@ -648,12 +648,154 @@
         <TypeComment>
             <summary>The syntax for the expression body of an expression-bodied member.</summary>
         </TypeComment>
-        <Kind Name="ArrowExpressionClause" />
+        <Kind Name="ArrowExpressionClause"/>
         <Field Name="ArrowToken" Type="SyntaxToken">
-            <Kind Name="EqualsGreaterThanToken" />
+            <Kind Name="EqualsGreaterThanToken"/>
         </Field>
-        <Field Name="Expression" Type="ExprSyntax" />
-    </Node>    
+        <Field Name="Expression" Type="ExprSyntax"/>
+    </Node>
+    <Node Name="InitializerEx" Base="ExprSyntax">
+        <Kind Name="ObjectInitializerExpression"/>
+        <Kind Name="CollectionInitializerExpression"/>
+        <Kind Name="ArrayInitializerExpression"/>
+        <Kind Name="ComplexElementInitializerExpression"/>
+        <Kind Name="WithInitializerExpression"/>
+        <Field Name="OpenBraceToken" Type="SyntaxToken">
+            <Kind Name="OpenBraceToken"/>
+            <PropertyComment>
+                <summary>SyntaxToken representing the open brace.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Expressions" Type="SeparatedSyntaxList&lt;ExprSyntax&gt;" AllowTrailingSeparator="true">
+            <PropertyComment>
+                <summary>SeparatedSyntaxList of ExpressionSyntax representing the list of expressions in the initializer
+                    expression.
+                </summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="CloseBraceToken" Type="SyntaxToken">
+            <Kind Name="CloseBraceToken"/>
+            <PropertyComment>
+                <summary>SyntaxToken representing the close brace.</summary>
+            </PropertyComment>
+        </Field>
+        <TypeComment>
+            <summary>Class which represents the syntax node for initializer expression.</summary>
+        </TypeComment>
+        <FactoryComment>
+            <summary>Creates an InitializerExpressionSyntax node.</summary>
+        </FactoryComment>
+    </Node>
+
+    <!--region Match -->
+    <Node Name="MatchEx" Base="ExprSyntax">
+        <Kind Name="MatchExpression"/>
+        <Field Name="MatchKeyword" Type="SyntaxToken">
+            <Kind Name="MatchKeyword"/>
+            <PropertyComment>
+                <summary>
+                    Gets a SyntaxToken that represents the match keyword.
+                </summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="OpenParenToken" Type="SyntaxToken" Optional="true">
+            <Kind Name="OpenParenToken"/>
+            <PropertyComment>
+                <summary>
+                    Gets a SyntaxToken that represents the open parenthesis preceding the switch governing expression.
+                </summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Expression" Type="ExprSyntax">
+            <PropertyComment>
+                <summary>
+                    Gets an ExpressionSyntax representing the expression of the match ex.
+                </summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="CloseParenToken" Type="SyntaxToken" Optional="true">
+            <Kind Name="CloseParenToken"/>
+            <PropertyComment>
+                <summary>
+                    Gets a SyntaxToken that represents the close parenthesis following the switch governing expression.
+                </summary>
+            </PropertyComment>
+        </Field>
+
+        <Field Name="OpenBraceToken" Type="SyntaxToken">
+            <Kind Name="OpenBraceToken"/>
+            <PropertyComment>
+                <summary>
+                    Gets a SyntaxToken that represents the open braces preceding the switch sections.
+                </summary>
+            </PropertyComment>
+        </Field>
+
+        <Field Name="Arms" Type="SeparatedSyntaxList&lt;MatchArm&gt;" AllowTrailingSeparator="true">
+            <PropertyComment>
+                <summary>
+                    Gets a SyntaxList of SwitchSectionSyntax's that represents the switch sections of the switch
+                    statement.
+                </summary>
+            </PropertyComment>
+        </Field>
+
+        <Field Name="CloseBraceToken" Type="SyntaxToken">
+            <Kind Name="CloseBraceToken"/>
+            <PropertyComment>
+                <summary>
+                    Gets a SyntaxToken that represents the open braces following the switch sections.
+                </summary>
+            </PropertyComment>
+        </Field>
+
+        <TypeComment>
+            <summary>Represents a match expression syntax.</summary>
+        </TypeComment>
+        <FactoryComment>
+            <summary>Creates a MatchEx node.</summary>
+        </FactoryComment>
+    </Node>
+
+    <Node Name="MatchArm" Base="CSharpSyntaxNode">
+        <Kind Name="MatchArm"/>
+
+        <Field Name="BarToken" Type="SyntaxToken" Optional="true">
+            <Kind Name="BarToken"/>
+            <PropertyComment>
+                <summary>
+                    Gets a SyntaxToken that represents the open parenthesis preceding the switch governing expression.
+                </summary>
+            </PropertyComment>
+        </Field>
+
+        <Field Name="PatternExpression" Type="ExprSyntax">
+            <PropertyComment>
+                <summary>
+                    Gets an ExpressionSyntax representing the expression of the match ex.
+                </summary>
+            </PropertyComment>
+        </Field>
+
+        <Field Name="EqualsGreaterThanToken" Type="SyntaxToken" Optional="true">
+            <Kind Name="EqualsGreaterThanToken"/>
+            <PropertyComment>
+                <summary>
+                    Gets a SyntaxToken that represents the open parenthesis preceding the switch governing expression.
+                </summary>
+            </PropertyComment>
+        </Field>
+
+        <Field Name="ResultExpression" Type="ExprSyntax">
+            <PropertyComment>
+                <summary>
+                    Gets an ExpressionSyntax representing the expression of the match ex.
+                </summary>
+            </PropertyComment>
+        </Field>
+    </Node>
+    <!--endregion Match -->
+
     <!--region String-->
     <AbstractNode Name="InterpolatedStringContentSyntax" Base="CSharpSyntaxNode"/>
     <Node Name="InterpolatedStringTextSyntax" Base="InterpolatedStringContentSyntax">
@@ -1038,6 +1180,7 @@
     </Node>
     <!--endregion Type-->
 
+    <!-- region Array -->
     <Node Name="ArrayRankSpecifierSyntax" Base="CSharpSyntaxNode">
         <Kind Name="ArrayRankSpecifier"/>
         <Field Name="OpenBracketToken" Type="SyntaxToken">
@@ -1063,6 +1206,7 @@
             <summary>Creates an OmittedArraySizeExpressionSyntax node.</summary>
         </FactoryComment>
     </Node>
+    <!-- endregion Array -->
 
     <!--region Parameters-->
     <AbstractNode Name="BaseParameterListSyntax" Base="CSharpSyntaxNode">
@@ -1414,6 +1558,19 @@
             <Kind Name="CloseParenToken"/>
         </Field>
         <Field Name="Statement" Type="StmtSyntax"/>
+    </Node>
+    <Node Name="LocalDeclStmt" Base="StmtSyntax">
+        <Kind Name="LocalDeclarationStatement"/>
+        <Field Name="AttributeLists" Type="SyntaxList&lt;AttributeListSyntax&gt;"/>
+        <Field Name="Modifiers" Type="SyntaxList&lt;SyntaxToken&gt;">
+            <PropertyComment>
+                <summary>Gets the modifier list.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Declaration" Type="VariableDecl"/>
+        <Field Name="SemicolonToken" Type="SyntaxToken">
+            <Kind Name="SemicolonToken"/>
+        </Field>
     </Node>
     <!--endregion Statements-->
 

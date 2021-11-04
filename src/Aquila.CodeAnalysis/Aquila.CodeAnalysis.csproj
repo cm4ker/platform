@@ -2,10 +2,14 @@
     <PropertyGroup>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <NoWarn>,NU5048,CS8632,CS1591</NoWarn>
+    </PropertyGroup>
 
     <Import Project="..\Props\target.props" />
 
     <ItemGroup>
+        <PackageReference Include="xunit.assert" Version="2.4.1" />
         <ProjectReference Include="..\CSharpSyntaxGenerator\CSharpSyntaxGenerator.csproj">
             <OutputItemType>Analyzer</OutputItemType>
             <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

@@ -332,6 +332,7 @@ namespace Microsoft.CodeAnalysis.CSharp
                 case SyntaxKind.EventFieldDeclaration:
                     return true;
             }
+
             return false;
         }
 
@@ -864,6 +865,8 @@ namespace Microsoft.CodeAnalysis.CSharp
                     return SyntaxKind.DoKeyword;
                 case "switch":
                     return SyntaxKind.SwitchKeyword;
+                case "match":
+                    return SyntaxKind.MatchKeyword;
                 case "case":
                     return SyntaxKind.CaseKeyword;
                 case "default":
@@ -970,6 +973,8 @@ namespace Microsoft.CodeAnalysis.CSharp
                     return SyntaxKind.ImplicitKeyword;
                 case "explicit":
                     return SyntaxKind.ExplicitKeyword;
+                case "import":
+                    return SyntaxKind.ImportKeyword;
                 default:
                     return SyntaxKind.None;
             }
@@ -1442,6 +1447,8 @@ namespace Microsoft.CodeAnalysis.CSharp
                     return "do";
                 case SyntaxKind.SwitchKeyword:
                     return "switch";
+                case SyntaxKind.MatchKeyword:
+                    return "match";
                 case SyntaxKind.CaseKeyword:
                     return "case";
                 case SyntaxKind.DefaultKeyword:
@@ -1526,6 +1533,8 @@ namespace Microsoft.CodeAnalysis.CSharp
                     return "namespace";
                 case SyntaxKind.UsingKeyword:
                     return "using";
+                case SyntaxKind.ImportKeyword:
+                    return "import";
                 case SyntaxKind.ClassKeyword:
                     return "class";
                 case SyntaxKind.StructKeyword:
@@ -1695,7 +1704,7 @@ namespace Microsoft.CodeAnalysis.CSharp
         public static bool IsDocumentationCommentTrivia(SyntaxKind kind)
         {
             return kind == SyntaxKind.SingleLineDocumentationCommentTrivia ||
-                kind == SyntaxKind.MultiLineDocumentationCommentTrivia;
+                   kind == SyntaxKind.MultiLineDocumentationCommentTrivia;
         }
     }
 }

@@ -101,6 +101,13 @@ namespace Aquila.CodeAnalysis.Errors
         ERR_ExpressionExpected,
         ERR_AliasQualAsExpression,
         ERR_NamespaceUnexpected,
+        ERR_BadMemberFlag,
+        ERR_ConstValueRequired,
+        ERR_FixedDimsRequired,
+        ERR_CStyleArray,
+        ERR_ArraySizeInDeclaration,
+        ERR_BadVarDecl,
+        ERR_MultiTypeInDeclaration,
 
         //Compilation
         ERR_BadCompilationOptionValue,
