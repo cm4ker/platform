@@ -12,13 +12,14 @@ using System.Text;
 using System.Threading;
 using System.Xml.Linq;
 using Aquila.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Aquila.CodeAnalysis.Syntax;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
-using InternalSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax;
+using InternalSyntax = Aquila.CodeAnalysis.Syntax.InternalSyntax;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     /// <summary>
     /// A class containing factory methods for constructing syntax nodes, tokens and trivia.

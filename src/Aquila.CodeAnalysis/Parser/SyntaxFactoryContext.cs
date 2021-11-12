@@ -4,7 +4,7 @@
 
 #nullable disable
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     /// <summary>
     /// Because syntax nodes need to be constructed with context information - to allow us to 

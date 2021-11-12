@@ -5,8 +5,9 @@
 #nullable disable
 
 using System;
+using Microsoft.CodeAnalysis;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     /// <summary>
     /// A diagnostic, along with the location where it occurred.

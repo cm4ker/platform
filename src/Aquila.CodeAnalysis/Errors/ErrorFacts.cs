@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Resources;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
+using Aquila.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis.Errors
 {

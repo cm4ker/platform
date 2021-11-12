@@ -382,7 +382,7 @@ Binder
                     case SyntaxKind.ObjectKeyword: return trf.Object;
                     case SyntaxKind.StringKeyword: return trf.String;
                     case SyntaxKind.BoolKeyword: return trf.Boolean;
-                    case SyntaxKind.DatetimeKeyword: return trf.DateTime;
+                    //case SyntaxKind.DatetimeKeyword: return trf.DateTime;
 
                     default: throw ExceptionUtilities.UnexpectedValue(pt.Kind);
                 }
@@ -643,7 +643,7 @@ Binder
             }
 
             //try to find type name
-            var foundedType = BindType(new NamedTypeRef(expr.Span, SyntaxKind.Type, identifier));
+            var foundedType = BindType(new NamedTypeRef(expr.Span, SyntaxKind.NamedTypeEx, identifier));
 
             return new BoundClassTypeRef(QualifiedName.Object, Method, foundedType);
         }

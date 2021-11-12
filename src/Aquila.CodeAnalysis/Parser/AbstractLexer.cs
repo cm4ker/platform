@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using Aquila.CodeAnalysis.Errors;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     // separate out text windowing implementation (keeps scanning & lexing functions from abusing details)
     internal class AbstractLexer : IDisposable

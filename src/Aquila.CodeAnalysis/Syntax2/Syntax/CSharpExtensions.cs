@@ -7,8 +7,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Syntax;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
 using Microsoft.CodeAnalysis.Syntax;
 
@@ -163,7 +164,7 @@ namespace Microsoft.CodeAnalysis
     }
 }
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     public static class CSharpExtensions
     {

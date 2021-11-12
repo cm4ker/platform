@@ -4,7 +4,7 @@
 
 #nullable disable
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     internal enum XmlParseErrorCode
     {

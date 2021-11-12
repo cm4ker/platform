@@ -9,9 +9,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Threading;
 using Aquila.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     public partial class CSharpSyntaxTree
     {

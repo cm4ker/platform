@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     public static partial class SyntaxFacts
     {

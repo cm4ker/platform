@@ -5,10 +5,11 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Aquila.CodeAnalysis.Syntax;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Syntax;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     /// <summary>
     /// Represents a <see cref="CSharpSyntaxVisitor{TResult}"/> which descends an entire <see cref="CSharpSyntaxNode"/> graph and

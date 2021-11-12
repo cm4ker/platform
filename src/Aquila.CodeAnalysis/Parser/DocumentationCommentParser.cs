@@ -8,9 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Aquila.CodeAnalysis.Errors;
+using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     using Microsoft.CodeAnalysis.Syntax.InternalSyntax;
 

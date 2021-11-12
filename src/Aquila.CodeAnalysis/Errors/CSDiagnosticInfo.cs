@@ -10,9 +10,10 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.CodeAnalysis.Symbols;
+using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     internal sealed class CSDiagnosticInfo : DiagnosticInfoWithSymbols
     {

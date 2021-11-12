@@ -10,7 +10,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     internal readonly partial struct Blender
     {
@@ -32,7 +32,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
         private readonly DirectiveStack _oldDirectives;
         private readonly LexerMode _newLexerDrivenMode;
 
-        public Blender(Lexer lexer, CSharp.CSharpSyntaxNode oldTree, IEnumerable<TextChangeRange> changes)
+        public Blender(Lexer lexer, Aquila.CodeAnalysis.CSharpSyntaxNode oldTree, IEnumerable<TextChangeRange> changes)
         {
             Debug.Assert(lexer != null);
             _lexer = lexer;
@@ -109,7 +109,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
         /// the change itself.
         /// </summary>
         private static TextChangeRange ExtendToAffectedRange(
-            CSharp.CSharpSyntaxNode oldTree,
+            Aquila.CodeAnalysis.CSharpSyntaxNode oldTree,
             TextChangeRange changeRange)
         {
             // we will increase affected range of the change by the number of lookahead tokens
@@ -157,7 +157,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             return new TextChangeRange(finalSpan, finalLength);
         }
 
-        private static bool IsInsideInterpolation(CSharp.CSharpSyntaxNode oldTree, int start)
+        private static bool IsInsideInterpolation(Aquila.CodeAnalysis.CSharpSyntaxNode oldTree, int start)
         {
             var token = oldTree.FindToken(start, findInsideTrivia: false);
             for (var parent = token.Parent; // for each parent

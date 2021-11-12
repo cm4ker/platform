@@ -7,8 +7,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.CodeAnalysis;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     using Microsoft.CodeAnalysis.Syntax.InternalSyntax;
 

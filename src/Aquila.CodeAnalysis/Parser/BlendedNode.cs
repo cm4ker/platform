@@ -4,15 +4,15 @@
 
 #nullable disable
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     internal readonly struct BlendedNode
     {
-        internal readonly CSharp.CSharpSyntaxNode Node;
+        internal readonly Aquila.CodeAnalysis.CSharpSyntaxNode Node;
         internal readonly SyntaxToken Token;
         internal readonly Blender Blender;
 
-        internal BlendedNode(CSharp.CSharpSyntaxNode node, SyntaxToken token, Blender blender)
+        internal BlendedNode(Aquila.CodeAnalysis.CSharpSyntaxNode node, SyntaxToken token, Blender blender)
         {
             this.Node = node;
             this.Token = token;

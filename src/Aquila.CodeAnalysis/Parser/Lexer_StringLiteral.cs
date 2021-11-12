@@ -6,7 +6,7 @@ using System.Diagnostics;
 using Aquila.CodeAnalysis.Errors;
 using Microsoft.CodeAnalysis.PooledObjects;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     internal partial class Lexer
     {

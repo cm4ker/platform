@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Aquila.CodeAnalysis;
 using Aquila.Syntax.Text;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Expressions;

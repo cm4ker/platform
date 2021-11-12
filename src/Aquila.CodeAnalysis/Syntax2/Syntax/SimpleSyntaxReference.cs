@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Threading;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     /// <summary>
     /// this is a basic do-nothing implementation of a syntax reference

@@ -44,9 +44,9 @@ namespace Aquila.SyntaxGenerator2
         {
             WriteFileHeader();
 
-            WriteLine("namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax");
+            WriteLine("namespace Aquila.CodeAnalysis.Syntax.InternalSyntax");
             OpenBlock();
-            WriteLine();
+            WriteLine("using Microsoft.CodeAnalysis;");
             this.WriteGreenTypes();
             this.WriteGreenVisitors();
             this.WriteGreenRewriter();
@@ -58,9 +58,10 @@ namespace Aquila.SyntaxGenerator2
         private void WriteSyntax()
         {
             WriteFileHeader();
-            WriteLine("namespace Microsoft.CodeAnalysis.CSharp.Syntax");
+            WriteLine("namespace Aquila.CodeAnalysis.Syntax");
             OpenBlock();
-            WriteLine();
+            WriteLine("using Microsoft.CodeAnalysis;");
+            
             this.WriteRedTypes();
             CloseBlock();
         }
@@ -68,10 +69,12 @@ namespace Aquila.SyntaxGenerator2
         private void WriteMain()
         {
             WriteFileHeader();
-            WriteLine("namespace Microsoft.CodeAnalysis.CSharp");
+            WriteLine("namespace Aquila.CodeAnalysis");
             OpenBlock();
             WriteLine("using System.Diagnostics.CodeAnalysis;");
-            WriteLine("using Microsoft.CodeAnalysis.CSharp.Syntax;");
+            WriteLine("using Aquila.CodeAnalysis.Syntax;");
+            WriteLine("using Microsoft.CodeAnalysis;");
+            
             this.WriteRedVisitors();
             this.WriteRedRewriter();
             this.WriteRedFactories();
@@ -280,7 +283,7 @@ namespace Aquila.SyntaxGenerator2
                 }
 
                 WriteLine();
-                WriteLine($"internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new CSharp.Syntax.{node.Name}(this, parent, position);");
+                WriteLine($"internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.{node.Name}(this, parent, position);");
 
                 this.WriteGreenAcceptMethods(nd);
                 this.WriteGreenUpdateMethod(nd);

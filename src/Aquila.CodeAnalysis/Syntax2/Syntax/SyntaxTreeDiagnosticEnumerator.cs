@@ -4,9 +4,10 @@
 
 using System;
 using System.Diagnostics;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     /// <summary>
     /// An enumerator for diagnostic lists.

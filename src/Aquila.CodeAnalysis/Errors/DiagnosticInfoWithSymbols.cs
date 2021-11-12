@@ -7,8 +7,9 @@
 using System.Collections.Immutable;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.CodeAnalysis.Symbols;
+using Microsoft.CodeAnalysis;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     internal class DiagnosticInfoWithSymbols : DiagnosticInfo
     {

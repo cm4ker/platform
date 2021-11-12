@@ -7,8 +7,9 @@
 using System;
 using Roslyn.Utilities;
 using System.Globalization;
+using Microsoft.CodeAnalysis;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     internal partial class SyntaxToken
     {

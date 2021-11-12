@@ -6,9 +6,10 @@
 
 using System;
 using System.Diagnostics;
+using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     internal partial struct Blender
     {
@@ -32,7 +33,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                 _indexInParent = indexInParent;
             }
 
-            public static Cursor FromRoot(CSharp.CSharpSyntaxNode node)
+            public static Cursor FromRoot(Aquila.CodeAnalysis.CSharpSyntaxNode node)
             {
                 return new Cursor(node, indexInParent: 0);
             }
@@ -92,7 +93,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
 
                 var children = node.Parent.ChildNodesAndTokens();
                 var index = SyntaxNodeOrToken.GetFirstChildIndexSpanningPosition(children,
-                    ((CSharp.CSharpSyntaxNode)node).Position);
+                    ((Aquila.CodeAnalysis.CSharpSyntaxNode)node).Position);
                 for (int i = index, n = children.Count; i < n; i++)
                 {
                     var child = children[i];

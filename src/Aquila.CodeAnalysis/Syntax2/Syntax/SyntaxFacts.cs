@@ -5,11 +5,12 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Aquila.CodeAnalysis.Syntax;
+using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
-using static Microsoft.CodeAnalysis.CSharp.SyntaxKind;
+using static Aquila.CodeAnalysis.SyntaxKind;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     public static partial class SyntaxFacts
     {

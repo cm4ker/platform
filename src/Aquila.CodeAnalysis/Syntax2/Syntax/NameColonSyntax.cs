@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Aquila.CodeAnalysis.Syntax;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax
+namespace Aquila.CodeAnalysis.Syntax
 {
     partial class NameColonSyntax
     {
@@ -19,7 +19,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax
     }
 }
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     public partial class SyntaxFactory
     {

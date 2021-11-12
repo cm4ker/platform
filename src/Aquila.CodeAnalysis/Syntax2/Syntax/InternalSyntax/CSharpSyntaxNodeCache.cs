@@ -4,9 +4,10 @@
 
 #nullable disable
 
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Syntax.InternalSyntax;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     internal static class CSharpSyntaxNodeCache
     {

@@ -9,10 +9,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Syntax.InternalSyntax;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     [DebuggerDisplay("{GetDebuggerDisplay(), nq}")]
     internal abstract class CSharpSyntaxNode : GreenNode
@@ -220,9 +221,9 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             return flags;
         }
 
-        public override CodeAnalysis.SyntaxToken CreateSeparator<TNode>(SyntaxNode element)
+        public override Microsoft.CodeAnalysis.SyntaxToken CreateSeparator<TNode>(SyntaxNode element)
         {
-            return new CodeAnalysis.SyntaxToken();
+            return new Microsoft.CodeAnalysis.SyntaxToken();
         }
 
         public override bool IsTriviaWithEndOfLine()
@@ -233,10 +234,10 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
 
         // Use conditional weak table so we always return same identity for structured trivia
         private static readonly
-            ConditionalWeakTable<SyntaxNode, Dictionary<CodeAnalysis.SyntaxTrivia, WeakReference<SyntaxNode>>>
+            ConditionalWeakTable<SyntaxNode, Dictionary<Microsoft.CodeAnalysis.SyntaxTrivia, WeakReference<SyntaxNode>>>
             s_structuresTable
                 = new ConditionalWeakTable<SyntaxNode,
-                    Dictionary<CodeAnalysis.SyntaxTrivia, WeakReference<SyntaxNode>>>();
+                    Dictionary<Microsoft.CodeAnalysis.SyntaxTrivia, WeakReference<SyntaxNode>>>();
 
         /// <summary>
         /// Gets the syntax node represented the structure of this trivia, if any. The HasStructure property can be used to 
@@ -266,12 +267,12 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                     {
                         if (!structsInParent.TryGetValue(trivia, out var weakStructure))
                         {
-                            structure = CSharp.Syntax.StructuredTriviaSyntax.Create(trivia);
+                            structure = Aquila.CodeAnalysis.Syntax.StructuredTriviaSyntax.Create(trivia);
                             structsInParent.Add(trivia, new WeakReference<SyntaxNode>(structure));
                         }
                         else if (!weakStructure.TryGetTarget(out structure))
                         {
-                            structure = CSharp.Syntax.StructuredTriviaSyntax.Create(trivia);
+                            structure = Aquila.CodeAnalysis.Syntax.StructuredTriviaSyntax.Create(trivia);
                             weakStructure.SetTarget(structure);
                         }
                     }
@@ -280,7 +281,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                 }
                 else
                 {
-                    return CSharp.Syntax.StructuredTriviaSyntax.Create(trivia);
+                    return Aquila.CodeAnalysis.Syntax.StructuredTriviaSyntax.Create(trivia);
                 }
             }
 

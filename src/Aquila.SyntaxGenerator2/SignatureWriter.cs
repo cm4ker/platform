@@ -38,7 +38,7 @@ namespace Aquila.SyntaxGenerator2
             _writer.WriteLine("using System.Linq;");
             _writer.WriteLine("using System.Threading;");
             _writer.WriteLine();
-            _writer.WriteLine("namespace Microsoft.CodeAnalysis.CSharp");
+            _writer.WriteLine("namespace Aquila.CodeAnalysis");
             _writer.WriteLine("{");
 
             this.WriteTypes();

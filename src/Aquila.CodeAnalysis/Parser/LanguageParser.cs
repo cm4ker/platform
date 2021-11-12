@@ -11,11 +11,12 @@ using System.Threading;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Statements;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
 using YamlDotNet.Serialization.NodeTypeResolvers;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     using Microsoft.CodeAnalysis.Syntax.InternalSyntax;
 
@@ -39,7 +40,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
 
         internal LanguageParser(
             Lexer lexer,
-            CSharp.CSharpSyntaxNode oldTree,
+            CSharpSyntaxNode oldTree,
             IEnumerable<TextChangeRange> changes,
             LexerMode lexerMode = LexerMode.Syntax,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -142,7 +143,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             return false;
         }
 
-        private static CSharp.CSharpSyntaxNode GetOldParent(CSharp.CSharpSyntaxNode node)
+        private static Aquila.CodeAnalysis.CSharpSyntaxNode GetOldParent(Aquila.CodeAnalysis.CSharpSyntaxNode node)
         {
             return node != null ? node.Parent : null;
         }
@@ -1938,7 +1939,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
         internal ParameterListSyntax ParseParenthesizedParameterList()
         {
             if (this.IsIncrementalAndFactoryContextMatches &&
-                CanReuseParameterList(this.CurrentNode as CSharp.Syntax.ParameterListSyntax))
+                CanReuseParameterList(this.CurrentNode as Aquila.CodeAnalysis.Syntax.ParameterListSyntax))
             {
                 return (ParameterListSyntax)this.EatNode();
             }
@@ -2024,7 +2025,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
         private ParameterSyntax ParseParameter()
         {
             if (this.IsIncrementalAndFactoryContextMatches &&
-                CanReuseParameter(this.CurrentNode as CSharp.Syntax.ParameterSyntax))
+                CanReuseParameter(this.CurrentNode as Aquila.CodeAnalysis.Syntax.ParameterSyntax))
             {
                 return (ParameterSyntax)this.EatNode();
             }
@@ -2078,7 +2079,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             }
         }
 
-        private static bool CanReuseParameterList(CSharp.Syntax.ParameterListSyntax list)
+        private static bool CanReuseParameterList(Aquila.CodeAnalysis.Syntax.ParameterListSyntax list)
         {
             if (list == null)
             {
@@ -2106,7 +2107,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             return true;
         }
 
-        private static bool CanReuseBracketedParameterList(CSharp.Syntax.BracketedParameterListSyntax list)
+        private static bool CanReuseBracketedParameterList(Aquila.CodeAnalysis.Syntax.BracketedParameterListSyntax list)
         {
             if (list == null)
             {
@@ -2168,7 +2169,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             }
         }
 
-        private static bool CanReuseParameter(CSharp.Syntax.ParameterSyntax parameter)
+        private static bool CanReuseParameter(Aquila.CodeAnalysis.Syntax.ParameterSyntax parameter)
         {
             if (parameter == null)
             {
@@ -2183,7 +2184,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
 
             // cannot reuse lambda parameters as normal parameters (parsed with
             // different rules)
-            CSharp.CSharpSyntaxNode parent = parameter.Parent;
+            Aquila.CodeAnalysis.CSharpSyntaxNode parent = parameter.Parent;
             if (parent != null)
             {
                 if (parent.Kind() == SyntaxKind.SimpleLambdaExpression)
@@ -2191,7 +2192,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                     return false;
                 }
 
-                CSharp.CSharpSyntaxNode grandparent = parent.Parent;
+                Aquila.CodeAnalysis.CSharpSyntaxNode grandparent = parent.Parent;
                 if (grandparent != null && grandparent.Kind() == SyntaxKind.ParenthesizedLambdaExpression)
                 {
                     Debug.Assert(parent.Kind() == SyntaxKind.ParameterList);
@@ -2346,47 +2347,47 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             Local = 0x04
         }
 
-        private static SyntaxTokenList GetOriginalModifiers(CSharp.CSharpSyntaxNode decl)
+        private static SyntaxTokenList GetOriginalModifiers(Aquila.CodeAnalysis.CSharpSyntaxNode decl)
         {
             if (decl != null)
             {
                 switch (decl.Kind())
                 {
                     // case SyntaxKind.FieldDeclaration:
-                    //     return ((CSharp.Syntax.FieldDeclarationSyntax)decl).Modifiers;
+                    //     return ((Aquila.CodeAnalysis.Syntax.FieldDeclarationSyntax)decl).Modifiers;
                     case SyntaxKind.MethodDeclaration:
-                        return ((CSharp.Syntax.MethodDecl)decl).Modifiers;
+                        return ((Aquila.CodeAnalysis.Syntax.MethodDecl)decl).Modifiers;
                     // case SyntaxKind.ConstructorDeclaration:
-                    //     return ((CSharp.Syntax.ConstructorDeclarationSyntax)decl).Modifiers;
+                    //     return ((Aquila.CodeAnalysis.Syntax.ConstructorDeclarationSyntax)decl).Modifiers;
                     // case SyntaxKind.DestructorDeclaration:
-                    //     return ((CSharp.Syntax.DestructorDeclarationSyntax)decl).Modifiers;
+                    //     return ((Aquila.CodeAnalysis.Syntax.DestructorDeclarationSyntax)decl).Modifiers;
                     // case SyntaxKind.PropertyDeclaration:
-                    //     return ((CSharp.Syntax.PropertyDeclarationSyntax)decl).Modifiers;
+                    //     return ((Aquila.CodeAnalysis.Syntax.PropertyDeclarationSyntax)decl).Modifiers;
                     // case SyntaxKind.EventFieldDeclaration:
-                    //     return ((CSharp.Syntax.EventFieldDeclarationSyntax)decl).Modifiers;
+                    //     return ((Aquila.CodeAnalysis.Syntax.EventFieldDeclarationSyntax)decl).Modifiers;
                     // case SyntaxKind.AddAccessorDeclaration:
                     // case SyntaxKind.RemoveAccessorDeclaration:
                     // case SyntaxKind.GetAccessorDeclaration:
                     // case SyntaxKind.SetAccessorDeclaration:
                     // case SyntaxKind.InitAccessorDeclaration:
-                    //     return ((CSharp.Syntax.AccessorDeclarationSyntax)decl).Modifiers;
+                    //     return ((Aquila.CodeAnalysis.Syntax.AccessorDeclarationSyntax)decl).Modifiers;
                     // case SyntaxKind.ClassDeclaration:
                     // case SyntaxKind.StructDeclaration:
                     // case SyntaxKind.InterfaceDeclaration:
                     // case SyntaxKind.RecordDeclaration:
                     // case SyntaxKind.RecordStructDeclaration:
-                    //     return ((CSharp.Syntax.TypeDeclarationSyntax)decl).Modifiers;
+                    //     return ((Aquila.CodeAnalysis.Syntax.TypeDeclarationSyntax)decl).Modifiers;
                     // case SyntaxKind.DelegateDeclaration:
-                    //     return ((CSharp.Syntax.DelegateDeclarationSyntax)decl).Modifiers;
+                    //     return ((Aquila.CodeAnalysis.Syntax.DelegateDeclarationSyntax)decl).Modifiers;
                 }
             }
 
             return default(SyntaxTokenList);
         }
 
-        private static bool WasFirstVariable(CSharp.Syntax.VariableInit variable)
+        private static bool WasFirstVariable(Aquila.CodeAnalysis.Syntax.VariableInit variable)
         {
-            var parent = GetOldParent(variable) as CSharp.Syntax.VariableDecl;
+            var parent = GetOldParent(variable) as Aquila.CodeAnalysis.Syntax.VariableDecl;
             if (parent != null)
             {
                 return parent.Variables[0] == variable;
@@ -2395,7 +2396,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             return false;
         }
 
-        private static VariableFlags GetOriginalVariableFlags(CSharp.Syntax.VariableInit old)
+        private static VariableFlags GetOriginalVariableFlags(Aquila.CodeAnalysis.Syntax.VariableInit old)
         {
             var parent = GetOldParent(old);
             var mods = GetOriginalModifiers(parent);
@@ -2419,7 +2420,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             return flags;
         }
 
-        private static bool CanReuseVariableDeclarator(CSharp.Syntax.VariableInit old, VariableFlags flags,
+        private static bool CanReuseVariableDeclarator(Syntax.VariableInit old, VariableFlags flags,
             bool isFirst)
         {
             if (old == null)
@@ -2446,7 +2447,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             bool isExpressionContext = false)
         {
             if (this.IsIncrementalAndFactoryContextMatches &&
-                CanReuseVariableDeclarator(this.CurrentNode as CSharp.Syntax.VariableInit, flags, isFirst))
+                CanReuseVariableDeclarator(this.CurrentNode as Aquila.CodeAnalysis.Syntax.VariableInit, flags, isFirst))
             {
                 return (VariableInit)this.EatNode();
             }
@@ -2805,7 +2806,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
         {
             if (this.IsIncrementalAndFactoryContextMatches && this.CurrentNodeKind == SyntaxKind.IdentifierName)
             {
-                if (!SyntaxFacts.IsContextualKeyword(((CSharp.Syntax.IdentifierEx)this.CurrentNode).Identifier
+                if (!SyntaxFacts.IsContextualKeyword(((Aquila.CodeAnalysis.Syntax.IdentifierEx)this.CurrentNode).Identifier
                         .Kind()))
                 {
                     return (IdentifierEx)this.EatNode();
@@ -7618,7 +7619,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                     return false;
                 }
 
-                CSharp.CSharpSyntaxNode current = this.CurrentNode;
+                Aquila.CodeAnalysis.CSharpSyntaxNode current = this.CurrentNode;
                 return current != null && MatchesFactoryContext(current.Green, _syntaxFactoryContext);
             }
         }

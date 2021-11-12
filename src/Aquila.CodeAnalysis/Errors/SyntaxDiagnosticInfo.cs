@@ -8,9 +8,10 @@ using System;
 using System.Diagnostics;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.Syntax.Errors;
+using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     internal class SyntaxDiagnosticInfo : DiagnosticInfo
     {

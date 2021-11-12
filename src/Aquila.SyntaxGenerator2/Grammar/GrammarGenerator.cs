@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis.CSharp;
+using Aquila.CodeAnalysis;
 
 namespace Aquila.SyntaxGenerator2.Grammar
 {

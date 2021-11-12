@@ -7,7 +7,7 @@
 using Microsoft.CodeAnalysis.Syntax.InternalSyntax;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     /// <summary>
     /// Set of well-known SyntaxTokens commonly found within XML doc comments.

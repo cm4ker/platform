@@ -8,7 +8,7 @@ using System;
 using System.Diagnostics;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     internal partial class Lexer
     {

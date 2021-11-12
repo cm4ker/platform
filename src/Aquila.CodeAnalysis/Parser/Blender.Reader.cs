@@ -6,9 +6,10 @@
 
 using System.Collections.Immutable;
 using System.Diagnostics;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     internal partial struct Blender
     {
@@ -207,7 +208,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                 _oldDirectives = currentNodeOrToken.ApplyDirectives(_oldDirectives);
 
                 blendedNode = CreateBlendedNode(
-                    node: (CSharp.CSharpSyntaxNode)currentNodeOrToken.AsNode(),
+                    node: (Aquila.CodeAnalysis.CSharpSyntaxNode)currentNodeOrToken.AsNode(),
                     token: (InternalSyntax.SyntaxToken)currentNodeOrToken.AsToken().Node);
                 return true;
             }
@@ -262,7 +263,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                 // semicolon, but we do not report errors.  It would be preferable to fix that so
                 // that the semicolon can be optional rather than abusing the system.
                 if ((nodeOrToken.IsToken && nodeOrToken.AsToken().IsMissing) ||
-                    (nodeOrToken.IsNode && IsIncomplete((CSharp.CSharpSyntaxNode)nodeOrToken.AsNode())))
+                    (nodeOrToken.IsNode && IsIncomplete((Aquila.CodeAnalysis.CSharpSyntaxNode)nodeOrToken.AsNode())))
                 {
                     return false;
                 }
@@ -289,7 +290,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                 return oldSpan.IntersectsWith(changeSpan);
             }
 
-            private static bool IsIncomplete(CSharp.CSharpSyntaxNode node)
+            private static bool IsIncomplete(Aquila.CodeAnalysis.CSharpSyntaxNode node)
             {
                 // A node is incomplete if the last token in it is a missing token.  Use the green
                 // node to determine this as it's much faster than going through the red API.
@@ -309,7 +310,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                 }
             }
 
-            private BlendedNode CreateBlendedNode(CSharp.CSharpSyntaxNode node, SyntaxToken token)
+            private BlendedNode CreateBlendedNode(Aquila.CodeAnalysis.CSharpSyntaxNode node, SyntaxToken token)
             {
                 return new BlendedNode(node, token,
                     new Blender(_lexer, _oldTreeCursor, _changes, _newPosition, _changeDelta, _newDirectives,

@@ -572,7 +572,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             if (hasActions)
             {
                 _current = WithNewOrdinal(Connect(_current, action));
-                this.Add(new ExpressionStmt(actionExpr.Span, SyntaxKind.ExpressionStatement, actionExpr));
+                this.Add(new ExpressionStmt(actionExpr.Span, Aquila.Syntax.SyntaxKind.ExpressionStatement, actionExpr));
             }
 
             CloseScope();

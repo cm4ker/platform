@@ -11,11 +11,12 @@ using System.Linq;
 using System.Text;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Errors;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Syntax.InternalSyntax;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     [Flags]
     internal enum LexerMode

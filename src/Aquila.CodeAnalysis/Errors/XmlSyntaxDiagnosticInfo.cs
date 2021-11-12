@@ -9,7 +9,7 @@ using System.Globalization;
 using Aquila.CodeAnalysis.Errors;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     internal sealed class XmlSyntaxDiagnosticInfo : SyntaxDiagnosticInfo
     {

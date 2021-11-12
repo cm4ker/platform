@@ -8,11 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
+using Microsoft.CodeAnalysis.Text;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     internal partial class LanguageParser
     {
@@ -69,7 +72,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             var interpolations = ArrayBuilder<Lexer.Interpolation>.GetInstance();
             SyntaxDiagnosticInfo error = null;
             bool closeQuoteMissing;
-            using (var tempLexer = new Lexer(Text.SourceText.From(originalText), this.Options,
+            using (var tempLexer = new Lexer(SourceText.From(originalText), this.Options,
                        allowPreprocessorDirectives: false))
             {
                 // compute the positions of the interpolations in the original string literal, and also compute/preserve
@@ -172,7 +175,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
 
             var parsedText = Substring(text, interpolation.OpenBracePosition,
                 interpolation.HasColon ? interpolation.ColonPosition - 1 : interpolation.CloseBracePosition - 1);
-            using (var tempLexer = new Lexer(Text.SourceText.From(parsedText), this.Options,
+            using (var tempLexer = new Lexer(SourceText.From(parsedText), this.Options,
                        allowPreprocessorDirectives: false, interpolationFollowedByColon: interpolation.HasColon))
             {
                 // TODO: some of the trivia in the interpolation maybe should be trailing trivia of the openBraceToken
@@ -222,7 +225,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
         {
             var prefix = isVerbatim ? "@\"" : "\"";
             var fakeString = prefix + bodyText + "\"";
-            using (var tempLexer = new Lexer(Text.SourceText.From(fakeString), this.Options,
+            using (var tempLexer = new Lexer(SourceText.From(fakeString), this.Options,
                        allowPreprocessorDirectives: false))
             {
                 LexerMode mode = LexerMode.Syntax;

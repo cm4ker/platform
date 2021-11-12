@@ -7,11 +7,12 @@ using System.Collections.Immutable;
 using System.Text;
 using System.Threading;
 using Aquila.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Aquila.CodeAnalysis.Syntax;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     public partial class CSharpSyntaxTree
     {

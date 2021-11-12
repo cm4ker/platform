@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Text;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     [DebuggerDisplay("{GetDebuggerDisplay(), nq}")]
     internal struct Directive

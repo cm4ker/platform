@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Text;
 using Aquila.CodeAnalysis.Errors;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     using Microsoft.CodeAnalysis.Syntax.InternalSyntax;
 

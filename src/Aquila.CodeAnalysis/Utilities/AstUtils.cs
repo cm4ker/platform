@@ -7,6 +7,7 @@ using Aquila.Syntax;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Functions;
 using Aquila.Syntax.Text;
+using MethodDecl = Aquila.Syntax.Ast.Functions.MethodDecl;
 
 namespace Aquila.CodeAnalysis
 {

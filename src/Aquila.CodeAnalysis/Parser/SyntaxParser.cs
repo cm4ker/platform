@@ -11,11 +11,12 @@ using System.Linq;
 using System.Threading;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Errors;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     using Microsoft.CodeAnalysis.Syntax.InternalSyntax;
 
@@ -46,7 +47,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
         protected SyntaxParser(
             Lexer lexer,
             LexerMode mode,
-            CSharp.CSharpSyntaxNode oldTree,
+            Aquila.CodeAnalysis.CSharpSyntaxNode oldTree,
             IEnumerable<TextChangeRange> changes,
             bool allowModeReset,
             bool preLexIfNotIncremental = false,
@@ -228,7 +229,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             }
         }
 
-        protected CSharp.CSharpSyntaxNode CurrentNode
+        protected Aquila.CodeAnalysis.CSharpSyntaxNode CurrentNode
         {
             get
             {

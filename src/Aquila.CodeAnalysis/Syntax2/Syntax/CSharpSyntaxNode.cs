@@ -8,12 +8,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Aquila.CodeAnalysis.Syntax;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
 using Roslyn.Utilities;
-using MemberDecl = Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax.MemberDecl;
+using MemberDecl = Aquila.CodeAnalysis.Syntax.InternalSyntax.MemberDecl;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     /// <summary>
     /// Represents a non-terminal node in the syntax tree.

@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     internal class SyntaxTrivia : CSharpSyntaxNode
     {
@@ -108,9 +109,9 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             writer.Write(Text);
         }
 
-        public static implicit operator CodeAnalysis.SyntaxTrivia(SyntaxTrivia trivia)
+        public static implicit operator Microsoft.CodeAnalysis.SyntaxTrivia(SyntaxTrivia trivia)
         {
-            return new CodeAnalysis.SyntaxTrivia(token: default, trivia, position: 0, index: 0);
+            return new Microsoft.CodeAnalysis.SyntaxTrivia(token: default, trivia, position: 0, index: 0);
         }
 
         public override bool IsEquivalentTo(GreenNode? other)

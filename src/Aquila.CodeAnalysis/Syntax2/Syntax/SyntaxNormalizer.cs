@@ -5,11 +5,12 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax
+namespace Aquila.CodeAnalysis.Syntax
 {
     internal class SyntaxNormalizer : CSharpSyntaxRewriter
     {

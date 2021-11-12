@@ -11,10 +11,11 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Aquila.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     public partial class CSharpSyntaxTree
     {

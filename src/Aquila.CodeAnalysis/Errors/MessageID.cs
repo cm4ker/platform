@@ -8,7 +8,7 @@ using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Errors;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     internal enum MessageID
     {

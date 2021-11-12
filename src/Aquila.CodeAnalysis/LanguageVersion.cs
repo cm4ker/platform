@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Aquila.CodeAnalysis.Errors;
+using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     /// <summary>
     /// Specifies the language version.

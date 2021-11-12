@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     /// <summary>
     /// Defines a set of methods to determine how Unicode characters are treated by the C# compiler.

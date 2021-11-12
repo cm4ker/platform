@@ -6,8 +6,9 @@
 
 using System.Diagnostics;
 using Aquila.CodeAnalysis.Errors;
+using Microsoft.CodeAnalysis;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     internal class SyntaxFirstTokenReplacer : CSharpSyntaxRewriter
     {

@@ -6,9 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax
+namespace Aquila.CodeAnalysis.Syntax
 {
     internal static class SyntaxReplacer
     {

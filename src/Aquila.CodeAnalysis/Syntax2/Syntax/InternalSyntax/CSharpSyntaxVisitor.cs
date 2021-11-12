@@ -4,7 +4,7 @@
 
 #nullable disable
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
+namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     internal abstract partial class CSharpSyntaxVisitor<TResult>
     {

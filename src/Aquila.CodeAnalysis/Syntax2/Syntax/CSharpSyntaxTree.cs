@@ -14,13 +14,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Aquila.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Aquila.CodeAnalysis.Syntax;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
-using InternalSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax;
+using InternalSyntax = Aquila.CodeAnalysis.Syntax.InternalSyntax;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     /// <summary>
     /// The parsed representation of a C# source document.

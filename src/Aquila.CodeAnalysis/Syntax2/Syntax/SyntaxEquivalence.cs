@@ -5,8 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.CodeAnalysis;
 
-namespace Microsoft.CodeAnalysis.CSharp.Syntax
+namespace Aquila.CodeAnalysis.Syntax
 {
     using Green = InternalSyntax;
 
