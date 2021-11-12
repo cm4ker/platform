@@ -975,6 +975,8 @@ namespace Microsoft.CodeAnalysis.CSharp
                     return SyntaxKind.ExplicitKeyword;
                 case "import":
                     return SyntaxKind.ImportKeyword;
+                case "extend":
+                    return SyntaxKind.ExtendKeyword;
                 default:
                     return SyntaxKind.None;
             }
@@ -1691,6 +1693,8 @@ namespace Microsoft.CodeAnalysis.CSharp
                     return "managed";
                 case SyntaxKind.UnmanagedKeyword:
                     return "unmanaged";
+                case SyntaxKind.ExtendKeyword:
+                    return "extend";
                 default:
                     return string.Empty;
             }

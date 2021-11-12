@@ -7,7 +7,7 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace CSharpSyntaxGenerator
+namespace Aquila.SyntaxGenerator2
 {
     public class TreeTypeChild
     {

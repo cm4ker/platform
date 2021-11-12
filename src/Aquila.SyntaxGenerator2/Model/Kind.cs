@@ -6,7 +6,7 @@
 
 using System.Xml.Serialization;
 
-namespace CSharpSyntaxGenerator
+namespace Aquila.SyntaxGenerator2
 {
     public class Kind
     {

@@ -13,9 +13,10 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using CSharpSyntaxGenerator.Grammar;
+using Aquila.SyntaxGenerator2;
+using Aquila.SyntaxGenerator2.Grammar;
 
-namespace CSharpSyntaxGenerator
+namespace Aquila.Aquila.SyntaxGenerator2
 {
     internal static class Program
     {

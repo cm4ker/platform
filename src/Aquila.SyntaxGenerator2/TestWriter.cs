@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace CSharpSyntaxGenerator
+namespace Aquila.SyntaxGenerator2
 {
     internal class TestWriter : AbstractFileWriter
     {

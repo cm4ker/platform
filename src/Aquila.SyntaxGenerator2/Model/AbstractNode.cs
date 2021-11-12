@@ -4,14 +4,13 @@
 
 #nullable disable
 
-using System.Xml;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace CSharpSyntaxGenerator
+namespace Aquila.SyntaxGenerator2
 {
-    public class Comment
+    public class AbstractNode : TreeType
     {
-        [XmlAnyElement]
-        public XmlElement[] Body;
+        public readonly List<Field> Fields = new List<Field>();
     }
 }

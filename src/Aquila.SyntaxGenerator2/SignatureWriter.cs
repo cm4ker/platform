@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace CSharpSyntaxGenerator
+namespace Aquila.SyntaxGenerator2
 {
     internal class SignatureWriter
     {

@@ -109,7 +109,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquila.CodeAnalysis.Feature
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquila.CodeAnalysis.Workspaces", "src\Aquila.CodeAnalysis.Workspaces\Aquila.CodeAnalysis.Workspaces.csproj", "{EC622ADC-AF71-449E-B434-436EF25D1917}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpSyntaxGenerator", "src\CSharpSyntaxGenerator\CSharpSyntaxGenerator.csproj", "{7B8608C2-3358-439E-A663-025F5D4CD7BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquila.SyntaxGenerator2", "src\Aquila.SyntaxGenerator2\Aquila.SyntaxGenerator2.csproj", "{7B8608C2-3358-439E-A663-025F5D4CD7BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

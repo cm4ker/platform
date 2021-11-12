@@ -14,7 +14,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace CSharpSyntaxGenerator.Grammar
+namespace Aquila.SyntaxGenerator2.Grammar
 {
     internal static class GrammarGenerator
     {

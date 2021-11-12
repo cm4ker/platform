@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading;
 using System.Xml;
 
-namespace CSharpSyntaxGenerator
+namespace Aquila.SyntaxGenerator2
 {
     internal class SourceWriter : AbstractFileWriter
     {

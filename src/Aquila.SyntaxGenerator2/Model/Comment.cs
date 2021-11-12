@@ -4,9 +4,14 @@
 
 #nullable disable
 
-namespace CSharpSyntaxGenerator
+using System.Xml;
+using System.Xml.Serialization;
+
+namespace Aquila.SyntaxGenerator2
 {
-    public class PredefinedNode : TreeType
+    public class Comment
     {
+        [XmlAnyElement]
+        public XmlElement[] Body;
     }
 }

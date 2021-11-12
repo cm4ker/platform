@@ -102,7 +102,19 @@
             <Kind Name="ExtendKeyword"/>
         </Field>
         <Field Name="Name" Type="NameEx"/>
+        <Field Name="OpenBraceToken" Type="SyntaxToken">
+            <Kind Name="OpenBraceToken"/>
+            <PropertyComment>
+                <summary>SyntaxToken representing the open brace.</summary>
+            </PropertyComment>
+        </Field>
         <Field Name="Methods" Type="SyntaxList&lt;MethodDecl&gt;"/>
+        <Field Name="CloseBraceToken" Type="SyntaxToken">
+            <Kind Name="CloseBraceToken"/>
+            <PropertyComment>
+                <summary>SyntaxToken representing the close brace.</summary>
+            </PropertyComment>
+        </Field>
     </Node>
     <Node Name="ComponentDecl" Base="CSharpSyntaxNode">
         <Kind Name="ComponentDecl"/>
@@ -1105,34 +1117,27 @@
         </FactoryComment>
     </Node>
     <Node Name="UnionTypeEx" Base="TypeEx">
-        <Kind Name="PredefinedType"/>
-        <Field Name="Keyword" Type="SyntaxToken">
-            <Kind Name="BoolKeyword"/>
-            <Kind Name="ByteKeyword"/>
-            <Kind Name="SByteKeyword"/>
-            <Kind Name="IntKeyword"/>
-            <Kind Name="UIntKeyword"/>
-            <Kind Name="ShortKeyword"/>
-            <Kind Name="UShortKeyword"/>
-            <Kind Name="LongKeyword"/>
-            <Kind Name="ULongKeyword"/>
-            <Kind Name="FloatKeyword"/>
-            <Kind Name="DoubleKeyword"/>
-            <Kind Name="DecimalKeyword"/>
-            <Kind Name="StringKeyword"/>
-            <Kind Name="CharKeyword"/>
-            <Kind Name="ObjectKeyword"/>
-            <Kind Name="VoidKeyword"/>
+        <Kind Name="UnionType"/>
+        <Field Name="OpenParenToken" Type="SyntaxToken">
             <PropertyComment>
-                <summary>SyntaxToken which represents the keyword corresponding to the predefined type.</summary>
+                <summary>Gets the open paren token.</summary>
+            </PropertyComment>
+            <Kind Name="OpenParenToken"/>
+        </Field>        
+        <Field Name="Types" Type="SeparatedSyntaxList&lt;TypeEx&gt;" AllowTrailingSeparator="true">
+            <PropertyComment>
+                <summary>
+                    Gets a SyntaxList of SwitchSectionSyntax's that represents the switch sections of the switch
+                    statement.
+                </summary>
             </PropertyComment>
         </Field>
-        <TypeComment>
-            <summary>Class which represents the syntax node for predefined types.</summary>
-        </TypeComment>
-        <FactoryComment>
-            <summary>Creates a PredefinedTypeSyntax node.</summary>
-        </FactoryComment>
+        <Field Name="CloseParenToken" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>Gets the close paren token.</summary>
+            </PropertyComment>
+            <Kind Name="CloseParenToken"/>
+        </Field>
     </Node>
     <Node Name="RefTypeEx" Base="TypeEx">
         <TypeComment>
@@ -1572,6 +1577,84 @@
             <Kind Name="SemicolonToken"/>
         </Field>
     </Node>
+    
+    <!-- region IfStmt -->
+    <Node Name="IfStmt" Base="StmtSyntax">
+        <Kind Name="IfStatement"/>
+        <Field Name="IfKeyword" Type="SyntaxToken">
+            <Kind Name="IfKeyword"/>
+            <PropertyComment>
+                <summary>
+                    Gets a SyntaxToken that represents the if keyword.
+                </summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="OpenParenToken" Type="SyntaxToken">
+            <Kind Name="OpenParenToken"/>
+            <PropertyComment>
+                <summary>
+                    Gets a SyntaxToken that represents the open parenthesis before the if statement's condition expression.
+                </summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Condition" Type="ExprSyntax">
+            <PropertyComment>
+                <summary>
+                    Gets an ExpressionSyntax that represents the condition of the if statement.
+                </summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="CloseParenToken" Type="SyntaxToken">
+            <Kind Name="CloseParenToken"/>
+            <PropertyComment>
+                <summary>
+                    Gets a SyntaxToken that represents the close parenthesis after the if statement's condition expression.
+                </summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Statement" Type="StmtSyntax">
+            <PropertyComment>
+                <summary>
+                    Gets a StatementSyntax the represents the statement to be executed when the condition is true.
+                </summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Else" Type="ElseClauseSyntax" Optional="true">
+            <PropertyComment>
+                <summary>
+                    Gets an ElseClauseSyntax that represents the statement to be executed when the condition is false if such statement exists.
+                </summary>
+            </PropertyComment>
+        </Field>
+        <TypeComment>
+            <summary>
+                Represents an if statement syntax.
+            </summary>
+        </TypeComment>
+        <FactoryComment>
+            <summary>Creates an IfStatementSyntax node</summary>
+        </FactoryComment>
+    </Node>
+    <Node Name="ElseClauseSyntax" Base="CSharpSyntaxNode">
+        <Kind Name="ElseClause"/>
+        <Field Name="ElseKeyword" Type="SyntaxToken">
+            <Kind Name="ElseKeyword"/>
+            <PropertyComment>
+                <summary>
+                    Gets a syntax token
+                </summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Statement" Type="StmtSyntax"/>
+        <TypeComment>
+            <summary>Represents an else statement syntax.</summary>
+        </TypeComment>
+        <FactoryComment>
+            <summary>Creates a ElseClauseSyntax node</summary>
+        </FactoryComment>
+    </Node>
+    <!-- endregion IfStmt --> 
+    
     <!--endregion Statements-->
 
     <!--region Xml -->

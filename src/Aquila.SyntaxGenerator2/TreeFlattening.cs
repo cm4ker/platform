@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CSharpSyntaxGenerator
+namespace Aquila.SyntaxGenerator2
 {
     public static class TreeFlattening
     {

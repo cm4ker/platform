@@ -16,10 +16,11 @@ using System.Text;
 using System.Threading;
 using System.Xml;
 using System.Xml.Serialization;
+using Aquila.SyntaxGenerator2;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-namespace CSharpSyntaxGenerator
+namespace Aquila.Aquila.SyntaxGenerator2
 {
     [Generator]
     public sealed class SourceGenerator : CachingSourceGenerator

@@ -1121,7 +1121,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             //
             //     return AddError(node, info.Code, info.Arguments);
             // }
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
             return node;
         }
 #nullable disable

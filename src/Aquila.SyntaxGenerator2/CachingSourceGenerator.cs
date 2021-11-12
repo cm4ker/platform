@@ -14,7 +14,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-namespace CSharpSyntaxGenerator
+namespace Aquila.Aquila.SyntaxGenerator2
 {
     public abstract class CachingSourceGenerator : ISourceGenerator
     {

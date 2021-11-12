@@ -1082,7 +1082,8 @@ namespace Microsoft.CodeAnalysis.CSharp
         IdentifierEx,
         NamedTypeEx,
         MatchExpression,
-        MatchArm
+        MatchArm,
+        UnionType
         
     }
 }
