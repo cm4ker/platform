@@ -14,9 +14,9 @@ using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis
 {
-    public partial class CSharpSyntaxTree
+    public partial class AquilaSyntaxTree
     {
-        internal sealed class DummySyntaxTree : CSharpSyntaxTree
+        internal sealed class DummySyntaxTree : AquilaSyntaxTree
         {
             private readonly CompilationUnitSyntax _node;
 
@@ -70,12 +70,12 @@ namespace Aquila.CodeAnalysis
                 return new SimpleSyntaxReference(node);
             }
 
-            public override CSharpSyntaxNode GetRoot(CancellationToken cancellationToken)
+            public override AquilaSyntaxNode GetRoot(CancellationToken cancellationToken)
             {
                 return _node;
             }
 
-            public override bool TryGetRoot(out CSharpSyntaxNode root)
+            public override bool TryGetRoot(out AquilaSyntaxNode root)
             {
                 root = _node;
                 return true;

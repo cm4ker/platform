@@ -13,7 +13,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     using Microsoft.CodeAnalysis.Syntax.InternalSyntax;
 
-    internal partial class SyntaxToken : CSharpSyntaxNode
+    internal partial class SyntaxToken : AquilaSyntaxNode
     {
         //====================
         // Optimization: Normally, we wouldn't accept this much duplicate code, but these constructors
@@ -256,7 +256,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return new SyntaxTokenWithValue<string>(SyntaxKind.StringLiteralToken, text, text);
         }
 
-        internal static SyntaxToken StringLiteral(CSharpSyntaxNode leading, string text, CSharpSyntaxNode trailing)
+        internal static SyntaxToken StringLiteral(AquilaSyntaxNode leading, string text, AquilaSyntaxNode trailing)
         {
             return new SyntaxTokenWithValueAndTrivia<string>(SyntaxKind.StringLiteralToken, text, text, leading,
                 trailing);
@@ -337,14 +337,14 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return trailing != null ? trailing.FullWidth : 0;
         }
 
-        internal SyntaxList<CSharpSyntaxNode> LeadingTrivia
+        internal SyntaxList<AquilaSyntaxNode> LeadingTrivia
         {
-            get { return new SyntaxList<CSharpSyntaxNode>(this.GetLeadingTrivia()); }
+            get { return new SyntaxList<AquilaSyntaxNode>(this.GetLeadingTrivia()); }
         }
 
-        internal SyntaxList<CSharpSyntaxNode> TrailingTrivia
+        internal SyntaxList<AquilaSyntaxNode> TrailingTrivia
         {
-            get { return new SyntaxList<CSharpSyntaxNode>(this.GetTrailingTrivia()); }
+            get { return new SyntaxList<AquilaSyntaxNode>(this.GetTrailingTrivia()); }
         }
 
         public sealed override GreenNode WithLeadingTrivia(GreenNode trivia)
@@ -379,12 +379,12 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return new SyntaxToken(this.Kind, this.FullWidth, this.GetDiagnostics(), annotations);
         }
 
-        public override TResult Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor)
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor)
         {
             return visitor.VisitToken(this);
         }
 
-        public override void Accept(CSharpSyntaxVisitor visitor)
+        public override void Accept(AquilaSyntaxVisitor visitor)
         {
             visitor.VisitToken(this);
         }

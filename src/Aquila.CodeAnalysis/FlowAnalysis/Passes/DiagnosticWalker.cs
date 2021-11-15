@@ -10,9 +10,6 @@ using Aquila.Syntax.Ast;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Utilities;
-using Aquila.Syntax;
-using Aquila.Syntax.Ast.Expressions;
-using Aquila.Syntax.Ast.Functions;
 using Aquila.Syntax.Errors;
 using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
@@ -39,7 +36,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             }
         }
 
-        void Add(Span span, Aquila.Syntax.Errors.ErrorInfo err, params string[] args)
+        void Add(TextSpan span, ErrorInfo err, params string[] args)
         {
             _diagnostics.Add(DiagnosticBagExtensions.ParserDiagnostic(_method, span, err, args));
         }

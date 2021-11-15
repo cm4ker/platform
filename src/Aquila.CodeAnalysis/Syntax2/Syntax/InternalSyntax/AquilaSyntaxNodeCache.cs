@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.Syntax.InternalSyntax;
 
 namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
-    internal static class CSharpSyntaxNodeCache
+    internal static class AquilaSyntaxNodeCache
     {
         internal static GreenNode TryGetNode(int kind, GreenNode child1, SyntaxFactoryContext context, out int hash)
         {

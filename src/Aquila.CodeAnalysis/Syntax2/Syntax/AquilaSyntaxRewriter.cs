@@ -12,14 +12,14 @@ using Microsoft.CodeAnalysis.Syntax;
 namespace Aquila.CodeAnalysis
 {
     /// <summary>
-    /// Represents a <see cref="CSharpSyntaxVisitor{TResult}"/> which descends an entire <see cref="CSharpSyntaxNode"/> graph and
+    /// Represents a <see cref="AquilaSyntaxVisitor{TResult}"/> which descends an entire <see cref="AquilaSyntaxNode"/> graph and
     /// may replace or remove visited SyntaxNodes in depth-first order.
     /// </summary>
-    public abstract partial class CSharpSyntaxRewriter : CSharpSyntaxVisitor<SyntaxNode?>
+    public abstract partial class AquilaSyntaxRewriter : AquilaSyntaxVisitor<SyntaxNode?>
     {
         private readonly bool _visitIntoStructuredTrivia;
 
-        public CSharpSyntaxRewriter(bool visitIntoStructuredTrivia = false)
+        public AquilaSyntaxRewriter(bool visitIntoStructuredTrivia = false)
         {
             _visitIntoStructuredTrivia = visitIntoStructuredTrivia;
         }
@@ -39,7 +39,7 @@ namespace Aquila.CodeAnalysis
                 _recursionDepth++;
                 StackGuard.EnsureSufficientExecutionStack(_recursionDepth);
 
-                var result = ((CSharpSyntaxNode)node).Accept(this);
+                var result = ((AquilaSyntaxNode)node).Accept(this);
 
                 _recursionDepth--;
                 // https://github.com/dotnet/roslyn/issues/47682
@@ -119,7 +119,7 @@ namespace Aquila.CodeAnalysis
         {
             if (this.VisitIntoStructuredTrivia && trivia.HasStructure)
             {
-                var structure = (CSharpSyntaxNode)trivia.GetStructure()!;
+                var structure = (AquilaSyntaxNode)trivia.GetStructure()!;
                 var newStructure = (StructuredTriviaSyntax?)this.Visit(structure);
                 if (newStructure != structure)
                 {

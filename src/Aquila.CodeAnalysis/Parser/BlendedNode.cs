@@ -8,11 +8,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     internal readonly struct BlendedNode
     {
-        internal readonly Aquila.CodeAnalysis.CSharpSyntaxNode Node;
+        internal readonly Aquila.CodeAnalysis.AquilaSyntaxNode Node;
         internal readonly SyntaxToken Token;
         internal readonly Blender Blender;
 
-        internal BlendedNode(Aquila.CodeAnalysis.CSharpSyntaxNode node, SyntaxToken token, Blender blender)
+        internal BlendedNode(Aquila.CodeAnalysis.AquilaSyntaxNode node, SyntaxToken token, Blender blender)
         {
             this.Node = node;
             this.Token = token;

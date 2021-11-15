@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
-    internal class SyntaxFirstTokenReplacer : CSharpSyntaxRewriter
+    internal class SyntaxFirstTokenReplacer : AquilaSyntaxRewriter
     {
         private readonly SyntaxToken _oldToken;
         private readonly SyntaxToken _newToken;
@@ -27,7 +27,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         internal static TRoot Replace<TRoot>(TRoot root, SyntaxToken oldToken, SyntaxToken newToken,
             int diagnosticOffsetDelta)
-            where TRoot : CSharpSyntaxNode
+            where TRoot : AquilaSyntaxNode
         {
             var replacer = new SyntaxFirstTokenReplacer(oldToken, newToken, diagnosticOffsetDelta);
             var newRoot = (TRoot)replacer.Visit(root);
@@ -35,7 +35,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return newRoot;
         }
 
-        public override CSharpSyntaxNode Visit(CSharpSyntaxNode node)
+        public override AquilaSyntaxNode Visit(AquilaSyntaxNode node)
         {
             if (node != null)
             {
@@ -58,7 +58,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
 
         private static TSyntax UpdateDiagnosticOffset<TSyntax>(TSyntax node, int diagnosticOffsetDelta)
-            where TSyntax : CSharpSyntaxNode
+            where TSyntax : AquilaSyntaxNode
         {
             DiagnosticInfo[] oldDiagnostics = node.GetDiagnostics();
             if (oldDiagnostics == null || oldDiagnostics.Length == 0)

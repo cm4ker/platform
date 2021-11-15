@@ -8,31 +8,25 @@ using Aquila.CodeAnalysis.Errors;
 using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Symbols;
-using Aquila.CodeAnalysis.Symbols.Source;
-using Aquila.CodeAnalysis.Symbols.Synthesized;
+using Aquila.CodeAnalysis.Syntax;
 using Aquila.CodeAnalysis.Utilities;
-using Aquila.Compiler.Utilities;
 using Aquila.Core.Querying.Model;
-using Aquila.Metadata;
 using Aquila.Syntax;
 using Aquila.Syntax.Ast;
-using Aquila.Syntax.Ast.Expressions;
-using Aquila.Syntax.Ast.Functions;
-using Aquila.Syntax.Ast.Statements;
 using Aquila.Syntax.Declarations;
 using Aquila.Syntax.Errors;
 using Aquila.Syntax.Metadata;
 using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
 using Microsoft.CodeAnalysis;
-using MoreLinq.Extensions;
 using EnumerableExtensions = Roslyn.Utilities.EnumerableExtensions;
+using LiteralEx = Aquila.Syntax.Ast.Expressions.LiteralEx;
 
 namespace Aquila.CodeAnalysis.Semantics
 {
-    internal class BinderFactory : AstVisitorBase<Binder>
+    internal class BinderFactory : AquilaSyntaxVisitor<Binder>
     {
-        private readonly ConcurrentDictionary<LangElement, Binder> _resolvedBinders;
+        private readonly ConcurrentDictionary<AquilaSyntaxNode, Binder> _resolvedBinders;
         private Stack<Binder> _stack;
 
         private Binder TopStack
@@ -49,7 +43,7 @@ namespace Aquila.CodeAnalysis.Semantics
             _compilation = compilation;
             _merged = compilation.SourceSymbolCollection.GetMergedUnit();
 
-            _resolvedBinders = new ConcurrentDictionary<LangElement, Binder>();
+            _resolvedBinders = new ConcurrentDictionary<AquilaSyntaxNode, Binder>();
             _stack = new Stack<Binder>();
 
             _global = new GlobalBinder(_compilation.GlobalNamespace);
@@ -107,13 +101,14 @@ Binder
     -> Container - TypeOrNamespace Context
          */
 
-        private Binder CreateBinder(LangElement element)
+        private Binder CreateBinder(AquilaSyntaxNode element)
         {
             var next = Visit(element.Parent);
 
             if (element is ComponentDecl comDecl)
             {
-                var ns = _compilation.PlatformSymbolCollection.GetNamespace(comDecl.Identifier.Text);
+                var ns = _compilation.PlatformSymbolCollection.GetNamespace(comDecl.Name.GetUnqualifiedName().Identifier
+                    .Text);
 
                 var icBinder = new InContainerBinder(ns, next);
                 _resolvedBinders.TryAdd(element, icBinder);
@@ -122,7 +117,7 @@ Binder
             }
             else if (element is ExtendDecl ext)
             {
-                var types = next.Container.GetTypeMembers(ext.Identifier.Text);
+                var types = next.Container.GetTypeMembers(ext.Name.GetUnqualifiedName().Identifier.Text);
 
                 if (EnumerableExtensions.IsSingle(types))
                 {
@@ -162,7 +157,7 @@ Binder
         }
 
 
-        private void GetBinder(LangElement element, out Binder binder)
+        private void GetBinder(AquilaSyntaxNode element, out Binder binder)
         {
             if (!_resolvedBinders.TryGetValue(element, out binder))
                 binder = CreateBinder(element);
@@ -172,7 +167,8 @@ Binder
         {
             var nextBinder = Pop();
 
-            var ns = _compilation.GlobalNamespace.GetMembers(arg.Name).ToImmutableArray();
+            var ns = _compilation.GlobalNamespace.GetMembers(arg.Name.GetUnqualifiedName().Identifier.Text)
+                .ToImmutableArray();
 
             if (ns.Count() == 1)
             {
@@ -185,12 +181,13 @@ Binder
             throw new Exception("Namespace not found");
         }
 
-        public override Binder VisitSourceUnit(SourceUnit arg)
+
+        public override Binder? VisitCompilationUnit(CompilationUnitSyntax node)
         {
             Push(_global);
-            if (arg.Imports.Any())
+            if (node.Imports.Any())
             {
-                arg.Imports
+                node.Imports
                     .Reverse()
                     .Foreach(x =>
                     {
@@ -201,7 +198,6 @@ Binder
 
             return Pop();
         }
-
 
         public override Binder VisitMethodDecl(MethodDecl arg)
         {
@@ -221,7 +217,7 @@ Binder
             return binder;
         }
 
-        public override Binder DefaultVisit(LangElement node)
+        public override Binder? DefaultVisit(SyntaxNode node)
         {
             return Visit(node.Parent);
         }
@@ -239,11 +235,11 @@ Binder
         public override NamespaceOrTypeSymbol Container => (NamespaceOrTypeSymbol)_container;
 
 
-        protected override ITypeSymbol FindTypeByName(NamedTypeRef tref)
+        protected override ITypeSymbol FindTypeByName(NameEx tref)
         {
-            var qName = new QualifiedName(new Name(tref.Value));
+            var qName = tref.GetUnqualifiedName().Identifier.Text;
 
-            var typeMembers = Container.GetTypeMembers(qName.ToString(), -1);
+            var typeMembers = Container.GetTypeMembers(qName, -1);
 
             if (typeMembers.Length == 1)
                 return typeMembers[0];
@@ -311,7 +307,7 @@ Binder
             return _next;
         }
 
-        public virtual Binder GetBinder(LangElement syntax)
+        public virtual Binder GetBinder(AquilaSyntaxNode syntax)
         {
             return GetNext().GetBinder(syntax);
         }
@@ -330,9 +326,9 @@ Binder
 
         #region Bind statements
 
-        public virtual BoundStatement BindStatement(Statement stmt) => BindStatementCore(stmt).WithSyntax(stmt);
+        public virtual BoundStatement BindStatement(StmtSyntax stmt) => BindStatementCore(stmt).WithSyntax(stmt);
 
-        BoundStatement BindStatementCore(Statement stmt)
+        BoundStatement BindStatementCore(StmtSyntax stmt)
         {
             Debug.Assert(stmt != null);
 
@@ -340,20 +336,22 @@ Binder
                 return new BoundExpressionStmt(BindExpression(exprStm.Expression, BoundAccess.None));
             if (stmt is ReturnStmt jmpStm)
                 return BindReturnStmt(jmpStm);
-            if (stmt is VarDecl varDecl)
+            if (stmt is LocalDeclStmt varDecl)
                 return BindVarDeclStmt(varDecl);
 
             Diagnostics.Add(GetLocation(stmt), ErrorCode.ERR_NotYetImplemented,
                 $"Statement of type '{stmt.GetType().Name}'");
-            return new BoundEmptyStmt(stmt.Span.ToTextSpan());
+            return new BoundEmptyStmt(stmt.Span);
         }
 
-        private BoundStatement BindVarDeclStmt(VarDecl varDecl)
+        private BoundStatement BindVarDeclStmt(LocalDeclStmt varDecl)
         {
-            foreach (var decl in varDecl.Declarators)
+            var decl1 = varDecl.Declaration;
+
+            foreach (var decl in decl1.Variables)
             {
                 var localVar = Method.LocalsTable.BindLocalVariable(new VariableName(decl.Identifier.Text), decl);
-                var boundExpression = BindExpression(decl.Initializer);
+                var boundExpression = BindExpression(decl.Initializer.Value);
 
                 return new BoundExpressionStmt(new BoundAssignEx(
                     new BoundVariableRef(decl.Identifier.Text, localVar.Type).WithAccess(BoundAccess.Write),
@@ -368,13 +366,13 @@ Binder
             throw new Exception();
         }
 
-        public TypeSymbol BindType(Aquila.Syntax.Ast.TypeRef tref)
+        public TypeSymbol BindType(TypeEx tref)
         {
             var trf = DeclaringCompilation.CoreTypes;
 
-            if (tref is PredefinedTypeRef pt)
+            if (tref is PredefinedTypeEx pt)
             {
-                switch (pt.Kind)
+                switch (pt.Kind())
                 {
                     case SyntaxKind.IntKeyword: return trf.Int32;
                     case SyntaxKind.LongKeyword: return trf.Int64;
@@ -384,15 +382,15 @@ Binder
                     case SyntaxKind.BoolKeyword: return trf.Boolean;
                     //case SyntaxKind.DatetimeKeyword: return trf.DateTime;
 
-                    default: throw ExceptionUtilities.UnexpectedValue(pt.Kind);
+                    default: throw ExceptionUtilities.UnexpectedValue(pt.Kind());
                 }
             }
-            else if (tref is NamedTypeRef named)
+            else if (tref is NameEx named)
             {
                 var typeSymbol = FindTypeByName(named);
                 return (TypeSymbol)typeSymbol;
             }
-            else if (tref is UnionType union)
+            else if (tref is UnionTypeEx union)
             {
                 var listSym = new List<TypeSymbol>();
                 foreach (var type in union.Types)
@@ -416,7 +414,7 @@ Binder
             }
         }
 
-        protected virtual ITypeSymbol FindTypeByName(NamedTypeRef tref)
+        protected virtual ITypeSymbol FindTypeByName(NameEx tref)
         {
             return _next?.FindTypeByName(tref);
         }
@@ -449,12 +447,12 @@ Binder
 
         #region Bind expressions
 
-        public virtual BoundExpression BindExpression(Expression expr, BoundAccess access) =>
+        public virtual BoundExpression BindExpression(ExprSyntax expr, BoundAccess access) =>
             BindExpressionCore(expr, access).WithSyntax(expr);
 
-        protected BoundExpression BindExpression(Expression expr) => BindExpression(expr, BoundAccess.Read);
+        protected BoundExpression BindExpression(ExprSyntax expr) => BindExpression(expr, BoundAccess.Read);
 
-        protected BoundExpression BindExpressionCore(Expression expr, BoundAccess access)
+        protected BoundExpression BindExpressionCore(ExprSyntax expr, BoundAccess access)
         {
             Debug.Assert(expr != null);
 
@@ -463,9 +461,10 @@ Binder
 
             if (expr is BinaryEx bex) return BindBinaryEx(bex).WithAccess(access);
             if (expr is AssignEx aex) return BindAssignEx(aex, access);
-            if (expr is UnaryEx ue) return BindUnaryEx(ue, access).WithAccess(access);
-            if (expr is IncDecEx incDec) return BindIncDec(incDec).WithAccess(access);
-            if (expr is CallEx ce) return BindCallEx(ce).WithAccess(access);
+            // if (expr is PrefixUnaryEx pfue) return BindUnaryEx(ue, access).WithAccess(access);
+            // if (expr is PostfixUnaryEx ptue) return BindUnaryEx(ue, access).WithAccess(access);
+            // if (expr is IncDecEx incDec) return BindIncDec(incDec).WithAccess(access);
+            if (expr is InvocationEx ce) return BindCallEx(ce).WithAccess(access);
             if (expr is MatchEx me) return BindMatchEx(me).WithAccess(access);
             if (expr is MemberAccessEx mae)
                 return BindMemberAccessEx(mae, ArgumentList.Empty, false).WithAccess(access);
@@ -712,7 +711,7 @@ Binder
             return new BoundVariableName(varName, type).WithSyntax(syntax);
         }
 
-        protected Location GetLocation(LangElement expr) => expr.SyntaxTree.GetLocation(expr);
+        protected Location GetLocation(AquilaSyntaxNode expr) => expr.SyntaxTree.GetLocation(expr);
 
         protected virtual BoundExpression BindBinaryEx(BinaryEx expr)
         {
@@ -736,7 +735,7 @@ Binder
             }
         }
 
-        protected BoundExpression BindUnaryEx(UnaryEx expr, BoundAccess access)
+        protected BoundExpression BindUnaryEx(PrefixUnaryEx expr, BoundAccess access)
         {
             var operandAccess = BoundAccess.Read;
 
@@ -864,18 +863,18 @@ Binder
             return new BoundIncDecEx(varref, expr.IsIncrement, expr.IsPost, null);
         }
 
-        private BoundExpression BindCallEx(CallEx expr)
+        private BoundExpression BindCallEx(InvocationEx expr)
         {
-            return BindMethodGroup(expr.Expression, expr.Arguments, true);
+            return BindMethodGroup(expr.Expression, expr.ArgumentList, true);
         }
 
-        private BoundExpression BindMethodGroup(Expression expr, ArgumentList args, bool invoked)
+        private BoundExpression BindMethodGroup(ExprSyntax expr, ArgumentListSyntax args, bool invoked)
         {
-            switch (expr.Kind)
+            switch (expr.Kind())
             {
-                case SyntaxKind.NameExpression:
+                case SyntaxKind.IdentifierEx:
                     return BindName((NameEx)expr, args, invoked);
-                case SyntaxKind.MemberAccessExpression:
+                case SyntaxKind.SimpleMemberAccessExpression:
                     return BindMemberAccessEx((MemberAccessEx)expr, args, invoked);
                 default:
                     throw new NotImplementedException();
@@ -907,7 +906,7 @@ Binder
         }
 
 
-        protected virtual BoundExpression BindName(NameEx expr, ArgumentList argumentList, bool invocation)
+        protected virtual BoundExpression BindName(NameEx expr, ArgumentListSyntax argumentList, bool invocation)
         {
             Debug.Assert(Method != null);
 
@@ -1008,26 +1007,27 @@ Binder
             throw new Exception("Test");
         }
 
-        private BoundExpression BindMemberAccessEx(MemberAccessEx expr, ArgumentList args, bool invoke)
+        private BoundExpression BindMemberAccessEx(MemberAccessEx expr, ArgumentListSyntax args, bool invoke)
         {
             var boundLeft = BindExpression(expr.Expression).WithAccess(BoundAccess.Invoke);
 
             var leftType = boundLeft.Type;
 
-            var members = leftType.GetMembers(expr.Identifier.Text);
+            var members = leftType.GetMembers(expr.Name.GetUnqualifiedName().Identifier.Text);
             foreach (var member in members)
             {
                 if (invoke)
                 {
                     if (member is MethodSymbol ms)
                     {
-                        var arglist = args.Select(x => BoundArgument.Create(BindExpression(x.Expression)))
+                        var arglist = args.Arguments.Select(x => BoundArgument.Create(BindExpression(x.Expression)))
                             .ToImmutableArray();
 
 
                         if (ms.IsStatic)
                             return new BoundStaticCallEx(ms,
-                                new BoundMethodName(QualifiedName.Parse(expr.Identifier.Text, true)),
+                                new BoundMethodName(QualifiedName.Parse(expr.Name.GetUnqualifiedName().Identifier.Text,
+                                    true)),
                                 arglist,
                                 ImmutableArray<ITypeSymbol>.Empty, ms.ReturnType);
 

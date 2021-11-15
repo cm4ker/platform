@@ -388,7 +388,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             Func<DocumentationCommentParser, bool> isNotExpectedFunction,
             Func<DocumentationCommentParser, bool> abortFunction,
             XmlParseErrorCode error
-        ) where T : CSharpSyntaxNode
+        ) where T : AquilaSyntaxNode
         {
             var badTokens = default(SyntaxListBuilder<SyntaxToken>);
             bool hasError = false;
@@ -429,7 +429,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     }
                     else
                     {
-                        list[list.Count - 1] = AddTrailingSkippedSyntax((CSharpSyntaxNode)list[list.Count - 1],
+                        list[list.Count - 1] = AddTrailingSkippedSyntax((AquilaSyntaxNode)list[list.Count - 1],
                             badTokens.ToListNode());
                     }
 
@@ -863,13 +863,13 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             }
         }
 
-        private TNode WithXmlParseError<TNode>(TNode node, XmlParseErrorCode code) where TNode : CSharpSyntaxNode
+        private TNode WithXmlParseError<TNode>(TNode node, XmlParseErrorCode code) where TNode : AquilaSyntaxNode
         {
             return WithAdditionalDiagnostics(node, new XmlSyntaxDiagnosticInfo(0, node.Width, code));
         }
 
         private TNode WithXmlParseError<TNode>(TNode node, XmlParseErrorCode code, params string[] args)
-            where TNode : CSharpSyntaxNode
+            where TNode : AquilaSyntaxNode
         {
             return WithAdditionalDiagnostics(node, new XmlSyntaxDiagnosticInfo(0, node.Width, code, args));
         }

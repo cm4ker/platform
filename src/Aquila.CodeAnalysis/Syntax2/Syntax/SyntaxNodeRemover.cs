@@ -46,7 +46,7 @@ namespace Aquila.CodeAnalysis.Syntax
             return (TRoot?)result;
         }
 
-        private class SyntaxRemover : CSharpSyntaxRewriter
+        private class SyntaxRemover : AquilaSyntaxRewriter
         {
             private readonly HashSet<SyntaxNode> _nodesToRemove;
             private readonly SyntaxRemoveOptions _options;

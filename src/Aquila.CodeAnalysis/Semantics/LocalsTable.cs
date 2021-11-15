@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.CodeAnalysis.Syntax;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis.Text;
@@ -106,7 +107,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// Gets local variable or create local if not yet.
         /// </summary>
-        public IVariableReference BindLocalVariable(VariableName varname, VarDeclarator decl) => BindVariable(varname,
+        public IVariableReference BindLocalVariable(VariableName varname, VariableInit decl) => BindVariable(varname,
             decl.Span.ToTextSpan(), (name, span) => CreateLocal(name, VariableKind.LocalVariable, decl));
 
         // public IVariableReference BindTemporalVariable(VariableName varname) => BindVariable(varname, default,

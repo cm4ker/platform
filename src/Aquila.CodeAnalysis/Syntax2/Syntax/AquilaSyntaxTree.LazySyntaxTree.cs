@@ -3,56 +3,38 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using Aquila.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis
 {
-    public partial class CSharpSyntaxTree
+    public partial class AquilaSyntaxTree
     {
-        private class ParsedSyntaxTree : CSharpSyntaxTree
+        private sealed class LazySyntaxTree : AquilaSyntaxTree
         {
+            private readonly SourceText _text;
             private readonly AquilaParseOptions _options;
             private readonly string _path;
-            private readonly CSharpSyntaxNode _root;
-            private readonly bool _hasCompilationUnitRoot;
-            private readonly Encoding? _encodingOpt;
-            private readonly SourceHashAlgorithm _checksumAlgorithm;
             private readonly ImmutableDictionary<string, ReportDiagnostic> _diagnosticOptions;
-            private SourceText? _lazyText;
+            private AquilaSyntaxNode? _lazyRoot;
 
-            internal ParsedSyntaxTree(
-                SourceText? textOpt,
-                Encoding? encodingOpt,
-                SourceHashAlgorithm checksumAlgorithm,
-                string path,
+            internal LazySyntaxTree(
+                SourceText text,
                 AquilaParseOptions options,
-                CSharpSyntaxNode root,
-                object directives,
-                ImmutableDictionary<string, ReportDiagnostic>? diagnosticOptions,
-                bool cloneRoot)
+                string path,
+                ImmutableDictionary<string, ReportDiagnostic>? diagnosticOptions)
             {
-                Debug.Assert(root != null);
                 Debug.Assert(options != null);
-                Debug.Assert(textOpt == null ||
-                             textOpt.Encoding == encodingOpt && textOpt.ChecksumAlgorithm == checksumAlgorithm);
 
-                _lazyText = textOpt;
-                _encodingOpt = encodingOpt ?? textOpt?.Encoding;
-                _checksumAlgorithm = checksumAlgorithm;
+                _text = text;
                 _options = options;
                 _path = path ?? string.Empty;
-                _root = cloneRoot ? this.CloneNodeAsRoot(root) : root;
-                _hasCompilationUnitRoot = root.Kind() == SyntaxKind.CompilationUnit;
                 _diagnosticOptions = diagnosticOptions ?? EmptyDiagnosticOptions;
             }
 
@@ -63,45 +45,48 @@ namespace Aquila.CodeAnalysis
 
             public override SourceText GetText(CancellationToken cancellationToken)
             {
-                if (_lazyText == null)
-                {
-                    Interlocked.CompareExchange(ref _lazyText,
-                        this.GetRoot(cancellationToken).GetText(_encodingOpt, _checksumAlgorithm), null);
-                }
-
-                return _lazyText;
+                return _text;
             }
 
             public override bool TryGetText([NotNullWhen(true)] out SourceText? text)
             {
-                text = _lazyText;
-                return text != null;
+                text = _text;
+                return true;
             }
 
             public override Encoding? Encoding
             {
-                get { return _encodingOpt; }
+                get { return _text.Encoding; }
             }
 
             public override int Length
             {
-                get { return _root.FullSpan.Length; }
+                get { return _text.Length; }
             }
 
-            public override CSharpSyntaxNode GetRoot(CancellationToken cancellationToken)
+            public override AquilaSyntaxNode GetRoot(CancellationToken cancellationToken)
             {
-                return _root;
+                if (_lazyRoot == null)
+                {
+                    // Parse the syntax tree
+                    var tree = SyntaxFactory.ParseSyntaxTree(_text, _options, _path, cancellationToken);
+                    var root = CloneNodeAsRoot((AquilaSyntaxNode)tree.GetRoot(cancellationToken));
+
+                    Interlocked.CompareExchange(ref _lazyRoot, root, null);
+                }
+
+                return _lazyRoot;
             }
 
-            public override bool TryGetRoot(out CSharpSyntaxNode root)
+            public override bool TryGetRoot([NotNullWhen(true)] out AquilaSyntaxNode? root)
             {
-                root = _root;
-                return true;
+                root = _lazyRoot;
+                return root != null;
             }
 
             public override bool HasCompilationUnitRoot
             {
-                get { return _hasCompilationUnitRoot; }
+                get { return true; }
             }
 
             public override AquilaParseOptions Options
@@ -120,18 +105,18 @@ namespace Aquila.CodeAnalysis
 
             public override SyntaxTree WithRootAndOptions(SyntaxNode root, ParseOptions options)
             {
-                if (ReferenceEquals(_root, root) && ReferenceEquals(_options, options))
+                if (ReferenceEquals(_lazyRoot, root) && ReferenceEquals(_options, options))
                 {
                     return this;
                 }
 
                 return new ParsedSyntaxTree(
                     textOpt: null,
-                    _encodingOpt,
-                    _checksumAlgorithm,
+                    _text.Encoding,
+                    _text.ChecksumAlgorithm,
                     _path,
                     (AquilaParseOptions)options,
-                    (CSharpSyntaxNode)root,
+                    (AquilaSyntaxNode)root,
                     null,
                     _diagnosticOptions,
                     cloneRoot: true);
@@ -144,16 +129,23 @@ namespace Aquila.CodeAnalysis
                     return this;
                 }
 
-                return new ParsedSyntaxTree(
-                    _lazyText,
-                    _encodingOpt,
-                    _checksumAlgorithm,
-                    path,
-                    _options,
-                    _root,
-                    null,
-                    _diagnosticOptions,
-                    cloneRoot: true);
+                if (TryGetRoot(out var root))
+                {
+                    return new ParsedSyntaxTree(
+                        _text,
+                        _text.Encoding,
+                        _text.ChecksumAlgorithm,
+                        path,
+                        _options,
+                        root,
+                        null,
+                        _diagnosticOptions,
+                        cloneRoot: true);
+                }
+                else
+                {
+                    return new LazySyntaxTree(_text, _options, path, _diagnosticOptions);
+                }
             }
 
             [Obsolete("Obsolete due to performance problems, use CompilationOptions.SyntaxTreeOptionsProvider instead",
@@ -170,16 +162,23 @@ namespace Aquila.CodeAnalysis
                     return this;
                 }
 
-                return new ParsedSyntaxTree(
-                    _lazyText,
-                    _encodingOpt,
-                    _checksumAlgorithm,
-                    _path,
-                    _options,
-                    _root,
-                    null,
-                    options,
-                    cloneRoot: true);
+                if (TryGetRoot(out var root))
+                {
+                    return new ParsedSyntaxTree(
+                        _text,
+                        _text.Encoding,
+                        _text.ChecksumAlgorithm,
+                        _path,
+                        _options,
+                        root,
+                        null,
+                        options,
+                        cloneRoot: true);
+                }
+                else
+                {
+                    return new LazySyntaxTree(_text, _options, _path, options);
+                }
             }
         }
     }

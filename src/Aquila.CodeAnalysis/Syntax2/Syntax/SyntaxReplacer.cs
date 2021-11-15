@@ -62,7 +62,7 @@ namespace Aquila.CodeAnalysis.Syntax
             }
         }
 
-        private class Replacer<TNode> : CSharpSyntaxRewriter where TNode : SyntaxNode
+        private class Replacer<TNode> : AquilaSyntaxRewriter where TNode : SyntaxNode
         {
             private readonly Func<TNode, TNode, SyntaxNode>? _computeReplacementNode;
             private readonly Func<SyntaxToken, SyntaxToken, SyntaxToken>? _computeReplacementToken;
@@ -283,7 +283,7 @@ namespace Aquila.CodeAnalysis.Syntax
             return new InvalidOperationException(CodeAnalysisResources.MissingListItem);
         }
 
-        private abstract class BaseListEditor : CSharpSyntaxRewriter
+        private abstract class BaseListEditor : AquilaSyntaxRewriter
         {
             private readonly TextSpan _elementSpan;
             private readonly bool _visitTrivia;

@@ -12,17 +12,17 @@ namespace Aquila.CodeAnalysis.Syntax
 {
     using Microsoft.CodeAnalysis;
 
-    public abstract partial class ExprSyntax : CSharpSyntaxNode
+    public abstract partial class ExprSyntax : AquilaSyntaxNode
     {
-        internal ExprSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ExprSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
     }
 
-    public abstract partial class StmtSyntax : CSharpSyntaxNode
+    public abstract partial class StmtSyntax : AquilaSyntaxNode
     {
-        internal StmtSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal StmtSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -34,14 +34,14 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.CompilationUnit"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class CompilationUnitSyntax : CSharpSyntaxNode
+    public sealed partial class CompilationUnitSyntax : AquilaSyntaxNode
     {
         private SyntaxNode? imports;
         private SyntaxNode? methods;
         private SyntaxNode? extends;
         private SyntaxNode? components;
 
-        internal CompilationUnitSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal CompilationUnitSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -76,8 +76,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitCompilationUnit(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitCompilationUnit(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitCompilationUnit(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitCompilationUnit(this);
 
         public CompilationUnitSyntax Update(SyntaxList<ImportDecl> imports, SyntaxList<MethodDecl> methods, SyntaxList<ExtendDecl> extends, SyntaxList<ComponentDecl> components, SyntaxToken endOfFileToken)
         {
@@ -109,11 +109,11 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.ImportDecl"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class ImportDecl : CSharpSyntaxNode
+    public sealed partial class ImportDecl : AquilaSyntaxNode
     {
         private NameEx? name;
 
-        internal ImportDecl(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ImportDecl(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -129,8 +129,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.name : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitImportDecl(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitImportDecl(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitImportDecl(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitImportDecl(this);
 
         public ImportDecl Update(SyntaxToken importKeyword, NameEx name, SyntaxToken semicolonToken)
         {
@@ -150,9 +150,9 @@ namespace Aquila.CodeAnalysis.Syntax
     }
 
     /// <summary>Member declaration syntax.</summary>
-    public abstract partial class MemberDecl : CSharpSyntaxNode
+    public abstract partial class MemberDecl : AquilaSyntaxNode
     {
-        internal MemberDecl(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal MemberDecl(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -190,7 +190,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private BlockStmt? body;
         private ArrowExClause? expressionBody;
 
-        internal MethodDecl(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal MethodDecl(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -255,8 +255,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitMethodDecl(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitMethodDecl(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitMethodDecl(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitMethodDecl(this);
 
         public MethodDecl Update(SyntaxList<AttributeListSyntax> attributeLists, SyntaxTokenList modifiers, TypeEx returnType, SyntaxToken identifier, TypeParameterListSyntax? typeParameterList, ParameterListSyntax parameterList, BlockStmt? body, ArrowExClause? expressionBody, SyntaxToken semicolonToken)
         {
@@ -305,12 +305,12 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.ExtendDecl"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class ExtendDecl : CSharpSyntaxNode
+    public sealed partial class ExtendDecl : AquilaSyntaxNode
     {
         private NameEx? name;
         private SyntaxNode? methods;
 
-        internal ExtendDecl(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ExtendDecl(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -343,8 +343,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitExtendDecl(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitExtendDecl(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitExtendDecl(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitExtendDecl(this);
 
         public ExtendDecl Update(SyntaxToken extendKeyword, NameEx name, SyntaxToken openBraceToken, SyntaxList<MethodDecl> methods, SyntaxToken closeBraceToken)
         {
@@ -373,12 +373,12 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.ComponentDecl"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class ComponentDecl : CSharpSyntaxNode
+    public sealed partial class ComponentDecl : AquilaSyntaxNode
     {
         private NameEx? name;
         private SyntaxNode? extends;
 
-        internal ComponentDecl(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ComponentDecl(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -405,8 +405,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitComponentDecl(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitComponentDecl(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitComponentDecl(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitComponentDecl(this);
 
         public ComponentDecl Update(SyntaxToken componentKeyword, NameEx name, SyntaxList<ExtendDecl> extends)
         {
@@ -434,11 +434,11 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.AttributeList"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class AttributeListSyntax : CSharpSyntaxNode
+    public sealed partial class AttributeListSyntax : AquilaSyntaxNode
     {
         private SyntaxNode? attributes;
 
-        internal AttributeListSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal AttributeListSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -463,8 +463,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.attributes : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitAttributeList(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitAttributeList(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitAttributeList(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitAttributeList(this);
 
         public AttributeListSyntax Update(SyntaxToken openBracketToken, SeparatedSyntaxList<AttributeSyntax> attributes, SyntaxToken closeBracketToken)
         {
@@ -492,12 +492,12 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.Attribute"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class AttributeSyntax : CSharpSyntaxNode
+    public sealed partial class AttributeSyntax : AquilaSyntaxNode
     {
         private NameEx? name;
         private AttributeArgumentListSyntax? argumentList;
 
-        internal AttributeSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal AttributeSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -523,8 +523,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitAttribute(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitAttribute(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitAttribute(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitAttribute(this);
 
         public AttributeSyntax Update(NameEx name, AttributeArgumentListSyntax? argumentList)
         {
@@ -555,11 +555,11 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.AttributeArgumentList"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class AttributeArgumentListSyntax : CSharpSyntaxNode
+    public sealed partial class AttributeArgumentListSyntax : AquilaSyntaxNode
     {
         private SyntaxNode? arguments;
 
-        internal AttributeArgumentListSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal AttributeArgumentListSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -584,8 +584,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.arguments : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitAttributeArgumentList(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitAttributeArgumentList(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitAttributeArgumentList(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitAttributeArgumentList(this);
 
         public AttributeArgumentListSyntax Update(SyntaxToken openParenToken, SeparatedSyntaxList<AttributeArgumentSyntax> arguments, SyntaxToken closeParenToken)
         {
@@ -613,12 +613,12 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.AttributeArgument"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class AttributeArgumentSyntax : CSharpSyntaxNode
+    public sealed partial class AttributeArgumentSyntax : AquilaSyntaxNode
     {
         private NameEqualsSyntax? nameEquals;
         private ExprSyntax? expression;
 
-        internal AttributeArgumentSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal AttributeArgumentSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -644,8 +644,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitAttributeArgument(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitAttributeArgument(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitAttributeArgument(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitAttributeArgument(this);
 
         public AttributeArgumentSyntax Update(NameEqualsSyntax? nameEquals, ExprSyntax expression)
         {
@@ -670,11 +670,11 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.NameEquals"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class NameEqualsSyntax : CSharpSyntaxNode
+    public sealed partial class NameEqualsSyntax : AquilaSyntaxNode
     {
         private IdentifierEx? name;
 
-        internal NameEqualsSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal NameEqualsSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -688,8 +688,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 0 ? this.name : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitNameEquals(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitNameEquals(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitNameEquals(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitNameEquals(this);
 
         public NameEqualsSyntax Update(IdentifierEx name, SyntaxToken equalsToken)
         {
@@ -714,11 +714,11 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.TypeParameterList"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class TypeParameterListSyntax : CSharpSyntaxNode
+    public sealed partial class TypeParameterListSyntax : AquilaSyntaxNode
     {
         private SyntaxNode? parameters;
 
-        internal TypeParameterListSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal TypeParameterListSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -743,8 +743,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.parameters : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitTypeParameterList(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitTypeParameterList(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitTypeParameterList(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitTypeParameterList(this);
 
         public TypeParameterListSyntax Update(SyntaxToken lessThanToken, SeparatedSyntaxList<TypeParameterSyntax> parameters, SyntaxToken greaterThanToken)
         {
@@ -772,11 +772,11 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.TypeParameter"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class TypeParameterSyntax : CSharpSyntaxNode
+    public sealed partial class TypeParameterSyntax : AquilaSyntaxNode
     {
         private SyntaxNode? attributeLists;
 
-        internal TypeParameterSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal TypeParameterSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -800,8 +800,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 0 ? this.attributeLists : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitTypeParameter(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitTypeParameter(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitTypeParameter(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitTypeParameter(this);
 
         public TypeParameterSyntax Update(SyntaxList<AttributeListSyntax> attributeLists, SyntaxToken varianceKeyword, SyntaxToken identifier)
         {
@@ -854,7 +854,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private ExprSyntax? left;
         private ExprSyntax? right;
 
-        internal BinaryEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal BinaryEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -885,8 +885,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitBinaryEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitBinaryEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitBinaryEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitBinaryEx(this);
 
         public BinaryEx Update(ExprSyntax left, SyntaxToken operatorToken, ExprSyntax right)
         {
@@ -916,7 +916,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private ExprSyntax? expression;
 
-        internal ParenthesizedEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ParenthesizedEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -934,8 +934,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.expression : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitParenthesizedEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitParenthesizedEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitParenthesizedEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitParenthesizedEx(this);
 
         public ParenthesizedEx Update(SyntaxToken openParenToken, ExprSyntax expression, SyntaxToken closeParenToken)
         {
@@ -973,7 +973,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private ExprSyntax? operand;
 
-        internal PrefixUnaryEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal PrefixUnaryEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -988,8 +988,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.operand : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitPrefixUnaryEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitPrefixUnaryEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitPrefixUnaryEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitPrefixUnaryEx(this);
 
         public PrefixUnaryEx Update(SyntaxToken operatorToken, ExprSyntax operand)
         {
@@ -1020,7 +1020,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private ExprSyntax? operand;
 
-        internal PostfixUnaryEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal PostfixUnaryEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -1035,8 +1035,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 0 ? this.operand : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitPostfixUnaryEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitPostfixUnaryEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitPostfixUnaryEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitPostfixUnaryEx(this);
 
         public PostfixUnaryEx Update(ExprSyntax operand, SyntaxToken operatorToken)
         {
@@ -1066,7 +1066,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private ExprSyntax? expression;
         private ArgumentListSyntax? argumentList;
 
-        internal InvocationEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal InvocationEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -1094,8 +1094,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitInvocationEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitInvocationEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitInvocationEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitInvocationEx(this);
 
         public InvocationEx Update(ExprSyntax expression, ArgumentListSyntax argumentList)
         {
@@ -1138,7 +1138,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private ExprSyntax? left;
         private ExprSyntax? right;
 
-        internal AssignEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal AssignEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -1170,8 +1170,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitAssignEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitAssignEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitAssignEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitAssignEx(this);
 
         public AssignEx Update(ExprSyntax left, SyntaxToken operatorToken, ExprSyntax right)
         {
@@ -1202,7 +1202,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private ExprSyntax? expression;
         private BracketedArgumentListSyntax? argumentList;
 
-        internal ElementAccessEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ElementAccessEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -1231,8 +1231,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitElementAccessEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitElementAccessEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitElementAccessEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitElementAccessEx(this);
 
         public ElementAccessEx Update(ExprSyntax expression, BracketedArgumentListSyntax argumentList)
         {
@@ -1265,7 +1265,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private ExprSyntax? expression;
         private NameEx? name;
 
-        internal MemberAccessEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal MemberAccessEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -1295,8 +1295,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitMemberAccessEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitMemberAccessEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitMemberAccessEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitMemberAccessEx(this);
 
         public MemberAccessEx Update(ExprSyntax expression, SyntaxToken operatorToken, NameEx name)
         {
@@ -1325,7 +1325,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private SyntaxNode? contents;
 
-        internal InterpolatedStringEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal InterpolatedStringEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -1345,8 +1345,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.contents : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitInterpolatedStringEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitInterpolatedStringEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitInterpolatedStringEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitInterpolatedStringEx(this);
 
         public InterpolatedStringEx Update(SyntaxToken stringStartToken, SyntaxList<InterpolatedStringContentSyntax> contents, SyntaxToken stringEndToken)
         {
@@ -1379,7 +1379,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private ExprSyntax? leftOperand;
         private ExprSyntax? rightOperand;
 
-        internal RangeEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal RangeEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -1409,8 +1409,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitRangeEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitRangeEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitRangeEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitRangeEx(this);
 
         public RangeEx Update(ExprSyntax? leftOperand, SyntaxToken operatorToken, ExprSyntax? rightOperand)
         {
@@ -1442,7 +1442,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private ExprSyntax? whenTrue;
         private ExprSyntax? whenFalse;
 
-        internal ConditionalEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ConditionalEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -1482,8 +1482,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitConditionalEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitConditionalEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitConditionalEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitConditionalEx(this);
 
         public ConditionalEx Update(ExprSyntax condition, SyntaxToken questionToken, ExprSyntax whenTrue, SyntaxToken colonToken, ExprSyntax whenFalse)
         {
@@ -1514,7 +1514,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private ExprSyntax? expression;
 
-        internal ThrowEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ThrowEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -1527,8 +1527,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.expression : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitThrowEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitThrowEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitThrowEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitThrowEx(this);
 
         public ThrowEx Update(SyntaxToken throwKeyword, ExprSyntax expression)
         {
@@ -1562,7 +1562,7 @@ namespace Aquila.CodeAnalysis.Syntax
     /// </remarks>
     public sealed partial class LiteralEx : ExprSyntax
     {
-        internal LiteralEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal LiteralEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -1575,8 +1575,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitLiteralEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitLiteralEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitLiteralEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitLiteralEx(this);
 
         public LiteralEx Update(SyntaxToken token)
         {
@@ -1600,11 +1600,11 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.ArrowExpressionClause"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class ArrowExClause : CSharpSyntaxNode
+    public sealed partial class ArrowExClause : AquilaSyntaxNode
     {
         private ExprSyntax? expression;
 
-        internal ArrowExClause(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ArrowExClause(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -1617,8 +1617,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.expression : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitArrowExClause(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitArrowExClause(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitArrowExClause(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitArrowExClause(this);
 
         public ArrowExClause Update(SyntaxToken arrowToken, ExprSyntax expression)
         {
@@ -1651,7 +1651,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private SyntaxNode? expressions;
 
-        internal InitializerEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal InitializerEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -1678,8 +1678,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.expressions : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitInitializerEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitInitializerEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitInitializerEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitInitializerEx(this);
 
         public InitializerEx Update(SyntaxToken openBraceToken, SeparatedSyntaxList<ExprSyntax> expressions, SyntaxToken closeBraceToken)
         {
@@ -1712,7 +1712,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private ExprSyntax? expression;
         private SyntaxNode? arms;
 
-        internal MatchEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal MatchEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -1790,8 +1790,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitMatchEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitMatchEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitMatchEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitMatchEx(this);
 
         public MatchEx Update(SyntaxToken matchKeyword, SyntaxToken openParenToken, ExprSyntax expression, SyntaxToken closeParenToken, SyntaxToken openBraceToken, SeparatedSyntaxList<MatchArm> arms, SyntaxToken closeBraceToken)
         {
@@ -1822,12 +1822,12 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.MatchArm"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class MatchArm : CSharpSyntaxNode
+    public sealed partial class MatchArm : AquilaSyntaxNode
     {
         private ExprSyntax? patternExpression;
         private ExprSyntax? resultExpression;
 
-        internal MatchArm(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal MatchArm(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -1882,8 +1882,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitMatchArm(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitMatchArm(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitMatchArm(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitMatchArm(this);
 
         public MatchArm Update(SyntaxToken barToken, ExprSyntax patternExpression, SyntaxToken equalsGreaterThanToken, ExprSyntax resultExpression)
         {
@@ -1903,9 +1903,9 @@ namespace Aquila.CodeAnalysis.Syntax
         public MatchArm WithResultExpression(ExprSyntax resultExpression) => Update(this.BarToken, this.PatternExpression, this.EqualsGreaterThanToken, resultExpression);
     }
 
-    public abstract partial class InterpolatedStringContentSyntax : CSharpSyntaxNode
+    public abstract partial class InterpolatedStringContentSyntax : AquilaSyntaxNode
     {
-        internal InterpolatedStringContentSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal InterpolatedStringContentSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -1919,7 +1919,7 @@ namespace Aquila.CodeAnalysis.Syntax
     /// </remarks>
     public sealed partial class InterpolatedStringTextSyntax : InterpolatedStringContentSyntax
     {
-        internal InterpolatedStringTextSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal InterpolatedStringTextSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -1931,8 +1931,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitInterpolatedStringText(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitInterpolatedStringText(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitInterpolatedStringText(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitInterpolatedStringText(this);
 
         public InterpolatedStringTextSyntax Update(SyntaxToken textToken)
         {
@@ -1961,7 +1961,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private InterpolationAlignmentClauseSyntax? alignmentClause;
         private InterpolationFormatClauseSyntax? formatClause;
 
-        internal InterpolationSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal InterpolationSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -1994,8 +1994,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitInterpolation(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitInterpolation(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitInterpolation(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitInterpolation(this);
 
         public InterpolationSyntax Update(SyntaxToken openBraceToken, ExprSyntax expression, InterpolationAlignmentClauseSyntax? alignmentClause, InterpolationFormatClauseSyntax? formatClause, SyntaxToken closeBraceToken)
         {
@@ -2022,11 +2022,11 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.InterpolationAlignmentClause"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class InterpolationAlignmentClauseSyntax : CSharpSyntaxNode
+    public sealed partial class InterpolationAlignmentClauseSyntax : AquilaSyntaxNode
     {
         private ExprSyntax? value;
 
-        internal InterpolationAlignmentClauseSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal InterpolationAlignmentClauseSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2039,8 +2039,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.value : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitInterpolationAlignmentClause(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitInterpolationAlignmentClause(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitInterpolationAlignmentClause(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitInterpolationAlignmentClause(this);
 
         public InterpolationAlignmentClauseSyntax Update(SyntaxToken commaToken, ExprSyntax value)
         {
@@ -2064,9 +2064,9 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.InterpolationFormatClause"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class InterpolationFormatClauseSyntax : CSharpSyntaxNode
+    public sealed partial class InterpolationFormatClauseSyntax : AquilaSyntaxNode
     {
-        internal InterpolationFormatClauseSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal InterpolationFormatClauseSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2080,8 +2080,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitInterpolationFormatClause(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitInterpolationFormatClause(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitInterpolationFormatClause(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitInterpolationFormatClause(this);
 
         public InterpolationFormatClauseSyntax Update(SyntaxToken colonToken, SyntaxToken formatStringToken)
         {
@@ -2102,9 +2102,9 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <summary>Provides the base class from which the classes that represent argument list syntax nodes are
     /// derived. This is an abstract class.
     /// </summary>
-    public abstract partial class BaseArgumentListSyntax : CSharpSyntaxNode
+    public abstract partial class BaseArgumentListSyntax : AquilaSyntaxNode
     {
-        internal BaseArgumentListSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal BaseArgumentListSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2129,7 +2129,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private SyntaxNode? arguments;
 
-        internal ArgumentListSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ArgumentListSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2154,8 +2154,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.arguments : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitArgumentList(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitArgumentList(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitArgumentList(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitArgumentList(this);
 
         public ArgumentListSyntax Update(SyntaxToken openParenToken, SeparatedSyntaxList<ArgumentSyntax> arguments, SyntaxToken closeParenToken)
         {
@@ -2189,7 +2189,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private SyntaxNode? arguments;
 
-        internal BracketedArgumentListSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal BracketedArgumentListSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2214,8 +2214,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.arguments : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitBracketedArgumentList(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitBracketedArgumentList(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitBracketedArgumentList(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitBracketedArgumentList(this);
 
         public BracketedArgumentListSyntax Update(SyntaxToken openBracketToken, SeparatedSyntaxList<ArgumentSyntax> arguments, SyntaxToken closeBracketToken)
         {
@@ -2245,12 +2245,12 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.Argument"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class ArgumentSyntax : CSharpSyntaxNode
+    public sealed partial class ArgumentSyntax : AquilaSyntaxNode
     {
         private NameColonSyntax? nameColon;
         private ExprSyntax? expression;
 
-        internal ArgumentSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ArgumentSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2287,8 +2287,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitArgument(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitArgument(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitArgument(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitArgument(this);
 
         public ArgumentSyntax Update(NameColonSyntax? nameColon, SyntaxToken refKindKeyword, ExprSyntax expression)
         {
@@ -2307,9 +2307,9 @@ namespace Aquila.CodeAnalysis.Syntax
         public ArgumentSyntax WithExpression(ExprSyntax expression) => Update(this.NameColon, this.RefKindKeyword, expression);
     }
 
-    public abstract partial class BaseExpressionColonSyntax : CSharpSyntaxNode
+    public abstract partial class BaseExpressionColonSyntax : AquilaSyntaxNode
     {
-        internal BaseExpressionColonSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal BaseExpressionColonSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2333,7 +2333,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private ExprSyntax? expression;
 
-        internal ExprColonSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ExprColonSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2346,8 +2346,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 0 ? this.expression : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitExprColon(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitExprColon(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitExprColon(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitExprColon(this);
 
         public ExprColonSyntax Update(ExprSyntax expression, SyntaxToken colonToken)
         {
@@ -2378,7 +2378,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private IdentifierEx? name;
 
-        internal NameColonSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal NameColonSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2393,8 +2393,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 0 ? this.name : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitNameColon(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitNameColon(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitNameColon(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitNameColon(this);
 
         public NameColonSyntax Update(IdentifierEx name, SyntaxToken colonToken)
         {
@@ -2415,7 +2415,7 @@ namespace Aquila.CodeAnalysis.Syntax
 
     public abstract partial class TypeEx : ExprSyntax
     {
-        internal TypeEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal TypeEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2423,7 +2423,7 @@ namespace Aquila.CodeAnalysis.Syntax
 
     public abstract partial class NameEx : TypeEx
     {
-        internal NameEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal NameEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2439,9 +2439,9 @@ namespace Aquila.CodeAnalysis.Syntax
     public sealed partial class QualifiedNameEx : NameEx
     {
         private NameEx? left;
-        private NameEx? right;
+        private SimpleNameEx? right;
 
-        internal QualifiedNameEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal QualifiedNameEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2457,7 +2457,7 @@ namespace Aquila.CodeAnalysis.Syntax
         /// <summary>SimpleNameSyntax node representing the name on the right side of the dot token of the qualified
         /// name.
         /// </summary>
-        public NameEx Right => GetRed(ref this.right, 2)!;
+        public SimpleNameEx Right => GetRed(ref this.right, 2)!;
 
         internal override SyntaxNode? GetNodeSlot(int index)
             => index switch
@@ -2475,10 +2475,10 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitQualifiedNameEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitQualifiedNameEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitQualifiedNameEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitQualifiedNameEx(this);
 
-        public QualifiedNameEx Update(NameEx left, SyntaxToken dotToken, NameEx right)
+        public QualifiedNameEx Update(NameEx left, SyntaxToken dotToken, SimpleNameEx right)
         {
             if (left != this.Left || dotToken != this.DotToken || right != this.Right)
             {
@@ -2492,7 +2492,7 @@ namespace Aquila.CodeAnalysis.Syntax
 
         public QualifiedNameEx WithLeft(NameEx left) => Update(left, this.DotToken, this.Right);
         public QualifiedNameEx WithDotToken(SyntaxToken dotToken) => Update(this.Left, dotToken, this.Right);
-        public QualifiedNameEx WithRight(NameEx right) => Update(this.Left, this.DotToken, right);
+        public QualifiedNameEx WithRight(SimpleNameEx right) => Update(this.Left, this.DotToken, right);
     }
 
     /// <summary>Provides the base class from which the classes that represent simple name syntax nodes are derived.
@@ -2500,7 +2500,7 @@ namespace Aquila.CodeAnalysis.Syntax
     /// </summary>
     public abstract partial class SimpleNameEx : NameEx
     {
-        internal SimpleNameEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal SimpleNameEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2519,7 +2519,7 @@ namespace Aquila.CodeAnalysis.Syntax
     /// </remarks>
     public sealed partial class IdentifierEx : SimpleNameEx
     {
-        internal IdentifierEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal IdentifierEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2531,8 +2531,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitIdentifierEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitIdentifierEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitIdentifierEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitIdentifierEx(this);
 
         public IdentifierEx Update(SyntaxToken identifier)
         {
@@ -2561,7 +2561,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private TypeArgumentListSyntax? typeArgumentList;
 
-        internal GenericEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal GenericEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2577,8 +2577,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.typeArgumentList : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitGenericEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitGenericEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitGenericEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitGenericEx(this);
 
         public GenericEx Update(SyntaxToken identifier, TypeArgumentListSyntax typeArgumentList)
         {
@@ -2599,44 +2599,6 @@ namespace Aquila.CodeAnalysis.Syntax
         public GenericEx AddTypeArgumentListArguments(params TypeEx[] items) => WithTypeArgumentList(this.TypeArgumentList.WithArguments(this.TypeArgumentList.Arguments.AddRange(items)));
     }
 
-    /// <remarks>
-    /// <para>This node is associated with the following syntax kinds:</para>
-    /// <list type="bullet">
-    /// <item><description><see cref="SyntaxKind.NamedTypeEx"/></description></item>
-    /// </list>
-    /// </remarks>
-    public sealed partial class NamedTypeEx : NameEx
-    {
-        internal NamedTypeEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
-          : base(green, parent, position)
-        {
-        }
-
-        /// <summary>Gets the identifier.</summary>
-        public SyntaxToken Identifier => new SyntaxToken(this, ((Syntax.InternalSyntax.NamedTypeEx)this.Green).identifier, Position, 0);
-
-        internal override SyntaxNode? GetNodeSlot(int index) => null;
-
-        internal override SyntaxNode? GetCachedSlot(int index) => null;
-
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitNamedTypeEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitNamedTypeEx(this);
-
-        public NamedTypeEx Update(SyntaxToken identifier)
-        {
-            if (identifier != this.Identifier)
-            {
-                var newNode = SyntaxFactory.NamedTypeEx(identifier);
-                var annotations = GetAnnotations();
-                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
-            }
-
-            return this;
-        }
-
-        public NamedTypeEx WithIdentifier(SyntaxToken identifier) => Update(identifier);
-    }
-
     /// <summary>Class which represents the syntax node for predefined types.</summary>
     /// <remarks>
     /// <para>This node is associated with the following syntax kinds:</para>
@@ -2646,7 +2608,7 @@ namespace Aquila.CodeAnalysis.Syntax
     /// </remarks>
     public sealed partial class PredefinedTypeEx : TypeEx
     {
-        internal PredefinedTypeEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal PredefinedTypeEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2658,8 +2620,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitPredefinedTypeEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitPredefinedTypeEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitPredefinedTypeEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitPredefinedTypeEx(this);
 
         public PredefinedTypeEx Update(SyntaxToken keyword)
         {
@@ -2688,7 +2650,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private TypeEx? elementType;
         private SyntaxNode? rankSpecifiers;
 
-        internal ArrayTypeEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ArrayTypeEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2717,8 +2679,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitArrayTypeEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitArrayTypeEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitArrayTypeEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitArrayTypeEx(this);
 
         public ArrayTypeEx Update(TypeEx elementType, SyntaxList<ArrayRankSpecifierSyntax> rankSpecifiers)
         {
@@ -2748,7 +2710,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private SyntaxNode? types;
 
-        internal UnionTypeEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal UnionTypeEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2776,8 +2738,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.types : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitUnionTypeEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitUnionTypeEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitUnionTypeEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitUnionTypeEx(this);
 
         public UnionTypeEx Update(SyntaxToken openParenToken, SeparatedSyntaxList<TypeEx> types, SyntaxToken closeParenToken)
         {
@@ -2809,7 +2771,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private TypeEx? type;
 
-        internal RefTypeEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal RefTypeEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2832,8 +2794,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 2 ? this.type : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitRefTypeEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitRefTypeEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitRefTypeEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitRefTypeEx(this);
 
         public RefTypeEx Update(SyntaxToken refKeyword, SyntaxToken readOnlyKeyword, TypeEx type)
         {
@@ -2859,11 +2821,11 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.TypeArgumentList"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class TypeArgumentListSyntax : CSharpSyntaxNode
+    public sealed partial class TypeArgumentListSyntax : AquilaSyntaxNode
     {
         private SyntaxNode? arguments;
 
-        internal TypeArgumentListSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal TypeArgumentListSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2888,8 +2850,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.arguments : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitTypeArgumentList(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitTypeArgumentList(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitTypeArgumentList(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitTypeArgumentList(this);
 
         public TypeArgumentListSyntax Update(SyntaxToken lessThanToken, SeparatedSyntaxList<TypeEx> arguments, SyntaxToken greaterThanToken)
         {
@@ -2916,11 +2878,11 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.ArrayRankSpecifier"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class ArrayRankSpecifierSyntax : CSharpSyntaxNode
+    public sealed partial class ArrayRankSpecifierSyntax : AquilaSyntaxNode
     {
         private SyntaxNode? sizes;
 
-        internal ArrayRankSpecifierSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ArrayRankSpecifierSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2942,8 +2904,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.sizes : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitArrayRankSpecifier(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitArrayRankSpecifier(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitArrayRankSpecifier(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitArrayRankSpecifier(this);
 
         public ArrayRankSpecifierSyntax Update(SyntaxToken openBracketToken, SeparatedSyntaxList<ExprSyntax> sizes, SyntaxToken closeBracketToken)
         {
@@ -2973,7 +2935,7 @@ namespace Aquila.CodeAnalysis.Syntax
     /// </remarks>
     public sealed partial class OmittedArraySizeEx : ExprSyntax
     {
-        internal OmittedArraySizeEx(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal OmittedArraySizeEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -2985,8 +2947,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitOmittedArraySizeEx(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitOmittedArraySizeEx(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitOmittedArraySizeEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitOmittedArraySizeEx(this);
 
         public OmittedArraySizeEx Update(SyntaxToken omittedArraySizeExpressionToken)
         {
@@ -3004,9 +2966,9 @@ namespace Aquila.CodeAnalysis.Syntax
     }
 
     /// <summary>Base type for parameter list syntax.</summary>
-    public abstract partial class BaseParameterListSyntax : CSharpSyntaxNode
+    public abstract partial class BaseParameterListSyntax : AquilaSyntaxNode
     {
-        internal BaseParameterListSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal BaseParameterListSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3031,7 +2993,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private SyntaxNode? parameters;
 
-        internal ParameterListSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ParameterListSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3055,8 +3017,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.parameters : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitParameterList(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitParameterList(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitParameterList(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitParameterList(this);
 
         public ParameterListSyntax Update(SyntaxToken openParenToken, SeparatedSyntaxList<ParameterSyntax> parameters, SyntaxToken closeParenToken)
         {
@@ -3090,7 +3052,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private SyntaxNode? parameters;
 
-        internal BracketedParameterListSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal BracketedParameterListSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3114,8 +3076,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.parameters : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitBracketedParameterList(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitBracketedParameterList(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitBracketedParameterList(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitBracketedParameterList(this);
 
         public BracketedParameterListSyntax Update(SyntaxToken openBracketToken, SeparatedSyntaxList<ParameterSyntax> parameters, SyntaxToken closeBracketToken)
         {
@@ -3139,9 +3101,9 @@ namespace Aquila.CodeAnalysis.Syntax
     }
 
     /// <summary>Base parameter syntax.</summary>
-    public abstract partial class BaseParameterSyntax : CSharpSyntaxNode
+    public abstract partial class BaseParameterSyntax : AquilaSyntaxNode
     {
-        internal BaseParameterSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal BaseParameterSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3180,7 +3142,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private TypeEx? type;
         private EqualsValueClauseSyntax? @default;
 
-        internal ParameterSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ParameterSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3223,8 +3185,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitParameter(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitParameter(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitParameter(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitParameter(this);
 
         public ParameterSyntax Update(SyntaxList<AttributeListSyntax> attributeLists, SyntaxTokenList modifiers, TypeEx? type, SyntaxToken identifier, EqualsValueClauseSyntax? @default)
         {
@@ -3265,7 +3227,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private SyntaxNode? attributeLists;
         private TypeEx? type;
 
-        internal FunctionPointerParameterSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal FunctionPointerParameterSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3301,8 +3263,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitFunctionPointerParameter(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitFunctionPointerParameter(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitFunctionPointerParameter(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitFunctionPointerParameter(this);
 
         public FunctionPointerParameterSyntax Update(SyntaxList<AttributeListSyntax> attributeLists, SyntaxTokenList modifiers, TypeEx type)
         {
@@ -3340,7 +3302,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private SyntaxNode? attributeLists;
         private TypeEx? type;
 
-        internal IncompleteMemberSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal IncompleteMemberSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3374,8 +3336,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitIncompleteMember(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitIncompleteMember(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitIncompleteMember(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitIncompleteMember(this);
 
         public IncompleteMemberSyntax Update(SyntaxList<AttributeListSyntax> attributeLists, SyntaxTokenList modifiers, TypeEx? type)
         {
@@ -3409,7 +3371,7 @@ namespace Aquila.CodeAnalysis.Syntax
     /// </remarks>
     public sealed partial class SkippedTokensTriviaSyntax : StructuredTriviaSyntax
     {
-        internal SkippedTokensTriviaSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal SkippedTokensTriviaSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3427,8 +3389,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitSkippedTokensTrivia(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitSkippedTokensTrivia(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitSkippedTokensTrivia(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitSkippedTokensTrivia(this);
 
         public SkippedTokensTriviaSyntax Update(SyntaxTokenList tokens)
         {
@@ -3453,11 +3415,11 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.EqualsValueClause"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class EqualsValueClauseSyntax : CSharpSyntaxNode
+    public sealed partial class EqualsValueClauseSyntax : AquilaSyntaxNode
     {
         private ExprSyntax? value;
 
-        internal EqualsValueClauseSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal EqualsValueClauseSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3470,8 +3432,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.value : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitEqualsValueClause(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitEqualsValueClause(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitEqualsValueClause(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitEqualsValueClause(this);
 
         public EqualsValueClauseSyntax Update(SyntaxToken equalsToken, ExprSyntax value)
         {
@@ -3495,12 +3457,12 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.VariableDeclaration"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class VariableDecl : CSharpSyntaxNode
+    public sealed partial class VariableDecl : AquilaSyntaxNode
     {
         private TypeEx? type;
         private SyntaxNode? variables;
 
-        internal VariableDecl(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal VariableDecl(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3532,8 +3494,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitVariableDecl(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitVariableDecl(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitVariableDecl(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitVariableDecl(this);
 
         public VariableDecl Update(TypeEx type, SeparatedSyntaxList<VariableInit> variables)
         {
@@ -3559,12 +3521,12 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.VariableDeclarator"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class VariableInit : CSharpSyntaxNode
+    public sealed partial class VariableInit : AquilaSyntaxNode
     {
         private BracketedArgumentListSyntax? argumentList;
         private EqualsValueClauseSyntax? initializer;
 
-        internal VariableInit(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal VariableInit(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3592,8 +3554,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitVariableInit(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitVariableInit(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitVariableInit(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitVariableInit(this);
 
         public VariableInit Update(SyntaxToken identifier, BracketedArgumentListSyntax? argumentList, EqualsValueClauseSyntax? initializer)
         {
@@ -3628,7 +3590,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private SyntaxNode? statements;
 
-        internal BlockStmt(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal BlockStmt(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3643,8 +3605,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.statements : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitBlockStmt(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitBlockStmt(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitBlockStmt(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitBlockStmt(this);
 
         public BlockStmt Update(SyntaxToken openBraceToken, SyntaxList<StmtSyntax> statements, SyntaxToken closeBraceToken)
         {
@@ -3675,7 +3637,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private ExprSyntax? expression;
 
-        internal ExpressionStmt(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ExpressionStmt(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3688,8 +3650,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 0 ? this.expression : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitExpressionStmt(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitExpressionStmt(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitExpressionStmt(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitExpressionStmt(this);
 
         public ExpressionStmt Update(ExprSyntax expression, SyntaxToken semicolonToken)
         {
@@ -3715,7 +3677,7 @@ namespace Aquila.CodeAnalysis.Syntax
     /// </remarks>
     public sealed partial class EmptyStmt : StmtSyntax
     {
-        internal EmptyStmt(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal EmptyStmt(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3726,8 +3688,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitEmptyStmt(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitEmptyStmt(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitEmptyStmt(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitEmptyStmt(this);
 
         public EmptyStmt Update(SyntaxToken semicolonToken)
         {
@@ -3755,7 +3717,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private StmtSyntax? statement;
 
-        internal LabeledStmt(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal LabeledStmt(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3772,8 +3734,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 2 ? this.statement : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitLabeledStmt(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitLabeledStmt(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitLabeledStmt(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitLabeledStmt(this);
 
         public LabeledStmt Update(SyntaxToken identifier, SyntaxToken colonToken, StmtSyntax statement)
         {
@@ -3807,7 +3769,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private ExprSyntax? expression;
 
-        internal GotoStmt(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal GotoStmt(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3843,8 +3805,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 2 ? this.expression : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitGotoStmt(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitGotoStmt(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitGotoStmt(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitGotoStmt(this);
 
         public GotoStmt Update(SyntaxToken gotoKeyword, SyntaxToken caseOrDefaultKeyword, ExprSyntax? expression, SyntaxToken semicolonToken)
         {
@@ -3872,7 +3834,7 @@ namespace Aquila.CodeAnalysis.Syntax
     /// </remarks>
     public sealed partial class BreakStmt : StmtSyntax
     {
-        internal BreakStmt(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal BreakStmt(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3885,8 +3847,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitBreakStmt(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitBreakStmt(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitBreakStmt(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitBreakStmt(this);
 
         public BreakStmt Update(SyntaxToken breakKeyword, SyntaxToken semicolonToken)
         {
@@ -3912,7 +3874,7 @@ namespace Aquila.CodeAnalysis.Syntax
     /// </remarks>
     public sealed partial class ContinueStmt : StmtSyntax
     {
-        internal ContinueStmt(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ContinueStmt(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3925,8 +3887,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitContinueStmt(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitContinueStmt(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitContinueStmt(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitContinueStmt(this);
 
         public ContinueStmt Update(SyntaxToken continueKeyword, SyntaxToken semicolonToken)
         {
@@ -3954,7 +3916,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private ExprSyntax? expression;
 
-        internal ReturnStmt(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ReturnStmt(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -3969,8 +3931,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.expression : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitReturnStmt(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitReturnStmt(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitReturnStmt(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitReturnStmt(this);
 
         public ReturnStmt Update(SyntaxToken returnKeyword, ExprSyntax? expression, SyntaxToken semicolonToken)
         {
@@ -3999,7 +3961,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private ExprSyntax? expression;
 
-        internal ThrowStmt(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ThrowStmt(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -4014,8 +3976,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.expression : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitThrowStmt(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitThrowStmt(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitThrowStmt(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitThrowStmt(this);
 
         public ThrowStmt Update(SyntaxToken throwKeyword, ExprSyntax? expression, SyntaxToken semicolonToken)
         {
@@ -4045,7 +4007,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private ExprSyntax? expression;
 
-        internal YieldStmt(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal YieldStmt(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -4062,8 +4024,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 2 ? this.expression : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitYieldStmt(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitYieldStmt(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitYieldStmt(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitYieldStmt(this);
 
         public YieldStmt Update(SyntaxToken yieldKeyword, SyntaxToken returnOrBreakKeyword, ExprSyntax? expression, SyntaxToken semicolonToken)
         {
@@ -4094,7 +4056,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private ExprSyntax? condition;
         private StmtSyntax? statement;
 
-        internal WhileStmt(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal WhileStmt(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -4125,8 +4087,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitWhileStmt(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitWhileStmt(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitWhileStmt(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitWhileStmt(this);
 
         public WhileStmt Update(SyntaxToken whileKeyword, SyntaxToken openParenToken, ExprSyntax condition, SyntaxToken closeParenToken, StmtSyntax statement)
         {
@@ -4158,7 +4120,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private StmtSyntax? statement;
         private ExprSyntax? condition;
 
-        internal DoStmt(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal DoStmt(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -4193,8 +4155,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitDoStmt(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitDoStmt(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitDoStmt(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitDoStmt(this);
 
         public DoStmt Update(SyntaxToken doKeyword, StmtSyntax statement, SyntaxToken whileKeyword, SyntaxToken openParenToken, ExprSyntax condition, SyntaxToken closeParenToken, SyntaxToken semicolonToken)
         {
@@ -4231,7 +4193,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private SyntaxNode? incrementors;
         private StmtSyntax? statement;
 
-        internal ForStmt(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ForStmt(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -4292,8 +4254,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitForStmt(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitForStmt(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitForStmt(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitForStmt(this);
 
         public ForStmt Update(SyntaxToken forKeyword, SyntaxToken openParenToken, VariableDecl? declaration, SeparatedSyntaxList<ExprSyntax> initializers, SyntaxToken firstSemicolonToken, ExprSyntax? condition, SyntaxToken secondSemicolonToken, SeparatedSyntaxList<ExprSyntax> incrementors, SyntaxToken closeParenToken, StmtSyntax statement)
         {
@@ -4333,7 +4295,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private SyntaxNode? attributeLists;
         private VariableDecl? declaration;
 
-        internal LocalDeclStmt(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal LocalDeclStmt(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -4370,8 +4332,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitLocalDeclStmt(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitLocalDeclStmt(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitLocalDeclStmt(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitLocalDeclStmt(this);
 
         public LocalDeclStmt Update(SyntaxList<AttributeListSyntax> attributeLists, SyntaxTokenList modifiers, VariableDecl declaration, SyntaxToken semicolonToken)
         {
@@ -4410,7 +4372,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private StmtSyntax? statement;
         private ElseClauseSyntax? @else;
 
-        internal IfStmt(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal IfStmt(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -4463,8 +4425,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitIfStmt(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitIfStmt(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitIfStmt(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitIfStmt(this);
 
         public IfStmt Update(SyntaxToken ifKeyword, SyntaxToken openParenToken, ExprSyntax condition, SyntaxToken closeParenToken, StmtSyntax statement, ElseClauseSyntax? @else)
         {
@@ -4493,11 +4455,11 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.ElseClause"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class ElseClauseSyntax : CSharpSyntaxNode
+    public sealed partial class ElseClauseSyntax : AquilaSyntaxNode
     {
         private StmtSyntax? statement;
 
-        internal ElseClauseSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ElseClauseSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -4513,8 +4475,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.statement : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitElseClause(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitElseClause(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitElseClause(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitElseClause(this);
 
         public ElseClauseSyntax Update(SyntaxToken elseKeyword, StmtSyntax statement)
         {
@@ -4543,7 +4505,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private SyntaxNode? content;
 
-        internal DocumentationCommentTriviaSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal DocumentationCommentTriviaSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -4556,8 +4518,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 0 ? this.content : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitDocumentationCommentTrivia(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitDocumentationCommentTrivia(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitDocumentationCommentTrivia(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitDocumentationCommentTrivia(this);
 
         public DocumentationCommentTriviaSyntax Update(SyntaxList<XmlNodeSyntax> content, SyntaxToken endOfComment)
         {
@@ -4582,9 +4544,9 @@ namespace Aquila.CodeAnalysis.Syntax
     /// tag).
     /// For example, the M in &lt;see cref="M" /&gt;.
     /// </summary>
-    public abstract partial class CrefSyntax : CSharpSyntaxNode
+    public abstract partial class CrefSyntax : AquilaSyntaxNode
     {
-        internal CrefSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal CrefSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -4607,7 +4569,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private TypeEx? type;
 
-        internal TypeCrefSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal TypeCrefSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -4618,8 +4580,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 0 ? this.type : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitTypeCref(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitTypeCref(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitTypeCref(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitTypeCref(this);
 
         public TypeCrefSyntax Update(TypeEx type)
         {
@@ -4654,7 +4616,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private TypeEx? container;
         private MemberCrefSyntax? member;
 
-        internal QualifiedCrefSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal QualifiedCrefSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -4681,8 +4643,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitQualifiedCref(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitQualifiedCref(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitQualifiedCref(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitQualifiedCref(this);
 
         public QualifiedCrefSyntax Update(TypeEx container, SyntaxToken dotToken, MemberCrefSyntax member)
         {
@@ -4710,7 +4672,7 @@ namespace Aquila.CodeAnalysis.Syntax
     /// </summary>
     public abstract partial class MemberCrefSyntax : CrefSyntax
     {
-        internal MemberCrefSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal MemberCrefSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -4734,7 +4696,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private TypeEx? name;
         private CrefParameterListSyntax? parameters;
 
-        internal NameMemberCrefSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal NameMemberCrefSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -4759,8 +4721,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitNameMemberCref(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitNameMemberCref(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitNameMemberCref(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitNameMemberCref(this);
 
         public NameMemberCrefSyntax Update(TypeEx name, CrefParameterListSyntax? parameters)
         {
@@ -4798,7 +4760,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private CrefBracketedParameterListSyntax? parameters;
 
-        internal IndexerMemberCrefSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal IndexerMemberCrefSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -4811,8 +4773,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.parameters : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitIndexerMemberCref(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitIndexerMemberCref(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitIndexerMemberCref(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitIndexerMemberCref(this);
 
         public IndexerMemberCrefSyntax Update(SyntaxToken thisKeyword, CrefBracketedParameterListSyntax? parameters)
         {
@@ -4851,7 +4813,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private CrefParameterListSyntax? parameters;
 
-        internal OperatorMemberCrefSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal OperatorMemberCrefSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -4867,8 +4829,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 2 ? this.parameters : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitOperatorMemberCref(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitOperatorMemberCref(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitOperatorMemberCref(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitOperatorMemberCref(this);
 
         public OperatorMemberCrefSyntax Update(SyntaxToken operatorKeyword, SyntaxToken operatorToken, CrefParameterListSyntax? parameters)
         {
@@ -4909,7 +4871,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private TypeEx? type;
         private CrefParameterListSyntax? parameters;
 
-        internal ConversionOperatorMemberCrefSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal ConversionOperatorMemberCrefSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -4938,8 +4900,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitConversionOperatorMemberCref(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitConversionOperatorMemberCref(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitConversionOperatorMemberCref(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitConversionOperatorMemberCref(this);
 
         public ConversionOperatorMemberCrefSyntax Update(SyntaxToken implicitOrExplicitKeyword, SyntaxToken operatorKeyword, TypeEx type, CrefParameterListSyntax? parameters)
         {
@@ -4969,9 +4931,9 @@ namespace Aquila.CodeAnalysis.Syntax
     /// A list of cref parameters with surrounding punctuation.
     /// Unlike regular parameters, cref parameters do not have names.
     /// </summary>
-    public abstract partial class BaseCrefParameterListSyntax : CSharpSyntaxNode
+    public abstract partial class BaseCrefParameterListSyntax : AquilaSyntaxNode
     {
-        internal BaseCrefParameterListSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal BaseCrefParameterListSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -4998,7 +4960,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private SyntaxNode? parameters;
 
-        internal CrefParameterListSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal CrefParameterListSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -5022,8 +4984,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.parameters : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitCrefParameterList(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitCrefParameterList(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitCrefParameterList(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitCrefParameterList(this);
 
         public CrefParameterListSyntax Update(SyntaxToken openParenToken, SeparatedSyntaxList<CrefParameterSyntax> parameters, SyntaxToken closeParenToken)
         {
@@ -5059,7 +5021,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private SyntaxNode? parameters;
 
-        internal CrefBracketedParameterListSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal CrefBracketedParameterListSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -5083,8 +5045,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.parameters : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitCrefBracketedParameterList(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitCrefBracketedParameterList(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitCrefBracketedParameterList(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitCrefBracketedParameterList(this);
 
         public CrefBracketedParameterListSyntax Update(SyntaxToken openBracketToken, SeparatedSyntaxList<CrefParameterSyntax> parameters, SyntaxToken closeBracketToken)
         {
@@ -5118,11 +5080,11 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.CrefParameter"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class CrefParameterSyntax : CSharpSyntaxNode
+    public sealed partial class CrefParameterSyntax : AquilaSyntaxNode
     {
         private TypeEx? type;
 
-        internal CrefParameterSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal CrefParameterSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -5142,8 +5104,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.type : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitCrefParameter(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitCrefParameter(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitCrefParameter(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitCrefParameter(this);
 
         public CrefParameterSyntax Update(SyntaxToken refKindKeyword, TypeEx type)
         {
@@ -5161,9 +5123,9 @@ namespace Aquila.CodeAnalysis.Syntax
         public CrefParameterSyntax WithType(TypeEx type) => Update(this.RefKindKeyword, type);
     }
 
-    public abstract partial class XmlNodeSyntax : CSharpSyntaxNode
+    public abstract partial class XmlNodeSyntax : AquilaSyntaxNode
     {
-        internal XmlNodeSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal XmlNodeSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -5181,7 +5143,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private SyntaxNode? content;
         private XmlElementEndTagSyntax? endTag;
 
-        internal XmlElementSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal XmlElementSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -5210,8 +5172,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitXmlElement(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlElement(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitXmlElement(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlElement(this);
 
         public XmlElementSyntax Update(XmlElementStartTagSyntax startTag, SyntaxList<XmlNodeSyntax> content, XmlElementEndTagSyntax endTag)
         {
@@ -5239,12 +5201,12 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.XmlElementStartTag"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class XmlElementStartTagSyntax : CSharpSyntaxNode
+    public sealed partial class XmlElementStartTagSyntax : AquilaSyntaxNode
     {
         private XmlNameSyntax? name;
         private SyntaxNode? attributes;
 
-        internal XmlElementStartTagSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal XmlElementStartTagSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -5273,8 +5235,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitXmlElementStartTag(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlElementStartTag(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitXmlElementStartTag(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlElementStartTag(this);
 
         public XmlElementStartTagSyntax Update(SyntaxToken lessThanToken, XmlNameSyntax name, SyntaxList<XmlAttributeSyntax> attributes, SyntaxToken greaterThanToken)
         {
@@ -5302,11 +5264,11 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.XmlElementEndTag"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class XmlElementEndTagSyntax : CSharpSyntaxNode
+    public sealed partial class XmlElementEndTagSyntax : AquilaSyntaxNode
     {
         private XmlNameSyntax? name;
 
-        internal XmlElementEndTagSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal XmlElementEndTagSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -5321,8 +5283,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.name : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitXmlElementEndTag(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlElementEndTag(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitXmlElementEndTag(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlElementEndTag(this);
 
         public XmlElementEndTagSyntax Update(SyntaxToken lessThanSlashToken, XmlNameSyntax name, SyntaxToken greaterThanToken)
         {
@@ -5352,7 +5314,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private XmlNameSyntax? name;
         private SyntaxNode? attributes;
 
-        internal XmlEmptyElementSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal XmlEmptyElementSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -5381,8 +5343,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitXmlEmptyElement(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlEmptyElement(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitXmlEmptyElement(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlEmptyElement(this);
 
         public XmlEmptyElementSyntax Update(SyntaxToken lessThanToken, XmlNameSyntax name, SyntaxList<XmlAttributeSyntax> attributes, SyntaxToken slashGreaterThanToken)
         {
@@ -5410,11 +5372,11 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.XmlName"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class XmlNameSyntax : CSharpSyntaxNode
+    public sealed partial class XmlNameSyntax : AquilaSyntaxNode
     {
         private XmlPrefixSyntax? prefix;
 
-        internal XmlNameSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal XmlNameSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -5427,8 +5389,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 0 ? this.prefix : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitXmlName(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlName(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitXmlName(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlName(this);
 
         public XmlNameSyntax Update(XmlPrefixSyntax? prefix, SyntaxToken localName)
         {
@@ -5452,9 +5414,9 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <item><description><see cref="SyntaxKind.XmlPrefix"/></description></item>
     /// </list>
     /// </remarks>
-    public sealed partial class XmlPrefixSyntax : CSharpSyntaxNode
+    public sealed partial class XmlPrefixSyntax : AquilaSyntaxNode
     {
-        internal XmlPrefixSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal XmlPrefixSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -5467,8 +5429,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitXmlPrefix(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlPrefix(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitXmlPrefix(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlPrefix(this);
 
         public XmlPrefixSyntax Update(SyntaxToken prefix, SyntaxToken colonToken)
         {
@@ -5486,9 +5448,9 @@ namespace Aquila.CodeAnalysis.Syntax
         public XmlPrefixSyntax WithColonToken(SyntaxToken colonToken) => Update(this.Prefix, colonToken);
     }
 
-    public abstract partial class XmlAttributeSyntax : CSharpSyntaxNode
+    public abstract partial class XmlAttributeSyntax : AquilaSyntaxNode
     {
-        internal XmlAttributeSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal XmlAttributeSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -5520,7 +5482,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private XmlNameSyntax? name;
 
-        internal XmlTextAttributeSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal XmlTextAttributeSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -5546,8 +5508,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 0 ? this.name : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitXmlTextAttribute(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlTextAttribute(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitXmlTextAttribute(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlTextAttribute(this);
 
         public XmlTextAttributeSyntax Update(XmlNameSyntax name, SyntaxToken equalsToken, SyntaxToken startQuoteToken, SyntaxTokenList textTokens, SyntaxToken endQuoteToken)
         {
@@ -5585,7 +5547,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private XmlNameSyntax? name;
         private CrefSyntax? cref;
 
-        internal XmlCrefAttributeSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal XmlCrefAttributeSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -5616,8 +5578,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitXmlCrefAttribute(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlCrefAttribute(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitXmlCrefAttribute(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlCrefAttribute(this);
 
         public XmlCrefAttributeSyntax Update(XmlNameSyntax name, SyntaxToken equalsToken, SyntaxToken startQuoteToken, CrefSyntax cref, SyntaxToken endQuoteToken)
         {
@@ -5653,7 +5615,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private XmlNameSyntax? name;
         private IdentifierEx? identifier;
 
-        internal XmlNameAttributeSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal XmlNameAttributeSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -5684,8 +5646,8 @@ namespace Aquila.CodeAnalysis.Syntax
                 _ => null,
             };
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitXmlNameAttribute(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlNameAttribute(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitXmlNameAttribute(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlNameAttribute(this);
 
         public XmlNameAttributeSyntax Update(XmlNameSyntax name, SyntaxToken equalsToken, SyntaxToken startQuoteToken, IdentifierEx identifier, SyntaxToken endQuoteToken)
         {
@@ -5718,7 +5680,7 @@ namespace Aquila.CodeAnalysis.Syntax
     /// </remarks>
     public sealed partial class XmlTextSyntax : XmlNodeSyntax
     {
-        internal XmlTextSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal XmlTextSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -5736,8 +5698,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitXmlText(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlText(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitXmlText(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlText(this);
 
         public XmlTextSyntax Update(SyntaxTokenList textTokens)
         {
@@ -5764,7 +5726,7 @@ namespace Aquila.CodeAnalysis.Syntax
     /// </remarks>
     public sealed partial class XmlCDataSectionSyntax : XmlNodeSyntax
     {
-        internal XmlCDataSectionSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal XmlCDataSectionSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -5786,8 +5748,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitXmlCDataSection(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlCDataSection(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitXmlCDataSection(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlCDataSection(this);
 
         public XmlCDataSectionSyntax Update(SyntaxToken startCDataToken, SyntaxTokenList textTokens, SyntaxToken endCDataToken)
         {
@@ -5818,7 +5780,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private XmlNameSyntax? name;
 
-        internal XmlProcessingInstructionSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal XmlProcessingInstructionSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -5842,8 +5804,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.name : null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitXmlProcessingInstruction(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlProcessingInstruction(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitXmlProcessingInstruction(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlProcessingInstruction(this);
 
         public XmlProcessingInstructionSyntax Update(SyntaxToken startProcessingInstructionToken, XmlNameSyntax name, SyntaxTokenList textTokens, SyntaxToken endProcessingInstructionToken)
         {
@@ -5873,7 +5835,7 @@ namespace Aquila.CodeAnalysis.Syntax
     /// </remarks>
     public sealed partial class XmlCommentSyntax : XmlNodeSyntax
     {
-        internal XmlCommentSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)
+        internal XmlCommentSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
         {
         }
@@ -5895,8 +5857,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
         internal override SyntaxNode? GetCachedSlot(int index) => null;
 
-        public override void Accept(CSharpSyntaxVisitor visitor) => visitor.VisitXmlComment(this);
-        public override TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlComment(this);
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitXmlComment(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitXmlComment(this);
 
         public XmlCommentSyntax Update(SyntaxToken lessThanExclamationMinusMinusToken, SyntaxTokenList textTokens, SyntaxToken minusMinusGreaterThanToken)
         {

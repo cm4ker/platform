@@ -182,7 +182,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                     value = ConstantValue.Create(b);
                 }
                 else if (double.TryParse(d.Value, System.Globalization.NumberStyles.Float,
-                    System.Globalization.CultureInfo.InvariantCulture, out var f))
+                             System.Globalization.CultureInfo.InvariantCulture, out var f))
                 {
                     value = ConstantValue.Create(f);
                 }
@@ -220,9 +220,11 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         {
             Contract.ThrowIfNull(tree);
 
-            Debug.Assert(tree.Source != null);
+            var unit = tree.GetCompilationUnitRoot();
+            Debug.Assert(unit != null);
 
-            foreach (var f in tree.Functions)
+
+            foreach (var f in unit.Methods)
             {
                 var method = new SourceGlobalMethodSymbol(DefinedConstantsContainer, f);
 
@@ -231,7 +233,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             }
 
             //Go through components and extends
-            foreach (var com in tree.Components)
+            foreach (var com in unit.Components)
             {
                 foreach (var ex in com.Extends)
                 {

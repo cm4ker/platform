@@ -12,7 +12,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public static T WithAccess<T>(this T expr, BoundExpression other) where T : BoundExpression => WithAccess(expr, other.Access);
 
-        public static T WithSyntax<T>(this T expr, LangElement syntax) where T : IAquilaOperation
+        public static T WithSyntax<T>(this T expr, AquilaSyntaxNode syntax) where T : IAquilaOperation
         {
             expr.AquilaSyntax = syntax;
             return expr;

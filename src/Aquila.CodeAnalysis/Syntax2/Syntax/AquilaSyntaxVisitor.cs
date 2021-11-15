@@ -7,20 +7,20 @@ using Microsoft.CodeAnalysis;
 namespace Aquila.CodeAnalysis
 {
     /// <summary>
-    /// Represents a <see cref="CSharpSyntaxNode"/> visitor that visits only the single CSharpSyntaxNode
+    /// Represents a <see cref="AquilaSyntaxNode"/> visitor that visits only the single CSharpSyntaxNode
     /// passed into its Visit method and produces 
     /// a value of the type specified by the <typeparamref name="TResult"/> parameter.
     /// </summary>
     /// <typeparam name="TResult">
     /// The type of the return value this visitor's Visit method.
     /// </typeparam>
-    public abstract partial class CSharpSyntaxVisitor<TResult>
+    public abstract partial class AquilaSyntaxVisitor<TResult>
     {
         public virtual TResult? Visit(SyntaxNode? node)
         {
             if (node != null)
             {
-                return ((CSharpSyntaxNode)node).Accept(this);
+                return ((AquilaSyntaxNode)node).Accept(this);
             }
 
             // should not come here too often so we will put this at the end of the method.
@@ -34,16 +34,16 @@ namespace Aquila.CodeAnalysis
     }
 
     /// <summary>
-    /// Represents a <see cref="CSharpSyntaxNode"/> visitor that visits only the single CSharpSyntaxNode
+    /// Represents a <see cref="AquilaSyntaxNode"/> visitor that visits only the single CSharpSyntaxNode
     /// passed into its Visit method.
     /// </summary>
-    public abstract partial class CSharpSyntaxVisitor
+    public abstract partial class AquilaSyntaxVisitor
     {
         public virtual void Visit(SyntaxNode? node)
         {
             if (node != null)
             {
-                ((CSharpSyntaxNode)node).Accept(this);
+                ((AquilaSyntaxNode)node).Accept(this);
             }
         }
 

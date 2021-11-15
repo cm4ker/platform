@@ -208,7 +208,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 _oldDirectives = currentNodeOrToken.ApplyDirectives(_oldDirectives);
 
                 blendedNode = CreateBlendedNode(
-                    node: (Aquila.CodeAnalysis.CSharpSyntaxNode)currentNodeOrToken.AsNode(),
+                    node: (Aquila.CodeAnalysis.AquilaSyntaxNode)currentNodeOrToken.AsNode(),
                     token: (InternalSyntax.SyntaxToken)currentNodeOrToken.AsToken().Node);
                 return true;
             }
@@ -240,7 +240,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
                 // don't reuse nodes or tokens with skipped text or diagnostics attached to them
                 if (nodeOrToken.ContainsDiagnostics ||
-                    (nodeOrToken.IsToken && ((CSharpSyntaxNode)nodeOrToken.AsToken().Node).ContainsSkippedText &&
+                    (nodeOrToken.IsToken && ((AquilaSyntaxNode)nodeOrToken.AsToken().Node).ContainsSkippedText &&
                      nodeOrToken.Parent.ContainsDiagnostics))
                 {
                     return false;
@@ -263,7 +263,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 // semicolon, but we do not report errors.  It would be preferable to fix that so
                 // that the semicolon can be optional rather than abusing the system.
                 if ((nodeOrToken.IsToken && nodeOrToken.AsToken().IsMissing) ||
-                    (nodeOrToken.IsNode && IsIncomplete((Aquila.CodeAnalysis.CSharpSyntaxNode)nodeOrToken.AsNode())))
+                    (nodeOrToken.IsNode && IsIncomplete((Aquila.CodeAnalysis.AquilaSyntaxNode)nodeOrToken.AsNode())))
                 {
                     return false;
                 }
@@ -290,7 +290,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 return oldSpan.IntersectsWith(changeSpan);
             }
 
-            private static bool IsIncomplete(Aquila.CodeAnalysis.CSharpSyntaxNode node)
+            private static bool IsIncomplete(Aquila.CodeAnalysis.AquilaSyntaxNode node)
             {
                 // A node is incomplete if the last token in it is a missing token.  Use the green
                 // node to determine this as it's much faster than going through the red API.
@@ -310,7 +310,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 }
             }
 
-            private BlendedNode CreateBlendedNode(Aquila.CodeAnalysis.CSharpSyntaxNode node, SyntaxToken token)
+            private BlendedNode CreateBlendedNode(Aquila.CodeAnalysis.AquilaSyntaxNode node, SyntaxToken token)
             {
                 return new BlendedNode(node, token,
                     new Blender(_lexer, _oldTreeCursor, _changes, _newPosition, _changeDelta, _newDirectives,

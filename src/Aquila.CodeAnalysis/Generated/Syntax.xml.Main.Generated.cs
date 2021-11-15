@@ -14,7 +14,7 @@ namespace Aquila.CodeAnalysis
     using Aquila.CodeAnalysis.Syntax;
     using Microsoft.CodeAnalysis;
 
-    public partial class CSharpSyntaxVisitor<TResult>
+    public partial class AquilaSyntaxVisitor<TResult>
     {
         /// <summary>Called when the visitor visits a CompilationUnitSyntax node.</summary>
         public virtual TResult? VisitCompilationUnit(CompilationUnitSyntax node) => this.DefaultVisit(node);
@@ -138,9 +138,6 @@ namespace Aquila.CodeAnalysis
 
         /// <summary>Called when the visitor visits a GenericEx node.</summary>
         public virtual TResult? VisitGenericEx(GenericEx node) => this.DefaultVisit(node);
-
-        /// <summary>Called when the visitor visits a NamedTypeEx node.</summary>
-        public virtual TResult? VisitNamedTypeEx(NamedTypeEx node) => this.DefaultVisit(node);
 
         /// <summary>Called when the visitor visits a PredefinedTypeEx node.</summary>
         public virtual TResult? VisitPredefinedTypeEx(PredefinedTypeEx node) => this.DefaultVisit(node);
@@ -308,7 +305,7 @@ namespace Aquila.CodeAnalysis
         public virtual TResult? VisitXmlComment(XmlCommentSyntax node) => this.DefaultVisit(node);
     }
 
-    public partial class CSharpSyntaxVisitor
+    public partial class AquilaSyntaxVisitor
     {
         /// <summary>Called when the visitor visits a CompilationUnitSyntax node.</summary>
         public virtual void VisitCompilationUnit(CompilationUnitSyntax node) => this.DefaultVisit(node);
@@ -432,9 +429,6 @@ namespace Aquila.CodeAnalysis
 
         /// <summary>Called when the visitor visits a GenericEx node.</summary>
         public virtual void VisitGenericEx(GenericEx node) => this.DefaultVisit(node);
-
-        /// <summary>Called when the visitor visits a NamedTypeEx node.</summary>
-        public virtual void VisitNamedTypeEx(NamedTypeEx node) => this.DefaultVisit(node);
 
         /// <summary>Called when the visitor visits a PredefinedTypeEx node.</summary>
         public virtual void VisitPredefinedTypeEx(PredefinedTypeEx node) => this.DefaultVisit(node);
@@ -602,7 +596,7 @@ namespace Aquila.CodeAnalysis
         public virtual void VisitXmlComment(XmlCommentSyntax node) => this.DefaultVisit(node);
     }
 
-    public partial class CSharpSyntaxRewriter : CSharpSyntaxVisitor<SyntaxNode?>
+    public partial class AquilaSyntaxRewriter : AquilaSyntaxVisitor<SyntaxNode?>
     {
         public override SyntaxNode? VisitCompilationUnit(CompilationUnitSyntax node)
             => node.Update(VisitList(node.Imports), VisitList(node.Methods), VisitList(node.Extends), VisitList(node.Components), VisitToken(node.EndOfFileToken));
@@ -719,16 +713,13 @@ namespace Aquila.CodeAnalysis
             => node.Update((IdentifierEx?)Visit(node.Name) ?? throw new ArgumentNullException("name"), VisitToken(node.ColonToken));
 
         public override SyntaxNode? VisitQualifiedNameEx(QualifiedNameEx node)
-            => node.Update((NameEx?)Visit(node.Left) ?? throw new ArgumentNullException("left"), VisitToken(node.DotToken), (NameEx?)Visit(node.Right) ?? throw new ArgumentNullException("right"));
+            => node.Update((NameEx?)Visit(node.Left) ?? throw new ArgumentNullException("left"), VisitToken(node.DotToken), (SimpleNameEx?)Visit(node.Right) ?? throw new ArgumentNullException("right"));
 
         public override SyntaxNode? VisitIdentifierEx(IdentifierEx node)
             => node.Update(VisitToken(node.Identifier));
 
         public override SyntaxNode? VisitGenericEx(GenericEx node)
             => node.Update(VisitToken(node.Identifier), (TypeArgumentListSyntax?)Visit(node.TypeArgumentList) ?? throw new ArgumentNullException("typeArgumentList"));
-
-        public override SyntaxNode? VisitNamedTypeEx(NamedTypeEx node)
-            => node.Update(VisitToken(node.Identifier));
 
         public override SyntaxNode? VisitPredefinedTypeEx(PredefinedTypeEx node)
             => node.Update(VisitToken(node.Keyword));
@@ -1689,16 +1680,16 @@ namespace Aquila.CodeAnalysis
         }
 
         /// <summary>Creates a new QualifiedNameEx instance.</summary>
-        public static QualifiedNameEx QualifiedNameEx(NameEx left, SyntaxToken dotToken, NameEx right)
+        public static QualifiedNameEx QualifiedNameEx(NameEx left, SyntaxToken dotToken, SimpleNameEx right)
         {
             if (left == null) throw new ArgumentNullException(nameof(left));
             if (dotToken.Kind() != SyntaxKind.DotToken) throw new ArgumentException(nameof(dotToken));
             if (right == null) throw new ArgumentNullException(nameof(right));
-            return (QualifiedNameEx)Syntax.InternalSyntax.SyntaxFactory.QualifiedNameEx((Syntax.InternalSyntax.NameEx)left.Green, (Syntax.InternalSyntax.SyntaxToken)dotToken.Node!, (Syntax.InternalSyntax.NameEx)right.Green).CreateRed();
+            return (QualifiedNameEx)Syntax.InternalSyntax.SyntaxFactory.QualifiedNameEx((Syntax.InternalSyntax.NameEx)left.Green, (Syntax.InternalSyntax.SyntaxToken)dotToken.Node!, (Syntax.InternalSyntax.SimpleNameEx)right.Green).CreateRed();
         }
 
         /// <summary>Creates a new QualifiedNameEx instance.</summary>
-        public static QualifiedNameEx QualifiedNameEx(NameEx left, NameEx right)
+        public static QualifiedNameEx QualifiedNameEx(NameEx left, SimpleNameEx right)
             => SyntaxFactory.QualifiedNameEx(left, SyntaxFactory.Token(SyntaxKind.DotToken), right);
 
         /// <summary>Creates a new IdentifierEx instance.</summary>
@@ -1723,13 +1714,6 @@ namespace Aquila.CodeAnalysis
         /// <summary>Creates a new GenericEx instance.</summary>
         public static GenericEx GenericEx(string identifier)
             => SyntaxFactory.GenericEx(SyntaxFactory.Identifier(identifier), SyntaxFactory.TypeArgumentList());
-
-        /// <summary>Creates a new NamedTypeEx instance.</summary>
-        public static NamedTypeEx NamedTypeEx(SyntaxToken identifier)
-        {
-            if (identifier.Kind() != SyntaxKind.IdentifierToken) throw new ArgumentException(nameof(identifier));
-            return (NamedTypeEx)Syntax.InternalSyntax.SyntaxFactory.NamedTypeEx((Syntax.InternalSyntax.SyntaxToken)identifier.Node!).CreateRed();
-        }
 
         /// <summary>Creates a new PredefinedTypeEx instance.</summary>
         public static PredefinedTypeEx PredefinedTypeEx(SyntaxToken keyword)

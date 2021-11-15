@@ -248,37 +248,37 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return SyntaxTrivia.Create(SyntaxKind.DocumentationCommentExteriorTrivia, text);
         }
 
-        public static SyntaxList<TNode> List<TNode>() where TNode : CSharpSyntaxNode
+        public static SyntaxList<TNode> List<TNode>() where TNode : AquilaSyntaxNode
         {
             return default(SyntaxList<TNode>);
         }
 
-        public static SyntaxList<TNode> List<TNode>(TNode node) where TNode : CSharpSyntaxNode
+        public static SyntaxList<TNode> List<TNode>(TNode node) where TNode : AquilaSyntaxNode
         {
             return new SyntaxList<TNode>(SyntaxList.List(node));
         }
 
-        public static SyntaxList<TNode> List<TNode>(TNode node0, TNode node1) where TNode : CSharpSyntaxNode
+        public static SyntaxList<TNode> List<TNode>(TNode node0, TNode node1) where TNode : AquilaSyntaxNode
         {
             return new SyntaxList<TNode>(SyntaxList.List(node0, node1));
         }
 
-        internal static GreenNode ListNode(CSharpSyntaxNode node0, CSharpSyntaxNode node1)
+        internal static GreenNode ListNode(AquilaSyntaxNode node0, AquilaSyntaxNode node1)
         {
             return SyntaxList.List(node0, node1);
         }
 
-        public static SyntaxList<TNode> List<TNode>(TNode node0, TNode node1, TNode node2) where TNode : CSharpSyntaxNode
+        public static SyntaxList<TNode> List<TNode>(TNode node0, TNode node1, TNode node2) where TNode : AquilaSyntaxNode
         {
             return new SyntaxList<TNode>(SyntaxList.List(node0, node1, node2));
         }
 
-        internal static GreenNode ListNode(CSharpSyntaxNode node0, CSharpSyntaxNode node1, CSharpSyntaxNode node2)
+        internal static GreenNode ListNode(AquilaSyntaxNode node0, AquilaSyntaxNode node1, AquilaSyntaxNode node2)
         {
             return SyntaxList.List(node0, node1, node2);
         }
 
-        public static SyntaxList<TNode> List<TNode>(params TNode[] nodes) where TNode : CSharpSyntaxNode
+        public static SyntaxList<TNode> List<TNode>(params TNode[] nodes) where TNode : AquilaSyntaxNode
         {
             if (nodes != null)
             {
@@ -293,22 +293,22 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return SyntaxList.List(nodes);
         }
 
-        public static SeparatedSyntaxList<TNode> SeparatedList<TNode>(TNode node) where TNode : CSharpSyntaxNode
+        public static SeparatedSyntaxList<TNode> SeparatedList<TNode>(TNode node) where TNode : AquilaSyntaxNode
         {
-            return new SeparatedSyntaxList<TNode>(new SyntaxList<CSharpSyntaxNode>(node));
+            return new SeparatedSyntaxList<TNode>(new SyntaxList<AquilaSyntaxNode>(node));
         }
 
-        public static SeparatedSyntaxList<TNode> SeparatedList<TNode>(SyntaxToken token) where TNode : CSharpSyntaxNode
+        public static SeparatedSyntaxList<TNode> SeparatedList<TNode>(SyntaxToken token) where TNode : AquilaSyntaxNode
         {
-            return new SeparatedSyntaxList<TNode>(new SyntaxList<CSharpSyntaxNode>(token));
+            return new SeparatedSyntaxList<TNode>(new SyntaxList<AquilaSyntaxNode>(token));
         }
 
-        public static SeparatedSyntaxList<TNode> SeparatedList<TNode>(TNode node1, SyntaxToken token, TNode node2) where TNode : CSharpSyntaxNode
+        public static SeparatedSyntaxList<TNode> SeparatedList<TNode>(TNode node1, SyntaxToken token, TNode node2) where TNode : AquilaSyntaxNode
         {
-            return new SeparatedSyntaxList<TNode>(new SyntaxList<CSharpSyntaxNode>(SyntaxList.List(node1, token, node2)));
+            return new SeparatedSyntaxList<TNode>(new SyntaxList<AquilaSyntaxNode>(SyntaxList.List(node1, token, node2)));
         }
 
-        public static SeparatedSyntaxList<TNode> SeparatedList<TNode>(params CSharpSyntaxNode[] nodes) where TNode : CSharpSyntaxNode
+        public static SeparatedSyntaxList<TNode> SeparatedList<TNode>(params AquilaSyntaxNode[] nodes) where TNode : AquilaSyntaxNode
         {
             if (nodes != null)
             {

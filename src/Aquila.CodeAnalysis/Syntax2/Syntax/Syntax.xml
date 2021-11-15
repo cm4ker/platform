@@ -6,16 +6,16 @@
 -->
 
 <Tree Root="SyntaxNode">
-    <PredefinedNode Name="CSharpSyntaxNode" Base="SyntaxNode"/>
-    <PredefinedNode Name="SyntaxToken" Base="CSharpSyntaxNode"/>
-    <PredefinedNode Name="StructuredTriviaSyntax" Base="CSharpSyntaxNode"/>
+    <PredefinedNode Name="AquilaSyntaxNode" Base="SyntaxNode"/>
+    <PredefinedNode Name="SyntaxToken" Base="AquilaSyntaxNode"/>
+    <PredefinedNode Name="StructuredTriviaSyntax" Base="AquilaSyntaxNode"/>
 
-    <AbstractNode Name="ExprSyntax" Base="CSharpSyntaxNode">
+    <AbstractNode Name="ExprSyntax" Base="AquilaSyntaxNode">
     </AbstractNode>
-    <AbstractNode Name="StmtSyntax" Base="CSharpSyntaxNode">
+    <AbstractNode Name="StmtSyntax" Base="AquilaSyntaxNode">
     </AbstractNode>
 
-    <Node Name="CompilationUnitSyntax" Base="CSharpSyntaxNode">
+    <Node Name="CompilationUnitSyntax" Base="AquilaSyntaxNode">
         <Kind Name="CompilationUnit"/>
         <Field Name="Imports" Type="SyntaxList&lt;ImportDecl&gt;"/>
         <Field Name="Methods" Type="SyntaxList&lt;MethodDecl&gt;"/>
@@ -26,7 +26,7 @@
         </Field>
     </Node>
 
-    <Node Name="ImportDecl" Base="CSharpSyntaxNode">
+    <Node Name="ImportDecl" Base="AquilaSyntaxNode">
         <Kind Name="ImportDecl"/>
         <Field Name="ImportKeyword" Type="SyntaxToken">
             <Kind Name="ImportKeyword"/>
@@ -40,7 +40,7 @@
         </Field>
     </Node>
 
-    <AbstractNode Name="MemberDecl" Base="CSharpSyntaxNode">
+    <AbstractNode Name="MemberDecl" Base="AquilaSyntaxNode">
         <TypeComment>
             <summary>Member declaration syntax.</summary>
         </TypeComment>
@@ -96,7 +96,7 @@
         </Choice>
     </Node>
 
-    <Node Name="ExtendDecl" Base="CSharpSyntaxNode">
+    <Node Name="ExtendDecl" Base="AquilaSyntaxNode">
         <Kind Name="ExtendDecl"/>
         <Field Name="ExtendKeyword" Type="SyntaxToken">
             <Kind Name="ExtendKeyword"/>
@@ -116,7 +116,7 @@
             </PropertyComment>
         </Field>
     </Node>
-    <Node Name="ComponentDecl" Base="CSharpSyntaxNode">
+    <Node Name="ComponentDecl" Base="AquilaSyntaxNode">
         <Kind Name="ComponentDecl"/>
         <Field Name="ComponentKeyword" Type="SyntaxToken">
             <Kind Name="ComponentKeyword"/>
@@ -126,7 +126,7 @@
     </Node>
 
     <!--region Attributes-->
-    <Node Name="AttributeListSyntax" Base="CSharpSyntaxNode">
+    <Node Name="AttributeListSyntax" Base="AquilaSyntaxNode">
         <TypeComment>
             <summary>Class representing one or more attributes applied to a language construct.</summary>
         </TypeComment>
@@ -149,7 +149,7 @@
             </PropertyComment>
         </Field>
     </Node>
-    <Node Name="AttributeSyntax" Base="CSharpSyntaxNode">
+    <Node Name="AttributeSyntax" Base="AquilaSyntaxNode">
         <TypeComment>
             <summary>Attribute syntax.</summary>
         </TypeComment>
@@ -161,7 +161,7 @@
         </Field>
         <Field Name="ArgumentList" Type="AttributeArgumentListSyntax" Optional="true"/>
     </Node>
-    <Node Name="AttributeArgumentListSyntax" Base="CSharpSyntaxNode">
+    <Node Name="AttributeArgumentListSyntax" Base="AquilaSyntaxNode">
         <TypeComment>
             <summary>Attribute argument list syntax.</summary>
         </TypeComment>
@@ -184,7 +184,7 @@
             <Kind Name="CloseParenToken"/>
         </Field>
     </Node>
-    <Node Name="AttributeArgumentSyntax" Base="CSharpSyntaxNode">
+    <Node Name="AttributeArgumentSyntax" Base="AquilaSyntaxNode">
         <TypeComment>
             <summary>Attribute argument syntax.</summary>
         </TypeComment>
@@ -199,7 +199,7 @@
             </PropertyComment>
         </Field>
     </Node>
-    <Node Name="NameEqualsSyntax" Base="CSharpSyntaxNode">
+    <Node Name="NameEqualsSyntax" Base="AquilaSyntaxNode">
         <TypeComment>
             <summary>Class representing an identifier name followed by an equals token.</summary>
         </TypeComment>
@@ -217,7 +217,7 @@
     <!--endregion Attributes-->
 
     <!--region Generics-->
-    <Node Name="TypeParameterListSyntax" Base="CSharpSyntaxNode">
+    <Node Name="TypeParameterListSyntax" Base="AquilaSyntaxNode">
         <TypeComment>
             <summary>Type parameter list syntax.</summary>
         </TypeComment>
@@ -240,7 +240,7 @@
             <Kind Name="GreaterThanToken"/>
         </Field>
     </Node>
-    <Node Name="TypeParameterSyntax" Base="CSharpSyntaxNode">
+    <Node Name="TypeParameterSyntax" Base="AquilaSyntaxNode">
         <TypeComment>
             <summary>Type parameter syntax.</summary>
         </TypeComment>
@@ -656,7 +656,7 @@
             <summary>Creates a LiteralExpressionSyntax node.</summary>
         </FactoryComment>
     </Node>
-    <Node Name="ArrowExClause" Base="CSharpSyntaxNode">
+    <Node Name="ArrowExClause" Base="AquilaSyntaxNode">
         <TypeComment>
             <summary>The syntax for the expression body of an expression-bodied member.</summary>
         </TypeComment>
@@ -769,7 +769,7 @@
         </FactoryComment>
     </Node>
 
-    <Node Name="MatchArm" Base="CSharpSyntaxNode">
+    <Node Name="MatchArm" Base="AquilaSyntaxNode">
         <Kind Name="MatchArm"/>
 
         <Field Name="BarToken" Type="SyntaxToken" Optional="true">
@@ -809,7 +809,7 @@
     <!--endregion Match -->
 
     <!--region String-->
-    <AbstractNode Name="InterpolatedStringContentSyntax" Base="CSharpSyntaxNode"/>
+    <AbstractNode Name="InterpolatedStringContentSyntax" Base="AquilaSyntaxNode"/>
     <Node Name="InterpolatedStringTextSyntax" Base="InterpolatedStringContentSyntax">
         <Kind Name="InterpolatedStringText"/>
         <Field Name="TextToken" Type="SyntaxToken">
@@ -831,12 +831,12 @@
             <Kind Name="CloseBraceToken"/>
         </Field>
     </Node>
-    <Node Name="InterpolationAlignmentClauseSyntax" Base="CSharpSyntaxNode">
+    <Node Name="InterpolationAlignmentClauseSyntax" Base="AquilaSyntaxNode">
         <Kind Name="InterpolationAlignmentClause"/>
         <Field Name="CommaToken" Type="SyntaxToken"/>
         <Field Name="Value" Type="ExprSyntax"/>
     </Node>
-    <Node Name="InterpolationFormatClauseSyntax" Base="CSharpSyntaxNode">
+    <Node Name="InterpolationFormatClauseSyntax" Base="AquilaSyntaxNode">
         <Kind Name="InterpolationFormatClause"/>
         <Field Name="ColonToken" Type="SyntaxToken"/>
         <Field Name="FormatStringToken" Type="SyntaxToken">
@@ -851,7 +851,7 @@
     <!--endregion Expressions-->
 
     <!--region Arguments-->
-    <AbstractNode Name="BaseArgumentListSyntax" Base="CSharpSyntaxNode">
+    <AbstractNode Name="BaseArgumentListSyntax" Base="AquilaSyntaxNode">
         <Field Name="Arguments" Type="SeparatedSyntaxList&lt;ArgumentSyntax&gt;">
             <PropertyComment>
                 <summary>SeparatedSyntaxList of ArgumentSyntax nodes representing the list of arguments.</summary>
@@ -915,7 +915,7 @@
             <summary>Creates a BracketedArgumentListSyntax node.</summary>
         </FactoryComment>
     </Node>
-    <Node Name="ArgumentSyntax" Base="CSharpSyntaxNode">
+    <Node Name="ArgumentSyntax" Base="AquilaSyntaxNode">
         <Kind Name="Argument"/>
         <Field Name="NameColon" Type="NameColonSyntax" Optional="true">
             <PropertyComment>
@@ -945,7 +945,7 @@
     <!--endregion Arguments-->
 
     <!--region Colon-->
-    <AbstractNode Name="BaseExpressionColonSyntax" Base="CSharpSyntaxNode">
+    <AbstractNode Name="BaseExpressionColonSyntax" Base="AquilaSyntaxNode">
         <Field Name="Expression" Type="ExprSyntax"/>
         <Field Name="ColonToken" Type="SyntaxToken">
             <Kind Name="ColonToken"/>
@@ -997,7 +997,7 @@
                 <summary>SyntaxToken representing the dot.</summary>
             </PropertyComment>
         </Field>
-        <Field Name="Right" Type="NameEx">
+        <Field Name="Right" Type="SimpleNameEx">
             <PropertyComment>
                 <summary>SimpleNameSyntax node representing the name on the right side of the dot token of the qualified
                     name.
@@ -1011,7 +1011,6 @@
             <summary>Creates a QualifiedNameSyntax node.</summary>
         </FactoryComment>
     </Node>
-
     <AbstractNode Name="SimpleNameEx" Base="NameEx">
         <Field Name="Identifier" Type="SyntaxToken">
             <PropertyComment>
@@ -1055,16 +1054,6 @@
             <summary>Creates a GenericNameSyntax node.</summary>
         </FactoryComment>
     </Node>
-    <Node Name="NamedTypeEx" Base="NameEx">
-        <Kind Name="NamedTypeEx"/>
-        <Field Name="Identifier" Type="SyntaxToken">
-            <PropertyComment>
-                <summary>Gets the identifier.</summary>
-            </PropertyComment>
-            <Kind Name="IdentifierToken"/>
-        </Field>
-    </Node>
-
     <Node Name="PredefinedTypeEx" Base="TypeEx">
         <Kind Name="PredefinedType"/>
         <Field Name="Keyword" Type="SyntaxToken">
@@ -1157,7 +1146,7 @@
     </Node>
 
 
-    <Node Name="TypeArgumentListSyntax" Base="CSharpSyntaxNode">
+    <Node Name="TypeArgumentListSyntax" Base="AquilaSyntaxNode">
         <Kind Name="TypeArgumentList"/>
         <Field Name="LessThanToken" Type="SyntaxToken">
             <Kind Name="LessThanToken"/>
@@ -1186,7 +1175,7 @@
     <!--endregion Type-->
 
     <!-- region Array -->
-    <Node Name="ArrayRankSpecifierSyntax" Base="CSharpSyntaxNode">
+    <Node Name="ArrayRankSpecifierSyntax" Base="AquilaSyntaxNode">
         <Kind Name="ArrayRankSpecifier"/>
         <Field Name="OpenBracketToken" Type="SyntaxToken">
             <Kind Name="OpenBracketToken"/>
@@ -1214,7 +1203,7 @@
     <!-- endregion Array -->
 
     <!--region Parameters-->
-    <AbstractNode Name="BaseParameterListSyntax" Base="CSharpSyntaxNode">
+    <AbstractNode Name="BaseParameterListSyntax" Base="AquilaSyntaxNode">
         <TypeComment>
             <summary>Base type for parameter list syntax.</summary>
         </TypeComment>
@@ -1262,7 +1251,7 @@
             <Kind Name="CloseBracketToken"/>
         </Field>
     </Node>
-    <AbstractNode Name="BaseParameterSyntax" Base="CSharpSyntaxNode">
+    <AbstractNode Name="BaseParameterSyntax" Base="AquilaSyntaxNode">
         <TypeComment>
             <summary>Base parameter syntax.</summary>
         </TypeComment>
@@ -1333,19 +1322,19 @@
     <!--endregion parameters-->
 
     <!--region Variables-->
-    <Node Name="EqualsValueClauseSyntax" Base="CSharpSyntaxNode">
+    <Node Name="EqualsValueClauseSyntax" Base="AquilaSyntaxNode">
         <Kind Name="EqualsValueClause"/>
         <Field Name="EqualsToken" Type="SyntaxToken">
             <Kind Name="EqualsToken"/>
         </Field>
         <Field Name="Value" Type="ExprSyntax"/>
     </Node>
-    <Node Name="VariableDecl" Base="CSharpSyntaxNode">
+    <Node Name="VariableDecl" Base="AquilaSyntaxNode">
         <Kind Name="VariableDeclaration"/>
         <Field Name="Type" Type="TypeEx"/>
         <Field Name="Variables" Type="SeparatedSyntaxList&lt;VariableInit&gt;" MinCount="1"/>
     </Node>
-    <Node Name="VariableInit" Base="CSharpSyntaxNode">
+    <Node Name="VariableInit" Base="AquilaSyntaxNode">
         <Kind Name="VariableDeclarator"/>
         <Field Name="Identifier" Type="SyntaxToken">
             <PropertyComment>
@@ -1635,7 +1624,7 @@
             <summary>Creates an IfStatementSyntax node</summary>
         </FactoryComment>
     </Node>
-    <Node Name="ElseClauseSyntax" Base="CSharpSyntaxNode">
+    <Node Name="ElseClauseSyntax" Base="AquilaSyntaxNode">
         <Kind Name="ElseClause"/>
         <Field Name="ElseKeyword" Type="SyntaxToken">
             <Kind Name="ElseKeyword"/>
@@ -1667,7 +1656,7 @@
             <Kind Name="EndOfDocumentationCommentToken"/>
         </Field>
     </Node>
-    <AbstractNode Name="CrefSyntax" Base="CSharpSyntaxNode">
+    <AbstractNode Name="CrefSyntax" Base="AquilaSyntaxNode">
         <TypeComment>
             <summary>
                 A symbol referenced by a cref attribute (e.g. in a &lt;see&gt; or &lt;seealso&gt; documentation comment
@@ -1804,7 +1793,7 @@
         <Field Name="Type" Type="TypeEx"/>
         <Field Name="Parameters" Type="CrefParameterListSyntax" Optional="true"/>
     </Node>
-    <AbstractNode Name="BaseCrefParameterListSyntax" Base="CSharpSyntaxNode">
+    <AbstractNode Name="BaseCrefParameterListSyntax" Base="AquilaSyntaxNode">
         <TypeComment>
             <summary>
                 A list of cref parameters with surrounding punctuation.
@@ -1859,7 +1848,7 @@
             <Kind Name="CloseBracketToken"/>
         </Field>
     </Node>
-    <Node Name="CrefParameterSyntax" Base="CSharpSyntaxNode">
+    <Node Name="CrefParameterSyntax" Base="AquilaSyntaxNode">
         <TypeComment>
             <summary>
                 An element of a BaseCrefParameterListSyntax.
@@ -1875,7 +1864,7 @@
         </Field>
         <Field Name="Type" Type="TypeEx"/>
     </Node>
-    <AbstractNode Name="XmlNodeSyntax" Base="CSharpSyntaxNode">
+    <AbstractNode Name="XmlNodeSyntax" Base="AquilaSyntaxNode">
     </AbstractNode>
     <Node Name="XmlElementSyntax" Base="XmlNodeSyntax">
         <Kind Name="XmlElement"/>
@@ -1883,7 +1872,7 @@
         <Field Name="Content" Type="SyntaxList&lt;XmlNodeSyntax&gt;"/>
         <Field Name="EndTag" Type="XmlElementEndTagSyntax"/>
     </Node>
-    <Node Name="XmlElementStartTagSyntax" Base="CSharpSyntaxNode">
+    <Node Name="XmlElementStartTagSyntax" Base="AquilaSyntaxNode">
         <Kind Name="XmlElementStartTag"/>
         <Field Name="LessThanToken" Type="SyntaxToken">
             <Kind Name="LessThanToken"/>
@@ -1894,7 +1883,7 @@
             <Kind Name="GreaterThanToken"/>
         </Field>
     </Node>
-    <Node Name="XmlElementEndTagSyntax" Base="CSharpSyntaxNode">
+    <Node Name="XmlElementEndTagSyntax" Base="AquilaSyntaxNode">
         <Kind Name="XmlElementEndTag"/>
         <Field Name="LessThanSlashToken" Type="SyntaxToken">
             <Kind Name="LessThanSlashToken"/>
@@ -1915,14 +1904,14 @@
             <Kind Name="SlashGreaterThanToken"/>
         </Field>
     </Node>
-    <Node Name="XmlNameSyntax" Base="CSharpSyntaxNode">
+    <Node Name="XmlNameSyntax" Base="AquilaSyntaxNode">
         <Kind Name="XmlName"/>
         <Field Name="Prefix" Type="XmlPrefixSyntax" Optional="true"/>
         <Field Name="LocalName" Type="SyntaxToken">
             <Kind Name="IdentifierToken"/>
         </Field>
     </Node>
-    <Node Name="XmlPrefixSyntax" Base="CSharpSyntaxNode">
+    <Node Name="XmlPrefixSyntax" Base="AquilaSyntaxNode">
         <Kind Name="XmlPrefix"/>
         <Field Name="Prefix" Type="SyntaxToken">
             <Kind Name="IdentifierToken"/>
@@ -1931,7 +1920,7 @@
             <Kind Name="ColonToken"/>
         </Field>
     </Node>
-    <AbstractNode Name="XmlAttributeSyntax" Base="CSharpSyntaxNode">
+    <AbstractNode Name="XmlAttributeSyntax" Base="AquilaSyntaxNode">
         <Field Name="Name" Type="XmlNameSyntax"/>
         <Field Name="EqualsToken" Type="SyntaxToken">
             <Kind Name="EqualsToken"/>

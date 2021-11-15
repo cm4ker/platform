@@ -47,7 +47,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         protected SyntaxParser(
             Lexer lexer,
             LexerMode mode,
-            Aquila.CodeAnalysis.CSharpSyntaxNode oldTree,
+            Aquila.CodeAnalysis.AquilaSyntaxNode oldTree,
             IEnumerable<TextChangeRange> changes,
             bool allowModeReset,
             bool preLexIfNotIncremental = false,
@@ -229,7 +229,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             }
         }
 
-        protected Aquila.CodeAnalysis.CSharpSyntaxNode CurrentNode
+        protected Aquila.CodeAnalysis.AquilaSyntaxNode CurrentNode
         {
             get
             {
@@ -682,7 +682,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             var trivia = _prevTokenTrailingTrivia;
             if (trivia != null)
             {
-                SyntaxList<CSharpSyntaxNode> triviaList = new SyntaxList<CSharpSyntaxNode>(trivia);
+                SyntaxList<AquilaSyntaxNode> triviaList = new SyntaxList<AquilaSyntaxNode>(trivia);
                 bool prevTokenHasEndOfLineTrivia = triviaList.Any((int)SyntaxKind.EndOfLineTrivia);
                 if (prevTokenHasEndOfLineTrivia)
                 {
@@ -773,13 +773,13 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
 
         protected TNode AddError<TNode>(TNode node, int offset, int length, ErrorCode code, params object[] args)
-            where TNode : CSharpSyntaxNode
+            where TNode : AquilaSyntaxNode
         {
             return WithAdditionalDiagnostics(node, MakeError(offset, length, code, args));
         }
 
-        protected TNode AddError<TNode>(TNode node, CSharpSyntaxNode location, ErrorCode code, params object[] args)
-            where TNode : CSharpSyntaxNode
+        protected TNode AddError<TNode>(TNode node, AquilaSyntaxNode location, ErrorCode code, params object[] args)
+            where TNode : AquilaSyntaxNode
         {
             // assumes non-terminals will at most appear once in sub-tree
             int offset;
@@ -787,7 +787,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return WithAdditionalDiagnostics(node, MakeError(offset, location.Width, code, args));
         }
 
-        protected TNode AddErrorToFirstToken<TNode>(TNode node, ErrorCode code) where TNode : CSharpSyntaxNode
+        protected TNode AddErrorToFirstToken<TNode>(TNode node, ErrorCode code) where TNode : AquilaSyntaxNode
         {
             var firstToken = node.GetFirstToken();
             return WithAdditionalDiagnostics(node,
@@ -795,14 +795,14 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
 
         protected TNode AddErrorToFirstToken<TNode>(TNode node, ErrorCode code, params object[] args)
-            where TNode : CSharpSyntaxNode
+            where TNode : AquilaSyntaxNode
         {
             var firstToken = node.GetFirstToken();
             return WithAdditionalDiagnostics(node,
                 MakeError(firstToken.GetLeadingTriviaWidth(), firstToken.Width, code, args));
         }
 
-        protected TNode AddErrorToLastToken<TNode>(TNode node, ErrorCode code) where TNode : CSharpSyntaxNode
+        protected TNode AddErrorToLastToken<TNode>(TNode node, ErrorCode code) where TNode : AquilaSyntaxNode
         {
             int offset;
             int width;
@@ -811,7 +811,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
 
         protected TNode AddErrorToLastToken<TNode>(TNode node, ErrorCode code, params object[] args)
-            where TNode : CSharpSyntaxNode
+            where TNode : AquilaSyntaxNode
         {
             int offset;
             int width;
@@ -820,7 +820,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
 
         private static void GetOffsetAndWidthForLastToken<TNode>(TNode node, out int offset, out int width)
-            where TNode : CSharpSyntaxNode
+            where TNode : AquilaSyntaxNode
         {
             var lastToken = node.GetLastNonmissingToken();
             offset = node.FullWidth; //advance to end of entire node
@@ -855,7 +855,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
 
         protected TNode AddLeadingSkippedSyntax<TNode>(TNode node, GreenNode skippedSyntax)
-            where TNode : CSharpSyntaxNode
+            where TNode : AquilaSyntaxNode
         {
             var oldToken = node as SyntaxToken ?? node.GetFirstToken();
             var newToken = AddSkippedSyntax(oldToken, skippedSyntax, trailing: false);
@@ -864,17 +864,17 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         protected void AddTrailingSkippedSyntax(SyntaxListBuilder list, GreenNode skippedSyntax)
         {
-            list[list.Count - 1] = AddTrailingSkippedSyntax((CSharpSyntaxNode)list[list.Count - 1], skippedSyntax);
+            list[list.Count - 1] = AddTrailingSkippedSyntax((AquilaSyntaxNode)list[list.Count - 1], skippedSyntax);
         }
 
         protected void AddTrailingSkippedSyntax<TNode>(SyntaxListBuilder<TNode> list, GreenNode skippedSyntax)
-            where TNode : CSharpSyntaxNode
+            where TNode : AquilaSyntaxNode
         {
             list[list.Count - 1] = AddTrailingSkippedSyntax(list[list.Count - 1], skippedSyntax);
         }
 
         protected TNode AddTrailingSkippedSyntax<TNode>(TNode node, GreenNode skippedSyntax)
-            where TNode : CSharpSyntaxNode
+            where TNode : AquilaSyntaxNode
         {
             var token = node as SyntaxToken;
             if (token != null)
@@ -1011,7 +1011,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         /// <param name="location">Node to search in the subtree rooted at root node</param>
         /// <param name="offset">Offset of the location node within the subtree rooted at child</param>
         /// <returns></returns>
-        private bool FindOffset(GreenNode root, CSharpSyntaxNode location, out int offset)
+        private bool FindOffset(GreenNode root, AquilaSyntaxNode location, out int offset)
         {
             int currentOffset = 0;
             offset = 0;

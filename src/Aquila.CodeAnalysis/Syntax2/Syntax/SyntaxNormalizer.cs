@@ -12,7 +12,7 @@ using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Syntax
 {
-    internal class SyntaxNormalizer : CSharpSyntaxRewriter
+    internal class SyntaxNormalizer : AquilaSyntaxRewriter
     {
         private readonly TextSpan _consideredSpan;
         private readonly int _initialDepth;

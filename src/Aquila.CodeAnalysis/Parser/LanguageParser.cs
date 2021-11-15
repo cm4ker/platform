@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.Threading;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.Syntax.Ast;
-using Aquila.Syntax.Ast.Statements;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
@@ -40,7 +39,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         internal LanguageParser(
             Lexer lexer,
-            CSharpSyntaxNode oldTree,
+            Aquila.CodeAnalysis.AquilaSyntaxNode oldTree,
             IEnumerable<TextChangeRange> changes,
             LexerMode lexerMode = LexerMode.Syntax,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -143,7 +142,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return false;
         }
 
-        private static Aquila.CodeAnalysis.CSharpSyntaxNode GetOldParent(Aquila.CodeAnalysis.CSharpSyntaxNode node)
+        private static Aquila.CodeAnalysis.AquilaSyntaxNode GetOldParent(Aquila.CodeAnalysis.AquilaSyntaxNode node)
         {
             return node != null ? node.Parent : null;
         }
@@ -213,7 +212,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
 
         internal TNode ParseWithStackGuard<TNode>(Func<TNode> parseFunc, Func<TNode> createEmptyNodeFunc)
-            where TNode : CSharpSyntaxNode
+            where TNode : AquilaSyntaxNode
         {
             // If this value is non-zero then we are nesting calls to ParseWithStackGuard which should not be 
             // happening.  It's not a bug but it's inefficient and should be changed.
@@ -229,7 +228,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             }
         }
 
-        private TNode CreateForGlobalFailure<TNode>(int position, TNode node) where TNode : CSharpSyntaxNode
+        private TNode CreateForGlobalFailure<TNode>(int position, TNode node) where TNode : AquilaSyntaxNode
         {
             // Turn the complete input into a single skipped token. This avoids running the lexer, and therefore
             // the preprocessor directive parser, which may itself run into the same problem that caused the
@@ -271,7 +270,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             ref SyntaxToken openBraceOrSemicolon,
             ref FileBody body,
             ref SyntaxListBuilder initialBadNodes,
-            CSharpSyntaxNode skippedSyntax)
+            AquilaSyntaxNode skippedSyntax)
         {
             if (body.Imports.Count > 0)
             {
@@ -1060,7 +1059,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     tokens.Add(this.EatToken());
                 }
 
-                previousNode = AddTrailingSkippedSyntax((CSharpSyntaxNode)previousNode, tokens.ToListNode());
+                previousNode = AddTrailingSkippedSyntax((AquilaSyntaxNode)previousNode, tokens.ToListNode());
             }
             finally
             {
@@ -1447,7 +1446,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 this.CurrentToken.Kind == SyntaxKind.OperatorKeyword;
         }
 
-        public static bool IsComplete(CSharpSyntaxNode node)
+        public static bool IsComplete(AquilaSyntaxNode node)
         {
             if (node == null)
             {
@@ -1459,7 +1458,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 var token = child as SyntaxToken;
                 if (token == null)
                 {
-                    return IsComplete((CSharpSyntaxNode)child);
+                    return IsComplete((AquilaSyntaxNode)child);
                 }
 
                 if (token.IsMissing)
@@ -1752,8 +1751,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             Func<LanguageParser, bool> isNotExpectedFunction,
             Func<LanguageParser, bool> abortFunction,
             SyntaxKind expected)
-            where T : CSharpSyntaxNode
-            where TNode : CSharpSyntaxNode
+            where T : AquilaSyntaxNode
+            where TNode : AquilaSyntaxNode
         {
             // We're going to cheat here and pass the underlying SyntaxListBuilder of "list" to the helper method so that
             // it can append skipped trivia to the last element, regardless of whether that element is a node or a token.
@@ -1774,8 +1773,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             Func<LanguageParser, bool> isNotExpectedFunction,
             Func<LanguageParser, bool> abortFunction,
             ErrorCode error)
-            where T : CSharpSyntaxNode
-            where TNode : CSharpSyntaxNode
+            where T : AquilaSyntaxNode
+            where TNode : AquilaSyntaxNode
         {
             GreenNode trailingTrivia;
             var action = this.SkipBadListTokensWithErrorCodeHelper(list, isNotExpectedFunction, abortFunction, error,
@@ -1824,7 +1823,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             Func<LanguageParser, bool> isNotExpectedFunction,
             Func<LanguageParser, bool> abortFunction,
             ErrorCode error,
-            out GreenNode trailingTrivia) where TNode : CSharpSyntaxNode
+            out GreenNode trailingTrivia) where TNode : AquilaSyntaxNode
         {
             if (list.Count == 0)
             {
@@ -2184,7 +2183,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
             // cannot reuse lambda parameters as normal parameters (parsed with
             // different rules)
-            Aquila.CodeAnalysis.CSharpSyntaxNode parent = parameter.Parent;
+            Aquila.CodeAnalysis.AquilaSyntaxNode parent = parameter.Parent;
             if (parent != null)
             {
                 if (parent.Kind() == SyntaxKind.SimpleLambdaExpression)
@@ -2192,7 +2191,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     return false;
                 }
 
-                Aquila.CodeAnalysis.CSharpSyntaxNode grandparent = parent.Parent;
+                Aquila.CodeAnalysis.AquilaSyntaxNode grandparent = parent.Parent;
                 if (grandparent != null && grandparent.Kind() == SyntaxKind.ParenthesizedLambdaExpression)
                 {
                     Debug.Assert(parent.Kind() == SyntaxKind.ParameterList);
@@ -2265,7 +2264,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
 
 
-        private TNode EatUnexpectedTrailingSemicolon<TNode>(TNode decl) where TNode : CSharpSyntaxNode
+        private TNode EatUnexpectedTrailingSemicolon<TNode>(TNode decl) where TNode : AquilaSyntaxNode
         {
             // allow for case of one unexpected semicolon...
             if (this.CurrentToken.Kind == SyntaxKind.SemicolonToken)
@@ -2331,7 +2330,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         private PostSkipAction SkipBadVariableListTokens(SeparatedSyntaxListBuilder<VariableInit> list,
             SyntaxKind expected)
         {
-            CSharpSyntaxNode tmp = null;
+            AquilaSyntaxNode tmp = null;
             Debug.Assert(list.Count > 0);
             return this.SkipBadSeparatedListTokensWithExpectedKind(ref tmp, list,
                 p => p.CurrentToken.Kind != SyntaxKind.CommaToken,
@@ -2347,7 +2346,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             Local = 0x04
         }
 
-        private static SyntaxTokenList GetOriginalModifiers(Aquila.CodeAnalysis.CSharpSyntaxNode decl)
+        private static SyntaxTokenList GetOriginalModifiers(Aquila.CodeAnalysis.AquilaSyntaxNode decl)
         {
             if (decl != null)
             {
@@ -2921,7 +2920,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         private PostSkipAction SkipBadTypeParameterListTokens(SeparatedSyntaxListBuilder<TypeParameterSyntax> list,
             SyntaxKind expected)
         {
-            CSharpSyntaxNode tmp = null;
+            AquilaSyntaxNode tmp = null;
             Debug.Assert(list.Count > 0);
             return this.SkipBadSeparatedListTokensWithExpectedKind(ref tmp, list,
                 p => p.CurrentToken.Kind != SyntaxKind.CommaToken,
@@ -3331,7 +3330,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         private PostSkipAction SkipBadTypeArgumentListTokens(SeparatedSyntaxListBuilder<TypeEx> list,
             SyntaxKind expected)
         {
-            CSharpSyntaxNode tmp = null;
+            AquilaSyntaxNode tmp = null;
             Debug.Assert(list.Count > 0);
             return this.SkipBadSeparatedListTokensWithExpectedKind(ref tmp, list,
                 p => p.CurrentToken.Kind != SyntaxKind.CommaToken && !p.IsPossibleType(),
@@ -4936,7 +4935,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 return (BlockStmt)this.EatNode();
 
             // There's a special error code for a missing token after an accessor keyword
-            CSharpSyntaxNode openBrace = isAccessorBody && this.CurrentToken.Kind != SyntaxKind.OpenBraceToken
+            AquilaSyntaxNode openBrace = isAccessorBody && this.CurrentToken.Kind != SyntaxKind.OpenBraceToken
                 ? this.AddError(
                     SyntaxFactory.MissingToken(SyntaxKind.OpenBraceToken),
                     IsFeatureEnabled(MessageID.IDS_FeatureExpressionBodiedAccessor)
@@ -4970,7 +4969,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             if (this.IsIncrementalAndFactoryContextMatches && this.CurrentNodeKind == SyntaxKind.Block)
                 return (BlockStmt)this.EatNode();
 
-            CSharpSyntaxNode openBrace = this.EatToken(SyntaxKind.OpenBraceToken);
+            AquilaSyntaxNode openBrace = this.EatToken(SyntaxKind.OpenBraceToken);
 
             var statements = _pool.Allocate<StmtSyntax>();
             this.ParseStatements(ref openBrace, statements, stopOnSwitchSections: false);
@@ -5006,7 +5005,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             }
         }
 
-        private void ParseStatements(ref CSharpSyntaxNode previousNode, SyntaxListBuilder<StmtSyntax> statements,
+        private void ParseStatements(ref AquilaSyntaxNode previousNode, SyntaxListBuilder<StmtSyntax> statements,
             bool stopOnSwitchSections)
         {
             var saveTerm = _termState;
@@ -7253,7 +7252,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         private PostSkipAction SkipBadInitializerListTokens<T>(ref SyntaxToken startToken,
             SeparatedSyntaxListBuilder<T> list, SyntaxKind expected)
-            where T : CSharpSyntaxNode
+            where T : AquilaSyntaxNode
         {
             return this.SkipBadSeparatedListTokensWithExpectedKind(ref startToken, list,
                 p => p.CurrentToken.Kind != SyntaxKind.CommaToken && !p.IsPossibleExpression(),
@@ -7619,7 +7618,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     return false;
                 }
 
-                Aquila.CodeAnalysis.CSharpSyntaxNode current = this.CurrentNode;
+                Aquila.CodeAnalysis.AquilaSyntaxNode current = this.CurrentNode;
                 return current != null && MatchesFactoryContext(current.Green, _syntaxFactoryContext);
             }
         }
@@ -7699,7 +7698,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             }
         }
 
-        internal TNode ConsumeUnexpectedTokens<TNode>(TNode node) where TNode : CSharpSyntaxNode
+        internal TNode ConsumeUnexpectedTokens<TNode>(TNode node) where TNode : AquilaSyntaxNode
         {
             if (this.CurrentToken.Kind == SyntaxKind.EndOfFileToken) return node;
             SyntaxListBuilder<SyntaxToken> b = _pool.Allocate<SyntaxToken>();

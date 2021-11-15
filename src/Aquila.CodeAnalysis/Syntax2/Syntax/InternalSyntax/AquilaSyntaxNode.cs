@@ -16,46 +16,46 @@ using Roslyn.Utilities;
 namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     [DebuggerDisplay("{GetDebuggerDisplay(), nq}")]
-    internal abstract class CSharpSyntaxNode : GreenNode
+    internal abstract class AquilaSyntaxNode : GreenNode
     {
-        internal CSharpSyntaxNode(SyntaxKind kind)
+        internal AquilaSyntaxNode(SyntaxKind kind)
             : base((ushort)kind)
         {
             GreenStats.NoteGreen(this);
         }
 
-        internal CSharpSyntaxNode(SyntaxKind kind, int fullWidth)
+        internal AquilaSyntaxNode(SyntaxKind kind, int fullWidth)
             : base((ushort)kind, fullWidth)
         {
             GreenStats.NoteGreen(this);
         }
 
-        internal CSharpSyntaxNode(SyntaxKind kind, DiagnosticInfo[] diagnostics)
+        internal AquilaSyntaxNode(SyntaxKind kind, DiagnosticInfo[] diagnostics)
             : base((ushort)kind, diagnostics)
         {
             GreenStats.NoteGreen(this);
         }
 
-        internal CSharpSyntaxNode(SyntaxKind kind, DiagnosticInfo[] diagnostics, int fullWidth)
+        internal AquilaSyntaxNode(SyntaxKind kind, DiagnosticInfo[] diagnostics, int fullWidth)
             : base((ushort)kind, diagnostics, fullWidth)
         {
             GreenStats.NoteGreen(this);
         }
 
-        internal CSharpSyntaxNode(SyntaxKind kind, DiagnosticInfo[] diagnostics, SyntaxAnnotation[] annotations)
+        internal AquilaSyntaxNode(SyntaxKind kind, DiagnosticInfo[] diagnostics, SyntaxAnnotation[] annotations)
             : base((ushort)kind, diagnostics, annotations)
         {
             GreenStats.NoteGreen(this);
         }
 
-        internal CSharpSyntaxNode(SyntaxKind kind, DiagnosticInfo[] diagnostics, SyntaxAnnotation[] annotations,
+        internal AquilaSyntaxNode(SyntaxKind kind, DiagnosticInfo[] diagnostics, SyntaxAnnotation[] annotations,
             int fullWidth)
             : base((ushort)kind, diagnostics, annotations, fullWidth)
         {
             GreenStats.NoteGreen(this);
         }
 
-        internal CSharpSyntaxNode(ObjectReader reader)
+        internal AquilaSyntaxNode(ObjectReader reader)
             : base(reader)
         {
         }
@@ -144,9 +144,9 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return this.GetTrailingTrivia();
         }
 
-        public abstract TResult Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor);
+        public abstract TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor);
 
-        public abstract void Accept(CSharpSyntaxVisitor visitor);
+        public abstract void Accept(AquilaSyntaxVisitor visitor);
 
         internal virtual DirectiveStack ApplyDirectives(DirectiveStack stack)
         {
@@ -183,7 +183,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             {
                 // Otherwise, we must have an actual piece of C# trivia.  Just apply the stack
                 // to that node directly.
-                return ((CSharpSyntaxNode)listOrNode).ApplyDirectives(stack);
+                return ((AquilaSyntaxNode)listOrNode).ApplyDirectives(stack);
             }
         }
 

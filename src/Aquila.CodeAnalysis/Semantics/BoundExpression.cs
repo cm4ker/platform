@@ -16,7 +16,6 @@ using Aquila.Syntax.Syntax;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Utilities;
-using Expression = Aquila.Syntax.Ast.Expression;
 
 namespace Aquila.CodeAnalysis.Semantics
 {
@@ -257,7 +256,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
     public abstract partial class BoundExpression : BoundOperation, IAquilaExpression
     {
-        private LangElement _aquilaSyntax;
+        private AquilaSyntaxNode _aquilaSyntax;
 
         private BoundAccess _acc;
 
@@ -283,9 +282,9 @@ namespace Aquila.CodeAnalysis.Semantics
         // /// </summary>
         // internal TypeSymbol ResultType { get; set; }
 
-        public LangElement AquilaSyntax
+        public AquilaSyntaxNode AquilaSyntax
         {
-            get => _aquilaSyntax ?? new EmptyElement();
+            get => _aquilaSyntax ?? SyntaxFactory.EmptyStmt();
             set => _aquilaSyntax = value;
         }
 
@@ -336,7 +335,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public SyntaxNode Syntax => null;
 
-        public LangElement AquilaSyntax { get; set; }
+        public AquilaSyntaxNode AquilaSyntax { get; set; }
 
         IOperation IArgumentOperation.Value => Value;
 
@@ -501,7 +500,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public override OperationKind Kind => OperationKind.None;
 
-        public LangElement AquilaSyntax { get; set; }
+        public AquilaSyntaxNode AquilaSyntax { get; set; }
 
         public BoundMethodName(QualifiedName name)
             : this(name, null)
@@ -1451,7 +1450,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public bool IsDirect => NameExpression == null;
 
-        public LangElement AquilaSyntax { get; set; }
+        public AquilaSyntaxNode AquilaSyntax { get; set; }
 
         public BoundVariableName(VariableName name, ITypeSymbol type)
             : this(name, null, type)

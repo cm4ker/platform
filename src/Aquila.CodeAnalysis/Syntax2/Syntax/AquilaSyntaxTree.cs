@@ -26,7 +26,7 @@ namespace Aquila.CodeAnalysis
     /// <summary>
     /// The parsed representation of a C# source document.
     /// </summary>
-    public abstract partial class CSharpSyntaxTree : SyntaxTree
+    public abstract partial class AquilaSyntaxTree : SyntaxTree
     {
         internal static readonly SyntaxTree Dummy = new DummySyntaxTree();
 
@@ -47,28 +47,28 @@ namespace Aquila.CodeAnalysis
         // at least limit its visibility to SyntaxTree extenders.
 
         /// <summary>
-        /// Produces a clone of a <see cref="CSharpSyntaxNode"/> which will have current syntax tree as its parent.
+        /// Produces a clone of a <see cref="AquilaSyntaxNode"/> which will have current syntax tree as its parent.
         ///
-        /// Caller must guarantee that if the same instance of <see cref="CSharpSyntaxNode"/> makes multiple calls
+        /// Caller must guarantee that if the same instance of <see cref="AquilaSyntaxNode"/> makes multiple calls
         /// to this function, only one result is observable.
         /// </summary>
         /// <typeparam name="T">Type of the syntax node.</typeparam>
         /// <param name="node">The original syntax node.</param>
-        /// <returns>A clone of the original syntax node that has current <see cref="CSharpSyntaxTree"/> as its parent.</returns>
-        protected T CloneNodeAsRoot<T>(T node) where T : CSharpSyntaxNode
+        /// <returns>A clone of the original syntax node that has current <see cref="AquilaSyntaxTree"/> as its parent.</returns>
+        protected T CloneNodeAsRoot<T>(T node) where T : AquilaSyntaxNode
         {
-            return CSharpSyntaxNode.CloneNodeAsRoot(node, this);
+            return AquilaSyntaxNode.CloneNodeAsRoot(node, this);
         }
 
         /// <summary>
         /// Gets the root node of the syntax tree.
         /// </summary>
-        public new abstract CSharpSyntaxNode GetRoot(CancellationToken cancellationToken = default);
+        public new abstract AquilaSyntaxNode GetRoot(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the root node of the syntax tree if it is already available.
         /// </summary>
-        public abstract bool TryGetRoot([NotNullWhen(true)] out CSharpSyntaxNode? root);
+        public abstract bool TryGetRoot([NotNullWhen(true)] out AquilaSyntaxNode? root);
 
         /// <summary>  
         /// Gets the root node of the syntax tree asynchronously.
@@ -77,9 +77,9 @@ namespace Aquila.CodeAnalysis
         /// By default, the work associated with this method will be executed immediately on the current thread.
         /// Implementations that wish to schedule this work differently should override <see cref="GetRootAsync(CancellationToken)"/>.
         /// </remarks>
-        public new virtual Task<CSharpSyntaxNode> GetRootAsync(CancellationToken cancellationToken = default)
+        public new virtual Task<AquilaSyntaxNode> GetRootAsync(CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(this.TryGetRoot(out CSharpSyntaxNode? node)
+            return Task.FromResult(this.TryGetRoot(out AquilaSyntaxNode? node)
                 ? node
                 : this.GetRoot(cancellationToken));
         }
@@ -148,7 +148,7 @@ namespace Aquila.CodeAnalysis
         /// <summary>
         /// Creates a new syntax tree from a syntax node.
         /// </summary>
-        public static SyntaxTree Create(CSharpSyntaxNode root, AquilaParseOptions? options = null, string path = "",
+        public static SyntaxTree Create(AquilaSyntaxNode root, AquilaParseOptions? options = null, string path = "",
             Encoding? encoding = null)
         {
 #pragma warning disable CS0618 // We are calling into the obsolete member as that's the one that still does the real work
@@ -168,7 +168,7 @@ namespace Aquila.CodeAnalysis
             "The diagnosticOptions and isGeneratedCode parameters are obsolete due to performance problems, if you are using them use CompilationOptions.SyntaxTreeOptionsProvider instead",
             error: false)]
         public static SyntaxTree Create(
-            CSharpSyntaxNode root,
+            AquilaSyntaxNode root,
             AquilaParseOptions? options,
             string path,
             Encoding? encoding,
@@ -202,7 +202,7 @@ namespace Aquila.CodeAnalysis
         /// Creates a new syntax tree from a syntax node with text that should correspond to the syntax node.
         /// </summary>
         /// <remarks>This is used by the ExpressionEvaluator.</remarks>
-        internal static SyntaxTree CreateForDebugger(CSharpSyntaxNode root, SourceText text, AquilaParseOptions options)
+        internal static SyntaxTree CreateForDebugger(AquilaSyntaxNode root, SourceText text, AquilaParseOptions options)
         {
             Debug.Assert(root != null);
 
@@ -211,13 +211,13 @@ namespace Aquila.CodeAnalysis
 
         /// <summary>
         /// <para>
-        /// Internal helper for <see cref="CSharpSyntaxNode"/> class to create a new syntax tree rooted at the given root node.
+        /// Internal helper for <see cref="AquilaSyntaxNode"/> class to create a new syntax tree rooted at the given root node.
         /// This method does not create a clone of the given root, but instead preserves it's reference identity.
         /// </para>
-        /// <para>NOTE: This method is only intended to be used from <see cref="CSharpSyntaxNode.SyntaxTree"/> property.</para>
-        /// <para>NOTE: Do not use this method elsewhere, instead use <see cref="Create(CSharpSyntaxNode, CSharpParseOptions, string, Encoding)"/> method for creating a syntax tree.</para>
+        /// <para>NOTE: This method is only intended to be used from <see cref="AquilaSyntaxNode.SyntaxTree"/> property.</para>
+        /// <para>NOTE: Do not use this method elsewhere, instead use <see cref="Create(AquilaSyntaxNode, CSharpParseOptions, string, Encoding)"/> method for creating a syntax tree.</para>
         /// </summary>
-        internal static SyntaxTree CreateWithoutClone(CSharpSyntaxNode root)
+        internal static SyntaxTree CreateWithoutClone(AquilaSyntaxNode root)
         {
             Debug.Assert(root != null);
 
@@ -235,7 +235,7 @@ namespace Aquila.CodeAnalysis
 
         /// <summary>
         /// Produces a syntax tree by parsing the source text lazily. The syntax tree is realized when
-        /// <see cref="CSharpSyntaxTree.GetRoot(CancellationToken)"/> is called.
+        /// <see cref="AquilaSyntaxTree.GetRoot(CancellationToken)"/> is called.
         /// </summary>
         internal static SyntaxTree ParseTextLazy(
             SourceText text,
@@ -390,7 +390,7 @@ namespace Aquila.CodeAnalysis
             }
 
             IReadOnlyList<TextChangeRange>? workingChanges = changes;
-            CSharpSyntaxTree? oldTree = this;
+            AquilaSyntaxTree? oldTree = this;
 
             // if changes is entire text do a full reparse
             if (workingChanges.Count == 1 && workingChanges[0].Span == new TextSpan(0, this.Length) &&
@@ -699,7 +699,7 @@ namespace Aquila.CodeAnalysis
 
         protected override bool TryGetRootCore([NotNullWhen(true)] out SyntaxNode? root)
         {
-            if (this.TryGetRoot(out CSharpSyntaxNode? node))
+            if (this.TryGetRoot(out AquilaSyntaxNode? node))
             {
                 root = node;
                 return true;
@@ -751,7 +751,7 @@ namespace Aquila.CodeAnalysis
             "The diagnosticOptions parameter is obsolete due to performance problems, if you are passing non-null use CompilationOptions.SyntaxTreeOptionsProvider instead",
             error: false)]
         public static SyntaxTree Create(
-            CSharpSyntaxNode root,
+            AquilaSyntaxNode root,
             AquilaParseOptions? options,
             string path,
             Encoding? encoding,

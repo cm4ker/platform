@@ -9,7 +9,7 @@ using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
-    internal abstract partial class StructuredTriviaSyntax : CSharpSyntaxNode
+    internal abstract partial class StructuredTriviaSyntax : AquilaSyntaxNode
     {
         internal StructuredTriviaSyntax(SyntaxKind kind, DiagnosticInfo[] diagnostics = null, SyntaxAnnotation[] annotations = null)
             : base(kind, diagnostics, annotations)

@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Functions;
@@ -15,8 +16,10 @@ using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Symbols.Attributes;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
+using Aquila.CodeAnalysis.Syntax;
 using Aquila.Syntax;
 using Aquila.Syntax.Text;
+using Microsoft.CodeAnalysis.Text;
 
 namespace Aquila.CodeAnalysis.Symbols
 {
@@ -29,7 +32,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         readonly MethodDecl _syntax;
 
-        Microsoft.CodeAnalysis.Text.TextSpan NameSpan => _syntax.Identifier.Span.ToTextSpan();
+        TextSpan NameSpan => _syntax.Identifier.Span;
 
         MethodSymbol _lazyOverridenMethod;
 
@@ -66,13 +69,13 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        internal IEnumerable<Parameter> SyntaxSignature => _syntax.Parameters;
+        internal ParameterListSyntax SyntaxSignature => _syntax.ParameterList;
 
-        internal TypeRef SyntaxReturnType => _syntax.ReturnType;
+        internal TypeEx SyntaxReturnType => _syntax.ReturnType;
 
-        internal LangElement Syntax => _syntax;
+        internal AquilaSyntaxNode Syntax => _syntax;
 
-        internal IList<Statement> Statements => _syntax.Block?.Statements.ToList();
+        internal IList<StmtSyntax> Statements => _syntax.Body?.Statements.ToList();
 
         protected TypeRefContext CreateTypeRefContext() => TypeRefFactory.CreateTypeRefContext(_type);
 
@@ -439,7 +442,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 // [return: NotNull]
                 var returnType = this.ReturnType;
                 if (returnType != null && (returnType.IsReferenceType)
-                ) // only if it makes sense to check for NULL
+                   ) // only if it makes sense to check for NULL
                 {
                     return ImmutableArray.Create<AttributeData>(DeclaringCompilation.CreateNotNullAttribute());
                 }

@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
-    internal class SyntaxLastTokenReplacer : CSharpSyntaxRewriter
+    internal class SyntaxLastTokenReplacer : AquilaSyntaxRewriter
     {
         private readonly SyntaxToken _oldToken;
         private readonly SyntaxToken _newToken;
@@ -22,7 +22,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
 
         internal static TRoot Replace<TRoot>(TRoot root, SyntaxToken newToken)
-            where TRoot : CSharpSyntaxNode
+            where TRoot : AquilaSyntaxNode
         {
             var oldToken = root.GetLastToken();
             var replacer = new SyntaxLastTokenReplacer(oldToken, newToken);
@@ -31,12 +31,12 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return newRoot;
         }
 
-        private static int CountNonNullSlots(CSharpSyntaxNode node)
+        private static int CountNonNullSlots(AquilaSyntaxNode node)
         {
             return node.ChildNodesAndTokens().Count;
         }
 
-        public override CSharpSyntaxNode Visit(CSharpSyntaxNode node)
+        public override AquilaSyntaxNode Visit(AquilaSyntaxNode node)
         {
             if (node != null && !_found)
             {

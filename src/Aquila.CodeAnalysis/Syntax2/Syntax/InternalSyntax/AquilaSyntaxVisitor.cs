@@ -6,9 +6,9 @@
 
 namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
-    internal abstract partial class CSharpSyntaxVisitor<TResult>
+    internal abstract partial class AquilaSyntaxVisitor<TResult>
     {
-        public virtual TResult Visit(CSharpSyntaxNode node)
+        public virtual TResult Visit(AquilaSyntaxNode node)
         {
             if (node == null)
             {
@@ -28,15 +28,15 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return this.DefaultVisit(trivia);
         }
 
-        protected virtual TResult DefaultVisit(CSharpSyntaxNode node)
+        protected virtual TResult DefaultVisit(AquilaSyntaxNode node)
         {
             return default(TResult);
         }
     }
 
-    internal abstract partial class CSharpSyntaxVisitor
+    internal abstract partial class AquilaSyntaxVisitor
     {
-        public virtual void Visit(CSharpSyntaxNode node)
+        public virtual void Visit(AquilaSyntaxNode node)
         {
             if (node == null)
             {
@@ -56,7 +56,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             this.DefaultVisit(trivia);
         }
 
-        public virtual void DefaultVisit(CSharpSyntaxNode node)
+        public virtual void DefaultVisit(AquilaSyntaxNode node)
         {
         }
     }

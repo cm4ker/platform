@@ -2526,7 +2526,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             this.AddTrivia(SyntaxFactory.ConflictMarker(TextWindow.GetText(false)), ref triviaList);
         }
 
-        private void AddTrivia(CSharpSyntaxNode trivia, ref SyntaxListBuilder list)
+        private void AddTrivia(AquilaSyntaxNode trivia, ref SyntaxListBuilder list)
         {
             if (this.HasErrors)
             {
@@ -2591,7 +2591,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         /// Scans a new-line sequence (either a single new-line character or a CR-LF combo).
         /// </summary>
         /// <returns>A trivia node with the new-line text</returns>
-        private CSharpSyntaxNode ScanEndOfLine()
+        private AquilaSyntaxNode ScanEndOfLine()
         {
             char ch;
             switch (ch = TextWindow.PeekChar())
@@ -2739,7 +2739,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         //     }
         // }
 
-        private CSharpSyntaxNode LexSingleDirective(
+        private AquilaSyntaxNode LexSingleDirective(
             bool isActive,
             bool endIsActive,
             bool afterFirstToken,
@@ -2752,7 +2752,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 this.AddTrivia(this.ScanWhitespace(), ref triviaList);
             }
 
-            CSharpSyntaxNode directive;
+            AquilaSyntaxNode directive;
             var saveMode = _mode;
 
             using (var dp = new DirectiveParser(this, _directives))
@@ -2767,7 +2767,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
 
         // consume text up to the next directive
-        private CSharpSyntaxNode LexDisabledText(out bool followedByDirective)
+        private AquilaSyntaxNode LexDisabledText(out bool followedByDirective)
         {
             this.Start();
 
@@ -3000,7 +3000,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         {
             SyntaxListBuilder trivia = null;
 
-            CSharpSyntaxNode tr;
+            AquilaSyntaxNode tr;
             while (true)
             {
                 var pos = TextWindow.Position;
@@ -3032,9 +3032,9 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return trivia;
         }
 
-        private CSharpSyntaxNode LexDirectiveTrivia()
+        private AquilaSyntaxNode LexDirectiveTrivia()
         {
-            CSharpSyntaxNode trivia = null;
+            AquilaSyntaxNode trivia = null;
 
             this.Start();
             char ch = TextWindow.PeekChar();
@@ -3078,7 +3078,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return trivia;
         }
 
-        private CSharpSyntaxNode LexXmlDocComment(XmlDocCommentStyle style)
+        private AquilaSyntaxNode LexXmlDocComment(XmlDocCommentStyle style)
         {
             var saveMode = _mode;
             bool isTerminated;

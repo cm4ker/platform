@@ -11,11 +11,11 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <summary>
     /// It's a non terminal Trivia CSharpSyntaxNode that has a tree underneath it.
     /// </summary>
-    public abstract partial class StructuredTriviaSyntax : CSharpSyntaxNode, IStructuredTriviaSyntax
+    public abstract partial class StructuredTriviaSyntax : AquilaSyntaxNode, IStructuredTriviaSyntax
     {
         private SyntaxTrivia _parent;
 
-        internal StructuredTriviaSyntax(InternalSyntax.CSharpSyntaxNode green, SyntaxNode parent, int position)
+        internal StructuredTriviaSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode parent, int position)
             : base(green, position, parent == null ? null : parent.SyntaxTree)
         {
             System.Diagnostics.Debug.Assert(parent == null || position >= 0);

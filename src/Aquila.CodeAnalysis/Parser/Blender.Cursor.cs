@@ -33,7 +33,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 _indexInParent = indexInParent;
             }
 
-            public static Cursor FromRoot(Aquila.CodeAnalysis.CSharpSyntaxNode node)
+            public static Cursor FromRoot(Aquila.CodeAnalysis.AquilaSyntaxNode node)
             {
                 return new Cursor(node, indexInParent: 0);
             }
@@ -93,7 +93,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
                 var children = node.Parent.ChildNodesAndTokens();
                 var index = SyntaxNodeOrToken.GetFirstChildIndexSpanningPosition(children,
-                    ((Aquila.CodeAnalysis.CSharpSyntaxNode)node).Position);
+                    ((Aquila.CodeAnalysis.AquilaSyntaxNode)node).Position);
                 for (int i = index, n = children.Count; i < n; i++)
                 {
                     var child = children[i];

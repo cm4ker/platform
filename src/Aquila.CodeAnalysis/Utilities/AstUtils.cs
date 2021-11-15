@@ -129,17 +129,17 @@ namespace Aquila.CodeAnalysis
             return false;
         }
 
-        public static Span BodySpanOrInvalid(this LangElement method)
-        {
-            if (method is MethodDecl m)
-            {
-                return m.Block?.Span ?? Span.Invalid;
-            }
-            else
-            {
-                return Span.Invalid;
-            }
-        }
+        // public static Span BodySpanOrInvalid(this LangElement method)
+        // {
+        //     if (method is MethodDecl m)
+        //     {
+        //         return m.Block?.Span ?? Span.Invalid;
+        //     }
+        //     else
+        //     {
+        //         return Span.Invalid;
+        //     }
+        // }
 
         /// <summary>
         /// Gets <see cref="Microsoft.CodeAnalysis.Text.LinePosition"/> from source position.
@@ -206,32 +206,32 @@ namespace Aquila.CodeAnalysis
                 : default;
         }
 
-        /// <summary>
-        /// Traverses AST and finds closest parent element of desired type.
-        /// </summary>
-        public static T FindParentLangElement<T>(LangElement node) where T : LangElement
-        {
-            while (node != null && !(node is T))
-            {
-                node = (LangElement)node.Parent;
-            }
-
-            return (T)node;
-        }
-
-        /// <summary>
-        /// Gets containing method element (function, method or lambda).
-        /// </summary>
-        public static LangElement GetContainingMethod(this LangElement element)
-        {
-            while (!(element is MethodDecl || element == null))
-            {
-                element = (LangElement)element.Parent;
-            }
-
-            //
-            return element;
-        }
+        // /// <summary>
+        // /// Traverses AST and finds closest parent element of desired type.
+        // /// </summary>
+        // public static T FindParentLangElement<T>(LangElement node) where T : LangElement
+        // {
+        //     while (node != null && !(node is T))
+        //     {
+        //         node = (LangElement)node.Parent;
+        //     }
+        //
+        //     return (T)node;
+        // }
+        //
+        // /// <summary>
+        // /// Gets containing method element (function, method or lambda).
+        // /// </summary>
+        // public static LangElement GetContainingMethod(this LangElement element)
+        // {
+        //     while (!(element is MethodDecl || element == null))
+        //     {
+        //         element = (LangElement)element.Parent;
+        //     }
+        //
+        //     //
+        //     return element;
+        // }
 
         // /// <summary>
         // /// Gets value indicating the type refers to a nullable type (<c>?TYPE</c>).

@@ -174,7 +174,7 @@ namespace Aquila.SyntaxGenerator2
                         Write($"{syntaxFactory}.Token(SyntaxKind.{kind})");
                     }
                 }
-                else if (field.Type == "CSharpSyntaxNode")
+                else if (field.Type == "AquilaSyntaxNode")
                 {
                     Write($"{syntaxFactory}.IdentifierName({syntaxFactory}.Identifier(\"{field.Name}\"))");
                 }

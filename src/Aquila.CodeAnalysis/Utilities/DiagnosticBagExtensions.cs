@@ -14,18 +14,18 @@ namespace Aquila.CodeAnalysis
 {
     internal static class DiagnosticBagExtensions
     {
-        public static Location GetLocation(this SyntaxTree tree, LangElement expr) =>
-            tree.GetLocation(expr.Span.ToTextSpan());
+        public static Location GetLocation(this SyntaxTree tree, AquilaSyntaxNode expr) =>
+            tree.GetLocation(expr.Span);
 
         public static void Add(
             this DiagnosticBag diagnostics,
             SourceMethodSymbol method,
-            LangElement syntax,
+            AquilaSyntaxNode syntax,
             ErrorCode code,
             params object[] args)
         {
             Debug.Assert(syntax != null);
-            Add(diagnostics, method, syntax.Span.ToTextSpan(), code, args);
+            Add(diagnostics, method, syntax.Span, code, args);
         }
 
         public static void Add(
@@ -46,13 +46,13 @@ namespace Aquila.CodeAnalysis
             diagnostics.Add(diag);
         }
 
-        public static Diagnostic ParserDiagnostic(SourceMethodSymbol method, Span span,
+        public static Diagnostic ParserDiagnostic(SourceMethodSymbol method, TextSpan span,
             Aquila.Syntax.Errors.ErrorInfo info, params string[] argsOpt)
         {
             return ParserDiagnostic(method.Syntax.SyntaxTree, span, info, argsOpt);
         }
 
-        public static Diagnostic ParserDiagnostic(SyntaxTree tree, Span span, Aquila.Syntax.Errors.ErrorInfo info,
+        public static Diagnostic ParserDiagnostic(SyntaxTree tree, TextSpan span, Aquila.Syntax.Errors.ErrorInfo info,
             params string[] argsOpt)
         {
             ParserMessageProvider.Instance.RegisterError(info);
@@ -60,7 +60,7 @@ namespace Aquila.CodeAnalysis
             return ParserMessageProvider.Instance.CreateDiagnostic(
                 info.Severity == Aquila.Syntax.Errors.ErrorSeverity.WarningAsError,
                 info.Id,
-                new SourceLocation(tree, span.ToTextSpan()),
+                new SourceLocation(tree, span),
                 argsOpt);
         }
 

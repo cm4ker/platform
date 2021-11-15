@@ -1,6 +1,17 @@
-﻿namespace Aquila.Syntax.Ast.Functions
+﻿using System;
+
+namespace Aquila.CodeAnalysis.Syntax
 {
-    public partial record MethodDecl
+    [Flags]
+    public enum MemberModifiers
+    {
+        None = 0,
+        Private = 0,
+        Public = 0x1,
+        Static = 0x2,
+    }
+
+    public partial class MethodDecl
     {
         private MemberModifiers? _memberModifers;
 
@@ -10,7 +21,7 @@
             {
                 _memberModifers = MemberModifiers.None;
 
-                foreach (var modifier in modifiers)
+                foreach (var modifier in Modifiers)
                 {
                     _memberModifers |= modifier.Text switch
                     {
@@ -23,5 +34,8 @@
 
             return _memberModifers.Value;
         }
+
+
+        public bool IsGlobal => Parent is CompilationUnitSyntax;
     }
 }

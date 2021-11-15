@@ -5,11 +5,10 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Aquila.CodeAnalysis.Errors;
+using Aquila.CodeAnalysis.Syntax;
 using Aquila.Syntax;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Expressions;
-using Aquila.Syntax.Ast.Functions;
-using Aquila.Syntax.Ast.Statements;
 using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
 
@@ -18,7 +17,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
     /// <summary>
     /// Visitor implementation that constructs the graph.
     /// </summary>
-    internal sealed class BuilderVisitor : AstWalker
+    internal sealed class BuilderVisitor : AquilaSyntaxWalker
     {
         readonly Binder _binder;
 
@@ -181,7 +180,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #region Construction
 
-        private BuilderVisitor(IList<Statement> statements, Binder binder)
+        private BuilderVisitor(IList<StmtSyntax> statements, Binder binder)
         {
             Contract.ThrowIfNull(statements);
             Contract.ThrowIfNull(binder);
@@ -207,7 +206,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             Debug.Assert(_breakTargets == null || _breakTargets.Count == 0);
         }
 
-        public static BuilderVisitor Build(IList<Statement> statements, Binder binder)
+        public static BuilderVisitor Build(IList<StmtSyntax> statements, Binder binder)
         {
             return new BuilderVisitor(statements, binder);
         }
@@ -224,7 +223,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             return this.Exit;
         }
 
-        private void Add(Statement stmt)
+        private void Add(StmtSyntax stmt)
         {
             Add(_binder.BindStatement(stmt));
         }
@@ -299,7 +298,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         }
 
         private BoundBlock Connect(BoundBlock source, BoundBlock ifTarget, BoundBlock elseTarget,
-            Expression condition, bool isloop = false)
+            ExprSyntax condition, bool isloop = false)
         {
             if (condition != null)
             {
@@ -379,6 +378,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             _declarations.Add(decl);
         }
+
 
         public override void VisitMethodDecl(MethodDecl x)
         {
@@ -537,21 +537,21 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         //     _current = WithNewOrdinal(end);
         // }
 
-        private void BuildForLoop(VarDecl decl, Expression condExpr, Expression actionExpr,
-            Statement bodyStmt)
+        private void BuildForLoop(VariableDecl decl, ExprSyntax condExpr, List<ExprSyntax> incrementors,
+            StmtSyntax bodyStmt)
         {
             var end = NewBlock();
 
-            bool hasActions = actionExpr != null;
+            bool hasIncrementors = incrementors != null;
             bool hasConditions = condExpr != null;
 
             // { initializer }
             if (decl != null)
-                VisitVarDecl(decl);
+                VisitVariableDecl(decl);
 
             var body = NewBlock();
             var cond = hasConditions ? NewBlock() : body;
-            var action = hasActions ? NewBlock() : cond;
+            var action = hasIncrementors ? NewBlock() : cond;
             OpenBreakScope(end, action);
 
             // while (x.Codition) {
@@ -569,10 +569,14 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             OpenScope(_current);
             Visit(bodyStmt);
             //   { x.Action }
-            if (hasActions)
+            if (hasIncrementors)
             {
                 _current = WithNewOrdinal(Connect(_current, action));
-                this.Add(new ExpressionStmt(actionExpr.Span, Aquila.Syntax.SyntaxKind.ExpressionStatement, actionExpr));
+
+                foreach (var incrementor in incrementors)
+                {
+                    this.Add(SyntaxFactory.ExpressionStmt(incrementor));
+                }
             }
 
             CloseScope();
@@ -587,7 +591,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             _current = WithNewOrdinal(end);
         }
 
-        private void BuildDoLoop(Expression condExpr, Statement bodyStmt)
+        private void BuildDoLoop(ExprSyntax condExpr, StmtSyntax bodyStmt)
         {
             var end = NewBlock();
 
@@ -617,15 +621,15 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public override void VisitForStmt(ForStmt x)
         {
-            BuildForLoop(x.VarDecl, x.Condition, x.Counter, x.Block);
+            BuildForLoop(x.Declaration, x.Condition, x.Incrementors.OfType<ExprSyntax>().ToList(), x.Statement);
         }
 
-        public override void VisitVarDecl(VarDecl arg)
+        public override void VisitVariableDecl(VariableDecl arg)
         {
-            BuildVariableDecl(arg);
+            BuildVariableDecl(SyntaxFactory.LocalDeclStmt(arg));
         }
 
-        private void BuildVariableDecl(VarDecl varDecl)
+        private void BuildVariableDecl(LocalDeclStmt varDecl)
         {
             Add(varDecl);
 
@@ -664,7 +668,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             var cond = conditions;
 
-            if (x.ElseBlock != null) // if (Condition) ...
+            if (x.Else != null) // if (Condition) ...
             {
                 elseBlock = end;
                 _current = Connect(_current, NewBlock(), elseBlock, cond);
@@ -676,7 +680,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             }
 
             OpenScope(_current);
-            Visit(x.ThenBlock);
+            Visit(x.Statement);
             CloseScope();
 
             Connect(_current, end);
@@ -767,7 +771,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public override void VisitMatchEx(MatchEx arg)
         {
-            var items = arg.Arms.ToArray();
+            var items = arg.Arms.OfType<MatchArm>().ToArray();
             if (!items.Any())
                 return;
 
@@ -781,7 +785,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             for (int i = 0; i < items.Count(); i++)
             {
-                var arm = new MatchArmBlock(_binder.BindExpression(items[i], BoundAccess.Read));
+                var arm = new MatchArmBlock(_binder.BindExpression(items[i].PatternExpression, BoundAccess.Read));
                 arms.Add(arm);
 
                 hasDefault |= arm.IsDefault;
@@ -814,7 +818,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 OpenScope(_current);
 
                 if (i < items.Length)
-                    Visit(items[i].Expression); // any break will connect block to end
+                    Visit(items[i].ResultExpression); // any break will connect block to end
 
                 CloseScope();
 
@@ -907,20 +911,20 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 //     _current.Ordinal = NewOrdinal();
 // }
 
-        public override void VisitDoWhileStmt(DoWhileStmt x)
-        {
-            Debug.Assert(x.Condition != null);
-
-            // do { BODY } while (COND)
-            BuildDoLoop(x.Condition, x.Block);
-        }
+        // public override void VisitDoWhileStmt(DoWhileStmt x)
+        // {
+        //     Debug.Assert(x.Condition != null);
+        //
+        //     // do { BODY } while (COND)
+        //     BuildDoLoop(x.Condition, x.Block);
+        // }
 
         public override void VisitWhileStmt(WhileStmt x)
         {
             Debug.Assert(x.Condition != null);
 
             // while (COND) { BODY }
-            BuildForLoop(null, x.Condition, null, x.Block);
+            BuildForLoop(null, x.Condition, null, x.Statement);
         }
 
         #endregion

@@ -7,11 +7,11 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Aquila.CodeAnalysis
 {
-    public partial class CSharpSyntaxTree
+    public partial class AquilaSyntaxTree
     {
         private class DebuggerSyntaxTree : ParsedSyntaxTree
         {
-            public DebuggerSyntaxTree(CSharpSyntaxNode root, SourceText text, AquilaParseOptions options)
+            public DebuggerSyntaxTree(AquilaSyntaxNode root, SourceText text, AquilaParseOptions options)
                 : base(
                     text,
                     text.Encoding,

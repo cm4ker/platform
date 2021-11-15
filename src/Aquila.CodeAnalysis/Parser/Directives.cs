@@ -14,9 +14,9 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
     [DebuggerDisplay("{GetDebuggerDisplay(), nq}")]
     internal struct Directive
     {
-        private readonly CSharpSyntaxNode _node;
+        private readonly AquilaSyntaxNode _node;
 
-        internal Directive(CSharpSyntaxNode node)
+        internal Directive(AquilaSyntaxNode node)
         {
             _node = node;
         }

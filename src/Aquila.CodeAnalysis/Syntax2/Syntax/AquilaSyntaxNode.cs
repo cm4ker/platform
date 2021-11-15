@@ -24,9 +24,9 @@ namespace Aquila.CodeAnalysis
     //to defer the realization of strings. Often diagnostics generated while binding
     //in service of a SemanticModel API are never realized. So this
     //deferral can result in meaningful savings of strings.
-    public abstract partial class CSharpSyntaxNode : SyntaxNode, IFormattable
+    public abstract partial class AquilaSyntaxNode : SyntaxNode, IFormattable
     {
-        internal CSharpSyntaxNode(GreenNode green, SyntaxNode? parent, int position)
+        internal AquilaSyntaxNode(GreenNode green, SyntaxNode? parent, int position)
             : base(green, parent, position)
         {
         }
@@ -35,7 +35,7 @@ namespace Aquila.CodeAnalysis
         /// Used by structured trivia which has "parent == null", and therefore must know its
         /// SyntaxTree explicitly when created.
         /// </summary>
-        internal CSharpSyntaxNode(GreenNode green, int position, SyntaxTree syntaxTree)
+        internal AquilaSyntaxNode(GreenNode green, int position, SyntaxTree syntaxTree)
             : base(green, position, syntaxTree)
         {
         }
@@ -56,9 +56,9 @@ namespace Aquila.CodeAnalysis
             }
         }
 
-        private static SyntaxTree ComputeSyntaxTree(CSharpSyntaxNode node)
+        private static SyntaxTree ComputeSyntaxTree(AquilaSyntaxNode node)
         {
-            ArrayBuilder<CSharpSyntaxNode>? nodes = null;
+            ArrayBuilder<AquilaSyntaxNode>? nodes = null;
             SyntaxTree? tree = null;
 
             // Find the nearest parent with a non-null syntax tree
@@ -74,7 +74,7 @@ namespace Aquila.CodeAnalysis
                 if (parent == null)
                 {
                     // set the tree on the root node atomically
-                    Interlocked.CompareExchange(ref node._syntaxTree, CSharpSyntaxTree.CreateWithoutClone(node), null);
+                    Interlocked.CompareExchange(ref node._syntaxTree, AquilaSyntaxTree.CreateWithoutClone(node), null);
                     tree = node._syntaxTree;
                     break;
                 }
@@ -86,7 +86,7 @@ namespace Aquila.CodeAnalysis
                     break;
                 }
 
-                (nodes ?? (nodes = ArrayBuilder<CSharpSyntaxNode>.GetInstance())).Add(node);
+                (nodes ?? (nodes = ArrayBuilder<AquilaSyntaxNode>.GetInstance())).Add(node);
                 node = parent;
             }
 
@@ -115,27 +115,27 @@ namespace Aquila.CodeAnalysis
             return tree;
         }
 
-        public abstract TResult? Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor);
+        public abstract TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor);
 
-        public abstract void Accept(CSharpSyntaxVisitor visitor);
+        public abstract void Accept(AquilaSyntaxVisitor visitor);
 
         /// <summary>
         /// The node that contains this node in its Children collection.
         /// </summary>
-        internal new CSharpSyntaxNode? Parent
+        internal new AquilaSyntaxNode? Parent
         {
-            get { return (CSharpSyntaxNode?)base.Parent; }
+            get { return (AquilaSyntaxNode?)base.Parent; }
         }
 
-        internal new CSharpSyntaxNode? ParentOrStructuredTriviaParent
+        internal new AquilaSyntaxNode? ParentOrStructuredTriviaParent
         {
-            get { return (CSharpSyntaxNode?)base.ParentOrStructuredTriviaParent; }
+            get { return (AquilaSyntaxNode?)base.ParentOrStructuredTriviaParent; }
         }
 
         // TODO: may be eventually not needed
-        internal Syntax.InternalSyntax.CSharpSyntaxNode CsGreen
+        internal Syntax.InternalSyntax.AquilaSyntaxNode CsGreen
         {
-            get { return (Syntax.InternalSyntax.CSharpSyntaxNode)this.Green; }
+            get { return (Syntax.InternalSyntax.AquilaSyntaxNode)this.Green; }
         }
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace Aquila.CodeAnalysis
                 throw new ArgumentException(CodeAnalysisResources.Stream_contains_invalid_data, nameof(stream));
             }
 
-            var root = (Syntax.InternalSyntax.CSharpSyntaxNode)reader.ReadValue();
+            var root = (Syntax.InternalSyntax.AquilaSyntaxNode)reader.ReadValue();
             return root.CreateRed();
         }
 
@@ -446,7 +446,7 @@ namespace Aquila.CodeAnalysis
         protected internal override SyntaxNode? RemoveNodesCore(IEnumerable<SyntaxNode> nodes,
             SyntaxRemoveOptions options)
         {
-            return SyntaxNodeRemover.RemoveNodes(this, nodes.Cast<CSharpSyntaxNode>(), options)
+            return SyntaxNodeRemover.RemoveNodes(this, nodes.Cast<AquilaSyntaxNode>(), options)
                 .AsRootOfNewTreeWithOptionsFrom(this.SyntaxTree);
         }
 

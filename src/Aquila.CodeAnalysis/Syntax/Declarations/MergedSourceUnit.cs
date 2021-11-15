@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Aquila.CodeAnalysis.Syntax;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Syntax;
+using ComponentDecl = Aquila.Syntax.Ast.ComponentDecl;
 
 namespace Aquila.Syntax.Declarations
 {
@@ -13,14 +15,14 @@ namespace Aquila.Syntax.Declarations
     /// </summary>
     public class MergedSourceUnit
     {
-        private List<SourceUnit> _units;
+        private List<CompilationUnitSyntax> _units;
 
-        public MergedSourceUnit(IEnumerable<SourceUnit> units)
+        public MergedSourceUnit(IEnumerable<CompilationUnitSyntax> units)
         {
             _units = units.ToList();
         }
 
-        public IEnumerable<SourceUnit> Units => _units;
+        public IEnumerable<CompilationUnitSyntax> Units => _units;
 
         public IEnumerable<MergedComponentDecl> GetComponents()
         {
@@ -28,14 +30,14 @@ namespace Aquila.Syntax.Declarations
 
             foreach (var unit in _units)
             {
-                foreach (var ns in unit.Components)
+                foreach (var com in unit.Components)
                 {
-                    if (merged.TryGetValue(ns.Identifier.Text, out var list))
+                    if (merged.TryGetValue(com.Name.GetText, out var list))
                     {
-                        list.Add(ns);
+                        list.Add(com);
                     }
                     else
-                        merged.Add(ns.Identifier.Text, new List<ComponentDecl> {ns});
+                        merged.Add(com.Identifier.Text, new List<ComponentDecl> { com });
                 }
             }
 

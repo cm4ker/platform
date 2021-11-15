@@ -11,17 +11,17 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
     using Microsoft.CodeAnalysis.Syntax.InternalSyntax;
 
 #nullable enable
-    internal partial class CSharpSyntaxRewriter : CSharpSyntaxVisitor<CSharpSyntaxNode>
+    internal partial class AquilaSyntaxRewriter : AquilaSyntaxVisitor<AquilaSyntaxNode>
 #nullable disable
     {
         protected readonly bool VisitIntoStructuredTrivia;
 
-        public CSharpSyntaxRewriter(bool visitIntoStructuredTrivia = false)
+        public AquilaSyntaxRewriter(bool visitIntoStructuredTrivia = false)
         {
             this.VisitIntoStructuredTrivia = visitIntoStructuredTrivia;
         }
 
-        public override CSharpSyntaxNode VisitToken(SyntaxToken token)
+        public override AquilaSyntaxNode VisitToken(SyntaxToken token)
         {
             var leading = this.VisitList(token.LeadingTrivia);
             var trailing = this.VisitList(token.TrailingTrivia);
@@ -42,7 +42,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return token;
         }
 
-        public SyntaxList<TNode> VisitList<TNode>(SyntaxList<TNode> list) where TNode : CSharpSyntaxNode
+        public SyntaxList<TNode> VisitList<TNode>(SyntaxList<TNode> list) where TNode : AquilaSyntaxNode
         {
             SyntaxListBuilder alternate = null;
             for (int i = 0, n = list.Count; i < n; i++)
@@ -70,12 +70,12 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return list;
         }
 
-        public SeparatedSyntaxList<TNode> VisitList<TNode>(SeparatedSyntaxList<TNode> list) where TNode : CSharpSyntaxNode
+        public SeparatedSyntaxList<TNode> VisitList<TNode>(SeparatedSyntaxList<TNode> list) where TNode : AquilaSyntaxNode
         {
             // A separated list is filled with C# nodes and C# tokens.  Both of which
             // derive from InternalSyntax.CSharpSyntaxNode.  So this cast is appropriately
             // typesafe.
-            var withSeps = (SyntaxList<CSharpSyntaxNode>)list.GetWithSeparators();
+            var withSeps = (SyntaxList<AquilaSyntaxNode>)list.GetWithSeparators();
             var result = this.VisitList(withSeps);
             if (result != withSeps)
             {

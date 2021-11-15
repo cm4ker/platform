@@ -15,7 +15,7 @@ using Microsoft.CodeAnalysis.Syntax;
 
 namespace Microsoft.CodeAnalysis
 {
-    public static class CSharpExtensions
+    public static class AquilaExtensions
     {
         /// <summary>
         /// Determines if <see cref="SyntaxToken"/> is of a specified kind.
@@ -166,7 +166,7 @@ namespace Microsoft.CodeAnalysis
 
 namespace Aquila.CodeAnalysis
 {
-    public static class CSharpExtensions
+    public static class AquilaExtensions
     {
         /// <summary>
         /// Determines if the given raw kind value belongs to the C# <see cref="SyntaxKind"/> enumeration.
@@ -324,12 +324,12 @@ namespace Aquila.CodeAnalysis
         
         internal static Syntax.InternalSyntax.DirectiveStack ApplyDirectives(this SyntaxNode node, Syntax.InternalSyntax.DirectiveStack stack)
         {
-            return ((Syntax.InternalSyntax.CSharpSyntaxNode)node.Green).ApplyDirectives(stack);
+            return ((Syntax.InternalSyntax.AquilaSyntaxNode)node.Green).ApplyDirectives(stack);
         }
 
         internal static Syntax.InternalSyntax.DirectiveStack ApplyDirectives(this SyntaxToken token, Syntax.InternalSyntax.DirectiveStack stack)
         {
-            return ((Syntax.InternalSyntax.CSharpSyntaxNode)token.Node!).ApplyDirectives(stack);
+            return ((Syntax.InternalSyntax.AquilaSyntaxNode)token.Node!).ApplyDirectives(stack);
         }
 
         internal static Syntax.InternalSyntax.DirectiveStack ApplyDirectives(this SyntaxNodeOrToken nodeOrToken, Syntax.InternalSyntax.DirectiveStack stack)
@@ -377,27 +377,27 @@ namespace Aquila.CodeAnalysis
 
         internal static bool HasReferenceDirectives([NotNullWhen(true)] this SyntaxTree? tree)
         {
-            var csharpTree = tree as CSharpSyntaxTree;
+            var csharpTree = tree as AquilaSyntaxTree;
             return csharpTree != null && csharpTree.HasReferenceDirectives;
         }
 
         internal static bool HasReferenceOrLoadDirectives([NotNullWhen(true)] this SyntaxTree? tree)
         {
-            var csharpTree = tree as CSharpSyntaxTree;
+            var csharpTree = tree as AquilaSyntaxTree;
             return csharpTree != null && csharpTree.HasReferenceOrLoadDirectives;
         }
 
         internal static bool IsAnyPreprocessorSymbolDefined([NotNullWhen(true)] this SyntaxTree? tree,
             ImmutableArray<string> conditionalSymbols)
         {
-            var csharpTree = tree as CSharpSyntaxTree;
+            var csharpTree = tree as AquilaSyntaxTree;
             return csharpTree != null && csharpTree.IsAnyPreprocessorSymbolDefined(conditionalSymbols);
         }
 
         internal static bool IsPreprocessorSymbolDefined([NotNullWhen(true)] this SyntaxTree? tree, string symbolName,
             int position)
         {
-            var csharpTree = tree as CSharpSyntaxTree;
+            var csharpTree = tree as AquilaSyntaxTree;
             return csharpTree != null && csharpTree.IsPreprocessorSymbolDefined(symbolName, position);
         }
 

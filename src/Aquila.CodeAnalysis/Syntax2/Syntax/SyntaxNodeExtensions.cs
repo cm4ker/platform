@@ -11,7 +11,7 @@ namespace Aquila.CodeAnalysis
     internal static class SyntaxNodeExtensions
     {
         public static TNode WithAnnotations<TNode>(this TNode node, params SyntaxAnnotation[] annotations)
-            where TNode : CSharpSyntaxNode
+            where TNode : AquilaSyntaxNode
         {
             return (TNode)node.Green.SetAnnotations(annotations).CreateRed();
         }

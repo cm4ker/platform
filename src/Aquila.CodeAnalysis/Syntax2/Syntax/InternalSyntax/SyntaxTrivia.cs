@@ -8,7 +8,7 @@ using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
-    internal class SyntaxTrivia : CSharpSyntaxNode
+    internal class SyntaxTrivia : AquilaSyntaxNode
     {
         public readonly string Text;
 
@@ -94,12 +94,12 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return new SyntaxTrivia(this.Kind, this.Text, GetDiagnostics(), annotations);
         }
 
-        public override TResult Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor)
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor)
         {
             return visitor.VisitTrivia(this);
         }
 
-        public override void Accept(CSharpSyntaxVisitor visitor)
+        public override void Accept(AquilaSyntaxVisitor visitor)
         {
             visitor.VisitTrivia(this);
         }

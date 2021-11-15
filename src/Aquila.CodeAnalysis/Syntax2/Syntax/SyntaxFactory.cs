@@ -245,7 +245,7 @@ namespace Aquila.CodeAnalysis
         public static SyntaxTree SyntaxTree(SyntaxNode root, ParseOptions? options = null, string path = "",
             Encoding? encoding = null)
         {
-            return CSharpSyntaxTree.Create((CSharpSyntaxNode)root, (AquilaParseOptions?)options, path, encoding);
+            return AquilaSyntaxTree.Create((AquilaSyntaxNode)root, (AquilaParseOptions?)options, path, encoding);
         }
 
         /// <summary>
@@ -334,7 +334,7 @@ namespace Aquila.CodeAnalysis
         /// or initializer expressions, otherwise all nodes and tokens must be equivalent. 
         /// </param>
         public static bool AreEquivalent<TNode>(SyntaxList<TNode> oldList, SyntaxList<TNode> newList, bool topLevel)
-            where TNode : CSharpSyntaxNode
+            where TNode : AquilaSyntaxNode
         {
             return SyntaxEquivalence.AreEquivalent(oldList.Node, newList.Node, null, topLevel);
         }
@@ -412,7 +412,7 @@ namespace Aquila.CodeAnalysis
         }
 
 
-        /// <inheritdoc cref="CSharpSyntaxTree.ParseText(string, AquilaParseOptions?, string, Encoding?, CancellationToken)"/>
+        /// <inheritdoc cref="AquilaSyntaxTree.ParseText(string, AquilaParseOptions?, string, Encoding?, CancellationToken)"/>
         public static SyntaxTree ParseSyntaxTree(
             string text,
             ParseOptions? options = null,
@@ -420,17 +420,17 @@ namespace Aquila.CodeAnalysis
             Encoding? encoding = null,
             CancellationToken cancellationToken = default)
         {
-            return CSharpSyntaxTree.ParseText(text, (AquilaParseOptions?)options, path, encoding, cancellationToken);
+            return AquilaSyntaxTree.ParseText(text, (AquilaParseOptions?)options, path, encoding, cancellationToken);
         }
 
-        /// <inheritdoc cref="CSharpSyntaxTree.ParseText(SourceText, AquilaParseOptions?, string, CancellationToken)"/>
+        /// <inheritdoc cref="AquilaSyntaxTree.ParseText(SourceText, AquilaParseOptions?, string, CancellationToken)"/>
         public static SyntaxTree ParseSyntaxTree(
             SourceText text,
             ParseOptions? options = null,
             string path = "",
             CancellationToken cancellationToken = default)
         {
-            return CSharpSyntaxTree.ParseText(text, (AquilaParseOptions?)options, path, cancellationToken);
+            return AquilaSyntaxTree.ParseText(text, (AquilaParseOptions?)options, path, cancellationToken);
         }
         
         /// <summary>

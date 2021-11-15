@@ -233,11 +233,11 @@ namespace Aquila.SyntaxGenerator2
                     }
                     else if (IsSeparatedNodeList(field.Type))
                     {
-                        WriteLine($"public {OverrideOrNewModifier(field)}Microsoft.CodeAnalysis.Syntax.InternalSyntax.{field.Type} {field.Name} => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.{field.Type}(new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<CSharpSyntaxNode>(this.{CamelCase(field.Name)}));");
+                        WriteLine($"public {OverrideOrNewModifier(field)}Microsoft.CodeAnalysis.Syntax.InternalSyntax.{field.Type} {field.Name} => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.{field.Type}(new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode>(this.{CamelCase(field.Name)}));");
                     }
                     else if (field.Type == "SyntaxNodeOrTokenList")
                     {
-                        WriteLine($"public {OverrideOrNewModifier(field)}Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<CSharpSyntaxNode> {field.Name} => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<CSharpSyntaxNode>(this.{CamelCase(field.Name)});");
+                        WriteLine($"public {OverrideOrNewModifier(field)}Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode> {field.Name} => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode>(this.{CamelCase(field.Name)});");
                     }
                     else
                     {
@@ -445,8 +445,8 @@ namespace Aquila.SyntaxGenerator2
         private void WriteGreenAcceptMethods(Node node)
         {
             WriteLine();
-            WriteLine($"public override void Accept(CSharpSyntaxVisitor visitor) => visitor.Visit{StripPost(node.Name, "Syntax")}(this);");
-            WriteLine($"public override TResult Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor) => visitor.Visit{StripPost(node.Name, "Syntax")}(this);");
+            WriteLine($"public override void Accept(AquilaSyntaxVisitor visitor) => visitor.Visit{StripPost(node.Name, "Syntax")}(this);");
+            WriteLine($"public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.Visit{StripPost(node.Name, "Syntax")}(this);");
         }
 
         private void WriteGreenVisitors()
@@ -460,7 +460,7 @@ namespace Aquila.SyntaxGenerator2
             var nodes = Tree.Types.Where(n => n is not PredefinedNode).ToList();
 
             WriteLine();
-            WriteLine("internal partial class CSharpSyntaxVisitor" + (withResult ? "<TResult>" : ""));
+            WriteLine("internal partial class AquilaSyntaxVisitor" + (withResult ? "<TResult>" : ""));
             OpenBlock();
             foreach (var node in nodes.OfType<Node>())
             {
@@ -476,7 +476,7 @@ namespace Aquila.SyntaxGenerator2
             Write(CommaJoin(node.Fields.Select(f =>
             {
                 var type =
-                    f.Type == "SyntaxNodeOrTokenList" ? "Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<CSharpSyntaxNode>" :
+                    f.Type == "SyntaxNodeOrTokenList" ? "Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode>" :
                     f.Type == "SyntaxTokenList" ? "Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<SyntaxToken>" :
                     IsNodeList(f.Type) ? "Microsoft.CodeAnalysis.Syntax.InternalSyntax." + f.Type :
                     IsSeparatedNodeList(f.Type) ? "Microsoft.CodeAnalysis.Syntax.InternalSyntax." + f.Type :
@@ -528,7 +528,7 @@ namespace Aquila.SyntaxGenerator2
             var nodes = Tree.Types.Where(n => n is not PredefinedNode).ToList();
 
             WriteLine();
-            WriteLine("internal partial class CSharpSyntaxRewriter : CSharpSyntaxVisitor<CSharpSyntaxNode>");
+            WriteLine("internal partial class CSharpSyntaxRewriter : AquilaSyntaxVisitor<AquilaSyntaxNode>");
             OpenBlock();
             int nWritten = 0;
             foreach (var node in nodes.OfType<Node>())
@@ -538,7 +538,7 @@ namespace Aquila.SyntaxGenerator2
                 if (nWritten > 0)
                     WriteLine();
                 nWritten++;
-                WriteLine($"public override CSharpSyntaxNode Visit{StripPost(node.Name, "Syntax")}({node.Name} node)");
+                WriteLine($"public override AquilaSyntaxNode Visit{StripPost(node.Name, "Syntax")}({node.Name} node)");
                 Indent();
 
                 if (nodeFields.Count == 0)
@@ -718,7 +718,7 @@ namespace Aquila.SyntaxGenerator2
                 //SyntaxNode cached = SyntaxNodeCache.TryGetNode(SyntaxKind.IdentifierName, identifier, this.context, out hash);
                 if (withSyntaxFactoryContext)
                 {
-                    Write("var cached = CSharpSyntaxNodeCache.TryGetNode((int)");
+                    Write("var cached = AquilaSyntaxNodeCache.TryGetNode((int)");
                 }
                 else
                 {
@@ -767,7 +767,7 @@ namespace Aquila.SyntaxGenerator2
                 {
                     var type = f.Type switch
                     {
-                        "SyntaxNodeOrTokenList" => "Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<CSharpSyntaxNode>",
+                        "SyntaxNodeOrTokenList" => "Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode>",
                         _ when IsSeparatedNodeList(f.Type) || IsNodeList(f.Type) => $"Microsoft.CodeAnalysis.Syntax.InternalSyntax.{f.Type}",
                         _ => GetFieldType(f, green: true),
                     };
@@ -815,7 +815,7 @@ namespace Aquila.SyntaxGenerator2
                 var nd = (AbstractNode)node;
                 WriteLine($"public abstract partial class {node.Name} : {node.Base}");
                 OpenBlock();
-                WriteLine($"internal {node.Name}(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)");
+                WriteLine($"internal {node.Name}(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)");
                 WriteLine("  : base(green, parent, position)");
                 OpenBlock();
                 CloseBlock();
@@ -954,7 +954,7 @@ namespace Aquila.SyntaxGenerator2
 
                 // write constructor
                 WriteLine();
-                WriteLine($"internal {node.Name}(InternalSyntax.CSharpSyntaxNode green, SyntaxNode? parent, int position)");
+                WriteLine($"internal {node.Name}(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)");
                 WriteLine("  : base(green, parent, position)");
                 OpenBlock();
                 CloseBlock();
@@ -1157,7 +1157,7 @@ namespace Aquila.SyntaxGenerator2
         private void WriteRedAcceptMethod(Node node, bool genericResult)
         {
             string genericArgs = genericResult ? "<TResult>" : "";
-            WriteLine($"public override {(genericResult ? "TResult?" : "void")} Accept{genericArgs}(CSharpSyntaxVisitor{genericArgs} visitor){(genericResult ? " where TResult : default" : "")} => visitor.Visit{StripPost(node.Name, "Syntax")}(this);");
+            WriteLine($"public override {(genericResult ? "TResult?" : "void")} Accept{genericArgs}(AquilaSyntaxVisitor{genericArgs} visitor){(genericResult ? " where TResult : default" : "")} => visitor.Visit{StripPost(node.Name, "Syntax")}(this);");
         }
 
         private void WriteRedVisitors()
@@ -1172,7 +1172,7 @@ namespace Aquila.SyntaxGenerator2
             var nodes = Tree.Types.Where(n => n is not PredefinedNode).ToList();
 
             WriteLine();
-            WriteLine("public partial class CSharpSyntaxVisitor" + genericArgs);
+            WriteLine("public partial class AquilaSyntaxVisitor" + genericArgs);
             OpenBlock();
             int nWritten = 0;
             foreach (var node in nodes.OfType<Node>())
@@ -1397,7 +1397,7 @@ namespace Aquila.SyntaxGenerator2
             var nodes = Tree.Types.Where(n => n is not PredefinedNode).ToList();
 
             WriteLine();
-            WriteLine("public partial class CSharpSyntaxRewriter : CSharpSyntaxVisitor<SyntaxNode?>");
+            WriteLine("public partial class CSharpSyntaxRewriter : AquilaSyntaxVisitor<SyntaxNode?>");
             OpenBlock();
 
             int nWritten = 0;
@@ -1610,7 +1610,7 @@ namespace Aquila.SyntaxGenerator2
                     else if (IsSeparatedNodeList(f.Type))
                         return $"{CamelCase(f.Name)}.Node.ToGreenSeparatedList<Syntax.InternalSyntax.{GetElementType(f.Type)}>()";
                     else if (f.Type == "SyntaxNodeOrTokenList")
-                        return $"{CamelCase(f.Name)}.Node.ToGreenList<Syntax.InternalSyntax.CSharpSyntaxNode>()";
+                        return $"{CamelCase(f.Name)}.Node.ToGreenList<Syntax.InternalSyntax.AquilaSyntaxNode>()";
                     else if (IsOptional(f))
                         return $"{CamelCase(f.Name)} == null ? null : (Syntax.InternalSyntax.{f.Type}){CamelCase(f.Name)}.Green";
                     else

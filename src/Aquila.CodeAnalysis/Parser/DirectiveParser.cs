@@ -25,7 +25,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             _context = context;
         }
 
-        public CSharpSyntaxNode ParseDirective(
+        public AquilaSyntaxNode ParseDirective(
             bool isActive,
             bool endIsActive,
             bool isAfterFirstTokenInFile,

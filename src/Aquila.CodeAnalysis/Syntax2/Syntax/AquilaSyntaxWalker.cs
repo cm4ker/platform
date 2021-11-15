@@ -7,14 +7,14 @@ using Microsoft.CodeAnalysis;
 namespace Aquila.CodeAnalysis
 {
     /// <summary>
-    /// Represents a <see cref="CSharpSyntaxVisitor"/> that descends an entire <see cref="CSharpSyntaxNode"/> graph
+    /// Represents a <see cref="CSharpSyntaxVisitor"/> that descends an entire <see cref="AquilaSyntaxNode"/> graph
     /// visiting each CSharpSyntaxNode and its child SyntaxNodes and <see cref="SyntaxToken"/>s in depth-first order.
     /// </summary>
-    public abstract class CSharpSyntaxWalker : CSharpSyntaxVisitor
+    public abstract class AquilaSyntaxWalker : AquilaSyntaxVisitor
     {
         protected SyntaxWalkerDepth Depth { get; }
 
-        protected CSharpSyntaxWalker(SyntaxWalkerDepth depth = SyntaxWalkerDepth.Node)
+        protected AquilaSyntaxWalker(SyntaxWalkerDepth depth = SyntaxWalkerDepth.Node)
         {
             this.Depth = depth;
         }
@@ -28,7 +28,7 @@ namespace Aquila.CodeAnalysis
                 _recursionDepth++;
                 StackGuard.EnsureSufficientExecutionStack(_recursionDepth);
 
-                ((CSharpSyntaxNode)node).Accept(this);
+                ((AquilaSyntaxNode)node).Accept(this);
 
                 _recursionDepth--;
             }
@@ -41,7 +41,7 @@ namespace Aquila.CodeAnalysis
 
             do
             {
-                var child = ChildSyntaxList.ItemInternal((CSharpSyntaxNode)node, i);
+                var child = ChildSyntaxList.ItemInternal((AquilaSyntaxNode)node, i);
                 i++;
 
                 var asNode = child.AsNode();
@@ -97,7 +97,7 @@ namespace Aquila.CodeAnalysis
         {
             if (this.Depth >= SyntaxWalkerDepth.StructuredTrivia && trivia.HasStructure)
             {
-                this.Visit((CSharpSyntaxNode)trivia.GetStructure()!);
+                this.Visit((AquilaSyntaxNode)trivia.GetStructure()!);
             }
         }
     }

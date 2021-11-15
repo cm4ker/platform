@@ -32,7 +32,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         private readonly DirectiveStack _oldDirectives;
         private readonly LexerMode _newLexerDrivenMode;
 
-        public Blender(Lexer lexer, Aquila.CodeAnalysis.CSharpSyntaxNode oldTree, IEnumerable<TextChangeRange> changes)
+        public Blender(Lexer lexer, Aquila.CodeAnalysis.AquilaSyntaxNode oldTree, IEnumerable<TextChangeRange> changes)
         {
             Debug.Assert(lexer != null);
             _lexer = lexer;
@@ -109,7 +109,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         /// the change itself.
         /// </summary>
         private static TextChangeRange ExtendToAffectedRange(
-            Aquila.CodeAnalysis.CSharpSyntaxNode oldTree,
+            Aquila.CodeAnalysis.AquilaSyntaxNode oldTree,
             TextChangeRange changeRange)
         {
             // we will increase affected range of the change by the number of lookahead tokens
@@ -157,7 +157,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return new TextChangeRange(finalSpan, finalLength);
         }
 
-        private static bool IsInsideInterpolation(Aquila.CodeAnalysis.CSharpSyntaxNode oldTree, int start)
+        private static bool IsInsideInterpolation(Aquila.CodeAnalysis.AquilaSyntaxNode oldTree, int start)
         {
             var token = oldTree.FindToken(start, findInsideTrivia: false);
             for (var parent = token.Parent; // for each parent
