@@ -241,7 +241,9 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                     {
                         //Full path to the Method is Component.Extend.Method
 
-                        var qn = QualifiedName.Parse($"{com.Identifier.Text}.{ex.Identifier.Text}", false);
+                        var qn = QualifiedName.Parse(
+                            $"{com.Name.GetUnqualifiedName().Identifier.Text}.{ex.Name.GetUnqualifiedName().Identifier.Text}",
+                            false);
 
                         //Try to find type
                         var type = Compilation.PlatformSymbolCollection.GetType(qn);
@@ -319,7 +321,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public MergedSourceUnit GetMergedUnit()
         {
-            return new MergedSourceUnit(_trees.Select(x => x.Source));
+            return new MergedSourceUnit(_trees.Select(x => x.GetCompilationUnitRoot()));
         }
     }
 }

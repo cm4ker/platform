@@ -236,20 +236,27 @@ namespace Aquila.CodeAnalysis.CommandLine
                 hadErrors = true;
             }
 
-            AquilaSyntaxTree result = null;
+            SyntaxTree result = null;
 
             if (content != null)
             {
-                result = AquilaSyntaxTree.ParseCode(content, parseOptions, scriptParseOptions, normalizedFilePath);
+                result = AquilaSyntaxTree.ParseText(content, parseOptions, normalizedFilePath);
             }
 
-            if (result != null && result.Diagnostics.HasAnyErrors())
+            if (result != null)
             {
-                ReportDiagnostics(result.Diagnostics, consoleOutput, errorLogger, null);
-                hadErrors = true;
+                var diag = result.GetDiagnostics().ToImmutableArray();
+
+                if (diag.Any())
+                {
+                    ReportDiagnostics(diag, consoleOutput, errorLogger, null);
+                    hadErrors = true;
+                }
+
+                return new ParsedSource { SyntaxTree = (AquilaSyntaxTree)result };
             }
 
-            return new ParsedSource { SyntaxTree = result };
+            throw new Exception("Compilation error. IDK.");
         }
 
         public override void PrintHelp(TextWriter consoleOutput)
@@ -266,10 +273,10 @@ namespace Aquila.CodeAnalysis.CommandLine
         public override void PrintLangVersions(TextWriter consoleOutput)
         {
             consoleOutput.WriteLine(AquilaResources.IDS_LangVersions);
-            foreach (var version in AquilaSyntaxTree.SupportedLanguageVersions)
-            {
-                consoleOutput.WriteLine(version.ToString(2));
-            }
+            // foreach (var version in AquilaSyntaxTree.SupportedLanguageVersions)
+            // {
+            //     consoleOutput.WriteLine(version.ToString(2));
+            // }
 
             consoleOutput.WriteLine();
         }

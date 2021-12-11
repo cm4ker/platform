@@ -1145,7 +1145,6 @@
         <Field Name="Type" Type="TypeEx"/>
     </Node>
 
-
     <Node Name="TypeArgumentListSyntax" Base="AquilaSyntaxNode">
         <Kind Name="TypeArgumentList"/>
         <Field Name="LessThanToken" Type="SyntaxToken">

@@ -20,11 +20,14 @@ namespace Aquila.SyntaxGenerator2
         {
         }
 
-        public static void WriteMain(TextWriter writer, Tree tree, CancellationToken cancellationToken = default) => new SourceWriter(writer, tree, cancellationToken).WriteMain();
+        public static void WriteMain(TextWriter writer, Tree tree, CancellationToken cancellationToken = default) =>
+            new SourceWriter(writer, tree, cancellationToken).WriteMain();
 
-        public static void WriteInternal(TextWriter writer, Tree tree, CancellationToken cancellationToken = default) => new SourceWriter(writer, tree, cancellationToken).WriteInternal();
+        public static void WriteInternal(TextWriter writer, Tree tree, CancellationToken cancellationToken = default) =>
+            new SourceWriter(writer, tree, cancellationToken).WriteInternal();
 
-        public static void WriteSyntax(TextWriter writer, Tree tree, CancellationToken cancellationToken = default) => new SourceWriter(writer, tree, cancellationToken).WriteSyntax();
+        public static void WriteSyntax(TextWriter writer, Tree tree, CancellationToken cancellationToken = default) =>
+            new SourceWriter(writer, tree, cancellationToken).WriteSyntax();
 
         private void WriteFileHeader()
         {
@@ -61,7 +64,7 @@ namespace Aquila.SyntaxGenerator2
             WriteLine("namespace Aquila.CodeAnalysis.Syntax");
             OpenBlock();
             WriteLine("using Microsoft.CodeAnalysis;");
-            
+
             this.WriteRedTypes();
             CloseBlock();
         }
@@ -74,7 +77,7 @@ namespace Aquila.SyntaxGenerator2
             WriteLine("using System.Diagnostics.CodeAnalysis;");
             WriteLine("using Aquila.CodeAnalysis.Syntax;");
             WriteLine("using Microsoft.CodeAnalysis;");
-            
+
             this.WriteRedVisitors();
             this.WriteRedRewriter();
             this.WriteRedFactories();
@@ -102,13 +105,15 @@ namespace Aquila.SyntaxGenerator2
                 OpenBlock();
 
                 // ctor with diagnostics and annotations
-                WriteLine($"internal {node.Name}(SyntaxKind kind, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)");
+                WriteLine(
+                    $"internal {node.Name}(SyntaxKind kind, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)");
                 WriteLine("  : base(kind, diagnostics, annotations)");
                 OpenBlock();
                 if (node.Name == "DirectiveTriviaSyntax")
                 {
                     WriteLine("this.flags |= NodeFlags.ContainsDirectives;");
                 }
+
                 CloseBlock();
                 WriteLine();
                 // ctor without diagnostics and annotations
@@ -119,6 +124,7 @@ namespace Aquila.SyntaxGenerator2
                 {
                     WriteLine("this.flags |= NodeFlags.ContainsDirectives;");
                 }
+
                 CloseBlock();
 
                 // object reader constructor
@@ -130,6 +136,7 @@ namespace Aquila.SyntaxGenerator2
                 {
                     WriteLine("this.flags |= NodeFlags.ContainsDirectives;");
                 }
+
                 CloseBlock();
 
                 var valueFields = nd.Fields.Where(n => !IsNodeOrNodeList(n.Type)).ToList();
@@ -145,11 +152,13 @@ namespace Aquila.SyntaxGenerator2
                         if (IsSeparatedNodeList(field.Type) ||
                             IsNodeList(field.Type))
                         {
-                            WriteLine($"public abstract {(IsNew(field) ? "new " : "")}Microsoft.CodeAnalysis.Syntax.InternalSyntax.{field.Type} {field.Name} {{ get; }}");
+                            WriteLine(
+                                $"public abstract {(IsNew(field) ? "new " : "")}Microsoft.CodeAnalysis.Syntax.InternalSyntax.{field.Type} {field.Name} {{ get; }}");
                         }
                         else
                         {
-                            WriteLine($"public abstract {(IsNew(field) ? "new " : "")}{(GetFieldType(field, green: true))} {field.Name} {{ get; }}");
+                            WriteLine(
+                                $"public abstract {(IsNew(field) ? "new " : "")}{(GetFieldType(field, green: true))} {field.Name} {{ get; }}");
                         }
                     }
                 }
@@ -229,26 +238,31 @@ namespace Aquila.SyntaxGenerator2
                     WriteComment(field.PropertyComment, "");
                     if (IsNodeList(field.Type))
                     {
-                        WriteLine($"public {OverrideOrNewModifier(field)}Microsoft.CodeAnalysis.Syntax.InternalSyntax.{field.Type} {field.Name} => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.{field.Type}(this.{CamelCase(field.Name)});");
+                        WriteLine(
+                            $"public {OverrideOrNewModifier(field)}Microsoft.CodeAnalysis.Syntax.InternalSyntax.{field.Type} {field.Name} => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.{field.Type}(this.{CamelCase(field.Name)});");
                     }
                     else if (IsSeparatedNodeList(field.Type))
                     {
-                        WriteLine($"public {OverrideOrNewModifier(field)}Microsoft.CodeAnalysis.Syntax.InternalSyntax.{field.Type} {field.Name} => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.{field.Type}(new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode>(this.{CamelCase(field.Name)}));");
+                        WriteLine(
+                            $"public {OverrideOrNewModifier(field)}Microsoft.CodeAnalysis.Syntax.InternalSyntax.{field.Type} {field.Name} => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.{field.Type}(new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode>(this.{CamelCase(field.Name)}));");
                     }
                     else if (field.Type == "SyntaxNodeOrTokenList")
                     {
-                        WriteLine($"public {OverrideOrNewModifier(field)}Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode> {field.Name} => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode>(this.{CamelCase(field.Name)});");
+                        WriteLine(
+                            $"public {OverrideOrNewModifier(field)}Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode> {field.Name} => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode>(this.{CamelCase(field.Name)});");
                     }
                     else
                     {
-                        WriteLine($"public {OverrideOrNewModifier(field)}{(GetFieldType(field, green: true))} {field.Name} => this.{CamelCase(field.Name)};");
+                        WriteLine(
+                            $"public {OverrideOrNewModifier(field)}{(GetFieldType(field, green: true))} {field.Name} => this.{CamelCase(field.Name)};");
                     }
                 }
 
                 foreach (var field in valueFields)
                 {
                     WriteComment(field.PropertyComment, "");
-                    WriteLine($"public {OverrideOrNewModifier(field)}{field.Type} {field.Name} => this.{CamelCase(field.Name)};");
+                    WriteLine(
+                        $"public {OverrideOrNewModifier(field)}{field.Type} {field.Name} => this.{CamelCase(field.Name)};");
                 }
 
                 // GetSlot
@@ -277,13 +291,15 @@ namespace Aquila.SyntaxGenerator2
                         var field = nodeFields[i];
                         WriteLine($"{i} => this.{CamelCase(field.Name)},");
                     }
+
                     WriteLine("_ => null,");
                     CloseBlock(";");
                     Unindent();
                 }
 
                 WriteLine();
-                WriteLine($"internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.{node.Name}(this, parent, position);");
+                WriteLine(
+                    $"internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.{node.Name}(this, parent, position);");
 
                 this.WriteGreenAcceptMethods(nd);
                 this.WriteGreenUpdateMethod(nd);
@@ -342,7 +358,8 @@ namespace Aquila.SyntaxGenerator2
 
             foreach (var field in valueFields)
             {
-                WriteLine($"this.{CamelCase(field.Name)} = ({(GetFieldType(field, green: true))})reader.{(GetReaderMethod(GetFieldType(field, green: true)))}();");
+                WriteLine(
+                    $"this.{CamelCase(field.Name)} = ({(GetFieldType(field, green: true))})reader.{(GetReaderMethod(GetFieldType(field, green: true)))}();");
             }
 
             CloseBlock();
@@ -378,14 +395,16 @@ namespace Aquila.SyntaxGenerator2
             => type switch
             {
                 "bool" => "WriteBoolean",
-                _ => throw new InvalidOperationException($"Type '{type}' not supported for object reader serialization."),
+                _ => throw new InvalidOperationException(
+                    $"Type '{type}' not supported for object reader serialization."),
             };
 
         private string GetReaderMethod(string type)
             => type switch
             {
                 "bool" => "ReadBoolean",
-                _ => throw new InvalidOperationException($"Type '{type}' not supported for object reader serialization."),
+                _ => throw new InvalidOperationException(
+                    $"Type '{type}' not supported for object reader serialization."),
             };
 
         private void WriteCtorBody(List<Field> valueFields, List<Field> nodeFields)
@@ -445,8 +464,10 @@ namespace Aquila.SyntaxGenerator2
         private void WriteGreenAcceptMethods(Node node)
         {
             WriteLine();
-            WriteLine($"public override void Accept(AquilaSyntaxVisitor visitor) => visitor.Visit{StripPost(node.Name, "Syntax")}(this);");
-            WriteLine($"public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.Visit{StripPost(node.Name, "Syntax")}(this);");
+            WriteLine(
+                $"public override void Accept(AquilaSyntaxVisitor visitor) => visitor.Visit{StripPost(node.Name, "Syntax")}(this);");
+            WriteLine(
+                $"public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.Visit{StripPost(node.Name, "Syntax")}(this);");
         }
 
         private void WriteGreenVisitors()
@@ -464,8 +485,10 @@ namespace Aquila.SyntaxGenerator2
             OpenBlock();
             foreach (var node in nodes.OfType<Node>())
             {
-                WriteLine($"public virtual {(withResult ? "TResult" : "void")} Visit{StripPost(node.Name, "Syntax")}({node.Name} node) => this.DefaultVisit(node);");
+                WriteLine(
+                    $"public virtual {(withResult ? "TResult" : "void")} Visit{StripPost(node.Name, "Syntax")}({node.Name} node) => this.DefaultVisit(node);");
             }
+
             CloseBlock();
         }
 
@@ -476,11 +499,20 @@ namespace Aquila.SyntaxGenerator2
             Write(CommaJoin(node.Fields.Select(f =>
             {
                 var type =
-                    f.Type == "SyntaxNodeOrTokenList" ? "Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode>" :
-                    f.Type == "SyntaxTokenList" ? "Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<SyntaxToken>" :
-                    IsNodeList(f.Type) ? "Microsoft.CodeAnalysis.Syntax.InternalSyntax." + f.Type :
-                    IsSeparatedNodeList(f.Type) ? "Microsoft.CodeAnalysis.Syntax.InternalSyntax." + f.Type :
-                    f.Type;
+                    f.Type == "SyntaxNodeOrTokenList"
+                        ?
+                        "Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode>"
+                        :
+                        f.Type == "SyntaxTokenList"
+                            ? "Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<SyntaxToken>"
+                            :
+                            IsNodeList(f.Type)
+                                ? "Microsoft.CodeAnalysis.Syntax.InternalSyntax." + f.Type
+                                :
+                                IsSeparatedNodeList(f.Type)
+                                    ? "Microsoft.CodeAnalysis.Syntax.InternalSyntax." + f.Type
+                                    :
+                                    f.Type;
 
                 return $"{type} {CamelCase(f.Name)}";
             })));
@@ -491,7 +523,8 @@ namespace Aquila.SyntaxGenerator2
             int nCompared = 0;
             foreach (var field in node.Fields)
             {
-                if (IsDerivedOrListOfDerived("SyntaxNode", field.Type) || IsDerivedOrListOfDerived("SyntaxToken", field.Type) || field.Type == "SyntaxNodeOrTokenList")
+                if (IsDerivedOrListOfDerived("SyntaxNode", field.Type) ||
+                    IsDerivedOrListOfDerived("SyntaxToken", field.Type) || field.Type == "SyntaxNodeOrTokenList")
                 {
                     if (nCompared > 0)
                         Write(" || ");
@@ -499,6 +532,7 @@ namespace Aquila.SyntaxGenerator2
                     nCompared++;
                 }
             }
+
             if (nCompared > 0)
             {
                 WriteLine(")");
@@ -528,7 +562,7 @@ namespace Aquila.SyntaxGenerator2
             var nodes = Tree.Types.Where(n => n is not PredefinedNode).ToList();
 
             WriteLine();
-            WriteLine("internal partial class CSharpSyntaxRewriter : AquilaSyntaxVisitor<AquilaSyntaxNode>");
+            WriteLine("internal partial class AquilaSyntaxRewriter : AquilaSyntaxVisitor<AquilaSyntaxNode>");
             OpenBlock();
             int nWritten = 0;
             foreach (var node in nodes.OfType<Node>())
@@ -640,6 +674,7 @@ namespace Aquila.SyntaxGenerator2
                 {
                     WriteLine($"case SyntaxKind.{kind.Name}:{(kind == nd.Kinds.Last() ? " break;" : "")}");
                 }
+
                 WriteLine("default: throw new ArgumentException(nameof(kind));");
                 CloseBlock();
             }
@@ -652,8 +687,10 @@ namespace Aquila.SyntaxGenerator2
 
                 if (!IsAnyList(field.Type) && !IsOptional(field))
                 {
-                    WriteLine($"if ({CamelCase(field.Name)} == null) throw new ArgumentNullException(nameof({CamelCase(field.Name)}));");
+                    WriteLine(
+                        $"if ({CamelCase(field.Name)} == null) throw new ArgumentNullException(nameof({CamelCase(field.Name)}));");
                 }
+
                 if (field.Type == "SyntaxToken" && field.Kinds != null && field.Kinds.Count > 0)
                 {
                     if (IsOptional(field))
@@ -664,7 +701,8 @@ namespace Aquila.SyntaxGenerator2
 
                     if (field.Kinds.Count == 1 && !IsOptional(field))
                     {
-                        WriteLine($"if ({pname}.Kind != SyntaxKind.{field.Kinds[0].Name}) throw new ArgumentException(nameof({pname}));");
+                        WriteLine(
+                            $"if ({pname}.Kind != SyntaxKind.{field.Kinds[0].Name}) throw new ArgumentException(nameof({pname}));");
                     }
                     else
                     {
@@ -677,6 +715,7 @@ namespace Aquila.SyntaxGenerator2
                         {
                             kinds.Add(new Kind { Name = "None" });
                         }
+
                         foreach (var kind in kinds)
                         {
                             WriteLine($"case SyntaxKind.{kind.Name}:{(kind == kinds.Last() ? " break;" : "")}");
@@ -767,8 +806,10 @@ namespace Aquila.SyntaxGenerator2
                 {
                     var type = f.Type switch
                     {
-                        "SyntaxNodeOrTokenList" => "Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode>",
-                        _ when IsSeparatedNodeList(f.Type) || IsNodeList(f.Type) => $"Microsoft.CodeAnalysis.Syntax.InternalSyntax.{f.Type}",
+                        "SyntaxNodeOrTokenList" =>
+                            "Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode>",
+                        _ when IsSeparatedNodeList(f.Type) || IsNodeList(f.Type) =>
+                            $"Microsoft.CodeAnalysis.Syntax.InternalSyntax.{f.Type}",
                         _ => GetFieldType(f, green: true),
                     };
 
@@ -776,7 +817,8 @@ namespace Aquila.SyntaxGenerator2
                 })));
         }
 
-        private void WriteCtorArgList(Node nd, bool withSyntaxFactoryContext, List<Field> valueFields, List<Field> nodeFields)
+        private void WriteCtorArgList(Node nd, bool withSyntaxFactoryContext, List<Field> valueFields,
+            List<Field> nodeFields)
         {
             Write(CommaJoin(
                 nd.Kinds.Count == 1 ? $"SyntaxKind.{nd.Kinds[0].Name}" : "kind",
@@ -815,7 +857,8 @@ namespace Aquila.SyntaxGenerator2
                 var nd = (AbstractNode)node;
                 WriteLine($"public abstract partial class {node.Name} : {node.Base}");
                 OpenBlock();
-                WriteLine($"internal {node.Name}(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)");
+                WriteLine(
+                    $"internal {node.Name}(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)");
                 WriteLine("  : base(green, parent, position)");
                 OpenBlock();
                 CloseBlock();
@@ -831,15 +874,19 @@ namespace Aquila.SyntaxGenerator2
                         var fieldType = GetRedFieldType(field);
                         WriteLine();
                         WriteComment(field.PropertyComment, "");
-                        WriteLine($"{"public"} abstract {(IsNew(field) ? "new " : "")}{fieldType} {field.Name} {{ get; }}");
-                        WriteLine($"public {node.Name} With{field.Name}({fieldType} {CamelCase(field.Name)}) => With{field.Name}Core({CamelCase(field.Name)});");
-                        WriteLine($"internal abstract {node.Name} With{field.Name}Core({fieldType} {CamelCase(field.Name)});");
+                        WriteLine(
+                            $"{"public"} abstract {(IsNew(field) ? "new " : "")}{fieldType} {field.Name} {{ get; }}");
+                        WriteLine(
+                            $"public {node.Name} With{field.Name}({fieldType} {CamelCase(field.Name)}) => With{field.Name}Core({CamelCase(field.Name)});");
+                        WriteLine(
+                            $"internal abstract {node.Name} With{field.Name}Core({fieldType} {CamelCase(field.Name)});");
 
                         if (IsAnyList(field.Type))
                         {
                             var argType = GetElementType(field.Type);
                             WriteLine();
-                            WriteLine($"public {node.Name} Add{field.Name}(params {argType}[] items) => Add{field.Name}Core(items);");
+                            WriteLine(
+                                $"public {node.Name} Add{field.Name}(params {argType}[] items) => Add{field.Name}Core(items);");
                             WriteLine($"internal abstract {node.Name} Add{field.Name}Core(params {argType}[] items);");
                         }
                         else
@@ -854,8 +901,10 @@ namespace Aquila.SyntaxGenerator2
                                         var argType = GetElementType(referencedNodeField.Type);
 
                                         WriteLine();
-                                        WriteLine($"public {node.Name} Add{StripPost(field.Name, "Opt")}{referencedNodeField.Name}(params {argType}[] items) => Add{StripPost(field.Name, "Opt")}{referencedNodeField.Name}Core(items);");
-                                        WriteLine($"internal abstract {node.Name} Add{StripPost(field.Name, "Opt")}{referencedNodeField.Name}Core(params {argType}[] items);");
+                                        WriteLine(
+                                            $"public {node.Name} Add{StripPost(field.Name, "Opt")}{referencedNodeField.Name}(params {argType}[] items) => Add{StripPost(field.Name, "Opt")}{referencedNodeField.Name}Core(items);");
+                                        WriteLine(
+                                            $"internal abstract {node.Name} Add{StripPost(field.Name, "Opt")}{referencedNodeField.Name}Core(params {argType}[] items);");
                                     }
                                 }
                             }
@@ -867,7 +916,8 @@ namespace Aquila.SyntaxGenerator2
                 {
                     WriteLine();
                     WriteComment(field.PropertyComment, "");
-                    WriteLine($"{"public"} abstract {(IsNew(field) ? "new " : "")}{field.Type} {field.Name} {{ get; }}");
+                    WriteLine(
+                        $"{"public"} abstract {(IsNew(field) ? "new " : "")}{field.Type} {field.Name} {{ get; }}");
                 }
 
                 var baseType = GetTreeType(node.Base);
@@ -881,7 +931,8 @@ namespace Aquila.SyntaxGenerator2
 
                     foreach (var baseField in baseNodeFields)
                     {
-                        WriteLine($"public new {node.Name} With{baseField.Name}({GetRedFieldType(baseField)} {CamelCase(baseField.Name)}) => ({node.Name})With{baseField.Name}Core({CamelCase(baseField.Name)});");
+                        WriteLine(
+                            $"public new {node.Name} With{baseField.Name}({GetRedFieldType(baseField)} {CamelCase(baseField.Name)}) => ({node.Name})With{baseField.Name}Core({CamelCase(baseField.Name)});");
                     }
 
                     foreach (var baseField in baseNodeFields)
@@ -890,7 +941,8 @@ namespace Aquila.SyntaxGenerator2
                         {
                             var argType = GetElementType(baseField.Type);
                             WriteLine();
-                            WriteLine($"public new {node.Name} Add{baseField.Name}(params {argType}[] items) => ({node.Name})Add{baseField.Name}Core(items);");
+                            WriteLine(
+                                $"public new {node.Name} Add{baseField.Name}(params {argType}[] items) => ({node.Name})Add{baseField.Name}Core(items);");
                         }
                         else
                         {
@@ -905,7 +957,8 @@ namespace Aquila.SyntaxGenerator2
                                         var argType = GetElementType(referencedNodeField.Type);
 
                                         WriteLine();
-                                        WriteLine($"public new {baseType.Name} Add{StripPost(baseField.Name, "Opt")}{referencedNodeField.Name}(params {argType}[] items) => Add{StripPost(baseField.Name, "Opt")}{referencedNodeField.Name}Core(items);");
+                                        WriteLine(
+                                            $"public new {baseType.Name} Add{StripPost(baseField.Name, "Opt")}{referencedNodeField.Name}(params {argType}[] items) => Add{StripPost(baseField.Name, "Opt")}{referencedNodeField.Name}Core(items);");
                                     }
                                 }
                             }
@@ -954,7 +1007,8 @@ namespace Aquila.SyntaxGenerator2
 
                 // write constructor
                 WriteLine();
-                WriteLine($"internal {node.Name}(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)");
+                WriteLine(
+                    $"internal {node.Name}(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)");
                 WriteLine("  : base(green, parent, position)");
                 OpenBlock();
                 CloseBlock();
@@ -974,14 +1028,17 @@ namespace Aquila.SyntaxGenerator2
                             OpenBlock();
                             WriteLine("get");
                             OpenBlock();
-                            WriteLine($"var slot = ((Syntax.InternalSyntax.{node.Name})this.Green).{CamelCase(field.Name)};");
-                            WriteLine($"return slot != null ? new SyntaxToken(this, slot, {GetChildPosition(i)}, {GetChildIndex(i)}) : default;");
+                            WriteLine(
+                                $"var slot = ((Syntax.InternalSyntax.{node.Name})this.Green).{CamelCase(field.Name)};");
+                            WriteLine(
+                                $"return slot != null ? new SyntaxToken(this, slot, {GetChildPosition(i)}, {GetChildIndex(i)}) : default;");
                             CloseBlock();
                             CloseBlock();
                         }
                         else
                         {
-                            WriteLine($" => new SyntaxToken(this, ((Syntax.InternalSyntax.{node.Name})this.Green).{CamelCase(field.Name)}, {GetChildPosition(i)}, {GetChildIndex(i)});");
+                            WriteLine(
+                                $" => new SyntaxToken(this, ((Syntax.InternalSyntax.{node.Name})this.Green).{CamelCase(field.Name)}, {GetChildPosition(i)}, {GetChildIndex(i)});");
                         }
                     }
                     else if (field.Type == "SyntaxList<SyntaxToken>")
@@ -992,7 +1049,8 @@ namespace Aquila.SyntaxGenerator2
                         WriteLine("get");
                         OpenBlock();
                         WriteLine($"var slot = this.Green.GetSlot({i});");
-                        WriteLine($"return slot != null ? new SyntaxTokenList(this, slot, {GetChildPosition(i)}, {GetChildIndex(i)}) : default;");
+                        WriteLine(
+                            $"return slot != null ? new SyntaxTokenList(this, slot, {GetChildPosition(i)}, {GetChildIndex(i)}) : default;");
                         CloseBlock();
                         CloseBlock();
                     }
@@ -1034,13 +1092,15 @@ namespace Aquila.SyntaxGenerator2
                             }
                         }
                     }
+
                     WriteLine();
                 }
 
                 foreach (var field in valueFields)
                 {
                     WriteComment(field.PropertyComment, "");
-                    WriteLine($"{"public"} {OverrideOrNewModifier(field)}{field.Type} {field.Name} => ((Syntax.InternalSyntax.{node.Name})this.Green).{field.Name};");
+                    WriteLine(
+                        $"{"public"} {OverrideOrNewModifier(field)}{field.Type} {field.Name} => ((Syntax.InternalSyntax.{node.Name})this.Green).{field.Name};");
                     WriteLine();
                 }
 
@@ -1049,7 +1109,7 @@ namespace Aquila.SyntaxGenerator2
                     Write("internal override SyntaxNode? GetNodeSlot(int index)");
 
                     var relevantNodes = nodeFields.Select((field, index) => (field, index))
-                                                  .Where(t => t.field.Type is not "SyntaxToken" and not "SyntaxList<SyntaxToken>");
+                        .Where(t => t.field.Type is not "SyntaxToken" and not "SyntaxList<SyntaxToken>");
                     if (!relevantNodes.Any())
                     {
                         WriteLine(" => null;");
@@ -1082,6 +1142,7 @@ namespace Aquila.SyntaxGenerator2
                                 WriteLine($"{index} => GetRed(ref this.{CamelCase(field.Name)}, {index}){suffix},");
                             }
                         }
+
                         WriteLine("_ => null,");
                         CloseBlock(";");
                         Unindent();
@@ -1095,7 +1156,7 @@ namespace Aquila.SyntaxGenerator2
                     Write("internal override SyntaxNode? GetCachedSlot(int index)");
 
                     var relevantNodes = nodeFields.Select((field, index) => (field, index))
-                                                  .Where(t => t.field.Type is not "SyntaxToken" and not "SyntaxList<SyntaxToken>");
+                        .Where(t => t.field.Type is not "SyntaxToken" and not "SyntaxList<SyntaxToken>");
                     if (!relevantNodes.Any())
                     {
                         WriteLine(" => null;");
@@ -1115,6 +1176,7 @@ namespace Aquila.SyntaxGenerator2
                         {
                             WriteLine($"{index} => this.{CamelCase(field.Name)},");
                         }
+
                         WriteLine("_ => null,");
                         CloseBlock(";");
                         Unindent();
@@ -1157,7 +1219,8 @@ namespace Aquila.SyntaxGenerator2
         private void WriteRedAcceptMethod(Node node, bool genericResult)
         {
             string genericArgs = genericResult ? "<TResult>" : "";
-            WriteLine($"public override {(genericResult ? "TResult?" : "void")} Accept{genericArgs}(AquilaSyntaxVisitor{genericArgs} visitor){(genericResult ? " where TResult : default" : "")} => visitor.Visit{StripPost(node.Name, "Syntax")}(this);");
+            WriteLine(
+                $"public override {(genericResult ? "TResult?" : "void")} Accept{genericArgs}(AquilaSyntaxVisitor{genericArgs} visitor){(genericResult ? " where TResult : default" : "")} => visitor.Visit{StripPost(node.Name, "Syntax")}(this);");
         }
 
         private void WriteRedVisitors()
@@ -1181,8 +1244,10 @@ namespace Aquila.SyntaxGenerator2
                     WriteLine();
                 nWritten++;
                 WriteComment($"<summary>Called when the visitor visits a {node.Name} node.</summary>");
-                WriteLine($"public virtual {(genericResult ? "TResult?" : "void")} Visit{StripPost(node.Name, "Syntax")}({node.Name} node) => this.DefaultVisit(node);");
+                WriteLine(
+                    $"public virtual {(genericResult ? "TResult?" : "void")} Visit{StripPost(node.Name, "Syntax")}({node.Name} node) => this.DefaultVisit(node);");
             }
+
             CloseBlock();
         }
 
@@ -1199,7 +1264,8 @@ namespace Aquila.SyntaxGenerator2
             int nCompared = 0;
             foreach (var field in node.Fields)
             {
-                if (IsDerivedOrListOfDerived("SyntaxNode", field.Type) || IsDerivedOrListOfDerived("SyntaxToken", field.Type) || field.Type == "SyntaxNodeOrTokenList")
+                if (IsDerivedOrListOfDerived("SyntaxNode", field.Type) ||
+                    IsDerivedOrListOfDerived("SyntaxToken", field.Type) || field.Type == "SyntaxNodeOrTokenList")
                 {
                     if (nCompared > 0)
                         Write(" || ");
@@ -1207,6 +1273,7 @@ namespace Aquila.SyntaxGenerator2
                     nCompared++;
                 }
             }
+
             if (nCompared > 0)
             {
                 WriteLine(")");
@@ -1243,11 +1310,13 @@ namespace Aquila.SyntaxGenerator2
                     var (baseType, baseField) = GetHighestBaseTypeWithField(node, field.Name);
                     if (baseType != null)
                     {
-                        Write($"internal override {baseType.Name} With{field.Name}Core({GetRedPropertyType(baseField)} {CamelCase(field.Name)}) => With{field.Name}({CamelCase(field.Name)}");
+                        Write(
+                            $"internal override {baseType.Name} With{field.Name}Core({GetRedPropertyType(baseField)} {CamelCase(field.Name)}) => With{field.Name}({CamelCase(field.Name)}");
                         if (baseField.Type != "SyntaxToken" && IsOptional(baseField) && !IsOptional(field))
                         {
                             Write($" ?? throw new ArgumentNullException(nameof({CamelCase(field.Name)}))");
                         }
+
                         WriteLine(");");
 
                         isNew = true;
@@ -1302,6 +1371,7 @@ namespace Aquila.SyntaxGenerator2
                         WriteLine();
                         wroteNewLine = true;
                     }
+
                     // write list helper methods for list properties
                     WriteRedListHelperMethods(node, field);
                 }
@@ -1320,6 +1390,7 @@ namespace Aquila.SyntaxGenerator2
                                     WriteLine();
                                     wroteNewLine = true;
                                 }
+
                                 WriteRedNestedListHelperMethods(node, field, referencedNode, referencedNodeField);
                             }
                         }
@@ -1350,15 +1421,18 @@ namespace Aquila.SyntaxGenerator2
                 if (baseType != null)
                 {
                     var baseArgType = GetElementType(baseField.Type);
-                    WriteLine($"internal override {baseType.Name} Add{field.Name}Core(params {baseArgType}[] items) => Add{field.Name}(items);");
+                    WriteLine(
+                        $"internal override {baseType.Name} Add{field.Name}Core(params {baseArgType}[] items) => Add{field.Name}(items);");
                     isNew = true;
                 }
             }
 
-            WriteLine($"public{(isNew ? " new " : " ")}{node.Name} Add{field.Name}(params {argType}[] items) => With{StripPost(field.Name, "Opt")}(this.{field.Name}.AddRange(items));");
+            WriteLine(
+                $"public{(isNew ? " new " : " ")}{node.Name} Add{field.Name}(params {argType}[] items) => With{StripPost(field.Name, "Opt")}(this.{field.Name}.AddRange(items));");
         }
 
-        private void WriteRedNestedListHelperMethods(Node node, Field field, Node referencedNode, Field referencedNodeField)
+        private void WriteRedNestedListHelperMethods(Node node, Field field, Node referencedNode,
+            Field referencedNodeField)
         {
             var argType = GetElementType(referencedNodeField.Type);
 
@@ -1368,13 +1442,15 @@ namespace Aquila.SyntaxGenerator2
                 var (baseType, _) = GetHighestBaseTypeWithField(node, field.Name);
                 if (baseType != null)
                 {
-                    WriteLine($"internal override {baseType.Name} Add{StripPost(field.Name, "Opt")}{referencedNodeField.Name}Core(params {argType}[] items) => Add{StripPost(field.Name, "Opt")}{referencedNodeField.Name}(items);");
+                    WriteLine(
+                        $"internal override {baseType.Name} Add{StripPost(field.Name, "Opt")}{referencedNodeField.Name}Core(params {argType}[] items) => Add{StripPost(field.Name, "Opt")}{referencedNodeField.Name}(items);");
                     isNew = true;
                 }
             }
 
             // AddBaseListTypes
-            Write($"public{(isNew ? " new " : " ")}{node.Name} Add{StripPost(field.Name, "Opt")}{referencedNodeField.Name}(params {argType}[] items)");
+            Write(
+                $"public{(isNew ? " new " : " ")}{node.Name} Add{StripPost(field.Name, "Opt")}{referencedNodeField.Name}(params {argType}[] items)");
 
             if (IsOptional(field))
             {
@@ -1383,12 +1459,14 @@ namespace Aquila.SyntaxGenerator2
                 var factoryName = StripPost(referencedNode.Name, "Syntax");
                 var varName = StripPost(CamelCase(field.Name), "Opt");
                 WriteLine($"var {varName} = this.{field.Name} ?? SyntaxFactory.{factoryName}();");
-                WriteLine($"return With{StripPost(field.Name, "Opt")}({varName}.With{StripPost(referencedNodeField.Name, "Opt")}({varName}.{referencedNodeField.Name}.AddRange(items)));");
+                WriteLine(
+                    $"return With{StripPost(field.Name, "Opt")}({varName}.With{StripPost(referencedNodeField.Name, "Opt")}({varName}.{referencedNodeField.Name}.AddRange(items)));");
                 CloseBlock();
             }
             else
             {
-                WriteLine($" => With{StripPost(field.Name, "Opt")}(this.{field.Name}.With{StripPost(referencedNodeField.Name, "Opt")}(this.{field.Name}.{referencedNodeField.Name}.AddRange(items)));");
+                WriteLine(
+                    $" => With{StripPost(field.Name, "Opt")}(this.{field.Name}.With{StripPost(referencedNodeField.Name, "Opt")}(this.{field.Name}.{referencedNodeField.Name}.AddRange(items)));");
             }
         }
 
@@ -1397,7 +1475,7 @@ namespace Aquila.SyntaxGenerator2
             var nodes = Tree.Types.Where(n => n is not PredefinedNode).ToList();
 
             WriteLine();
-            WriteLine("public partial class CSharpSyntaxRewriter : AquilaSyntaxVisitor<SyntaxNode?>");
+            WriteLine("public partial class AquilaSyntaxRewriter : AquilaSyntaxVisitor<SyntaxNode?>");
             OpenBlock();
 
             int nWritten = 0;
@@ -1426,7 +1504,8 @@ namespace Aquila.SyntaxGenerator2
                             else if (IsOptional(f))
                                 return $"({(GetFieldType(f, green: false))})Visit(node.{f.Name})";
                             else
-                                return $"({(GetFieldType(f, green: false))})Visit(node.{f.Name}) ?? throw new ArgumentNullException(\"{CamelCase(f.Name)}\")";
+                                return
+                                    $"({(GetFieldType(f, green: false))})Visit(node.{f.Name}) ?? throw new ArgumentNullException(\"{CamelCase(f.Name)}\")";
                         }
 
                         return $"node.{f.Name}";
@@ -1435,6 +1514,7 @@ namespace Aquila.SyntaxGenerator2
                     WriteLine(");");
                 }
             }
+
             CloseBlock();
         }
 
@@ -1448,13 +1528,15 @@ namespace Aquila.SyntaxGenerator2
             foreach (var node in nodes)
             {
                 this.WriteRedFactory(node);
-                bool skipConvenienceFactories = node.SkipConvenienceFactories != null && string.Compare(node.SkipConvenienceFactories, "true", true) == 0;
+                bool skipConvenienceFactories = node.SkipConvenienceFactories != null &&
+                                                string.Compare(node.SkipConvenienceFactories, "true", true) == 0;
                 if (!skipConvenienceFactories)
                 {
                     this.WriteRedFactoryWithNoAutoCreatableTokens(node);
                     this.WriteRedMinimalFactory(node);
                     this.WriteRedMinimalFactory(node, withStringNames: true);
                 }
+
                 this.WriteKindConverters(node);
             }
 
@@ -1467,8 +1549,10 @@ namespace Aquila.SyntaxGenerator2
         private bool IsAutoCreatableToken(Node node, Field field)
         {
             return field.Type == "SyntaxToken"
-                && field.Kinds != null
-                && ((field.Kinds.Count == 1 && field.Kinds[0].Name != "IdentifierToken" && !field.Kinds[0].Name.EndsWith("LiteralToken", StringComparison.Ordinal)) || (field.Kinds.Count > 1 && field.Kinds.Count == node.Kinds.Count));
+                   && field.Kinds != null
+                   && ((field.Kinds.Count == 1 && field.Kinds[0].Name != "IdentifierToken" &&
+                        !field.Kinds[0].Name.EndsWith("LiteralToken", StringComparison.Ordinal)) ||
+                       (field.Kinds.Count > 1 && field.Kinds.Count == node.Kinds.Count));
         }
 
         private bool IsAutoCreatableNode(Field field)
@@ -1479,7 +1563,8 @@ namespace Aquila.SyntaxGenerator2
 
         private bool IsRequiredFactoryField(Node node, Field field)
         {
-            return (!IsOptional(field) && !IsAnyList(field.Type) && !CanBeAutoCreated(node, field)) || IsValueField(field);
+            return (!IsOptional(field) && !IsAnyList(field.Type) && !CanBeAutoCreated(node, field)) ||
+                   IsValueField(field);
         }
 
         private bool IsValueField(Field field)
@@ -1547,6 +1632,7 @@ namespace Aquila.SyntaxGenerator2
                 {
                     WriteLine($"case SyntaxKind.{kind.Name}:{(kind == nd.Kinds.Last() ? " break;" : "")}");
                 }
+
                 WriteLine("default: throw new ArgumentException(nameof(kind));");
                 CloseBlock();
             }
@@ -1569,7 +1655,8 @@ namespace Aquila.SyntaxGenerator2
 
                         if (kinds.Count == 1)
                         {
-                            WriteLine($"if ({pname}.Kind() != SyntaxKind.{kinds[0].Name}) throw new ArgumentException(nameof({pname}));");
+                            WriteLine(
+                                $"if ({pname}.Kind() != SyntaxKind.{kinds[0].Name}) throw new ArgumentException(nameof({pname}));");
                         }
                         else
                         {
@@ -1579,6 +1666,7 @@ namespace Aquila.SyntaxGenerator2
                             {
                                 WriteLine($"case SyntaxKind.{kind.Name}:{(kind == kinds.Last() ? " break;" : "")}");
                             }
+
                             WriteLine($"default: throw new ArgumentException(nameof({pname}));");
                             CloseBlock();
                         }
@@ -1586,7 +1674,8 @@ namespace Aquila.SyntaxGenerator2
                 }
                 else if (!IsAnyList(field.Type) && !IsOptional(field))
                 {
-                    WriteLine($"if ({CamelCase(field.Name)} == null) throw new ArgumentNullException(nameof({CamelCase(field.Name)}));");
+                    WriteLine(
+                        $"if ({CamelCase(field.Name)} == null) throw new ArgumentNullException(nameof({CamelCase(field.Name)}));");
                 }
             }
 
@@ -1606,13 +1695,16 @@ namespace Aquila.SyntaxGenerator2
                     else if (f.Type == "SyntaxList<SyntaxToken>")
                         return $"{CamelCase(f.Name)}.Node.ToGreenList<Syntax.InternalSyntax.SyntaxToken>()";
                     else if (IsNodeList(f.Type))
-                        return $"{CamelCase(f.Name)}.Node.ToGreenList<Syntax.InternalSyntax.{GetElementType(f.Type)}>()";
+                        return
+                            $"{CamelCase(f.Name)}.Node.ToGreenList<Syntax.InternalSyntax.{GetElementType(f.Type)}>()";
                     else if (IsSeparatedNodeList(f.Type))
-                        return $"{CamelCase(f.Name)}.Node.ToGreenSeparatedList<Syntax.InternalSyntax.{GetElementType(f.Type)}>()";
+                        return
+                            $"{CamelCase(f.Name)}.Node.ToGreenSeparatedList<Syntax.InternalSyntax.{GetElementType(f.Type)}>()";
                     else if (f.Type == "SyntaxNodeOrTokenList")
                         return $"{CamelCase(f.Name)}.Node.ToGreenList<Syntax.InternalSyntax.AquilaSyntaxNode>()";
                     else if (IsOptional(f))
-                        return $"{CamelCase(f.Name)} == null ? null : (Syntax.InternalSyntax.{f.Type}){CamelCase(f.Name)}.Green";
+                        return
+                            $"{CamelCase(f.Name)} == null ? null : (Syntax.InternalSyntax.{f.Type}){CamelCase(f.Name)}.Green";
                     else
                         return $"(Syntax.InternalSyntax.{f.Type}){CamelCase(f.Name)}.Green";
                 }),
@@ -1657,7 +1749,8 @@ namespace Aquila.SyntaxGenerator2
                 }
                 else
                 {
-                    return $"SyntaxFactory.Token(Get{StripPost(nd.Name, "Syntax")}{StripPost(field.Name, "Opt")}Kind(kind))";
+                    return
+                        $"SyntaxFactory.Token(Get{StripPost(nd.Name, "Syntax")}{StripPost(field.Name, "Opt")}Kind(kind))";
                 }
             }
             else
@@ -1675,7 +1768,8 @@ namespace Aquila.SyntaxGenerator2
                 if (field.Type == "SyntaxToken" && CanBeAutoCreated(nd, field) && field.Kinds.Count > 1)
                 {
                     WriteLine();
-                    WriteLine($"private static SyntaxKind Get{StripPost(nd.Name, "Syntax")}{StripPost(field.Name, "Opt")}Kind(SyntaxKind kind)");
+                    WriteLine(
+                        $"private static SyntaxKind Get{StripPost(nd.Name, "Syntax")}{StripPost(field.Name, "Opt")}Kind(SyntaxKind kind)");
                     Indent();
                     WriteLine("=> kind switch");
                     OpenBlock();
@@ -1706,7 +1800,8 @@ namespace Aquila.SyntaxGenerator2
             if (nAutoCreatableTokens == 0)
                 return; // already handled by general factory
 
-            var factoryWithNoAutoCreatableTokenFields = new HashSet<Field>(DetermineRedFactoryWithNoAutoCreatableTokenFields(nd));
+            var factoryWithNoAutoCreatableTokenFields =
+                new HashSet<Field>(DetermineRedFactoryWithNoAutoCreatableTokenFields(nd));
             var minimalFactoryFields = DetermineMinimalFactoryFields(nd);
             if (minimalFactoryFields != null && factoryWithNoAutoCreatableTokenFields.SetEquals(minimalFactoryFields))
             {
@@ -1791,7 +1886,8 @@ namespace Aquila.SyntaxGenerator2
 
             var minimalFactoryfields = new HashSet<Field>(DetermineMinimalFactoryFields(nd));
 
-            if (withStringNames && minimalFactoryfields.Count(f => IsRequiredFactoryField(nd, f) && CanAutoConvertFromString(f)) == 0)
+            if (withStringNames &&
+                minimalFactoryfields.Count(f => IsRequiredFactoryField(nd, f) && CanAutoConvertFromString(f)) == 0)
                 return; // no string-name overload necessary
 
             this.WriteLine();
@@ -1871,7 +1967,8 @@ namespace Aquila.SyntaxGenerator2
 
         private bool IsIdentifierToken(Field field)
         {
-            return field.Type == "SyntaxToken" && field.Kinds != null && field.Kinds.Count == 1 && field.Kinds[0].Name == "IdentifierToken";
+            return field.Type == "SyntaxToken" && field.Kinds != null && field.Kinds.Count == 1 &&
+                   field.Kinds[0].Name == "IdentifierToken";
         }
 
         private bool IsIdentifierNameSyntax(Field field)
@@ -1921,7 +2018,8 @@ namespace Aquila.SyntaxGenerator2
             {
                 foreach (XmlElement element in comment.Body)
                 {
-                    string[] lines = element.OuterXml.Split(new string[] { "\r", "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] lines = element.OuterXml.Split(new string[] { "\r", "\n", "\r\n" },
+                        StringSplitOptions.RemoveEmptyEntries);
                     foreach (string line in lines.Where(l => !string.IsNullOrWhiteSpace(l)))
                     {
                         WriteLine($"{indent}/// {line.TrimStart()}");

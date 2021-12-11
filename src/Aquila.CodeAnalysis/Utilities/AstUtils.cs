@@ -3,11 +3,8 @@ using Microsoft.CodeAnalysis.Text;
 using System.Net.Mime;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Syntax;
-using Aquila.Syntax;
 using Aquila.Syntax.Ast;
-using Aquila.Syntax.Ast.Functions;
 using Aquila.Syntax.Text;
-using MethodDecl = Aquila.Syntax.Ast.Functions.MethodDecl;
 
 namespace Aquila.CodeAnalysis
 {
@@ -175,34 +172,24 @@ namespace Aquila.CodeAnalysis
         /// </summary>
         public const string AppStaticTagName = "@appstatic";
 
-        /// <summary>
-        /// Lookups notation determining given field as app-static instead of context-static.
-        /// </summary>
-        /// <param name="field"></param>
-        /// <returns></returns>
-        public static bool IsAppStatic(this FieldDecl field)
-        {
-            return false;
-        }
+        // /// <summary>
+        // /// Lookups notation determining given field as app-static instead of context-static.
+        // /// </summary>
+        // /// <param name="field"></param>
+        // /// <returns></returns>
+        // public static bool IsAppStatic(this FieldDecl field)
+        // {
+        //     return false;
+        // }
 
-        /// <summary>
-        /// Wraps given <see cref="MediaTypeNames.Text.Span"/> into <see cref="Microsoft.CodeAnalysis.Text.TextSpan"/> representing the same value.
-        /// </summary>
-        public static Microsoft.CodeAnalysis.Text.TextSpan 
-            ToTextSpan(this Span span)
-        {
-            return span.IsValid
-                ? new Microsoft.CodeAnalysis.Text.TextSpan(span.Start, span.Length)
-                : default;
-        }
-
+        
         /// <summary>
         /// Gets text span of given expression.
         /// </summary>
-        public static Microsoft.CodeAnalysis.Text.TextSpan GetTextSpan(this BoundExpression expression)
+        public static TextSpan GetTextSpan(this BoundExpression expression)
         {
             return expression != null && expression.AquilaSyntax != null
-                ? expression.AquilaSyntax.Span.ToTextSpan()
+                ? expression.AquilaSyntax.Span
                 : default;
         }
 

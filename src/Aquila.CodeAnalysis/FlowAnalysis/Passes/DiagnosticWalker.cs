@@ -9,10 +9,12 @@ using Aquila.CodeAnalysis.Semantics.TypeRef;
 using Aquila.Syntax.Ast;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.CodeAnalysis.Syntax;
 using Aquila.CodeAnalysis.Utilities;
 using Aquila.Syntax.Errors;
 using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
+using Microsoft.CodeAnalysis.Text;
 
 namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 {
@@ -492,12 +494,12 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
         }
 
 
-        static Microsoft.CodeAnalysis.Text.TextSpan GetMemberNameSpanForDiagnostic(LangElement node)
+        static Microsoft.CodeAnalysis.Text.TextSpan GetMemberNameSpanForDiagnostic(AquilaSyntaxNode node)
         {
-            return node.Span.ToTextSpan();
+            return node.Span;
         }
 
-        void CheckObsoleteSymbol(LangElement syntax, Aquila.CodeAnalysis.Symbols.Symbol target, bool isMemberCall)
+        void CheckObsoleteSymbol(AquilaSyntaxNode syntax, Aquila.CodeAnalysis.Symbols.Symbol target, bool isMemberCall)
         {
             var obsolete = target?.ObsoleteAttributeData;
             if (obsolete != null)
@@ -514,8 +516,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 if (x.AquilaSyntax == null)
                     throw new Exception("Internal compiler error");
 
-                var span = x.AquilaSyntax is CallEx fnc ? fnc.Span : x.AquilaSyntax.Span;
-                _diagnostics.Add(_method, span.ToTextSpan(), ErrorCode.WRN_UndefinedMethodCall, type.Name,
+                var span = x.AquilaSyntax is InvocationEx fnc ? fnc.Span : x.AquilaSyntax.Span;
+                _diagnostics.Add(_method, span, ErrorCode.WRN_UndefinedMethodCall, type.Name,
                     name.NameValue.ToString());
             }
         }

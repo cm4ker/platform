@@ -4,11 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Threading;
-using Aquila.Syntax.Ast;
-using Aquila.Syntax.Ast.Functions;
-using Aquila.Syntax.Ast.Statements;
 using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Semantics;
@@ -17,8 +13,6 @@ using Aquila.CodeAnalysis.Symbols.Attributes;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.CodeAnalysis.Syntax;
-using Aquila.Syntax;
-using Aquila.Syntax.Text;
 using Microsoft.CodeAnalysis.Text;
 
 namespace Aquila.CodeAnalysis.Symbols
@@ -193,7 +187,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override ImmutableArray<Location> Locations =>
             ImmutableArray.Create(
-                Location.Create(null, Syntax is LangElement element ? element.Span.ToTextSpan() : default
+                Location.Create(null, Syntax is AquilaSyntaxNode element ? element.Span : default
                 ));
 
         public override bool IsUnreachable => (Flags & MethodFlags.IsUnreachable) != 0;
@@ -227,11 +221,11 @@ namespace Aquila.CodeAnalysis.Symbols
         /// Constructs method source parameters.
         /// </summary>
         protected IEnumerable<SourceParameterSymbol> BuildSrcParams(
-            IEnumerable<Parameter> formalparams)
+            ParameterListSyntax formalparams)
         {
             var pindex = 0; // zero-based relative index
 
-            foreach (var p in formalparams)
+            foreach (var p in formalparams.Parameters)
             {
                 if (p == null)
                 {
@@ -462,12 +456,12 @@ namespace Aquila.CodeAnalysis.Symbols
             var builder = ImmutableArray.CreateBuilder<AttributeData>();
             builder.AddRange(base.GetAttributes());
 
-            foreach (var annotation in _syntax.Annotations)
-            {
-                var tref = new NamedTypeRef(Span.Empty, SyntaxKind.Type, annotation.Identifier.Text);
-                var type = (NamedTypeSymbol)DeclaringCompilation.GetBinder(_syntax).BindType(tref);
-                builder.Add(new SourceAttributeData(null, type, type.Ctor(), false));
-            }
+            // foreach (var annotation in _syntax.AttributeLists)
+            // {
+            //     var tref = SyntaxFactory.IdentifierEx(annotation.Identifier.Text);
+            //     var type = (NamedTypeSymbol)DeclaringCompilation.GetBinder(_syntax).BindType(tref);
+            //     builder.Add(new SourceAttributeData(null, type, type.Ctor(), false));
+            // }
 
 
             return builder.ToImmutable();

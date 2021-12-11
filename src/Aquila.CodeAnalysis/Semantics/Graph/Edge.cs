@@ -17,7 +17,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         {
             Debug.Assert(source != null);
 
-            var edge = new ConditionalEdge(@true, @false, cond) {IsLoop = isLoop};
+            var edge = new ConditionalEdge(@true, @false, cond) { IsLoop = isLoop };
             source.SetNextEdge(edge);
         }
 
@@ -54,7 +54,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// Associated syntax node.
         /// </summary>
-        internal LangElement AquilaSyntax { get; set; }
+        internal AquilaSyntaxNode AquilaSyntax { get; set; }
 
         /// <summary>
         /// Target blocks.
@@ -154,7 +154,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// Target blocks.
         /// </summary>
-        public override IEnumerable<BoundBlock> Targets => new BoundBlock[] {_target};
+        public override IEnumerable<BoundBlock> Targets => new BoundBlock[] { _target };
 
         /// <summary>
         /// Visits the object by given visitor.
@@ -236,7 +236,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// All target blocks.
         /// </summary>
-        public override IEnumerable<BoundBlock> Targets => new BoundBlock[] {_true, _false};
+        public override IEnumerable<BoundBlock> Targets => new BoundBlock[] { _true, _false };
 
         public override bool IsConditional
         {
@@ -452,7 +452,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public override IEnumerable<BoundBlock> Targets
         {
-            get { return new BoundBlock[] {BodyBlock, _end}; }
+            get { return new BoundBlock[] { BodyBlock, _end }; }
         }
 
         /// <summary>
@@ -499,7 +499,8 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             _end = endBlock;
         }
 
-        public MatchEdge Update(BoundExpression switchValue, ImmutableArray<MatchArmBlock> caseBlocks, BoundBlock endBlock)
+        public MatchEdge Update(BoundExpression switchValue, ImmutableArray<MatchArmBlock> caseBlocks,
+            BoundBlock endBlock)
         {
             if (switchValue == _switchValue && caseBlocks == _matchBlocks && endBlock == _end)
             {

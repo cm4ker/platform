@@ -12,7 +12,7 @@ namespace Aquila.CodeAnalysis
 {
     public partial class AquilaCompilation
     {
-        internal Binder GetBinder(LangElement syntax)
+        internal Binder GetBinder(AquilaSyntaxNode syntax)
         {
             return BinderFactory.Visit(syntax);
         }

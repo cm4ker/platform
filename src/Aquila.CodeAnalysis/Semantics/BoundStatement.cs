@@ -4,15 +4,11 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Semantics.Graph;
-using Aquila.Syntax;
 using Aquila.Syntax.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using Aquila.CodeAnalysis.Symbols;
-using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
-using Aquila.Syntax.Ast.Functions;
+using Aquila.CodeAnalysis.Syntax;
 using Aquila.CodeAnalysis.Utilities;
 
 namespace Aquila.CodeAnalysis.Semantics
@@ -24,7 +20,7 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         public virtual bool IsInvalid => false;
 
-        public LangElement AquilaSyntax { get; set; }
+        public AquilaSyntaxNode AquilaSyntax { get; set; }
     }
 
     public sealed partial class BoundEmptyStmt : BoundStatement, IEmptyOperation
@@ -69,11 +65,11 @@ namespace Aquila.CodeAnalysis.Semantics
     /// </summary>
     public sealed partial class BoundMethodDeclStmt : IInvalidOperation
     {
-        internal MethodDecl FunctionDecl => (MethodDecl) AquilaSyntax;
+        internal MethodDecl FunctionDecl => (MethodDecl)AquilaSyntax;
 
         partial void OnCreateImpl(SourceMethodSymbol method)
         {
-            this.AquilaSyntax = (MethodDecl) method.Syntax;
+            this.AquilaSyntax = (MethodDecl)method.Syntax;
         }
 
         partial void AcceptImpl(OperationVisitor visitor) => visitor.VisitInvalid(this);

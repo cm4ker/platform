@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Aquila.Syntax.Ast;
-using Aquila.Syntax.Ast.Functions;
+using Aquila.CodeAnalysis.Syntax;
 
 namespace Aquila.Syntax.Declarations
 {
@@ -20,7 +19,7 @@ namespace Aquila.Syntax.Declarations
             first = extendsDecls.First();
         }
 
-        public IdentifierToken Identifier => first.Identifier;
+        public NameEx Identifier => first.Name;
 
         public IEnumerable<MethodDecl> Methods => extendsDecls.SelectMany(x => x.Methods);
     }

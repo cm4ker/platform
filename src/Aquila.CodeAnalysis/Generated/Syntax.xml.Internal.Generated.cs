@@ -12733,7 +12733,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         public virtual void VisitXmlComment(XmlCommentSyntax node) => this.DefaultVisit(node);
     }
 
-    internal partial class CSharpSyntaxRewriter : AquilaSyntaxVisitor<AquilaSyntaxNode>
+    internal partial class AquilaSyntaxRewriter : AquilaSyntaxVisitor<AquilaSyntaxNode>
     {
         public override AquilaSyntaxNode VisitCompilationUnit(CompilationUnitSyntax node)
             => node.Update(VisitList(node.Imports), VisitList(node.Methods), VisitList(node.Extends), VisitList(node.Components), (SyntaxToken)Visit(node.EndOfFileToken));

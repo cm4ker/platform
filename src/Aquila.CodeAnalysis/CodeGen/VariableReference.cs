@@ -534,7 +534,7 @@ namespace Aquila.CodeAnalysis.Semantics
             readonly IPlace _varargsplace;
             readonly int _index;
             bool _isparams => _p.IsParams;
-            bool _byref => _p.Syntax.PassMethod == PassMethod.ByReference;
+            //bool _byref => _p.Syntax.PassMethod == PassMethod.ByReference;
 
             readonly SourceParameterSymbol _p;
 

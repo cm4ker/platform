@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Syntax;
 using Aquila.Syntax.Ast;
 using Microsoft.CodeAnalysis.Symbols;
 
@@ -50,17 +51,17 @@ namespace Aquila.CodeAnalysis.Symbols
     internal class SourceLocalSymbol : Symbol, ILocalSymbol, ILocalSymbolInternal
     {
         readonly protected SourceMethodSymbol _method;
-        readonly protected VarDecl _decl;
+        readonly protected VariableDecl _decl;
 
         readonly string _name;
 
-        public SourceLocalSymbol(SourceMethodSymbol method, VarDeclarator declarator)
+        public SourceLocalSymbol(SourceMethodSymbol method, VariableInit declarator)
         {
             Debug.Assert(method != null);
             Debug.Assert(!string.IsNullOrWhiteSpace(declarator.Identifier.Text));
 
             _method = method;
-            _decl = (VarDecl)declarator.Parent.Parent;
+            _decl = (VariableDecl)declarator.Parent;
             _name = declarator.Identifier.Text;
         }
 
@@ -122,7 +123,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get
             {
-                var langElem = _decl.VariableType;
+                var langElem = (SimpleNameEx)_decl.Type;
 
                 var binder = DeclaringCompilation.GetBinder(langElem);
 
@@ -131,7 +132,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 if (langElem.IsVar)
                 {
                     tsymbol = (TypeSymbol)binder
-                        .BindExpression(_decl.Declarators.First().Initializer, BoundAccess.ReadAndWrite)
+                        .BindExpression(_decl.Variables.First().Initializer.Value, BoundAccess.ReadAndWrite)
                         .Type;
                 }
                 else

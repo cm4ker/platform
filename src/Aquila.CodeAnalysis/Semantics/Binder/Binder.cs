@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Semantics.TypeRef;
@@ -20,7 +21,7 @@ using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
 using Microsoft.CodeAnalysis;
 using EnumerableExtensions = Roslyn.Utilities.EnumerableExtensions;
-using LiteralEx = Aquila.Syntax.Ast.Expressions.LiteralEx;
+using SpecialTypeExtensions = Aquila.CodeAnalysis.Symbols.SpecialTypeExtensions;
 
 namespace Aquila.CodeAnalysis.Semantics
 {
@@ -438,9 +439,9 @@ Binder
             return new BoundReturnStmt(expr).WithSyntax(expr.AquilaSyntax);
         }
 
-        public BoundStatement BindEmptyStmt(Span span)
+        public BoundStatement BindEmptyStmt(Microsoft.CodeAnalysis.Text.TextSpan span)
         {
-            return new BoundEmptyStmt(span.ToTextSpan());
+            return new BoundEmptyStmt(span);
         }
 
         #endregion
@@ -456,7 +457,7 @@ Binder
         {
             Debug.Assert(expr != null);
 
-            if (expr is LiteralEx) return BindLiteral((LiteralEx)expr).WithAccess(access);
+            if (expr is LiteralEx) return BindLiteralEx((LiteralEx)expr).WithAccess(access);
             if (expr is NameEx ne) return BindNameEx(ne, access);
 
             if (expr is BinaryEx bex) return BindBinaryEx(bex).WithAccess(access);
@@ -467,8 +468,8 @@ Binder
             if (expr is InvocationEx ce) return BindCallEx(ce).WithAccess(access);
             if (expr is MatchEx me) return BindMatchEx(me).WithAccess(access);
             if (expr is MemberAccessEx mae)
-                return BindMemberAccessEx(mae, ArgumentList.Empty, false).WithAccess(access);
-            if (expr is IndexerEx ie) return BindIndexerEx(ie).WithAccess(access);
+                return BindMemberAccessEx(mae, SyntaxFactory.ArgumentList(), false).WithAccess(access);
+            //if (expr is IndexerEx ie) return BindIndexerEx(ie).WithAccess(access);
 
             if (expr is ThrowEx throwEx)
                 return new BoundThrowEx(BindExpression(throwEx.Expression, BoundAccess.Read), null);
@@ -531,70 +532,106 @@ Binder
 
         private BoundMatchArm BindMatchArm(MatchArm arm)
         {
-            var pattern = BindExpression(arm.Expression);
+            var pattern = BindExpression(arm.PatternExpression);
 
-            var result = (arm.Result != null) ? BindExpression(arm.Result) : null;
+            var result = (arm.ResultExpression != null) ? BindExpression(arm.ResultExpression) : null;
 
-            return new BoundMatchArm(pattern, (arm.WhenGuard != null) ? BindExpression(arm.WhenGuard) : null, result,
-                result?.ResultType);
+            return new BoundMatchArm(pattern, null, result, result?.ResultType);
         }
 
-        private BoundExpression BindIndexerEx(IndexerEx ie)
+        // private BoundExpression BindIndexerEx(IndexerEx ie)
+        // {
+        //     var array = BindExpression(ie.Expression);
+        //     var indexer = BindExpression(ie.Indexer);
+        //
+        //
+        //     var accessIndexMethod = array.Type.GetMembers("get_Item").OfType<MethodSymbol>()
+        //         .FirstOrDefault(x => x.ParameterCount == 1 && x.Parameters[0].Type == indexer.Type);
+        //
+        //     if (accessIndexMethod != null)
+        //         return new BoundArrayItemEx(DeclaringCompilation, array, indexer, accessIndexMethod.ReturnType);
+        //
+        //
+        //     throw new NotImplementedException();
+        // }
+
+
+        private BoundLiteral BindLiteralEx(LiteralEx node)
         {
-            var array = BindExpression(ie.Expression);
-            var indexer = BindExpression(ie.Indexer);
+            // bug.Assert(node.Kind == SyntaxKind.LiteralExpression);
 
+            var value = node.Token.Value;
 
-            var accessIndexMethod = array.Type.GetMembers("get_Item").OfType<MethodSymbol>()
-                .FirstOrDefault(x => x.ParameterCount == 1 && x.Parameters[0].Type == indexer.Type);
+            ConstantValue cv;
+            TypeSymbol type = null;
 
-            if (accessIndexMethod != null)
-                return new BoundArrayItemEx(DeclaringCompilation, array, indexer, accessIndexMethod.ReturnType);
-
-
-            throw new NotImplementedException();
-        }
-
-        protected BoundExpression BindLiteral(LiteralEx expr)
-        {
-            switch (expr.Operation)
+            if (value == null)
             {
-                case Operations.IntLiteral:
-                case Operations.StringLiteral:
-                case Operations.DoubleLiteral:
-                case Operations.NullLiteral:
-                case Operations.BinaryStringLiteral:
-                case Operations.BoolLiteral:
-                    return new BoundLiteral(expr.ObjectiveValue, GetSymbolFromLiteralOperation(expr.Operation));
-
-                case Operations.QueryLiteral:
-
-                    var query = (string)expr.ObjectiveValue;
-                    var element = QLang.Parse(query, DeclaringCompilation.MetadataCollection);
-
-                    var vars = element.Find<QVar>().ToArray();
-
-                    foreach (var @var in vars)
-                    {
-                        var bVar = BindVariableName(@var.Name, null);
-                        var vType = bVar.Type;
-                        var smType = MetadataTypeProvider.Resolve(DeclaringCompilation, vType);
-
-                        @var.BindType(smType);
-                    }
-
-                    //var transforms into parameter
-
-
-                    //TODO: Add errors to the DiagnosticBug if we catch error
-                    //DeclaringCompilation.GetDiagnostics()
-
-                    return new BoundLiteral(expr.ObjectiveValue, GetSymbolFromLiteralOperation(expr.Operation));
-
-                default:
-                    throw new NotImplementedException();
+                cv = ConstantValue.Null;
             }
+            else
+            {
+                Debug.Assert(!value.GetType().GetTypeInfo().IsEnum);
+
+                var specialType = SpecialTypeExtensions.FromRuntimeTypeOfLiteralValue(value);
+
+                // C# literals can't be of type byte, sbyte, short, ushort:
+                Debug.Assert(
+                    specialType != SpecialType.None &&
+                    specialType != SpecialType.System_Byte &&
+                    specialType != SpecialType.System_SByte &&
+                    specialType != SpecialType.System_Int16 &&
+                    specialType != SpecialType.System_UInt16);
+
+                cv = ConstantValue.Create(value, specialType);
+                type = DeclaringCompilation.GetSpecialType(specialType);
+            }
+
+            return new BoundLiteral(cv.Value, type);
         }
+
+        // protected BoundExpression BindLiteral(LiteralEx expr)
+        // {
+        //     var op = ToOp(expr.Kind());
+        //
+        //     switch (op)
+        //     {
+        //         case Operations.IntLiteral:
+        //         case Operations.StringLiteral:
+        //         case Operations.DoubleLiteral:
+        //         case Operations.NullLiteral:
+        //         case Operations.BinaryStringLiteral:
+        //         case Operations.BoolLiteral:
+        //             return new BoundLiteral(expr.ObjectiveValue, GetSymbolFromLiteralOperation(op));
+        //
+        //         case Operations.QueryLiteral:
+        //
+        //             var query = (string)expr.ObjectiveValue;
+        //             var element = QLang.Parse(query, DeclaringCompilation.MetadataCollection);
+        //
+        //             var vars = element.Find<QVar>().ToArray();
+        //
+        //             foreach (var @var in vars)
+        //             {
+        //                 var bVar = BindVariableName(@var.Name, null);
+        //                 var vType = bVar.Type;
+        //                 var smType = MetadataTypeProvider.Resolve(DeclaringCompilation, vType);
+        //
+        //                 @var.BindType(smType);
+        //             }
+        //
+        //             //var transforms into parameter
+        //
+        //
+        //             //TODO: Add errors to the DiagnosticBug if we catch error
+        //             //DeclaringCompilation.GetDiagnostics()
+        //
+        //             return new BoundLiteral(expr.ObjectiveValue, GetSymbolFromLiteralOperation(expr.Operation));
+        //
+        //         default:
+        //             throw new NotImplementedException();
+        //     }
+        // }
 
         protected ITypeSymbol GetSymbolFromLiteralOperation(Operations op)
         {
@@ -616,7 +653,7 @@ Binder
         protected BoundExpression BindNameEx(NameEx expr, BoundAccess access)
         {
             //handle special wildcard symbol
-            var identifier = expr.Identifier.Text;
+            var identifier = expr.GetUnqualifiedName().Identifier.Text;
 
             if (identifier == "_")
             {
@@ -642,7 +679,7 @@ Binder
             }
 
             //try to find type name
-            var foundedType = BindType(new NamedTypeRef(expr.Span, SyntaxKind.NamedTypeEx, identifier));
+            var foundedType = BindType(expr);
 
             return new BoundClassTypeRef(QualifiedName.Object, Method, foundedType);
         }
@@ -695,10 +732,10 @@ Binder
         protected BoundVariableName BindVariableName(NameEx nameEx)
         {
             Debug.Assert(nameEx != null);
-            return BindVariableName(nameEx.Identifier.Text, nameEx);
+            return BindVariableName(nameEx.GetUnqualifiedName().Identifier.Text, nameEx);
         }
 
-        protected BoundVariableName BindVariableName(string varName, LangElement syntax)
+        protected BoundVariableName BindVariableName(string varName, AquilaSyntaxNode syntax)
         {
             Debug.Assert(varName != null);
             Debug.Assert(Method != null);
@@ -717,21 +754,13 @@ Binder
         {
             BoundAccess laccess = BoundAccess.Read;
 
-            switch (expr.Operation)
+            switch (expr.OperatorToken)
             {
-                case Operations.Concat: // Left . Right
-                    throw new NotSupportedException(
-                        "Concat operation not supported"); //return BindConcatEx(new[] {expr.Left, expr.Right});
-
-                case Operations.Coalesce:
-                    laccess = BoundAccess.Read.WithQuiet(); // Template: A ?? B; // read A quietly
-                    goto default;
-
                 default:
                     var left = BindExpression(expr.Left, laccess);
                     var right = BindExpression(expr.Right, BoundAccess.Read);
 
-                    return new BoundBinaryEx(left, right, expr.Operation, left.ResultType);
+                    return new BoundBinaryEx(left, right, Operations.Add, left.ResultType);
             }
         }
 
@@ -739,43 +768,36 @@ Binder
         {
             var operandAccess = BoundAccess.Read;
 
-            switch (expr.Operation)
+            switch (expr.Kind())
             {
-                case Operations.AtSign:
-                    operandAccess = access; // TODO: | Quiet
-                    break;
-                case Operations.UnsetCast:
-                    operandAccess = BoundAccess.None;
-                    break;
+                // case SyntaxKind.:
+                //     operandAccess = access; // TODO: | Quiet
+                //     break;
+                // case Operations.UnsetCast:
+                //     operandAccess = BoundAccess.None;
+                //     break;
             }
 
-            var boundOperation = BindExpression(expr.Expression, operandAccess);
+            var boundOperation = BindExpression(expr.Operand, operandAccess);
 
-            switch (expr.Operation)
+            switch (expr.Kind())
             {
-                case Operations.BoolCast:
+                case SyntaxKind.BoolKeyword:
                     return new BoundConversionEx(boundOperation, PrimitiveBoundTypeRefs.BoolTypeRef, null);
 
-                case Operations.Int8Cast:
-                case Operations.Int16Cast:
-                case Operations.Int32Cast:
-                case Operations.UInt8Cast:
-                case Operations.UInt16Cast:
-                // -->
-                case Operations.UInt64Cast:
-                case Operations.UInt32Cast:
-                case Operations.Int64Cast:
+                case SyntaxKind.IntKeyword:
+                case SyntaxKind.LongKeyword:
                     return new BoundConversionEx(boundOperation, PrimitiveBoundTypeRefs.LongTypeRef, null);
 
-                case Operations.DecimalCast:
-                case Operations.DoubleCast:
-                case Operations.FloatCast:
+                case SyntaxKind.DecimalKeyword:
+                case SyntaxKind.DoubleKeyword:
+                case SyntaxKind.FloatKeyword:
                     return new BoundConversionEx(boundOperation, PrimitiveBoundTypeRefs.DoubleTypeRef, null);
 
-                case Operations.UnicodeCast:
-                    return new BoundConversionEx(boundOperation, PrimitiveBoundTypeRefs.StringTypeRef, null);
+                // case Operations.UnicodeCast:
+                //     return new BoundConversionEx(boundOperation, PrimitiveBoundTypeRefs.StringTypeRef, null);
 
-                case Operations.StringCast:
+                case SyntaxKind.StringKeyword:
 
                     // // workaround (binary) is parsed as (StringCast)
                     // if (expr.ContainingSourceUnit.GetSourceCode(expr.Span).StartsWith("(binary)"))
@@ -787,23 +809,24 @@ Binder
                         new BoundConversionEx(boundOperation,
                             PrimitiveBoundTypeRefs.StringTypeRef, null);
 
-                case Operations.BinaryCast:
-                    throw new NotImplementedException();
-
-                case Operations.ArrayCast:
-                    throw new NotImplementedException();
-
-                case Operations.ObjectCast:
-                    throw new NotImplementedException();
-
                 default:
-                    return new BoundUnaryEx(BindExpression(expr.Expression, operandAccess), expr.Operation, null);
+                    return new BoundUnaryEx(BindExpression(expr.Operand, operandAccess), ToOp(expr.Kind()), null);
+            }
+        }
+
+
+        private static Operations ToOp(SyntaxKind kind)
+        {
+            switch (kind)
+            {
+                default:
+                    return Operations.Unknown;
             }
         }
 
         protected BoundExpression BindAssignEx(AssignEx expr, BoundAccess access)
         {
-            var boundExpr = BindExpression(expr.LValue, BoundAccess.Write);
+            var boundExpr = BindExpression(expr.Left, BoundAccess.Write);
 
 
             if (!(boundExpr is BoundReferenceEx target))
@@ -814,14 +837,17 @@ Binder
 
             BoundExpression value;
 
-            value = BindExpression(expr.RValue, BoundAccess.Read);
+            value = BindExpression(expr.Right, BoundAccess.Read);
 
             // if (expr.Operation == Operations.AssignValue && !(target is BoundListEx))
             // {
             //     value = BindCopyValue(value);
             // }
 
-            if (expr.Operation == Operations.AssignValue || expr.Operation == Operations.AssignRef)
+
+            var op = ToOp(expr.Kind());
+
+            if (op == Operations.AssignValue || op == Operations.AssignRef)
             {
                 return new BoundAssignEx(target, value, value.ResultType).WithAccess(access);
             }
@@ -830,14 +856,14 @@ Binder
                 if (target is BoundArrayItemEx itemex && itemex.Index == null)
                 {
                     // Special case:
-                    switch (expr.Operation)
+                    switch (op)
                     {
                         case Operations.AssignPrepend:
                         case Operations.AssignAppend:
                             break;
                         default:
                             value = new BoundBinaryEx(new BoundLiteral(null, null).WithAccess(BoundAccess.Read), value,
-                                AstUtils.CompoundOpToBinaryOp(expr.Operation), null);
+                                AstUtils.CompoundOpToBinaryOp(op), null);
                             break;
                     }
 
@@ -848,20 +874,20 @@ Binder
                 {
                     target.Access = target.Access.WithRead();
 
-                    return new BoundCompoundAssignEx(target, value, expr.Operation, value.ResultType)
+                    return new BoundCompoundAssignEx(target, value, op, value.ResultType)
                         .WithAccess(access);
                 }
             }
         }
 
-        protected BoundExpression BindIncDec(IncDecEx expr)
-        {
-            // bind variable reference
-            var varref = (BoundReferenceEx)BindExpression(expr.Operand, BoundAccess.ReadAndWrite);
-
-            //
-            return new BoundIncDecEx(varref, expr.IsIncrement, expr.IsPost, null);
-        }
+        // protected BoundExpression BindIncDec(IncDecEx expr)
+        // {
+        //     // bind variable reference
+        //     var varref = (BoundReferenceEx)BindExpression(expr.Operand, BoundAccess.ReadAndWrite);
+        //
+        //     //
+        //     return new BoundIncDecEx(varref, expr.IsIncrement, expr.IsPost, null);
+        // }
 
         private BoundExpression BindCallEx(InvocationEx expr)
         {
@@ -873,7 +899,7 @@ Binder
             switch (expr.Kind())
             {
                 case SyntaxKind.IdentifierEx:
-                    return BindName((NameEx)expr, args, invoked);
+                    return BindName((SimpleNameEx)expr, args, invoked);
                 case SyntaxKind.SimpleMemberAccessExpression:
                     return BindMemberAccessEx((MemberAccessEx)expr, args, invoked);
                 default:
@@ -905,12 +931,22 @@ Binder
             }
         }
 
-
-        protected virtual BoundExpression BindName(NameEx expr, ArgumentListSyntax argumentList, bool invocation)
+        protected virtual BoundExpression BindName(SimpleNameEx expr, ArgumentListSyntax argumentList, bool invocation)
         {
             Debug.Assert(Method != null);
 
-            var typeArgs = expr.ArgList.Select(x => (ITypeSymbol)BindType(x)).ToImmutableArray();
+            var arglist = argumentList.Arguments
+                .Select(x => BoundArgument.Create(BindExpression(x.Expression)))
+                .ToImmutableArray();
+
+            var typeArgs = ImmutableArray<ITypeSymbol>.Empty;
+
+            if (expr.Kind() == SyntaxKind.GenericName)
+            {
+                typeArgs = ((GenericEx)expr).TypeArgumentList.Arguments.Select(x => BindType(x) as ITypeSymbol)
+                    .ToImmutableArray();
+            }
+
 
             var containerMembers = Container.GetMembers(expr.Identifier.Text).Where(x => x is MethodSymbol)
                 .ToList();
@@ -924,9 +960,6 @@ Binder
                     {
                         if (ms.IsStatic)
                         {
-                            var arglist = argumentList.Select(x => BoundArgument.Create(BindExpression(x.Expression)))
-                                .ToImmutableArray();
-
                             return new BoundStaticCallEx(ms,
                                 new BoundMethodName(new QualifiedName(new Name(expr.Identifier.Text))),
                                 arglist, ImmutableArray<ITypeSymbol>.Empty, null);
@@ -974,7 +1007,7 @@ Binder
 
             //TODO: Add global built-in methods and try to resolve it here, if local members not found
             var globalMembers = FindMethodsByName(expr.Identifier.Text)
-                .Where(x => x.Arity == expr.ArgList.Count()).ToImmutableArray();
+                .Where(x => x.Arity == typeArgs.Count()).ToImmutableArray();
 
             globalMembers = Construct(globalMembers, typeArgs);
 
@@ -988,10 +1021,6 @@ Binder
                     {
                         if (ms.IsStatic)
                         {
-                            var arglist = argumentList.Select(x => BoundArgument.Create(BindExpression(x.Expression)))
-                                .ToImmutableArray();
-
-
                             return new BoundStaticCallEx(ms,
                                 new BoundMethodName(new QualifiedName(new Name(expr.Identifier.Text))),
                                 arglist, typeArgs, ms.ReturnType);
@@ -1034,7 +1063,8 @@ Binder
                         else
 
                             return new BoundInstanceCallEx(ms,
-                                new BoundMethodName(QualifiedName.Parse(expr.Identifier.Text, true)),
+                                new BoundMethodName(QualifiedName.Parse(expr.Name.GetUnqualifiedName().Identifier.Text,
+                                    true)),
                                 arglist, ImmutableArray<ITypeSymbol>.Empty,
                                 boundLeft, ms.ReturnType);
                     }
@@ -1048,8 +1078,8 @@ Binder
                 }
             }
 
-            Diagnostics.Add(GetLocation(expr.Identifier), ErrorCode.ERR_MethodNotFound,
-                expr.Identifier.Text, leftType.Name);
+            Diagnostics.Add(GetLocation(expr.Name), ErrorCode.ERR_MethodNotFound,
+                expr.Name.GetUnqualifiedName().Identifier.Text, leftType.Name);
 
             return new BoundLiteral(0, DeclaringCompilation.CoreTypes.Int32.Symbol);
         }

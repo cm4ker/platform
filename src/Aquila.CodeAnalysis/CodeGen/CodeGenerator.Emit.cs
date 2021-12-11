@@ -12,6 +12,7 @@ using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.Syntax;
 using Aquila.Syntax.Text;
+using Microsoft.CodeAnalysis.Text;
 
 
 namespace Aquila.CodeAnalysis.CodeGen
@@ -174,15 +175,7 @@ namespace Aquila.CodeAnalysis.CodeGen
                     .System_Type__GetTypeFromHandle));
         }
 
-        internal void EmitSequencePoint(Span span)
-        {
-            if (EmitPdbSequencePoints && span.IsValid && !span.IsEmpty)
-            {
-                EmitSequencePoint(span.ToTextSpan());
-            }
-        }
-
-        internal void EmitSequencePoint(Microsoft.CodeAnalysis.Text.TextSpan span)
+        internal void EmitSequencePoint(TextSpan span)
         {
             if (EmitPdbSequencePoints && span.Length > 0)
             {
@@ -191,7 +184,7 @@ namespace Aquila.CodeAnalysis.CodeGen
             }
         }
 
-        internal void EmitSequencePoint(LangElement element)
+        internal void EmitSequencePoint(AquilaSyntaxNode element)
         {
             if (element != null)
                 EmitSequencePoint(element.Span);
@@ -475,7 +468,7 @@ namespace Aquila.CodeAnalysis.CodeGen
             _il.EmitOpCode(ILOpCode.Ldc_i4_0, 1);
             _il.EmitOpCode(ILOpCode.Ceq);
         }
-        
+
         /// <summary>
         /// Emits .ret instruction with sequence point at closing brace.
         /// Eventually emits branching to closing block.
@@ -483,10 +476,10 @@ namespace Aquila.CodeAnalysis.CodeGen
         public void EmitRet(TypeSymbol stack, bool yielding = false)
         {
             // sequence point
-            var body = AstUtils.BodySpanOrInvalid(Method?.Syntax);
-            if (body.IsValid && EmitPdbSequencePoints)
+            var body = Method?.Syntax.Span;
+            if (body != null && EmitPdbSequencePoints)
             {
-                EmitSequencePoint(new Span(body.End - 1, 1));
+                EmitSequencePoint(body.Value);
             }
 
             //

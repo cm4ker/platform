@@ -71,7 +71,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             }
         }
 
-        private static LangElement PickFirstSyntaxNode(BoundBlock block)
+        private static AquilaSyntaxNode PickFirstSyntaxNode(BoundBlock block)
         {
             var syntax = block.Statements.FirstOrDefault(st => st.AquilaSyntax != null)
                 ?.AquilaSyntax;

@@ -73,7 +73,7 @@ namespace Aquila.CodeAnalysis.Semantics
         public override int GetHashCode() => base.GetHashCode();
 
         public override OperationKind Kind => OperationKind.None;
-        public LangElement AquilaSyntax { get; set; }
+        public AquilaSyntaxNode AquilaSyntax { get; set; }
 
         /// <summary>
         /// Lazily set type symbol if resolved.

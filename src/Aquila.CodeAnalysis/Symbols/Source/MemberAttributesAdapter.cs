@@ -1,4 +1,5 @@
-﻿using Aquila.Syntax.Ast;
+﻿using Aquila.CodeAnalysis.Syntax;
+using Aquila.Syntax.Ast;
 using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis.Symbols.Source

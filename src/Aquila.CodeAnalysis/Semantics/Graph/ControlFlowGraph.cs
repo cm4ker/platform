@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using Aquila.Syntax.Ast.Statements;
-using Aquila.Syntax.Text;
+using Aquila.CodeAnalysis.Syntax;
+using Microsoft.CodeAnalysis.Text;
 
 namespace Aquila.CodeAnalysis.Semantics.Graph
 {
@@ -53,7 +53,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             /// <summary>
             /// Positions of label definition and/or last label use.
             /// </summary>
-            public Span LabelSpan;
+            public TextSpan LabelSpan;
 
             /// <summary>
             /// Lable target block.
@@ -140,7 +140,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #region Construction
 
-        internal ControlFlowGraph(IList<Statement> statements, Binder binder)
+        internal ControlFlowGraph(IList<StmtSyntax> statements, Binder binder)
             : this(BuilderVisitor.Build(statements, binder))
         {
         }

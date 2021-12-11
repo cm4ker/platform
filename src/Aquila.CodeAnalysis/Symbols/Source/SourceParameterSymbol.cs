@@ -5,10 +5,9 @@ using System.Diagnostics;
 using System.Threading;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.Syntax;
-using Aquila.Syntax.Ast.Functions;
 using Microsoft.CodeAnalysis;
-using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Syntax;
 
 namespace Aquila.CodeAnalysis.Symbols.Source
 {
@@ -18,7 +17,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
     internal sealed class SourceParameterSymbol : ParameterSymbol
     {
         readonly SourceMethodSymbol _method;
-        readonly Parameter _syntax;
+        readonly ParameterSyntax _syntax;
 
         /// <summary>
         /// Index of the source parameter, relative to the first source parameter.
@@ -50,11 +49,11 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
                     if (Initializer is BoundArrayEx arr)
                     {
-                        // special case: empty array
-                        if (arr.Items.Length == 0 && _syntax.PassMethod != PassMethod.ByReference)
-                        {
-                            return null;
-                        }
+                        // // special case: empty array
+                        // if (arr.Items.Length == 0 && _syntax.PassMethod != PassMethod.ByReference)
+                        // {
+                        //     return null;
+                        // }
 
                         //   
                         fldtype = null;
@@ -70,9 +69,9 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
                     // The construction of the default value may require a Context, cannot be created as a static singletong
                     if (Initializer.RequiresContext ||
-                        (_syntax.PassMethod == PassMethod.ByReference && fldtype.IsReferenceType &&
+                        (fldtype.IsReferenceType &&
                          fldtype.SpecialType != SpecialType.System_String)
-                    ) // we can cache the default value even for Refs if it is an immutable value
+                       ) // we can cache the default value even for Refs if it is an immutable value
                     {
                         fldtype = DeclaringCompilation.GetWellKnownType(WellKnownType.System_Func_T2).Construct(
                             null,
@@ -107,7 +106,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         FieldSymbol _lazyDefaultValueField;
 
-        public SourceParameterSymbol(SourceMethodSymbol method, Parameter syntax, int relindex)
+        public SourceParameterSymbol(SourceMethodSymbol method, ParameterSyntax syntax, int relindex)
         {
             Contract.ThrowIfNull(method);
             Contract.ThrowIfNull(syntax);
@@ -142,7 +141,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public override bool IsThis => false;
 
-        public Parameter Syntax => _syntax;
+        public ParameterSyntax Syntax => _syntax;
 
         /// <summary>
         /// The parameter is a constructor property.
@@ -224,7 +223,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             get
             {
                 return ImmutableArray.Create(Location.Create(Method.Syntax.SyntaxTree,
-                    _syntax.Identifier.Span.ToTextSpan()));
+                    _syntax.Identifier.Span));
             }
         }
 

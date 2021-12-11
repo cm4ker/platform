@@ -31,14 +31,14 @@ namespace Aquila.Syntax.Parser
 
     public static class ParserHelper
     {
-        public static SourceUnit ParseUnit(string text, string fileName)
-        {
-            var parser = Parse(text);
-            ZLanguageVisitor zl = new ZLanguageVisitor(text, fileName);
-
-            var ast = zl.Visit(parser.entryPoint()) as SourceUnit;
-            return ast;
-        }
+        // public static SourceUnit ParseUnit(string text, string fileName)
+        // {
+        //     var parser = Parse(text);
+        //     ZLanguageVisitor zl = new ZLanguageVisitor(text, fileName);
+        //
+        //     var ast = zl.Visit(parser.entryPoint()) as SourceUnit;
+        //     return ast;
+        // }
 
         #region Helpers
 

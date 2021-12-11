@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using Aquila.Syntax.Ast;
-using Aquila.Syntax.Ast.Functions;
-using Aquila.Syntax.Ast.Statements;
+﻿using System.Collections.Generic;
+using Aquila.CodeAnalysis.Syntax;
 using Microsoft.CodeAnalysis;
-using Aquila.CodeAnalysis.FlowAnalysis;
 
 namespace Aquila.CodeAnalysis.Symbols
 {

@@ -128,7 +128,7 @@ namespace Aquila.Compiler.Utilities
         /// </summary>
         public static NamingContext GetNamingContext(this SourceMethodSymbol method)
         {
-            var node = (LangElement)method?.Syntax;
+            var node = (AquilaSyntaxNode)method?.Syntax;
             if (node != null)
             {
                 throw new Exception("Not implemented need to look for namespace Symbol based on that module");

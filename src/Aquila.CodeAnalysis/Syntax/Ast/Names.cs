@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Aquila.Syntax.Text;
+using Microsoft.CodeAnalysis.Text;
 
 namespace Aquila.Syntax.Syntax
 {
@@ -1234,9 +1235,9 @@ namespace Aquila.Syntax.Syntax
         /// <summary>
         /// Span of the element within the source code.
         /// </summary>
-        public Span Span => _name.Span;
+        public TextSpan Span => _name.Span;
 
-        public TranslatedQualifiedName(QualifiedName name, Span nameSpan, QualifiedName originalName,
+        public TranslatedQualifiedName(QualifiedName name, TextSpan nameSpan, QualifiedName originalName,
             QualifiedName? nameFallback)
         {
             _name = new QualifiedNameRef(nameSpan, name);
@@ -1244,7 +1245,7 @@ namespace Aquila.Syntax.Syntax
             _fallbackName = nameFallback;
         }
 
-        public TranslatedQualifiedName(QualifiedName name, Span nameSpan) : this(name, nameSpan, name, null)
+        public TranslatedQualifiedName(QualifiedName name, TextSpan nameSpan) : this(name, nameSpan, name, null)
         {
         }
     }

@@ -3,34 +3,34 @@ using Aquila.Syntax.Text;
 
 namespace Aquila.Syntax
 {
-    public static class TypeSyntaxHelper
-    {
-        public static TypeRef Create(Span info, string typeName, TypeRef genericArguments = null)
-        {
-            switch (typeName)
-            {
-                case "int":
-                case "i32":
-                    return new PredefinedTypeRef(info, SyntaxKind.IntKeyword);
-                case "bool": return new PredefinedTypeRef(info, SyntaxKind.BoolKeyword);
-                case "string": return new PredefinedTypeRef(info, SyntaxKind.StringKeyword);
-                case "double": return new PredefinedTypeRef(info, SyntaxKind.DoubleKeyword);
-                // case "void": return new PredefinedTypeRef(info, SyntaxKind.VoidKeyword);
-                case "object": return new PredefinedTypeRef(info, SyntaxKind.ObjectKeyword);
-                case "datetime": return new PredefinedTypeRef(info, SyntaxKind.DatetimeKeyword);
-
-                case "var": return new NamedTypeRef(info, SyntaxKind.VarKeyword, "var");
-
-                default:
-                {
-                    return new NamedTypeRef(info, SyntaxKind.Type, typeName);
-                }
-            }
-        }
-
-        public static TypeRef CreateVoid(Span info)
-        {
-            return new PredefinedTypeRef(info, SyntaxKind.VoidKeyword);
-        }
-    }
+    // public static class TypeSyntaxHelper
+    // {
+    //     public static TypeRef Create(Span info, string typeName, TypeRef genericArguments = null)
+    //     {
+    //         switch (typeName)
+    //         {
+    //             case "int":
+    //             case "i32":
+    //                 return new PredefinedTypeRef(info, SyntaxKind.IntKeyword);
+    //             case "bool": return new PredefinedTypeRef(info, SyntaxKind.BoolKeyword);
+    //             case "string": return new PredefinedTypeRef(info, SyntaxKind.StringKeyword);
+    //             case "double": return new PredefinedTypeRef(info, SyntaxKind.DoubleKeyword);
+    //             // case "void": return new PredefinedTypeRef(info, SyntaxKind.VoidKeyword);
+    //             case "object": return new PredefinedTypeRef(info, SyntaxKind.ObjectKeyword);
+    //             case "datetime": return new PredefinedTypeRef(info, SyntaxKind.DatetimeKeyword);
+    //
+    //             case "var": return new NamedTypeRef(info, SyntaxKind.VarKeyword, "var");
+    //
+    //             default:
+    //             {
+    //                 return new NamedTypeRef(info, SyntaxKind.Type, typeName);
+    //             }
+    //         }
+    //     }
+    //
+    //     public static TypeRef CreateVoid(Span info)
+    //     {
+    //         return new PredefinedTypeRef(info, SyntaxKind.VoidKeyword);
+    //     }
+    // }
 }

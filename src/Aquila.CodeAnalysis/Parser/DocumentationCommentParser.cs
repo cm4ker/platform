@@ -1391,7 +1391,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
                 this.Release(ref resetPoint);
 
-                leftName = SyntaxFactory.QualifiedNameEx(leftName, dot, rightName);
+                leftName = SyntaxFactory.QualifiedNameEx(leftName, dot, (SimpleNameEx)rightName);
             }
 
             return leftName;

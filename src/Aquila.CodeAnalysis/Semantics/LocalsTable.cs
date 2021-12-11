@@ -76,7 +76,7 @@ namespace Aquila.CodeAnalysis.Semantics
             throw new NotImplementedException();
         }
 
-        LocalVariableReference CreateLocal(VariableName name, VariableKind kind, VarDeclarator decl)
+        LocalVariableReference CreateLocal(VariableName name, VariableKind kind, VariableInit decl)
         {
             Debug.Assert(!name.IsAutoGlobal);
             var locSym = new SourceLocalSymbol(Method, decl);
@@ -108,7 +108,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// Gets local variable or create local if not yet.
         /// </summary>
         public IVariableReference BindLocalVariable(VariableName varname, VariableInit decl) => BindVariable(varname,
-            decl.Span.ToTextSpan(), (name, span) => CreateLocal(name, VariableKind.LocalVariable, decl));
+            decl.Span, (name, span) => CreateLocal(name, VariableKind.LocalVariable, decl));
 
         // public IVariableReference BindTemporalVariable(VariableName varname) => BindVariable(varname, default,
         //     (name, span) => CreateLocal(name, VariableKind.LocalTemporalVariable, span));

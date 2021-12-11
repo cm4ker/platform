@@ -11,6 +11,7 @@ using Aquila.Syntax.Ast;
 using Aquila.Syntax.Ast.Expressions;
 using Aquila.Syntax.Syntax;
 using Aquila.Syntax.Text;
+using Microsoft.CodeAnalysis.Text;
 
 namespace Aquila.CodeAnalysis.Semantics.Graph
 {
@@ -339,7 +340,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 _labels[label] = result = new ControlFlowGraph.LabelBlockState()
                 {
                     TargetBlock = NewBlock(),
-                    LabelSpan = Span.Invalid,
+                    LabelSpan = default,
                     Label = label,
                     Flags = ControlFlowGraph.LabelBlockFlags.None,
                 };
@@ -401,11 +402,11 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public override void VisitBlockStmt(BlockStmt x)
         {
-            Add(_binder.BindEmptyStmt(new Span(x.Span.Start, 1))); // {
+            Add(_binder.BindEmptyStmt(new TextSpan(x.Span.Start, 1))); // {
 
             base.VisitBlockStmt(x); // visit nested statements
 
-            Add(_binder.BindEmptyStmt(new Span(x.Span.End - 1, 1))); // } // TODO: endif; etc.
+            Add(_binder.BindEmptyStmt(new TextSpan(x.Span.End - 1, 1))); // } // TODO: endif; etc.
         }
 
         // public override void VisitDeclareStmt(DeclareStmt x)

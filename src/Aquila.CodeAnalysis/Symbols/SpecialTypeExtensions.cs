@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System;
+using Microsoft.CodeAnalysis;
+using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols
 {
@@ -117,6 +119,92 @@ namespace Aquila.CodeAnalysis.Symbols
             // SizeInBytes() handles decimal (contrary to the language spec).  But decimal is not allowed
             // as a fixed buffer element type.
             return specialType == SpecialType.System_Decimal ? 0 : specialType.SizeInBytes();
+        }
+        
+        
+        public static SpecialType FromRuntimeTypeOfLiteralValue(object value)
+        {
+            RoslynDebug.Assert(value != null);
+
+            // Perf: Note that JIT optimizes each expression val.GetType() == typeof(T) to a single register comparison.
+            // Also the checks are sorted by commonality of the checked types.
+
+            if (value.GetType() == typeof(int))
+            {
+                return SpecialType.System_Int32;
+            }
+
+            if (value.GetType() == typeof(string))
+            {
+                return SpecialType.System_String;
+            }
+
+            if (value.GetType() == typeof(bool))
+            {
+                return SpecialType.System_Boolean;
+            }
+
+            if (value.GetType() == typeof(char))
+            {
+                return SpecialType.System_Char;
+            }
+
+            if (value.GetType() == typeof(long))
+            {
+                return SpecialType.System_Int64;
+            }
+
+            if (value.GetType() == typeof(double))
+            {
+                return SpecialType.System_Double;
+            }
+
+            if (value.GetType() == typeof(uint))
+            {
+                return SpecialType.System_UInt32;
+            }
+
+            if (value.GetType() == typeof(ulong))
+            {
+                return SpecialType.System_UInt64;
+            }
+
+            if (value.GetType() == typeof(float))
+            {
+                return SpecialType.System_Single;
+            }
+
+            if (value.GetType() == typeof(decimal))
+            {
+                return SpecialType.System_Decimal;
+            }
+
+            if (value.GetType() == typeof(short))
+            {
+                return SpecialType.System_Int16;
+            }
+
+            if (value.GetType() == typeof(ushort))
+            {
+                return SpecialType.System_UInt16;
+            }
+
+            if (value.GetType() == typeof(DateTime))
+            {
+                return SpecialType.System_DateTime;
+            }
+
+            if (value.GetType() == typeof(byte))
+            {
+                return SpecialType.System_Byte;
+            }
+
+            if (value.GetType() == typeof(sbyte))
+            {
+                return SpecialType.System_SByte;
+            }
+
+            return SpecialType.None;
         }
     }
 }

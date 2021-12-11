@@ -17,6 +17,7 @@ using System;
 using System.Diagnostics;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Text;
+using Microsoft.CodeAnalysis.Text;
 
 namespace Aquila.Syntax.Syntax
 {
@@ -28,25 +29,25 @@ namespace Aquila.Syntax.Syntax
     [DebuggerDisplay("{_span,nq} {_name}")]
     public struct VariableNameRef
     {
-        private readonly Span _span;
+        private readonly TextSpan _span;
         private readonly VariableName _name;
 
         /// <summary>
         /// Position of the name.
         /// </summary>
-        public Span Span => _span;
+        public TextSpan Span => _span;
 
         /// <summary>
         /// Variable name.
         /// </summary>
         public VariableName Name => _name;
 
-        public VariableNameRef(Span span, string name)
+        public VariableNameRef(TextSpan span, string name)
             : this(span, new VariableName(name))
         {
         }
 
-        public VariableNameRef(Span span, VariableName name)
+        public VariableNameRef(TextSpan span, VariableName name)
         {
             _span = span;
             _name = name;
@@ -67,13 +68,13 @@ namespace Aquila.Syntax.Syntax
     [DebuggerDisplay("{_span,nq} {_name}")]
     public struct NameRef
     {
-        private readonly Span _span;
+        private readonly TextSpan _span;
         private readonly Name _name;
 
         /// <summary>
         /// Position of the name.
         /// </summary>
-        public Span Span => _span;
+        public TextSpan Span => _span;
 
         /// <summary>
         /// Variable name.
@@ -88,14 +89,14 @@ namespace Aquila.Syntax.Syntax
         /// <summary>
         /// An empty name.
         /// </summary>
-        public static NameRef Invalid => new NameRef(Span.Invalid, Name.EmptyBaseName);
+        public static NameRef Invalid => new NameRef(TextSpan.FromBounds(0, 0), Name.EmptyBaseName);
 
-        public NameRef(Span span, string name)
+        public NameRef(TextSpan span, string name)
             : this(span, new Name(name))
         {
         }
 
-        public NameRef(Span span, Name name)
+        public NameRef(TextSpan span, Name name)
         {
             _span = span;
             _name = name;
@@ -119,13 +120,13 @@ namespace Aquila.Syntax.Syntax
     [DebuggerDisplay("{_span,nq} {_name}")]
     public struct QualifiedNameRef
     {
-        private readonly Span _span;
+        private readonly TextSpan _span;
         private readonly QualifiedName _name;
 
         /// <summary>
         /// Position of the qualified name.
         /// </summary>
-        public Span Span => _span;
+        public TextSpan Span => _span;
 
         /// <summary>
         /// Qualified name.
@@ -135,32 +136,34 @@ namespace Aquila.Syntax.Syntax
         /// <summary>
         /// Gets value indicating the qualified name is not empty.
         /// </summary>
-        public bool HasValue => !string.IsNullOrEmpty(_name.Name.Value) || (_name.Namespaces != null && _name.Namespaces.Length != 0);
+        public bool HasValue => !string.IsNullOrEmpty(_name.Name.Value) ||
+                                (_name.Namespaces != null && _name.Namespaces.Length != 0);
 
-        internal static QualifiedNameRef FromTypeRef(TypeRef tref)
-        {
-            // if (tref == null)
-            // {
-            //     return QualifiedNameRef.Invalid;
-            // }
-            // var qname = tref.QualifiedName;
-            // if (qname.HasValue)
-            //     return new QualifiedNameRef(tref.Span, qname.Value);
-            // else
-                throw new ArgumentException();
-        }
+        // internal static QualifiedNameRef FromTypeRef(TypeRef tref)
+        // {
+        //     // if (tref == null)
+        //     // {
+        //     //     return QualifiedNameRef.Invalid;
+        //     // }
+        //     // var qname = tref.QualifiedName;
+        //     // if (qname.HasValue)
+        //     //     return new QualifiedNameRef(tref.Span, qname.Value);
+        //     // else
+        //     throw new ArgumentException();
+        // }
 
         /// <summary>
         /// Empty name.
         /// </summary>
-        public static QualifiedNameRef Invalid => new QualifiedNameRef(Span.Invalid, Syntax.Name.EmptyBaseName, Syntax.Name.EmptyNames);
+        public static QualifiedNameRef Invalid =>
+            new QualifiedNameRef(TextSpan.FromBounds(0, 0), Syntax.Name.EmptyBaseName, Syntax.Name.EmptyNames);
 
-        public QualifiedNameRef(Span span, Name name, Name[] namespaces, bool fullyQualified = false)
+        public QualifiedNameRef(TextSpan span, Name name, Name[] namespaces, bool fullyQualified = false)
             : this(span, new QualifiedName(name, namespaces, fullyQualified))
         {
         }
 
-        public QualifiedNameRef(Span span, QualifiedName name)
+        public QualifiedNameRef(TextSpan span, QualifiedName name)
         {
             _span = span;
             _name = name;

@@ -221,17 +221,16 @@ namespace Aquila.Library.Scripting
             }
 
             // parse the source code
-            var tree = AquilaSyntaxTree.ParseCode(
+            var tree = AquilaSyntaxTree.ParseText(
                 SourceText.From(code, Encoding.UTF8, SourceHashAlgorithm.Sha256),
                 new AquilaParseOptions(
                     kind: kind,
                     languageVersion: languageVersion,
                     shortOpenTags: shortOpenTags),
-                AquilaParseOptions.Default,
                 options.IsSubmission ? BuildSubmissionFileName(options.Location.Path, name.Name) : options.Location.Path
             );
 
-            var diagnostics = tree.Diagnostics;
+            var diagnostics = tree.GetDiagnostics().ToImmutableArray();
             if (!HasErrors(diagnostics))
             {
                 // TODO: collect required types from {tree}, remember as a script dependencies

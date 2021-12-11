@@ -10,22 +10,23 @@ using Aquila.Syntax.Ast.Expressions;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Syntax;
 using Aquila.CodeAnalysis.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols.Source
 {
     sealed class SourceCustomAttribute : BaseAttributeData
     {
-        readonly TypeRef _tref;
-        readonly ImmutableArray<LangElement> _arguments;
-        readonly ImmutableArray<KeyValuePair<Name, LangElement>> _properties;
+        readonly NameEx _tref;
+        readonly ImmutableArray<AquilaSyntaxNode> _arguments;
+        readonly ImmutableArray<KeyValuePair<Name, AquilaSyntaxNode>> _properties;
 
         NamedTypeSymbol _type;
         MethodSymbol _ctor;
         ImmutableArray<TypedConstant> _ctorArgs;
         ImmutableArray<KeyValuePair<string, TypedConstant>> _namedArgs;
 
-        public SourceCustomAttribute(TypeRef tref, IList<KeyValuePair<Name, LangElement>> arguments)
+        public SourceCustomAttribute(NameEx tref, IList<KeyValuePair<Name, AquilaSyntaxNode>> arguments)
         {
             _tref = tref;
 
@@ -42,8 +43,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             }
             else
             {
-                _arguments = ImmutableArray<LangElement>.Empty;
-                _properties = ImmutableArray<KeyValuePair<Name, LangElement>>.Empty;
+                _arguments = ImmutableArray<AquilaSyntaxNode>.Empty;
+                _properties = ImmutableArray<KeyValuePair<Name, AquilaSyntaxNode>>.Empty;
             }
         }
 
@@ -197,7 +198,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         static bool TryBindTypedConstant(TypeSymbol target, object value, out TypedConstant result)
         {
-            Debug.Assert(!(value is LangElement));
+            Debug.Assert(!(value is AquilaSyntaxNode));
 
             if (ReferenceEquals(value, null))
             {
@@ -221,15 +222,16 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             return false;
         }
 
-        static bool TryBindTypedConstant(TypeSymbol target, LangElement element, AquilaCompilation compilation,
+        static bool TryBindTypedConstant(TypeSymbol target, AquilaSyntaxNode element, AquilaCompilation compilation,
             out TypedConstant result)
         {
             if (element is LiteralEx lit)
             {
-                return TryBindTypedConstant(target, lit.Value, out result);
+                throw new NotImplementedException();
+                //return TryBindTypedConstant(target, lit.Value, out result);
             }
 
-            if (element is TypeRef tref)
+            if (element is TypeEx tref)
             {
                 var system_type = compilation.GetWellKnownType(WellKnownType.System_Type);
                 result = new TypedConstant(system_type, TypedConstantKind.Type,

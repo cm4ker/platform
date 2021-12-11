@@ -77,25 +77,25 @@ namespace Aquila.Syntax.Text
             }
         }
 
-        /// <summary>
-        /// Gets <see cref="Span"/> of whole <paramref name="line"/>.
-        /// </summary>
-        /// <param name="lineBreaks">Information about line breaks in the document. Cannot be <c>null</c>.</param>
-        /// <param name="line">Line number.</param>
-        /// <returns><see cref="Span"/> of line specified by parameter <paramref name="line"/> within the document <paramref name="lineBreaks"/>.</returns>
-        public static Span GetLineSpan(this ILineBreaks lineBreaks, int line)
-        {
-            if (lineBreaks == null)
-                throw new ArgumentNullException("lineBreaks");
-
-            if (line < 0 || line > lineBreaks.Count)
-                throw new ArgumentException("line");
-
-            int start = (line != 0) ? lineBreaks.EndOfLineBreak(line - 1) : 0;
-            int end = (line < lineBreaks.Count) ? lineBreaks.EndOfLineBreak(line) : lineBreaks.TextLength;
-
-            return Span.FromBounds(start, end);
-        }
+        // /// <summary>
+        // /// Gets <see cref="Span"/> of whole <paramref name="line"/>.
+        // /// </summary>
+        // /// <param name="lineBreaks">Information about line breaks in the document. Cannot be <c>null</c>.</param>
+        // /// <param name="line">Line number.</param>
+        // /// <returns><see cref="Span"/> of line specified by parameter <paramref name="line"/> within the document <paramref name="lineBreaks"/>.</returns>
+        // public static Text GetLineSpan(this ILineBreaks lineBreaks, int line)
+        // {
+        //     if (lineBreaks == null)
+        //         throw new ArgumentNullException("lineBreaks");
+        //
+        //     if (line < 0 || line > lineBreaks.Count)
+        //         throw new ArgumentException("line");
+        //
+        //     int start = (line != 0) ? lineBreaks.EndOfLineBreak(line - 1) : 0;
+        //     int end = (line < lineBreaks.Count) ? lineBreaks.EndOfLineBreak(line) : lineBreaks.TextLength;
+        //
+        //     return Span.FromBounds(start, end);
+        // }
 
         /// <summary>Gets number as string. Numbers in range (0,9) don't cause a new string allocation.</summary>
         public static string GetNumeral(this int number)

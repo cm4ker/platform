@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Aquila.CodeAnalysis.Syntax;
 using Aquila.Syntax.Ast;
 
 namespace Aquila.Syntax.Declarations
@@ -22,9 +23,9 @@ namespace Aquila.Syntax.Declarations
             _firstElem = this._declareations.First();
         }
 
-        public QualifiedIdentifierToken Identifier
+        public NameEx Identifier
         {
-            get => _firstElem.Identifier;
+            get => _firstElem.Name;
         }
 
         private IEnumerable<ExtendDecl> Extends
@@ -38,13 +39,15 @@ namespace Aquila.Syntax.Declarations
 
             foreach (var extendDecl in Extends)
             {
-                if (merged.TryGetValue($"{Identifier.Text}.{extendDecl.Identifier.Text}", out var list))
+                if (merged.TryGetValue(
+                        $"{Identifier.GetUnqualifiedName().Identifier.Text}.{extendDecl.Name.GetUnqualifiedName().Identifier.Text}",
+                        out var list))
                 {
                     list.Add(extendDecl);
                 }
                 else
-                    merged.Add($"{Identifier.Text}.{extendDecl.Identifier.Text}",
-                        new List<ExtendDecl> {extendDecl});
+                    merged.Add($"{Identifier.GetUnqualifiedName().Identifier.Text}.{extendDecl.Name.GetUnqualifiedName().Identifier.Text}",
+                        new List<ExtendDecl> { extendDecl });
             }
 
             return merged.Select(x => new MergedExtendDecl(x.Value.ToImmutableArray())).ToImmutableArray();

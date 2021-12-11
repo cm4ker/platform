@@ -20,4 +20,17 @@
             return Right;
         }
     }
+
+    public partial class TypeEx
+    {
+        public bool IsVar => ((InternalSyntax.TypeEx)this.Green).IsVar;
+
+        public bool IsUnmanaged => ((InternalSyntax.TypeEx)this.Green).IsUnmanaged;
+
+        public bool IsNotNull => ((InternalSyntax.TypeEx)this.Green).IsNotNull;
+
+        public bool IsNint => ((InternalSyntax.TypeEx)this.Green).IsNint;
+
+        public bool IsNuint => ((InternalSyntax.TypeEx)this.Green).IsNuint;
+    }
 }
