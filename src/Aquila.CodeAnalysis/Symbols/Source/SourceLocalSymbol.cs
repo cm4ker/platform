@@ -123,7 +123,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get
             {
-                var langElem = (SimpleNameEx)_decl.Type;
+                var langElem = _decl.Type;
 
                 var binder = DeclaringCompilation.GetBinder(langElem);
 

@@ -630,6 +630,11 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             BuildVariableDecl(SyntaxFactory.LocalDeclStmt(arg));
         }
 
+        public override void VisitLocalDeclStmt(LocalDeclStmt node)
+        {
+            BuildVariableDecl(node);
+        }
+
         private void BuildVariableDecl(LocalDeclStmt varDecl)
         {
             Add(varDecl);

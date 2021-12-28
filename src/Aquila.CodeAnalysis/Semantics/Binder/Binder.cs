@@ -182,7 +182,6 @@ Binder
             throw new Exception("Namespace not found");
         }
 
-
         public override Binder? VisitCompilationUnit(CompilationUnitSyntax node)
         {
             Push(_global);
@@ -373,7 +372,7 @@ Binder
 
             if (tref is PredefinedTypeEx pt)
             {
-                switch (pt.Kind())
+                switch (pt.Keyword.Kind())
                 {
                     case SyntaxKind.IntKeyword: return trf.Int32;
                     case SyntaxKind.LongKeyword: return trf.Int64;
@@ -819,6 +818,8 @@ Binder
         {
             switch (kind)
             {
+                case SyntaxKind.SimpleAssignmentExpression:
+                    return Operations.AssignValue;
                 default:
                     return Operations.Unknown;
             }
