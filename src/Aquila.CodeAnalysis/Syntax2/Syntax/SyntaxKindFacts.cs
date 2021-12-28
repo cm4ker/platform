@@ -296,6 +296,7 @@ namespace Aquila.CodeAnalysis
                 case SyntaxKind.CharKeyword:
                 case SyntaxKind.ObjectKeyword:
                 case SyntaxKind.VoidKeyword:
+                case SyntaxKind.DatetimeKeyword:
                     return true;
                 default:
                     return false;
@@ -978,6 +979,8 @@ namespace Aquila.CodeAnalysis
                     return SyntaxKind.ImportKeyword;
                 case "extend":
                     return SyntaxKind.ExtendKeyword;
+                case "datetime":
+                    return SyntaxKind.DatetimeKeyword;
                 default:
                     return SyntaxKind.None;
             }
@@ -1696,6 +1699,8 @@ namespace Aquila.CodeAnalysis
                     return "unmanaged";
                 case SyntaxKind.ExtendKeyword:
                     return "extend";
+                case SyntaxKind.DatetimeKeyword:
+                    return "datetime";
                 default:
                     return string.Empty;
             }

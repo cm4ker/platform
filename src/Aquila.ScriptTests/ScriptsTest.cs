@@ -49,6 +49,7 @@ namespace ScriptsTest
             var service = TestEnvSetup.GetServerService(_output);
             var manager = service.GetService<IAqInstanceManager>();
             var instance = manager.GetInstance("Library");
+            instance.Migrate();
 
             _output.WriteLine("Testing {0} ...", fname);
 

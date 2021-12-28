@@ -535,16 +535,16 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             var attributes = _pool.Allocate<AttributeListSyntax>();
             try
             {
-                // var saveTerm = _termState;
-                // _termState |= TerminatorState.IsAttributeDeclarationTerminator;
-                //
-                // while (this.IsPossibleAttributeDeclaration())
-                // {
-                //     var attribute = this.ParseAttributeDeclaration();
-                //     attributes.Add(attribute);
-                // }
-                //
-                // _termState = saveTerm;
+                var saveTerm = _termState;
+                _termState |= TerminatorState.IsAttributeDeclarationTerminator;
+
+                while (this.IsPossibleAttributeDeclaration())
+                {
+                    var attribute = this.ParseAttributeDeclaration();
+                    attributes.Add(attribute);
+                }
+
+                _termState = saveTerm;
 
                 return attributes.ToList();
             }
@@ -561,6 +561,77 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                    || this.IsPossibleAttributeDeclaration(); // start of a new one...
         }
 
+        private AttributeListSyntax ParseAttributeDeclaration()
+        {
+            if (this.IsIncrementalAndFactoryContextMatches && this.CurrentNodeKind == SyntaxKind.AttributeList)
+            {
+                return (AttributeListSyntax)this.EatNode();
+            }
+
+            var openBracket = this.EatToken(SyntaxKind.OpenBracketToken);
+
+            // // Check for optional location :
+            // AttributeTargetSpecifierSyntax attrLocation = null;
+            if (IsSomeWord(this.CurrentToken.Kind) && this.PeekToken(1).Kind == SyntaxKind.ColonToken)
+            {
+                // var id = ConvertToKeyword(this.EatToken());
+                // var colon = this.EatToken(SyntaxKind.ColonToken);
+                // attrLocation = _syntaxFactory.AttributeTargetSpecifier(id, colon);
+            }
+
+            var attributes = _pool.AllocateSeparated<AttributeSyntax>();
+            try
+            {
+                // if (attrLocation != null && attrLocation.Identifier.ToAttributeLocation() == AttributeLocation.Module)
+                // {
+                //     attrLocation = CheckFeatureAvailability(attrLocation, MessageID.IDS_FeatureModuleAttrLoc);
+                // }
+
+                this.ParseAttributes(attributes);
+                var closeBracket = this.EatToken(SyntaxKind.CloseBracketToken);
+                var declaration = _syntaxFactory.AttributeList(openBracket, attributes, closeBracket);
+
+                return declaration;
+            }
+            finally
+            {
+                _pool.Free(attributes);
+            }
+        }
+
+        private void ParseAttributes(SeparatedSyntaxListBuilder<AttributeSyntax> nodes)
+        {
+            // always expect at least one attribute
+            nodes.Add(this.ParseAttribute());
+
+            // remaining attributes
+            while (this.CurrentToken.Kind != SyntaxKind.CloseBracketToken)
+            {
+                if (this.CurrentToken.Kind == SyntaxKind.CommaToken)
+                {
+                    // comma is optional, but if it is present it may be followed by another attribute
+                    nodes.AddSeparator(this.EatToken());
+
+                    // check for legal trailing comma
+                    if (this.CurrentToken.Kind == SyntaxKind.CloseBracketToken)
+                    {
+                        break;
+                    }
+
+                    nodes.Add(this.ParseAttribute());
+                }
+                else if (this.IsPossibleAttribute())
+                {
+                    // report missing comma
+                    nodes.AddSeparator(this.EatToken(SyntaxKind.CommaToken));
+                    nodes.Add(this.ParseAttribute());
+                }
+                else if (this.SkipBadAttributeListTokens(nodes, SyntaxKind.IdentifierToken) == PostSkipAction.Abort)
+                {
+                    break;
+                }
+            }
+        }
 
         private PostSkipAction SkipBadAttributeListTokens(SeparatedSyntaxListBuilder<AttributeSyntax> list,
             SyntaxKind expected)
@@ -576,6 +647,19 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         private bool IsPossibleAttribute()
         {
             return this.IsTrueIdentifier();
+        }
+
+        private AttributeSyntax ParseAttribute()
+        {
+            if (this.IsIncrementalAndFactoryContextMatches && this.CurrentNodeKind == SyntaxKind.Attribute)
+            {
+                return (AttributeSyntax)this.EatNode();
+            }
+
+            var name = this.ParseQualifiedName();
+
+            //var argList = this.ParseAttributeArgumentList();
+            return _syntaxFactory.Attribute(name, null);
         }
 
 
@@ -1128,6 +1212,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 case SyntaxKind.FixedKeyword:
                 case SyntaxKind.FloatKeyword:
                 case SyntaxKind.IntKeyword:
+                case SyntaxKind.DatetimeKeyword:
                 case SyntaxKind.InterfaceKeyword:
                 case SyntaxKind.InternalKeyword:
                 case SyntaxKind.LongKeyword:
@@ -2805,7 +2890,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         {
             if (this.IsIncrementalAndFactoryContextMatches && this.CurrentNodeKind == SyntaxKind.IdentifierName)
             {
-                if (!SyntaxFacts.IsContextualKeyword(((Aquila.CodeAnalysis.Syntax.IdentifierEx)this.CurrentNode).Identifier
+                if (!SyntaxFacts.IsContextualKeyword(((Aquila.CodeAnalysis.Syntax.IdentifierEx)this.CurrentNode)
+                        .Identifier
                         .Kind()))
                 {
                     return (IdentifierEx)this.EatNode();

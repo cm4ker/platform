@@ -676,12 +676,14 @@ namespace Aquila.CodeAnalysis
         /// <summary>Represents the end of a triple-slash documentation comment.</summary>
         EndOfDocumentationCommentToken = 8495,
 
-        
+
         ExtendKeyword = 8496,
         ComponentKeyword = 8497,
         ImportKeyword = 8498,
         MatchKeyword = 8499,
-        
+
+        DatetimeKeyword = 8500,
+
         /// <summary>Represents the end of a file.</summary>
         EndOfFileToken = 8506, //NB: this is assumed to be the last textless token
 
@@ -1080,12 +1082,11 @@ namespace Aquila.CodeAnalysis
         MethodDecl,
         ComponentDecl,
         ExtendDecl,
-        
+
         IdentifierEx,
         NamedTypeEx,
         MatchExpression,
         MatchArm,
         UnionType
-        
     }
 }

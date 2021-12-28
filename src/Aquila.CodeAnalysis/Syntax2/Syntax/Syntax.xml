@@ -1073,6 +1073,7 @@
             <Kind Name="CharKeyword"/>
             <Kind Name="ObjectKeyword"/>
             <Kind Name="VoidKeyword"/>
+            <Kind Name="DatetimeKeyword"/>
             <PropertyComment>
                 <summary>SyntaxToken which represents the keyword corresponding to the predefined type.</summary>
             </PropertyComment>
@@ -1112,7 +1113,7 @@
                 <summary>Gets the open paren token.</summary>
             </PropertyComment>
             <Kind Name="OpenParenToken"/>
-        </Field>        
+        </Field>
         <Field Name="Types" Type="SeparatedSyntaxList&lt;TypeEx&gt;" AllowTrailingSeparator="true">
             <PropertyComment>
                 <summary>
@@ -1565,7 +1566,7 @@
             <Kind Name="SemicolonToken"/>
         </Field>
     </Node>
-    
+
     <!-- region IfStmt -->
     <Node Name="IfStmt" Base="StmtSyntax">
         <Kind Name="IfStatement"/>
@@ -1581,7 +1582,8 @@
             <Kind Name="OpenParenToken"/>
             <PropertyComment>
                 <summary>
-                    Gets a SyntaxToken that represents the open parenthesis before the if statement's condition expression.
+                    Gets a SyntaxToken that represents the open parenthesis before the if statement's condition
+                    expression.
                 </summary>
             </PropertyComment>
         </Field>
@@ -1596,7 +1598,8 @@
             <Kind Name="CloseParenToken"/>
             <PropertyComment>
                 <summary>
-                    Gets a SyntaxToken that represents the close parenthesis after the if statement's condition expression.
+                    Gets a SyntaxToken that represents the close parenthesis after the if statement's condition
+                    expression.
                 </summary>
             </PropertyComment>
         </Field>
@@ -1610,7 +1613,8 @@
         <Field Name="Else" Type="ElseClauseSyntax" Optional="true">
             <PropertyComment>
                 <summary>
-                    Gets an ElseClauseSyntax that represents the statement to be executed when the condition is false if such statement exists.
+                    Gets an ElseClauseSyntax that represents the statement to be executed when the condition is false if
+                    such statement exists.
                 </summary>
             </PropertyComment>
         </Field>
@@ -1641,8 +1645,8 @@
             <summary>Creates a ElseClauseSyntax node</summary>
         </FactoryComment>
     </Node>
-    <!-- endregion IfStmt --> 
-    
+    <!-- endregion IfStmt -->
+
     <!--endregion Statements-->
 
     <!--region Xml -->

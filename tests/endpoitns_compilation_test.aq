@@ -2,7 +2,7 @@ import Entity;
 
 public static int Main() 
 {
-    reutrn 1;
+    return 1;
 }
 
 [endpoint] public static int endpoint_test() { return 100500; }

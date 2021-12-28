@@ -9362,7 +9362,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         /// </summary>
         public SyntaxToken IfKeyword => this.ifKeyword;
         /// <summary>
-        /// Gets a SyntaxToken that represents the open parenthesis before the if statement's condition expression.
+        /// Gets a SyntaxToken that represents the open parenthesis before the if statement's condition
+        /// expression.
         /// </summary>
         public SyntaxToken OpenParenToken => this.openParenToken;
         /// <summary>
@@ -9370,7 +9371,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         /// </summary>
         public ExprSyntax Condition => this.condition;
         /// <summary>
-        /// Gets a SyntaxToken that represents the close parenthesis after the if statement's condition expression.
+        /// Gets a SyntaxToken that represents the close parenthesis after the if statement's condition
+        /// expression.
         /// </summary>
         public SyntaxToken CloseParenToken => this.closeParenToken;
         /// <summary>
@@ -9378,7 +9380,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         /// </summary>
         public StmtSyntax Statement => this.statement;
         /// <summary>
-        /// Gets an ElseClauseSyntax that represents the statement to be executed when the condition is false if such statement exists.
+        /// Gets an ElseClauseSyntax that represents the statement to be executed when the condition is false if
+        /// such statement exists.
         /// </summary>
         public ElseClauseSyntax? Else => this.@else;
 
@@ -14087,7 +14090,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 case SyntaxKind.StringKeyword:
                 case SyntaxKind.CharKeyword:
                 case SyntaxKind.ObjectKeyword:
-                case SyntaxKind.VoidKeyword: break;
+                case SyntaxKind.VoidKeyword:
+                case SyntaxKind.DatetimeKeyword: break;
                 default: throw new ArgumentException(nameof(keyword));
             }
 #endif
@@ -16282,7 +16286,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 case SyntaxKind.StringKeyword:
                 case SyntaxKind.CharKeyword:
                 case SyntaxKind.ObjectKeyword:
-                case SyntaxKind.VoidKeyword: break;
+                case SyntaxKind.VoidKeyword:
+                case SyntaxKind.DatetimeKeyword: break;
                 default: throw new ArgumentException(nameof(keyword));
             }
 #endif

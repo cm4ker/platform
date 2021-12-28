@@ -1735,7 +1735,8 @@ namespace Aquila.CodeAnalysis
                 case SyntaxKind.StringKeyword:
                 case SyntaxKind.CharKeyword:
                 case SyntaxKind.ObjectKeyword:
-                case SyntaxKind.VoidKeyword: break;
+                case SyntaxKind.VoidKeyword:
+                case SyntaxKind.DatetimeKeyword: break;
                 default: throw new ArgumentException(nameof(keyword));
             }
             return (PredefinedTypeEx)Syntax.InternalSyntax.SyntaxFactory.PredefinedTypeEx((Syntax.InternalSyntax.SyntaxToken)keyword.Node!).CreateRed();

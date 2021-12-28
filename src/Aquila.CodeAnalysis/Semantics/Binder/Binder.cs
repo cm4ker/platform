@@ -380,7 +380,7 @@ Binder
                     case SyntaxKind.ObjectKeyword: return trf.Object;
                     case SyntaxKind.StringKeyword: return trf.String;
                     case SyntaxKind.BoolKeyword: return trf.Boolean;
-                    //case SyntaxKind.DatetimeKeyword: return trf.DateTime;
+                    case SyntaxKind.DatetimeKeyword: return trf.DateTime;
 
                     default: throw ExceptionUtilities.UnexpectedValue(pt.Kind());
                 }
@@ -468,7 +468,7 @@ Binder
             if (expr is MatchEx me) return BindMatchEx(me).WithAccess(access);
             if (expr is MemberAccessEx mae)
                 return BindMemberAccessEx(mae, SyntaxFactory.ArgumentList(), false).WithAccess(access);
-            //if (expr is IndexerEx ie) return BindIndexerEx(ie).WithAccess(access);
+            if (expr is ElementAccessEx eae) return BindIndexerEx(eae).WithAccess(access);
 
             if (expr is ThrowEx throwEx)
                 return new BoundThrowEx(BindExpression(throwEx.Expression, BoundAccess.Read), null);
@@ -538,21 +538,23 @@ Binder
             return new BoundMatchArm(pattern, null, result, result?.ResultType);
         }
 
-        // private BoundExpression BindIndexerEx(IndexerEx ie)
-        // {
-        //     var array = BindExpression(ie.Expression);
-        //     var indexer = BindExpression(ie.Indexer);
-        //
-        //
-        //     var accessIndexMethod = array.Type.GetMembers("get_Item").OfType<MethodSymbol>()
-        //         .FirstOrDefault(x => x.ParameterCount == 1 && x.Parameters[0].Type == indexer.Type);
-        //
-        //     if (accessIndexMethod != null)
-        //         return new BoundArrayItemEx(DeclaringCompilation, array, indexer, accessIndexMethod.ReturnType);
-        //
-        //
-        //     throw new NotImplementedException();
-        // }
+        private BoundExpression BindIndexerEx(ElementAccessEx ie)
+        {
+            var array = BindExpression(ie.Expression);
+
+            //TODO: make arity for element accsessex
+            var indexer = BindExpression(ie.ArgumentList.Arguments.First().Expression);
+
+
+            var accessIndexMethod = array.Type.GetMembers("get_Item").OfType<MethodSymbol>()
+                .FirstOrDefault(x => x.ParameterCount == 1 && x.Parameters[0].Type == indexer.Type);
+
+            if (accessIndexMethod != null)
+                return new BoundArrayItemEx(DeclaringCompilation, array, indexer, accessIndexMethod.ReturnType);
+
+
+            throw new NotImplementedException();
+        }
 
 
         private BoundLiteral BindLiteralEx(LiteralEx node)

@@ -4383,7 +4383,8 @@ namespace Aquila.CodeAnalysis.Syntax
         public SyntaxToken IfKeyword => new SyntaxToken(this, ((Syntax.InternalSyntax.IfStmt)this.Green).ifKeyword, Position, 0);
 
         /// <summary>
-        /// Gets a SyntaxToken that represents the open parenthesis before the if statement's condition expression.
+        /// Gets a SyntaxToken that represents the open parenthesis before the if statement's condition
+        /// expression.
         /// </summary>
         public SyntaxToken OpenParenToken => new SyntaxToken(this, ((Syntax.InternalSyntax.IfStmt)this.Green).openParenToken, GetChildPosition(1), GetChildIndex(1));
 
@@ -4393,7 +4394,8 @@ namespace Aquila.CodeAnalysis.Syntax
         public ExprSyntax Condition => GetRed(ref this.condition, 2)!;
 
         /// <summary>
-        /// Gets a SyntaxToken that represents the close parenthesis after the if statement's condition expression.
+        /// Gets a SyntaxToken that represents the close parenthesis after the if statement's condition
+        /// expression.
         /// </summary>
         public SyntaxToken CloseParenToken => new SyntaxToken(this, ((Syntax.InternalSyntax.IfStmt)this.Green).closeParenToken, GetChildPosition(3), GetChildIndex(3));
 
@@ -4403,7 +4405,8 @@ namespace Aquila.CodeAnalysis.Syntax
         public StmtSyntax Statement => GetRed(ref this.statement, 4)!;
 
         /// <summary>
-        /// Gets an ElseClauseSyntax that represents the statement to be executed when the condition is false if such statement exists.
+        /// Gets an ElseClauseSyntax that represents the statement to be executed when the condition is false if
+        /// such statement exists.
         /// </summary>
         public ElseClauseSyntax? Else => GetRed(ref this.@else, 5);
 
