@@ -1,12 +1,12 @@
 ﻿using System;
+using Aquila.CodeAnalysis;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Aquila.Compiler.Test2
 {
-    public class TreePrinter : CSharpSyntaxWalker
+    public class TreePrinter : AquilaSyntaxWalker
     {
         private readonly ITestOutputHelper _output;
 
@@ -41,7 +41,7 @@ namespace Aquila.Compiler.Test2
         {
             var tp = new TreePrinter(_output);
 
-            var graph = CSharpSyntaxTree.ParseText("public void test() {}");
+            var graph = AquilaSyntaxTree.ParseText("public void test() {}");
 
             tp.Visit(graph.GetRoot());
         }
@@ -51,7 +51,7 @@ namespace Aquila.Compiler.Test2
         {
             var tp = new TreePrinter(_output);
 
-            var graph = CSharpSyntaxTree.ParseText(
+            var graph = AquilaSyntaxTree.ParseText(
                 @"
 import Entity;
 
@@ -76,7 +76,7 @@ public static int Main()
         {
             var tp = new TreePrinter(_output);
 
-            var graph = CSharpSyntaxTree.ParseText(
+            var graph = AquilaSyntaxTree.ParseText(
                 @"
 import Entity;
 
@@ -101,7 +101,7 @@ public static int Main()
         {
             var tp = new TreePrinter(_output);
 
-            var graph = CSharpSyntaxTree.ParseText(
+            var graph = AquilaSyntaxTree.ParseText(
                 @"
 import Entity;
 
@@ -121,7 +121,7 @@ public static int Main()
         {
             var tp = new TreePrinter(_output);
 
-            var graph = CSharpSyntaxTree.ParseText(
+            var graph = AquilaSyntaxTree.ParseText(
                 @"
 import Entity;
 
@@ -138,7 +138,7 @@ public static int Main()
         {
             var tp = new TreePrinter(_output);
 
-            var graph = CSharpSyntaxTree.ParseText(
+            var graph = AquilaSyntaxTree.ParseText(
                 @"
 import Entity;
 
@@ -154,7 +154,7 @@ public static int Main()
         {
             var tp = new TreePrinter(_output);
 
-            var graph = CSharpSyntaxTree.ParseText(
+            var graph = AquilaSyntaxTree.ParseText(
                 @"
 extend Invoice
 {
@@ -177,7 +177,7 @@ extend Invoice
         {
             var tp = new TreePrinter(_output);
 
-            var graph = CSharpSyntaxTree.ParseText(
+            var graph = AquilaSyntaxTree.ParseText(
                 @"
 public static int Main() 
 {

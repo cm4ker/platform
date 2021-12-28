@@ -903,6 +903,9 @@ Binder
                     return BindName((SimpleNameEx)expr, args, invoked);
                 case SyntaxKind.SimpleMemberAccessExpression:
                     return BindMemberAccessEx((MemberAccessEx)expr, args, invoked);
+                case SyntaxKind.GenericName:
+                    return BindName((GenericEx)expr, args, invoked);
+
                 default:
                     throw new NotImplementedException();
             }

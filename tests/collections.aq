@@ -2,7 +2,7 @@ public static int Main()
 {
     var c1 = list();
     var c2 = list<int>();
-    var c3 = list<int|string>();
+    var c3 = list<(int|string)>();
 
     c1.Add("test");
     c1.Add("test2");
