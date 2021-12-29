@@ -181,7 +181,6 @@ namespace Aquila.CodeAnalysis.Semantics
                 case Operations.Div:
                     cg.EmitOpCode(ILOpCode.Div);
                     break;
-
                 case Operations.GreaterThan:
                     cg.EmitOpCode(ILOpCode.Cgt);
                     returnedType = cg.DeclaringCompilation.CoreTypes.Boolean;

@@ -755,14 +755,22 @@ Binder
         {
             BoundAccess laccess = BoundAccess.Read;
 
-            switch (expr.OperatorToken)
-            {
-                default:
-                    var left = BindExpression(expr.Left, laccess);
-                    var right = BindExpression(expr.Right, BoundAccess.Read);
 
-                    return new BoundBinaryEx(left, right, Operations.Add, left.ResultType);
-            }
+            var op = expr.OperatorToken.Kind() switch
+            {
+                SyntaxKind.PlusToken => Operations.Add,
+                SyntaxKind.AsteriskToken => Operations.Mul,
+                SyntaxKind.SlashToken => Operations.Div,
+                SyntaxKind.MinusToken => Operations.Sub,
+                SyntaxKind.ExclamationEqualsToken => Operations.NotEqual,
+                _ => Operations.Unknown
+            };
+
+            var left = BindExpression(expr.Left, laccess);
+            var right = BindExpression(expr.Right, BoundAccess.Read);
+
+
+            return new BoundBinaryEx(left, right, op, left.ResultType);
         }
 
         protected BoundExpression BindUnaryEx(PrefixUnaryEx expr, BoundAccess access)
