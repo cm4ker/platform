@@ -381,29 +381,25 @@ namespace Aquila.Core.Querying.Test
             _m.@as("A");
             _m.@from();
 
+            _m.create(QObjectType.ExpressionList);
+            _m.dup();
+            _m.ld_const(1);
+            _m.st_elem();
+            _m.group_by();
+
             _m.create(QObjectType.FieldList);
             _m.ld_name("A");
             _m.ld_field("Id");
             _m.st_elem();
             _m.select();
 
-            _m.create(QObjectType.OrderList);
-            _m.dup();
-
-
-            _m.ld_const(1);
-            _m.ld_sort(QSortDirection.Ascending);
-            _m.create(QObjectType.OrderExpression);
-            _m.st_elem();
-            _m.order_by();
-
             _m.new_query();
 
             var query = (QQuery)_m.top();
 
             Assert.NotNull(query);
-            Assert.NotNull(query.OrderBy);
-            Assert.NotEmpty(query.OrderBy.Expressions);
+            Assert.NotNull(query.GroupBy);
+            Assert.NotEmpty(query.GroupBy.Expressions);
         }
     }
 }

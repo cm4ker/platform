@@ -129,7 +129,7 @@ namespace Aquila.Core.Querying.Model
             _logicStack.Push(new QWhere(_logicStack.PopExpression()));
         }
 
-        private void gorup_by()
+        public void group_by()
         {
             _logicStack.Push(new QGroupBy(_logicStack.PopItem<QExpressionList>()));
         }
