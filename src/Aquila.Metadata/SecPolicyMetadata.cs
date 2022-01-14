@@ -58,6 +58,7 @@ namespace Aquila.Metadata
         public SecPermission Permission { get; set; }
 
         public string Subject { get; set; }
+        
 
         public string Query { get; set; }
     }
