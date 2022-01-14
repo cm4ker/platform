@@ -206,25 +206,25 @@ namespace Aquila.Core.Querying
                 if (result != null)
                 {
                     claim = result;
-                    if (permission.HasFlag(SecPermission.Create) && !result.CanCreate)
+                    if (permission.HasFlag(SecPermission.Create) && !result.Permission.HasFlag(SecPermission.Create))
                     {
                         claim = null;
                         return false;
                     }
 
-                    if (permission.HasFlag(SecPermission.Read) && !result.CanRead)
+                    if (permission.HasFlag(SecPermission.Read) && !result.Permission.HasFlag(SecPermission.Read))
                     {
                         claim = null;
                         return false;
                     }
 
-                    if (permission.HasFlag(SecPermission.Update) && !result.CanUpdate)
+                    if (permission.HasFlag(SecPermission.Update) && !result.Permission.HasFlag(SecPermission.Update))
                     {
                         claim = null;
                         return false;
                     }
 
-                    if (permission.HasFlag(SecPermission.Delete) && !result.CanDelete)
+                    if (permission.HasFlag(SecPermission.Delete) && !result.Permission.HasFlag(SecPermission.Delete))
                     {
                         claim = null;
                         return false;

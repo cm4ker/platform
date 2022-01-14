@@ -26,9 +26,11 @@ namespace Aquila.Metadata
             _metadata = new List<EntityMetadata>();
         }
 
-        public EntityMetadataCollection(IEnumerable<EntityMetadata> metadata) : this()
+        public EntityMetadataCollection(IEnumerable<EntityMetadata> metadata,
+            IEnumerable<SecPolicyMetadata> secMetadata) : this()
         {
             _metadata = metadata.ToList();
+            _secMetadata = secMetadata.ToList();
         }
 
         public IEnumerable<EntityMetadata> Metadata => _metadata;

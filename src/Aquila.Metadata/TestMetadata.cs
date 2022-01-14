@@ -1,4 +1,6 @@
-﻿namespace Aquila.Metadata
+﻿using System.Collections.Generic;
+
+namespace Aquila.Metadata
 {
     public class TestMetadata
     {
@@ -47,7 +49,7 @@
                 }
             };
 
-            return new EntityMetadataCollection(new[] { em1, em2, em3 });
+            return new EntityMetadataCollection(new[] { em1, em2, em3 }, new List<SecPolicyMetadata>());
         }
 
         public static EntityMetadataCollection GetEmptyMetadata() => new EntityMetadataCollection();

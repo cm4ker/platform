@@ -71,7 +71,7 @@ namespace Aquila.Runtime
                     }
                 }
 
-                _md = new EntityMetadataCollection(list);
+                _md = new EntityMetadataCollection(list, secList);
             }
 
             public void SaveMetadata(DataConnectionContext context)
