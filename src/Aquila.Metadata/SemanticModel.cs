@@ -246,14 +246,6 @@ namespace Aquila.Metadata
             _precision = precision;
         }
 
-        public bool Equals(SMType? other)
-        {
-            return other != null
-                   && Kind == other.Kind
-                   && Size == other.Size
-                   && Scale == other.Scale
-                   && Precision == other.Precision;
-        }
 
         public string Name => _name;
 
@@ -314,6 +306,23 @@ namespace Aquila.Metadata
         public SMEntity GetSemantic()
         {
             return _semanticMetadata;
+        }
+        public bool Equals(SMType? other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return _name == other._name && _size == other._size && _scale == other._scale &&
+                   _precision == other._precision && _isReference == other._isReference;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return ReferenceEquals(this, obj) || obj is SMType other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_name, _size, _scale, _precision, _isReference);
         }
     }
 
