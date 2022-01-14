@@ -475,7 +475,8 @@ namespace Aquila.Core.Querying
 
         public override void VisitQGroupBy(QGroupBy arg)
         {
-            throw new NotImplementedException();
+            _qm.m_group_by();
+            Visit(arg.Expressions);
         }
 
         public override void VisitQWhere(QWhere node)
