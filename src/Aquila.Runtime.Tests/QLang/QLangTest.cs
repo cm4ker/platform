@@ -358,7 +358,7 @@ namespace Aquila.Core.Querying.Test
 
             _m.ld_component("Entity");
             _m.ld_object_type("Store");
-            _m.ld_field("Property1");
+            _m.ld_field("Invoice");
             _m.lookup("Id");
             _m.st_elem();
 
