@@ -368,11 +368,16 @@ namespace Aquila.Core.Querying.Model
     {
         public IEnumerable<SMProperty> GetProperties()
         {
-            throw new NotImplementedException();
+            foreach (var type in BaseExpression.GetExpressionType())
+            {
+                if (type.IsReference)
 
-            // return BaseExpression.GetExpressionType().Where(x =>
-            //         x.IsObject && x.Properties.Any(p => p.Name == PropName))
-            //     .Select(x => x.FindPropertyByName(PropName));
+                    foreach (var prop in type.GetSemantic().Properties)
+                    {
+                        if (prop.Name == PropName)
+                            yield return prop;
+                    }
+            }
         }
 
         public override IEnumerable<SMType> GetExpressionType()

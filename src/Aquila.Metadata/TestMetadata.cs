@@ -46,6 +46,8 @@ namespace Aquila.Metadata
                 Properties =
                 {
                     new EntityProperty { Name = "Name", Types = { new MetadataType { Name = "string", Size = 30 } } },
+                    new EntityProperty
+                        { Name = "Invoice", Types = { new MetadataType { Name = "Entity.InvoiceLink" } } },
                 }
             };
 
