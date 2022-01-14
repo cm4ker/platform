@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Aquila.Core.Querying.Model;
@@ -107,13 +108,146 @@ namespace Aquila.Core.Querying
         private bool _hasNamedSource = false;
         private bool _hasAlias = false;
 
+
         public string Log => _l.ToString();
 
         internal DatabaseRuntimeContext DrContext => _drContext;
 
+        private List<SMSecPolicy> _polices = new();
+
+        /*
+        
+            // 1. We can throw the SecException on construct query if user haven't access to the table
+            // 2. We need create SecTable
+        
+            UserSecTable
+            Object\Permission        | Create | Update | Read | Delete |
+                                     +--------+--------+------+--------+
+                            Store    |   x    |        |  x   |   x*   | 
+                                     |________+________+______+________+
+                            Invoice  |        |   x*   |      |        |
+                                     |________+________+______+________+
+                            Document |   x    |   x    |  x   |   x    |
+                                     |________+________+______+________+
+            
+            Where x* - is permission with lookup query (more complex case) NOTE: Lookup queries can be more than one
+         */
+
+        private class UserSecPermission
+        {
+            public static Dictionary<SMType, UserSecPermission> FromPolicy(SMSecPolicy policy)
+            {
+                var subjects = policy.Subjects;
+                var criteria = policy.Criteria;
+
+                var result = new Dictionary<SMType, UserSecPermission>();
+
+                var a = (from s in subjects
+                        join c in criteria
+                            on s.Subject equals c.Subject
+                            into tmp
+                        from t in tmp.DefaultIfEmpty()
+                        group new { Sbuject = s.Subject, Permission = s.Permission, Criteria = tmp.ToList() } by s
+                            .Subject
+                    );
+
+                foreach (var t in a)
+                {
+                    var up = new UserSecPermission();
+
+                    foreach (var values in t)
+                    {
+                        up.Permission |= values.Permission;
+
+                        foreach (var criterion in values.Criteria)
+                        {
+                            up.Criteria[criterion.Permission].Add(criterion.Query);
+                        }
+                    }
+
+                    result[t.Key] = up;
+                }
+
+                // TODO: this is primitive algo for creating user sec permissions dictionary
+                // we need more complex algo for this
+                // 1. Check for the same criterion query
+                // 2. Merge UserSecPermission then we have many secs;
+
+                return result;
+            }
+
+            public SecPermission Permission { get; set; }
+
+            public Dictionary<SecPermission, List<string>> Criteria { get; set; }
+        }
+
+        private class UserSecTable
+        {
+            private Dictionary<SMType, UserSecPermission> _rows;
+
+            public UserSecTable(List<SMSecPolicy> polices)
+            {
+            }
+
+            public UserSecPermission this[SMType type]
+            {
+                get { return _rows[type]; }
+            }
+
+            public bool TryClaimSec(SMType type, out UserSecPermission permission)
+            {
+                permission = this[type];
+                return permission != null;
+            }
+
+            public bool TryClaimPermission(SMType type, SecPermission permission, out UserSecPermission claim)
+            {
+                var result = this[type];
+                if (result != null)
+                {
+                    claim = result;
+                    if (permission.HasFlag(SecPermission.Create) && !result.CanCreate)
+                    {
+                        claim = null;
+                        return false;
+                    }
+
+                    if (permission.HasFlag(SecPermission.Read) && !result.CanRead)
+                    {
+                        claim = null;
+                        return false;
+                    }
+
+                    if (permission.HasFlag(SecPermission.Update) && !result.CanUpdate)
+                    {
+                        claim = null;
+                        return false;
+                    }
+
+                    if (permission.HasFlag(SecPermission.Delete) && !result.CanDelete)
+                    {
+                        claim = null;
+                        return false;
+                    }
+                }
+                else
+                {
+                    claim = null;
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Create instance of real walker class
+        /// </summary>
+        /// <param name="drContext"></param>
         public RealWalker(DatabaseRuntimeContext drContext)
         {
             _drContext = drContext;
+
             _qm = new QueryMachine();
             _l = new StringWriter();
         }
@@ -132,9 +266,9 @@ namespace Aquila.Core.Querying
 
             Visit(node.From);
             Visit(node.Where);
+            Visit(node.GroupBy);
             Visit(node.OrderBy);
             Visit(node.Select);
-
 
             _qm.st_query();
             _l.WriteLine("st_query");
@@ -175,10 +309,6 @@ namespace Aquila.Core.Querying
                 _qm.@as(node.GetDbName());
 
             _hasAlias = false;
-        }
-
-        private enum TypesComparerOp
-        {
         }
 
         public override void VisitQAdd(QAdd node)
@@ -328,7 +458,6 @@ namespace Aquila.Core.Querying
             concatAction();
         }
 
-
         public override void VisitQFrom(QFrom node)
         {
             _qm.m_from();
@@ -336,6 +465,7 @@ namespace Aquila.Core.Querying
 
             Visit(node.Source);
 
+            //analyse join
             if (node.Joins != null)
                 foreach (var nodeJoin in node.Joins)
                 {
@@ -343,6 +473,10 @@ namespace Aquila.Core.Querying
                 }
         }
 
+        public override void VisitQGroupBy(QGroupBy arg)
+        {
+            throw new NotImplementedException();
+        }
 
         public override void VisitQWhere(QWhere node)
         {
@@ -435,7 +569,6 @@ namespace Aquila.Core.Querying
                 GenColumn(schema);
             }
         }
-
 
         public override void VisitQSourceFieldExpression(QSourceFieldExpression node)
         {

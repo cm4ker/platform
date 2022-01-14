@@ -553,7 +553,8 @@ namespace Aquila.CodeAnalysis
             FilterAndAppendAndFreeDiagnostics(diagnostics, ref builder, cancellationToken);
         }
 
-        public override ImmutableArray<MetadataReference> GetUsedAssemblyReferences(CancellationToken cancellationToken = new CancellationToken())
+        public override ImmutableArray<MetadataReference> GetUsedAssemblyReferences(
+            CancellationToken cancellationToken = new CancellationToken())
         {
             throw new NotImplementedException();
         }
@@ -960,9 +961,9 @@ namespace Aquila.CodeAnalysis
             if (emittingPdb)
             {
                 if (!CreateDebugDocuments(
-                    moduleBeingBuilt.DebugDocumentsBuilder,
-                    moduleBeingBuilt.EmbeddedTexts.Concat(CollectAdditionalEmbeddedTexts()),
-                    diagnostics))
+                        moduleBeingBuilt.DebugDocumentsBuilder,
+                        moduleBeingBuilt.EmbeddedTexts.Concat(CollectAdditionalEmbeddedTexts()),
+                        diagnostics))
                 {
                     return false;
                 }

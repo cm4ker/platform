@@ -72,6 +72,12 @@ namespace Aquila.CodeAnalysis.Symbols
 
         ITypeSymbol ITypeSymbolInternal.GetITypeSymbol() => this;
 
+        internal ITypeSymbol GetITypeSymbol(NullableAnnotation nullableAnnotation)
+        {
+            return this;
+        }
+
+
         internal NamedTypeSymbol BaseTypeWithDefinitionUseSiteDiagnostics(
             ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
@@ -300,12 +306,37 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             return ReferenceEquals(this, t2);
         }
+        
+        /// <summary>
+        /// Determines if this type symbol represent the same type as another, according to the language
+        /// semantics.
+        /// </summary>
+        /// <param name="t2">The other type.</param>
+        /// <param name="compareKind">
+        /// What kind of comparison to use? 
+        /// You can ignore custom modifiers, ignore the distinction between object and dynamic, or ignore tuple element names differences.
+        /// </param>
+        /// <returns>True if the types are equivalent.</returns>
+        internal virtual bool Equals(TypeSymbol t2, TypeCompareKind compareKind)
+        {
+            return ReferenceEquals(this, t2);
+        }
 
         public override sealed bool Equals(ISymbol obj, SymbolEqualityComparer equalityComparer)
         {
             var t2 = obj as TypeSymbol;
             if ((object)t2 == null) return false;
             return this.Equals(t2, false, false);
+        }
+        
+        public static bool Equals(TypeSymbol left, TypeSymbol right, TypeCompareKind comparison)
+        {
+            if (left is null)
+            {
+                return right is null;
+            }
+
+            return left.Equals(right, comparison);
         }
 
         /// <summary>
@@ -380,7 +411,5 @@ namespace Aquila.CodeAnalysis.Symbols
             //
             return set.ToArray();
         }
-
-       
     }
 }

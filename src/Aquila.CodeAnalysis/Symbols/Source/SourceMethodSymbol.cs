@@ -456,12 +456,14 @@ namespace Aquila.CodeAnalysis.Symbols
             var builder = ImmutableArray.CreateBuilder<AttributeData>();
             builder.AddRange(base.GetAttributes());
 
-            // foreach (var annotation in _syntax.AttributeLists)
-            // {
-            //     var tref = SyntaxFactory.IdentifierEx(annotation.Identifier.Text);
-            //     var type = (NamedTypeSymbol)DeclaringCompilation.GetBinder(_syntax).BindType(tref);
-            //     builder.Add(new SourceAttributeData(null, type, type.Ctor(), false));
-            // }
+            foreach (var attrList in _syntax.AttributeLists)
+            {
+                foreach (var attr in attrList.Attributes)
+                {
+                    var type = (NamedTypeSymbol)DeclaringCompilation.GetBinder(_syntax).BindType(attr.Name);
+                    builder.Add(new SourceAttributeData(null, type, type.Ctor(), false));
+                }
+            }
 
 
             return builder.ToImmutable();

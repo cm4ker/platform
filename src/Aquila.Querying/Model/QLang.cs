@@ -398,6 +398,11 @@ namespace Aquila.Core.Querying.Model
             return _logicStack.Peek();
         }
 
+        public T top<T>()
+        {
+            return (T)top();
+        }
+
         /// <summary>
         /// Логическое И
         /// </summary>

@@ -1,15 +1,33 @@
-- Name : SecPolicy1
+- Name: SecPolicy1
+  Type: Grant
   Subjects:
-    - Entity.Book
-    - Entity.Genre
+    - Name: Entity.Book
+      Permission: [ Create, Read, Delete ]
+
+    - Name: Entity.Genre
+      Permission: [ Update, Delete ]
+
+    - Name: Entity.Country
+      Permission: [ Read ]
+
+  Criteria: 
+    - Permission: Create 
+      Subject: Entity.Country
+      Query: 
+             Subject s 
+             JOIN Entity.Genre g on s.Genre = g.Id
+             WHERE g.Name = "Test" 
+             
+    - Permission: Update
+      Subject: Entity.Country
+      Query: 
+             Subject s
+             JOIN Entity.Genre g on s.Genre = g.Id
+             WHERE g.Name = "Test" 
+          
+
+- Name: DenyCreateCountry
+  Type: Revoke
+  Subjects:
     - Entity.Country
-  Permissons:
-    - Type: Create
-      RLS: Subject s
-            JOIN Entity.Genre g on s.Genre = g.Id
-            WHERE g.Name = "Test"
-    - Type: Read
-    - Type: Update
-    - Type: Delete
-
-
+  Permission: [ Create ]

@@ -53,7 +53,42 @@ Properties:
         [Fact]
         public void MdLoadTest()
         {
-            
+        }
+
+        [Fact]
+        void MdSecParseTest()
+        {
+            var yaml =
+                @"
+Name: SecPolicy1
+Type: Grant
+Subjects:
+- Name: Entity.Book
+  Permission: [ Create, Read, Delete ]
+
+- Name: Entity.Genre
+  Permission: [ Update, Delete ]
+
+- Name: Entity.Country
+  Permission: [ Read ]
+
+Criteria: 
+- Permission: Create 
+  Subject: Entity.Country
+  Query: 
+         Subject s 
+         JOIN Entity.Genre g on s.Genre = g.Id
+         WHERE g.Name = ""Test"" 
+         
+- Permission: Update
+  Subject: Entity.Country
+  Query: 
+        Subject s
+        JOIN Entity.Genre g on s.Genre = g.Id
+        WHERE g.Name = ""Test"" 
+";
+            var test = SecPolicyMetadata.FromYaml(yaml);
+            var serialize = SecPolicyMetadata.ToYaml(test);
         }
     }
 }

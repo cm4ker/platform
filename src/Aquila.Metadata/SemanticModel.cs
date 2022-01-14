@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 
 namespace Aquila.Metadata
 {
-    public class SMCache
+    public sealed class SMCache
     {
         private List<SMType> _types;
 
@@ -29,7 +30,7 @@ namespace Aquila.Metadata
         }
     }
 
-    public class SMEntity
+    public sealed class SMEntity
     {
         private readonly EntityMetadata _md;
         private readonly SMCache _cache;
@@ -112,7 +113,7 @@ namespace Aquila.Metadata
         public string ReferenceName => $"{FullName}{LinkPostfix}";
     }
 
-    public class SMProperty
+    public sealed class SMProperty
     {
         private readonly EntityProperty _mdProp;
         private readonly SMCache _cache;
@@ -193,7 +194,7 @@ namespace Aquila.Metadata
         Reference = 0x100,
     }
 
-    public class SMType : IEquatable<SMType>
+    public sealed class SMType : IEquatable<SMType>
     {
         private readonly MetadataType _type;
         private readonly string _name;
@@ -314,5 +315,62 @@ namespace Aquila.Metadata
         {
             return _semanticMetadata;
         }
+    }
+
+    public sealed class SMSecSubject
+    {
+        private readonly SecPolicySubjectMetadata _md;
+        private readonly SMCache _cache;
+
+        public SMSecSubject(SecPolicySubjectMetadata md, SMCache cache)
+        {
+            _md = md;
+            _cache = cache;
+        }
+
+        public SecPermission Permission => _md.Permission;
+
+        public SMType Subject => _cache.ResolveType(_md.Name);
+    }
+
+    public sealed class SMSecPolicy
+    {
+        private readonly SecPolicyMetadata _md;
+        private readonly SMCache _cache;
+
+        public SMSecPolicy(SecPolicyMetadata md, SMCache cache)
+        {
+            _md = md;
+            _cache = cache;
+        }
+
+        public string Name => _md.Name;
+
+
+        public IEnumerable<SMSecSubject> Subjects
+        {
+            get { return _md.Subjects.Select(x => new SMSecSubject(x, _cache)); }
+        }
+
+        public IEnumerable<SMSecPolicyCriterion> Criteria =>
+            _md.Criteria.Select(x => new SMSecPolicyCriterion(x, _cache));
+    }
+
+    public sealed class SMSecPolicyCriterion
+    {
+        private readonly SecPolicyCriterionMetadata _md;
+        private readonly SMCache _cache;
+
+        public SMSecPolicyCriterion(SecPolicyCriterionMetadata md, SMCache cache)
+        {
+            _md = md;
+            _cache = cache;
+        }
+
+        public string Query => _md.Query;
+
+        public SecPermission Permission => _md.Permission;
+
+        public SMType Subject => _cache.ResolveType(_md.Subject);
     }
 }

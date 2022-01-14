@@ -43,7 +43,7 @@ namespace Aquila.Core
         {
             if (_needRecompile)
             {
-                var result = QueryCompilerHelper.Compile(_context, _text);
+                var result = QLangHelper.Compile(_context, _text);
 
                 _compiled = result.sql;
                 _logicalTree = result.logicalTree;

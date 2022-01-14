@@ -40,7 +40,7 @@ namespace Aquila.AspNetCore.Web
         }
 
 
-        #region Overrided
+        #region Overrided   
 
         /// <summary>Debug display string.</summary>
         protected override string DebugDisplay => $"{_httpctx.Request.Path.Value}{_httpctx.Request.QueryString.Value}";

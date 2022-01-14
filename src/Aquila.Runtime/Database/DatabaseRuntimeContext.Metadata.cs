@@ -50,16 +50,25 @@ namespace Aquila.Runtime
                 using var reader = cmd.ExecuteReader();
 
                 var list = new List<EntityMetadata>();
-
+                var secList = new List<SecPolicyMetadata>();
 
                 while (reader.Read())
                 {
+                    var name = (string)reader[DBConsts.BLOB_NAME_COLUMN];
                     var data = (byte[])reader[DBConsts.DATA_COLUMN];
 
-                    var yaml = Encoding.UTF8.GetString(data);
-                    var md = EntityMetadata.FromYaml(yaml);
-
-                    list.Add(md);
+                    if (name.StartsWith("Entity"))
+                    {
+                        var yaml = Encoding.UTF8.GetString(data);
+                        var md = EntityMetadata.FromYaml(yaml);
+                        list.Add(md);
+                    }
+                    else if (name.StartsWith("Sec"))
+                    {
+                        var yaml = Encoding.UTF8.GetString(data);
+                        var md = SecPolicyMetadata.FromYaml(yaml);
+                        secList.Add(md);
+                    }
                 }
 
                 _md = new EntityMetadataCollection(list);

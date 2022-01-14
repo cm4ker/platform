@@ -11,7 +11,9 @@ namespace Aquila.Metadata
     public class EntityMetadataCollection
     {
         private List<EntityMetadata> _metadata;
+        private List<SecPolicyMetadata> _secMetadata;
         private List<SMEntity> _semanticMetadata;
+        private List<SMSecPolicy> _secPolicies;
         private SMCache _cache;
         private bool _needUpdate;
 
@@ -39,6 +41,14 @@ namespace Aquila.Metadata
             return _semanticMetadata;
         }
 
+        public IEnumerable<SMSecPolicy> GetSecPolicies()
+        {
+            if (_secPolicies == null || _needUpdate)
+                CoreLazySemanticAnalyze();
+
+            return _secPolicies;
+        }
+
         private void CoreLazySemanticAnalyze()
         {
             _cache = new SMCache();
@@ -50,12 +60,19 @@ namespace Aquila.Metadata
                 return t;
             }).ToList();
 
+            _secPolicies = _secMetadata.Select(x => new SMSecPolicy(x, _cache)).ToList();
+
             _needUpdate = false;
         }
 
         public SMEntity GetSemanticByName(string name) => GetSemanticMetadata().FirstOrDefault(x => x.Name == name);
 
         public SMEntity GetSemantic(Func<SMEntity, bool> criteria) => GetSemanticMetadata().FirstOrDefault(criteria);
+
+        public SMSecPolicy GetSecPolicy(Func<SMSecPolicy, bool> criteria) => GetSecPolicies().FirstOrDefault(criteria);
+
+        public IEnumerable<SMSecPolicy> GetSecPolicies(Func<SMSecPolicy, bool> criteria) =>
+            GetSecPolicies().Where(criteria);
 
         public IEnumerator<EntityMetadata> GetEnumerator() => _metadata.GetEnumerator();
 
