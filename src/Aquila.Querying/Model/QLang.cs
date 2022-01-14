@@ -72,8 +72,16 @@ namespace Aquila.Core.Querying.Model
                     _logicStack.Push(new QOrderExpression(_logicStack.PopItem<QSortDirection>(),
                         _logicStack.PopExpression()));
                     break;
+
+                case QObjectType.GroupList:
+                    _logicStack.Push(new QGroupList(ImmutableArray<QGroupExpression>.Empty));
+                    break;
+                case QObjectType.GroupExpression:
+                    _logicStack.Push(new QGroupExpression(_logicStack.PopExpression()));
+                    break;
                 case QObjectType.ResultColumn:
                     new_result_column();
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
@@ -131,7 +139,7 @@ namespace Aquila.Core.Querying.Model
 
         public void group_by()
         {
-            _logicStack.Push(new QGroupBy(_logicStack.PopItem<QExpressionList>()));
+            _logicStack.Push(new QGroupBy(_logicStack.PopItem<QGroupList>()));
         }
 
         public void ld_component(string componentName)
@@ -314,11 +322,15 @@ namespace Aquila.Core.Querying.Model
         {
             _scope.Pop();
 
-
-            _logicStack.Push(new QQuery(_logicStack.PopItem<QOrderBy>(),
+            var query = new QQuery(_logicStack.PopItem<QOrderBy>(),
                 _logicStack.PopItem<QSelect>(), _logicStack.PopItem<QHaving>(),
                 _logicStack.PopItem<QGroupBy>(), _logicStack.PopItem<QWhere>(),
-                _logicStack.PopItem<QFrom>()));
+                _logicStack.PopItem<QFrom>());
+
+            //we need validate query before push it to the stack            
+
+            _logicStack.Push(query);
+
 
             if (_scope.Count > 0) //мы находимся во внутреннем запросе
                 _logicStack.Push(new QNestedQuery(_logicStack.PopQuery()));

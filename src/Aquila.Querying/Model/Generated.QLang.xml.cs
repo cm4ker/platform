@@ -10,8 +10,6 @@ namespace Aquila.Core.Querying.Model
     public class QFieldList : QLangCollection<QField>
     {
         public static QFieldList Empty => new QFieldList(ImmutableArray<QField>.Empty);
-        
-        
         public QFieldList(ImmutableArray<QField> elements): base(elements)
         {
         }
@@ -148,6 +146,35 @@ namespace Aquila.Core.Querying.Model
         public override void Accept(QLangVisitorBase visitor)
         {
             visitor.VisitQOrderList(this);
+        }
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
+    public class QGroupList : QLangCollection<QGroupExpression>
+    {
+        public static QGroupList Empty => new QGroupList(ImmutableArray<QGroupExpression>.Empty);
+        public QGroupList(ImmutableArray<QGroupExpression> elements): base(elements)
+        {
+        }
+
+        public override QGroupList Add(QLangElement element)
+        {
+            var item = element as QGroupExpression;
+            if (item == null)
+                throw new Exception("Element is not QGroupExpression");
+            return new QGroupList(Elements.Add(item));
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQGroupList(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQGroupList(this);
         }
     }
 }
@@ -371,12 +398,12 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QGroupBy : QLangElement
     {
-        public QGroupBy(QExpressionList expressions): base()
+        public QGroupBy(QGroupList expressions): base()
         {
             this.expressions = expressions;
         }
 
-        public QExpressionList Expressions { get => this.expressions; init => this.expressions = value; }
+        public QGroupList Expressions { get => this.expressions; init => this.expressions = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -395,7 +422,7 @@ namespace Aquila.Core.Querying.Model
             yield break;
         }
 
-        private QExpressionList expressions;
+        private QGroupList expressions;
     }
 }
 
@@ -962,6 +989,43 @@ namespace Aquila.Core.Querying.Model
         }
 
         private QSortDirection sortingDirection;
+        private QExpression expression;
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
+    public partial class QGroupExpression : QExpression
+    {
+        public QGroupExpression(QExpression expression): base()
+        {
+            this.expression = expression;
+        }
+
+        public QExpression Expression { get => this.expression; init => this.expression = value; }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQGroupExpression(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQGroupExpression(this);
+        }
+
+        public override IEnumerable<QLangElement> GetChildren()
+        {
+            if (this.expression != null)
+                yield return this.expression;
+            foreach (var item in base.GetChildren())
+            {
+                yield return item;
+            }
+
+            yield break;
+        }
+
         private QExpression expression;
     }
 }
@@ -1686,6 +1750,11 @@ namespace Aquila.Core.Querying
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitQGroupList(QGroupList arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitQWhenList(QWhenList arg)
         {
             return DefaultVisit(arg);
@@ -1787,6 +1856,11 @@ namespace Aquila.Core.Querying
         }
 
         public virtual T VisitQOrderExpression(QOrderExpression arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitQGroupExpression(QGroupExpression arg)
         {
             return DefaultVisit(arg);
         }
@@ -1919,6 +1993,11 @@ namespace Aquila.Core.Querying
             DefaultVisit(arg);
         }
 
+        public virtual void VisitQGroupList(QGroupList arg)
+        {
+            DefaultVisit(arg);
+        }
+
         public virtual void VisitQWhenList(QWhenList arg)
         {
             DefaultVisit(arg);
@@ -2020,6 +2099,11 @@ namespace Aquila.Core.Querying
         }
 
         public virtual void VisitQOrderExpression(QOrderExpression arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQGroupExpression(QGroupExpression arg)
         {
             DefaultVisit(arg);
         }

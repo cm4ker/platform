@@ -6,6 +6,7 @@
     <Syntax IsList="true" Base="QExpression" Name="QExpressionList"/>
     <Syntax IsList="true" Base="QDataSource" Name="QDataSourceList"/>
     <Syntax IsList="true" Base="QOrderExpression" Name="QOrderList"/>
+    <Syntax IsList="true" Base="QGroupExpression" Name="QGroupList"/>
     <Syntax IsList="true" Base="QWhen" Name="QWhenList"/>
     <Syntax IsList="true" Base="QQuery" Name="QQueryList"/>
 
@@ -37,7 +38,7 @@
 
     <Syntax Name="QGroupBy">
         <Arguments>
-            <List Name="Expressions" Type="QExpressionList"/>
+            <List Name="Expressions" Type="QGroupList"/>
         </Arguments>
     </Syntax>
 
@@ -127,6 +128,12 @@
     <Syntax Name="QOrderExpression" Base="QExpression">
         <Arguments>
             <Single Name="SortingDirection" Type="QSortDirection" DenyChildrenFill="true"/>
+            <Single Name="Expression" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QGroupExpression" Base="QExpression">
+        <Arguments>
             <Single Name="Expression" Type="QExpression"/>
         </Arguments>
     </Syntax>

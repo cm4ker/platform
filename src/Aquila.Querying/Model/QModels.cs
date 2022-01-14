@@ -321,6 +321,22 @@ namespace Aquila.Core.Querying.Model
         }
     }
 
+    partial class QGroupBy
+    {
+        public override string ToString()
+        {
+            return "Group by";
+        }
+    }
+
+    partial class QOrderBy
+    {
+        public override string ToString()
+        {
+            return "Order by";
+        }
+    }
+
     /// <summary>
     /// Выражение в предложении  SELECT 
     /// </summary>

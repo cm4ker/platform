@@ -121,6 +121,15 @@ namespace Aquila.Core.Querying
             return null;
         }
 
+        public override object VisitGroup_by_stmt(ZSqlGrammarParser.Group_by_stmtContext context)
+        {
+            _stack.create(QObjectType.GroupList);
+            base.VisitGroup_by_stmt(context);
+
+            _stack.group_by();
+
+            return null;
+        }
 
         public override object VisitParameter(ZSqlGrammarParser.ParameterContext context)
         {
@@ -262,7 +271,7 @@ namespace Aquila.Core.Querying
                 _stack.ld_star();
                 return null;
             }
-            
+
             _stack.create(QObjectType.ResultColumn);
 
             if (context.column_alias() != null)
@@ -275,7 +284,7 @@ namespace Aquila.Core.Querying
         public override object VisitOrdered_column(ZSqlGrammarParser.Ordered_columnContext context)
         {
             //duplicate array of fields for load the new result column into it
-            _stack.dup();
+            //_stack.dup();
             base.VisitOrdered_column(context);
 
             if (context.DESC() != null)
@@ -284,6 +293,17 @@ namespace Aquila.Core.Querying
                 _stack.ld_sort(QSortDirection.Ascending);
 
             _stack.create(QObjectType.OrderExpression);
+            _stack.st_elem();
+            return null;
+        }
+
+        public override object VisitGrouped_column(ZSqlGrammarParser.Grouped_columnContext context)
+        {
+            //duplicate array of fields for load the new result column into it
+            //_stack.dup();
+            base.VisitGrouped_column(context);
+
+            _stack.create(QObjectType.GroupExpression);
             _stack.st_elem();
             return null;
         }

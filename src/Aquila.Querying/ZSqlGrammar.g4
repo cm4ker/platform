@@ -20,7 +20,7 @@ where_stmt
 
 group_by_stmt
 :
-    GROUP BY expr ( ',' expr )*
+    GROUP BY grouped_column ( ',' grouped_column )*
 ;
 
 having_stmt
@@ -136,6 +136,10 @@ result_column
  | object_name '.' '*'
  | ( column_alias '=')? expr 
  ;
+
+grouped_column
+ :
+ | expr;
 
 ordered_column
  : 

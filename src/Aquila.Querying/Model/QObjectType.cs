@@ -13,7 +13,9 @@ namespace Aquila.Core.Querying.Model
         JoinList,
         QueryList,
         OrderList,
+        GroupList,
         OrderExpression,
+        GroupExpression,
         ResultColumn
     }
 }
