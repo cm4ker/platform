@@ -135,11 +135,14 @@ namespace Aquila.Core.Querying
             _qm.ld_param(arg.GetDbName());
         }
 
+        private List<(QDataSource ds, UserSecPermission)> _permissions;
+
         public override void VisitQQuery(QQuery node)
         {
             _qm.bg_query();
             _l.WriteLine("ct_query");
 
+            _permissions = new List<(QDataSource ds, UserSecPermission)>();
             Visit(node.From);
             Visit(node.Where);
             Visit(node.GroupBy);
@@ -162,19 +165,52 @@ namespace Aquila.Core.Querying
             _l.WriteLine("m_select");
 
             base.VisitQSelect(node);
+
+
+            foreach (var perm in _permissions)
+            {
+                foreach (var criterion in perm.Item2.Criteria.Where(x => x.Key == SecPermission.Read)
+                             .SelectMany(x => x.Value))
+                {
+                    _qm.ld_const(criterion);
+                }
+            }
         }
+
 
         public override void VisitQObjectTable(QObjectTable node)
         {
             var ot = node.ObjectType;
 
-            
-            
+            if (!_ust.TryClaimPermission(ot, SecPermission.Read, out var claim))
+            {
+                //access denied!
+                throw new Exception("Access denied");
+            }
+
+            /*
+             
+             Need register query
+             
+             
+             SELECT ( CASE WHEN EXISTS(SELECT 1 FROM (QUERY)) THEN 0x01 (ALLOW) ELSE 0x00 (DENIED) END  ) SEC_FLAG
+             
+             FROM (SOURCE_TABLE)
+ 
+             NOTE: where SOURCE_TABLE - table                            
+             
+             */
+
+            //claim.Criteria.TryGetValue(SecPermission.Read, out var )
+
+            _permissions.Add((node, claim));
+
             //Inject data source - the idea
             _qm.ld_table(ot.GetDescriptor(_drContext).DatabaseName);
 
             if (!_hasAlias)
                 _qm.@as(node.GetDbName());
+
 
             _hasAlias = false;
 

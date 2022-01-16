@@ -51,8 +51,27 @@ namespace Aquila.Metadata
                 }
             };
 
-            return new EntityMetadataCollection(new[] { em1, em2, em3 }, new List<SecPolicyMetadata>());
+            return new EntityMetadataCollection(new[] { em1, em2, em3 }, getTestSecPolicyMetadatas);
         }
+
+        public static string TestSecName = "TestSec";
+
+        private static List<SecPolicyMetadata> getTestSecPolicyMetadatas => new()
+        {
+            new SecPolicyMetadata
+            {
+                Name = TestSecName,
+                Subjects = new()
+                {
+                    new() { Name = "Store", Permission = SecPermission.Read }
+                },
+                Criteria = new()
+                {
+                    new() { Permission = SecPermission.Read, Query = "YOOOOHOHOH", Subject = "Store" },
+                    new() { Permission = SecPermission.Read, Query = "KASJHDLKASH", Subject = "Store" }
+                }
+            }
+        };
 
         public static EntityMetadataCollection GetEmptyMetadata() => new EntityMetadataCollection();
     }

@@ -58,7 +58,9 @@ namespace Aquila.Metadata
             _semanticMetadata = _metadata.Select(x =>
             {
                 var t = new SMEntity(x, _cache);
-                _cache.AddType(t);
+                _cache.AddType(t, t.ReferenceName, SMTypeKind.Reference);
+                _cache.AddType(t, t.Name, SMTypeKind.Object);
+
                 return t;
             }).ToList();
 
@@ -75,6 +77,10 @@ namespace Aquila.Metadata
 
         public IEnumerable<SMSecPolicy> GetSecPolicies(Func<SMSecPolicy, bool> criteria) =>
             GetSecPolicies().Where(criteria);
+
+        public IEnumerable<SMSecPolicy> GetSecPoliciesFromRoles(IEnumerable<string> roles) =>
+            GetSecPolicies((x => roles.Contains(x.Name)));
+
 
         public IEnumerator<EntityMetadata> GetEnumerator() => _metadata.GetEnumerator();
 

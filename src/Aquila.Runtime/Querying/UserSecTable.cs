@@ -36,7 +36,7 @@ namespace Aquila.Runtime.Querying
 
     public class UserSecTable
     {
-        private Dictionary<SMType, UserSecPermission> _rows;
+        private Dictionary<SMEntity, UserSecPermission> _rows;
 
         public UserSecTable()
         {
@@ -47,7 +47,7 @@ namespace Aquila.Runtime.Querying
             var subjects = policies.SelectMany(x => x.Subjects);
             var criteria = policies.SelectMany(x => x.Criteria);
 
-            var result = new Dictionary<SMType, UserSecPermission>();
+            var result = new Dictionary<SMEntity, UserSecPermission>();
 
             var a = (
                 from s in subjects
@@ -55,19 +55,21 @@ namespace Aquila.Runtime.Querying
                     on s.Subject equals c.Subject
                     into tmp
                 from t in tmp.DefaultIfEmpty()
-                group new { Sbuject = s.Subject, Permission = s.Permission, Criteria = tmp.ToList() } by s
-                    .Subject
+                group new { Sbuject = s.Subject, Permission = s.Permission, Criterion = t } by s.Subject
+                into g
+                select new { g.Key, Items = g.ToList() }
             );
 
             foreach (var t in a)
             {
                 var up = new UserSecPermission();
 
-                foreach (var values in t)
+                foreach (var values in t.Items)
                 {
                     up.Permission |= values.Permission;
 
-                    foreach (var criterion in values.Criteria)
+                    var criterion = values.Criterion;
+                    if (criterion != null)
                     {
                         if (up.Criteria.TryGetValue(criterion.Permission, out var pList))
                             pList.Add(criterion.Query);
@@ -87,20 +89,19 @@ namespace Aquila.Runtime.Querying
             _rows = result;
         }
 
-        public UserSecPermission this[SMType type]
+        public UserSecPermission this[SMEntity md]
         {
-            get { return _rows[type]; }
+            get { return _rows[md]; }
         }
 
-        public bool TryClaimSec(SMType type, out UserSecPermission permission)
+        public bool TryClaimSec(SMEntity md, out UserSecPermission permission)
         {
-            permission = this[type];
-            return permission != null;
+            return _rows.TryGetValue(md, out permission);
         }
 
-        public bool TryClaimPermission(SMType type, SecPermission permission, out UserSecPermission claim)
+        public bool TryClaimPermission(SMEntity md, SecPermission permission, out UserSecPermission claim)
         {
-            if (TryClaimSec(type, out var result))
+            if (TryClaimSec(md, out var result))
             {
                 claim = result;
                 if (permission.HasFlag(SecPermission.Create) && !result.Permission.HasFlag(SecPermission.Create))

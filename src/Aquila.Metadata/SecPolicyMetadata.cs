@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
@@ -20,6 +21,12 @@ namespace Aquila.Metadata
 
     public class SecPolicyMetadata
     {
+        public SecPolicyMetadata()
+        {
+            Criteria = new List<SecPolicyCriterionMetadata>();
+            Subjects = new List<SecPolicySubjectMetadata>();
+        }
+
         private static readonly IDeserializer Deserializer = new DeserializerBuilder()
             .WithTypeConverter(new YamlStringEnumConverter())
             .WithNamingConvention(NullNamingConvention.Instance)
@@ -58,7 +65,7 @@ namespace Aquila.Metadata
         public SecPermission Permission { get; set; }
 
         public string Subject { get; set; }
-        
+
 
         public string Query { get; set; }
     }

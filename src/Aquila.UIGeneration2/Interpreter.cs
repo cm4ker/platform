@@ -9,6 +9,7 @@ using Aquila.Metadata;
 using Aquila.QueryBuilder.Model;
 using Aquila.QueryBuilder.Visitor;
 using Aquila.Runtime;
+using Aquila.Runtime.Querying;
 
 namespace Aquila.UIBuilder
 {
@@ -91,13 +92,17 @@ namespace Aquila.UIBuilder
 
                 try
                 {
+                    var ust = new UserSecTable();
+                    ust.Init(_mdCollection.GetSecPolicies().ToList());
+
+
                     var walker = new PrinterWalker(output);
                     walker.Visit(_m.top() as QLangElement);
 
                     var pwalker = new PhysicalNameWalker(_drContext);
                     pwalker.Visit(_m.top() as QLangElement);
 
-                    var realWalker = new RealWalker(_drContext);
+                    var realWalker = new RealWalker(_drContext, ust);
                     realWalker.Visit(_m.top() as QLangElement);
 
 
@@ -146,13 +151,16 @@ namespace Aquila.UIBuilder
 
                 try
                 {
+                    var ust = new UserSecTable();
+                    ust.Init(_mdCollection.GetSecPolicies().ToList());
+
                     var pwalker = new PhysicalNameWalker(_drContext);
                     pwalker.Visit(_m.top() as QLangElement);
 
                     var walker = new PrinterWalker(output);
                     walker.Visit(_m.top() as QLangElement);
 
-                    var realWalker = new RealWalker(_drContext);
+                    var realWalker = new RealWalker(_drContext, ust);
                     realWalker.Visit(_m.top() as QLangElement);
 
 

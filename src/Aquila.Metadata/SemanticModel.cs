@@ -24,9 +24,9 @@ namespace Aquila.Metadata
             return result;
         }
 
-        public void AddType(SMEntity metadata)
+        public void AddType(SMEntity metadata, string name, SMTypeKind typeKind)
         {
-            _types.Add(new SMType(metadata));
+            _types.Add(new SMType(typeKind, metadata, name));
         }
     }
 
@@ -192,6 +192,9 @@ namespace Aquila.Metadata
 
         //Important reference kind must be last below contains primitive types
         Reference = 0x100,
+
+        //Object
+        Object = 0x10000
     }
 
     public sealed class SMType : IEquatable<SMType>
@@ -201,8 +204,8 @@ namespace Aquila.Metadata
         private readonly int _size;
         private readonly int _scale;
         private readonly int _precision;
-        private readonly bool _isReference;
         private SMEntity _semanticMetadata;
+        private SMTypeKind _typeKind;
 
 
         #region WellKnownTypes
@@ -219,24 +222,22 @@ namespace Aquila.Metadata
         #endregion
 
 
-        public SMType(MetadataType type)
+        public SMType(MetadataType type) : this(type.Name, type.Size, type.Scale, type.Precision)
         {
             _type = type;
-            _name = _type.Name;
-
-            _scale = _type.Scale;
-            _precision = _type.Precision;
-            _size = _type.Size;
         }
 
-        public SMType(SMEntity semanticMetadata)
+        public SMType(SMTypeKind typeKind, SMEntity semanticMetadata, string name)
         {
             _semanticMetadata = semanticMetadata;
-
-            //TODO: refactor this. We need divide reference from metadata 
-            _name = semanticMetadata.ReferenceName;
-            //Scale, precision, size is default at this case
+            _typeKind = typeKind;
+            _name = name;
         }
+
+        // public SMType(SMEntity semanticMetadata) : this(SMTypeKind.Reference, semanticMetadata,
+        //     semanticMetadata.ReferenceName)
+        // {
+        // }
 
         public SMType(string name, int size = 0, int scale = 0, int precision = 0)
         {
@@ -244,36 +245,25 @@ namespace Aquila.Metadata
             _size = size;
             _scale = scale;
             _precision = precision;
+
+            _typeKind = _name switch
+            {
+                String => SMTypeKind.String,
+                Int => SMTypeKind.Int,
+                Boolean => SMTypeKind.Bool,
+                Decimal => SMTypeKind.Decimal,
+                DateTime => SMTypeKind.DateTime,
+                Numeric => SMTypeKind.Numeric,
+                Guid => SMTypeKind.Guid,
+                _ => SMTypeKind.Unknown
+            };
         }
 
 
         public string Name => _name;
 
 
-        public SMTypeKind Kind
-        {
-            get
-            {
-                if (_semanticMetadata == null)
-                {
-                    return Name switch
-                    {
-                        String => SMTypeKind.String,
-                        Int => SMTypeKind.Int,
-                        Boolean => SMTypeKind.Bool,
-                        Decimal => SMTypeKind.Decimal,
-                        DateTime => SMTypeKind.DateTime,
-                        Numeric => SMTypeKind.Numeric,
-                        Guid => SMTypeKind.Guid,
-                        _ => SMTypeKind.Unknown
-                    };
-                }
-                else
-                {
-                    return SMTypeKind.Reference;
-                }
-            }
-        }
+        public SMTypeKind Kind => _typeKind;
 
         public int Size => _size;
         public int Scale => _scale;
@@ -307,12 +297,13 @@ namespace Aquila.Metadata
         {
             return _semanticMetadata;
         }
+
         public bool Equals(SMType? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return _name == other._name && _size == other._size && _scale == other._scale &&
-                   _precision == other._precision && _isReference == other._isReference;
+                   _precision == other._precision;
         }
 
         public override bool Equals(object obj)
@@ -322,7 +313,7 @@ namespace Aquila.Metadata
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(_name, _size, _scale, _precision, _isReference);
+            return HashCode.Combine(_name, _size, _scale, _precision);
         }
     }
 
@@ -339,7 +330,7 @@ namespace Aquila.Metadata
 
         public SecPermission Permission => _md.Permission;
 
-        public SMType Subject => _cache.ResolveType(_md.Name);
+        public SMEntity Subject => _cache.ResolveType(_md.Name).GetSemantic();
     }
 
     public sealed class SMSecPolicy
@@ -380,6 +371,6 @@ namespace Aquila.Metadata
 
         public SecPermission Permission => _md.Permission;
 
-        public SMType Subject => _cache.ResolveType(_md.Subject);
+        public SMEntity Subject => _cache.ResolveType(_md.Subject).GetSemantic();
     }
 }
