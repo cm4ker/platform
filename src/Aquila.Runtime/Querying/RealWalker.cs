@@ -176,11 +176,24 @@ namespace Aquila.Core.Querying
                     foreach (var cri in criteria.Value)
                     {
                         Visit(cri.cModel);
+                        _qm.ld_scalar();
                     }
                 }
             }
         }
 
+        public override void VisitQCriterion(QCriterion arg)
+        {
+            _qm.bg_query();
+
+            Visit(arg.From);
+            Visit(arg.Where);
+
+            _qm.m_select();
+            _qm.ld_const(1);
+
+            _qm.st_query();
+        }
 
         public override void VisitQObjectTable(QObjectTable node)
         {

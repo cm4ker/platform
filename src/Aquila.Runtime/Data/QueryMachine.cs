@@ -164,6 +164,8 @@ namespace Aquila.QueryBuilder
 
         public QueryMachine @as(string name)
         {
+            if (name == null) throw new Exception("no name");
+
             switch (pop())
             {
                 case SExpression exp:
