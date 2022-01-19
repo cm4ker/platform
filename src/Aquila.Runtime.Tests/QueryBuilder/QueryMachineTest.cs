@@ -248,5 +248,32 @@ namespace Aquila.Runtime.Tests
             Assert.Equal(res,
                 res = "INSERT INTO table2(column3, column2, column1)\nVALUES\n(@value3, @value2, @value1)\n");
         }
+        
+        [Fact]
+        public void QueryInSelectTest()
+        {
+            var machine = new QueryMachine();
+
+            machine
+                .bg_query()
+                .m_from()
+                .ld_table("Table")
+                .m_select()
+                
+                
+                .bg_query()
+                .m_from()
+                .ld_table("Table")
+                .m_select()
+                .ld_column("Column")
+                .st_query()
+                .ld_scalar()
+                
+                
+                .ld_column("Column")
+                .st_query();
+
+            Assert.Equal("SELECT (SELECT Column\nFROM\nTable\n),\nColumn\nFROM\nTable\n", CompileMsSql(machine));
+        }
     }
 }

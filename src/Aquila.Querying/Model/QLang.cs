@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Data;
 using System.Linq;
 using Antlr4.Runtime;
 using Aquila.Metadata;
@@ -10,21 +11,23 @@ namespace Aquila.Core.Querying.Model
     public class QLang
     {
         private readonly EntityMetadataCollection _metadata;
+        private readonly SMEntity _criterionContext;
         private LogicStack _logicStack;
         private Stack<LogicScope> _scope;
         private QLangTypeBuilder _tb;
 
-        public QLang(EntityMetadataCollection metadata)
+        public QLang(EntityMetadataCollection metadata, SMEntity criterionContext = null)
         {
             _metadata = metadata;
+            _criterionContext = criterionContext;
             _logicStack = new LogicStack();
             _scope = new Stack<LogicScope>();
             _tb = new QLangTypeBuilder();
         }
 
-        public static QLangElement Parse(string sql, EntityMetadataCollection md)
+        public static QLangElement Parse(string sql, EntityMetadataCollection md, SMEntity criterionContext = null)
         {
-            var m = new QLang(md);
+            var m = new QLang(md, criterionContext);
 
             AntlrInputStream inputStream = new AntlrInputStream(sql);
             ZSqlGrammarLexer speakLexer = new ZSqlGrammarLexer(inputStream);
@@ -165,7 +168,22 @@ namespace Aquila.Core.Querying.Model
                 CurrentScope.ScopedDataSources.Add(ds);
         }
 
-        public void ld_object_table(string tableName)
+        /// <summary>
+        /// used for load subject then criterion build
+        /// need pass CriterionContext parameter to constructor for using this feature
+        /// </summary>
+        public void ld_subject()
+        {
+            if (_criterionContext != null)
+            {
+                var ds = new QObjectTable(_criterionContext);
+                _logicStack.Push(ds);
+                if (CurrentScope != null)
+                    CurrentScope.ScopedDataSources.Add(ds);
+            }
+        }
+
+        public void ld_table(string tableName)
         {
             var ds = _logicStack.PopDataSource();
             var table = ds.FindTable(tableName);
@@ -189,10 +207,22 @@ namespace Aquila.Core.Querying.Model
             ld_component(componentName);
             ld_object_type(typeName);
 
-            if (!string.IsNullOrEmpty(p_alias))
+            if (string.IsNullOrEmpty(p_alias))
             {
-                @as(p_alias);
+                //force aliasing the sources because we need it at adding security level
+                p_alias = RandomString(10);
             }
+
+            @as(p_alias);
+        }
+
+        private static Random random = new Random();
+
+        private static string RandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
         public void ld_param(string name)
@@ -334,6 +364,15 @@ namespace Aquila.Core.Querying.Model
 
             if (_scope.Count > 0) //мы находимся во внутреннем запросе
                 _logicStack.Push(new QNestedQuery(_logicStack.PopQuery()));
+        }
+
+        public void new_criterion()
+        {
+            var criterion = new QCriterion(_logicStack.PopItem<QWhere>(), _logicStack.PopItem<QFrom>());
+
+            //we need validate query before push it to the stack            
+
+            _logicStack.Push(criterion);
         }
 
 

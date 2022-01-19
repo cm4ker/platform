@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Aquila.Core.Querying.Model;
 using Aquila.Metadata;
 
 namespace Aquila.Runtime.Querying
@@ -26,12 +28,12 @@ namespace Aquila.Runtime.Querying
     {
         public UserSecPermission()
         {
-            Criteria = new Dictionary<SecPermission, List<string>>();
+            Criteria = new Dictionary<SecPermission, List<(string, QCriterion)>>();
         }
 
         public SecPermission Permission { get; set; }
 
-        public Dictionary<SecPermission, List<string>> Criteria { get; set; }
+        public Dictionary<SecPermission, List<(string cString, QCriterion cModel)>> Criteria { get; set; }
     }
 
     public class UserSecTable
@@ -42,7 +44,7 @@ namespace Aquila.Runtime.Querying
         {
         }
 
-        public void Init(List<SMSecPolicy> policies)
+        public void Init(List<SMSecPolicy> policies, DatabaseRuntimeContext _drContext)
         {
             var subjects = policies.SelectMany(x => x.Subjects);
             var criteria = policies.SelectMany(x => x.Criteria);
@@ -71,10 +73,16 @@ namespace Aquila.Runtime.Querying
                     var criterion = values.Criterion;
                     if (criterion != null)
                     {
+                        var subject = criterion.Subject;
+                        var sCriterion = criterion.Query;
+                        var qCriterion =
+                            QLang.Parse(sCriterion, _drContext.Metadata.GetMetadata(), subject) as QCriterion ??
+                            throw new Exception("can't compile criterion");
+
                         if (up.Criteria.TryGetValue(criterion.Permission, out var pList))
-                            pList.Add(criterion.Query);
+                            pList.Add((criterion.Query, qCriterion));
                         else
-                            up.Criteria[criterion.Permission] = new() { criterion.Query };
+                            up.Criteria[criterion.Permission] = new() { (sCriterion, qCriterion) };
                     }
                 }
 

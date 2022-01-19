@@ -264,6 +264,31 @@ namespace Aquila.Core.Querying.Model
 
 namespace Aquila.Core.Querying.Model
 {
+    public abstract partial class QQueryBase : QLangElement
+    {
+        public QQueryBase(): base()
+        {
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<QLangElement> GetChildren()
+        {
+            yield break;
+        }
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
     public partial class QQuery : QLangElement
     {
         public QQuery(QOrderBy orderBy, QSelect select, QHaving having, QGroupBy groupBy, QWhere where, QFrom from): base()
@@ -319,6 +344,44 @@ namespace Aquila.Core.Querying.Model
         private QSelect select;
         private QHaving having;
         private QGroupBy groupBy;
+        private QWhere where;
+        private QFrom from;
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
+    public partial class QCriterion : QLangElement
+    {
+        public QCriterion(QWhere where, QFrom from): base()
+        {
+            this.where = where;
+            this.from = from;
+        }
+
+        public QWhere Where { get => this.where; init => this.where = value; }
+
+        public QFrom From { get => this.from; init => this.from = value; }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQCriterion(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQCriterion(this);
+        }
+
+        public override IEnumerable<QLangElement> GetChildren()
+        {
+            if (this.where != null)
+                yield return this.where;
+            if (this.from != null)
+                yield return this.from;
+            yield break;
+        }
+
         private QWhere where;
         private QFrom from;
     }
@@ -1775,6 +1838,11 @@ namespace Aquila.Core.Querying
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitQCriterion(QCriterion arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitQSelect(QSelect arg)
         {
             return DefaultVisit(arg);
@@ -2014,6 +2082,11 @@ namespace Aquila.Core.Querying
         }
 
         public virtual void VisitQQuery(QQuery arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQCriterion(QCriterion arg)
         {
             DefaultVisit(arg);
         }

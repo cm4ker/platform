@@ -120,9 +120,24 @@ namespace Aquila.QueryBuilder
             return this;
         }
 
+        /// <summary>
+        /// Pop two string args from stack (name, table_name) and put new column on stack 
+        /// </summary>
+        /// <returns></returns>
         public QueryMachine ld_column()
         {
             push(new SField(Pop<string>(), Pop<string>()));
+            return this;
+        }
+
+        /// <summary>
+        /// Pop select statement from stack and push the scalar
+        /// </summary>
+        /// <returns></returns>
+        public QueryMachine ld_scalar()
+        {
+            var q = Pop<SDataSourceNestedQuery>();
+            push(new SScalar(q));
             return this;
         }
 
@@ -231,8 +246,8 @@ namespace Aquila.QueryBuilder
             {
                 case MachineContextType.Select:
                     push(new SSelect(
-                        TryPopList<SExpression>(0, needReverse: true),
                         TryPop<SOrderBy>(),
+                        TryPopList<SExpression>(0, needReverse: true),
                         TryPop<STop>(),
                         TryPop<SHaving>(),
                         TryPop<SGroupBy>(),

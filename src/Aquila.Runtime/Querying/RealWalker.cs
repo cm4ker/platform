@@ -166,13 +166,17 @@ namespace Aquila.Core.Querying
 
             base.VisitQSelect(node);
 
+            //
 
-            foreach (var perm in _permissions)
+            foreach (var perm in _permissions.ToArray())
             {
-                foreach (var criterion in perm.Item2.Criteria.Where(x => x.Key == SecPermission.Read)
-                             .SelectMany(x => x.Value))
+                foreach (var criteria in perm.Item2.Criteria.Where(x =>
+                             x.Key == SecPermission.Read))
                 {
-                    _qm.ld_const(criterion);
+                    foreach (var cri in criteria.Value)
+                    {
+                        Visit(cri.cModel);
+                    }
                 }
             }
         }
@@ -189,19 +193,14 @@ namespace Aquila.Core.Querying
             }
 
             /*
-             
              Need register query
-             
              
              SELECT ( CASE WHEN EXISTS(SELECT 1 FROM (QUERY)) THEN 0x01 (ALLOW) ELSE 0x00 (DENIED) END  ) SEC_FLAG
              
              FROM (SOURCE_TABLE)
  
-             NOTE: where SOURCE_TABLE - table                            
-             
-             */
-
-            //claim.Criteria.TryGetValue(SecPermission.Read, out var )
+             NOTE: where SOURCE_TABLE - table subject                            
+            */
 
             _permissions.Add((node, claim));
 
@@ -534,5 +533,34 @@ namespace Aquila.Core.Querying
                 _qm.@as(node.GetDbName());
             }
         }
+    }
+
+    public class SecMachine
+    {
+        private Stack<List<Action<QueryMachine>>> _stack = new();
+
+        //machine for emit delayed securities
+        /*
+         we have get sec for executing query on emitting FROM construction
+         here we have to register for emitting permission (if we have a criterion)
+         
+         
+         SELECT
+            (0x00 || 0x01) && T0._sec
+         FROM
+          ...
+          (SELECT (0x00 || 0x01) AS _sec) AS T0  
+         */
+
+
+        public void PushAnCriterion(QObjectTable source, string criterion)
+        {
+            //TODO: we need to compile criterion on this stage already
+            //_stack
+        }
+
+        // public bool PullNextCriterionCheck(out Action<QueryMachine> qm)
+        // {
+        // }
     }
 }

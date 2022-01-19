@@ -20,6 +20,10 @@
       "commandName": "Project",
       "commandLineArgs": "sql sql_syntax.xml Generated.SQL.xml.cs"
     },
+    "SQLDirect": {
+      "commandName": "Project",
+      "commandLineArgs": "sql sql_syntax.xml ..\\..\\..\\Aquila.Runtime\\Data\\Model\\Generated.SQL.xml.cs"
+    },
     "BoundTreeDirect": {
       "commandName": "Project",
       "commandLineArgs": "bound_tree BoundTree.xml ..\\..\\..\\Aquila.CodeAnalysis\\Generated\\Generated.BoundTree.xml.cs"

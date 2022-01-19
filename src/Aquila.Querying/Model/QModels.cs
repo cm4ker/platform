@@ -294,6 +294,14 @@ namespace Aquila.Core.Querying.Model
         }
     }
 
+    public partial class QCriterion
+    {
+        public override string ToString()
+        {
+            return "Criterion";
+        }
+    }
+
     /// <summary>
     /// Заппрос
     /// </summary>

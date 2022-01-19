@@ -22,6 +22,20 @@ namespace Aquila.Core.Querying
             return base.VisitSql_stmt_list(context);
         }
 
+        public override object VisitCriterion_stmt(ZSqlGrammarParser.Criterion_stmtContext context)
+        {
+            _stack.new_scope();
+            if (context.from_stmt() != null)
+                Visit(context.from_stmt());
+
+            if (context.where_stmt() != null)
+                Visit(context.where_stmt());
+
+            _stack.new_criterion();
+
+            return null;
+        }
+
         public override object VisitQuery_stmt(ZSqlGrammarParser.Query_stmtContext context)
         {
             // _stack.dup();
@@ -172,6 +186,24 @@ namespace Aquila.Core.Querying
             return null;
         }
 
+        public override object VisitTable_qualified_name(ZSqlGrammarParser.Table_qualified_nameContext context)
+        {
+            var list = context.any_name();
+            if (list.Length == 2)
+            {
+                var comName = list[0].GetText();
+                var objName = list[1].GetText();
+                _stack.ld_source(comName, objName, context.table_alias()?.GetText());
+            }
+            else if (list.Length == 1 && list[0].GetText().ToLower() == "subject")
+            {
+                _stack.ld_subject();
+            }
+
+
+            return base.VisitTable_qualified_name(context);
+        }
+
         public override object VisitTable(ZSqlGrammarParser.TableContext context)
         {
             _stack.ld_source(context.component_name().GetText(), context.object_name().GetText(),
@@ -196,7 +228,7 @@ namespace Aquila.Core.Querying
             Visit(context.component_name());
             Visit(context.object_name());
 
-            _stack.ld_object_table(context.table_name().GetText());
+            _stack.ld_table(context.table_name().GetText());
 
             if (context.table_alias() != null)
                 Visit(context.table_alias());

@@ -67,8 +67,8 @@ namespace Aquila.Metadata
                 },
                 Criteria = new()
                 {
-                    new() { Permission = SecPermission.Read, Query = "YOOOOHOHOH", Subject = "Store" },
-                    new() { Permission = SecPermission.Read, Query = "KASJHDLKASH", Subject = "Store" }
+                    new() { Permission = SecPermission.Read, Query = "FROM Subject s WHERE Name = 'Test'", Subject = "Store" },
+                    new() { Permission = SecPermission.Read, Query = "FROM Subject s WHERE Name = 'Hello'", Subject = "Store" }
                 }
             }
         };

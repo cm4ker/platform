@@ -73,6 +73,11 @@
 
     <Syntax Name="SMarker"/>
 
+    <Syntax Name="SScalar" Base="SExpression">
+        <Arguments>
+            <Single Name="NestedQuery" Type="SDataSourceNestedQuery"/>
+        </Arguments>
+    </Syntax>
 
     <Syntax Name="SCoalese" Base="SExpression">
         <Arguments>

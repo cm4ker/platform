@@ -12,12 +12,21 @@
 
     <Syntax Name="QExpression"/>
 
+    <Syntax IsAbstract="true" Name="QQueryBase"/>
+
     <Syntax Name="QQuery">
         <Arguments>
             <Single Name="OrderBy" Type="QOrderBy"/>
             <Single Name="Select" Type="QSelect"/>
             <Single Name="Having" Type="QHaving"/>
             <Single Name="GroupBy" Type="QGroupBy"/>
+            <Single Name="Where" Type="QWhere"/>
+            <Single Name="From" Type="QFrom"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QCriterion">
+        <Arguments>
             <Single Name="Where" Type="QWhere"/>
             <Single Name="From" Type="QFrom"/>
         </Arguments>

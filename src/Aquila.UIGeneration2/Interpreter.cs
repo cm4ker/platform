@@ -93,7 +93,7 @@ namespace Aquila.UIBuilder
                 try
                 {
                     var ust = new UserSecTable();
-                    ust.Init(_mdCollection.GetSecPolicies().ToList());
+                    ust.Init(_mdCollection.GetSecPolicies().ToList(), _drContext);
 
 
                     var walker = new PrinterWalker(output);
@@ -152,7 +152,7 @@ namespace Aquila.UIBuilder
                 try
                 {
                     var ust = new UserSecTable();
-                    ust.Init(_mdCollection.GetSecPolicies().ToList());
+                    ust.Init(_mdCollection.GetSecPolicies().ToList(), _drContext);
 
                     var pwalker = new PhysicalNameWalker(_drContext);
                     pwalker.Visit(_m.top() as QLangElement);

@@ -20,7 +20,7 @@ namespace Aquila.Core.Querying
             pwalker.Visit(logicalTree);
 
             var ust = new UserSecTable();
-            ust.Init(secPolicies);
+            ust.Init(secPolicies, drContext);
 
             var realWalker = new RealWalker(drContext, ust);
             realWalker.Visit(logicalTree);

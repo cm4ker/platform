@@ -61,11 +61,7 @@ namespace Aquila.QueryBuilder.Model
             Name = name;
         }
 
-        public string Name
-        {
-            get;
-            set;
-        }
+        public string Name { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -95,17 +91,9 @@ namespace Aquila.QueryBuilder.Model
             Offset = offset;
         }
 
-        public int Limit
-        {
-            get;
-            set;
-        }
+        public int Limit { get; set; }
 
-        public int Offset
-        {
-            get;
-            set;
-        }
+        public int Offset { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -134,11 +122,7 @@ namespace Aquila.QueryBuilder.Model
             Query = query;
         }
 
-        public SSelect Query
-        {
-            get;
-            set;
-        }
+        public SSelect Query { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -167,11 +151,7 @@ namespace Aquila.QueryBuilder.Model
             Query = query;
         }
 
-        public SSelect Query
-        {
-            get;
-            set;
-        }
+        public SSelect Query { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -201,17 +181,9 @@ namespace Aquila.QueryBuilder.Model
             Table = table;
         }
 
-        public string Name
-        {
-            get;
-            set;
-        }
+        public string Name { get; set; }
 
-        public string Table
-        {
-            get;
-            set;
-        }
+        public string Table { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -241,17 +213,9 @@ namespace Aquila.QueryBuilder.Model
             Name = name;
         }
 
-        public SExpression Expression
-        {
-            get;
-            set;
-        }
+        public SExpression Expression { get; set; }
 
-        public string Name
-        {
-            get;
-            set;
-        }
+        public string Name { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -281,17 +245,9 @@ namespace Aquila.QueryBuilder.Model
             Name = name;
         }
 
-        public SDataSource DataSource
-        {
-            get;
-            set;
-        }
+        public SDataSource DataSource { get; set; }
 
-        public string Name
-        {
-            get;
-            set;
-        }
+        public string Name { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -315,7 +271,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SSelect : SDataSource
     {
-        public SSelect( List<SExpression> fields, SOrderBy orderBy, STop top, SHaving having, SGroupBy groupBy, SWhere where, SFrom from): base()
+        public SSelect(SOrderBy orderBy, List<SExpression> fields, STop top, SHaving having, SGroupBy groupBy, SWhere where, SFrom from): base()
         {
             OrderBy = orderBy;
             Fields = fields;
@@ -326,47 +282,19 @@ namespace Aquila.QueryBuilder.Model
             From = from;
         }
 
-        public SOrderBy OrderBy
-        {
-            get;
-            set;
-        }
+        public SOrderBy OrderBy { get; set; }
 
-        public List<SExpression> Fields
-        {
-            get;
-            set;
-        }
+        public List<SExpression> Fields { get; set; }
 
-        public STop Top
-        {
-            get;
-            set;
-        }
+        public STop Top { get; set; }
 
-        public SHaving Having
-        {
-            get;
-            set;
-        }
+        public SHaving Having { get; set; }
 
-        public SGroupBy GroupBy
-        {
-            get;
-            set;
-        }
+        public SGroupBy GroupBy { get; set; }
 
-        public SWhere Where
-        {
-            get;
-            set;
-        }
+        public SWhere Where { get; set; }
 
-        public SFrom From
-        {
-            get;
-            set;
-        }
+        public SFrom From { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -395,11 +323,7 @@ namespace Aquila.QueryBuilder.Model
             Value = value;
         }
 
-        public object Value
-        {
-            get;
-            set;
-        }
+        public object Value { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -441,6 +365,35 @@ namespace Aquila.QueryBuilder.Model
 
 namespace Aquila.QueryBuilder.Model
 {
+    public partial class SScalar : SExpression
+    {
+        public SScalar(SDataSourceNestedQuery nestedQuery): base()
+        {
+            NestedQuery = nestedQuery;
+        }
+
+        public SDataSourceNestedQuery NestedQuery { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( SScalar ) obj ;  return  ( Compare ( this . NestedQuery ,  node . NestedQuery ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (NestedQuery == null ? 0 : NestedQuery.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSScalar(this);
+        }
+    }
+}
+
+namespace Aquila.QueryBuilder.Model
+{
     public partial class SCoalese : SExpression
     {
         public SCoalese(List<SExpression> expressions): base()
@@ -448,11 +401,7 @@ namespace Aquila.QueryBuilder.Model
             Expressions = expressions;
         }
 
-        public List<SExpression> Expressions
-        {
-            get;
-            set;
-        }
+        public List<SExpression> Expressions { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -482,17 +431,9 @@ namespace Aquila.QueryBuilder.Model
             From = from;
         }
 
-        public SWhere Where
-        {
-            get;
-            set;
-        }
+        public SWhere Where { get; set; }
 
-        public SFrom From
-        {
-            get;
-            set;
-        }
+        public SFrom From { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -522,17 +463,9 @@ namespace Aquila.QueryBuilder.Model
             Fields = fields;
         }
 
-        public OrderDirection Direction
-        {
-            get;
-            set;
-        }
+        public OrderDirection Direction { get; set; }
 
-        public List<SExpression> Fields
-        {
-            get;
-            set;
-        }
+        public List<SExpression> Fields { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -561,11 +494,7 @@ namespace Aquila.QueryBuilder.Model
             Fields = fields;
         }
 
-        public List<SExpression> Fields
-        {
-            get;
-            set;
-        }
+        public List<SExpression> Fields { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -594,11 +523,7 @@ namespace Aquila.QueryBuilder.Model
             Condition = condition;
         }
 
-        public SCondition Condition
-        {
-            get;
-            set;
-        }
+        public SCondition Condition { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -648,17 +573,9 @@ namespace Aquila.QueryBuilder.Model
             Right = right;
         }
 
-        public SExpression Left
-        {
-            get;
-            set;
-        }
+        public SExpression Left { get; set; }
 
-        public SExpression Right
-        {
-            get;
-            set;
-        }
+        public SExpression Right { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -688,17 +605,9 @@ namespace Aquila.QueryBuilder.Model
             Right = right;
         }
 
-        public SExpression Left
-        {
-            get;
-            set;
-        }
+        public SExpression Left { get; set; }
 
-        public SExpression Right
-        {
-            get;
-            set;
-        }
+        public SExpression Right { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -728,17 +637,9 @@ namespace Aquila.QueryBuilder.Model
             Right = right;
         }
 
-        public SExpression Left
-        {
-            get;
-            set;
-        }
+        public SExpression Left { get; set; }
 
-        public SExpression Right
-        {
-            get;
-            set;
-        }
+        public SExpression Right { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -768,17 +669,9 @@ namespace Aquila.QueryBuilder.Model
             Right = right;
         }
 
-        public SExpression Left
-        {
-            get;
-            set;
-        }
+        public SExpression Left { get; set; }
 
-        public SExpression Right
-        {
-            get;
-            set;
-        }
+        public SExpression Right { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -808,17 +701,9 @@ namespace Aquila.QueryBuilder.Model
             Right = right;
         }
 
-        public SExpression Left
-        {
-            get;
-            set;
-        }
+        public SExpression Left { get; set; }
 
-        public SExpression Right
-        {
-            get;
-            set;
-        }
+        public SExpression Right { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -848,17 +733,9 @@ namespace Aquila.QueryBuilder.Model
             Right = right;
         }
 
-        public SExpression Left
-        {
-            get;
-            set;
-        }
+        public SExpression Left { get; set; }
 
-        public SExpression Right
-        {
-            get;
-            set;
-        }
+        public SExpression Right { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -887,11 +764,7 @@ namespace Aquila.QueryBuilder.Model
             Expressions = expressions;
         }
 
-        public List<SExpression> Expressions
-        {
-            get;
-            set;
-        }
+        public List<SExpression> Expressions { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -920,11 +793,7 @@ namespace Aquila.QueryBuilder.Model
             Expressions = expressions;
         }
 
-        public List<SExpression> Expressions
-        {
-            get;
-            set;
-        }
+        public List<SExpression> Expressions { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -953,11 +822,7 @@ namespace Aquila.QueryBuilder.Model
             Expressions = expressions;
         }
 
-        public List<SExpression> Expressions
-        {
-            get;
-            set;
-        }
+        public List<SExpression> Expressions { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -986,11 +851,7 @@ namespace Aquila.QueryBuilder.Model
             Expressions = expressions;
         }
 
-        public List<SExpression> Expressions
-        {
-            get;
-            set;
-        }
+        public List<SExpression> Expressions { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1019,11 +880,7 @@ namespace Aquila.QueryBuilder.Model
             Argument = argument;
         }
 
-        public SExpression Argument
-        {
-            get;
-            set;
-        }
+        public SExpression Argument { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1052,11 +909,7 @@ namespace Aquila.QueryBuilder.Model
             Argument = argument;
         }
 
-        public SExpression Argument
-        {
-            get;
-            set;
-        }
+        public SExpression Argument { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1085,11 +938,7 @@ namespace Aquila.QueryBuilder.Model
             Argument = argument;
         }
 
-        public SExpression Argument
-        {
-            get;
-            set;
-        }
+        public SExpression Argument { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1118,11 +967,7 @@ namespace Aquila.QueryBuilder.Model
             Name = name;
         }
 
-        public string Name
-        {
-            get;
-            set;
-        }
+        public string Name { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1153,23 +998,11 @@ namespace Aquila.QueryBuilder.Model
             JoinType = joinType;
         }
 
-        public SCondition Condition
-        {
-            get;
-            set;
-        }
+        public SCondition Condition { get; set; }
 
-        public SDataSource DataSource
-        {
-            get;
-            set;
-        }
+        public SDataSource DataSource { get; set; }
 
-        public JoinType JoinType
-        {
-            get;
-            set;
-        }
+        public JoinType JoinType { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1198,11 +1031,7 @@ namespace Aquila.QueryBuilder.Model
             Condition = condition;
         }
 
-        public SCondition Condition
-        {
-            get;
-            set;
-        }
+        public SCondition Condition { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1232,17 +1061,9 @@ namespace Aquila.QueryBuilder.Model
             DataSource = dataSource;
         }
 
-        public List<SJoin> Join
-        {
-            get;
-            set;
-        }
+        public List<SJoin> Join { get; set; }
 
-        public SDataSource DataSource
-        {
-            get;
-            set;
-        }
+        public SDataSource DataSource { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1273,23 +1094,11 @@ namespace Aquila.QueryBuilder.Model
             DataSource = dataSource;
         }
 
-        public List<SField> Fields
-        {
-            get;
-            set;
-        }
+        public List<SField> Fields { get; set; }
 
-        public STable Into
-        {
-            get;
-            set;
-        }
+        public STable Into { get; set; }
 
-        public SDataSource DataSource
-        {
-            get;
-            set;
-        }
+        public SDataSource DataSource { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1318,11 +1127,7 @@ namespace Aquila.QueryBuilder.Model
             Values = values;
         }
 
-        public List<SExpression> Values
-        {
-            get;
-            set;
-        }
+        public List<SExpression> Values { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1352,17 +1157,9 @@ namespace Aquila.QueryBuilder.Model
             Variable = variable;
         }
 
-        public SExpression Expression
-        {
-            get;
-            set;
-        }
+        public SExpression Expression { get; set; }
 
-        public SField Variable
-        {
-            get;
-            set;
-        }
+        public SField Variable { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1391,11 +1188,7 @@ namespace Aquila.QueryBuilder.Model
             Items = items;
         }
 
-        public List<SAssign> Items
-        {
-            get;
-            set;
-        }
+        public List<SAssign> Items { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1427,29 +1220,13 @@ namespace Aquila.QueryBuilder.Model
             From = from;
         }
 
-        public SDataSource Update
-        {
-            get;
-            set;
-        }
+        public SDataSource Update { get; set; }
 
-        public SSet Set
-        {
-            get;
-            set;
-        }
+        public SSet Set { get; set; }
 
-        public SWhere Where
-        {
-            get;
-            set;
-        }
+        public SWhere Where { get; set; }
 
-        public SFrom From
-        {
-            get;
-            set;
-        }
+        public SFrom From { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1479,17 +1256,9 @@ namespace Aquila.QueryBuilder.Model
             Then = then;
         }
 
-        public SCondition Condition
-        {
-            get;
-            set;
-        }
+        public SCondition Condition { get; set; }
 
-        public SExpression Then
-        {
-            get;
-            set;
-        }
+        public SExpression Then { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1519,17 +1288,9 @@ namespace Aquila.QueryBuilder.Model
             Whens = whens;
         }
 
-        public SExpression Else
-        {
-            get;
-            set;
-        }
+        public SExpression Else { get; set; }
 
-        public List<SWhen> Whens
-        {
-            get;
-            set;
-        }
+        public List<SWhen> Whens { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1559,17 +1320,9 @@ namespace Aquila.QueryBuilder.Model
             Expression = expression;
         }
 
-        public ColumnType Type
-        {
-            get;
-            set;
-        }
+        public ColumnType Type { get; set; }
 
-        public SExpression Expression
-        {
-            get;
-            set;
-        }
+        public SExpression Expression { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1618,11 +1371,7 @@ namespace Aquila.QueryBuilder.Model
             QueryList = new List<SSyntaxNode>();
         }
 
-        public List<SSyntaxNode> QueryList
-        {
-            get;
-            set;
-        }
+        public List<SSyntaxNode> QueryList { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1650,11 +1399,7 @@ namespace Aquila.QueryBuilder.Model
         {
         }
 
-        public string Value
-        {
-            get;
-            set;
-        }
+        public string Value { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1782,11 +1527,7 @@ namespace Aquila.QueryBuilder.Model
         {
         }
 
-        public Scheme Scheme
-        {
-            get;
-            set;
-        }
+        public Scheme Scheme { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1814,11 +1555,7 @@ namespace Aquila.QueryBuilder.Model
         {
         }
 
-        public Database Database
-        {
-            get;
-            set;
-        }
+        public Database Database { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1846,11 +1583,7 @@ namespace Aquila.QueryBuilder.Model
         {
         }
 
-        public Table Table
-        {
-            get;
-            set;
-        }
+        public Table Table { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1898,11 +1631,7 @@ namespace Aquila.QueryBuilder.Model
         {
         }
 
-        public int Size
-        {
-            get;
-            set;
-        }
+        public int Size { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -1930,17 +1659,9 @@ namespace Aquila.QueryBuilder.Model
         {
         }
 
-        public int Scale
-        {
-            get;
-            set;
-        }
+        public int Scale { get; set; }
 
-        public int Precision
-        {
-            get;
-            set;
-        }
+        public int Precision { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -2268,35 +1989,15 @@ namespace Aquila.QueryBuilder.Model
         {
         }
 
-        public Column Column
-        {
-            get;
-            set;
-        }
+        public Column Column { get; set; }
 
-        public ColumnType Type
-        {
-            get;
-            set;
-        }
+        public ColumnType Type { get; set; }
 
-        public bool IsNotNull
-        {
-            get;
-            set;
-        }
+        public bool IsNotNull { get; set; }
 
-        public object DefaultValue
-        {
-            get;
-            set;
-        }
+        public object DefaultValue { get; set; }
 
-        public SystemMethods DefaultMethod
-        {
-            get;
-            set;
-        }
+        public SystemMethods DefaultMethod { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -2324,11 +2025,7 @@ namespace Aquila.QueryBuilder.Model
         {
         }
 
-        public string Name
-        {
-            get;
-            set;
-        }
+        public string Name { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -2357,11 +2054,7 @@ namespace Aquila.QueryBuilder.Model
             Columns = new List<Column>();
         }
 
-        public List<Column> Columns
-        {
-            get;
-            set;
-        }
+        public List<Column> Columns { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -2390,11 +2083,7 @@ namespace Aquila.QueryBuilder.Model
             Columns = new List<Column>();
         }
 
-        public List<Column> Columns
-        {
-            get;
-            set;
-        }
+        public List<Column> Columns { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -2424,23 +2113,11 @@ namespace Aquila.QueryBuilder.Model
             ForeignColumns = new List<Column>();
         }
 
-        public List<Column> Columns
-        {
-            get;
-            set;
-        }
+        public List<Column> Columns { get; set; }
 
-        public List<Column> ForeignColumns
-        {
-            get;
-            set;
-        }
+        public List<Column> ForeignColumns { get; set; }
 
-        public Table ForeignTable
-        {
-            get;
-            set;
-        }
+        public Table ForeignTable { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -2470,23 +2147,11 @@ namespace Aquila.QueryBuilder.Model
             Constraints = new List<ConstraintDefinition>();
         }
 
-        public List<ColumnDefinition> Columns
-        {
-            get;
-            set;
-        }
+        public List<ColumnDefinition> Columns { get; set; }
 
-        public List<ConstraintDefinition> Constraints
-        {
-            get;
-            set;
-        }
+        public List<ConstraintDefinition> Constraints { get; set; }
 
-        public bool CheckExists
-        {
-            get;
-            set;
-        }
+        public bool CheckExists { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -2514,11 +2179,7 @@ namespace Aquila.QueryBuilder.Model
         {
         }
 
-        public bool IfExists
-        {
-            get;
-            set;
-        }
+        public bool IfExists { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -2546,11 +2207,7 @@ namespace Aquila.QueryBuilder.Model
         {
         }
 
-        public Column Column
-        {
-            get;
-            set;
-        }
+        public Column Column { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -2578,11 +2235,7 @@ namespace Aquila.QueryBuilder.Model
         {
         }
 
-        public Table DstTable
-        {
-            get;
-            set;
-        }
+        public Table DstTable { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -2610,11 +2263,7 @@ namespace Aquila.QueryBuilder.Model
         {
         }
 
-        public ColumnDefinition Column
-        {
-            get;
-            set;
-        }
+        public ColumnDefinition Column { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -2682,11 +2331,7 @@ namespace Aquila.QueryBuilder.Model
         {
         }
 
-        public ConstraintDefinition Constraint
-        {
-            get;
-            set;
-        }
+        public ConstraintDefinition Constraint { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -2714,11 +2359,7 @@ namespace Aquila.QueryBuilder.Model
         {
         }
 
-        public Constraint Constraint
-        {
-            get;
-            set;
-        }
+        public Constraint Constraint { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -2746,17 +2387,9 @@ namespace Aquila.QueryBuilder.Model
         {
         }
 
-        public Table From
-        {
-            get;
-            set;
-        }
+        public Table From { get; set; }
 
-        public Table To
-        {
-            get;
-            set;
-        }
+        public Table To { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -2784,17 +2417,9 @@ namespace Aquila.QueryBuilder.Model
         {
         }
 
-        public Column From
-        {
-            get;
-            set;
-        }
+        public Column From { get; set; }
 
-        public Column To
-        {
-            get;
-            set;
-        }
+        public Column To { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -2878,6 +2503,11 @@ namespace Aquila.QueryBuilder.Visitor
         }
 
         public virtual T VisitSMarker(SMarker node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSScalar(SScalar node)
         {
             return DefaultVisit(node);
         }

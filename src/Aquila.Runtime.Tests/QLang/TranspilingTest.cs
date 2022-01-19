@@ -46,7 +46,7 @@ namespace Aquila.Core.Querying.Test
 
             _m.new_query();
 
-            var actual = _m.top<QLangElement>().Compile(null);
+            var actual = _m.top<QLangElement>().Compile(null, null);
 
             Assert.Equal(
                 "SELECT T4.Fld_0002_Ref,\nT4.Fld_0002_Type\nFROM\nObj_0002 as T4\nJOIN Obj_0001 as T2 ON T4.Fld_0002_Type = 4 and NULL = T2.Id\n",

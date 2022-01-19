@@ -183,6 +183,11 @@ namespace Aquila.QueryBuilder.Visitor
             );
         }
 
+        public override string VisitSScalar(SScalar node)
+        {
+            return node.NestedQuery.Accept(this);
+        }
+
         public override string VisitSDelete(SDelete node)
         {
             return string.Format("DELETE\n{0}{1}",

@@ -1,7 +1,7 @@
 ﻿grammar ZSqlGrammar;
 
 parse
- : ( sql_stmt_list )* EOF
+ : ( sql_stmt_list | criterion_stmt )* EOF
  ;
 
 sql_stmt_list
@@ -35,6 +35,12 @@ having_stmt
  orderby_stmt:
     ORDER BY ordered_column (',' ordered_column)*
  ;
+ 
+criterion_stmt
+: from_stmt 
+  (where_stmt)?
+;
+    
  
 query_stmt
  : ( from_stmt )?
@@ -146,6 +152,10 @@ ordered_column
  | expr (DESC | ASC)? 
  ;
 
+table_qualified_name: 
+    any_name ('.' any_name)* (AS? table_alias)?
+;
+
 table:
     component_name '.' object_name ( AS? table_alias )?
 ;
@@ -156,8 +166,7 @@ table_property:
  
 table_or_subquery
  : ( 
- table
- | table_property
+ table_qualified_name
  | '(' ( table_or_subquery ( ',' table_or_subquery )*
        | join_clause )
    ')' ( AS? table_alias )?
