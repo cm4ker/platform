@@ -5,39 +5,47 @@ using System.Data;
 using System.Linq;
 using Antlr4.Runtime;
 using Aquila.Metadata;
+using Aquila.Runtime.Querying;
 
 namespace Aquila.Core.Querying.Model
 {
     public class QLang
     {
         private readonly EntityMetadataCollection _metadata;
-        private readonly SMEntity _criterionContext;
+        private readonly UserSecTable _ust;
+
         private LogicStack _logicStack;
         private Stack<LogicScope> _scope;
         private QLangTypeBuilder _tb;
 
-        public QLang(EntityMetadataCollection metadata, SMEntity criterionContext = null)
+        public QLang(EntityMetadataCollection metadata, UserSecTable secTable, SMEntity criterionContext = null)
         {
             _metadata = metadata;
-            _criterionContext = criterionContext;
+            _ust = secTable;
+
             _logicStack = new LogicStack();
             _scope = new Stack<LogicScope>();
             _tb = new QLangTypeBuilder();
         }
 
-        public static QLangElement Parse(string sql, EntityMetadataCollection md, SMEntity criterionContext = null)
+        public static QLangElement Parse(string sql, EntityMetadataCollection md, UserSecTable secTable,
+            SMEntity criterionContext = null)
         {
-            var m = new QLang(md, criterionContext);
+            var m = new QLang(md, secTable, criterionContext);
+            return Parse(m, sql);
+        }
 
+        public static QLangElement Parse(QLang machine, string sql)
+        {
             AntlrInputStream inputStream = new AntlrInputStream(sql);
             ZSqlGrammarLexer speakLexer = new ZSqlGrammarLexer(inputStream);
             CommonTokenStream commonTokenStream = new CommonTokenStream(speakLexer);
             ZSqlGrammarParser parser = new ZSqlGrammarParser(commonTokenStream);
-            ZSqlGrammarVisitor visitor = new ZSqlGrammarVisitor(m);
+            ZSqlGrammarVisitor visitor = new ZSqlGrammarVisitor(machine);
 
             visitor.Visit(parser.parse());
 
-            return m.top() as QLangElement;
+            return machine.top() as QLangElement;
         }
 
         public LogicScope CurrentScope => _scope.TryPeek(out var res) ? res : null;
@@ -158,15 +166,6 @@ namespace Aquila.Core.Querying.Model
             _logicStack.Push(_tb.Parse(typeName));
         }
 
-        public void ld_object_type(string typeName)
-        {
-            var type = _metadata.GetSemanticByName(typeName);
-
-            var ds = new QObjectTable(type);
-            _logicStack.Push(ds);
-            if (CurrentScope != null)
-                CurrentScope.ScopedDataSources.Add(ds);
-        }
 
         /// <summary>
         /// used for load subject then criterion build
@@ -174,9 +173,10 @@ namespace Aquila.Core.Querying.Model
         /// </summary>
         public void ld_subject()
         {
-            if (_criterionContext != null)
+            var ds = (QDataSource)top();
+
+            if (ds != null)
             {
-                var ds = new QObjectTable(_criterionContext);
                 _logicStack.Push(ds);
                 if (CurrentScope != null)
                     CurrentScope.ScopedDataSources.Add(ds);
@@ -205,7 +205,13 @@ namespace Aquila.Core.Querying.Model
         public void ld_source(string componentName, string typeName, string p_alias = "")
         {
             ld_component(componentName);
-            ld_object_type(typeName);
+
+            //load entity type
+            var type = _metadata.GetSemanticByName(typeName);
+            var ds = new QObjectTable(type);
+            _logicStack.Push(ds);
+            if (CurrentScope != null)
+                CurrentScope.ScopedDataSources.Add(ds);
 
             if (string.IsNullOrEmpty(p_alias))
             {
@@ -214,6 +220,35 @@ namespace Aquila.Core.Querying.Model
             }
 
             @as(p_alias);
+
+            //NOTE: Important create subject context after aliasing the source
+            if (_ust != null)
+            {
+                if (!_ust.TryClaimPermission(type, SecPermission.Read, out var claim))
+                {
+                    //access denied!
+                    throw new Exception("Access denied");
+                }
+
+                //            /*
+                //             Need register query
+                //             
+                //             SELECT ( CASE WHEN EXISTS(SELECT 1 FROM (QUERY)) THEN 0x01 (ALLOW) ELSE 0x00 (DENIED) END  ) SEC_FLAG
+                //             
+                //             FROM (SOURCE_TABLE)
+                //
+                //             NOTE: where SOURCE_TABLE - table subject                            
+                //            */
+                //
+
+                var qCriterial = claim.Criteria.SelectMany(x => x.Value).Select(x =>
+                {
+                    var c = x.cString;
+                    Parse(this, c);
+                    return (QCriterion)pop();
+                });
+                CurrentScope.Criteria.AddRange(qCriterial);
+            }
         }
 
         private static Random random = new Random();
@@ -350,12 +385,14 @@ namespace Aquila.Core.Querying.Model
         /// </summary>
         public void new_query()
         {
-            _scope.Pop();
+            var scope = _scope.Pop();
+
+            var clist = new QCriterionList(scope.Criteria.Select(x => x).ToImmutableArray());
 
             var query = new QQuery(_logicStack.PopItem<QOrderBy>(),
                 _logicStack.PopItem<QSelect>(), _logicStack.PopItem<QHaving>(),
                 _logicStack.PopItem<QGroupBy>(), _logicStack.PopItem<QWhere>(),
-                _logicStack.PopItem<QFrom>());
+                _logicStack.PopItem<QFrom>(), clist);
 
             //we need validate query before push it to the stack            
 
@@ -368,6 +405,7 @@ namespace Aquila.Core.Querying.Model
 
         public void new_criterion()
         {
+            var scope = _scope.Pop();
             var criterion = new QCriterion(_logicStack.PopItem<QWhere>(), _logicStack.PopItem<QFrom>());
 
             //we need validate query before push it to the stack            

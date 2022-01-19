@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Aquila.Metadata;
+using Aquila.Runtime.Querying;
 
 namespace Aquila.Core.Querying.Model
 {
@@ -20,6 +22,7 @@ namespace Aquila.Core.Querying.Model
         {
             Scope = new Dictionary<string, QDataSource>();
             ScopedDataSources = new List<QDataSource>();
+            Criteria = new();
         }
 
         public QueryContext QueryContext;
@@ -30,5 +33,7 @@ namespace Aquila.Core.Querying.Model
         public Dictionary<string, QDataSource> Scope { get; set; }
 
         public List<QDataSource> ScopedDataSources { get; set; }
+
+        public List<QCriterion> Criteria { get; set; }
     }
 }

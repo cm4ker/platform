@@ -31,6 +31,7 @@ namespace Aquila.Core.Querying
             VisitQGroupBy(node.GroupBy);
             VisitQHaving(node.Having);
             VisitQSelect(node.Select);
+            VisitQCriterionList(node.Criteria);
         }
 
         public override void VisitQObjectTable(QObjectTable node)
@@ -47,7 +48,9 @@ namespace Aquila.Core.Querying
 
         public override void VisitQAliasedDataSource(QAliasedDataSource node)
         {
-            node.SetDbNameIfEmpty($"T{_tableCount++}");
+            if (node.GetDbName() == null)
+                node.SetDbNameIfEmpty($"T{_tableCount++}");
+
             base.VisitQAliasedDataSource(node);
         }
 

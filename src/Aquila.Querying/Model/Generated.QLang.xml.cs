@@ -239,6 +239,35 @@ namespace Aquila.Core.Querying.Model
 
 namespace Aquila.Core.Querying.Model
 {
+    public class QCriterionList : QLangCollection<QCriterion>
+    {
+        public static QCriterionList Empty => new QCriterionList(ImmutableArray<QCriterion>.Empty);
+        public QCriterionList(ImmutableArray<QCriterion> elements): base(elements)
+        {
+        }
+
+        public override QCriterionList Add(QLangElement element)
+        {
+            var item = element as QCriterion;
+            if (item == null)
+                throw new Exception("Element is not QCriterion");
+            return new QCriterionList(Elements.Add(item));
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQCriterionList(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQCriterionList(this);
+        }
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
     public partial class QExpression : QLangElement
     {
         public QExpression(): base()
@@ -291,7 +320,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QQuery : QLangElement
     {
-        public QQuery(QOrderBy orderBy, QSelect select, QHaving having, QGroupBy groupBy, QWhere where, QFrom from): base()
+        public QQuery(QOrderBy orderBy, QSelect select, QHaving having, QGroupBy groupBy, QWhere where, QFrom from, QCriterionList criteria): base()
         {
             this.orderBy = orderBy;
             this.select = select;
@@ -299,6 +328,7 @@ namespace Aquila.Core.Querying.Model
             this.groupBy = groupBy;
             this.where = where;
             this.from = from;
+            this.criteria = criteria;
         }
 
         public QOrderBy OrderBy { get => this.orderBy; init => this.orderBy = value; }
@@ -312,6 +342,8 @@ namespace Aquila.Core.Querying.Model
         public QWhere Where { get => this.where; init => this.where = value; }
 
         public QFrom From { get => this.from; init => this.from = value; }
+
+        public QCriterionList Criteria { get => this.criteria; init => this.criteria = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -337,6 +369,8 @@ namespace Aquila.Core.Querying.Model
                 yield return this.where;
             if (this.from != null)
                 yield return this.from;
+            if (this.criteria != null)
+                yield return this.criteria;
             yield break;
         }
 
@@ -346,6 +380,7 @@ namespace Aquila.Core.Querying.Model
         private QGroupBy groupBy;
         private QWhere where;
         private QFrom from;
+        private QCriterionList criteria;
     }
 }
 
@@ -1828,6 +1863,11 @@ namespace Aquila.Core.Querying
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitQCriterionList(QCriterionList arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitQExpression(QExpression arg)
         {
             return DefaultVisit(arg);
@@ -2072,6 +2112,11 @@ namespace Aquila.Core.Querying
         }
 
         public virtual void VisitQQueryList(QQueryList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQCriterionList(QCriterionList arg)
         {
             DefaultVisit(arg);
         }

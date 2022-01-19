@@ -200,8 +200,7 @@ namespace Aquila.Core.Querying
                 _stack.ld_subject();
             }
 
-
-            return base.VisitTable_qualified_name(context);
+            return null;
         }
 
         public override object VisitTable(ZSqlGrammarParser.TableContext context)
@@ -238,7 +237,7 @@ namespace Aquila.Core.Querying
 
         public override object VisitObject_name(ZSqlGrammarParser.Object_nameContext context)
         {
-            _stack.ld_object_type(context.GetText());
+            _stack.ld_source("", context.GetText());
             return base.VisitObject_name(context);
         }
 

@@ -70,7 +70,11 @@ namespace Aquila.UIBuilder
             _drContext = drContext;
             _mdCollection = TestMetadata.GetTestMetadata();
 
-            _m = new QLang(_mdCollection);
+
+            var ust = new UserSecTable();
+            ust.Init(_mdCollection.GetSecPolicies().ToList(), _mdCollection);
+
+            _m = new QLang(_mdCollection, ust);
         }
 
         public (string Output1, string Output2) RunQuery(string sql)
@@ -92,17 +96,13 @@ namespace Aquila.UIBuilder
 
                 try
                 {
-                    var ust = new UserSecTable();
-                    ust.Init(_mdCollection.GetSecPolicies().ToList(), _drContext);
-
-
                     var walker = new PrinterWalker(output);
                     walker.Visit(_m.top() as QLangElement);
 
                     var pwalker = new PhysicalNameWalker(_drContext);
                     pwalker.Visit(_m.top() as QLangElement);
 
-                    var realWalker = new RealWalker(_drContext, ust);
+                    var realWalker = new RealWalker(_drContext);
                     realWalker.Visit(_m.top() as QLangElement);
 
 
@@ -151,16 +151,13 @@ namespace Aquila.UIBuilder
 
                 try
                 {
-                    var ust = new UserSecTable();
-                    ust.Init(_mdCollection.GetSecPolicies().ToList(), _drContext);
-
                     var pwalker = new PhysicalNameWalker(_drContext);
                     pwalker.Visit(_m.top() as QLangElement);
 
                     var walker = new PrinterWalker(output);
                     walker.Visit(_m.top() as QLangElement);
 
-                    var realWalker = new RealWalker(_drContext, ust);
+                    var realWalker = new RealWalker(_drContext);
                     realWalker.Visit(_m.top() as QLangElement);
 
 

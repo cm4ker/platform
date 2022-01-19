@@ -12,17 +12,13 @@ namespace Aquila.Core.Querying
 {
     public static class QLangHelper
     {
-        public static string Compile(this QLangElement logicalTree, DatabaseRuntimeContext drContext,
-            List<SMSecPolicy> secPolicies)
+        public static string Compile(this QLangElement logicalTree, DatabaseRuntimeContext drContext)
         {
             //Create aliases for tree
             var pwalker = new PhysicalNameWalker(drContext);
             pwalker.Visit(logicalTree);
 
-            var ust = new UserSecTable();
-            ust.Init(secPolicies, drContext);
-
-            var realWalker = new RealWalker(drContext, ust);
+            var realWalker = new RealWalker(drContext);
             realWalker.Visit(logicalTree);
 
             var syntax = (realWalker.QueryMachine.pop() as SSyntaxNode);
@@ -32,13 +28,18 @@ namespace Aquila.Core.Querying
         public static (string sql, QQueryList logicalTree) Compile(AqContext context, string sql)
         {
             var drc = context.DataRuntimeContext;
+            var md = drc.Metadata.GetMetadata();
 
             var sec = drc.Metadata.GetMetadata().GetSecPoliciesFromRoles(context.Roles).ToList();
 
-            var logicalTree = QLang.Parse(sql, drc.Metadata.GetMetadata()) as QQueryList ??
+            //TODO: restrict user
+            var ust = new UserSecTable();
+            ust.Init(sec, md);
+
+            var logicalTree = QLang.Parse(sql, md, ust) as QQueryList ??
                               throw new Exception("Query stack machine after parsing MUST return the QueryList");
 
-            return (logicalTree.Compile(drc, sec), logicalTree);
+            return (logicalTree.Compile(drc), logicalTree);
         }
     }
 }

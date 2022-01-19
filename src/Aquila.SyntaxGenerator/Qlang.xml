@@ -9,6 +9,7 @@
     <Syntax IsList="true" Base="QGroupExpression" Name="QGroupList"/>
     <Syntax IsList="true" Base="QWhen" Name="QWhenList"/>
     <Syntax IsList="true" Base="QQuery" Name="QQueryList"/>
+    <Syntax IsList="true" Base="QCriterion" Name="QCriterionList"/>
 
     <Syntax Name="QExpression"/>
 
@@ -22,6 +23,7 @@
             <Single Name="GroupBy" Type="QGroupBy"/>
             <Single Name="Where" Type="QWhere"/>
             <Single Name="From" Type="QFrom"/>
+            <Single Name="Criteria" Type="QCriterionList"/>
         </Arguments>
     </Syntax>
 

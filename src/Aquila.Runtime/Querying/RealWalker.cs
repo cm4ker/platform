@@ -104,7 +104,7 @@ namespace Aquila.Core.Querying
     public class RealWalker : QLangWalker
     {
         private readonly DatabaseRuntimeContext _drContext;
-        private readonly UserSecTable _ust;
+
         private QueryMachine _qm;
         private StringWriter _l;
         private bool _hasNamedSource = false;
@@ -119,10 +119,9 @@ namespace Aquila.Core.Querying
         /// Create instance of real walker class
         /// </summary>
         /// <param name="drContext"></param>
-        public RealWalker(DatabaseRuntimeContext drContext, UserSecTable ust)
+        public RealWalker(DatabaseRuntimeContext drContext)
         {
             _drContext = drContext;
-            _ust = ust;
 
             _qm = new QueryMachine();
             _l = new StringWriter();
@@ -135,19 +134,17 @@ namespace Aquila.Core.Querying
             _qm.ld_param(arg.GetDbName());
         }
 
-        private List<(QDataSource ds, UserSecPermission)> _permissions;
-
         public override void VisitQQuery(QQuery node)
         {
             _qm.bg_query();
             _l.WriteLine("ct_query");
 
-            _permissions = new List<(QDataSource ds, UserSecPermission)>();
             Visit(node.From);
             Visit(node.Where);
             Visit(node.GroupBy);
             Visit(node.OrderBy);
             Visit(node.Select);
+            Visit(node.Criteria);
 
             _qm.st_query();
             _l.WriteLine("st_query");
@@ -168,54 +165,40 @@ namespace Aquila.Core.Querying
 
             //
 
-            foreach (var perm in _permissions.ToArray())
-            {
-                foreach (var criteria in perm.Item2.Criteria.Where(x =>
-                             x.Key == SecPermission.Read))
-                {
-                    foreach (var cri in criteria.Value)
-                    {
-                        Visit(cri.cModel);
-                        _qm.ld_scalar();
-                    }
-                }
-            }
+            // foreach (var perm in _permissions.ToArray())
+            // {
+            //     foreach (var criteria in perm.Item2.Criteria.Where(x =>
+            //                  x.Key == SecPermission.Read))
+            //     {
+            //         foreach (var cri in criteria.Value)
+            //         {
+            //             Visit(cri.cModel);
+            //             
+            //         }
+            //     }
+            // }
         }
 
         public override void VisitQCriterion(QCriterion arg)
         {
             _qm.bg_query();
-
-            Visit(arg.From);
+            _qm.m_from();
+            //Visit(arg.From);
+            _qm.bg_query().m_select().ld_const(1).@as("_sec_fld").st_query().@as("_sec_dummy");
+            Visit(arg.From.Joins);
             Visit(arg.Where);
 
             _qm.m_select();
             _qm.ld_const(1);
 
             _qm.st_query();
+
+            _qm.ld_scalar();
         }
 
         public override void VisitQObjectTable(QObjectTable node)
         {
             var ot = node.ObjectType;
-
-            if (!_ust.TryClaimPermission(ot, SecPermission.Read, out var claim))
-            {
-                //access denied!
-                throw new Exception("Access denied");
-            }
-
-            /*
-             Need register query
-             
-             SELECT ( CASE WHEN EXISTS(SELECT 1 FROM (QUERY)) THEN 0x01 (ALLOW) ELSE 0x00 (DENIED) END  ) SEC_FLAG
-             
-             FROM (SOURCE_TABLE)
- 
-             NOTE: where SOURCE_TABLE - table subject                            
-            */
-
-            _permissions.Add((node, claim));
 
             //Inject data source - the idea
             _qm.ld_table(ot.GetDescriptor(_drContext).DatabaseName);

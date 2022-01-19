@@ -44,7 +44,7 @@ namespace Aquila.Runtime.Querying
         {
         }
 
-        public void Init(List<SMSecPolicy> policies, DatabaseRuntimeContext _drContext)
+        public void Init(List<SMSecPolicy> policies, EntityMetadataCollection md)
         {
             var subjects = policies.SelectMany(x => x.Subjects);
             var criteria = policies.SelectMany(x => x.Criteria);
@@ -75,14 +75,14 @@ namespace Aquila.Runtime.Querying
                     {
                         var subject = criterion.Subject;
                         var sCriterion = criterion.Query;
-                        var qCriterion =
-                            QLang.Parse(sCriterion, _drContext.Metadata.GetMetadata(), subject) as QCriterion ??
-                            throw new Exception("can't compile criterion");
+                        // var qCriterion =
+                        //     QLang.Parse(sCriterion, md, null, subject) as QCriterion ??
+                        //     throw new Exception("can't compile criterion");
 
                         if (up.Criteria.TryGetValue(criterion.Permission, out var pList))
-                            pList.Add((criterion.Query, qCriterion));
+                            pList.Add((criterion.Query, null));
                         else
-                            up.Criteria[criterion.Permission] = new() { (sCriterion, qCriterion) };
+                            up.Criteria[criterion.Permission] = new() { (sCriterion, null) };
                     }
                 }
 
