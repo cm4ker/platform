@@ -163,7 +163,8 @@
 
     <Syntax Name="SOr" Base="SCondition">
         <Arguments>
-            <List Name="Expressions" Type="SExpression"/>
+            <Single Name="Right" Type="SExpression"/>
+            <Single Name="Left" Type="SExpression"/>
         </Arguments>
     </Syntax>
 
@@ -196,6 +197,13 @@
             <Single Name="Argument" Type="SExpression"/>
         </Arguments>
     </Syntax>
+
+    <Syntax Name="SExists" Base="SExpression">
+        <Arguments>
+            <Single Name="Argument" Type="SDataSourceNestedQuery"/>
+        </Arguments>
+    </Syntax>
+
 
     <Syntax Name="SParameter" Base="SExpression">
         <Arguments>

@@ -53,7 +53,7 @@ import Entity;
     obj.ComplexProperty = store.link;
     obj.Store = store.link;
     obj.save();
-    
+     
     var q = query();
     q.text = ""FROM Entity.Invoice SELECT ComplexProperty"";
     q.set_param(""p0"", 1);

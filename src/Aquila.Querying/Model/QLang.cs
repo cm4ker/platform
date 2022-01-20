@@ -227,7 +227,7 @@ namespace Aquila.Core.Querying.Model
                 if (!_ust.TryClaimPermission(type, SecPermission.Read, out var claim))
                 {
                     //access denied!
-                    throw new Exception("Access denied");
+                   // throw new Exception("Access denied");
                 }
 
                 //            /*
@@ -240,14 +240,16 @@ namespace Aquila.Core.Querying.Model
                 //             NOTE: where SOURCE_TABLE - table subject                            
                 //            */
                 //
-
-                var qCriterial = claim.Criteria.SelectMany(x => x.Value).Select(x =>
+                if (claim != null)
                 {
-                    var c = x.cString;
-                    Parse(this, c);
-                    return (QCriterion)pop();
-                });
-                CurrentScope.Criteria.AddRange(qCriterial);
+                    var qCriterial = claim.Criteria.SelectMany(x => x.Value).Select(x =>
+                    {
+                        var c = x.cString;
+                        Parse(this, c);
+                        return (QCriterion)pop();
+                    });
+                    CurrentScope.Criteria.AddRange(qCriterial);
+                }
             }
         }
 

@@ -152,9 +152,7 @@ namespace Aquila.QueryBuilder.Visitor
 
         public override string VisitSOr(SOr node)
         {
-            return string.Format("({0})",
-                string.Join(" OR ", node.Expressions.Select(e => e.Accept(this)))
-            );
+            return string.Format("({0} OR {1})", node.Left.Accept(this), node.Right.Accept(this));
         }
 
         public override string VisitSOrderBy(SOrderBy node)
@@ -163,6 +161,11 @@ namespace Aquila.QueryBuilder.Visitor
                 string.Join(", ", node.Fields.Select(f => f.Accept(this))),
                 node.Direction == OrderDirection.DESC ? " DESC" : ""
             );
+        }
+
+        public override string VisitSExists(SExists node)
+        {
+            return string.Format("EXISTS {0}", node.Argument.Accept(this));
         }
 
         public override string VisitSParameter(SParameter node)

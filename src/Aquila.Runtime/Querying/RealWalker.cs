@@ -181,11 +181,34 @@ namespace Aquila.Core.Querying
 
         public override void VisitQCriterionList(QCriterionList arg)
         {
+            //if no criteria then we move forward
+            if (!arg.Any())
+                return;
+
+            var emitOr = false;
+
             //expr
             _qm.ld_const(1);
-            //condition
+
+            foreach (var item in arg)
+            {
+                //condition
+                VisitQCriterion(item);
+                _qm.exists();
+
+                if (emitOr)
+                    _qm.or();
+
+                emitOr = true;
+            }
+
             _qm.when();
+
+            //else
+            _qm.ld_const(0);
             _qm.@case();
+
+            _qm.@as("_sec");
         }
 
         public override void VisitQCriterion(QCriterion arg)
@@ -201,8 +224,6 @@ namespace Aquila.Core.Querying
             _qm.ld_const(1);
 
             _qm.st_query();
-
-            _qm.ld_scalar();
         }
 
         public override void VisitQObjectTable(QObjectTable node)

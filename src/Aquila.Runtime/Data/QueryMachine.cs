@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Aquila.Core.Querying.Model;
 using Aquila.QueryBuilder.Model;
 
 namespace Aquila.QueryBuilder
@@ -221,8 +222,7 @@ namespace Aquila.QueryBuilder
             push(new SWhen(Pop<SCondition>(), Pop<SExpression>()));
             return this;
         }
-        
-        
+
 
         public QueryMachine ld_type(string type)
         {
@@ -234,6 +234,12 @@ namespace Aquila.QueryBuilder
         public QueryMachine cast()
         {
             push(new SCast(Pop<ColumnType>(), Pop<SExpression>()));
+            return this;
+        }
+
+        public QueryMachine exists()
+        {
+            push(new SExists(Pop<SDataSourceNestedQuery>()));
             return this;
         }
 
@@ -464,7 +470,7 @@ namespace Aquila.QueryBuilder
 
         public void or()
         {
-            push(new SOr(PopList<SExpression>()));
+            push(new SOr(Pop<SExpression>(), Pop<SExpression>()));
         }
 
         #endregion

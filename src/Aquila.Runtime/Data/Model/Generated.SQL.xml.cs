@@ -788,22 +788,25 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SOr : SCondition
     {
-        public SOr(List<SExpression> expressions): base()
+        public SOr(SExpression right, SExpression left): base()
         {
-            Expressions = expressions;
+            Right = right;
+            Left = left;
         }
 
-        public List<SExpression> Expressions { get; set; }
+        public SExpression Right { get; set; }
+
+        public SExpression Left { get; set; }
 
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SOr ) obj ;  return  ( SequenceEqual ( this . Expressions ,  node . Expressions ) ) ; 
+                return false; var  node  =  ( SOr ) obj ;  return  ( Compare ( this . Right ,  node . Right ) && Compare ( this . Left ,  node . Left ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return Xor(Expressions, i => i.GetHashCode());
+            return (Right == null ? 0 : Right.GetHashCode()) ^ (Left == null ? 0 : Left.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -954,6 +957,35 @@ namespace Aquila.QueryBuilder.Model
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitSAvg(this);
+        }
+    }
+}
+
+namespace Aquila.QueryBuilder.Model
+{
+    public partial class SExists : SExpression
+    {
+        public SExists(SDataSourceNestedQuery argument): base()
+        {
+            Argument = argument;
+        }
+
+        public SDataSourceNestedQuery Argument { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( SExists ) obj ;  return  ( Compare ( this . Argument ,  node . Argument ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Argument == null ? 0 : Argument.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSExists(this);
         }
     }
 }
@@ -2603,6 +2635,11 @@ namespace Aquila.QueryBuilder.Visitor
         }
 
         public virtual T VisitSAvg(SAvg node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSExists(SExists node)
         {
             return DefaultVisit(node);
         }
