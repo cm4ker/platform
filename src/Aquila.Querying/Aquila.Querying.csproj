@@ -15,6 +15,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <AdditionalFiles Include="QLang.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </AdditionalFiles>
         <Content Include="ZSqlGrammar.g4" />
         <Antlr4 Update="ZSqlGrammar.g4">
             <Generator>MSBuild:Compile</Generator>
@@ -29,9 +32,23 @@
     <ItemGroup>
         <!-- Note that this is not a "normal" ProjectReference.
              It needs the additional 'OutputItemType' and 'ReferenceOutputAssmbly' attributes. -->
-        <ProjectReference Include="..\Aquila.QlangSyntaxGenerator\Aquila.QlangSyntaxGenerator.csproj"
-                          OutputItemType="Analyzer"
-                          ReferenceOutputAssembly="false" />
+        <ProjectReference Include="..\Aquila.QLangSyntaxGenerator\Aquila.QLangSyntaxGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
+
+    <PropertyGroup>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
+    </PropertyGroup>
+    
+    <Target Name="RemoveSourceGeneratedFiles" BeforeTargets="CoreCompile">
+        <ItemGroup>
+            <Compile Remove="Generated\**" />
+        </ItemGroup>
+    </Target>
+    <Target Name="AddSourceGeneratedFiles" AfterTargets="CoreCompile">
+        <ItemGroup>
+            <Compile Include="Generated\**" />
+        </ItemGroup>
+    </Target>
 
 </Project>
