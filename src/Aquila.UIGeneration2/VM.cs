@@ -19,6 +19,7 @@ namespace Aquila.UIBuilder
         private string _connectionString;
         private DatabaseRuntimeContext _drContext;
         private DataConnectionContext _dcContext;
+        private string _translated;
 
         public VM()
         {
@@ -52,6 +53,16 @@ namespace Aquila.UIBuilder
             }
         }
 
+        public string Translated
+        {
+            get => _translated;
+            set
+            {
+                _translated = value;
+                OnPropertyChanged(nameof(Translated));
+            }
+        }
+
         private void InputChanged()
         {
         }
@@ -62,12 +73,13 @@ namespace Aquila.UIBuilder
             var o = i.RunQuery(_input2);
             Output1 = o.Output1;
             Output2 = o.Output2;
+            Translated = o.Translated;
 
             try
             {
                 var crud = new CRUDQueryGenerator();
                 var md = _drContext.Metadata.GetMetadata();
-                var invoice = md.GetSemanticByName("Invoice");
+                var invoice = md.GetSemanticByName("Entity.Invoice");
 
                 var insert = CRUDQueryGenerator.GetSaveInsert(invoice, _drContext);
                 var update = CRUDQueryGenerator.GetSaveUpdate(invoice, _drContext);

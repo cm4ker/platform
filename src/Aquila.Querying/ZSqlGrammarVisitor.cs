@@ -224,12 +224,6 @@ namespace Aquila.Core.Querying
             return null;
         }
 
-        public override object VisitObject_name(ZSqlGrammarParser.Object_nameContext context)
-        {
-            _stack.ld_source("", context.GetText());
-            return base.VisitObject_name(context);
-        }
-
         public override object VisitComponent_name(ZSqlGrammarParser.Component_nameContext context)
         {
             _stack.ld_component(context.GetText());

@@ -88,6 +88,8 @@ namespace Aquila.Core.Querying.Model
 
     public partial class QDataSource
     {
+        public bool Substituted { get; set; }
+
         public virtual IEnumerable<QField> GetFields()
         {
             return null;
@@ -220,16 +222,6 @@ namespace Aquila.Core.Querying.Model
     {
         private List<QField> _fields;
         private List<QTable> _tables;
-
-        public QObjectTable(SMEntity type)
-        {
-            ObjectType = type;
-        }
-
-        /// <summary>
-        /// Ссылка на тип объекта
-        /// </summary>
-        public SMEntity ObjectType { get; }
 
         public override IEnumerable<QField> GetFields()
         {

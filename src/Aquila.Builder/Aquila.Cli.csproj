@@ -1,12 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
-        <AssemblyName>Aquila.Cli</AssemblyName>
-        <RootNamespace>Aquila.Cli</RootNamespace>
-        <LangVersion>preview</LangVersion>
-        <Configurations>Debug;Release;DebugServer</Configurations>
-        <Platforms>AnyCPU</Platforms>
-    </PropertyGroup>
+    <Import Project="..\Props\target.props" />
+    
     <ItemGroup>
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.4.1"/>
     </ItemGroup>

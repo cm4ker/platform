@@ -271,10 +271,10 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SSelect : SDataSource
     {
-        public SSelect(SOrderBy orderBy, List<SExpression> fields, STop top, SHaving having, SGroupBy groupBy, SWhere where, SFrom from): base()
+        public SSelect(List<SExpression> fields, SOrderBy orderBy, STop top, SHaving having, SGroupBy groupBy, SWhere where, SFrom from): base()
         {
-            OrderBy = orderBy;
             Fields = fields;
+            OrderBy = orderBy;
             Top = top;
             Having = having;
             GroupBy = groupBy;
@@ -282,9 +282,9 @@ namespace Aquila.QueryBuilder.Model
             From = from;
         }
 
-        public SOrderBy OrderBy { get; set; }
-
         public List<SExpression> Fields { get; set; }
+
+        public SOrderBy OrderBy { get; set; }
 
         public STop Top { get; set; }
 
@@ -299,12 +299,12 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SSelect ) obj ;  return  ( Compare ( this . OrderBy ,  node . OrderBy ) && SequenceEqual ( this . Fields ,  node . Fields ) && Compare ( this . Top ,  node . Top ) && Compare ( this . Having ,  node . Having ) && Compare ( this . GroupBy ,  node . GroupBy ) && Compare ( this . Where ,  node . Where ) && Compare ( this . From ,  node . From ) ) ; 
+                return false; var  node  =  ( SSelect ) obj ;  return  ( SequenceEqual ( this . Fields ,  node . Fields ) && Compare ( this . OrderBy ,  node . OrderBy ) && Compare ( this . Top ,  node . Top ) && Compare ( this . Having ,  node . Having ) && Compare ( this . GroupBy ,  node . GroupBy ) && Compare ( this . Where ,  node . Where ) && Compare ( this . From ,  node . From ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return (OrderBy == null ? 0 : OrderBy.GetHashCode()) ^ Xor(Fields, i => i.GetHashCode()) ^ (Top == null ? 0 : Top.GetHashCode()) ^ (Having == null ? 0 : Having.GetHashCode()) ^ (GroupBy == null ? 0 : GroupBy.GetHashCode()) ^ (Where == null ? 0 : Where.GetHashCode()) ^ (From == null ? 0 : From.GetHashCode());
+            return Xor(Fields, i => i.GetHashCode()) ^ (OrderBy == null ? 0 : OrderBy.GetHashCode()) ^ (Top == null ? 0 : Top.GetHashCode()) ^ (Having == null ? 0 : Having.GetHashCode()) ^ (GroupBy == null ? 0 : GroupBy.GetHashCode()) ^ (Where == null ? 0 : Where.GetHashCode()) ^ (From == null ? 0 : From.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)

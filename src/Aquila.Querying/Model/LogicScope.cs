@@ -23,7 +23,7 @@ namespace Aquila.Core.Querying.Model
         public LogicScope()
         {
             _aliasedDS = new Dictionary<string, QDataSource>();
-            _scopedDS = new ImmutableArray<QDataSource>();
+            _scopedDS = ImmutableArray<QDataSource>.Empty;
             Criteria = new();
         }
 
@@ -43,15 +43,27 @@ namespace Aquila.Core.Querying.Model
         /// Push data to the scope. Data from this DS will be available in this scope
         /// </summary>
         /// <param name="ds"></param>
-        public void AddDS(QDataSource ds)
+        public void AddDS(QDataSource ds, string alias = "")
         {
             _scopedDS = _scopedDS.Add(ds);
 
+            if (!string.IsNullOrEmpty(alias))
+            {
+                if (!_aliasedDS.TryAdd(alias, ds))
+                {
+                    throw new Exception($"ERROR: Name collision {alias}");
+                }
+
+                return;
+            }
+
             if (ds is QAliasedDataSource ads)
+            {
                 if (!_aliasedDS.TryAdd(ads.Alias, ds))
                 {
                     throw new Exception($"ERROR: Name collision {ads.Alias}");
                 }
+            }
         }
 
         public void RemoveDS(QDataSource ds)

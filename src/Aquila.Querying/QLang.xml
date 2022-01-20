@@ -71,7 +71,7 @@
     </Syntax>
 
     <!-- DataSource -->
-    <Syntax Name="QDataSource"/>
+    <Syntax IsAbstract="true" Name="QDataSource"/>
     <Syntax Name="QAliasedDataSource" Base="QDataSource">
         <Arguments>
             <Single Type="QDataSource" Name="ParentSource"/>
@@ -93,7 +93,11 @@
 
     <Syntax IsAbstract="true" Name="QPlatformDataSource" Base="QDataSource"/>
 
-    <Syntax Name="QObjectTable" Base="QPlatformDataSource"/>
+    <Syntax Name="QObjectTable" Base="QPlatformDataSource">
+        <Arguments>
+            <Single Name="ObjectType" Type="SMEntity" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
 
     <Syntax Name="QTable" Base="QPlatformDataSource">
         <Arguments>

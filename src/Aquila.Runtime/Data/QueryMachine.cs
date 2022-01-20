@@ -256,8 +256,8 @@ namespace Aquila.QueryBuilder
             {
                 case MachineContextType.Select:
                     push(new SSelect(
-                        TryPop<SOrderBy>(),
                         TryPopList<SExpression>(0, needReverse: true),
+                        TryPop<SOrderBy>(),
                         TryPop<STop>(),
                         TryPop<SHaving>(),
                         TryPop<SGroupBy>(),

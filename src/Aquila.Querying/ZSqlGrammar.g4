@@ -166,11 +166,9 @@ table_property:
  
 table_or_subquery
  : ( 
- table_qualified_name
- | '(' ( table_or_subquery ( ',' table_or_subquery )*
-       | join_clause )
-   ')' ( AS? table_alias )?
- | '(' query_stmt ')' AS? table_alias);
+ table_qualified_name 
+ | '(' ( table_or_subquery ( ',' table_or_subquery )* | join_clause ) ')' 
+ | '(' query_stmt ')') (AS? table_alias)?;
 
 join_clause
  : table_or_subquery ( join_operator table_or_subquery join_constraint )*

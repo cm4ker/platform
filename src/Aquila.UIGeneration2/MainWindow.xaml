@@ -7,6 +7,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="1">
@@ -29,6 +30,7 @@
             <TextBox Grid.Row="0" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding Input, Mode=TwoWay}" />
         </Grid>
 
+        <TextBox Grid.Column="2" AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding Translated, Mode=TwoWay}" />
 
     </Grid>
 </Window>

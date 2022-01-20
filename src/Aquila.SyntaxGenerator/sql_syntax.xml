@@ -55,8 +55,8 @@
 
     <Syntax Name="SSelect" Base="SDataSource">
         <Arguments>
-            <Single Name="OrderBy" Type="SOrderBy"/>
             <List Name="Fields" Type="SExpression"/>
+            <Single Name="OrderBy" Type="SOrderBy"/>
             <Single Name="Top" Type="STop"/>
             <Single Name="Having" Type="SHaving"/>
             <Single Name="GroupBy" Type="SGroupBy"/>

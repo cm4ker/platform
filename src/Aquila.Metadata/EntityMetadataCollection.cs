@@ -24,6 +24,7 @@ namespace Aquila.Metadata
         public EntityMetadataCollection()
         {
             _metadata = new List<EntityMetadata>();
+            _secMetadata = new List<SecPolicyMetadata>();
         }
 
         public EntityMetadataCollection(IEnumerable<EntityMetadata> metadata,
@@ -69,7 +70,8 @@ namespace Aquila.Metadata
             _needUpdate = false;
         }
 
-        public SMEntity GetSemanticByName(string name) => GetSemanticMetadata().FirstOrDefault(x => x.Name == name);
+        public SMEntity GetSemanticByName(string fullName) =>
+            GetSemanticMetadata().FirstOrDefault(x => x.FullName == fullName);
 
         public SMEntity GetSemantic(Func<SMEntity, bool> criteria) => GetSemanticMetadata().FirstOrDefault(criteria);
 

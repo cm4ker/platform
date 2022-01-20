@@ -98,8 +98,9 @@ namespace Aquila.Core.Querying
                       Cast(B.String AS int)
      End = C.Int
      */
+
     /// <summary>
-    /// Обходит дерево логического запроса и строит на его основе дерево реального SQL зарпоса 
+    /// Visit logical tree of query and build query for real DBMS 
     /// </summary>
     public class RealWalker : QLangWalker
     {
@@ -162,21 +163,6 @@ namespace Aquila.Core.Querying
             _l.WriteLine("m_select");
 
             base.VisitQSelect(node);
-
-            //
-
-            // foreach (var perm in _permissions.ToArray())
-            // {
-            //     foreach (var criteria in perm.Item2.Criteria.Where(x =>
-            //                  x.Key == SecPermission.Read))
-            //     {
-            //         foreach (var cri in criteria.Value)
-            //         {
-            //             Visit(cri.cModel);
-            //             
-            //         }
-            //     }
-            // }
         }
 
         public override void VisitQCriterionList(QCriterionList arg)

@@ -18,6 +18,7 @@ namespace Aquila.UIBuilder
         private readonly DatabaseRuntimeContext _drContext;
         private readonly EntityMetadataCollection _mdCollection;
         private QLang _m;
+        private readonly UserSecTable _ust;
 
         private class PrinterWalker : QLangWalker
         {
@@ -71,13 +72,13 @@ namespace Aquila.UIBuilder
             _mdCollection = TestMetadata.GetTestMetadata();
 
 
-            var ust = new UserSecTable();
-            ust.Init(_mdCollection.GetSecPolicies().ToList(), _mdCollection);
+            _ust = new UserSecTable();
+            _ust.Init(_mdCollection.GetSecPolicies().ToList(), _mdCollection);
 
-            _m = new QLang(_mdCollection, ust);
+            _m = new QLang(_mdCollection, _ust);
         }
 
-        public (string Output1, string Output2) RunQuery(string sql)
+        public (string Output1, string Output2, string Translated) RunQuery(string sql)
         {
             try
             {
@@ -92,19 +93,23 @@ namespace Aquila.UIBuilder
                 visitor.Visit(parser.parse());
 
                 var output = new StringWriter();
+                var translatedOutput = new StringWriter();
                 string sqlString = "";
 
                 try
                 {
-                    var walker = new PrinterWalker(output);
-                    walker.Visit(_m.top() as QLangElement);
+                    var element = _m.top() as QLangElement;
+                    var t = new SecurityVisitor(_mdCollection, _ust);
+                    
+                    var translated = t.Visit(element);
+                    new PrinterWalker(translatedOutput).Visit(translated);
+                    new PrinterWalker(output).Visit(element);
 
                     var pwalker = new PhysicalNameWalker(_drContext);
-                    pwalker.Visit(_m.top() as QLangElement);
+                    pwalker.Visit(translated);
 
                     var realWalker = new RealWalker(_drContext);
-                    realWalker.Visit(_m.top() as QLangElement);
-
+                    realWalker.Visit(translated);
 
                     var syntax = (realWalker.QueryMachine.pop() as SSyntaxNode);
                     sqlString = new MsSqlBuilder().Visit(syntax);
@@ -115,79 +120,12 @@ namespace Aquila.UIBuilder
                 }
 
 
-                return (output.ToString(), sqlString);
+                return (output.ToString(), sqlString, translatedOutput.ToString());
             }
             catch (Exception ex)
             {
-                return ($"Runtime error: {ex.Message}\nST: {ex.StackTrace}", "");
+                return ($"Runtime error: {ex.Message}\nST: {ex.StackTrace}", "", "Empty");
             }
-        }
-
-        public (string Output1, string Output2) Run(string code)
-        {
-            try
-            {
-                _m.reset();
-
-                StringReader sr = new StringReader(code);
-
-                var cmd = sr.ReadLine();
-                while (cmd != null)
-                {
-                    try
-                    {
-                        RunCommand(cmd);
-                    }
-                    catch (Exception ex)
-                    {
-                        return ($"Command: {cmd}\nMessage: {ex.Message}\nST:{ex.StackTrace}", "");
-                    }
-
-                    cmd = sr.ReadLine();
-                }
-
-                var output = new StringWriter();
-                string sqlString = "";
-
-                try
-                {
-                    var pwalker = new PhysicalNameWalker(_drContext);
-                    pwalker.Visit(_m.top() as QLangElement);
-
-                    var walker = new PrinterWalker(output);
-                    walker.Visit(_m.top() as QLangElement);
-
-                    var realWalker = new RealWalker(_drContext);
-                    realWalker.Visit(_m.top() as QLangElement);
-
-
-                    var syntax = (realWalker.QueryMachine.pop() as SSyntaxNode);
-                    sqlString = new MsSqlBuilder().Visit(syntax);
-                }
-                catch (Exception ex)
-                {
-                    sqlString = $"MSG: {ex.Message}\nST: {ex.StackTrace}";
-                }
-
-
-                return (output.ToString(), sqlString);
-            }
-            catch (Exception ex)
-            {
-                return ($"Runtime error: {ex.Message}\nST: {ex.StackTrace}", "");
-            }
-        }
-
-        private void RunCommand(string cmd)
-        {
-            var args = cmd.Split(" ");
-
-            var mName = args[0];
-
-            if (args.Length > 1)
-                typeof(QLang).GetMethod(mName)?.Invoke(_m, args[1..]);
-            else
-                typeof(QLang).GetMethod(mName)?.Invoke(_m, null);
         }
     }
 }

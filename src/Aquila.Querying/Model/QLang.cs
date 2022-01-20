@@ -18,7 +18,7 @@ namespace Aquila.Core.Querying.Model
         private Stack<LogicScope> _scope;
         private QLangTypeBuilder _tb;
 
-        public QLang(EntityMetadataCollection metadata, UserSecTable secTable, SMEntity criterionContext = null)
+        public QLang(EntityMetadataCollection metadata, UserSecTable secTable)
         {
             _metadata = metadata;
             _ust = secTable;
@@ -28,10 +28,9 @@ namespace Aquila.Core.Querying.Model
             _tb = new QLangTypeBuilder();
         }
 
-        public static QLangElement Parse(string sql, EntityMetadataCollection md, UserSecTable secTable,
-            SMEntity criterionContext = null)
+        public static QLangElement Parse(string sql, EntityMetadataCollection md, UserSecTable secTable)
         {
-            var m = new QLang(md, secTable, criterionContext);
+            var m = new QLang(md, secTable);
             return Parse(m, sql);
         }
 
@@ -196,6 +195,12 @@ namespace Aquila.Core.Querying.Model
             }
         }
 
+        public void ld_ref(QLangElement element)
+        {
+            _logicStack.Push(element);
+        }
+
+
         /// <summary>
         /// Load some data source from current context
         /// </summary>
@@ -220,49 +225,42 @@ namespace Aquila.Core.Querying.Model
             // @as(p_alias);
 
             //NOTE: Important create subject context after aliasing the source
-            if (_ust != null)
-            {
-                if (!_ust.TryClaimPermission(type, SecPermission.Read, out var claim))
-                {
-                    //access denied!
-                    // throw new Exception("Access denied");
-                }
-
-                // /*
-                //  Need register query
-                //  
-                //  SELECT ( CASE WHEN EXISTS(SELECT 1 FROM (QUERY)) THEN 0x01 (ALLOW) ELSE 0x00 (DENIED) END  ) SEC_FLAG
-                //  
-                //  FROM (SOURCE_TABLE)
-                //
-                //  NOTE: where SOURCE_TABLE - table subject                            
-                // */
-
-                if (claim != null)
-                {
-                    var qCriterial = claim.Criteria.SelectMany(x => x.Value).Select(x =>
-                    {
-                        var c = x.cString;
-
-                        new_scope();
-                        Parse(this, c);
-                        pop_scope();
-
-                        return (QCriterion)pop();
-                    });
-                    CurrentScope.Criteria.AddRange(qCriterial);
-                }
-            }
+            // if (_ust != null)
+            // {
+            //     if (!_ust.TryClaimPermission(type, SecPermission.Read, out var claim))
+            //     {
+            //         //access denied!
+            //         // throw new Exception("Access denied");
+            //     }
+            //
+            //     // /*
+            //     //  Need register query
+            //     //  
+            //     //  SELECT ( CASE WHEN EXISTS(SELECT 1 FROM (QUERY)) THEN 0x01 (ALLOW) ELSE 0x00 (DENIED) END  ) SEC_FLAG
+            //     //  
+            //     //  FROM (SOURCE_TABLE)
+            //     //
+            //     //  NOTE: where SOURCE_TABLE - table subject                            
+            //     // */
+            //
+            //     if (claim != null)
+            //     {
+            //         var qCriterial = claim.Criteria.SelectMany(x => x.Value).Select(x =>
+            //         {
+            //             var c = x.cString;
+            //
+            //             new_scope();
+            //
+            //             Parse(this, c);
+            //             pop_scope();
+            //
+            //             return (QCriterion)pop();
+            //         });
+            //         CurrentScope.Criteria.AddRange(qCriterial);
+            //     }
+            // }
         }
 
-        private static Random random = new Random();
-
-        private static string RandomString(int length)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            return new string(Enumerable.Repeat(chars, length)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
-        }
 
         public void ld_param(string name)
         {
@@ -335,6 +333,13 @@ namespace Aquila.Core.Querying.Model
         public void @as(string alias)
         {
             var item = _logicStack.Pop();
+
+            if (item is QDataSource aqds && aqds.Substituted)
+            {
+                CurrentScope.RemoveDS(aqds);
+                CurrentScope.AddDS(aqds, alias);
+                return;
+            }
 
             if (item is QAliasedDataSource || item is QAliasedSelectExpression)
             {
@@ -614,9 +619,5 @@ namespace Aquila.Core.Querying.Model
         {
             _logicStack.Push(new QConst(new SMType(SMType.Numeric, 0, 10, 10), number));
         }
-    }
-
-    public class Diagnostic
-    {
     }
 }

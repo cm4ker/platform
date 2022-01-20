@@ -17,8 +17,11 @@ namespace Aquila.QLangSyntaxGenerator
         public void Execute(GeneratorExecutionContext context)
         {
             var unit = QLangSyntaxGeneratorHelper.Generate(context);
-            context.AddSource("QLang.sources.generated.cs",
+            context.AddSource("QLang.models.generated.cs",
                 SourceText.From(unit.NormalizeWhitespace().ToFullString(), Encoding.UTF8));
+
+            context.AddSource("QLang.rewriter.generated.cs",
+                SourceText.From(QLangSyntaxGeneratorHelper.GenerateRewriter(context), Encoding.UTF8));
         }
     }
 }

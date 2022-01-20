@@ -35,6 +35,10 @@
         <ProjectReference Include="..\Aquila.QLangSyntaxGenerator\Aquila.QLangSyntaxGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Generated\Aquila.QLangSyntaxGenerator\Aquila.QLangSyntaxGenerator.AstSourceGenerator" />
+    </ItemGroup>
+
     <PropertyGroup>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>

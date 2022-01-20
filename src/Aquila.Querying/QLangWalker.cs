@@ -39,6 +39,8 @@ namespace Aquila.Core.Querying
 
         protected IEnumerable<QLangElement> CurrentStackTree => _stack;
 
+        
+        
         public override T DefaultVisit(QLangElement node)
         {
             if (node == null)
