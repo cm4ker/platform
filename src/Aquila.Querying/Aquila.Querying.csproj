@@ -26,4 +26,12 @@
         <ProjectReference Include="..\Aquila.Metadata\Aquila.Metadata.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <!-- Note that this is not a "normal" ProjectReference.
+             It needs the additional 'OutputItemType' and 'ReferenceOutputAssmbly' attributes. -->
+        <ProjectReference Include="..\Aquila.QlangSyntaxGenerator\Aquila.QlangSyntaxGenerator.csproj"
+                          OutputItemType="Analyzer"
+                          ReferenceOutputAssembly="false" />
+    </ItemGroup>
+
 </Project>

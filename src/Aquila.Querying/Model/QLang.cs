@@ -227,19 +227,19 @@ namespace Aquila.Core.Querying.Model
                 if (!_ust.TryClaimPermission(type, SecPermission.Read, out var claim))
                 {
                     //access denied!
-                   // throw new Exception("Access denied");
+                    // throw new Exception("Access denied");
                 }
 
-                //            /*
-                //             Need register query
-                //             
-                //             SELECT ( CASE WHEN EXISTS(SELECT 1 FROM (QUERY)) THEN 0x01 (ALLOW) ELSE 0x00 (DENIED) END  ) SEC_FLAG
-                //             
-                //             FROM (SOURCE_TABLE)
+                // /*
+                //  Need register query
+                //  
+                //  SELECT ( CASE WHEN EXISTS(SELECT 1 FROM (QUERY)) THEN 0x01 (ALLOW) ELSE 0x00 (DENIED) END  ) SEC_FLAG
+                //  
+                //  FROM (SOURCE_TABLE)
                 //
-                //             NOTE: where SOURCE_TABLE - table subject                            
-                //            */
-                //
+                //  NOTE: where SOURCE_TABLE - table subject                            
+                // */
+
                 if (claim != null)
                 {
                     var qCriterial = claim.Criteria.SelectMany(x => x.Value).Select(x =>
