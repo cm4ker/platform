@@ -153,7 +153,7 @@ ordered_column
  ;
 
 table_qualified_name: 
-    any_name ('.' any_name)* (AS? table_alias)?
+    any_name ('.' any_name)*
 ;
 
 table:

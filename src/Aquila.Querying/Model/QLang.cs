@@ -179,7 +179,7 @@ namespace Aquila.Core.Querying.Model
             {
                 _logicStack.Push(ds);
                 if (CurrentScope != null)
-                    CurrentScope.ScopedDataSources.Add(ds);
+                    CurrentScope.AddDS(ds);
             }
         }
 
@@ -191,35 +191,33 @@ namespace Aquila.Core.Querying.Model
             _logicStack.Push(table);
             if (CurrentScope != null)
             {
-                CurrentScope.ScopedDataSources.Add(table);
-                CurrentScope.ScopedDataSources.Remove(ds);
+                CurrentScope.AddDS(table);
+                CurrentScope.RemoveDS(ds);
             }
         }
 
         /// <summary>
-        /// Записать источник данных. Ссылка на него полностью получается из метаданных 
+        /// Load some data source from current context
         /// </summary>
         /// <param name="componentName"></param>
         /// <param name="typeName"></param>
         /// <param name="alias"></param>
-        public void ld_source(string componentName, string typeName, string p_alias = "")
+        public void ld_source(string qualifiedName)
         {
-            ld_component(componentName);
-
             //load entity type
-            var type = _metadata.GetSemanticByName(typeName);
+            var type = _metadata.GetSemanticByName(qualifiedName);
             var ds = new QObjectTable(type);
             _logicStack.Push(ds);
             if (CurrentScope != null)
-                CurrentScope.ScopedDataSources.Add(ds);
+                CurrentScope.AddDS(ds);
 
-            if (string.IsNullOrEmpty(p_alias))
-            {
-                //force aliasing the sources because we need it at adding security level
-                p_alias = RandomString(10);
-            }
-
-            @as(p_alias);
+            // if (string.IsNullOrEmpty(p_alias))
+            // {
+            //     //force aliasing the sources because we need it at adding security level
+            //     p_alias = RandomString(10);
+            // }
+            //
+            // @as(p_alias);
 
             //NOTE: Important create subject context after aliasing the source
             if (_ust != null)
@@ -245,7 +243,11 @@ namespace Aquila.Core.Querying.Model
                     var qCriterial = claim.Criteria.SelectMany(x => x.Value).Select(x =>
                     {
                         var c = x.cString;
+
+                        new_scope();
                         Parse(this, c);
+                        pop_scope();
+
                         return (QCriterion)pop();
                     });
                     CurrentScope.Criteria.AddRange(qCriterial);
@@ -275,12 +277,12 @@ namespace Aquila.Core.Querying.Model
         public void ld_source_context()
         {
             _logicStack.Push(
-                new QCombinedDataSource(new QDataSourceList(CurrentScope.ScopedDataSources.ToImmutableArray())));
+                new QCombinedDataSource(new QDataSourceList(CurrentScope.GetScopedDS())));
         }
 
         public void ld_name(string name)
         {
-            if (CurrentScope.Scope.TryGetValue(name, out var source))
+            if (CurrentScope.TryGetDS(name, out var source))
             {
                 _logicStack.Push(source);
             }
@@ -302,7 +304,7 @@ namespace Aquila.Core.Querying.Model
 
         public void ld_star()
         {
-            var fields = CurrentScope.ScopedDataSources.SelectMany(x => x.GetFields());
+            var fields = CurrentScope.GetScopedDS().SelectMany(x => x.GetFields());
 
             foreach (var field in fields)
             {
@@ -334,33 +336,40 @@ namespace Aquila.Core.Querying.Model
         {
             var item = _logicStack.Pop();
 
-            if (item is QDataSource source)
+            if (item is QAliasedDataSource || item is QAliasedSelectExpression)
             {
-                var ds = new QAliasedDataSource(source, alias);
+                throw new Exception("You can't alias object twice");
+            }
 
-                _logicStack.Push(ds);
-
-                CurrentScope.ScopedDataSources.Remove(source);
-                CurrentScope.ScopedDataSources.Add(ds);
-
-                CurrentScope.Scope.Add(alias, ds);
+            if (item is QDataSource ds)
+            {
+                var ads = new QAliasedDataSource(ds, alias);
+                _logicStack.Push(ads);
+                CurrentScope.ReplaceDS(ds, ads);
             }
             else if (item is QSelectExpression expr)
-            {
                 _logicStack.Push(new QAliasedSelectExpression(expr, alias));
-            }
             else if (item is QField field)
                 _logicStack.Push(new QAliasedSelectExpression(field, alias));
             else
-
             {
-                throw new Exception("In this element not available for aliasing");
+                throw new Exception("Element on stack not available for aliasing");
             }
         }
 
+        /// <summary>
+        /// creates new visibility scope for creating objects
+        /// scope automatically close then you invoke closing-scope instruction
+        /// like new_query()
+        /// </summary>
         public void new_scope()
         {
             _scope.Push(new LogicScope());
+        }
+
+        private LogicScope pop_scope()
+        {
+            return _scope.Pop();
         }
 
         public void lookup(string propName)
@@ -370,7 +379,7 @@ namespace Aquila.Core.Querying.Model
 
         public void st_data_request()
         {
-            _scope.Pop();
+            pop_scope();
             _logicStack.Push(new QDataRequest(_logicStack.PopItem<QFieldList>()));
         }
 
@@ -387,7 +396,7 @@ namespace Aquila.Core.Querying.Model
         /// </summary>
         public void new_query()
         {
-            var scope = _scope.Pop();
+            var scope = pop_scope();
 
             var clist = new QCriterionList(scope.Criteria.Select(x => x).ToImmutableArray());
 
@@ -401,13 +410,13 @@ namespace Aquila.Core.Querying.Model
             _logicStack.Push(query);
 
 
-            if (_scope.Count > 0) //мы находимся во внутреннем запросе
+            if (_scope.Count > 0) //we are inside the nested query
                 _logicStack.Push(new QNestedQuery(_logicStack.PopQuery()));
         }
 
         public void new_criterion()
         {
-            var scope = _scope.Pop();
+            var scope = pop_scope();
             var criterion = new QCriterion(_logicStack.PopItem<QWhere>(), _logicStack.PopItem<QFrom>());
 
             //we need validate query before push it to the stack            

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 using Aquila.Metadata;
 using Aquila.Runtime.Querying;
 
@@ -20,20 +22,65 @@ namespace Aquila.Core.Querying.Model
     {
         public LogicScope()
         {
-            Scope = new Dictionary<string, QDataSource>();
-            ScopedDataSources = new List<QDataSource>();
+            _aliasedDS = new Dictionary<string, QDataSource>();
+            _scopedDS = new ImmutableArray<QDataSource>();
             Criteria = new();
         }
 
         public QueryContext QueryContext;
 
         /// <summary>
-        /// Область видимости имен данных
+        /// Names of datasources
         /// </summary>
-        public Dictionary<string, QDataSource> Scope { get; set; }
+        private Dictionary<string, QDataSource> _aliasedDS { get; }
 
-        public List<QDataSource> ScopedDataSources { get; set; }
+        private ImmutableArray<QDataSource> _scopedDS;
 
         public List<QCriterion> Criteria { get; set; }
+
+
+        /// <summary>
+        /// Push data to the scope. Data from this DS will be available in this scope
+        /// </summary>
+        /// <param name="ds"></param>
+        public void AddDS(QDataSource ds)
+        {
+            _scopedDS = _scopedDS.Add(ds);
+
+            if (ds is QAliasedDataSource ads)
+                if (!_aliasedDS.TryAdd(ads.Alias, ds))
+                {
+                    throw new Exception($"ERROR: Name collision {ads.Alias}");
+                }
+        }
+
+        public void RemoveDS(QDataSource ds)
+        {
+            _scopedDS = _scopedDS.Remove(ds);
+
+            if (ds is QAliasedDataSource a)
+            {
+                _aliasedDS.Remove(a.Alias);
+            }
+        }
+
+        public void ReplaceDS(QDataSource oldDS, QDataSource newDS)
+        {
+            RemoveDS(oldDS);
+            AddDS(newDS);
+        }
+
+        public void RemoveDS(string alias)
+        {
+            _aliasedDS.Remove(alias, out var ds);
+            _scopedDS = _scopedDS.Remove(ds);
+        }
+
+        public bool TryGetDS(string alias, out QDataSource ds)
+        {
+            return _aliasedDS.TryGetValue(alias, out ds);
+        }
+
+        public ImmutableArray<QDataSource> GetScopedDS() => _scopedDS;
     }
 }
