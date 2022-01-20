@@ -179,6 +179,15 @@ namespace Aquila.Core.Querying
             // }
         }
 
+        public override void VisitQCriterionList(QCriterionList arg)
+        {
+            //expr
+            _qm.ld_const(1);
+            //condition
+            _qm.when();
+            _qm.@case();
+        }
+
         public override void VisitQCriterion(QCriterion arg)
         {
             _qm.bg_query();
