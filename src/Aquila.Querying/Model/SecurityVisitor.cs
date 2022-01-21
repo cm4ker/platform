@@ -20,7 +20,7 @@ namespace Aquila.Core.Querying.Model
 
         public SecurityVisitor(EntityMetadataCollection em, UserSecTable sec)
         {
-            _m = new QLang(em, sec);
+            _m = new QLang(em);
             _sec = sec;
         }
 
@@ -86,7 +86,6 @@ namespace Aquila.Core.Querying.Model
                 EmitCriteria(ads, ot2);
             }
 
-
             return new QFrom(joinList, arg.Source);
         }
 
@@ -118,6 +117,20 @@ namespace Aquila.Core.Querying.Model
 
         public override QLangElement VisitQFromItem(QFromItem arg)
         {
+            /*
+             
+             Transfrom
+             
+             FROM {Source1}
+             JOIN  {Source2}
+            
+             TO
+             
+             FROM {Source1}
+             JOIN (SELECT Fields FROM {Source2} {WithCriteria}) X             
+             
+             */
+
             QObjectTable ot = null;
             QAliasedDataSource ads = null;
 
@@ -139,11 +152,18 @@ namespace Aquila.Core.Querying.Model
 
                 var select = new QSelect(new QFieldList(ads.GetFields().ToImmutableArray()));
                 var from = new QFrom(QJoinList.Empty, arg.Joined);
-                var newDs = new QAliasedDataSource(new QNestedQuery(new QQuery(null, select, null, null, null, from,
-                    new QCriterionList(_criteria.ToImmutableArray()))), ads.Alias);
-                
+
+                //TODO: optimize selection in inner query (only used field needs remaining)
+                var query = new QQuery(null, select, null, null, null, from,
+                    new QCriterionList(_criteria.ToImmutableArray()));
+
+                var newDs = new QAliasedDataSource(new QNestedQuery(query), ads.Alias);
+
+                //erase the value for next emitting
+                _criteria = new();
+
                 _subs[ads] = newDs;
-                
+
                 //
                 var condition = (QExpression)Visit(arg.Condition);
                 return new QFromItem(condition, newDs, arg.JoinType);

@@ -75,7 +75,7 @@ namespace Aquila.UIBuilder
             _ust = new UserSecTable();
             _ust.Init(_mdCollection.GetSecPolicies().ToList(), _mdCollection);
 
-            _m = new QLang(_mdCollection, _ust);
+            _m = new QLang(_mdCollection);
         }
 
         public (string Output1, string Output2, string Translated) RunQuery(string sql)
@@ -100,7 +100,7 @@ namespace Aquila.UIBuilder
                 {
                     var element = _m.top() as QLangElement;
                     var t = new SecurityVisitor(_mdCollection, _ust);
-                    
+
                     var translated = t.Visit(element);
                     new PrinterWalker(translatedOutput).Visit(translated);
                     new PrinterWalker(output).Visit(element);

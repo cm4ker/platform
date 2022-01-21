@@ -36,8 +36,11 @@ namespace Aquila.Core.Querying
             var ust = new UserSecTable();
             ust.Init(sec, md);
 
-            var logicalTree = QLang.Parse(sql, md, ust) as QQueryList ??
+            var logicalTree = QLang.Parse(sql, md) as QQueryList ??
                               throw new Exception("Query stack machine after parsing MUST return the QueryList");
+
+            //Transform tree
+            logicalTree = (QQueryList)(new SecurityVisitor(md, ust).Visit(logicalTree));
 
             return (logicalTree.Compile(drc), logicalTree);
         }

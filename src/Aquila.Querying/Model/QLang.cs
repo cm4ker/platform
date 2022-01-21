@@ -12,25 +12,23 @@ namespace Aquila.Core.Querying.Model
     public class QLang
     {
         private readonly EntityMetadataCollection _metadata;
-        private readonly UserSecTable _ust;
 
         private LogicStack _logicStack;
         private Stack<LogicScope> _scope;
         private QLangTypeBuilder _tb;
 
-        public QLang(EntityMetadataCollection metadata, UserSecTable secTable)
+        public QLang(EntityMetadataCollection metadata)
         {
             _metadata = metadata;
-            _ust = secTable;
 
             _logicStack = new LogicStack();
             _scope = new Stack<LogicScope>();
             _tb = new QLangTypeBuilder();
         }
 
-        public static QLangElement Parse(string sql, EntityMetadataCollection md, UserSecTable secTable)
+        public static QLangElement Parse(string sql, EntityMetadataCollection md)
         {
-            var m = new QLang(md, secTable);
+            var m = new QLang(md);
             return Parse(m, sql);
         }
 

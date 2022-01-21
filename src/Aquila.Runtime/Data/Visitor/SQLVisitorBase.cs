@@ -35,7 +35,7 @@ namespace Aquila.QueryBuilder.Visitor
 
         public override string VisitSAnd(SAnd node)
         {
-            return string.Join(" and ", node.Expressions.Select(n => n.Accept(this)));
+            return string.Format("({0} AND {1})", node.Left.Accept(this), node.Right.Accept(this));
         }
 
         public override string VisitSAvg(SAvg node)
@@ -216,6 +216,11 @@ namespace Aquila.QueryBuilder.Visitor
         public override string VisitSSum(SSum node)
         {
             return string.Format("sum({0})", node.Argument.Accept(this));
+        }
+
+        public override string VisitSIsNull(SIsNull node)
+        {
+            return string.Format("isnull({0},{1})", node.First.Accept(this), node.Second.Accept(this));
         }
 
         public override string VisitSTable(STable node)

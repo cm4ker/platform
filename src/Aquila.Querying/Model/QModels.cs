@@ -10,6 +10,8 @@ namespace Aquila.Core.Querying.Model
     {
         private List<QField> _fields;
 
+        public override bool HasInternalCriterion => ParentSource.HasInternalCriterion;
+
         public override IEnumerable<QField> GetFields()
         {
             return _fields ??= ParentSource.GetFields().Select(x => (QField)new QIntermediateSourceField(x, this))
@@ -93,6 +95,16 @@ namespace Aquila.Core.Querying.Model
         public virtual IEnumerable<QField> GetFields()
         {
             return null;
+        }
+
+        public virtual QField GetField(string name) => GetFields().FirstOrDefault(x => x.GetName() == name);
+
+
+        public virtual bool HasInternalCriterion => false;
+
+        public virtual bool HasField(string name)
+        {
+            return GetFields().Any(x => x.GetName() == name);
         }
 
         public virtual IEnumerable<QTable> GetTables()
@@ -202,6 +214,8 @@ namespace Aquila.Core.Querying.Model
     public partial class QNestedQuery : QDataSource
     {
         private List<QField> _fields;
+
+        public override bool HasInternalCriterion => Nested.Criteria.Any();
 
         public override IEnumerable<QField> GetFields()
         {

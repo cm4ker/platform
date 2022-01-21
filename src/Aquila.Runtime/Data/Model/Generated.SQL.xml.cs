@@ -759,22 +759,25 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SAnd : SCondition
     {
-        public SAnd(List<SExpression> expressions): base()
+        public SAnd(SExpression right, SExpression left): base()
         {
-            Expressions = expressions;
+            Right = right;
+            Left = left;
         }
 
-        public List<SExpression> Expressions { get; set; }
+        public SExpression Right { get; set; }
+
+        public SExpression Left { get; set; }
 
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SAnd ) obj ;  return  ( SequenceEqual ( this . Expressions ,  node . Expressions ) ) ; 
+                return false; var  node  =  ( SAnd ) obj ;  return  ( Compare ( this . Right ,  node . Right ) && Compare ( this . Left ,  node . Left ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return Xor(Expressions, i => i.GetHashCode());
+            return (Right == null ? 0 : Right.GetHashCode()) ^ (Left == null ? 0 : Left.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -899,6 +902,38 @@ namespace Aquila.QueryBuilder.Model
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
             return visitor.VisitSSum(this);
+        }
+    }
+}
+
+namespace Aquila.QueryBuilder.Model
+{
+    public partial class SIsNull : SExpression
+    {
+        public SIsNull(SExpression second, SExpression first): base()
+        {
+            Second = second;
+            First = first;
+        }
+
+        public SExpression Second { get; set; }
+
+        public SExpression First { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (!this.GetType().Equals(obj.GetType()))
+                return false; var  node  =  ( SIsNull ) obj ;  return  ( Compare ( this . Second ,  node . Second ) && Compare ( this . First ,  node . First ) ) ; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (Second == null ? 0 : Second.GetHashCode()) ^ (First == null ? 0 : First.GetHashCode());
+        }
+
+        public override T Accept<T>(QueryVisitorBase<T> visitor)
+        {
+            return visitor.VisitSIsNull(this);
         }
     }
 }
@@ -2625,6 +2660,11 @@ namespace Aquila.QueryBuilder.Visitor
         }
 
         public virtual T VisitSSum(SSum node)
+        {
+            return DefaultVisit(node);
+        }
+
+        public virtual T VisitSIsNull(SIsNull node)
         {
             return DefaultVisit(node);
         }

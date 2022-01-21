@@ -150,14 +150,15 @@
 
     <Syntax Name="SEquals" Base="SCondition">
         <Arguments>
-            <Single Name="Left" Type="SExpression"/>
             <Single Name="Right" Type="SExpression"/>
+            <Single Name="Left" Type="SExpression"/>
         </Arguments>
     </Syntax>
 
     <Syntax Name="SAnd" Base="SCondition">
         <Arguments>
-            <List Name="Expressions" Type="SExpression"/>
+            <Single Name="Right" Type="SExpression"/>
+            <Single Name="Left" Type="SExpression"/>
         </Arguments>
     </Syntax>
 
@@ -183,6 +184,13 @@
     <Syntax Name="SSum" Base="SExpression">
         <Arguments>
             <Single Name="Argument" Type="SExpression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="SIsNull" Base="SExpression">
+        <Arguments>
+            <Single Name="Second" Type="SExpression"/>
+            <Single Name="First" Type="SExpression"/>
         </Arguments>
     </Syntax>
 

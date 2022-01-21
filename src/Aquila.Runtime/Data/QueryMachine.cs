@@ -463,14 +463,21 @@ namespace Aquila.QueryBuilder
 
         public QueryMachine and()
         {
-            push(new SAnd(PopList<SExpression>()));
+            push(new SAnd(Pop<SExpression>(), Pop<SExpression>()));
             return this;
         }
 
 
-        public void or()
+        public QueryMachine or()
         {
             push(new SOr(Pop<SExpression>(), Pop<SExpression>()));
+            return this;
+        }
+
+        public QueryMachine is_null()
+        {
+            push(new SIsNull(Pop<SExpression>(), Pop<SExpression>()));
+            return this;
         }
 
         #endregion

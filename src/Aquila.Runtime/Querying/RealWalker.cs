@@ -111,7 +111,6 @@ namespace Aquila.Core.Querying
         private bool _hasNamedSource = false;
         private bool _hasAlias = false;
 
-
         public string Log => _l.ToString();
 
         internal DatabaseRuntimeContext DrContext => _drContext;
@@ -145,7 +144,7 @@ namespace Aquila.Core.Querying
             Visit(node.GroupBy);
             Visit(node.OrderBy);
             Visit(node.Select);
-            Visit(node.Criteria);
+            VisitQCriterionList(node.Criteria, node.From);
 
             _qm.st_query();
             _l.WriteLine("st_query");
@@ -165,11 +164,32 @@ namespace Aquila.Core.Querying
             base.VisitQSelect(node);
         }
 
-        public override void VisitQCriterionList(QCriterionList arg)
+        public void VisitQCriterionList(QCriterionList arg, QFrom from)
         {
             //if no criteria then we move forward
-            if (!arg.Any())
+            if (arg == null || !arg.Any())
+            {
+                if (from.Joins != null)
+                {
+                    //if on general table we have not a criteria but we have it on joined
+
+                    foreach (var fromItem in from.Joins)
+                    {
+                        if (fromItem.Joined.HasInternalCriterion)
+                        {
+                            LoadNamedSource(fromItem.Joined.GetDbName());
+
+                            _qm.ld_str("_sec")
+                                .ld_column()
+                                .ld_const(1)
+                                .is_null()
+                                .@as("_sec");
+                        }
+                    }
+                }
+
                 return;
+            }
 
             var emitOr = false;
 
@@ -188,6 +208,23 @@ namespace Aquila.Core.Querying
                 emitOr = true;
             }
 
+            if (from.Joins != null)
+                foreach (var fromItem in from.Joins)
+                {
+                    if (fromItem.Joined.HasInternalCriterion)
+                    {
+                        LoadNamedSource(fromItem.Joined.GetDbName());
+
+                        _qm.ld_str("_sec")
+                            .ld_column()
+                            .ld_const(1)
+                            .is_null()
+                            .ld_const(1)
+                            .eq()
+                            .and();
+                    }
+                }
+
             _qm.when();
 
             //else
@@ -201,8 +238,8 @@ namespace Aquila.Core.Querying
         {
             _qm.bg_query();
             _qm.m_from();
-            //Visit(arg.From);
             _qm.bg_query().m_select().ld_const(1).@as("_sec_fld").st_query().@as("_sec_dummy");
+
             Visit(arg.From.Joins);
             Visit(arg.Where);
 
