@@ -169,15 +169,23 @@ namespace Aquila.Core.Querying
             //if no criteria then we move forward
             if (arg == null || !arg.Any())
             {
+                //capture all source names where we need take a _sec filed
+                //in the feature we build resulting toplevel _sec field
+                List<string> tlSec = new();
+
                 if (from.Source.HasInternalCriterion)
                 {
-                    LoadNamedSource(from.Source.GetDbName());
+                    tlSec.Add(from.Source.GetDbName());
 
-                    _qm.ld_str("_sec")
-                        .ld_column()
-                        .ld_const(1)
-                        .is_null()
-                        .@as("_sec");
+                    // LoadNamedSource(from.Source.GetDbName());
+                    //
+                    // _qm.ld_str("_sec")
+                    //     .ld_column()
+                    //     .ld_const(1)
+                    //     .is_null()
+                    //     .@as("_sec");
+                    //
+                    // _hasNamedSource = false;
                 }
 
                 if (from.Joins != null)
@@ -188,14 +196,54 @@ namespace Aquila.Core.Querying
                     {
                         if (fromItem.Joined.HasInternalCriterion)
                         {
-                            LoadNamedSource(fromItem.Joined.GetDbName());
+                            tlSec.Add(fromItem.Joined.GetDbName());
+                            // LoadNamedSource();
+                            // _qm.ld_str("_sec")
+                            //     .ld_column()
+                            //     .ld_const(1)
+                            //     .is_null()
+                            //     .@as("_sec");
+                            // _hasNamedSource = false;
+                        }
+                    }
+                }
 
-                            _qm.ld_str("_sec")
+                if (tlSec.Any())
+                {
+                    if (tlSec.Count() == 1)
+                    {
+                        _qm.ld_str(tlSec.First())
+                            .ld_str("_sec")
+                            .ld_column();
+                    }
+                    else
+                    {
+                        var isFirst = true;
+
+                        //total result expression
+                        _qm.ld_const(1);
+
+                        foreach (var sec in tlSec)
+                        {
+                            _qm.ld_str(sec)
+                                .ld_str("_sec")
                                 .ld_column()
                                 .ld_const(1)
-                                .is_null()
-                                .@as("_sec");
+                                .eq();
+
+                            if (isFirst)
+                            {
+                                isFirst = false;
+                                continue;
+                            }
+
+                            _qm.and();
                         }
+
+                        _qm.when();
+                        _qm.ld_const(0);
+                        _qm.@case()
+                            .@as("_sec");
                     }
                 }
 

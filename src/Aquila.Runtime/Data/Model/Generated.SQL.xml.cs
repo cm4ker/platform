@@ -727,25 +727,25 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SEquals : SCondition
     {
-        public SEquals(SExpression left, SExpression right): base()
+        public SEquals(SExpression right, SExpression left): base()
         {
-            Left = left;
             Right = right;
+            Left = left;
         }
 
-        public SExpression Left { get; set; }
-
         public SExpression Right { get; set; }
+
+        public SExpression Left { get; set; }
 
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SEquals ) obj ;  return  ( Compare ( this . Left ,  node . Left ) && Compare ( this . Right ,  node . Right ) ) ; 
+                return false; var  node  =  ( SEquals ) obj ;  return  ( Compare ( this . Right ,  node . Right ) && Compare ( this . Left ,  node . Left ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return (Left == null ? 0 : Left.GetHashCode()) ^ (Right == null ? 0 : Right.GetHashCode());
+            return (Right == null ? 0 : Right.GetHashCode()) ^ (Left == null ? 0 : Left.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
