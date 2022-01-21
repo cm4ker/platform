@@ -176,16 +176,6 @@ namespace Aquila.Core.Querying
                 if (from.Source.HasInternalCriterion)
                 {
                     tlSec.Add(from.Source.GetDbName());
-
-                    // LoadNamedSource(from.Source.GetDbName());
-                    //
-                    // _qm.ld_str("_sec")
-                    //     .ld_column()
-                    //     .ld_const(1)
-                    //     .is_null()
-                    //     .@as("_sec");
-                    //
-                    // _hasNamedSource = false;
                 }
 
                 if (from.Joins != null)
@@ -197,13 +187,6 @@ namespace Aquila.Core.Querying
                         if (fromItem.Joined.HasInternalCriterion)
                         {
                             tlSec.Add(fromItem.Joined.GetDbName());
-                            // LoadNamedSource();
-                            // _qm.ld_str("_sec")
-                            //     .ld_column()
-                            //     .ld_const(1)
-                            //     .is_null()
-                            //     .@as("_sec");
-                            // _hasNamedSource = false;
                         }
                     }
                 }
