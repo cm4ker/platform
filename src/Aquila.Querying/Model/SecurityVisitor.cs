@@ -16,7 +16,7 @@ namespace Aquila.Core.Querying.Model
         private QLang _m;
         private Dictionary<QDataSource, QDataSource> _subs = new();
 
-        public List<QCriterion> _criteria = new();
+        public Stack<List<QCriterion>> _criteriaStack = new();
 
         public SecurityVisitor(EntityMetadataCollection em, UserSecTable sec)
         {
@@ -35,9 +35,7 @@ namespace Aquila.Core.Querying.Model
 
             //Fill the criteria for this query
             var query = new QQuery(orderby, select, having, groupby, where, from,
-                new QCriterionList(_criteria.ToImmutableArray()));
-            //not use this criteria for next queries
-            _criteria = new();
+                new QCriterionList(_criteriaStack.Pop().ToImmutableArray()));
 
             return query;
         }
@@ -59,13 +57,13 @@ namespace Aquila.Core.Querying.Model
                 //transform it to the nested query for checking rows inside the table
                 ds.Substituted = true;
 
-                _criteria = claim.Criteria.SelectMany(x => x.Value).Select(x =>
+                _criteriaStack.Push(claim.Criteria.SelectMany(x => x.Value).Select(x =>
                 {
                     _m.ld_ref(ds);
                     var c = x.cString;
                     QLang.Parse(_m, c);
                     return (QCriterion)_m.pop();
-                }).ToList();
+                }).ToList());
             }
             else
             {
@@ -184,12 +182,9 @@ namespace Aquila.Core.Querying.Model
 
                 //TODO: optimize selection in inner query (only used field needs remaining)
                 var query = new QQuery(null, select, null, null, null, from,
-                    new QCriterionList(_criteria.ToImmutableArray()));
+                    new QCriterionList(_criteriaStack.Pop().ToImmutableArray()));
 
                 var newDs = new QAliasedDataSource(new QNestedQuery(query), ads.Alias);
-
-                //erase the value for next emitting
-                _criteria = new();
 
                 _subs[ads] = newDs;
 

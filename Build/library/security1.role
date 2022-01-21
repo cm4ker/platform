@@ -11,7 +11,7 @@
       Permission: [ Read ]
 
   Criteria: 
-    - Permission: Create 
+    - Permission: Read 
       Subject: Entity.Country
       Query: 
              Subject s 
@@ -30,4 +30,4 @@
   Type: Revoke
   Subjects:
     - Entity.Country
-  Permission: [ Create ]
+  Permission: [ Create, Update, Delete ]
