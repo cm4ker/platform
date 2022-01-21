@@ -34,6 +34,12 @@ namespace Aquila.Core.Querying
             VisitQCriterionList(node.Criteria);
         }
 
+        public override void VisitQFrom(QFrom arg)
+        {
+            Visit(arg.Source);
+            Visit(arg.Joins);
+        }
+
         public override void VisitQObjectTable(QObjectTable node)
         {
             node.SetDbNameIfEmpty($"{node.ObjectType.GetDescriptor(_context).DatabaseName}");

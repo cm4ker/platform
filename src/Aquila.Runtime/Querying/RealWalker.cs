@@ -169,6 +169,17 @@ namespace Aquila.Core.Querying
             //if no criteria then we move forward
             if (arg == null || !arg.Any())
             {
+                if (from.Source.HasInternalCriterion)
+                {
+                    LoadNamedSource(from.Source.GetDbName());
+
+                    _qm.ld_str("_sec")
+                        .ld_column()
+                        .ld_const(1)
+                        .is_null()
+                        .@as("_sec");
+                }
+
                 if (from.Joins != null)
                 {
                     //if on general table we have not a criteria but we have it on joined

@@ -18,8 +18,13 @@ namespace Aquila.Core.Querying
         public override object VisitSql_stmt_list(ZSqlGrammarParser.Sql_stmt_listContext context)
         {
             _stack.create(QObjectType.QueryList);
+            foreach (var query in context.query_stmt())
+            {
+                VisitQuery_stmt(query);
+                _stack.st_elem();
+            }
 
-            return base.VisitSql_stmt_list(context);
+            return null;
         }
 
         public override object VisitCriterion_stmt(ZSqlGrammarParser.Criterion_stmtContext context)
@@ -60,7 +65,7 @@ namespace Aquila.Core.Querying
                 Visit(context.orderby_stmt());
 
             _stack.new_query();
-            _stack.st_elem();
+
 
             return null;
         }

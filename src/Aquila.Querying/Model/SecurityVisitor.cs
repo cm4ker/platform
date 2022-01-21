@@ -34,8 +34,12 @@ namespace Aquila.Core.Querying.Model
             var orderby = (QOrderBy)Visit(arg.OrderBy);
 
             //Fill the criteria for this query
-            return new QQuery(orderby, select, having, groupby, where, from,
+            var query = new QQuery(orderby, select, having, groupby, where, from,
                 new QCriterionList(_criteria.ToImmutableArray()));
+            //not use this criteria for next queries
+            _criteria = new();
+
+            return query;
         }
 
         private static Random random = new Random();
@@ -84,9 +88,13 @@ namespace Aquila.Core.Querying.Model
             else if (arg.Source is QAliasedDataSource { ParentSource: QObjectTable ot2 } ads)
             {
                 EmitCriteria(ads, ot2);
+                return new QFrom(joinList, arg.Source);
             }
-
-            return new QFrom(joinList, arg.Source);
+            else
+            {
+                var source = (QDataSource)Visit(arg.Source);
+                return new QFrom(joinList, source);
+            }
         }
 
         public override QLangElement VisitQObjectTable(QObjectTable arg)
@@ -95,6 +103,7 @@ namespace Aquila.Core.Querying.Model
 
             if (_subs.TryGetValue(arg, out var newArg))
                 return newArg;
+
             return arg;
         }
 
@@ -102,6 +111,20 @@ namespace Aquila.Core.Querying.Model
         {
             if (_subs.TryGetValue(arg, out var newArg))
                 return newArg;
+
+            var newDs = (QAliasedDataSource)base.VisitQAliasedDataSource(arg);
+            _subs[arg] = newDs;
+
+            return newDs;
+        }
+
+        public override QLangElement VisitQIntermediateSourceField(QIntermediateSourceField arg)
+        {
+            if (_subs.TryGetValue(arg.DataSource, out var subs))
+            {
+                return subs.GetFields().Where(x => x.GetName() == arg.GetName()).First();
+            }
+
             return arg;
         }
 
@@ -112,7 +135,7 @@ namespace Aquila.Core.Querying.Model
                 return subs.GetFields().Where(x => x.GetName() == arg.GetName()).First();
             }
 
-            return base.VisitQSourceFieldExpression(arg);
+            return arg;
         }
 
         public override QLangElement VisitQFromItem(QFromItem arg)
