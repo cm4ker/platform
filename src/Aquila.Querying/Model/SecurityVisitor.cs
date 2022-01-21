@@ -75,7 +75,7 @@ namespace Aquila.Core.Querying.Model
 
         public override QLangElement VisitQFrom(QFrom arg)
         {
-            var joinList = (QJoinList)Visit(arg.Joins);
+            QDataSource resultDs;
 
             if (arg.Source is QObjectTable ot)
             {
@@ -83,18 +83,24 @@ namespace Aquila.Core.Querying.Model
                 EmitCriteria(ds, ot);
                 _subs[ot] = ds;
 
-                return new QFrom(joinList, ds);
+
+                resultDs = ds;
             }
             else if (arg.Source is QAliasedDataSource { ParentSource: QObjectTable ot2 } ads)
             {
                 EmitCriteria(ads, ot2);
-                return new QFrom(joinList, arg.Source);
+
+                resultDs = arg.Source;
             }
             else
             {
                 var source = (QDataSource)Visit(arg.Source);
-                return new QFrom(joinList, source);
+                resultDs = source;
             }
+
+            var joinList = (QJoinList)Visit(arg.Joins);
+
+            return new QFrom(joinList, resultDs);
         }
 
         public override QLangElement VisitQObjectTable(QObjectTable arg)
