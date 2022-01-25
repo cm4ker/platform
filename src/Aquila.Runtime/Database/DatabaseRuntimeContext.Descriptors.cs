@@ -19,19 +19,6 @@ namespace Aquila.Runtime
                 _descriptors = new List<EntityDescriptor>();
             }
 
-            /// <summary>
-            /// Contains translation from objects to the database
-            /// </summary>
-            public IEnumerable<EntityDescriptor> GetEntityDescriptors()
-            {
-                return _descriptors.AsReadOnly();
-            }
-
-            public EntityDescriptor GetEntityDescriptor(string s_id)
-            {
-                return _descriptors.FirstOrDefault(x => x.MetadataId == s_id);
-            }
-
 
             #region Descriptors
 
@@ -119,12 +106,23 @@ namespace Aquila.Runtime
                     throw new Exception("Metadata not found");
             }
 
+            /// <summary>
+            /// Contains translation from objects to the database
+            /// </summary>
+            public IEnumerable<EntityDescriptor> GetEntityDescriptors()
+            {
+                return _descriptors.AsReadOnly();
+            }
 
-            public EntityDescriptor FindEntityDescriptor(string key)
+            public EntityDescriptor GetEntityDescriptor(string key)
             {
                 return _descriptors.FirstOrDefault(x => x.MetadataId == key);
             }
 
+            public EntityDescriptor GetEntityDescriptor(int typeId)
+            {
+                return _descriptors.FirstOrDefault(x => x.DatabaseId == typeId);
+            }
 
             public void SaveDescriptors(DataConnectionContext context)
             {

@@ -1,5 +1,7 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using Aquila.Core;
 using Aquila.Core.Querying.Model;
 using Aquila.Metadata;
 using Aquila.QueryBuilder;
@@ -12,8 +14,8 @@ namespace Aquila.Runtime.Querying
     {
         public static string GetSaveUpdate(SMEntity entity, DatabaseRuntimeContext drc)
         {
-            var e_desc = drc.Descriptors.FindEntityDescriptor(entity.FullName);
-            var id_desc = drc.Descriptors.FindEntityDescriptor(entity.IdProperty.FullName);
+            var e_desc = drc.Descriptors.GetEntityDescriptor(entity.FullName);
+            var id_desc = drc.Descriptors.GetEntityDescriptor(entity.IdProperty.FullName);
 
             var qm = new QueryMachine();
             var paramNum = 0;
@@ -53,7 +55,7 @@ namespace Aquila.Runtime.Querying
 
         public static string GetSaveInsert(SMEntity entity, DatabaseRuntimeContext drc)
         {
-            var e_desc = drc.Descriptors.FindEntityDescriptor(entity.FullName);
+            var e_desc = drc.Descriptors.GetEntityDescriptor(entity.FullName);
             var qm = new QueryMachine();
             var paramNum = 0;
 
@@ -89,8 +91,8 @@ namespace Aquila.Runtime.Querying
 
         public static string GetLoad(SMEntity entity, DatabaseRuntimeContext drc)
         {
-            var e_desc = drc.Descriptors.FindEntityDescriptor(entity.FullName);
-            var id_desc = drc.Descriptors.FindEntityDescriptor(entity.IdProperty.FullName);
+            var e_desc = drc.Descriptors.GetEntityDescriptor(entity.FullName);
+            var id_desc = drc.Descriptors.GetEntityDescriptor(entity.IdProperty.FullName);
 
             var qm = new QueryMachine();
             var paramNum = 0;
@@ -117,6 +119,25 @@ namespace Aquila.Runtime.Querying
             var builder = new MsSqlBuilder();
 
             return builder.Visit((SSyntaxNode)qm.peek());
+        }
+
+        public static string GetSecUpdate(string baseQuery, int typeId, AqContext context)
+        {
+            var ust = new UserSecTable();
+            ust.Init(new List<SMSecPolicy>(), context.MetadataCollection);
+            var desc = context.DataRuntimeContext.Descriptors.GetEntityDescriptor(typeId);
+            var mdId = desc.MetadataId;
+            var md = context.MetadataCollection.GetSemanticByName(mdId);
+
+            if (ust.TryClaimPermission(md, SecPermission.Update, out var claim))
+            {
+            }
+            else
+            {
+                //access denied
+            }
+
+            return baseQuery + "";
         }
     }
 }

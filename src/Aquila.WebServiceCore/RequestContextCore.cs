@@ -50,7 +50,7 @@ namespace Aquila.AspNetCore.Web
 
         #endregion
 
-        #region IHttpPhpContext
+        #region IAqHttpContext
 
         /// <summary>Gets value indicating HTTP headers were already sent.</summary>
         bool IAqHttpContext.HeadersSent

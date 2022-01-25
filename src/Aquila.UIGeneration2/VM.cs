@@ -77,7 +77,6 @@ namespace Aquila.UIBuilder
 
             try
             {
-                var crud = new CRUDQueryGenerator();
                 var md = _drContext.Metadata.GetMetadata();
                 var invoice = md.GetSemanticByName("Entity.Invoice");
 

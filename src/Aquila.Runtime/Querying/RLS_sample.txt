@@ -20,8 +20,3 @@ WHERE (T1._IDRRef = @P5 AND T1._Version = @P6)
                                     WHERE ((@P10) < @P11)))) THEN 0
                       ELSE 2000000000 END + 2000000000
           ELSE 0 END = 2000000000
-
-
-
-
-',N'@P1 varbinary(1),@P2 nvarchar(4000),@P3 datetime2(3),@P4 varbinary(1),@P5 nvarchar(4000),@P6 varbinary(16),@P7 varbinary(8000),@P8 varbinary(16),@P9 varbinary(8000),@P10 nvarchar(4000),@P11 nvarchar(4000),@P12 nvarchar(4000)',0x00,N'000000005','4022-10-24 13:34:21',0x00,N'',0x80F5000C2948F0BB11EC330A77FF12A1,0x00000000000007E8,0x80F5000C2948F0BB11EC330A77FF12A1,0x00000000000007E8,N'ОПА',N'',N'ОПА'
