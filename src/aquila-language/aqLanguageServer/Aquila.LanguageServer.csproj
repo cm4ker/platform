@@ -1,12 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+    <Import Project="..\..\Props\target.props" />
+
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <IsPackable>false</IsPackable>
-        <TargetFramework>net5.0</TargetFramework>
         <LangVersion>latest</LangVersion>
-        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
@@ -35,10 +34,14 @@
         <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
         <PackageReference Include="System.IO.Pipelines" Version="4.7.3" />
         <PackageReference Include="Nerdbank.Streams" Version="2.6.81" />
+
+        <PackageReference Include="Microsoft.Build" Version="17.0.0" />
+        <PackageReference Include="Microsoft.Build.Runtime" Version="17.0.0" />
+        <PackageReference Include="Microsoft.Build.NuGetSdkResolver" Version="5.11.0-rc.10" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Aquila.CodeAnalysis\Aquila.CodeAnalysis.csproj" />
+        <ProjectReference Include="..\..\Aquila.CodeAnalysis\Aquila.CodeAnalysis.csproj" />
     </ItemGroup>
 
 </Project>

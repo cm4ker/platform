@@ -1,4 +1,4 @@
-component Entity 
+component Entity
 {
   extend AuthorObject 
   {

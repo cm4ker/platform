@@ -156,15 +156,7 @@ namespace Aquila.CodeAnalysis
         /// </summary>
         public static int GetOffset(this AquilaSyntaxTree tree, LinePosition linePosition)
         {
-            throw new NotImplementedException();
-
-            // if (linePosition.Line < 0 || linePosition.Line > tree.Source.LineBreaks.Count)
-            // {
-            //     return -1;
-            // }
-            //
-            // int lineStart = (linePosition.Line == 0) ? 0 : tree.Source.LineBreaks.EndOfLineBreak(linePosition.Line - 1);
-            // return lineStart + linePosition.Character;
+            return tree.GetText().Lines.GetPosition(linePosition);
         }
 
         /// <summary>
@@ -182,7 +174,7 @@ namespace Aquila.CodeAnalysis
         //     return false;
         // }
 
-        
+
         /// <summary>
         /// Gets text span of given expression.
         /// </summary>

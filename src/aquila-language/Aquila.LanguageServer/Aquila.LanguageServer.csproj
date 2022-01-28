@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <Version>1.0.6</Version>
+        <TargetFramework>net6.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <OutputType>Exe</OutputType>
+        <PackageId>Aquila.LanguageServer</PackageId>
+        <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+        <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+        <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+        <DisableMSBuildAssemblyCopyCheck>true</DisableMSBuildAssemblyCopyCheck>
+        <SignAssembly>True</SignAssembly>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="Microsoft.Build" Version="17.0.0" />
+        <PackageReference Include="Microsoft.Build.Locator" Version="1.4.1" />
+        <PackageReference Include="Microsoft.Build.Runtime" Version="17.0.0" />
+        <PackageReference Include="Microsoft.Build.NuGetSdkResolver" Version="5.10.0-rc.7240" />
+        <PackageReference Include="Nuget.Common" Version="6.0.0" />
+        <PackageReference Include="Nuget.Configuration" Version="6.0.0" />
+        <PackageReference Include="Nuget.Frameworks" Version="6.0.0" />
+        <PackageReference Include="Nuget.LibraryModel" Version="6.0.0" />
+        <PackageReference Include="Nuget.Packaging" Version="6.0.0" />
+        <PackageReference Include="Nuget.Packaging.Core" Version="6.0.0" />
+        <PackageReference Include="Nuget.ProjectModel" Version="6.0.0" />
+        <PackageReference Include="Nuget.Versioning" Version="6.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Aquila.CodeAnalysis\Aquila.CodeAnalysis.csproj" />
+    </ItemGroup>
+</Project>

@@ -1,5 +1,6 @@
 [endpoint]
 public static int get_books_count()
 {
+    var a = "asdf";
     return 0;
 }

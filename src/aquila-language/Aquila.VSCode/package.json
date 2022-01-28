@@ -1,0 +1,125 @@
+{
+  "name": "aqlang-vscode",
+  "displayName": "Aquila for Visual Studio Code",
+  "description": "Visual Studio Code extension for AqLang",
+  "icon": "",
+  "version": "1.0.0",
+  "publisher": "aqlang",
+  "preview": true,
+  "license": "MIT",
+  "galleryBanner": {
+    "color": "#eff1f3",
+    "theme": "light"
+  },
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "engines": {
+    "vscode": "^1.63.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets",
+    "Debuggers"
+  ],
+  "keywords": [
+    "Aquila",
+    "coreclr",
+    "dotnet",
+    "aq",
+    "aqlang"
+  ],
+  "activationEvents": [
+    "onLanguage:aqlang",
+    "onCommand:aqlang.createproject"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "aqlang.createproject",
+        "title": "aqlang: Create new project"
+      }
+    ],
+    "breakpoints": [
+      {
+        "language": "aqlang"
+      }
+    ],
+    "debuggers": [
+      {
+        "type": "dummy",
+        "enableBreakpointsFor": {
+          "languageIds": [
+            "aqlang"
+          ]
+        }
+      }
+    ],
+    "languages": [
+      {
+        "id": "xml",
+        "extensions": [
+          ".aqproj"
+        ]
+      },
+      {
+        "id": "aqlang",
+        "aliases": [
+          "aqlang",
+          "aqlang"
+        ],
+        "extensions": [
+          ".aq"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Example configuration",
+      "properties": {
+          "aqLanguageServer.maxNumberOfProblems": {
+              "type": "number",
+              "default": 100,
+              "description": "Controls the maximum number of problems produced by the server."
+          },
+          "aqLanguageServer.trace.server": {
+              "type": "string",
+              "enum": [
+                  "off",
+                  "messages",
+                  "verbose"
+              ],
+              "default": "verbose",
+              "description": "Traces the communication between VSCode and the languageServerExample service."
+          }
+      }
+    }
+  },
+  "badges": [
+    
+  ],
+  "scripts": {
+    "vscode:prepublish": "dotnet publish ../Aquila.LanguageServer --configuration Release --output ../Aquila.VSCode/out/server & tsc -p ./",
+    "compile": "dotnet publish ../Aquila.LanguageServer --output ../Aquila.VSCode/out/server & tsc -p ./"
+  },
+  "devDependencies": {
+    "@types/mocha": "^8.0.0",
+    "@types/node": "^14.0.25",
+    "typescript": "^3.9.7",
+    "@types/vscode": "^1.63.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^7.0.0",
+    "vscode-languageserver": "^7.0.0",
+    "vscode-languageserver-protocol": "^3.16.0-next.6",
+    "vscode-nls": "^3.2.2",
+    "@xmldom/xmldom": "^0.8.0",
+    "xpath": "^0.0.27",
+    "open": "^6.0.0",
+    "xmlhttprequest": "^1.8.0"
+  }
+}
