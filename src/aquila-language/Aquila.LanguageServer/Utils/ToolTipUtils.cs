@@ -7,17 +7,20 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Xml;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.Syntax.Syntax;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 
 namespace Aquila.LanguageServer
 {
     internal static class ToolTipUtils
     {
-        public static SourceSymbolSearcher.SymbolStat FindDefinition(AquilaCompilation compilation, string filepath, int line, int character)
+        public static SourceSymbolSearcher.SymbolStat FindDefinition(AquilaCompilation compilation, string filepath,
+            int line, int character)
         {
             var tree = compilation.SyntaxTrees.FirstOrDefault(t => t.FilePath == filepath);
             if (tree == null)
@@ -31,6 +34,8 @@ namespace Aquila.LanguageServer
             {
                 return null;
             }
+
+            var token = tree.GetTouchingTokenAsync(position, CancellationToken.None);
 
             // Find the bound node corresponding to the text position
             SourceSymbolSearcher.SymbolStat searchResult = null;
@@ -58,7 +63,8 @@ namespace Aquila.LanguageServer
             return searchResult;
         }
 
-        public static IEnumerable<Protocol.Location> ObtainDefinition(AquilaCompilation compilation, string filepath, int line, int character)
+        public static IEnumerable<Protocol.Location> ObtainDefinition(AquilaCompilation compilation, string filepath,
+            int line, int character)
         {
             var result = FindDefinition(compilation, filepath, line, character);
             if (result != null && result.Symbol != null)
@@ -71,7 +77,7 @@ namespace Aquila.LanguageServer
                 }
                 catch
                 {
-                    yield break;    // location not impl.
+                    yield break; // location not impl.
                 }
 
                 foreach (var loc in location)
@@ -177,7 +183,6 @@ namespace Aquila.LanguageServer
                 //}
 
                 result.Append("$" + name);
-
             }
             else if (expression is BoundGlobalConst)
             {
@@ -238,7 +243,9 @@ namespace Aquila.LanguageServer
                     else
                     {
                         result.Append(fld.IsStaticField ? "static" : "var");
-                    };
+                    }
+
+                    ;
 
                     if (fld.Instance != null)
                     {
@@ -257,10 +264,12 @@ namespace Aquila.LanguageServer
                         result.Append(containedType);
                         result.Append(Name.ClassMemberSeparator);
                     }
+
                     if (!fld.IsClassConstant)
                     {
                         result.Append("$");
                     }
+
                     result.Append(fld.FieldName.NameValue.Value);
                 }
                 else
@@ -312,7 +321,8 @@ namespace Aquila.LanguageServer
                 string valueStr;
                 if (value == null) valueStr = "NULL";
                 else if (value is int) valueStr = ((int)value).ToString();
-                else if (value is string) valueStr = "\"" + ((string)value).Replace("\"", "\\\"").Replace("\n", "\\n") + "\"";
+                else if (value is string)
+                    valueStr = "\"" + ((string)value).Replace("\"", "\\\"").Replace("\n", "\\n") + "\"";
                 else if (value is long) valueStr = ((long)value).ToString();
                 else if (value is double) valueStr = ((double)value).ToString(CultureInfo.InvariantCulture);
                 else if (value is bool) valueStr = (bool)value ? "TRUE" : "FALSE";
@@ -394,7 +404,7 @@ namespace Aquila.LanguageServer
                             switch (xml.Name.ToLowerInvariant())
                             {
                                 case "summary":
-                                    break;  // OK
+                                    break; // OK
                                 case "remarks":
                                     result.Append("\n\n**Remarks:**\n");
                                     break;
@@ -402,7 +412,7 @@ namespace Aquila.LanguageServer
                                 case "p":
                                 case "br":
                                     result.Append("\n\n");
-                                    break;  // continue
+                                    break; // continue
                                 case "returns":
                                     result.Append("\n\n**Returns:**\n");
                                     break;
@@ -420,7 +430,8 @@ namespace Aquila.LanguageServer
                                     break;
                                 case "see":
                                     if (xml.HasAttributes)
-                                        result.AppendFormat("**{0}**", xml.GetAttribute("langword") ?? CrefToString(xml.GetAttribute("cref")));
+                                        result.AppendFormat("**{0}**",
+                                            xml.GetAttribute("langword") ?? CrefToString(xml.GetAttribute("cref")));
                                     break;
                                 case "a":
                                     if (xml.HasAttributes)
@@ -428,6 +439,7 @@ namespace Aquila.LanguageServer
                                         result.AppendFormat("({1})[{0}]", xml.GetAttribute("href"), xml.ReadInnerXml());
                                         skipped = true;
                                     }
+
                                     break;
                                 // TODO: table, thead, tr, td
                                 default:
@@ -435,6 +447,7 @@ namespace Aquila.LanguageServer
                                     skipped = true; // do not call Read()!
                                     break;
                             }
+
                             break;
 
                         case XmlNodeType.Text:

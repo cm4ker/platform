@@ -46,7 +46,7 @@ namespace Aquila.CodeAnalysis
     /// exhibit reference-equality.  
     /// </para>
     /// </remarks>
-    internal abstract class AquilaSemanticModel : SemanticModel
+    public abstract class AquilaSemanticModel : SemanticModel
     {
     }
 }

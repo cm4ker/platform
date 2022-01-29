@@ -79,7 +79,7 @@ namespace Aquila.LanguageServer
 
             if (diags.Length != 0)
             {
-                _parserDiagnostics[path] =diags;
+                _parserDiagnostics[path] = diags;
             }
             else if (previousDiagnostics != null)
             {
@@ -89,7 +89,7 @@ namespace Aquila.LanguageServer
             if (diags.Length != 0 || previousDiagnostics != null)
             {
                 // If there were any errors previously, send an empty set to remove them
-                OnDocumentDiagnosticsChanged(path,diags);
+                OnDocumentDiagnosticsChanged(path, diags);
             }
 
             // Update the compilation
@@ -187,11 +187,11 @@ namespace Aquila.LanguageServer
         }
 
         /// <summary>
-        /// Gets used PeachPie Sdk version.
+        /// Gets used Aquila Sdk version.
         /// </summary>
         public bool TryGetSdkVersion(out string version)
         {
-            version = this.BuildInstance.GetPropertyValue("PeachpieVersion");
+            version = this.BuildInstance.GetPropertyValue("AquilaVersion");
             return version != null;
         }
 

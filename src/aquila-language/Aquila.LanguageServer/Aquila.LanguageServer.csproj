@@ -29,6 +29,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\..\Aquila.CodeAnalysis\Aquila.CodeAnalysis.csproj" />
+        <ProjectReference Include=".\..\..\Aquila.CodeAnalysis\Aquila.CodeAnalysis.csproj" />
     </ItemGroup>
 </Project>

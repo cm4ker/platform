@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Threading;
 using Aquila.CodeAnalysis;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -195,6 +197,32 @@ public static int Main()
         }");
 
             tp.Visit(graph.GetRoot());
+        }
+
+
+        [Fact]
+        public void Test9GetSyntaxByPosition()
+        {
+            var tp = new TreePrinter(_output);
+
+            var graph = AquilaSyntaxTree.ParseText(
+                @"
+public static int Main() 
+{
+    var c1 = list();
+    var c2 = list<int>();
+    var c3 = list<(int|string)>();
+
+    c1.Add(""test"");
+            c1.Add(""test2"");
+   
+            c2.Add(1);
+            //c2.Add(""test""); //Error
+   
+            return c1.Count;
+        }");
+
+            var token = graph.GetTouchingTokenAsync(20, CancellationToken.None).GetAwaiter().GetResult();
         }
     }
 }

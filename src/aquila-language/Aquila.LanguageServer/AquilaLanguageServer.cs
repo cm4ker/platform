@@ -10,9 +10,9 @@ using Newtonsoft.Json;
 
 namespace Aquila.LanguageServer
 {
-    internal class PhpLanguageServer : ILogTarget
+    internal class AquilaLanguageServer : ILogTarget
     {
-        private const string DiagnosticSource = "peachpie";
+        private const string DiagnosticSource = "aquila";
 
         private ServerOptions _options;
         private MessageReader _requestReader;
@@ -21,7 +21,7 @@ namespace Aquila.LanguageServer
         private string _rootPath;
         private ProjectHandler _project;
 
-        static Version LatestPeachpieVersion
+        static Version LatestAquilaVersion
         {
             get
             {
@@ -30,7 +30,7 @@ namespace Aquila.LanguageServer
             }
         }
 
-        public PhpLanguageServer(ServerOptions options, MessageReader requestReader, MessageWriter messageWriter)
+        public AquilaLanguageServer(ServerOptions options, MessageReader requestReader, MessageWriter messageWriter)
         {
             _options = options;
             _requestReader = requestReader;
@@ -169,13 +169,13 @@ namespace Aquila.LanguageServer
 
             SendLogMessage($@"Loaded project:
   {newProject.BuildInstance.FullPath}
-  PeachPie Version: {(sdkverstr ?? "unknown")}");
+  Aquila Version: {(sdkverstr ?? "unknown")}");
 
-            if (Version.TryParse(sdkverstr, out var sdkver) && sdkver < LatestPeachpieVersion)
+            if (Version.TryParse(sdkverstr, out var sdkver) && sdkver < LatestAquilaVersion)
             {
-                SendLogMessage($"  New version available: {LatestPeachpieVersion}");
+                SendLogMessage($"  New version available: {LatestAquilaVersion}");
                 ShowMessage(
-                    $"PeachPie {LatestPeachpieVersion} is available! Your project is running version {sdkver.ToString(3)}, please update.");
+                    $"Aquila {LatestAquilaVersion} is available! Your project is running version {sdkver.ToString(3)}, please update.");
             }
         }
 
@@ -265,7 +265,7 @@ namespace Aquila.LanguageServer
             {
                 var codePart = new MarkedString()
                 {
-                    Language = "php",
+                    Language = "aqlang",
                     Value = tooltip.Code
                 };
 
@@ -299,7 +299,7 @@ namespace Aquila.LanguageServer
             _messageWriter.WriteResponse(request.Id, initializeResult);
 
             SendLogMessage($@"
-PeachPie Language Server
+Aquila Language Server
   PID: {Process.GetCurrentProcess().Id}
   Path: {System.Reflection.Assembly.GetEntryAssembly().Location}
 ");
@@ -313,7 +313,7 @@ PeachPie Language Server
         private void SendGreetingMessage()
         {
             int processId = Process.GetCurrentProcess().Id;
-            ShowMessage($"Hello from PeachPie Language Server! The ID of the process is {processId}");
+            ShowMessage($"Hello from Aquila Language Server! The ID of the process is {processId}");
         }
 
         private void ShowMessage(string message)
@@ -351,7 +351,7 @@ PeachPie Language Server
                         Range = diagnostic.Location.AsRange(),
                         Severity = ConvertSeverity(diagnostic.Severity),
                         Code = diagnostic.Id,
-                        Source = "PeachPie",
+                        Source = "Aquila",
                         Message = "HELLO" //diagnostic.GetMessage(),
                     }),
             };

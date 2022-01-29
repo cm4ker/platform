@@ -30,7 +30,7 @@ namespace Aquila.LanguageServer
 
             AssemblyLoadContext.Default.Resolving += Assembly_Resolving;
 
-            var server = new PhpLanguageServer(options, requestReader, messageWriter);
+            var server = new AquilaLanguageServer(options, requestReader, messageWriter);
             await server.Run();
         }
 
