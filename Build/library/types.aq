@@ -1,0 +1,11 @@
+type Test
+{
+    int a;
+    int b;
+    int c;
+} 
+
+type Test2
+{
+    int c1;
+}
