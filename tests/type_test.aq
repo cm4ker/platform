@@ -1,0 +1,12 @@
+public static int Main()
+{
+    i_type some_var = i_type;
+
+
+    return 0;    
+}
+
+type i_type
+{
+    string message_hello;    
+}
