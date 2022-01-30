@@ -99,6 +99,10 @@ namespace Aquila.CodeAnalysis.CodeGen
             throw new NotImplementedException();
         }
 
+        public void EmitConvert(ITypeSymbol from, ITypeSymbol to, ConversionKind conversionKind = ConversionKind.Implicit) =>
+            EmitConvert((TypeSymbol)from, (TypeSymbol)to, conversionKind);
+
+
         /// <summary>
         /// In case expression is of type <c>Int32</c> or <c>bool</c> or <c>PhpNumber</c>,
         /// converts it to <c>double</c> and leaves the result on evaluation stack. Otherwise

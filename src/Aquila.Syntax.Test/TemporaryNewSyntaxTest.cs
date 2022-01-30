@@ -229,6 +229,9 @@ public static int Main()
         }
 
 
+        /// <summary>
+        /// 
+        /// </summary>
         [Fact]
         public void TypeParseTest()
         {
@@ -241,6 +244,23 @@ public static int Main()
     int d
 }");
             Assert.True(graph.GetRoot().ChildNodes().First().Kind() == SyntaxKind.TypeDecl);
+        }
+
+        [Fact]
+        public void TypeParseTest2()
+        {
+            var graph = AquilaSyntaxTree.ParseText(@"
+public static int Main()
+{
+    return 0;    
+}
+
+type internal_type
+{
+    string message_hello;    
+}
+
+");
         }
     }
 }

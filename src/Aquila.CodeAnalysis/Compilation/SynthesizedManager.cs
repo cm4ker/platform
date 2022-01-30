@@ -24,7 +24,7 @@ namespace Aquila.CodeAnalysis.Emit
 
         public AquilaCompilation DeclaringCompilation => _module.Compilation;
 
-        readonly ConcurrentDictionary<Cci.ITypeDefinition, List<Aquila.CodeAnalysis.Symbols.Symbol>> _membersByType =
+        readonly ConcurrentDictionary<Cci.ITypeDefinition, List<Symbol>> _membersByType =
             new ConcurrentDictionary<Cci.ITypeDefinition, List<Aquila.CodeAnalysis.Symbols.Symbol>>();
 
         public SynthesizedManager(PEModuleBuilder module)
@@ -36,12 +36,12 @@ namespace Aquila.CodeAnalysis.Emit
 
         #region Synthesized Members
 
-        List<Aquila.CodeAnalysis.Symbols.Symbol> EnsureList(Cci.ITypeDefinition type)
+        List<Symbol> EnsureList(Cci.ITypeDefinition type)
         {
-            return _membersByType.GetOrAdd(type, (_) => new List<Aquila.CodeAnalysis.Symbols.Symbol>());
+            return _membersByType.GetOrAdd(type, (_) => new List<Symbol>());
         }
 
-        void AddMember(Cci.ITypeDefinition type, Aquila.CodeAnalysis.Symbols.Symbol member)
+        void AddMember(Cci.ITypeDefinition type, Symbol member)
         {
             var members = EnsureList(type);
             lock (members)
@@ -122,7 +122,8 @@ namespace Aquila.CodeAnalysis.Emit
                         .SetName(name)
                         .SetAccess(accessibility)
                         .SetIsStatic(isstatic)
-                        .SetReadOnly(@readonly);;
+                        .SetReadOnly(@readonly);
+                    ;
                     members.Add(field);
                 }
             }

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.ComponentModel.Design;
 using System.Globalization;
 using System.Threading;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Symbols.Source;
+using Aquila.CodeAnalysis.Syntax;
 using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols
@@ -14,14 +17,19 @@ namespace Aquila.CodeAnalysis.Symbols
     /// </summary>
     /// <remarks>
     /// Its CLR properties vary depending on <see cref="SourceFieldSymbol.Initializer"/> and its evaluation.
-    /// Some expressions have to be evaluated in runtime which causes the field to be contained in <see cref="Synthesized.SynthesizedStaticFieldsHolder"/>.
+    /// Some expressions have to be evaluated in runtime which causes the field to be contained in <see cref="SynthesizedStaticFieldsHolder"/>.
     /// </remarks>
     internal partial class SourceFieldSymbol : FieldSymbol
     {
-        //readonly SourceTypeSymbol _containingType;
-        readonly string _fieldName;
+        private readonly FieldDecl _fieldSyntax;
+        readonly NamedTypeSymbol _containingType;
 
-        readonly Location _location;
+
+        public SourceFieldSymbol(FieldDecl fieldSyntax, NamedTypeSymbol containingType)
+        {
+            _fieldSyntax = fieldSyntax;
+            _containingType = containingType;
+        }
 
         /// <summary>
         /// Declared accessibility - private, protected or public.
@@ -104,13 +112,13 @@ namespace Aquila.CodeAnalysis.Symbols
 
         #region FieldSymbol
 
-        public override string Name => _fieldName;
+        public override string Name => _fieldSyntax.Identifier.Text;
 
         public override Symbol AssociatedSymbol => null;
 
-        public override Symbol ContainingSymbol => null;
+        public override Symbol ContainingSymbol => _containingType;
 
-        internal override AquilaCompilation DeclaringCompilation => null; //_containingType.DeclaringCompilation;
+        internal override AquilaCompilation DeclaringCompilation => _containingType.DeclaringCompilation;
 
         public override ImmutableArray<CustomModifier> CustomModifiers => ImmutableArray<CustomModifier>.Empty;
 
@@ -123,7 +131,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override bool IsVolatile => false;
 
-        public override ImmutableArray<Location> Locations => ImmutableArray.Create(_location);
+        public override ImmutableArray<Location> Locations => ImmutableArray.Create(_fieldSyntax.Location);
 
         internal override bool HasRuntimeSpecialName => false;
 
@@ -166,34 +174,8 @@ namespace Aquila.CodeAnalysis.Symbols
 
         internal override TypeSymbol GetFieldType(ConsList<FieldSymbol> fieldsBeingBound)
         {
-            if ((IsConst || IsReadOnly) && Initializer != null)
-            {
-                // resolved type symbol if possible
-                if (Initializer.ResultType != null)
-                {
-                    return (TypeSymbol)Initializer.ResultType;
-                }
-
-                // resolved value type if possible
-                var cvalue = Initializer.ConstantValue;
-                if (cvalue.HasValue)
-                {
-                    var specialType = (cvalue.Value != null)
-                        ? cvalue.ToConstantValueOrNull()?.SpecialType
-                        : SpecialType.System_Object; // NULL
-
-                    if (specialType.HasValue && specialType != SpecialType.None)
-                    {
-                        return DeclaringCompilation.GetSpecialType(specialType.Value);
-                    }
-                }
-
-                //
-                //return DeclaringCompilation.GetTypeFromTypeRef(typectx, Initializer.TypeRefMask);
-            }
-
-            // default
-            return null;
+            var binder = DeclaringCompilation.GetBinder(_fieldSyntax);
+            return binder.BindType(_fieldSyntax.Type);
         }
 
         /// <summary>

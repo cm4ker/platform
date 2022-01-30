@@ -630,8 +630,8 @@ namespace Aquila.CodeAnalysis.Emit
             // foreach (var f in _sourceModule.SymbolCollection.GetFiles())
             //     yield return f;
 
-            // foreach (var t in _sourceModule.SymbolCollection.GetTypes())
-            //     yield return t;
+            foreach (var t in _sourceModule.SymbolCollection.GetTypes())
+                yield return t;
 
             //var namespacesToProcess = new Stack<INamespaceSymbol>();
             //namespacesToProcess.Push(this.SourceModule.GlobalNamespace);
@@ -1308,8 +1308,9 @@ namespace Aquila.CodeAnalysis.Emit
 
             return false;
         }
-        
-        public override IEnumerable<(Cci.ITypeDefinition, ImmutableArray<Cci.DebugSourceDocument>)> GetTypeToDebugDocumentMap(EmitContext context)
+
+        public override IEnumerable<(Cci.ITypeDefinition, ImmutableArray<Cci.DebugSourceDocument>)>
+            GetTypeToDebugDocumentMap(EmitContext context)
         {
             throw new NotImplementedException();
         }

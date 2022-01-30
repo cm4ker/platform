@@ -4,7 +4,6 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
-using Aquila.CodeAnalysis.Syntax;
 using Aquila.Compiler.Utilities;
 using Aquila.Syntax;
 using Aquila.Syntax.Syntax;
@@ -118,6 +117,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         private MultiDictionary<QualifiedName, SourceMethodSymbol> _extendMethods;
         private List<SourceMethodSymbol> _globalMethods;
+        private List<NamedTypeSymbol> _types;
+
 
         /// <summary>
         /// Class holding app-static constants defined in compile-time.
@@ -125,6 +126,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         /// </summary>
         internal SynthesizedTypeSymbol DefinedConstantsContainer { get; }
 
+        internal NamespaceOrTypeSymbol SourceTypeContainer { get; set; }
 
         public IDictionary<SyntaxTree, int> OrdinalMap => _ordinalMap;
 
@@ -138,6 +140,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
             _extendMethods = new MultiDictionary<QualifiedName, SourceMethodSymbol>();
             _globalMethods = new List<SourceMethodSymbol>();
+            _types = new List<NamedTypeSymbol>();
 
             // class <constants> { ... }
 
@@ -145,6 +148,9 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 _compilation.AnonymousTypeManager.SynthesizeType("<Constants>", true);
 
             PopulateDefinedConstants(DefinedConstantsContainer, _compilation.Options.Defines);
+
+
+            SourceTypeContainer = (NamespaceSymbol)_compilation.GlobalNamespace;
         }
 
         void PopulateDefinedConstants(SynthesizedTypeSymbol container,
@@ -223,6 +229,10 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             var unit = tree.GetCompilationUnitRoot();
             Debug.Assert(unit != null);
 
+            foreach (var type in unit.Types)
+            {
+                _types.Add(new SourceTypeSymbol(SourceTypeContainer, type));
+            }
 
             foreach (var f in unit.Methods)
             {
@@ -311,10 +321,20 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             }
         }
 
+        public IEnumerable<SourceTypeSymbol> GetTypes() => _types.Cast<SourceTypeSymbol>();
+
         public NamedTypeSymbol GetType(QualifiedName name, Dictionary<QualifiedName, INamedTypeSymbol> resolved = null)
         {
-            NamedTypeSymbol first = null;
-            List<NamedTypeSymbol> alternatives = null;
+            var resolvedTypes = _types.Where(x => x.MakeQualifiedName() == name).ToImmutableArray();
+
+            if (resolvedTypes.Length == 1)
+            {
+                return resolvedTypes.First();
+            }
+            else if (resolvedTypes.Length > 1)
+            {
+                return new AmbiguousErrorTypeSymbol(resolvedTypes);
+            }
 
             return new MissingMetadataTypeSymbol(name.ClrName(), 0, false);
         }

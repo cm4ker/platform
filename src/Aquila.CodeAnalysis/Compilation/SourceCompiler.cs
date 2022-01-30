@@ -15,6 +15,7 @@ using Aquila.CodeAnalysis.FlowAnalysis.Passes;
 using Aquila.CodeAnalysis.Lowering;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Semantics.Graph;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.Syntax.Syntax;
 using SourceMethodSymbol = Aquila.CodeAnalysis.Symbols.SourceMethodSymbol;
@@ -102,19 +103,19 @@ namespace Aquila.CodeAnalysis
         //     }
         // }
 
-        // void WalkTypes(Action<SourceTypeSymbol> action, bool allowParallel = false)
-        // {
-        //     var types = _compilation.SourceSymbolCollection.GetTypes();
-        //
-        //     if (ConcurrentBuild && allowParallel)
-        //     {
-        //         Parallel.ForEach(types, action);
-        //     }
-        //     else
-        //     {
-        //         types.ForEach(action);
-        //     }
-        // }
+        void WalkTypes(Action<SourceTypeSymbol> action, bool allowParallel = false)
+        {
+            var types = _compilation.SourceSymbolCollection.GetTypes();
+
+            if (ConcurrentBuild && allowParallel)
+            {
+                Parallel.ForEach(types, action);
+            }
+            else
+            {
+                types.ForEach(action);
+            }
+        }
 
         /// <summary>
         /// Enqueues method's start block for analysis.
@@ -349,13 +350,13 @@ namespace Aquila.CodeAnalysis
 
         private void DiagnoseTypes()
         {
-            //this.WalkTypes(DiagnoseType, allowParallel: true);
+            this.WalkTypes(DiagnoseType, allowParallel: true);
         }
 
-        // private void DiagnoseType(SourceTypeSymbol type)
-        // {
-        //     type.GetDiagnostics(_diagnostics);
-        // }
+        private void DiagnoseType(SourceTypeSymbol type)
+        {
+            type.GetDiagnostics(_diagnostics);
+        }
 
         bool TransformMethods(bool allowParallel)
         {
@@ -497,8 +498,8 @@ namespace Aquila.CodeAnalysis
                 // 1. Bind Syntax & Symbols to Operations (CFG)
                 //   a. construct CFG, bind AST to Operation
                 //   b. declare table of local variables
+                // compiler.WalkTypes(compiler.EnqueueFieldsInitializer, allowParallel: true);
                 compiler.WalkMethods(compiler.EnqueueMethod, allowParallel: true);
-                //compiler.WalkTypes(compiler.EnqueueFieldsInitializer, allowParallel: true);
             }
 
             // Repeat analysis and transformation until either the limit is met or there are no more changes

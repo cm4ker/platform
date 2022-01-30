@@ -79,13 +79,26 @@ namespace Aquila.CodeAnalysis.CodeGen
                 code = ILOpCode.Call;
             }
 
+            var argsCount = arguments.Length;
+
             if (method.HasParamPlatformContext)
+            {
                 EmitLoadContext();
+                argsCount++;
+            }
 
             // arguments
-            foreach (var arg in arguments)
+
+            if (argsCount != method.Parameters.Length)
+                throw new Exception("Broke compilation! Bounded args length != method args");
+
+            for (var index = 0; index < arguments.Length; index++)
             {
+                var arg = arguments[index];
+                var methodParam = method.Parameters[index];
+
                 EmitLoadArgument(arg);
+                EmitConvert(arg.Type, methodParam.Type);
             }
 
             // call the method

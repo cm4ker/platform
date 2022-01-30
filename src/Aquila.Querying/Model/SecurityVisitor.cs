@@ -33,9 +33,12 @@ namespace Aquila.Core.Querying.Model
             var select = (QSelect)Visit(arg.Select);
             var orderby = (QOrderBy)Visit(arg.OrderBy);
 
+            if (!_criteriaStack.TryPop(out var list))
+                list = new();
+
             //Fill the criteria for this query
             var query = new QQuery(orderby, select, having, groupby, where, from,
-                new QCriterionList(_criteriaStack.Pop().ToImmutableArray()));
+                new QCriterionList(list.ToImmutableArray()));
 
             return query;
         }
