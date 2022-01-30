@@ -40,6 +40,7 @@ namespace Aquila.CodeAnalysis.Syntax
         private SyntaxNode? methods;
         private SyntaxNode? extends;
         private SyntaxNode? components;
+        private SyntaxNode? types;
 
         internal CompilationUnitSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
@@ -54,7 +55,9 @@ namespace Aquila.CodeAnalysis.Syntax
 
         public SyntaxList<ComponentDecl> Components => new SyntaxList<ComponentDecl>(GetRed(ref this.components, 3));
 
-        public SyntaxToken EndOfFileToken => new SyntaxToken(this, ((Syntax.InternalSyntax.CompilationUnitSyntax)this.Green).endOfFileToken, GetChildPosition(4), GetChildIndex(4));
+        public SyntaxList<TypeDecl> Types => new SyntaxList<TypeDecl>(GetRed(ref this.types, 4));
+
+        public SyntaxToken EndOfFileToken => new SyntaxToken(this, ((Syntax.InternalSyntax.CompilationUnitSyntax)this.Green).endOfFileToken, GetChildPosition(5), GetChildIndex(5));
 
         internal override SyntaxNode? GetNodeSlot(int index)
             => index switch
@@ -63,6 +66,7 @@ namespace Aquila.CodeAnalysis.Syntax
                 1 => GetRed(ref this.methods, 1)!,
                 2 => GetRed(ref this.extends, 2)!,
                 3 => GetRed(ref this.components, 3)!,
+                4 => GetRed(ref this.types, 4)!,
                 _ => null,
             };
 
@@ -73,17 +77,18 @@ namespace Aquila.CodeAnalysis.Syntax
                 1 => this.methods,
                 2 => this.extends,
                 3 => this.components,
+                4 => this.types,
                 _ => null,
             };
 
         public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitCompilationUnit(this);
         public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitCompilationUnit(this);
 
-        public CompilationUnitSyntax Update(SyntaxList<ImportDecl> imports, SyntaxList<MethodDecl> methods, SyntaxList<ExtendDecl> extends, SyntaxList<ComponentDecl> components, SyntaxToken endOfFileToken)
+        public CompilationUnitSyntax Update(SyntaxList<ImportDecl> imports, SyntaxList<MethodDecl> methods, SyntaxList<ExtendDecl> extends, SyntaxList<ComponentDecl> components, SyntaxList<TypeDecl> types, SyntaxToken endOfFileToken)
         {
-            if (imports != this.Imports || methods != this.Methods || extends != this.Extends || components != this.Components || endOfFileToken != this.EndOfFileToken)
+            if (imports != this.Imports || methods != this.Methods || extends != this.Extends || components != this.Components || types != this.Types || endOfFileToken != this.EndOfFileToken)
             {
-                var newNode = SyntaxFactory.CompilationUnit(imports, methods, extends, components, endOfFileToken);
+                var newNode = SyntaxFactory.CompilationUnit(imports, methods, extends, components, types, endOfFileToken);
                 var annotations = GetAnnotations();
                 return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
             }
@@ -91,16 +96,18 @@ namespace Aquila.CodeAnalysis.Syntax
             return this;
         }
 
-        public CompilationUnitSyntax WithImports(SyntaxList<ImportDecl> imports) => Update(imports, this.Methods, this.Extends, this.Components, this.EndOfFileToken);
-        public CompilationUnitSyntax WithMethods(SyntaxList<MethodDecl> methods) => Update(this.Imports, methods, this.Extends, this.Components, this.EndOfFileToken);
-        public CompilationUnitSyntax WithExtends(SyntaxList<ExtendDecl> extends) => Update(this.Imports, this.Methods, extends, this.Components, this.EndOfFileToken);
-        public CompilationUnitSyntax WithComponents(SyntaxList<ComponentDecl> components) => Update(this.Imports, this.Methods, this.Extends, components, this.EndOfFileToken);
-        public CompilationUnitSyntax WithEndOfFileToken(SyntaxToken endOfFileToken) => Update(this.Imports, this.Methods, this.Extends, this.Components, endOfFileToken);
+        public CompilationUnitSyntax WithImports(SyntaxList<ImportDecl> imports) => Update(imports, this.Methods, this.Extends, this.Components, this.Types, this.EndOfFileToken);
+        public CompilationUnitSyntax WithMethods(SyntaxList<MethodDecl> methods) => Update(this.Imports, methods, this.Extends, this.Components, this.Types, this.EndOfFileToken);
+        public CompilationUnitSyntax WithExtends(SyntaxList<ExtendDecl> extends) => Update(this.Imports, this.Methods, extends, this.Components, this.Types, this.EndOfFileToken);
+        public CompilationUnitSyntax WithComponents(SyntaxList<ComponentDecl> components) => Update(this.Imports, this.Methods, this.Extends, components, this.Types, this.EndOfFileToken);
+        public CompilationUnitSyntax WithTypes(SyntaxList<TypeDecl> types) => Update(this.Imports, this.Methods, this.Extends, this.Components, types, this.EndOfFileToken);
+        public CompilationUnitSyntax WithEndOfFileToken(SyntaxToken endOfFileToken) => Update(this.Imports, this.Methods, this.Extends, this.Components, this.Types, endOfFileToken);
 
         public CompilationUnitSyntax AddImports(params ImportDecl[] items) => WithImports(this.Imports.AddRange(items));
         public CompilationUnitSyntax AddMethods(params MethodDecl[] items) => WithMethods(this.Methods.AddRange(items));
         public CompilationUnitSyntax AddExtends(params ExtendDecl[] items) => WithExtends(this.Extends.AddRange(items));
         public CompilationUnitSyntax AddComponents(params ComponentDecl[] items) => WithComponents(this.Components.AddRange(items));
+        public CompilationUnitSyntax AddTypes(params TypeDecl[] items) => WithTypes(this.Types.AddRange(items));
     }
 
     /// <remarks>
@@ -172,6 +179,87 @@ namespace Aquila.CodeAnalysis.Syntax
 
         public MemberDecl AddModifiers(params SyntaxToken[] items) => AddModifiersCore(items);
         internal abstract MemberDecl AddModifiersCore(params SyntaxToken[] items);
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.FieldDecl"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class FieldDecl : MemberDecl
+    {
+        private SyntaxNode? attributeLists;
+        private TypeEx? type;
+
+        internal FieldDecl(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public override SyntaxList<AttributeListSyntax> AttributeLists => new SyntaxList<AttributeListSyntax>(GetRed(ref this.attributeLists, 0));
+
+        public override SyntaxTokenList Modifiers
+        {
+            get
+            {
+                var slot = this.Green.GetSlot(1);
+                return slot != null ? new SyntaxTokenList(this, slot, GetChildPosition(1), GetChildIndex(1)) : default;
+            }
+        }
+
+        /// <summary>Gets the type of syntax.</summary>
+        public TypeEx Type => GetRed(ref this.type, 2)!;
+
+        /// <summary>Gets the identifier.</summary>
+        public SyntaxToken Identifier => new SyntaxToken(this, ((Syntax.InternalSyntax.FieldDecl)this.Green).identifier, GetChildPosition(3), GetChildIndex(3));
+
+        /// <summary>Gets the semicolon token.</summary>
+        public SyntaxToken SemicolonToken => new SyntaxToken(this, ((Syntax.InternalSyntax.FieldDecl)this.Green).semicolonToken, GetChildPosition(4), GetChildIndex(4));
+
+        internal override SyntaxNode? GetNodeSlot(int index)
+            => index switch
+            {
+                0 => GetRedAtZero(ref this.attributeLists)!,
+                2 => GetRed(ref this.type, 2)!,
+                _ => null,
+            };
+
+        internal override SyntaxNode? GetCachedSlot(int index)
+            => index switch
+            {
+                0 => this.attributeLists,
+                2 => this.type,
+                _ => null,
+            };
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitFieldDecl(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitFieldDecl(this);
+
+        public FieldDecl Update(SyntaxList<AttributeListSyntax> attributeLists, SyntaxTokenList modifiers, TypeEx type, SyntaxToken identifier, SyntaxToken semicolonToken)
+        {
+            if (attributeLists != this.AttributeLists || modifiers != this.Modifiers || type != this.Type || identifier != this.Identifier || semicolonToken != this.SemicolonToken)
+            {
+                var newNode = SyntaxFactory.FieldDecl(attributeLists, modifiers, type, identifier, semicolonToken);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        internal override MemberDecl WithAttributeListsCore(SyntaxList<AttributeListSyntax> attributeLists) => WithAttributeLists(attributeLists);
+        public new FieldDecl WithAttributeLists(SyntaxList<AttributeListSyntax> attributeLists) => Update(attributeLists, this.Modifiers, this.Type, this.Identifier, this.SemicolonToken);
+        internal override MemberDecl WithModifiersCore(SyntaxTokenList modifiers) => WithModifiers(modifiers);
+        public new FieldDecl WithModifiers(SyntaxTokenList modifiers) => Update(this.AttributeLists, modifiers, this.Type, this.Identifier, this.SemicolonToken);
+        public FieldDecl WithType(TypeEx type) => Update(this.AttributeLists, this.Modifiers, type, this.Identifier, this.SemicolonToken);
+        public FieldDecl WithIdentifier(SyntaxToken identifier) => Update(this.AttributeLists, this.Modifiers, this.Type, identifier, this.SemicolonToken);
+        public FieldDecl WithSemicolonToken(SyntaxToken semicolonToken) => Update(this.AttributeLists, this.Modifiers, this.Type, this.Identifier, semicolonToken);
+
+        internal override MemberDecl AddAttributeListsCore(params AttributeListSyntax[] items) => AddAttributeLists(items);
+        public new FieldDecl AddAttributeLists(params AttributeListSyntax[] items) => WithAttributeLists(this.AttributeLists.AddRange(items));
+        internal override MemberDecl AddModifiersCore(params SyntaxToken[] items) => AddModifiers(items);
+        public new FieldDecl AddModifiers(params SyntaxToken[] items) => WithModifiers(this.Modifiers.AddRange(items));
     }
 
     /// <summary>Base type for method declaration syntax.</summary>
@@ -425,6 +513,74 @@ namespace Aquila.CodeAnalysis.Syntax
         public ComponentDecl WithExtends(SyntaxList<ExtendDecl> extends) => Update(this.ComponentKeyword, this.Name, extends);
 
         public ComponentDecl AddExtends(params ExtendDecl[] items) => WithExtends(this.Extends.AddRange(items));
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.TypeDecl"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class TypeDecl : AquilaSyntaxNode
+    {
+        private NameEx? name;
+        private SyntaxNode? fields;
+
+        internal TypeDecl(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public SyntaxToken TypeKeyword => new SyntaxToken(this, ((Syntax.InternalSyntax.TypeDecl)this.Green).typeKeyword, Position, 0);
+
+        public NameEx Name => GetRed(ref this.name, 1)!;
+
+        /// <summary>SyntaxToken representing the open brace.</summary>
+        public SyntaxToken OpenBraceToken => new SyntaxToken(this, ((Syntax.InternalSyntax.TypeDecl)this.Green).openBraceToken, GetChildPosition(2), GetChildIndex(2));
+
+        public SyntaxList<FieldDecl> Fields => new SyntaxList<FieldDecl>(GetRed(ref this.fields, 3));
+
+        /// <summary>SyntaxToken representing the close brace.</summary>
+        public SyntaxToken CloseBraceToken => new SyntaxToken(this, ((Syntax.InternalSyntax.TypeDecl)this.Green).closeBraceToken, GetChildPosition(4), GetChildIndex(4));
+
+        internal override SyntaxNode? GetNodeSlot(int index)
+            => index switch
+            {
+                1 => GetRed(ref this.name, 1)!,
+                3 => GetRed(ref this.fields, 3)!,
+                _ => null,
+            };
+
+        internal override SyntaxNode? GetCachedSlot(int index)
+            => index switch
+            {
+                1 => this.name,
+                3 => this.fields,
+                _ => null,
+            };
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitTypeDecl(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitTypeDecl(this);
+
+        public TypeDecl Update(SyntaxToken typeKeyword, NameEx name, SyntaxToken openBraceToken, SyntaxList<FieldDecl> fields, SyntaxToken closeBraceToken)
+        {
+            if (typeKeyword != this.TypeKeyword || name != this.Name || openBraceToken != this.OpenBraceToken || fields != this.Fields || closeBraceToken != this.CloseBraceToken)
+            {
+                var newNode = SyntaxFactory.TypeDecl(typeKeyword, name, openBraceToken, fields, closeBraceToken);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public TypeDecl WithTypeKeyword(SyntaxToken typeKeyword) => Update(typeKeyword, this.Name, this.OpenBraceToken, this.Fields, this.CloseBraceToken);
+        public TypeDecl WithName(NameEx name) => Update(this.TypeKeyword, name, this.OpenBraceToken, this.Fields, this.CloseBraceToken);
+        public TypeDecl WithOpenBraceToken(SyntaxToken openBraceToken) => Update(this.TypeKeyword, this.Name, openBraceToken, this.Fields, this.CloseBraceToken);
+        public TypeDecl WithFields(SyntaxList<FieldDecl> fields) => Update(this.TypeKeyword, this.Name, this.OpenBraceToken, fields, this.CloseBraceToken);
+        public TypeDecl WithCloseBraceToken(SyntaxToken closeBraceToken) => Update(this.TypeKeyword, this.Name, this.OpenBraceToken, this.Fields, closeBraceToken);
+
+        public TypeDecl AddFields(params FieldDecl[] items) => WithFields(this.Fields.AddRange(items));
     }
 
     /// <summary>Class representing one or more attributes applied to a language construct.</summary>

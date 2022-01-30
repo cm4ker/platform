@@ -56,5 +56,50 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 _pool.Free(members);
             }
         }
+
+        TypeDecl ParseTypeDecl()
+        {
+            Debug.Assert(CurrentToken.Kind == SyntaxKind.TypeKeyword);
+
+            var importKeyword = EatToken(SyntaxKind.TypeKeyword);
+            NameEx name = this.ParseQualifiedName();
+            if (name.IsMissing && this.PeekToken(1).Kind == SyntaxKind.SemicolonToken)
+            {
+                //if we can see a semicolon ahead, then the current token was
+                //probably supposed to be an identifier
+                name = AddTrailingSkippedSyntax(name, this.EatToken());
+            }
+
+            var members = _pool.Allocate<FieldDecl>();
+            try
+            {
+                var openBrace = EatToken(SyntaxKind.OpenBraceToken);
+
+                while (CurrentToken.Kind != SyntaxKind.CloseBraceToken)
+                {
+                    var decl = ParseMemberDeclaration(SyntaxKind.TypeDecl);
+                    if (decl.Kind == SyntaxKind.FieldDecl)
+                        members.Add((FieldDecl)decl);
+                    else
+                    {
+                        //error
+                    }
+                }
+
+                var closeBrace = EatToken(SyntaxKind.CloseBraceToken);
+
+                return SyntaxFactory.TypeDecl(importKeyword, name, openBrace, members, closeBrace);
+            }
+            finally
+            {
+                _pool.Free(members);
+            }
+        }
+
+        FieldDecl ParseFieldDecl(TypeEx type, SyntaxToken identifier)
+        {
+            var semicolon = EatToken(SyntaxKind.SemicolonToken);
+            return SyntaxFactory.FieldDecl(null, null, type, identifier, semicolon);
+        }
     }
 }

@@ -54,12 +54,13 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         internal readonly GreenNode? methods;
         internal readonly GreenNode? extends;
         internal readonly GreenNode? components;
+        internal readonly GreenNode? types;
         internal readonly SyntaxToken endOfFileToken;
 
-        internal CompilationUnitSyntax(SyntaxKind kind, GreenNode? imports, GreenNode? methods, GreenNode? extends, GreenNode? components, SyntaxToken endOfFileToken, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+        internal CompilationUnitSyntax(SyntaxKind kind, GreenNode? imports, GreenNode? methods, GreenNode? extends, GreenNode? components, GreenNode? types, SyntaxToken endOfFileToken, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
           : base(kind, diagnostics, annotations)
         {
-            this.SlotCount = 5;
+            this.SlotCount = 6;
             if (imports != null)
             {
                 this.AdjustFlagsAndWidth(imports);
@@ -80,15 +81,20 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 this.AdjustFlagsAndWidth(components);
                 this.components = components;
             }
+            if (types != null)
+            {
+                this.AdjustFlagsAndWidth(types);
+                this.types = types;
+            }
             this.AdjustFlagsAndWidth(endOfFileToken);
             this.endOfFileToken = endOfFileToken;
         }
 
-        internal CompilationUnitSyntax(SyntaxKind kind, GreenNode? imports, GreenNode? methods, GreenNode? extends, GreenNode? components, SyntaxToken endOfFileToken, SyntaxFactoryContext context)
+        internal CompilationUnitSyntax(SyntaxKind kind, GreenNode? imports, GreenNode? methods, GreenNode? extends, GreenNode? components, GreenNode? types, SyntaxToken endOfFileToken, SyntaxFactoryContext context)
           : base(kind)
         {
             this.SetFactoryContext(context);
-            this.SlotCount = 5;
+            this.SlotCount = 6;
             if (imports != null)
             {
                 this.AdjustFlagsAndWidth(imports);
@@ -108,15 +114,20 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             {
                 this.AdjustFlagsAndWidth(components);
                 this.components = components;
+            }
+            if (types != null)
+            {
+                this.AdjustFlagsAndWidth(types);
+                this.types = types;
             }
             this.AdjustFlagsAndWidth(endOfFileToken);
             this.endOfFileToken = endOfFileToken;
         }
 
-        internal CompilationUnitSyntax(SyntaxKind kind, GreenNode? imports, GreenNode? methods, GreenNode? extends, GreenNode? components, SyntaxToken endOfFileToken)
+        internal CompilationUnitSyntax(SyntaxKind kind, GreenNode? imports, GreenNode? methods, GreenNode? extends, GreenNode? components, GreenNode? types, SyntaxToken endOfFileToken)
           : base(kind)
         {
-            this.SlotCount = 5;
+            this.SlotCount = 6;
             if (imports != null)
             {
                 this.AdjustFlagsAndWidth(imports);
@@ -136,6 +147,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             {
                 this.AdjustFlagsAndWidth(components);
                 this.components = components;
+            }
+            if (types != null)
+            {
+                this.AdjustFlagsAndWidth(types);
+                this.types = types;
             }
             this.AdjustFlagsAndWidth(endOfFileToken);
             this.endOfFileToken = endOfFileToken;
@@ -145,6 +161,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         public Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MethodDecl> Methods => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MethodDecl>(this.methods);
         public Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ExtendDecl> Extends => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ExtendDecl>(this.extends);
         public Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ComponentDecl> Components => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ComponentDecl>(this.components);
+        public Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<TypeDecl> Types => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<TypeDecl>(this.types);
         public SyntaxToken EndOfFileToken => this.endOfFileToken;
 
         internal override GreenNode? GetSlot(int index)
@@ -154,7 +171,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 1 => this.methods,
                 2 => this.extends,
                 3 => this.components,
-                4 => this.endOfFileToken,
+                4 => this.types,
+                5 => this.endOfFileToken,
                 _ => null,
             };
 
@@ -163,11 +181,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitCompilationUnit(this);
         public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitCompilationUnit(this);
 
-        public CompilationUnitSyntax Update(Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> imports, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MethodDecl> methods, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ExtendDecl> extends, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ComponentDecl> components, SyntaxToken endOfFileToken)
+        public CompilationUnitSyntax Update(Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> imports, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MethodDecl> methods, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ExtendDecl> extends, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ComponentDecl> components, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<TypeDecl> types, SyntaxToken endOfFileToken)
         {
-            if (imports != this.Imports || methods != this.Methods || extends != this.Extends || components != this.Components || endOfFileToken != this.EndOfFileToken)
+            if (imports != this.Imports || methods != this.Methods || extends != this.Extends || components != this.Components || types != this.Types || endOfFileToken != this.EndOfFileToken)
             {
-                var newNode = SyntaxFactory.CompilationUnit(imports, methods, extends, components, endOfFileToken);
+                var newNode = SyntaxFactory.CompilationUnit(imports, methods, extends, components, types, endOfFileToken);
                 var diags = GetDiagnostics();
                 if (diags?.Length > 0)
                     newNode = newNode.WithDiagnosticsGreen(diags);
@@ -181,15 +199,15 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
 
         internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
-            => new CompilationUnitSyntax(this.Kind, this.imports, this.methods, this.extends, this.components, this.endOfFileToken, diagnostics, GetAnnotations());
+            => new CompilationUnitSyntax(this.Kind, this.imports, this.methods, this.extends, this.components, this.types, this.endOfFileToken, diagnostics, GetAnnotations());
 
         internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
-            => new CompilationUnitSyntax(this.Kind, this.imports, this.methods, this.extends, this.components, this.endOfFileToken, GetDiagnostics(), annotations);
+            => new CompilationUnitSyntax(this.Kind, this.imports, this.methods, this.extends, this.components, this.types, this.endOfFileToken, GetDiagnostics(), annotations);
 
         internal CompilationUnitSyntax(ObjectReader reader)
           : base(reader)
         {
-            this.SlotCount = 5;
+            this.SlotCount = 6;
             var imports = (GreenNode?)reader.ReadValue();
             if (imports != null)
             {
@@ -214,6 +232,12 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 AdjustFlagsAndWidth(components);
                 this.components = components;
             }
+            var types = (GreenNode?)reader.ReadValue();
+            if (types != null)
+            {
+                AdjustFlagsAndWidth(types);
+                this.types = types;
+            }
             var endOfFileToken = (SyntaxToken)reader.ReadValue();
             AdjustFlagsAndWidth(endOfFileToken);
             this.endOfFileToken = endOfFileToken;
@@ -226,6 +250,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             writer.WriteValue(this.methods);
             writer.WriteValue(this.extends);
             writer.WriteValue(this.components);
+            writer.WriteValue(this.types);
             writer.WriteValue(this.endOfFileToken);
         }
 
@@ -372,6 +397,172 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         /// <summary>Gets the modifier list.</summary>
         public abstract Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<SyntaxToken> Modifiers { get; }
+    }
+
+    internal sealed partial class FieldDecl : MemberDecl
+    {
+        internal readonly GreenNode? attributeLists;
+        internal readonly GreenNode? modifiers;
+        internal readonly TypeEx type;
+        internal readonly SyntaxToken identifier;
+        internal readonly SyntaxToken semicolonToken;
+
+        internal FieldDecl(SyntaxKind kind, GreenNode? attributeLists, GreenNode? modifiers, TypeEx type, SyntaxToken identifier, SyntaxToken semicolonToken, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 5;
+            if (attributeLists != null)
+            {
+                this.AdjustFlagsAndWidth(attributeLists);
+                this.attributeLists = attributeLists;
+            }
+            if (modifiers != null)
+            {
+                this.AdjustFlagsAndWidth(modifiers);
+                this.modifiers = modifiers;
+            }
+            this.AdjustFlagsAndWidth(type);
+            this.type = type;
+            this.AdjustFlagsAndWidth(identifier);
+            this.identifier = identifier;
+            this.AdjustFlagsAndWidth(semicolonToken);
+            this.semicolonToken = semicolonToken;
+        }
+
+        internal FieldDecl(SyntaxKind kind, GreenNode? attributeLists, GreenNode? modifiers, TypeEx type, SyntaxToken identifier, SyntaxToken semicolonToken, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 5;
+            if (attributeLists != null)
+            {
+                this.AdjustFlagsAndWidth(attributeLists);
+                this.attributeLists = attributeLists;
+            }
+            if (modifiers != null)
+            {
+                this.AdjustFlagsAndWidth(modifiers);
+                this.modifiers = modifiers;
+            }
+            this.AdjustFlagsAndWidth(type);
+            this.type = type;
+            this.AdjustFlagsAndWidth(identifier);
+            this.identifier = identifier;
+            this.AdjustFlagsAndWidth(semicolonToken);
+            this.semicolonToken = semicolonToken;
+        }
+
+        internal FieldDecl(SyntaxKind kind, GreenNode? attributeLists, GreenNode? modifiers, TypeEx type, SyntaxToken identifier, SyntaxToken semicolonToken)
+          : base(kind)
+        {
+            this.SlotCount = 5;
+            if (attributeLists != null)
+            {
+                this.AdjustFlagsAndWidth(attributeLists);
+                this.attributeLists = attributeLists;
+            }
+            if (modifiers != null)
+            {
+                this.AdjustFlagsAndWidth(modifiers);
+                this.modifiers = modifiers;
+            }
+            this.AdjustFlagsAndWidth(type);
+            this.type = type;
+            this.AdjustFlagsAndWidth(identifier);
+            this.identifier = identifier;
+            this.AdjustFlagsAndWidth(semicolonToken);
+            this.semicolonToken = semicolonToken;
+        }
+
+        public override Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AttributeListSyntax> AttributeLists => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AttributeListSyntax>(this.attributeLists);
+        public override Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<SyntaxToken> Modifiers => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<SyntaxToken>(this.modifiers);
+        /// <summary>Gets the type of syntax.</summary>
+        public TypeEx Type => this.type;
+        /// <summary>Gets the identifier.</summary>
+        public SyntaxToken Identifier => this.identifier;
+        /// <summary>Gets the semicolon token.</summary>
+        public SyntaxToken SemicolonToken => this.semicolonToken;
+
+        internal override GreenNode? GetSlot(int index)
+            => index switch
+            {
+                0 => this.attributeLists,
+                1 => this.modifiers,
+                2 => this.type,
+                3 => this.identifier,
+                4 => this.semicolonToken,
+                _ => null,
+            };
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.FieldDecl(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitFieldDecl(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitFieldDecl(this);
+
+        public FieldDecl Update(Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AttributeListSyntax> attributeLists, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, TypeEx type, SyntaxToken identifier, SyntaxToken semicolonToken)
+        {
+            if (attributeLists != this.AttributeLists || modifiers != this.Modifiers || type != this.Type || identifier != this.Identifier || semicolonToken != this.SemicolonToken)
+            {
+                var newNode = SyntaxFactory.FieldDecl(attributeLists, modifiers, type, identifier, semicolonToken);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new FieldDecl(this.Kind, this.attributeLists, this.modifiers, this.type, this.identifier, this.semicolonToken, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new FieldDecl(this.Kind, this.attributeLists, this.modifiers, this.type, this.identifier, this.semicolonToken, GetDiagnostics(), annotations);
+
+        internal FieldDecl(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 5;
+            var attributeLists = (GreenNode?)reader.ReadValue();
+            if (attributeLists != null)
+            {
+                AdjustFlagsAndWidth(attributeLists);
+                this.attributeLists = attributeLists;
+            }
+            var modifiers = (GreenNode?)reader.ReadValue();
+            if (modifiers != null)
+            {
+                AdjustFlagsAndWidth(modifiers);
+                this.modifiers = modifiers;
+            }
+            var type = (TypeEx)reader.ReadValue();
+            AdjustFlagsAndWidth(type);
+            this.type = type;
+            var identifier = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(identifier);
+            this.identifier = identifier;
+            var semicolonToken = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(semicolonToken);
+            this.semicolonToken = semicolonToken;
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.attributeLists);
+            writer.WriteValue(this.modifiers);
+            writer.WriteValue(this.type);
+            writer.WriteValue(this.identifier);
+            writer.WriteValue(this.semicolonToken);
+        }
+
+        static FieldDecl()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(FieldDecl), r => new FieldDecl(r));
+        }
     }
 
     /// <summary>Base type for method declaration syntax.</summary>
@@ -917,6 +1108,159 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         static ComponentDecl()
         {
             ObjectBinder.RegisterTypeReader(typeof(ComponentDecl), r => new ComponentDecl(r));
+        }
+    }
+
+    internal sealed partial class TypeDecl : AquilaSyntaxNode
+    {
+        internal readonly SyntaxToken typeKeyword;
+        internal readonly NameEx name;
+        internal readonly SyntaxToken openBraceToken;
+        internal readonly GreenNode? fields;
+        internal readonly SyntaxToken closeBraceToken;
+
+        internal TypeDecl(SyntaxKind kind, SyntaxToken typeKeyword, NameEx name, SyntaxToken openBraceToken, GreenNode? fields, SyntaxToken closeBraceToken, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 5;
+            this.AdjustFlagsAndWidth(typeKeyword);
+            this.typeKeyword = typeKeyword;
+            this.AdjustFlagsAndWidth(name);
+            this.name = name;
+            this.AdjustFlagsAndWidth(openBraceToken);
+            this.openBraceToken = openBraceToken;
+            if (fields != null)
+            {
+                this.AdjustFlagsAndWidth(fields);
+                this.fields = fields;
+            }
+            this.AdjustFlagsAndWidth(closeBraceToken);
+            this.closeBraceToken = closeBraceToken;
+        }
+
+        internal TypeDecl(SyntaxKind kind, SyntaxToken typeKeyword, NameEx name, SyntaxToken openBraceToken, GreenNode? fields, SyntaxToken closeBraceToken, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 5;
+            this.AdjustFlagsAndWidth(typeKeyword);
+            this.typeKeyword = typeKeyword;
+            this.AdjustFlagsAndWidth(name);
+            this.name = name;
+            this.AdjustFlagsAndWidth(openBraceToken);
+            this.openBraceToken = openBraceToken;
+            if (fields != null)
+            {
+                this.AdjustFlagsAndWidth(fields);
+                this.fields = fields;
+            }
+            this.AdjustFlagsAndWidth(closeBraceToken);
+            this.closeBraceToken = closeBraceToken;
+        }
+
+        internal TypeDecl(SyntaxKind kind, SyntaxToken typeKeyword, NameEx name, SyntaxToken openBraceToken, GreenNode? fields, SyntaxToken closeBraceToken)
+          : base(kind)
+        {
+            this.SlotCount = 5;
+            this.AdjustFlagsAndWidth(typeKeyword);
+            this.typeKeyword = typeKeyword;
+            this.AdjustFlagsAndWidth(name);
+            this.name = name;
+            this.AdjustFlagsAndWidth(openBraceToken);
+            this.openBraceToken = openBraceToken;
+            if (fields != null)
+            {
+                this.AdjustFlagsAndWidth(fields);
+                this.fields = fields;
+            }
+            this.AdjustFlagsAndWidth(closeBraceToken);
+            this.closeBraceToken = closeBraceToken;
+        }
+
+        public SyntaxToken TypeKeyword => this.typeKeyword;
+        public NameEx Name => this.name;
+        /// <summary>SyntaxToken representing the open brace.</summary>
+        public SyntaxToken OpenBraceToken => this.openBraceToken;
+        public Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<FieldDecl> Fields => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<FieldDecl>(this.fields);
+        /// <summary>SyntaxToken representing the close brace.</summary>
+        public SyntaxToken CloseBraceToken => this.closeBraceToken;
+
+        internal override GreenNode? GetSlot(int index)
+            => index switch
+            {
+                0 => this.typeKeyword,
+                1 => this.name,
+                2 => this.openBraceToken,
+                3 => this.fields,
+                4 => this.closeBraceToken,
+                _ => null,
+            };
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.TypeDecl(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitTypeDecl(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitTypeDecl(this);
+
+        public TypeDecl Update(SyntaxToken typeKeyword, NameEx name, SyntaxToken openBraceToken, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<FieldDecl> fields, SyntaxToken closeBraceToken)
+        {
+            if (typeKeyword != this.TypeKeyword || name != this.Name || openBraceToken != this.OpenBraceToken || fields != this.Fields || closeBraceToken != this.CloseBraceToken)
+            {
+                var newNode = SyntaxFactory.TypeDecl(typeKeyword, name, openBraceToken, fields, closeBraceToken);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new TypeDecl(this.Kind, this.typeKeyword, this.name, this.openBraceToken, this.fields, this.closeBraceToken, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new TypeDecl(this.Kind, this.typeKeyword, this.name, this.openBraceToken, this.fields, this.closeBraceToken, GetDiagnostics(), annotations);
+
+        internal TypeDecl(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 5;
+            var typeKeyword = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(typeKeyword);
+            this.typeKeyword = typeKeyword;
+            var name = (NameEx)reader.ReadValue();
+            AdjustFlagsAndWidth(name);
+            this.name = name;
+            var openBraceToken = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(openBraceToken);
+            this.openBraceToken = openBraceToken;
+            var fields = (GreenNode?)reader.ReadValue();
+            if (fields != null)
+            {
+                AdjustFlagsAndWidth(fields);
+                this.fields = fields;
+            }
+            var closeBraceToken = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(closeBraceToken);
+            this.closeBraceToken = closeBraceToken;
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.typeKeyword);
+            writer.WriteValue(this.name);
+            writer.WriteValue(this.openBraceToken);
+            writer.WriteValue(this.fields);
+            writer.WriteValue(this.closeBraceToken);
+        }
+
+        static TypeDecl()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(TypeDecl), r => new TypeDecl(r));
         }
     }
 
@@ -12540,9 +12884,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
     {
         public virtual TResult VisitCompilationUnit(CompilationUnitSyntax node) => this.DefaultVisit(node);
         public virtual TResult VisitImportDecl(ImportDecl node) => this.DefaultVisit(node);
+        public virtual TResult VisitFieldDecl(FieldDecl node) => this.DefaultVisit(node);
         public virtual TResult VisitMethodDecl(MethodDecl node) => this.DefaultVisit(node);
         public virtual TResult VisitExtendDecl(ExtendDecl node) => this.DefaultVisit(node);
         public virtual TResult VisitComponentDecl(ComponentDecl node) => this.DefaultVisit(node);
+        public virtual TResult VisitTypeDecl(TypeDecl node) => this.DefaultVisit(node);
         public virtual TResult VisitAttributeList(AttributeListSyntax node) => this.DefaultVisit(node);
         public virtual TResult VisitAttribute(AttributeSyntax node) => this.DefaultVisit(node);
         public virtual TResult VisitAttributeArgumentList(AttributeArgumentListSyntax node) => this.DefaultVisit(node);
@@ -12640,9 +12986,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
     {
         public virtual void VisitCompilationUnit(CompilationUnitSyntax node) => this.DefaultVisit(node);
         public virtual void VisitImportDecl(ImportDecl node) => this.DefaultVisit(node);
+        public virtual void VisitFieldDecl(FieldDecl node) => this.DefaultVisit(node);
         public virtual void VisitMethodDecl(MethodDecl node) => this.DefaultVisit(node);
         public virtual void VisitExtendDecl(ExtendDecl node) => this.DefaultVisit(node);
         public virtual void VisitComponentDecl(ComponentDecl node) => this.DefaultVisit(node);
+        public virtual void VisitTypeDecl(TypeDecl node) => this.DefaultVisit(node);
         public virtual void VisitAttributeList(AttributeListSyntax node) => this.DefaultVisit(node);
         public virtual void VisitAttribute(AttributeSyntax node) => this.DefaultVisit(node);
         public virtual void VisitAttributeArgumentList(AttributeArgumentListSyntax node) => this.DefaultVisit(node);
@@ -12739,10 +13087,13 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
     internal partial class AquilaSyntaxRewriter : AquilaSyntaxVisitor<AquilaSyntaxNode>
     {
         public override AquilaSyntaxNode VisitCompilationUnit(CompilationUnitSyntax node)
-            => node.Update(VisitList(node.Imports), VisitList(node.Methods), VisitList(node.Extends), VisitList(node.Components), (SyntaxToken)Visit(node.EndOfFileToken));
+            => node.Update(VisitList(node.Imports), VisitList(node.Methods), VisitList(node.Extends), VisitList(node.Components), VisitList(node.Types), (SyntaxToken)Visit(node.EndOfFileToken));
 
         public override AquilaSyntaxNode VisitImportDecl(ImportDecl node)
             => node.Update((SyntaxToken)Visit(node.ImportKeyword), (NameEx)Visit(node.Name), (SyntaxToken)Visit(node.SemicolonToken));
+
+        public override AquilaSyntaxNode VisitFieldDecl(FieldDecl node)
+            => node.Update(VisitList(node.AttributeLists), VisitList(node.Modifiers), (TypeEx)Visit(node.Type), (SyntaxToken)Visit(node.Identifier), (SyntaxToken)Visit(node.SemicolonToken));
 
         public override AquilaSyntaxNode VisitMethodDecl(MethodDecl node)
             => node.Update(VisitList(node.AttributeLists), VisitList(node.Modifiers), (TypeEx)Visit(node.ReturnType), (SyntaxToken)Visit(node.Identifier), (TypeParameterListSyntax)Visit(node.TypeParameterList), (ParameterListSyntax)Visit(node.ParameterList), (BlockStmt)Visit(node.Body), (ArrowExClause)Visit(node.ExpressionBody), (SyntaxToken)Visit(node.SemicolonToken));
@@ -12752,6 +13103,9 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         public override AquilaSyntaxNode VisitComponentDecl(ComponentDecl node)
             => node.Update((SyntaxToken)Visit(node.ComponentKeyword), (NameEx)Visit(node.Name), VisitList(node.Extends));
+
+        public override AquilaSyntaxNode VisitTypeDecl(TypeDecl node)
+            => node.Update((SyntaxToken)Visit(node.TypeKeyword), (NameEx)Visit(node.Name), (SyntaxToken)Visit(node.OpenBraceToken), VisitList(node.Fields), (SyntaxToken)Visit(node.CloseBraceToken));
 
         public override AquilaSyntaxNode VisitAttributeList(AttributeListSyntax node)
             => node.Update((SyntaxToken)Visit(node.OpenBracketToken), VisitList(node.Attributes), (SyntaxToken)Visit(node.CloseBracketToken));
@@ -13034,14 +13388,14 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         public ContextAwareSyntax(SyntaxFactoryContext context)
             => this.context = context;
 
-        public CompilationUnitSyntax CompilationUnit(Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> imports, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MethodDecl> methods, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ExtendDecl> extends, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ComponentDecl> components, SyntaxToken endOfFileToken)
+        public CompilationUnitSyntax CompilationUnit(Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> imports, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MethodDecl> methods, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ExtendDecl> extends, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ComponentDecl> components, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<TypeDecl> types, SyntaxToken endOfFileToken)
         {
 #if DEBUG
             if (endOfFileToken == null) throw new ArgumentNullException(nameof(endOfFileToken));
             if (endOfFileToken.Kind != SyntaxKind.EndOfFileToken) throw new ArgumentException(nameof(endOfFileToken));
 #endif
 
-            return new CompilationUnitSyntax(SyntaxKind.CompilationUnit, imports.Node, methods.Node, extends.Node, components.Node, endOfFileToken, this.context);
+            return new CompilationUnitSyntax(SyntaxKind.CompilationUnit, imports.Node, methods.Node, extends.Node, components.Node, types.Node, endOfFileToken, this.context);
         }
 
         public ImportDecl ImportDecl(SyntaxToken importKeyword, NameEx name, SyntaxToken semicolonToken)
@@ -13065,6 +13419,19 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             }
 
             return result;
+        }
+
+        public FieldDecl FieldDecl(Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AttributeListSyntax> attributeLists, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, TypeEx type, SyntaxToken identifier, SyntaxToken semicolonToken)
+        {
+#if DEBUG
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (identifier == null) throw new ArgumentNullException(nameof(identifier));
+            if (identifier.Kind != SyntaxKind.IdentifierToken) throw new ArgumentException(nameof(identifier));
+            if (semicolonToken == null) throw new ArgumentNullException(nameof(semicolonToken));
+            if (semicolonToken.Kind != SyntaxKind.SemicolonToken) throw new ArgumentException(nameof(semicolonToken));
+#endif
+
+            return new FieldDecl(SyntaxKind.FieldDecl, attributeLists.Node, modifiers.Node, type, identifier, semicolonToken, this.context);
         }
 
         public MethodDecl MethodDecl(Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AttributeListSyntax> attributeLists, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, TypeEx returnType, SyntaxToken identifier, TypeParameterListSyntax? typeParameterList, ParameterListSyntax parameterList, BlockStmt? body, ArrowExClause? expressionBody, SyntaxToken? semicolonToken)
@@ -13122,6 +13489,21 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             }
 
             return result;
+        }
+
+        public TypeDecl TypeDecl(SyntaxToken typeKeyword, NameEx name, SyntaxToken openBraceToken, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<FieldDecl> fields, SyntaxToken closeBraceToken)
+        {
+#if DEBUG
+            if (typeKeyword == null) throw new ArgumentNullException(nameof(typeKeyword));
+            if (typeKeyword.Kind != SyntaxKind.TypeKeyword) throw new ArgumentException(nameof(typeKeyword));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (openBraceToken == null) throw new ArgumentNullException(nameof(openBraceToken));
+            if (openBraceToken.Kind != SyntaxKind.OpenBraceToken) throw new ArgumentException(nameof(openBraceToken));
+            if (closeBraceToken == null) throw new ArgumentNullException(nameof(closeBraceToken));
+            if (closeBraceToken.Kind != SyntaxKind.CloseBraceToken) throw new ArgumentException(nameof(closeBraceToken));
+#endif
+
+            return new TypeDecl(SyntaxKind.TypeDecl, typeKeyword, name, openBraceToken, fields.Node, closeBraceToken, this.context);
         }
 
         public AttributeListSyntax AttributeList(SyntaxToken openBracketToken, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SeparatedSyntaxList<AttributeSyntax> attributes, SyntaxToken closeBracketToken)
@@ -15230,14 +15612,14 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
     internal static partial class SyntaxFactory
     {
-        public static CompilationUnitSyntax CompilationUnit(Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> imports, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MethodDecl> methods, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ExtendDecl> extends, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ComponentDecl> components, SyntaxToken endOfFileToken)
+        public static CompilationUnitSyntax CompilationUnit(Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> imports, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MethodDecl> methods, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ExtendDecl> extends, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ComponentDecl> components, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<TypeDecl> types, SyntaxToken endOfFileToken)
         {
 #if DEBUG
             if (endOfFileToken == null) throw new ArgumentNullException(nameof(endOfFileToken));
             if (endOfFileToken.Kind != SyntaxKind.EndOfFileToken) throw new ArgumentException(nameof(endOfFileToken));
 #endif
 
-            return new CompilationUnitSyntax(SyntaxKind.CompilationUnit, imports.Node, methods.Node, extends.Node, components.Node, endOfFileToken);
+            return new CompilationUnitSyntax(SyntaxKind.CompilationUnit, imports.Node, methods.Node, extends.Node, components.Node, types.Node, endOfFileToken);
         }
 
         public static ImportDecl ImportDecl(SyntaxToken importKeyword, NameEx name, SyntaxToken semicolonToken)
@@ -15261,6 +15643,19 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             }
 
             return result;
+        }
+
+        public static FieldDecl FieldDecl(Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AttributeListSyntax> attributeLists, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, TypeEx type, SyntaxToken identifier, SyntaxToken semicolonToken)
+        {
+#if DEBUG
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (identifier == null) throw new ArgumentNullException(nameof(identifier));
+            if (identifier.Kind != SyntaxKind.IdentifierToken) throw new ArgumentException(nameof(identifier));
+            if (semicolonToken == null) throw new ArgumentNullException(nameof(semicolonToken));
+            if (semicolonToken.Kind != SyntaxKind.SemicolonToken) throw new ArgumentException(nameof(semicolonToken));
+#endif
+
+            return new FieldDecl(SyntaxKind.FieldDecl, attributeLists.Node, modifiers.Node, type, identifier, semicolonToken);
         }
 
         public static MethodDecl MethodDecl(Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AttributeListSyntax> attributeLists, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, TypeEx returnType, SyntaxToken identifier, TypeParameterListSyntax? typeParameterList, ParameterListSyntax parameterList, BlockStmt? body, ArrowExClause? expressionBody, SyntaxToken? semicolonToken)
@@ -15318,6 +15713,21 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             }
 
             return result;
+        }
+
+        public static TypeDecl TypeDecl(SyntaxToken typeKeyword, NameEx name, SyntaxToken openBraceToken, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<FieldDecl> fields, SyntaxToken closeBraceToken)
+        {
+#if DEBUG
+            if (typeKeyword == null) throw new ArgumentNullException(nameof(typeKeyword));
+            if (typeKeyword.Kind != SyntaxKind.TypeKeyword) throw new ArgumentException(nameof(typeKeyword));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (openBraceToken == null) throw new ArgumentNullException(nameof(openBraceToken));
+            if (openBraceToken.Kind != SyntaxKind.OpenBraceToken) throw new ArgumentException(nameof(openBraceToken));
+            if (closeBraceToken == null) throw new ArgumentNullException(nameof(closeBraceToken));
+            if (closeBraceToken.Kind != SyntaxKind.CloseBraceToken) throw new ArgumentException(nameof(closeBraceToken));
+#endif
+
+            return new TypeDecl(SyntaxKind.TypeDecl, typeKeyword, name, openBraceToken, fields.Node, closeBraceToken);
         }
 
         public static AttributeListSyntax AttributeList(SyntaxToken openBracketToken, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SeparatedSyntaxList<AttributeSyntax> attributes, SyntaxToken closeBracketToken)
@@ -17428,9 +17838,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             {
                 typeof(CompilationUnitSyntax),
                 typeof(ImportDecl),
+                typeof(FieldDecl),
                 typeof(MethodDecl),
                 typeof(ExtendDecl),
                 typeof(ComponentDecl),
+                typeof(TypeDecl),
                 typeof(AttributeListSyntax),
                 typeof(AttributeSyntax),
                 typeof(AttributeArgumentListSyntax),

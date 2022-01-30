@@ -981,6 +981,8 @@ namespace Aquila.CodeAnalysis
                     return SyntaxKind.ExtendKeyword;
                 case "datetime":
                     return SyntaxKind.DatetimeKeyword;
+                case "type":
+                    return SyntaxKind.TypeKeyword;
                 default:
                     return SyntaxKind.None;
             }
@@ -1118,7 +1120,6 @@ namespace Aquila.CodeAnalysis
                 case SyntaxKind.DescendingKeyword:
                 case SyntaxKind.AssemblyKeyword:
                 case SyntaxKind.ModuleKeyword:
-                case SyntaxKind.TypeKeyword:
                 case SyntaxKind.GlobalKeyword:
                 case SyntaxKind.FieldKeyword:
                 case SyntaxKind.MethodKeyword:
@@ -1701,6 +1702,7 @@ namespace Aquila.CodeAnalysis
                     return "extend";
                 case SyntaxKind.DatetimeKeyword:
                     return "datetime";
+
                 default:
                     return string.Empty;
             }

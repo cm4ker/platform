@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using Aquila.CodeAnalysis;
 using Microsoft.CodeAnalysis;
@@ -223,6 +224,23 @@ public static int Main()
         }");
 
             var token = graph.GetTouchingTokenAsync(20, CancellationToken.None).GetAwaiter().GetResult();
+
+            Assert.True(token.Kind() == SyntaxKind.IdentifierToken);
+        }
+
+
+        [Fact]
+        public void TypeParseTest()
+        {
+            var graph = AquilaSyntaxTree.ParseText(
+                @"type Test 
+{
+    int a;
+    int b
+    int c
+    int d
+}");
+            Assert.True(graph.GetRoot().ChildNodes().First().Kind() == SyntaxKind.TypeDecl);
         }
     }
 }

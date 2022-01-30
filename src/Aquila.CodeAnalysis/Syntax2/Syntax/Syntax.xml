@@ -21,6 +21,8 @@
         <Field Name="Methods" Type="SyntaxList&lt;MethodDecl&gt;"/>
         <Field Name="Extends" Type="SyntaxList&lt;ExtendDecl&gt;"/>
         <Field Name="Components" Type="SyntaxList&lt;ComponentDecl&gt;"/>
+        <Field Name="Types" Type="SyntaxList&lt;TypeDecl&gt;"/>
+
         <Field Name="EndOfFileToken" Type="SyntaxToken">
             <Kind Name="EndOfFileToken"/>
         </Field>
@@ -55,6 +57,31 @@
             </PropertyComment>
         </Field>
     </AbstractNode>
+
+    <Node Name="FieldDecl" Base="MemberDecl">
+        <Kind Name="FieldDecl"/>
+
+        <Field Name="AttributeLists" Type="SyntaxList&lt;AttributeListSyntax&gt;" Override="true"/>
+        <Field Name="Modifiers" Type="SyntaxList&lt;SyntaxToken&gt;" Override="true"/>
+        
+        <Field Name="Type" Type="TypeEx">
+            <PropertyComment>
+                <summary>Gets the type of syntax.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Identifier" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>Gets the identifier.</summary>
+            </PropertyComment>
+            <Kind Name="IdentifierToken"/>
+        </Field>
+        <Field Name="SemicolonToken" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>Gets the semicolon token.</summary>
+            </PropertyComment>
+            <Kind Name="SemicolonToken"/>
+        </Field>
+    </Node>
 
     <Node Name="MethodDecl" Base="MemberDecl">
         <Kind Name="MethodDecl"/>
@@ -124,6 +151,29 @@
         <Field Name="Name" Type="NameEx"/>
         <Field Name="Extends" Type="SyntaxList&lt;ExtendDecl&gt;"/>
     </Node>
+    <Node Name="TypeDecl" Base="AquilaSyntaxNode">
+        <Kind Name="TypeDecl"/>
+        <Field Name="TypeKeyword" Type="SyntaxToken">
+            <Kind Name="TypeKeyword"/>
+        </Field>
+        <Field Name="Name" Type="NameEx"/>
+        <Field Name="OpenBraceToken" Type="SyntaxToken">
+            <Kind Name="OpenBraceToken"/>
+            <PropertyComment>
+                <summary>SyntaxToken representing the open brace.</summary>
+            </PropertyComment>
+        </Field>
+
+        <Field Name="Fields" Type="SyntaxList&lt;FieldDecl&gt;"/>
+
+        <Field Name="CloseBraceToken" Type="SyntaxToken">
+            <Kind Name="CloseBraceToken"/>
+            <PropertyComment>
+                <summary>SyntaxToken representing the close brace.</summary>
+            </PropertyComment>
+        </Field>
+    </Node>
+
 
     <!--region Attributes-->
     <Node Name="AttributeListSyntax" Base="AquilaSyntaxNode">

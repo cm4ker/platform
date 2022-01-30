@@ -22,6 +22,9 @@ namespace Aquila.CodeAnalysis
         /// <summary>Called when the visitor visits a ImportDecl node.</summary>
         public virtual TResult? VisitImportDecl(ImportDecl node) => this.DefaultVisit(node);
 
+        /// <summary>Called when the visitor visits a FieldDecl node.</summary>
+        public virtual TResult? VisitFieldDecl(FieldDecl node) => this.DefaultVisit(node);
+
         /// <summary>Called when the visitor visits a MethodDecl node.</summary>
         public virtual TResult? VisitMethodDecl(MethodDecl node) => this.DefaultVisit(node);
 
@@ -30,6 +33,9 @@ namespace Aquila.CodeAnalysis
 
         /// <summary>Called when the visitor visits a ComponentDecl node.</summary>
         public virtual TResult? VisitComponentDecl(ComponentDecl node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a TypeDecl node.</summary>
+        public virtual TResult? VisitTypeDecl(TypeDecl node) => this.DefaultVisit(node);
 
         /// <summary>Called when the visitor visits a AttributeListSyntax node.</summary>
         public virtual TResult? VisitAttributeList(AttributeListSyntax node) => this.DefaultVisit(node);
@@ -313,6 +319,9 @@ namespace Aquila.CodeAnalysis
         /// <summary>Called when the visitor visits a ImportDecl node.</summary>
         public virtual void VisitImportDecl(ImportDecl node) => this.DefaultVisit(node);
 
+        /// <summary>Called when the visitor visits a FieldDecl node.</summary>
+        public virtual void VisitFieldDecl(FieldDecl node) => this.DefaultVisit(node);
+
         /// <summary>Called when the visitor visits a MethodDecl node.</summary>
         public virtual void VisitMethodDecl(MethodDecl node) => this.DefaultVisit(node);
 
@@ -321,6 +330,9 @@ namespace Aquila.CodeAnalysis
 
         /// <summary>Called when the visitor visits a ComponentDecl node.</summary>
         public virtual void VisitComponentDecl(ComponentDecl node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a TypeDecl node.</summary>
+        public virtual void VisitTypeDecl(TypeDecl node) => this.DefaultVisit(node);
 
         /// <summary>Called when the visitor visits a AttributeListSyntax node.</summary>
         public virtual void VisitAttributeList(AttributeListSyntax node) => this.DefaultVisit(node);
@@ -599,10 +611,13 @@ namespace Aquila.CodeAnalysis
     public partial class AquilaSyntaxRewriter : AquilaSyntaxVisitor<SyntaxNode?>
     {
         public override SyntaxNode? VisitCompilationUnit(CompilationUnitSyntax node)
-            => node.Update(VisitList(node.Imports), VisitList(node.Methods), VisitList(node.Extends), VisitList(node.Components), VisitToken(node.EndOfFileToken));
+            => node.Update(VisitList(node.Imports), VisitList(node.Methods), VisitList(node.Extends), VisitList(node.Components), VisitList(node.Types), VisitToken(node.EndOfFileToken));
 
         public override SyntaxNode? VisitImportDecl(ImportDecl node)
             => node.Update(VisitToken(node.ImportKeyword), (NameEx?)Visit(node.Name) ?? throw new ArgumentNullException("name"), VisitToken(node.SemicolonToken));
+
+        public override SyntaxNode? VisitFieldDecl(FieldDecl node)
+            => node.Update(VisitList(node.AttributeLists), VisitList(node.Modifiers), (TypeEx?)Visit(node.Type) ?? throw new ArgumentNullException("type"), VisitToken(node.Identifier), VisitToken(node.SemicolonToken));
 
         public override SyntaxNode? VisitMethodDecl(MethodDecl node)
             => node.Update(VisitList(node.AttributeLists), VisitList(node.Modifiers), (TypeEx?)Visit(node.ReturnType) ?? throw new ArgumentNullException("returnType"), VisitToken(node.Identifier), (TypeParameterListSyntax?)Visit(node.TypeParameterList), (ParameterListSyntax?)Visit(node.ParameterList) ?? throw new ArgumentNullException("parameterList"), (BlockStmt?)Visit(node.Body), (ArrowExClause?)Visit(node.ExpressionBody), VisitToken(node.SemicolonToken));
@@ -612,6 +627,9 @@ namespace Aquila.CodeAnalysis
 
         public override SyntaxNode? VisitComponentDecl(ComponentDecl node)
             => node.Update(VisitToken(node.ComponentKeyword), (NameEx?)Visit(node.Name) ?? throw new ArgumentNullException("name"), VisitList(node.Extends));
+
+        public override SyntaxNode? VisitTypeDecl(TypeDecl node)
+            => node.Update(VisitToken(node.TypeKeyword), (NameEx?)Visit(node.Name) ?? throw new ArgumentNullException("name"), VisitToken(node.OpenBraceToken), VisitList(node.Fields), VisitToken(node.CloseBraceToken));
 
         public override SyntaxNode? VisitAttributeList(AttributeListSyntax node)
             => node.Update(VisitToken(node.OpenBracketToken), VisitList(node.Attributes), VisitToken(node.CloseBracketToken));
@@ -890,19 +908,19 @@ namespace Aquila.CodeAnalysis
     public static partial class SyntaxFactory
     {
         /// <summary>Creates a new CompilationUnitSyntax instance.</summary>
-        public static CompilationUnitSyntax CompilationUnit(SyntaxList<ImportDecl> imports, SyntaxList<MethodDecl> methods, SyntaxList<ExtendDecl> extends, SyntaxList<ComponentDecl> components, SyntaxToken endOfFileToken)
+        public static CompilationUnitSyntax CompilationUnit(SyntaxList<ImportDecl> imports, SyntaxList<MethodDecl> methods, SyntaxList<ExtendDecl> extends, SyntaxList<ComponentDecl> components, SyntaxList<TypeDecl> types, SyntaxToken endOfFileToken)
         {
             if (endOfFileToken.Kind() != SyntaxKind.EndOfFileToken) throw new ArgumentException(nameof(endOfFileToken));
-            return (CompilationUnitSyntax)Syntax.InternalSyntax.SyntaxFactory.CompilationUnit(imports.Node.ToGreenList<Syntax.InternalSyntax.ImportDecl>(), methods.Node.ToGreenList<Syntax.InternalSyntax.MethodDecl>(), extends.Node.ToGreenList<Syntax.InternalSyntax.ExtendDecl>(), components.Node.ToGreenList<Syntax.InternalSyntax.ComponentDecl>(), (Syntax.InternalSyntax.SyntaxToken)endOfFileToken.Node!).CreateRed();
+            return (CompilationUnitSyntax)Syntax.InternalSyntax.SyntaxFactory.CompilationUnit(imports.Node.ToGreenList<Syntax.InternalSyntax.ImportDecl>(), methods.Node.ToGreenList<Syntax.InternalSyntax.MethodDecl>(), extends.Node.ToGreenList<Syntax.InternalSyntax.ExtendDecl>(), components.Node.ToGreenList<Syntax.InternalSyntax.ComponentDecl>(), types.Node.ToGreenList<Syntax.InternalSyntax.TypeDecl>(), (Syntax.InternalSyntax.SyntaxToken)endOfFileToken.Node!).CreateRed();
         }
 
         /// <summary>Creates a new CompilationUnitSyntax instance.</summary>
-        public static CompilationUnitSyntax CompilationUnit(SyntaxList<ImportDecl> imports, SyntaxList<MethodDecl> methods, SyntaxList<ExtendDecl> extends, SyntaxList<ComponentDecl> components)
-            => SyntaxFactory.CompilationUnit(imports, methods, extends, components, SyntaxFactory.Token(SyntaxKind.EndOfFileToken));
+        public static CompilationUnitSyntax CompilationUnit(SyntaxList<ImportDecl> imports, SyntaxList<MethodDecl> methods, SyntaxList<ExtendDecl> extends, SyntaxList<ComponentDecl> components, SyntaxList<TypeDecl> types)
+            => SyntaxFactory.CompilationUnit(imports, methods, extends, components, types, SyntaxFactory.Token(SyntaxKind.EndOfFileToken));
 
         /// <summary>Creates a new CompilationUnitSyntax instance.</summary>
         public static CompilationUnitSyntax CompilationUnit()
-            => SyntaxFactory.CompilationUnit(default, default, default, default, SyntaxFactory.Token(SyntaxKind.EndOfFileToken));
+            => SyntaxFactory.CompilationUnit(default, default, default, default, default, SyntaxFactory.Token(SyntaxKind.EndOfFileToken));
 
         /// <summary>Creates a new ImportDecl instance.</summary>
         public static ImportDecl ImportDecl(SyntaxToken importKeyword, NameEx name, SyntaxToken semicolonToken)
@@ -916,6 +934,27 @@ namespace Aquila.CodeAnalysis
         /// <summary>Creates a new ImportDecl instance.</summary>
         public static ImportDecl ImportDecl(NameEx name)
             => SyntaxFactory.ImportDecl(SyntaxFactory.Token(SyntaxKind.ImportKeyword), name, SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+
+        /// <summary>Creates a new FieldDecl instance.</summary>
+        public static FieldDecl FieldDecl(SyntaxList<AttributeListSyntax> attributeLists, SyntaxTokenList modifiers, TypeEx type, SyntaxToken identifier, SyntaxToken semicolonToken)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (identifier.Kind() != SyntaxKind.IdentifierToken) throw new ArgumentException(nameof(identifier));
+            if (semicolonToken.Kind() != SyntaxKind.SemicolonToken) throw new ArgumentException(nameof(semicolonToken));
+            return (FieldDecl)Syntax.InternalSyntax.SyntaxFactory.FieldDecl(attributeLists.Node.ToGreenList<Syntax.InternalSyntax.AttributeListSyntax>(), modifiers.Node.ToGreenList<Syntax.InternalSyntax.SyntaxToken>(), (Syntax.InternalSyntax.TypeEx)type.Green, (Syntax.InternalSyntax.SyntaxToken)identifier.Node!, (Syntax.InternalSyntax.SyntaxToken)semicolonToken.Node!).CreateRed();
+        }
+
+        /// <summary>Creates a new FieldDecl instance.</summary>
+        public static FieldDecl FieldDecl(SyntaxList<AttributeListSyntax> attributeLists, SyntaxTokenList modifiers, TypeEx type, SyntaxToken identifier)
+            => SyntaxFactory.FieldDecl(attributeLists, modifiers, type, identifier, SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+
+        /// <summary>Creates a new FieldDecl instance.</summary>
+        public static FieldDecl FieldDecl(TypeEx type, SyntaxToken identifier)
+            => SyntaxFactory.FieldDecl(default, default(SyntaxTokenList), type, identifier, SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+
+        /// <summary>Creates a new FieldDecl instance.</summary>
+        public static FieldDecl FieldDecl(TypeEx type, string identifier)
+            => SyntaxFactory.FieldDecl(default, default(SyntaxTokenList), type, SyntaxFactory.Identifier(identifier), SyntaxFactory.Token(SyntaxKind.SemicolonToken));
 
         /// <summary>Creates a new MethodDecl instance.</summary>
         public static MethodDecl MethodDecl(SyntaxList<AttributeListSyntax> attributeLists, SyntaxTokenList modifiers, TypeEx returnType, SyntaxToken identifier, TypeParameterListSyntax? typeParameterList, ParameterListSyntax parameterList, BlockStmt? body, ArrowExClause? expressionBody, SyntaxToken semicolonToken)
@@ -977,6 +1016,24 @@ namespace Aquila.CodeAnalysis
         /// <summary>Creates a new ComponentDecl instance.</summary>
         public static ComponentDecl ComponentDecl(NameEx name)
             => SyntaxFactory.ComponentDecl(SyntaxFactory.Token(SyntaxKind.ComponentKeyword), name, default);
+
+        /// <summary>Creates a new TypeDecl instance.</summary>
+        public static TypeDecl TypeDecl(SyntaxToken typeKeyword, NameEx name, SyntaxToken openBraceToken, SyntaxList<FieldDecl> fields, SyntaxToken closeBraceToken)
+        {
+            if (typeKeyword.Kind() != SyntaxKind.TypeKeyword) throw new ArgumentException(nameof(typeKeyword));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (openBraceToken.Kind() != SyntaxKind.OpenBraceToken) throw new ArgumentException(nameof(openBraceToken));
+            if (closeBraceToken.Kind() != SyntaxKind.CloseBraceToken) throw new ArgumentException(nameof(closeBraceToken));
+            return (TypeDecl)Syntax.InternalSyntax.SyntaxFactory.TypeDecl((Syntax.InternalSyntax.SyntaxToken)typeKeyword.Node!, (Syntax.InternalSyntax.NameEx)name.Green, (Syntax.InternalSyntax.SyntaxToken)openBraceToken.Node!, fields.Node.ToGreenList<Syntax.InternalSyntax.FieldDecl>(), (Syntax.InternalSyntax.SyntaxToken)closeBraceToken.Node!).CreateRed();
+        }
+
+        /// <summary>Creates a new TypeDecl instance.</summary>
+        public static TypeDecl TypeDecl(NameEx name, SyntaxList<FieldDecl> fields)
+            => SyntaxFactory.TypeDecl(SyntaxFactory.Token(SyntaxKind.TypeKeyword), name, SyntaxFactory.Token(SyntaxKind.OpenBraceToken), fields, SyntaxFactory.Token(SyntaxKind.CloseBraceToken));
+
+        /// <summary>Creates a new TypeDecl instance.</summary>
+        public static TypeDecl TypeDecl(NameEx name)
+            => SyntaxFactory.TypeDecl(SyntaxFactory.Token(SyntaxKind.TypeKeyword), name, SyntaxFactory.Token(SyntaxKind.OpenBraceToken), default, SyntaxFactory.Token(SyntaxKind.CloseBraceToken));
 
         /// <summary>Creates a new AttributeListSyntax instance.</summary>
         public static AttributeListSyntax AttributeList(SyntaxToken openBracketToken, SeparatedSyntaxList<AttributeSyntax> attributes, SyntaxToken closeBracketToken)

@@ -153,6 +153,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             public SyntaxListBuilder<MethodDecl> Methods;
             public SyntaxListBuilder<ExtendDecl> Extends;
             public SyntaxListBuilder<ComponentDecl> Components;
+            public SyntaxListBuilder<TypeDecl> Types;
 
             public FileBody(SyntaxListPool pool)
             {
@@ -160,6 +161,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 Methods = pool.Allocate<MethodDecl>();
                 Extends = pool.Allocate<ExtendDecl>();
                 Components = pool.Allocate<ComponentDecl>();
+                Types = pool.Allocate<TypeDecl>();
             }
 
             internal void Free(SyntaxListPool pool)
@@ -168,6 +170,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 pool.Free(Methods);
                 pool.Free(Extends);
                 pool.Free(Components);
+                pool.Free(Types);
             }
         }
 
@@ -180,6 +183,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     new SyntaxList<MethodDecl>(),
                     new SyntaxList<ExtendDecl>(),
                     new SyntaxList<ComponentDecl>(),
+                    new SyntaxList<TypeDecl>(),
                     SyntaxFactory.Token(SyntaxKind.EndOfFileToken)));
         }
 
@@ -194,7 +198,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
                 var eof = this.EatToken(SyntaxKind.EndOfFileToken);
                 var result =
-                    _syntaxFactory.CompilationUnit(body.Imports, body.Methods, body.Extends, body.Components, eof);
+                    _syntaxFactory.CompilationUnit(body.Imports, body.Methods, body.Extends, body.Components,
+                        body.Types, eof);
 
                 if (initialBadNodes != null)
                 {
@@ -373,6 +378,12 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                             body.Imports.Add(import);
 
                             break;
+
+                        case SyntaxKind.TypeKeyword:
+                            var type = ParseTypeDecl();
+                            body.Types.Add(type);
+                            break;
+
                         case SyntaxKind.EndOfFileToken:
                             // This token marks the end of a namespace body
                             return;
@@ -1470,6 +1481,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     CheckForVersionSpecificModifiers(modifiers, SyntaxKind.ReadOnlyKeyword,
                         MessageID.IDS_FeatureReadOnlyMembers);
 
+
+                    if (parentKind == SyntaxKind.TypeDecl)
+                    {
+                        return ParseFieldDecl(type, identifierOrThisOpt);
+                    }
 
                     // treat anything else as a method.
                     return this.ParseMethodDeclaration(attributes, modifiers, type, identifierOrThisOpt,
