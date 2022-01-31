@@ -1856,6 +1856,65 @@ namespace Aquila.CodeAnalysis.Syntax
         public InitializerEx AddExpressions(params ExprSyntax[] items) => WithExpressions(this.Expressions.AddRange(items));
     }
 
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.AllocExpression"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class AllocEx : ExprSyntax
+    {
+        private TypeEx? name;
+        private InitializerEx? initializer;
+
+        internal AllocEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        /// <summary>IdentifierNameSyntax representing the identifier name.</summary>
+        public TypeEx Name => GetRedAtZero(ref this.name)!;
+
+        /// <summary>Initializer for type</summary>
+        public InitializerEx Initializer => GetRed(ref this.initializer, 1)!;
+
+        internal override SyntaxNode? GetNodeSlot(int index)
+            => index switch
+            {
+                0 => GetRedAtZero(ref this.name)!,
+                1 => GetRed(ref this.initializer, 1)!,
+                _ => null,
+            };
+
+        internal override SyntaxNode? GetCachedSlot(int index)
+            => index switch
+            {
+                0 => this.name,
+                1 => this.initializer,
+                _ => null,
+            };
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitAllocEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitAllocEx(this);
+
+        public AllocEx Update(TypeEx name, InitializerEx initializer)
+        {
+            if (name != this.Name || initializer != this.Initializer)
+            {
+                var newNode = SyntaxFactory.AllocEx(name, initializer);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public AllocEx WithName(TypeEx name) => Update(name, this.Initializer);
+        public AllocEx WithInitializer(InitializerEx initializer) => Update(this.Name, initializer);
+
+        public AllocEx AddInitializerExpressions(params ExprSyntax[] items) => WithInitializer(this.Initializer.WithExpressions(this.Initializer.Expressions.AddRange(items)));
+    }
+
     /// <summary>Represents a match expression syntax.</summary>
     /// <remarks>
     /// <para>This node is associated with the following syntax kinds:</para>

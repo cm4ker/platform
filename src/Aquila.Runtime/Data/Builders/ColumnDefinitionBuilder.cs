@@ -5,7 +5,7 @@ using Aquila.QueryBuilder.Model;
 
 namespace Aquila.QueryBuilder.Builders
 {
-    public class ColumnDefinitionBuilder: ExpressionBuilderWithColumnOptionsAndTypesBase<ColumnDefinitionBuilder>
+    public class ColumnDefinitionBuilder : ExpressionBuilderWithColumnOptionsAndTypesBase<ColumnDefinitionBuilder>
     {
         private readonly ColumnDefinition _columnDefinition;
 
@@ -30,8 +30,6 @@ namespace Aquila.QueryBuilder.Builders
         public override void SetConstraintDefinition(ConstraintDefinition constraint)
         {
             throw new NotImplementedException();
-
-            
         }
 
         public override ColumnDefinition GetCurrentColumn()

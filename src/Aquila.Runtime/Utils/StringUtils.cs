@@ -9,11 +9,14 @@ namespace Aquila.Core.Utilities
 {
     public static class StringUtils
     {
-        public static bool EqualsOrdinalIgnoreCase(this string str1, string str2) => string.Equals(str1, str2, StringComparison.OrdinalIgnoreCase);
+        public static bool EqualsOrdinalIgnoreCase(this string str1, string str2) =>
+            string.Equals(str1, str2, StringComparison.OrdinalIgnoreCase);
 
-        public static bool EqualsOrdinalIgnoreCase(this ReadOnlySpan<char> str1, ReadOnlySpan<char> str2) => str1.Equals(str2, StringComparison.OrdinalIgnoreCase);
+        public static bool EqualsOrdinalIgnoreCase(this ReadOnlySpan<char> str1, ReadOnlySpan<char> str2) =>
+            str1.Equals(str2, StringComparison.OrdinalIgnoreCase);
 
-        public static bool EqualsOrdinalIgnoreCase(this ReadOnlySpan<char> str1, string str2) => str1.Equals(str2.AsSpan(), StringComparison.OrdinalIgnoreCase);
+        public static bool EqualsOrdinalIgnoreCase(this ReadOnlySpan<char> str1, string str2) =>
+            str1.Equals(str2.AsSpan(), StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// Converts a string of bytes into hexadecimal representation.
@@ -35,7 +38,7 @@ namespace Aquila.Core.Utilities
             var length = bytes.Length * 2 + (bytes.Length - 1) * separator.Length;
             var buffer = new char[length];
             var bufferpos = 0;
-            
+
             // appends characters to the result for each byte:
             for (int i = 0; i < bytes.Length; i++)
             {
@@ -73,7 +76,8 @@ namespace Aquila.Core.Utilities
         /// contains the number of elements specified by<paramref name="count" />, if found; otherwise, -1.</returns>
         public static int IndexOfOrdinal(this string source, string value, int startIndex, int count)
         {
-            return System.Globalization.CultureInfo.InvariantCulture.CompareInfo.IndexOf(source, value, startIndex, count, System.Globalization.CompareOptions.Ordinal);
+            return System.Globalization.CultureInfo.InvariantCulture.CompareInfo.IndexOf(source, value, startIndex,
+                count, System.Globalization.CompareOptions.Ordinal);
         }
 
         /// <summary>

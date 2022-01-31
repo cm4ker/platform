@@ -16,7 +16,7 @@ namespace Aquila.QueryBuilder.Builders
         {
             _createTable = new CreateTable()
             {
-                Table = new Table() {Value = tableName}
+                Table = new Table() { Value = tableName }
             };
         }
 
@@ -45,7 +45,7 @@ namespace Aquila.QueryBuilder.Builders
         {
             _currentColumn = new ColumnDefinition()
             {
-                Column = new Column() {Value = columnName}
+                Column = new Column() { Value = columnName }
             };
 
             _createTable.Columns.Add(_currentColumn);

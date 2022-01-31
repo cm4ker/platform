@@ -262,5 +262,25 @@ type internal_type
 
 ");
         }
+
+        [Fact]
+        public void TypeCreateParse()
+        {
+            var tp = new TreePrinter(_output);
+            var tree = AquilaSyntaxTree.ParseText(@"
+public static some_type Main()
+{
+    var calc_sec = sec{};
+    var q = query{text = query_text, time_out = 30, sec = calc_sec};
+
+    var a = some_type{ Prop = 1, Prop2 = 2, Prop3 = 6};
+    var b = some_type{some, super, named, collections};
+
+    return a;     
+}
+");
+
+            tp.Visit(tree.GetRoot());
+        }
     }
 }

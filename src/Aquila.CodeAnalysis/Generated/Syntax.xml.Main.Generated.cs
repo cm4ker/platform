@@ -103,6 +103,9 @@ namespace Aquila.CodeAnalysis
         /// <summary>Called when the visitor visits a InitializerEx node.</summary>
         public virtual TResult? VisitInitializerEx(InitializerEx node) => this.DefaultVisit(node);
 
+        /// <summary>Called when the visitor visits a AllocEx node.</summary>
+        public virtual TResult? VisitAllocEx(AllocEx node) => this.DefaultVisit(node);
+
         /// <summary>Called when the visitor visits a MatchEx node.</summary>
         public virtual TResult? VisitMatchEx(MatchEx node) => this.DefaultVisit(node);
 
@@ -400,6 +403,9 @@ namespace Aquila.CodeAnalysis
         /// <summary>Called when the visitor visits a InitializerEx node.</summary>
         public virtual void VisitInitializerEx(InitializerEx node) => this.DefaultVisit(node);
 
+        /// <summary>Called when the visitor visits a AllocEx node.</summary>
+        public virtual void VisitAllocEx(AllocEx node) => this.DefaultVisit(node);
+
         /// <summary>Called when the visitor visits a MatchEx node.</summary>
         public virtual void VisitMatchEx(MatchEx node) => this.DefaultVisit(node);
 
@@ -696,6 +702,9 @@ namespace Aquila.CodeAnalysis
 
         public override SyntaxNode? VisitInitializerEx(InitializerEx node)
             => node.Update(VisitToken(node.OpenBraceToken), VisitList(node.Expressions), VisitToken(node.CloseBraceToken));
+
+        public override SyntaxNode? VisitAllocEx(AllocEx node)
+            => node.Update((TypeEx?)Visit(node.Name) ?? throw new ArgumentNullException("name"), (InitializerEx?)Visit(node.Initializer) ?? throw new ArgumentNullException("initializer"));
 
         public override SyntaxNode? VisitMatchEx(MatchEx node)
             => node.Update(VisitToken(node.MatchKeyword), VisitToken(node.OpenParenToken), (ExprSyntax?)Visit(node.Expression) ?? throw new ArgumentNullException("expression"), VisitToken(node.CloseParenToken), VisitToken(node.OpenBraceToken), VisitList(node.Arms), VisitToken(node.CloseBraceToken));
@@ -1576,6 +1585,14 @@ namespace Aquila.CodeAnalysis
         /// <summary>Creates a new InitializerEx instance.</summary>
         public static InitializerEx InitializerEx(SyntaxKind kind, SeparatedSyntaxList<ExprSyntax> expressions = default)
             => SyntaxFactory.InitializerEx(kind, SyntaxFactory.Token(SyntaxKind.OpenBraceToken), expressions, SyntaxFactory.Token(SyntaxKind.CloseBraceToken));
+
+        /// <summary>Creates a new AllocEx instance.</summary>
+        public static AllocEx AllocEx(TypeEx name, InitializerEx initializer)
+        {
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (initializer == null) throw new ArgumentNullException(nameof(initializer));
+            return (AllocEx)Syntax.InternalSyntax.SyntaxFactory.AllocEx((Syntax.InternalSyntax.TypeEx)name.Green, (Syntax.InternalSyntax.InitializerEx)initializer.Green).CreateRed();
+        }
 
         /// <summary>Creates a new MatchEx instance.</summary>
         public static MatchEx MatchEx(SyntaxToken matchKeyword, SyntaxToken openParenToken, ExprSyntax expression, SyntaxToken closeParenToken, SyntaxToken openBraceToken, SeparatedSyntaxList<MatchArm> arms, SyntaxToken closeBraceToken)

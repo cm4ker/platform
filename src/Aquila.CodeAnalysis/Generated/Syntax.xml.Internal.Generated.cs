@@ -3843,6 +3843,108 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
     }
 
+    internal sealed partial class AllocEx : ExprSyntax
+    {
+        internal readonly TypeEx name;
+        internal readonly InitializerEx initializer;
+
+        internal AllocEx(SyntaxKind kind, TypeEx name, InitializerEx initializer, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 2;
+            this.AdjustFlagsAndWidth(name);
+            this.name = name;
+            this.AdjustFlagsAndWidth(initializer);
+            this.initializer = initializer;
+        }
+
+        internal AllocEx(SyntaxKind kind, TypeEx name, InitializerEx initializer, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 2;
+            this.AdjustFlagsAndWidth(name);
+            this.name = name;
+            this.AdjustFlagsAndWidth(initializer);
+            this.initializer = initializer;
+        }
+
+        internal AllocEx(SyntaxKind kind, TypeEx name, InitializerEx initializer)
+          : base(kind)
+        {
+            this.SlotCount = 2;
+            this.AdjustFlagsAndWidth(name);
+            this.name = name;
+            this.AdjustFlagsAndWidth(initializer);
+            this.initializer = initializer;
+        }
+
+        /// <summary>IdentifierNameSyntax representing the identifier name.</summary>
+        public TypeEx Name => this.name;
+        /// <summary>Initializer for type</summary>
+        public InitializerEx Initializer => this.initializer;
+
+        internal override GreenNode? GetSlot(int index)
+            => index switch
+            {
+                0 => this.name,
+                1 => this.initializer,
+                _ => null,
+            };
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.AllocEx(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitAllocEx(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitAllocEx(this);
+
+        public AllocEx Update(TypeEx name, InitializerEx initializer)
+        {
+            if (name != this.Name || initializer != this.Initializer)
+            {
+                var newNode = SyntaxFactory.AllocEx(name, initializer);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new AllocEx(this.Kind, this.name, this.initializer, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new AllocEx(this.Kind, this.name, this.initializer, GetDiagnostics(), annotations);
+
+        internal AllocEx(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 2;
+            var name = (TypeEx)reader.ReadValue();
+            AdjustFlagsAndWidth(name);
+            this.name = name;
+            var initializer = (InitializerEx)reader.ReadValue();
+            AdjustFlagsAndWidth(initializer);
+            this.initializer = initializer;
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.name);
+            writer.WriteValue(this.initializer);
+        }
+
+        static AllocEx()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(AllocEx), r => new AllocEx(r));
+        }
+    }
+
     /// <summary>Represents a match expression syntax.</summary>
     internal sealed partial class MatchEx : ExprSyntax
     {
@@ -12911,6 +13013,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         public virtual TResult VisitLiteralEx(LiteralEx node) => this.DefaultVisit(node);
         public virtual TResult VisitArrowExClause(ArrowExClause node) => this.DefaultVisit(node);
         public virtual TResult VisitInitializerEx(InitializerEx node) => this.DefaultVisit(node);
+        public virtual TResult VisitAllocEx(AllocEx node) => this.DefaultVisit(node);
         public virtual TResult VisitMatchEx(MatchEx node) => this.DefaultVisit(node);
         public virtual TResult VisitMatchArm(MatchArm node) => this.DefaultVisit(node);
         public virtual TResult VisitInterpolatedStringText(InterpolatedStringTextSyntax node) => this.DefaultVisit(node);
@@ -13013,6 +13116,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         public virtual void VisitLiteralEx(LiteralEx node) => this.DefaultVisit(node);
         public virtual void VisitArrowExClause(ArrowExClause node) => this.DefaultVisit(node);
         public virtual void VisitInitializerEx(InitializerEx node) => this.DefaultVisit(node);
+        public virtual void VisitAllocEx(AllocEx node) => this.DefaultVisit(node);
         public virtual void VisitMatchEx(MatchEx node) => this.DefaultVisit(node);
         public virtual void VisitMatchArm(MatchArm node) => this.DefaultVisit(node);
         public virtual void VisitInterpolatedStringText(InterpolatedStringTextSyntax node) => this.DefaultVisit(node);
@@ -13172,6 +13276,9 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         public override AquilaSyntaxNode VisitInitializerEx(InitializerEx node)
             => node.Update((SyntaxToken)Visit(node.OpenBraceToken), VisitList(node.Expressions), (SyntaxToken)Visit(node.CloseBraceToken));
+
+        public override AquilaSyntaxNode VisitAllocEx(AllocEx node)
+            => node.Update((TypeEx)Visit(node.Name), (InitializerEx)Visit(node.Initializer));
 
         public override AquilaSyntaxNode VisitMatchEx(MatchEx node)
             => node.Update((SyntaxToken)Visit(node.MatchKeyword), (SyntaxToken)Visit(node.OpenParenToken), (ExprSyntax)Visit(node.Expression), (SyntaxToken)Visit(node.CloseParenToken), (SyntaxToken)Visit(node.OpenBraceToken), VisitList(node.Arms), (SyntaxToken)Visit(node.CloseBraceToken));
@@ -14131,6 +14238,26 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             if (cached != null) return (InitializerEx)cached;
 
             var result = new InitializerEx(kind, openBraceToken, expressions.Node, closeBraceToken, this.context);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
+        public AllocEx AllocEx(TypeEx name, InitializerEx initializer)
+        {
+#if DEBUG
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (initializer == null) throw new ArgumentNullException(nameof(initializer));
+#endif
+
+            int hash;
+            var cached = AquilaSyntaxNodeCache.TryGetNode((int)SyntaxKind.AllocExpression, name, initializer, this.context, out hash);
+            if (cached != null) return (AllocEx)cached;
+
+            var result = new AllocEx(SyntaxKind.AllocExpression, name, initializer, this.context);
             if (hash >= 0)
             {
                 SyntaxNodeCache.AddNode(result, hash);
@@ -16363,6 +16490,26 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return result;
         }
 
+        public static AllocEx AllocEx(TypeEx name, InitializerEx initializer)
+        {
+#if DEBUG
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (initializer == null) throw new ArgumentNullException(nameof(initializer));
+#endif
+
+            int hash;
+            var cached = SyntaxNodeCache.TryGetNode((int)SyntaxKind.AllocExpression, name, initializer, out hash);
+            if (cached != null) return (AllocEx)cached;
+
+            var result = new AllocEx(SyntaxKind.AllocExpression, name, initializer);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
         public static MatchEx MatchEx(SyntaxToken matchKeyword, SyntaxToken? openParenToken, ExprSyntax expression, SyntaxToken? closeParenToken, SyntaxToken openBraceToken, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SeparatedSyntaxList<MatchArm> arms, SyntaxToken closeBraceToken)
         {
 #if DEBUG
@@ -17865,6 +18012,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 typeof(LiteralEx),
                 typeof(ArrowExClause),
                 typeof(InitializerEx),
+                typeof(AllocEx),
                 typeof(MatchEx),
                 typeof(MatchArm),
                 typeof(InterpolatedStringTextSyntax),

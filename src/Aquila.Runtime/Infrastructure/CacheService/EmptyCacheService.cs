@@ -18,7 +18,6 @@ namespace Aquila.Core.CacheService
 
         public void Set(int databaseId, int typeId, Guid entityId, object value)
         {
-            
         }
     }
 }

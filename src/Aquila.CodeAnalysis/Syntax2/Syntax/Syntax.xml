@@ -63,7 +63,7 @@
 
         <Field Name="AttributeLists" Type="SyntaxList&lt;AttributeListSyntax&gt;" Override="true"/>
         <Field Name="Modifiers" Type="SyntaxList&lt;SyntaxToken&gt;" Override="true"/>
-        
+
         <Field Name="Type" Type="TypeEx">
             <PropertyComment>
                 <summary>Gets the type of syntax.</summary>
@@ -748,6 +748,21 @@
             <summary>Creates an InitializerExpressionSyntax node.</summary>
         </FactoryComment>
     </Node>
+    <Node Name="AllocEx" Base="ExprSyntax">
+        <Kind Name="AllocExpression"/>
+        <Field Name="Name" Type="TypeEx">
+            <Kind Name="IdentifierName"/>
+            <PropertyComment>
+                <summary>IdentifierNameSyntax representing the identifier name.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="Initializer" Type="InitializerEx">
+            <PropertyComment>
+                <summary>Initializer for type</summary>
+            </PropertyComment>
+        </Field>
+    </Node>
+
 
     <!--region Match -->
     <Node Name="MatchEx" Base="ExprSyntax">

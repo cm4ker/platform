@@ -1,6 +1,6 @@
 public static int Main()
 {
-    i_type some_var = i_type;
+    var some_var = new i_type;
 
 
     return 0;    

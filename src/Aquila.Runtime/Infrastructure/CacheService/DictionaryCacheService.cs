@@ -12,6 +12,7 @@ namespace Aquila.Core.CacheService
             public object cache;
             public DateTime ttl;
         }
+
         private ConcurrentDictionary<string, CacheUnit> _cache;
 
         private Timer _timer;
@@ -19,12 +20,12 @@ namespace Aquila.Core.CacheService
         public DictionaryCacheService()
         {
             _cache = new ConcurrentDictionary<string, CacheUnit>();
-            _timer = new Timer(new TimerCallback(ClearCache), null, 0, 10*60*1000); //раз в 10 минут удаляем все что в кеше завалялось
+            _timer = new Timer(new TimerCallback(ClearCache), null, 0,
+                10 * 60 * 1000); //раз в 10 минут удаляем все что в кеше завалялось
         }
 
         private void ClearCache(object obj)
         {
-            
             var now = DateTime.Now;
             foreach (var check in _cache)
             {
@@ -56,6 +57,7 @@ namespace Aquila.Core.CacheService
                     return null;
                 }
             }
+
             return null;
         }
 
@@ -65,10 +67,10 @@ namespace Aquila.Core.CacheService
             var cacheUnit = new CacheUnit() { cache = value, ttl = DateTime.Now };
             _cache.AddOrUpdate(key, cacheUnit, (key, existing) => cacheUnit);
         }
+
         private string GetKey(int databaseId, int typeId, Guid entityId)
         {
             return $"{databaseId}_{typeId}_{entityId}";
         }
-
     }
 }

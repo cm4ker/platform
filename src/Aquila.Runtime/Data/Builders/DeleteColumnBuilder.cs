@@ -29,9 +29,5 @@ namespace Aquila.QueryBuilder.Builders
             _dropColumn.Table = new Table() { Value = tableName };
             return this;
         }
-
-
-
-
     }
 }

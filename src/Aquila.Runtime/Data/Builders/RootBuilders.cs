@@ -6,8 +6,7 @@ using Aquila.QueryBuilder.Contracts;
 
 namespace Aquila.QueryBuilder.Builders
 {
-
-    public class DDLQuery: IExpression
+    public class DDLQuery : IExpression
     {
         public static DDLQuery New()
         {
@@ -55,7 +54,7 @@ namespace Aquila.QueryBuilder.Builders
             var builder = new DeleteBuilder(_expression);
             return builder;
         }
-        
+
         public CopyBuilder Copy()
         {
             var builder = new CopyBuilder(_expression);
@@ -67,13 +66,11 @@ namespace Aquila.QueryBuilder.Builders
             var builder = new RenameBuilder(_expression);
             return builder;
         }
-
-
     }
 
     public class CreateBuilder
     {
-        private Querys _querys ;
+        private Querys _querys;
 
         public CreateBuilder(Querys querys)
         {
@@ -83,7 +80,6 @@ namespace Aquila.QueryBuilder.Builders
 
         public CreateTableBuilder Table(string tableName)
         {
-
             CreateTable createTable = new CreateTable() { Table = new Table() { Value = tableName } };
             _querys.QueryList.Add(createTable);
             return new CreateTableBuilder(createTable);
@@ -91,12 +87,10 @@ namespace Aquila.QueryBuilder.Builders
 
         public CreateColumnBuilder Column(string columnName)
         {
-
             var add = new AddColumn();
 
             _querys.QueryList.Add(add);
             return new CreateColumnBuilder(add).Column(columnName);
-
         }
 
         public CreateColumnBuilder Column(ColumnDefinition column)
@@ -108,7 +102,7 @@ namespace Aquila.QueryBuilder.Builders
         }
     }
 
-    public class AlterBuilder 
+    public class AlterBuilder
     {
         private Querys _querys;
 
@@ -119,8 +113,6 @@ namespace Aquila.QueryBuilder.Builders
 
         public AlterColumnBuilder Column(string columnName)
         {
-
-
             var alter = new AlterColumn();
 
             _querys.QueryList.Add(alter);
@@ -134,10 +126,9 @@ namespace Aquila.QueryBuilder.Builders
             _querys.QueryList.Add(alter);
             return new AlterColumnBuilder(alter).Column(column);
         }
-
     }
 
-    public class DeleteBuilder 
+    public class DeleteBuilder
     {
         private Querys _querys;
 
@@ -163,10 +154,9 @@ namespace Aquila.QueryBuilder.Builders
             _querys.QueryList.Add(dropColumn);
             return new DeleteColumnBuilder(dropColumn);
         }
-
     }
 
-    public class CopyBuilder 
+    public class CopyBuilder
     {
         private Querys _querys;
 
@@ -191,7 +181,7 @@ namespace Aquila.QueryBuilder.Builders
     }
 
 
-    public class RenameBuilder 
+    public class RenameBuilder
     {
         private Querys _querys;
 
@@ -219,7 +209,5 @@ namespace Aquila.QueryBuilder.Builders
             _querys.QueryList.Add(node);
             return builder;
         }
-
     }
-
 }

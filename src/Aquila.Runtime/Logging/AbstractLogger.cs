@@ -4,13 +4,13 @@ using System.Text;
 
 namespace Aquila.Logging
 {
-    public abstract class AbstractLogger: ILogger
+    public abstract class AbstractLogger : ILogger
     {
         public abstract bool IsTrace { get; }
 
         public abstract bool IsDebug { get; }
 
-        public abstract bool IsInfo  { get; }
+        public abstract bool IsInfo { get; }
 
         public abstract bool IsWarn { get; }
 

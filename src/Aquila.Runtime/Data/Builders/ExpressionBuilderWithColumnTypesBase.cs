@@ -8,7 +8,6 @@ namespace Aquila.QueryBuilder.Builders
 {
     public abstract class ExpressionBuilderWithColumnTypesBase<TNext> : IColumnTypeSyntax<TNext>
     {
-
         protected ExpressionBuilderWithColumnTypesBase()
         {
         }
@@ -67,8 +66,6 @@ namespace Aquila.QueryBuilder.Builders
         }
 
 
-
-
         /// <inheritdoc />
         public TNext AsDecimal()
         {
@@ -79,14 +76,14 @@ namespace Aquila.QueryBuilder.Builders
         /// <inheritdoc />
         public TNext AsDecimal(int size, int precision)
         {
-            SetType(new ColumnTypeDecimal() { Scale = size , Precision = precision});
+            SetType(new ColumnTypeDecimal() { Scale = size, Precision = precision });
             return (TNext)(object)this;
         }
 
         /// <inheritdoc />
         public TNext AsFloat(int size, int precision)
         {
-            SetType(new ColumnTypeFloat() { Scale = size, Precision = precision} );
+            SetType(new ColumnTypeFloat() { Scale = size, Precision = precision });
             return (TNext)(object)this;
         }
 
@@ -128,7 +125,7 @@ namespace Aquila.QueryBuilder.Builders
         /// <inheritdoc />
         public TNext AsString(int size)
         {
-            SetType(new ColumnTypeText() {  Size = size });
+            SetType(new ColumnTypeText() { Size = size });
             return (TNext)(object)this;
         }
 
@@ -155,7 +152,5 @@ namespace Aquila.QueryBuilder.Builders
         {
             throw new NotImplementedException();
         }
-
-
     }
 }

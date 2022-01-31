@@ -33,7 +33,7 @@ namespace Aquila.Core.Settings
         public T Get<T>() where T : class, new()
         {
             if (_cache.ContainsKey(typeof(T)))
-                return (T) _cache[typeof(T)];
+                return (T)_cache[typeof(T)];
 
             var attr = typeof(T).GetCustomAttribute<ConfigFileNameAttribute>();
 

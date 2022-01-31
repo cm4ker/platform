@@ -18,7 +18,7 @@ namespace Aquila.Core.CacheService
     {
         private MemoryCache _cache;
         private int _secondsCount;
-        
+
         public CacheService()
         {
             _cache = new MemoryCache("AppCache");
@@ -42,7 +42,7 @@ namespace Aquila.Core.CacheService
 
         public T Get<T>(int databaseId, int typeId, Guid entityId)
         {
-            return (T) Get(typeof(T), databaseId, typeId, entityId);
+            return (T)Get(typeof(T), databaseId, typeId, entityId);
         }
 
         public object Get(Type type, int databaseId, int typeId, Guid entityId)

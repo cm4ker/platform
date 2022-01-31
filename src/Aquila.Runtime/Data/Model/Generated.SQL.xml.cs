@@ -16,7 +16,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SExpression : SSyntaxNode
     {
-        public SExpression(): base()
+        public SExpression() : base()
         {
         }
 
@@ -36,7 +36,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SDataSource : SSyntaxNode
     {
-        public SDataSource(): base()
+        public SDataSource() : base()
         {
         }
 
@@ -56,7 +56,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class STable : SDataSource
     {
-        public STable( string  name): base()
+        public STable(string name) : base()
         {
             Name = name;
         }
@@ -66,7 +66,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( STable ) obj ;  return  ( ( this . Name == node . Name ) ) ; 
+                return false;
+            var node = (STable)obj;
+            return ((this.Name == node.Name));
         }
 
         public override int GetHashCode()
@@ -85,7 +87,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class STop : SSyntaxNode
     {
-        public STop( int  limit,  int  offset): base()
+        public STop(int limit, int offset) : base()
         {
             Limit = limit;
             Offset = offset;
@@ -98,7 +100,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( STop ) obj ;  return  ( ( this . Limit == node . Limit ) && ( this . Offset == node . Offset ) ) ; 
+                return false;
+            var node = (STop)obj;
+            return ((this.Limit == node.Limit) && (this.Offset == node.Offset));
         }
 
         public override int GetHashCode()
@@ -117,7 +121,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SDataSourceNestedQuery : SDataSource
     {
-        public SDataSourceNestedQuery(SSelect query): base()
+        public SDataSourceNestedQuery(SSelect query) : base()
         {
             Query = query;
         }
@@ -127,7 +131,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SDataSourceNestedQuery ) obj ;  return  ( Compare ( this . Query ,  node . Query ) ) ; 
+                return false;
+            var node = (SDataSourceNestedQuery)obj;
+            return (Compare(this.Query, node.Query));
         }
 
         public override int GetHashCode()
@@ -146,7 +152,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SExpressionNestedQueryNode : SExpression
     {
-        public SExpressionNestedQueryNode(SSelect query): base()
+        public SExpressionNestedQueryNode(SSelect query) : base()
         {
             Query = query;
         }
@@ -156,7 +162,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SExpressionNestedQueryNode ) obj ;  return  ( Compare ( this . Query ,  node . Query ) ) ; 
+                return false;
+            var node = (SExpressionNestedQueryNode)obj;
+            return (Compare(this.Query, node.Query));
         }
 
         public override int GetHashCode()
@@ -175,7 +183,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SField : SExpression
     {
-        public SField( string  name,  string  table): base()
+        public SField(string name, string table) : base()
         {
             Name = name;
             Table = table;
@@ -188,7 +196,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SField ) obj ;  return  ( ( this . Name == node . Name ) && ( this . Table == node . Table ) ) ; 
+                return false;
+            var node = (SField)obj;
+            return ((this.Name == node.Name) && (this.Table == node.Table));
         }
 
         public override int GetHashCode()
@@ -207,7 +217,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SAliasedExpression : SExpression
     {
-        public SAliasedExpression(SExpression expression,  string  name): base()
+        public SAliasedExpression(SExpression expression, string name) : base()
         {
             Expression = expression;
             Name = name;
@@ -220,7 +230,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SAliasedExpression ) obj ;  return  ( Compare ( this . Expression ,  node . Expression ) && ( this . Name == node . Name ) ) ; 
+                return false;
+            var node = (SAliasedExpression)obj;
+            return (Compare(this.Expression, node.Expression) && (this.Name == node.Name));
         }
 
         public override int GetHashCode()
@@ -239,7 +251,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SAliasedDataSource : SDataSource
     {
-        public SAliasedDataSource(SDataSource dataSource,  string  name): base()
+        public SAliasedDataSource(SDataSource dataSource, string name) : base()
         {
             DataSource = dataSource;
             Name = name;
@@ -252,7 +264,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SAliasedDataSource ) obj ;  return  ( Compare ( this . DataSource ,  node . DataSource ) && ( this . Name == node . Name ) ) ; 
+                return false;
+            var node = (SAliasedDataSource)obj;
+            return (Compare(this.DataSource, node.DataSource) && (this.Name == node.Name));
         }
 
         public override int GetHashCode()
@@ -271,7 +285,8 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SSelect : SDataSource
     {
-        public SSelect(List<SExpression> fields, SOrderBy orderBy, STop top, SHaving having, SGroupBy groupBy, SWhere where, SFrom from): base()
+        public SSelect(List<SExpression> fields, SOrderBy orderBy, STop top, SHaving having, SGroupBy groupBy,
+            SWhere where, SFrom from) : base()
         {
             Fields = fields;
             OrderBy = orderBy;
@@ -299,12 +314,20 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SSelect ) obj ;  return  ( SequenceEqual ( this . Fields ,  node . Fields ) && Compare ( this . OrderBy ,  node . OrderBy ) && Compare ( this . Top ,  node . Top ) && Compare ( this . Having ,  node . Having ) && Compare ( this . GroupBy ,  node . GroupBy ) && Compare ( this . Where ,  node . Where ) && Compare ( this . From ,  node . From ) ) ; 
+                return false;
+            var node = (SSelect)obj;
+            return (SequenceEqual(this.Fields, node.Fields) && Compare(this.OrderBy, node.OrderBy) &&
+                    Compare(this.Top, node.Top) && Compare(this.Having, node.Having) &&
+                    Compare(this.GroupBy, node.GroupBy) && Compare(this.Where, node.Where) &&
+                    Compare(this.From, node.From));
         }
 
         public override int GetHashCode()
         {
-            return Xor(Fields, i => i.GetHashCode()) ^ (OrderBy == null ? 0 : OrderBy.GetHashCode()) ^ (Top == null ? 0 : Top.GetHashCode()) ^ (Having == null ? 0 : Having.GetHashCode()) ^ (GroupBy == null ? 0 : GroupBy.GetHashCode()) ^ (Where == null ? 0 : Where.GetHashCode()) ^ (From == null ? 0 : From.GetHashCode());
+            return Xor(Fields, i => i.GetHashCode()) ^ (OrderBy == null ? 0 : OrderBy.GetHashCode()) ^
+                   (Top == null ? 0 : Top.GetHashCode()) ^ (Having == null ? 0 : Having.GetHashCode()) ^
+                   (GroupBy == null ? 0 : GroupBy.GetHashCode()) ^ (Where == null ? 0 : Where.GetHashCode()) ^
+                   (From == null ? 0 : From.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -318,7 +341,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SConstant : SExpression
     {
-        public SConstant( object  value): base()
+        public SConstant(object value) : base()
         {
             Value = value;
         }
@@ -328,7 +351,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SConstant ) obj ;  return  ( ( this . Value . Equals ( node . Value ) ) ) ; 
+                return false;
+            var node = (SConstant)obj;
+            return ((this.Value.Equals(node.Value)));
         }
 
         public override int GetHashCode()
@@ -347,7 +372,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SMarker : SSyntaxNode
     {
-        public SMarker(): base()
+        public SMarker() : base()
         {
         }
 
@@ -367,7 +392,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SScalar : SExpression
     {
-        public SScalar(SDataSourceNestedQuery nestedQuery): base()
+        public SScalar(SDataSourceNestedQuery nestedQuery) : base()
         {
             NestedQuery = nestedQuery;
         }
@@ -377,7 +402,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SScalar ) obj ;  return  ( Compare ( this . NestedQuery ,  node . NestedQuery ) ) ; 
+                return false;
+            var node = (SScalar)obj;
+            return (Compare(this.NestedQuery, node.NestedQuery));
         }
 
         public override int GetHashCode()
@@ -396,7 +423,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SCoalese : SExpression
     {
-        public SCoalese(List<SExpression> expressions): base()
+        public SCoalese(List<SExpression> expressions) : base()
         {
             Expressions = expressions;
         }
@@ -406,7 +433,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SCoalese ) obj ;  return  ( SequenceEqual ( this . Expressions ,  node . Expressions ) ) ; 
+                return false;
+            var node = (SCoalese)obj;
+            return (SequenceEqual(this.Expressions, node.Expressions));
         }
 
         public override int GetHashCode()
@@ -425,7 +454,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SDelete : SSyntaxNode
     {
-        public SDelete(SWhere where, SFrom from): base()
+        public SDelete(SWhere where, SFrom from) : base()
         {
             Where = where;
             From = from;
@@ -438,7 +467,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SDelete ) obj ;  return  ( Compare ( this . Where ,  node . Where ) && Compare ( this . From ,  node . From ) ) ; 
+                return false;
+            var node = (SDelete)obj;
+            return (Compare(this.Where, node.Where) && Compare(this.From, node.From));
         }
 
         public override int GetHashCode()
@@ -457,7 +488,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SOrderBy : SSyntaxNode
     {
-        public SOrderBy(OrderDirection direction, List<SExpression> fields): base()
+        public SOrderBy(OrderDirection direction, List<SExpression> fields) : base()
         {
             Direction = direction;
             Fields = fields;
@@ -470,7 +501,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SOrderBy ) obj ;  return  ( ( this . Direction == node . Direction ) && SequenceEqual ( this . Fields ,  node . Fields ) ) ; 
+                return false;
+            var node = (SOrderBy)obj;
+            return ((this.Direction == node.Direction) && SequenceEqual(this.Fields, node.Fields));
         }
 
         public override int GetHashCode()
@@ -489,7 +522,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SGroupBy : SSyntaxNode
     {
-        public SGroupBy(List<SExpression> fields): base()
+        public SGroupBy(List<SExpression> fields) : base()
         {
             Fields = fields;
         }
@@ -499,7 +532,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SGroupBy ) obj ;  return  ( SequenceEqual ( this . Fields ,  node . Fields ) ) ; 
+                return false;
+            var node = (SGroupBy)obj;
+            return (SequenceEqual(this.Fields, node.Fields));
         }
 
         public override int GetHashCode()
@@ -518,7 +553,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SHaving : SSyntaxNode
     {
-        public SHaving(SCondition condition): base()
+        public SHaving(SCondition condition) : base()
         {
             Condition = condition;
         }
@@ -528,7 +563,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SHaving ) obj ;  return  ( Compare ( this . Condition ,  node . Condition ) ) ; 
+                return false;
+            var node = (SHaving)obj;
+            return (Compare(this.Condition, node.Condition));
         }
 
         public override int GetHashCode()
@@ -547,7 +584,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SCondition : SExpression
     {
-        public SCondition(): base()
+        public SCondition() : base()
         {
         }
 
@@ -567,7 +604,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SGreatThen : SCondition
     {
-        public SGreatThen(SExpression left, SExpression right): base()
+        public SGreatThen(SExpression left, SExpression right) : base()
         {
             Left = left;
             Right = right;
@@ -580,7 +617,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SGreatThen ) obj ;  return  ( Compare ( this . Left ,  node . Left ) && Compare ( this . Right ,  node . Right ) ) ; 
+                return false;
+            var node = (SGreatThen)obj;
+            return (Compare(this.Left, node.Left) && Compare(this.Right, node.Right));
         }
 
         public override int GetHashCode()
@@ -599,7 +638,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SLessThen : SCondition
     {
-        public SLessThen(SExpression left, SExpression right): base()
+        public SLessThen(SExpression left, SExpression right) : base()
         {
             Left = left;
             Right = right;
@@ -612,7 +651,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SLessThen ) obj ;  return  ( Compare ( this . Left ,  node . Left ) && Compare ( this . Right ,  node . Right ) ) ; 
+                return false;
+            var node = (SLessThen)obj;
+            return (Compare(this.Left, node.Left) && Compare(this.Right, node.Right));
         }
 
         public override int GetHashCode()
@@ -631,7 +672,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SGreatThenOrEquals : SCondition
     {
-        public SGreatThenOrEquals(SExpression left, SExpression right): base()
+        public SGreatThenOrEquals(SExpression left, SExpression right) : base()
         {
             Left = left;
             Right = right;
@@ -644,7 +685,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SGreatThenOrEquals ) obj ;  return  ( Compare ( this . Left ,  node . Left ) && Compare ( this . Right ,  node . Right ) ) ; 
+                return false;
+            var node = (SGreatThenOrEquals)obj;
+            return (Compare(this.Left, node.Left) && Compare(this.Right, node.Right));
         }
 
         public override int GetHashCode()
@@ -663,7 +706,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SLessThenOrEquals : SCondition
     {
-        public SLessThenOrEquals(SExpression left, SExpression right): base()
+        public SLessThenOrEquals(SExpression left, SExpression right) : base()
         {
             Left = left;
             Right = right;
@@ -676,7 +719,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SLessThenOrEquals ) obj ;  return  ( Compare ( this . Left ,  node . Left ) && Compare ( this . Right ,  node . Right ) ) ; 
+                return false;
+            var node = (SLessThenOrEquals)obj;
+            return (Compare(this.Left, node.Left) && Compare(this.Right, node.Right));
         }
 
         public override int GetHashCode()
@@ -695,7 +740,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SNotEquals : SCondition
     {
-        public SNotEquals(SExpression left, SExpression right): base()
+        public SNotEquals(SExpression left, SExpression right) : base()
         {
             Left = left;
             Right = right;
@@ -708,7 +753,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SNotEquals ) obj ;  return  ( Compare ( this . Left ,  node . Left ) && Compare ( this . Right ,  node . Right ) ) ; 
+                return false;
+            var node = (SNotEquals)obj;
+            return (Compare(this.Left, node.Left) && Compare(this.Right, node.Right));
         }
 
         public override int GetHashCode()
@@ -727,7 +774,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SEquals : SCondition
     {
-        public SEquals(SExpression right, SExpression left): base()
+        public SEquals(SExpression right, SExpression left) : base()
         {
             Right = right;
             Left = left;
@@ -740,7 +787,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SEquals ) obj ;  return  ( Compare ( this . Right ,  node . Right ) && Compare ( this . Left ,  node . Left ) ) ; 
+                return false;
+            var node = (SEquals)obj;
+            return (Compare(this.Right, node.Right) && Compare(this.Left, node.Left));
         }
 
         public override int GetHashCode()
@@ -759,7 +808,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SAnd : SCondition
     {
-        public SAnd(SExpression right, SExpression left): base()
+        public SAnd(SExpression right, SExpression left) : base()
         {
             Right = right;
             Left = left;
@@ -772,7 +821,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SAnd ) obj ;  return  ( Compare ( this . Right ,  node . Right ) && Compare ( this . Left ,  node . Left ) ) ; 
+                return false;
+            var node = (SAnd)obj;
+            return (Compare(this.Right, node.Right) && Compare(this.Left, node.Left));
         }
 
         public override int GetHashCode()
@@ -791,7 +842,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SOr : SCondition
     {
-        public SOr(SExpression right, SExpression left): base()
+        public SOr(SExpression right, SExpression left) : base()
         {
             Right = right;
             Left = left;
@@ -804,7 +855,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SOr ) obj ;  return  ( Compare ( this . Right ,  node . Right ) && Compare ( this . Left ,  node . Left ) ) ; 
+                return false;
+            var node = (SOr)obj;
+            return (Compare(this.Right, node.Right) && Compare(this.Left, node.Left));
         }
 
         public override int GetHashCode()
@@ -823,7 +876,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SAdd : SExpression
     {
-        public SAdd(List<SExpression> expressions): base()
+        public SAdd(List<SExpression> expressions) : base()
         {
             Expressions = expressions;
         }
@@ -833,7 +886,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SAdd ) obj ;  return  ( SequenceEqual ( this . Expressions ,  node . Expressions ) ) ; 
+                return false;
+            var node = (SAdd)obj;
+            return (SequenceEqual(this.Expressions, node.Expressions));
         }
 
         public override int GetHashCode()
@@ -852,7 +907,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SSub : SExpression
     {
-        public SSub(List<SExpression> expressions): base()
+        public SSub(List<SExpression> expressions) : base()
         {
             Expressions = expressions;
         }
@@ -862,7 +917,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SSub ) obj ;  return  ( SequenceEqual ( this . Expressions ,  node . Expressions ) ) ; 
+                return false;
+            var node = (SSub)obj;
+            return (SequenceEqual(this.Expressions, node.Expressions));
         }
 
         public override int GetHashCode()
@@ -881,7 +938,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SSum : SExpression
     {
-        public SSum(SExpression argument): base()
+        public SSum(SExpression argument) : base()
         {
             Argument = argument;
         }
@@ -891,7 +948,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SSum ) obj ;  return  ( Compare ( this . Argument ,  node . Argument ) ) ; 
+                return false;
+            var node = (SSum)obj;
+            return (Compare(this.Argument, node.Argument));
         }
 
         public override int GetHashCode()
@@ -910,7 +969,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SIsNull : SExpression
     {
-        public SIsNull(SExpression second, SExpression first): base()
+        public SIsNull(SExpression second, SExpression first) : base()
         {
             Second = second;
             First = first;
@@ -923,7 +982,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SIsNull ) obj ;  return  ( Compare ( this . Second ,  node . Second ) && Compare ( this . First ,  node . First ) ) ; 
+                return false;
+            var node = (SIsNull)obj;
+            return (Compare(this.Second, node.Second) && Compare(this.First, node.First));
         }
 
         public override int GetHashCode()
@@ -942,7 +1003,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SCount : SExpression
     {
-        public SCount(SExpression argument): base()
+        public SCount(SExpression argument) : base()
         {
             Argument = argument;
         }
@@ -952,7 +1013,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SCount ) obj ;  return  ( Compare ( this . Argument ,  node . Argument ) ) ; 
+                return false;
+            var node = (SCount)obj;
+            return (Compare(this.Argument, node.Argument));
         }
 
         public override int GetHashCode()
@@ -971,7 +1034,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SAvg : SExpression
     {
-        public SAvg(SExpression argument): base()
+        public SAvg(SExpression argument) : base()
         {
             Argument = argument;
         }
@@ -981,7 +1044,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SAvg ) obj ;  return  ( Compare ( this . Argument ,  node . Argument ) ) ; 
+                return false;
+            var node = (SAvg)obj;
+            return (Compare(this.Argument, node.Argument));
         }
 
         public override int GetHashCode()
@@ -1000,7 +1065,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SExists : SExpression
     {
-        public SExists(SDataSourceNestedQuery argument): base()
+        public SExists(SDataSourceNestedQuery argument) : base()
         {
             Argument = argument;
         }
@@ -1010,7 +1075,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SExists ) obj ;  return  ( Compare ( this . Argument ,  node . Argument ) ) ; 
+                return false;
+            var node = (SExists)obj;
+            return (Compare(this.Argument, node.Argument));
         }
 
         public override int GetHashCode()
@@ -1029,7 +1096,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SParameter : SExpression
     {
-        public SParameter( string  name): base()
+        public SParameter(string name) : base()
         {
             Name = name;
         }
@@ -1039,7 +1106,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SParameter ) obj ;  return  ( ( this . Name == node . Name ) ) ; 
+                return false;
+            var node = (SParameter)obj;
+            return ((this.Name == node.Name));
         }
 
         public override int GetHashCode()
@@ -1058,7 +1127,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SJoin : SSyntaxNode
     {
-        public SJoin(SCondition condition, SDataSource dataSource, JoinType joinType): base()
+        public SJoin(SCondition condition, SDataSource dataSource, JoinType joinType) : base()
         {
             Condition = condition;
             DataSource = dataSource;
@@ -1074,12 +1143,16 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SJoin ) obj ;  return  ( Compare ( this . Condition ,  node . Condition ) && Compare ( this . DataSource ,  node . DataSource ) && ( this . JoinType == node . JoinType ) ) ; 
+                return false;
+            var node = (SJoin)obj;
+            return (Compare(this.Condition, node.Condition) && Compare(this.DataSource, node.DataSource) &&
+                    (this.JoinType == node.JoinType));
         }
 
         public override int GetHashCode()
         {
-            return (Condition == null ? 0 : Condition.GetHashCode()) ^ (DataSource == null ? 0 : DataSource.GetHashCode()) ^ (JoinType.GetHashCode());
+            return (Condition == null ? 0 : Condition.GetHashCode()) ^
+                   (DataSource == null ? 0 : DataSource.GetHashCode()) ^ (JoinType.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -1093,7 +1166,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SWhere : SSyntaxNode
     {
-        public SWhere(SCondition condition): base()
+        public SWhere(SCondition condition) : base()
         {
             Condition = condition;
         }
@@ -1103,7 +1176,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SWhere ) obj ;  return  ( Compare ( this . Condition ,  node . Condition ) ) ; 
+                return false;
+            var node = (SWhere)obj;
+            return (Compare(this.Condition, node.Condition));
         }
 
         public override int GetHashCode()
@@ -1122,7 +1197,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SFrom : SSyntaxNode
     {
-        public SFrom(List<SJoin> join, SDataSource dataSource): base()
+        public SFrom(List<SJoin> join, SDataSource dataSource) : base()
         {
             Join = join;
             DataSource = dataSource;
@@ -1135,7 +1210,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SFrom ) obj ;  return  ( SequenceEqual ( this . Join ,  node . Join ) && Compare ( this . DataSource ,  node . DataSource ) ) ; 
+                return false;
+            var node = (SFrom)obj;
+            return (SequenceEqual(this.Join, node.Join) && Compare(this.DataSource, node.DataSource));
         }
 
         public override int GetHashCode()
@@ -1154,7 +1231,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SInsert : SSyntaxNode
     {
-        public SInsert(List<SField> fields, STable into, SDataSource dataSource): base()
+        public SInsert(List<SField> fields, STable into, SDataSource dataSource) : base()
         {
             Fields = fields;
             Into = into;
@@ -1170,12 +1247,16 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SInsert ) obj ;  return  ( SequenceEqual ( this . Fields ,  node . Fields ) && Compare ( this . Into ,  node . Into ) && Compare ( this . DataSource ,  node . DataSource ) ) ; 
+                return false;
+            var node = (SInsert)obj;
+            return (SequenceEqual(this.Fields, node.Fields) && Compare(this.Into, node.Into) &&
+                    Compare(this.DataSource, node.DataSource));
         }
 
         public override int GetHashCode()
         {
-            return Xor(Fields, i => i.GetHashCode()) ^ (Into == null ? 0 : Into.GetHashCode()) ^ (DataSource == null ? 0 : DataSource.GetHashCode());
+            return Xor(Fields, i => i.GetHashCode()) ^ (Into == null ? 0 : Into.GetHashCode()) ^
+                   (DataSource == null ? 0 : DataSource.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -1189,7 +1270,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SValuesSource : SDataSource
     {
-        public SValuesSource(List<SExpression> values): base()
+        public SValuesSource(List<SExpression> values) : base()
         {
             Values = values;
         }
@@ -1199,7 +1280,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SValuesSource ) obj ;  return  ( SequenceEqual ( this . Values ,  node . Values ) ) ; 
+                return false;
+            var node = (SValuesSource)obj;
+            return (SequenceEqual(this.Values, node.Values));
         }
 
         public override int GetHashCode()
@@ -1218,7 +1301,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SAssign : SSyntaxNode
     {
-        public SAssign(SExpression expression, SField variable): base()
+        public SAssign(SExpression expression, SField variable) : base()
         {
             Expression = expression;
             Variable = variable;
@@ -1231,12 +1314,15 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SAssign ) obj ;  return  ( Compare ( this . Expression ,  node . Expression ) && Compare ( this . Variable ,  node . Variable ) ) ; 
+                return false;
+            var node = (SAssign)obj;
+            return (Compare(this.Expression, node.Expression) && Compare(this.Variable, node.Variable));
         }
 
         public override int GetHashCode()
         {
-            return (Expression == null ? 0 : Expression.GetHashCode()) ^ (Variable == null ? 0 : Variable.GetHashCode());
+            return (Expression == null ? 0 : Expression.GetHashCode()) ^
+                   (Variable == null ? 0 : Variable.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -1250,7 +1336,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SSet : SSyntaxNode
     {
-        public SSet(List<SAssign> items): base()
+        public SSet(List<SAssign> items) : base()
         {
             Items = items;
         }
@@ -1260,7 +1346,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SSet ) obj ;  return  ( SequenceEqual ( this . Items ,  node . Items ) ) ; 
+                return false;
+            var node = (SSet)obj;
+            return (SequenceEqual(this.Items, node.Items));
         }
 
         public override int GetHashCode()
@@ -1279,7 +1367,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SUpdate : SSyntaxNode
     {
-        public SUpdate(SDataSource update, SSet set, SWhere where, SFrom from): base()
+        public SUpdate(SDataSource update, SSet set, SWhere where, SFrom from) : base()
         {
             Update = update;
             Set = set;
@@ -1298,12 +1386,16 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SUpdate ) obj ;  return  ( Compare ( this . Update ,  node . Update ) && Compare ( this . Set ,  node . Set ) && Compare ( this . Where ,  node . Where ) && Compare ( this . From ,  node . From ) ) ; 
+                return false;
+            var node = (SUpdate)obj;
+            return (Compare(this.Update, node.Update) && Compare(this.Set, node.Set) &&
+                    Compare(this.Where, node.Where) && Compare(this.From, node.From));
         }
 
         public override int GetHashCode()
         {
-            return (Update == null ? 0 : Update.GetHashCode()) ^ (Set == null ? 0 : Set.GetHashCode()) ^ (Where == null ? 0 : Where.GetHashCode()) ^ (From == null ? 0 : From.GetHashCode());
+            return (Update == null ? 0 : Update.GetHashCode()) ^ (Set == null ? 0 : Set.GetHashCode()) ^
+                   (Where == null ? 0 : Where.GetHashCode()) ^ (From == null ? 0 : From.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -1317,7 +1409,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SWhen : SSyntaxNode
     {
-        public SWhen(SCondition condition, SExpression then): base()
+        public SWhen(SCondition condition, SExpression then) : base()
         {
             Condition = condition;
             Then = then;
@@ -1330,7 +1422,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SWhen ) obj ;  return  ( Compare ( this . Condition ,  node . Condition ) && Compare ( this . Then ,  node . Then ) ) ; 
+                return false;
+            var node = (SWhen)obj;
+            return (Compare(this.Condition, node.Condition) && Compare(this.Then, node.Then));
         }
 
         public override int GetHashCode()
@@ -1349,7 +1443,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SCase : SExpression
     {
-        public SCase(SExpression @else, List<SWhen> whens): base()
+        public SCase(SExpression @else, List<SWhen> whens) : base()
         {
             Else = @else;
             Whens = whens;
@@ -1362,7 +1456,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SCase ) obj ;  return  ( Compare ( this . Else ,  node . Else ) && SequenceEqual ( this . Whens ,  node . Whens ) ) ; 
+                return false;
+            var node = (SCase)obj;
+            return (Compare(this.Else, node.Else) && SequenceEqual(this.Whens, node.Whens));
         }
 
         public override int GetHashCode()
@@ -1381,7 +1477,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SCast : SExpression
     {
-        public SCast(ColumnType type, SExpression expression): base()
+        public SCast(ColumnType type, SExpression expression) : base()
         {
             Type = type;
             Expression = expression;
@@ -1394,7 +1490,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SCast ) obj ;  return  ( Compare ( this . Type ,  node . Type ) && Compare ( this . Expression ,  node . Expression ) ) ; 
+                return false;
+            var node = (SCast)obj;
+            return (Compare(this.Type, node.Type) && Compare(this.Expression, node.Expression));
         }
 
         public override int GetHashCode()
@@ -1413,7 +1511,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SNull : SExpression
     {
-        public SNull(): base()
+        public SNull() : base()
         {
         }
 
@@ -1433,7 +1531,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class Querys : SSyntaxNode
     {
-        public Querys(): base()
+        public Querys() : base()
         {
             QueryList = new List<SSyntaxNode>();
         }
@@ -1443,7 +1541,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( Querys ) obj ;  return  ( SequenceEqual ( this . QueryList ,  node . QueryList ) ) ; 
+                return false;
+            var node = (Querys)obj;
+            return (SequenceEqual(this.QueryList, node.QueryList));
         }
 
         public override int GetHashCode()
@@ -1462,7 +1562,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class StringValue : SSyntaxNode
     {
-        public StringValue(): base()
+        public StringValue() : base()
         {
         }
 
@@ -1471,7 +1571,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( StringValue ) obj ;  return  ( ( this . Value == node . Value ) ) ; 
+                return false;
+            var node = (StringValue)obj;
+            return ((this.Value == node.Value));
         }
 
         public override int GetHashCode()
@@ -1490,7 +1592,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class Scheme : StringValue
     {
-        public Scheme(): base()
+        public Scheme() : base()
         {
         }
 
@@ -1510,7 +1612,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class Database : StringValue
     {
-        public Database(): base()
+        public Database() : base()
         {
         }
 
@@ -1530,7 +1632,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class Table : StringValue
     {
-        public Table(): base()
+        public Table() : base()
         {
         }
 
@@ -1550,7 +1652,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class Column : StringValue
     {
-        public Column(): base()
+        public Column() : base()
         {
         }
 
@@ -1570,7 +1672,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class Constraint : StringValue
     {
-        public Constraint(): base()
+        public Constraint() : base()
         {
         }
 
@@ -1590,7 +1692,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SchemeOperation : SSyntaxNode
     {
-        public SchemeOperation(): base()
+        public SchemeOperation() : base()
         {
         }
 
@@ -1599,7 +1701,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SchemeOperation ) obj ;  return  ( Compare ( this . Scheme ,  node . Scheme ) ) ; 
+                return false;
+            var node = (SchemeOperation)obj;
+            return (Compare(this.Scheme, node.Scheme));
         }
 
         public override int GetHashCode()
@@ -1618,7 +1722,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class DatabaseOperation : SchemeOperation
     {
-        public DatabaseOperation(): base()
+        public DatabaseOperation() : base()
         {
         }
 
@@ -1627,7 +1731,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( DatabaseOperation ) obj ;  return  ( Compare ( this . Database ,  node . Database ) ) ; 
+                return false;
+            var node = (DatabaseOperation)obj;
+            return (Compare(this.Database, node.Database));
         }
 
         public override int GetHashCode()
@@ -1646,7 +1752,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class TableOperation : DatabaseOperation
     {
-        public TableOperation(): base()
+        public TableOperation() : base()
         {
         }
 
@@ -1655,7 +1761,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( TableOperation ) obj ;  return  ( Compare ( this . Table ,  node . Table ) ) ; 
+                return false;
+            var node = (TableOperation)obj;
+            return (Compare(this.Table, node.Table));
         }
 
         public override int GetHashCode()
@@ -1674,7 +1782,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ColumnType : SSyntaxNode
     {
-        public ColumnType(): base()
+        public ColumnType() : base()
         {
         }
 
@@ -1694,7 +1802,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SizableType : ColumnType
     {
-        public SizableType(): base()
+        public SizableType() : base()
         {
         }
 
@@ -1703,7 +1811,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SizableType ) obj ;  return  ( ( this . Size == node . Size ) ) ; 
+                return false;
+            var node = (SizableType)obj;
+            return ((this.Size == node.Size));
         }
 
         public override int GetHashCode()
@@ -1722,7 +1832,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class PrecisionType : ColumnType
     {
-        public PrecisionType(): base()
+        public PrecisionType() : base()
         {
         }
 
@@ -1733,7 +1843,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( PrecisionType ) obj ;  return  ( ( this . Scale == node . Scale ) && ( this . Precision == node . Precision ) ) ; 
+                return false;
+            var node = (PrecisionType)obj;
+            return ((this.Scale == node.Scale) && (this.Precision == node.Precision));
         }
 
         public override int GetHashCode()
@@ -1752,7 +1864,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ColumnTypeChar : ColumnType
     {
-        public ColumnTypeChar(): base()
+        public ColumnTypeChar() : base()
         {
         }
 
@@ -1772,7 +1884,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ColumnTypeVarChar : SizableType
     {
-        public ColumnTypeVarChar(): base()
+        public ColumnTypeVarChar() : base()
         {
         }
 
@@ -1792,7 +1904,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ColumnTypeBlob : SizableType
     {
-        public ColumnTypeBlob(): base()
+        public ColumnTypeBlob() : base()
         {
         }
 
@@ -1812,7 +1924,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ColumnTypeBinary : SizableType
     {
-        public ColumnTypeBinary(): base()
+        public ColumnTypeBinary() : base()
         {
         }
 
@@ -1832,7 +1944,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ColumnTypeVarBinary : SizableType
     {
-        public ColumnTypeVarBinary(): base()
+        public ColumnTypeVarBinary() : base()
         {
         }
 
@@ -1852,7 +1964,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ColumnTypeGuid : ColumnType
     {
-        public ColumnTypeGuid(): base()
+        public ColumnTypeGuid() : base()
         {
         }
 
@@ -1872,7 +1984,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ColumnTypeText : SizableType
     {
-        public ColumnTypeText(): base()
+        public ColumnTypeText() : base()
         {
         }
 
@@ -1892,7 +2004,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ColumnTypeInt : ColumnType
     {
-        public ColumnTypeInt(): base()
+        public ColumnTypeInt() : base()
         {
         }
 
@@ -1912,7 +2024,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ColumnTypeSmallInt : ColumnType
     {
-        public ColumnTypeSmallInt(): base()
+        public ColumnTypeSmallInt() : base()
         {
         }
 
@@ -1932,7 +2044,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ColumnTypeBigInt : ColumnType
     {
-        public ColumnTypeBigInt(): base()
+        public ColumnTypeBigInt() : base()
         {
         }
 
@@ -1952,7 +2064,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ColumnTypeBool : ColumnType
     {
-        public ColumnTypeBool(): base()
+        public ColumnTypeBool() : base()
         {
         }
 
@@ -1972,7 +2084,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ColumnTypeFloat : PrecisionType
     {
-        public ColumnTypeFloat(): base()
+        public ColumnTypeFloat() : base()
         {
         }
 
@@ -1992,7 +2104,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ColumnTypeDecimal : PrecisionType
     {
-        public ColumnTypeDecimal(): base()
+        public ColumnTypeDecimal() : base()
         {
         }
 
@@ -2012,7 +2124,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ColumnTypeNumeric : PrecisionType
     {
-        public ColumnTypeNumeric(): base()
+        public ColumnTypeNumeric() : base()
         {
         }
 
@@ -2032,7 +2144,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ColumnTypeDataTime : ColumnType
     {
-        public ColumnTypeDataTime(): base()
+        public ColumnTypeDataTime() : base()
         {
         }
 
@@ -2052,7 +2164,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ColumnDefinition : SSyntaxNode
     {
-        public ColumnDefinition(): base()
+        public ColumnDefinition() : base()
         {
         }
 
@@ -2069,12 +2181,18 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( ColumnDefinition ) obj ;  return  ( Compare ( this . Column ,  node . Column ) && Compare ( this . Type ,  node . Type ) && ( this . IsNotNull == node . IsNotNull ) && ( this . DefaultValue . Equals ( node . DefaultValue ) ) && ( this . DefaultMethod == node . DefaultMethod ) ) ; 
+                return false;
+            var node = (ColumnDefinition)obj;
+            return (Compare(this.Column, node.Column) && Compare(this.Type, node.Type) &&
+                    (this.IsNotNull == node.IsNotNull) && (this.DefaultValue.Equals(node.DefaultValue)) &&
+                    (this.DefaultMethod == node.DefaultMethod));
         }
 
         public override int GetHashCode()
         {
-            return (Column == null ? 0 : Column.GetHashCode()) ^ (Type == null ? 0 : Type.GetHashCode()) ^ (IsNotNull.GetHashCode()) ^ (DefaultValue == null ? 0 : DefaultValue.GetHashCode()) ^ (DefaultMethod.GetHashCode());
+            return (Column == null ? 0 : Column.GetHashCode()) ^ (Type == null ? 0 : Type.GetHashCode()) ^
+                   (IsNotNull.GetHashCode()) ^ (DefaultValue == null ? 0 : DefaultValue.GetHashCode()) ^
+                   (DefaultMethod.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -2088,7 +2206,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ConstraintDefinition : SSyntaxNode
     {
-        public ConstraintDefinition(): base()
+        public ConstraintDefinition() : base()
         {
         }
 
@@ -2097,7 +2215,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( ConstraintDefinition ) obj ;  return  ( ( this . Name == node . Name ) ) ; 
+                return false;
+            var node = (ConstraintDefinition)obj;
+            return ((this.Name == node.Name));
         }
 
         public override int GetHashCode()
@@ -2116,7 +2236,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ConstraintDefinitionUnique : ConstraintDefinition
     {
-        public ConstraintDefinitionUnique(): base()
+        public ConstraintDefinitionUnique() : base()
         {
             Columns = new List<Column>();
         }
@@ -2126,7 +2246,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( ConstraintDefinitionUnique ) obj ;  return  ( SequenceEqual ( this . Columns ,  node . Columns ) ) ; 
+                return false;
+            var node = (ConstraintDefinitionUnique)obj;
+            return (SequenceEqual(this.Columns, node.Columns));
         }
 
         public override int GetHashCode()
@@ -2145,7 +2267,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ConstraintDefinitionPrimaryKey : ConstraintDefinition
     {
-        public ConstraintDefinitionPrimaryKey(): base()
+        public ConstraintDefinitionPrimaryKey() : base()
         {
             Columns = new List<Column>();
         }
@@ -2155,7 +2277,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( ConstraintDefinitionPrimaryKey ) obj ;  return  ( SequenceEqual ( this . Columns ,  node . Columns ) ) ; 
+                return false;
+            var node = (ConstraintDefinitionPrimaryKey)obj;
+            return (SequenceEqual(this.Columns, node.Columns));
         }
 
         public override int GetHashCode()
@@ -2174,7 +2298,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class ConstraintDefinitionForeignKey : ConstraintDefinition
     {
-        public ConstraintDefinitionForeignKey(): base()
+        public ConstraintDefinitionForeignKey() : base()
         {
             Columns = new List<Column>();
             ForeignColumns = new List<Column>();
@@ -2189,12 +2313,17 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( ConstraintDefinitionForeignKey ) obj ;  return  ( SequenceEqual ( this . Columns ,  node . Columns ) && SequenceEqual ( this . ForeignColumns ,  node . ForeignColumns ) && Compare ( this . ForeignTable ,  node . ForeignTable ) ) ; 
+                return false;
+            var node = (ConstraintDefinitionForeignKey)obj;
+            return (SequenceEqual(this.Columns, node.Columns) &&
+                    SequenceEqual(this.ForeignColumns, node.ForeignColumns) &&
+                    Compare(this.ForeignTable, node.ForeignTable));
         }
 
         public override int GetHashCode()
         {
-            return Xor(Columns, i => i.GetHashCode()) ^ Xor(ForeignColumns, i => i.GetHashCode()) ^ (ForeignTable == null ? 0 : ForeignTable.GetHashCode());
+            return Xor(Columns, i => i.GetHashCode()) ^ Xor(ForeignColumns, i => i.GetHashCode()) ^
+                   (ForeignTable == null ? 0 : ForeignTable.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -2208,7 +2337,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class CreateTable : TableOperation
     {
-        public CreateTable(): base()
+        public CreateTable() : base()
         {
             Columns = new List<ColumnDefinition>();
             Constraints = new List<ConstraintDefinition>();
@@ -2223,12 +2352,16 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( CreateTable ) obj ;  return  ( SequenceEqual ( this . Columns ,  node . Columns ) && SequenceEqual ( this . Constraints ,  node . Constraints ) && ( this . CheckExists == node . CheckExists ) ) ; 
+                return false;
+            var node = (CreateTable)obj;
+            return (SequenceEqual(this.Columns, node.Columns) && SequenceEqual(this.Constraints, node.Constraints) &&
+                    (this.CheckExists == node.CheckExists));
         }
 
         public override int GetHashCode()
         {
-            return Xor(Columns, i => i.GetHashCode()) ^ Xor(Constraints, i => i.GetHashCode()) ^ (CheckExists.GetHashCode());
+            return Xor(Columns, i => i.GetHashCode()) ^ Xor(Constraints, i => i.GetHashCode()) ^
+                   (CheckExists.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
@@ -2242,7 +2375,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class DropTable : TableOperation
     {
-        public DropTable(): base()
+        public DropTable() : base()
         {
         }
 
@@ -2251,7 +2384,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( DropTable ) obj ;  return  ( ( this . IfExists == node . IfExists ) ) ; 
+                return false;
+            var node = (DropTable)obj;
+            return ((this.IfExists == node.IfExists));
         }
 
         public override int GetHashCode()
@@ -2270,7 +2405,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class DropColumn : TableOperation
     {
-        public DropColumn(): base()
+        public DropColumn() : base()
         {
         }
 
@@ -2279,7 +2414,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( DropColumn ) obj ;  return  ( Compare ( this . Column ,  node . Column ) ) ; 
+                return false;
+            var node = (DropColumn)obj;
+            return (Compare(this.Column, node.Column));
         }
 
         public override int GetHashCode()
@@ -2298,7 +2435,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class CopyTable : TableOperation
     {
-        public CopyTable(): base()
+        public CopyTable() : base()
         {
         }
 
@@ -2307,7 +2444,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( CopyTable ) obj ;  return  ( Compare ( this . DstTable ,  node . DstTable ) ) ; 
+                return false;
+            var node = (CopyTable)obj;
+            return (Compare(this.DstTable, node.DstTable));
         }
 
         public override int GetHashCode()
@@ -2326,7 +2465,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class AlterAddColumn : TableOperation
     {
-        public AlterAddColumn(): base()
+        public AlterAddColumn() : base()
         {
         }
 
@@ -2335,7 +2474,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( AlterAddColumn ) obj ;  return  ( Compare ( this . Column ,  node . Column ) ) ; 
+                return false;
+            var node = (AlterAddColumn)obj;
+            return (Compare(this.Column, node.Column));
         }
 
         public override int GetHashCode()
@@ -2354,7 +2495,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class AddColumn : AlterAddColumn
     {
-        public AddColumn(): base()
+        public AddColumn() : base()
         {
         }
 
@@ -2374,7 +2515,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class AlterColumn : AlterAddColumn
     {
-        public AlterColumn(): base()
+        public AlterColumn() : base()
         {
         }
 
@@ -2394,7 +2535,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class AddConstraint : TableOperation
     {
-        public AddConstraint(): base()
+        public AddConstraint() : base()
         {
         }
 
@@ -2403,7 +2544,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( AddConstraint ) obj ;  return  ( Compare ( this . Constraint ,  node . Constraint ) ) ; 
+                return false;
+            var node = (AddConstraint)obj;
+            return (Compare(this.Constraint, node.Constraint));
         }
 
         public override int GetHashCode()
@@ -2422,7 +2565,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class DropConstraint : TableOperation
     {
-        public DropConstraint(): base()
+        public DropConstraint() : base()
         {
         }
 
@@ -2431,7 +2574,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( DropConstraint ) obj ;  return  ( Compare ( this . Constraint ,  node . Constraint ) ) ; 
+                return false;
+            var node = (DropConstraint)obj;
+            return (Compare(this.Constraint, node.Constraint));
         }
 
         public override int GetHashCode()
@@ -2450,7 +2595,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class RenameTableNode : SSyntaxNode
     {
-        public RenameTableNode(): base()
+        public RenameTableNode() : base()
         {
         }
 
@@ -2461,7 +2606,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( RenameTableNode ) obj ;  return  ( Compare ( this . From ,  node . From ) && Compare ( this . To ,  node . To ) ) ; 
+                return false;
+            var node = (RenameTableNode)obj;
+            return (Compare(this.From, node.From) && Compare(this.To, node.To));
         }
 
         public override int GetHashCode()
@@ -2480,7 +2627,7 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class RenameColumnNode : TableOperation
     {
-        public RenameColumnNode(): base()
+        public RenameColumnNode() : base()
         {
         }
 
@@ -2491,7 +2638,9 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( RenameColumnNode ) obj ;  return  ( Compare ( this . From ,  node . From ) && Compare ( this . To ,  node . To ) ) ; 
+                return false;
+            var node = (RenameColumnNode)obj;
+            return (Compare(this.From, node.From) && Compare(this.To, node.To));
         }
 
         public override int GetHashCode()

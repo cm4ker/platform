@@ -1,6 +1,4 @@
-
 using System;
-
 
 
 namespace Aquila.QueryBuilder.Contracts
@@ -11,9 +9,6 @@ namespace Aquila.QueryBuilder.Contracts
     /// <typeparam name="TNext">The interface to return after a type was specified</typeparam>
     public interface IColumnTypeSyntax<TNext>
     {
-
-
-
         /// <summary>
         /// Defines the column type as VarBinary
         /// </summary>
@@ -56,8 +51,6 @@ namespace Aquila.QueryBuilder.Contracts
         /// </summary>
         /// <returns>The next step</returns>
         TNext AsDateTime();
-
-
 
 
         /// <summary>
@@ -118,7 +111,6 @@ namespace Aquila.QueryBuilder.Contracts
         /// <param name="size">The maximum length in code points</param>
         /// <returns>The next step</returns>
         TNext AsString(int size);
-
 
 
         /// <summary>

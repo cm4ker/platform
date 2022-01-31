@@ -6,9 +6,10 @@ using Aquila.QueryBuilder.Model;
 
 namespace Aquila.QueryBuilder.Builders
 {
-    public abstract class ExpressionBuilderWithColumnOptionsAndTypesBase<TNext> : ExpressionBuilderWithColumnTypesBase<TNext>, IColumnOptionSyntax<TNext>
+    public abstract class
+        ExpressionBuilderWithColumnOptionsAndTypesBase<TNext> : ExpressionBuilderWithColumnTypesBase<TNext>,
+            IColumnOptionSyntax<TNext>
     {
-
         public override abstract void SetType(ColumnType columnType);
         public abstract void SetConstraintDefinition(ConstraintDefinition constraint);
 
@@ -16,7 +17,6 @@ namespace Aquila.QueryBuilder.Builders
 
         public TNext ForeignKey(string primaryTableName, string primaryColumnName)
         {
-
             return ForeignKey(null, null, primaryTableName, primaryColumnName);
         }
 
@@ -25,7 +25,8 @@ namespace Aquila.QueryBuilder.Builders
             return ForeignKey(foreignKeyName, null, primaryTableName, primaryColumnName);
         }
 
-        public TNext ForeignKey(string foreignKeyName, string primaryTableSchema, string primaryTableName, string primaryColumnName)
+        public TNext ForeignKey(string foreignKeyName, string primaryTableSchema, string primaryTableName,
+            string primaryColumnName)
         {
             var constraint = new ConstraintDefinitionForeignKey()
             {
@@ -87,7 +88,6 @@ namespace Aquila.QueryBuilder.Builders
             return (TNext)(object)this;
         }
 
-        
 
         public TNext Unique()
         {

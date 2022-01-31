@@ -61,7 +61,4 @@ namespace Aquila.Core.Contracts.Network
 
         Task<object> InvokeProxy(ISession session, object instanceObject, string methodName, object[] args);
     }
-
-
-
 }

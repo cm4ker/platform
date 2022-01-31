@@ -20,6 +20,7 @@ namespace Aquila.QueryBuilder.Model
                     cnt.Add(s, 1);
                 }
             }
+
             foreach (T s in list2)
             {
                 if (cnt.ContainsKey(s))
@@ -31,13 +32,14 @@ namespace Aquila.QueryBuilder.Model
                     return false;
                 }
             }
+
             return cnt.Values.All(c => c == 0);
         }
 
-        public bool Compare(SSyntaxNode node1, SSyntaxNode node2) 
+        public bool Compare(SSyntaxNode node1, SSyntaxNode node2)
         {
-            if (node1 == null && node2 == null) return true; 
-            if (node1 == null || node2 == null) return false; 
+            if (node1 == null && node2 == null) return true;
+            if (node1 == null || node2 == null) return false;
             return node1.Equals(node2);
         }
 
@@ -48,8 +50,6 @@ namespace Aquila.QueryBuilder.Model
             foreach (var item in list)
             {
                 result ^= func(item);
-
-
             }
 
             return result;

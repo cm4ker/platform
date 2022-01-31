@@ -9,6 +9,7 @@ namespace Aquila.QueryBuilder.Builders
     public class DeleteTableBuilder
     {
         private DropTable _dropTable;
+
         public DeleteTableBuilder(string tableName)
         {
             _dropTable = new DropTable() { Table = new Table() { Value = tableName } };
@@ -25,9 +26,5 @@ namespace Aquila.QueryBuilder.Builders
             _dropTable.IfExists = true;
             return this;
         }
-
-
-
-
     }
 }

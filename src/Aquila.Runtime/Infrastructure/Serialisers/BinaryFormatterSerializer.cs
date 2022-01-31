@@ -6,9 +6,8 @@ using System.Text;
 
 namespace Aquila.Core.Serialisers
 {
-    public class BinaryFormatterSerializer: ISerializer
+    public class BinaryFormatterSerializer : ISerializer
     {
-
         public T FromBytes<T>(byte[] input)
         {
             return (T)FromBytes(input);

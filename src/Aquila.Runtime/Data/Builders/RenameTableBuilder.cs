@@ -25,7 +25,5 @@ namespace Aquila.QueryBuilder.Builders
             _node.To = new Table() { Value = newName };
             return this;
         }
-
-
     }
 }

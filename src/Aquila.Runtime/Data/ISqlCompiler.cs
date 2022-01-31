@@ -3,5 +3,4 @@ using Aquila.QueryBuilder.Model;
 
 namespace Aquila.Data
 {
-
 }

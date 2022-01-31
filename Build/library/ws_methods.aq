@@ -2,5 +2,10 @@
 public static int get_books_count()
 {
     var a = "asdf";
+    var b = my_type{};
     return 0;
+}
+
+type A
+{
 }

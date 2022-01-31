@@ -13,6 +13,5 @@ namespace Aquila.Core
         public abstract object this[string value] { get; }
 
         public abstract bool read();
-
     }
 }

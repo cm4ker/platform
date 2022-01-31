@@ -19,7 +19,7 @@ namespace Aquila.LanguageServer
 
         private static async Task MainAsync(string[] args)
         {
-            Debugger.Launch();
+            //Debugger.Launch();
             
             await EnvironmentUtils.InitializeAsync();
 

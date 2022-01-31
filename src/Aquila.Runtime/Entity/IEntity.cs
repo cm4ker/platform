@@ -2,6 +2,6 @@
 {
     public interface IEntity
     {
-        object GetDto();        
+        object GetDto();
     }
 }

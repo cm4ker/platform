@@ -8,6 +8,5 @@ namespace Aquila.QueryBuilder.Model
     {
         ASC = 0,
         DESC = 1
-        
     }
 }

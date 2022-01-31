@@ -2,7 +2,7 @@
 
 namespace Aquila.Core.Contracts.Network
 {
-    public interface IRemovable: IDisposable
+    public interface IRemovable : IDisposable
     {
         void SetRemover(IDisposable remover);
     }

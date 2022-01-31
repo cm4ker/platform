@@ -10,6 +10,5 @@ namespace Aquila.Core
 {
     public class QueryCompilerHelper
     {
-      
     }
 }

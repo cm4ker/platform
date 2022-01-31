@@ -683,7 +683,7 @@ namespace Aquila.CodeAnalysis
         MatchKeyword = 8499,
 
         DatetimeKeyword = 8500,
-        
+
 
         /// <summary>Represents the end of a file.</summary>
         EndOfFileToken = 8506, //NB: this is assumed to be the last textless token
@@ -1090,6 +1090,8 @@ namespace Aquila.CodeAnalysis
         NamedTypeEx,
         MatchExpression,
         MatchArm,
-        UnionType
+        UnionType,
+
+        AllocExpression
     }
 }

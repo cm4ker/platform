@@ -23,7 +23,7 @@ namespace Aquila.Core
         public static bool Ceq(int lx, double dy) => (double)lx == dy;
         public static bool Ceq(int lx, bool by) => (lx != 0) == by;
         public static bool Ceq(int lx, string sy) => Equals(sy, lx);
-        
+
         public static bool Ceq(double dx, string sy) => Equals(sy, dx);
         public static bool Ceq(string sx, long ly) => Equals(sx, ly);
         public static bool Ceq(string sx, double dy) => Equals(sx, dy);

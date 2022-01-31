@@ -1,5 +1,3 @@
-
-
 using Aquila.QueryBuilder.Model;
 
 namespace Aquila.QueryBuilder.Contracts
@@ -9,7 +7,7 @@ namespace Aquila.QueryBuilder.Contracts
     /// </summary>
     /// <typeparam name="TNext">The interface of the next step</typeparam>
     /// <typeparam name="TNextFk">The interface of the next step after a foreign key definition</typeparam>
-    public interface IColumnOptionSyntax<TNext> 
+    public interface IColumnOptionSyntax<TNext>
 
     {
         /// <summary>
@@ -115,6 +113,7 @@ namespace Aquila.QueryBuilder.Contracts
         /// <param name="primaryTableName">The primary table name</param>
         /// <param name="primaryColumnName">The primary tables column name</param>
         /// <returns>The next step</returns>
-        TNext ForeignKey(string foreignKeyName, string primaryTableSchema, string primaryTableName, string primaryColumnName);
+        TNext ForeignKey(string foreignKeyName, string primaryTableSchema, string primaryTableName,
+            string primaryColumnName);
     }
 }

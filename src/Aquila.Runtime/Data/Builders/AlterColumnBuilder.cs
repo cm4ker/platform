@@ -9,21 +9,18 @@ namespace Aquila.QueryBuilder.Builders
     public class AlterColumnBuilder : ExpressionBuilderWithColumnOptionsAndTypesBase<AlterColumnBuilder>
     {
         private AlterAddColumn _alterColumn;
-        
+
         public AlterColumnBuilder(AlterAddColumn alterColumn)
         {
-
             _alterColumn = alterColumn;
         }
 
 
         public AlterColumnBuilder Column(ColumnDefinition column)
         {
-
             _alterColumn.Column = column;
 
             return this;
-
         }
 
         public AlterColumnBuilder Column(string columnName)
@@ -35,7 +32,6 @@ namespace Aquila.QueryBuilder.Builders
 
             return this;
         }
-
 
 
         public override ColumnDefinition GetCurrentColumn()

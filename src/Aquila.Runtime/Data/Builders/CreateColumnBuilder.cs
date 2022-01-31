@@ -8,21 +8,18 @@ namespace Aquila.QueryBuilder.Builders
 {
     public class CreateColumnBuilder : ExpressionBuilderWithColumnOptionsAndTypesBase<CreateTableBuilder>
     {
-
         private AlterAddColumn _alterColumn;
 
         public CreateColumnBuilder(AlterAddColumn alterColumn)
         {
-
             _alterColumn = alterColumn;
         }
+
         public CreateColumnBuilder Column(ColumnDefinition column)
         {
-
             _alterColumn.Column = column;
 
             return this;
-
         }
 
         public CreateColumnBuilder Column(string columnName)
@@ -49,13 +46,12 @@ namespace Aquila.QueryBuilder.Builders
         {
             _alterColumn.Column.Type = columnType;
         }
-    
+
 
         public CreateColumnBuilder OnTable(string tableName)
         {
             _alterColumn.Table = new Table() { Value = tableName };
             return this;
         }
-
     }
 }

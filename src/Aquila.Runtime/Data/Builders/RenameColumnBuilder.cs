@@ -31,7 +31,5 @@ namespace Aquila.QueryBuilder.Builders
             _node.To = new Column() { Value = newName };
             return this;
         }
-
-
     }
 }

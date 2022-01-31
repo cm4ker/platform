@@ -8,7 +8,6 @@ namespace Aquila.QueryBuilder.Builders
 {
     public class CopyTableBuilder
     {
-
         private CopyTable _copyTable;
 
         public CopyTableBuilder(CopyTable copyTable)
@@ -30,8 +29,5 @@ namespace Aquila.QueryBuilder.Builders
 
             return this;
         }
-
-
-
     }
 }

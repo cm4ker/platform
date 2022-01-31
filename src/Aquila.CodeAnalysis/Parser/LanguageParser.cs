@@ -6122,6 +6122,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 case SyntaxKind.NullLiteralExpression:
                 case SyntaxKind.NumericLiteralExpression:
                 case SyntaxKind.ObjectCreationExpression:
+                case SyntaxKind.AllocExpression:
                 case SyntaxKind.ParenthesizedExpression:
                 case SyntaxKind.PointerMemberAccessExpression:
                 case SyntaxKind.PostDecrementExpression:
@@ -6837,6 +6838,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                         expr = CheckFeatureAvailability(expr, MessageID.IDS_FeatureNullableReferenceTypes);
                         break;
 
+                    case SyntaxKind.OpenBraceToken when expr is TypeEx typeEx:
+                        expr = _syntaxFactory.AllocEx(typeEx, this.ParseObjectOrCollectionInitializer());
+                        break;
+
+
                     default:
                         return expr;
                 }
@@ -7352,6 +7358,120 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             }
         }
 
+
+        private InitializerEx ParseObjectOrCollectionInitializer()
+        {
+            var openBrace = this.EatToken(SyntaxKind.OpenBraceToken);
+
+            var initializers = _pool.AllocateSeparated<ExprSyntax>();
+            try
+            {
+                bool isObjectInitializer;
+                this.ParseObjectOrCollectionInitializerMembers(ref openBrace, initializers, out isObjectInitializer);
+                Debug.Assert(initializers.Count > 0 || isObjectInitializer);
+
+                openBrace = CheckFeatureAvailability(openBrace,
+                    isObjectInitializer
+                        ? MessageID.IDS_FeatureObjectInitializer
+                        : MessageID.IDS_FeatureCollectionInitializer);
+
+                var closeBrace = this.EatToken(SyntaxKind.CloseBraceToken);
+                return _syntaxFactory.InitializerEx(
+                    isObjectInitializer
+                        ? SyntaxKind.ObjectInitializerExpression
+                        : SyntaxKind.CollectionInitializerExpression,
+                    openBrace,
+                    initializers,
+                    closeBrace);
+            }
+            finally
+            {
+                _pool.Free(initializers);
+            }
+        }
+
+        private void ParseObjectOrCollectionInitializerMembers(ref SyntaxToken startToken,
+            SeparatedSyntaxListBuilder<ExprSyntax> list, out bool isObjectInitializer)
+        {
+            // Empty initializer list must be parsed as an object initializer.
+            isObjectInitializer = true;
+
+            if (this.CurrentToken.Kind != SyntaxKind.CloseBraceToken)
+            {
+                tryAgain:
+                if (this.IsInitializerMember() || this.CurrentToken.Kind == SyntaxKind.CommaToken)
+                {
+                    // We have at least one initializer expression.
+                    // If at least one initializer expression is a named assignment, this is an object initializer.
+                    // Otherwise, this is a collection initializer.
+                    isObjectInitializer = false;
+
+                    // first argument
+                    list.Add(this.ParseObjectOrCollectionInitializerMember(ref isObjectInitializer));
+
+                    // additional arguments
+                    int lastTokenPosition = -1;
+                    while (IsMakingProgress(ref lastTokenPosition))
+                    {
+                        if (this.CurrentToken.Kind == SyntaxKind.CloseBraceToken)
+                        {
+                            break;
+                        }
+                        else if (this.CurrentToken.Kind == SyntaxKind.CommaToken || this.IsInitializerMember())
+                        {
+                            list.AddSeparator(this.EatToken(SyntaxKind.CommaToken));
+
+                            // check for exit case after legal trailing comma
+                            if (this.CurrentToken.Kind == SyntaxKind.CloseBraceToken)
+                            {
+                                break;
+                            }
+
+                            list.Add(this.ParseObjectOrCollectionInitializerMember(ref isObjectInitializer));
+                            continue;
+                        }
+                        else if (this.SkipBadInitializerListTokens(ref startToken, list, SyntaxKind.CommaToken) ==
+                                 PostSkipAction.Abort)
+                        {
+                            break;
+                        }
+                    }
+                }
+                else if (this.SkipBadInitializerListTokens(ref startToken, list, SyntaxKind.IdentifierToken) ==
+                         PostSkipAction.Continue)
+                {
+                    goto tryAgain;
+                }
+            }
+
+            // We may have invalid initializer elements. These will be reported during binding.
+        }
+
+
+        private ExprSyntax ParseObjectOrCollectionInitializerMember(ref bool isObjectInitializer)
+        {
+            if (this.IsComplexElementInitializer())
+            {
+                return this.ParseComplexElementInitializer();
+            }
+            else if (IsDictionaryInitializer())
+            {
+                isObjectInitializer = true;
+                var initializer = this.ParseDictionaryInitializer();
+                initializer = CheckFeatureAvailability(initializer, MessageID.IDS_FeatureDictionaryInitializer);
+                return initializer;
+            }
+            else if (this.IsNamedAssignment())
+            {
+                isObjectInitializer = true;
+                return this.ParseObjectInitializerNamedAssignment();
+            }
+            else
+            {
+                return this.ParseExpressionCore();
+            }
+        }
+
         private PostSkipAction SkipBadInitializerListTokens<T>(ref SyntaxToken startToken,
             SeparatedSyntaxListBuilder<T> list, SyntaxKind expected)
             where T : AquilaSyntaxNode
@@ -7360,6 +7480,109 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 p => p.CurrentToken.Kind != SyntaxKind.CommaToken && !p.IsPossibleExpression(),
                 p => p.CurrentToken.Kind == SyntaxKind.CloseBraceToken || p.IsTerminator(),
                 expected);
+        }
+
+
+        private ExprSyntax ParseObjectInitializerNamedAssignment()
+        {
+            var identifier = this.ParseIdentifierName();
+            var equal = this.EatToken(SyntaxKind.EqualsToken);
+            ExprSyntax expression;
+            if (this.CurrentToken.Kind == SyntaxKind.OpenBraceToken)
+            {
+                expression = this.ParseObjectOrCollectionInitializer();
+            }
+            else
+            {
+                expression = this.ParseExpressionCore();
+            }
+
+            return _syntaxFactory.AssignEx(SyntaxKind.SimpleAssignmentExpression, identifier, equal, expression);
+        }
+
+        private ExprSyntax ParseDictionaryInitializer()
+        {
+            throw new NotImplementedException();
+            // var arguments = this.ParseBracketedArgumentList();
+            // var equal = this.EatToken(SyntaxKind.EqualsToken);
+            // var expression = this.CurrentToken.Kind == SyntaxKind.OpenBraceToken
+            //     ? this.ParseObjectOrCollectionInitializer()
+            //     : this.ParseExpressionCore();
+            //
+            // var elementAccess = _syntaxFactory.ImplicitElementAccess(arguments);
+            // return _syntaxFactory.AssignEx(
+            //     SyntaxKind.SimpleAssignmentExpression, elementAccess, equal, expression);
+        }
+
+        private InitializerEx ParseComplexElementInitializer()
+        {
+            var openBrace = this.EatToken(SyntaxKind.OpenBraceToken);
+            var initializers = _pool.AllocateSeparated<ExprSyntax>();
+            try
+            {
+                DiagnosticInfo closeBraceError;
+                this.ParseExpressionsForComplexElementInitializer(ref openBrace, initializers, out closeBraceError);
+                var closeBrace = this.EatToken(SyntaxKind.CloseBraceToken);
+                if (closeBraceError != null)
+                {
+                    closeBrace = WithAdditionalDiagnostics(closeBrace, closeBraceError);
+                }
+
+                return _syntaxFactory.InitializerEx(SyntaxKind.ComplexElementInitializerExpression, openBrace,
+                    initializers, closeBrace);
+            }
+            finally
+            {
+                _pool.Free(initializers);
+            }
+        }
+
+        private void ParseExpressionsForComplexElementInitializer(ref SyntaxToken openBrace,
+            SeparatedSyntaxListBuilder<ExprSyntax> list, out DiagnosticInfo closeBraceError)
+        {
+            closeBraceError = null;
+
+            if (this.CurrentToken.Kind != SyntaxKind.CloseBraceToken)
+            {
+                tryAgain:
+                if (this.IsPossibleExpression() || this.CurrentToken.Kind == SyntaxKind.CommaToken)
+                {
+                    // first argument
+                    list.Add(this.ParseExpressionCore());
+
+                    // additional arguments
+                    int lastTokenPosition = -1;
+                    while (IsMakingProgress(ref lastTokenPosition))
+                    {
+                        if (this.CurrentToken.Kind == SyntaxKind.CloseBraceToken)
+                        {
+                            break;
+                        }
+                        else if (this.CurrentToken.Kind == SyntaxKind.CommaToken || this.IsPossibleExpression())
+                        {
+                            list.AddSeparator(this.EatToken(SyntaxKind.CommaToken));
+                            if (this.CurrentToken.Kind == SyntaxKind.CloseBraceToken)
+                            {
+                                closeBraceError = MakeError(this.CurrentToken, ErrorCode.ERR_ExpressionExpected);
+                                break;
+                            }
+
+                            list.Add(this.ParseExpressionCore());
+                            continue;
+                        }
+                        else if (this.SkipBadInitializerListTokens(ref openBrace, list, SyntaxKind.CommaToken) ==
+                                 PostSkipAction.Abort)
+                        {
+                            break;
+                        }
+                    }
+                }
+                else if (this.SkipBadInitializerListTokens(ref openBrace, list, SyntaxKind.IdentifierToken) ==
+                         PostSkipAction.Continue)
+                {
+                    goto tryAgain;
+                }
+            }
         }
 
         private bool IsImplicitlyTypedArray()
