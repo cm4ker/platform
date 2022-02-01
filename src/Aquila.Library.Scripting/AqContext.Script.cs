@@ -141,8 +141,8 @@ namespace Aquila.Library.Scripting
             // collect dependency scripts from referenced assemblies
             var dependencies = new HashSet<Script>();
             foreach (var refname in
-                assembly
-                    .GetReferencedAssemblies()) // TODO: only assemblies really used within the {assembly} -> optimizes caching
+                     assembly
+                         .GetReferencedAssemblies()) // TODO: only assemblies really used within the {assembly} -> optimizes caching
             {
                 var refass = builder.TryGetSubmissionAssembly(refname);
                 if (refass != null)
@@ -265,7 +265,9 @@ namespace Aquila.Library.Scripting
                 if (options.EmitDebugInformation)
                 {
                     compilation = compilation.WithAquilaOptions(compilation.Options
-                        .WithOptimizationLevel(OptimizationLevel.Debug).WithDebugPlusMode(true));
+                        .WithOptimizationLevel(OptimizationLevel.Debug)
+                        .WithDebugPlusMode(true)
+                        .WithConcurrentBuild(false));
 
                     if (options.IsSubmission)
                     {

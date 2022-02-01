@@ -73,7 +73,6 @@
         </Arguments>
     </Syntax>
 
-
     <Syntax Name="CompoundAssignEx" Base="AssignEx" OperationKind="CompoundAssignment">
         <Arguments>
             <Single Name="Target" Type="BoundReferenceEx" IsUpdatable="true" OnlyArgument="true"
@@ -214,7 +213,7 @@
     <Syntax Name="NewEx" Base="CallEx">
         <Arguments>
             <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true" OnlyArgument="true" PassBase="true"/>
-            <Single Name="Name" Type="BoundMethodName" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Name" Type="BoundMethodName" OnlyArgument="true" PassBase="true" PassBaseConst="null"/>
             <Single Name="TypeRef" Type="ITypeSymbol"/>
             <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;" OnlyArgument="true" PassBase="true"/>
             <Single Name="TypeArguments" Type="ImmutableArray&lt;ITypeSymbol&gt;" OnlyArgument="true"
@@ -232,6 +231,32 @@
     <Syntax Name="ThrowEx" Base="Expression" OperationKind="Throw">
         <Arguments>
             <Single Name="Thrown" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="AllocEx" Base="Expression" OperationKind="None">
+        <Arguments>
+            <Single Name="TypeRef" Type="ITypeSymbol"/>
+            <Single Name="Initializer" Type="List&lt;BoundAllocExAssign&gt;" IsUpdatable="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="AllocExAssign" Base="Expression" OperationKind="None">
+        <Arguments>
+            <Single Name="ReceiverSymbol" Type="ISymbol"/>
+            <Single Name="Expression" Type="BoundExpression"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true"
+                    IsInternal="true" PassBaseConst="expression.Type"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="GroupedEx" Base="Expression" OperationKind="None">
+        <Arguments>
+            <Single Name="Expressions" Type="List&lt;BoundExpression&gt;" IsUpdatable="true"/>
             <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
                     IsInternal="true"/>
         </Arguments>
@@ -267,12 +292,10 @@
 
     <Syntax Name="FieldRef" Base="ReferenceEx" OperationKind="FieldReference">
         <Arguments>
-            <Single Name="Instance" Type="BoundExpression" IsUpdatable="false" OnlyPrivate="true"/>
-            <Single Name="ContainingType" Type="ITypeSymbol" IsUpdatable="false"/>
-            <Single Name="FieldName" Type="BoundVariableName" IsUpdatable="false"/>
-            <Single Name="fieldType" Type="FieldType" IsUpdatable="false"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
-                    IsInternal="true"/>
+            <Single Name="Field" Type="IFieldSymbol"/>
+            <Single Name="Instance" Type="BoundExpression"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true"
+                    IsInternal="true" PassBaseConst="field.Type"/>
         </Arguments>
     </Syntax>
 

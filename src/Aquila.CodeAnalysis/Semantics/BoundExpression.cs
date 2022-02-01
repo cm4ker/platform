@@ -1529,13 +1529,13 @@ namespace Aquila.CodeAnalysis.Semantics
     /// <remarks>
     /// Inheriting from <c>BoundVariableRef</c> is just a temporary measure. Do NOT take dependencies on anything but <c>IReferenceExpression</c>.
     /// </remarks>
-    public partial class BoundTemporalVariableRef : BoundVariableRef
+    public partial class BoundTemporalVariableRef
     {
         private string _name;
 
         partial void OnCreateImpl(BoundVariableName name, ITypeSymbol typeSymbol)
         {
-            _name = name.NameValue.Value;
+            //_name = name.NameValue.Value;
         }
     }
 
@@ -1597,37 +1597,6 @@ namespace Aquila.CodeAnalysis.Semantics
         public bool IsStaticField => _type == FieldType.StaticField;
         public bool IsClassConstant => _type == FieldType.ClassConstant;
 
-        /// <summary>
-        /// In case of a non static field, gets its instance expression.
-        /// </summary>
-        public BoundExpression Instance
-        {
-            get => IsInstanceField ? _instance : null;
-            set
-            {
-                if (IsInstanceField)
-                    _instance = value;
-                else
-                    throw new InvalidOperationException();
-            }
-        }
-
-        partial void OnCreateImpl(BoundExpression instance, ITypeSymbol containingType, BoundVariableName fieldName,
-            FieldType fieldType, ITypeSymbol resultType)
-        {
-            Debug.Assert((instance == null) != (containingType == null));
-            Debug.Assert((fieldType == FieldType.InstanceField) == (instance != null));
-        }
-
-        public static BoundFieldRef CreateInstanceField(BoundExpression instance, BoundVariableName name) =>
-            new BoundFieldRef(instance, null, name, FieldType.InstanceField, null);
-
-        public static BoundFieldRef CreateStaticField(ITypeSymbol type, BoundVariableName name) =>
-            new BoundFieldRef(null, type, name, FieldType.StaticField, null);
-
-        public static BoundFieldRef CreateClassConst(ITypeSymbol type, BoundVariableName name) =>
-            new BoundFieldRef(null, type, name, FieldType.ClassConstant, null);
-
         partial void AcceptImpl(OperationVisitor visitor)
         {
             visitor.VisitFieldReference(this);
@@ -1639,11 +1608,11 @@ namespace Aquila.CodeAnalysis.Semantics
             result = visitor.VisitFieldReference(this, argument);
         }
 
-        public BoundFieldRef Update(BoundExpression instance, ITypeSymbol containingType, BoundVariableName fieldName)
+        public BoundFieldRef Update(BoundExpression instance)
         {
-            if (_instance == instance && _containingType == containingType && _fieldName == fieldName)
+            if (_instance == instance)
                 return this;
-            return new BoundFieldRef(instance, containingType, fieldName, _type, ResultType);
+            return new BoundFieldRef(_field, instance);
         }
     }
 
@@ -2116,6 +2085,21 @@ namespace Aquila.CodeAnalysis.Semantics
     }
 
     public partial class BoundMatchArm
+    {
+    }
+
+    public partial class BoundAllocEx
+    {
+    }
+
+    public partial class BoundAllocExAssign
+    {
+    }
+
+    /// <summary>
+    /// Grouped chain of expressions into one expression and return last expression as result
+    /// </summary>
+    public partial class BoundGroupedEx
     {
     }
 }

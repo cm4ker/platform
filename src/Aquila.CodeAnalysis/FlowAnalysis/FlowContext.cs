@@ -60,28 +60,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         readonly SourceMethodSymbol _method;
 
-        // /// <summary>
-        // /// Gets reference to containing file symbol.
-        // /// Cannot be <c>null</c>.
-        // /// </summary>
-        // internal SourceFileSymbol ContainingFile
-        // {
-        //     get
-        //     {
-        //         if (Method != null)
-        //         {
-        //             return Method.ContainingFile;
-        //         }
-        //
-        //         if (_typeCtx.SelfType != null)
-        //         {
-        //             //return ((SourceTypeSymbol) _typeCtx.SelfType).ContainingFile;
-        //         }
-        //
-        //         throw new InvalidOperationException();
-        //     }
-        // }
-
         /// <summary>
         /// Map of variables name and their index.
         /// </summary>

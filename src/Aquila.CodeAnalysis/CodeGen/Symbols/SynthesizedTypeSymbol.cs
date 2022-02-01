@@ -8,13 +8,13 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
     {
         public void Init(PEModuleBuilder module, DiagnosticBag diagnostics)
         {
-            //emit only SynthesizedMethods SourceMethods iterate in other cycle 
-            var methods = GetMembers().OfType<SynthesizedMethodSymbol>();
-
-            foreach (var method in methods)
-            {
-                module.SetMethodBody(method, method.CreateMethodBody(module, diagnostics));
-            }
+            // //emit only SynthesizedMethods SourceMethods iterate in other cycle 
+            // var methods = GetMembers().OfType<SynthesizedMethodSymbol>();
+            //
+            // foreach (var method in methods)
+            // {
+            //     module.SetMethodBody(method, method.CreateMethodBody(module, diagnostics));
+            // }
         }
     }
 }

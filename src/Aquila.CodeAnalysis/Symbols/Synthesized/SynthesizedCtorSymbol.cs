@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Reflection.Metadata;
+using Aquila.CodeAnalysis.CodeGen;
 using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis.Symbols.Synthesized

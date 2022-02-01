@@ -263,12 +263,10 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             // Insert the blocks with the highest priority to the batch while having at most one block
             // from each method, delaying the rest
             int n = 0;
-            while (
-                n < todoBlocks.Length &&
-                _queue.TryDequeue(
-                    out T block)) // TODO: TryDequeue() with a predicate so we won't have to maintain {delayedBlocks}
+            while (n < todoBlocks.Length && _queue.TryDequeue(out T block))
+                //TODO: TryDequeue() with a predicate so we won't have to maintain {delayedBlocks}
             {
-                var typeCtx = block.FlowState.FlowContext.TypeRefContext;
+                var typeCtx = block.FlowState?.FlowContext?.TypeRefContext;
 
                 if (todoContexts.Add(typeCtx))
                 {

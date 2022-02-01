@@ -75,6 +75,25 @@ namespace Aquila.CodeAnalysis
             }
         }
 
+        void WalkSynthesizedMethods(Action<SynthesizedMethodSymbol> action, bool allowParallel = false)
+        {
+            var ps = _compilation.PlatformSymbolCollection.SynthesizedTypes.SelectMany(x =>
+                x.GetMembers().OfType<SynthesizedMethodSymbol>());
+            var ss = _compilation.SourceSymbolCollection.GetTypes().SelectMany(x => x.GetMembers()
+                .OfType<SynthesizedMethodSymbol>());
+
+            var methods = ps.Union(ss);
+
+            if (ConcurrentBuild && allowParallel)
+            {
+                Parallel.ForEach(methods, action);
+            }
+            else
+            {
+                methods.ForEach(action);
+            }
+        }
+
         void WalkSynthesizedTypes(Action<SynthesizedTypeSymbol> action, bool allowParallel = false)
         {
             var types = _compilation.PlatformSymbolCollection.SynthesizedTypes;
@@ -184,7 +203,7 @@ namespace Aquila.CodeAnalysis
             // _worklist.AddAnalysis:
 
             // TypeAnalysis + ResolveSymbols
-            // LowerBody(block)
+            //LowerBody(block)
 
             // analyse blocks
             _worklist.DoAll(concurrent: ConcurrentBuild);
@@ -388,8 +407,8 @@ namespace Aquila.CodeAnalysis
         internal void EmitSynthesized()
         {
             WalkMethods(f => f.SynthesizeStubs(_moduleBuilder, _diagnostics));
-            WalkSynthesizedTypes(t => t.Init(_moduleBuilder, _diagnostics));
-//            _moduleBuilder.RealizeStaticCtors();
+            WalkSynthesizedMethods(m =>
+                _moduleBuilder.SetMethodBody(m, m.CreateMethodBody(_moduleBuilder, _diagnostics)));
         }
 
         /// <summary>
@@ -508,31 +527,30 @@ namespace Aquila.CodeAnalysis
             {
                 using (compilation.StartMetric("analysis"))
                 {
-                    // 2. Analyze Operations
-                    //   a. type analysis (converge type - mask), resolve symbols
-                    //   b. lower semantics, update bound tree, repeat
+                    // Analyze Operations
                     compiler.AnalyzeMethods();
                 }
 
                 using (compilation.StartMetric("bind types"))
                 {
-                    // 3. Resolve operators and types
+                    // Resolve operators and types
                     compiler.BindTypes();
+                }
+
+
+                using (compilation.StartMetric("lowering"))
+                {
+                    // Lowering methods
+                    compiler.LoweringMethods();
                 }
 
                 using (compilation.StartMetric(nameof(ForwardLateStaticBindings)))
                 {
-                    // 4. forward the late static type if needed
+                    // Forward the late static type if needed
                     compiler.ForwardLateStaticBindings();
                 }
 
-                using (compilation.StartMetric("lowering"))
-                {
-                    //5. Lowering methods
-                    compiler.LoweringMethods();
-                }
-
-                // 6. Transform Semantic Trees for Runtime Optimization
+                // Transform Semantic Trees for Runtime Optimization
             } while (
                 transformation++ < compiler.MaxTransformCount // limit number of lowering cycles
                 && !cancellationToken.IsCancellationRequested // user canceled ?
@@ -543,7 +561,7 @@ namespace Aquila.CodeAnalysis
 
             using (compilation.StartMetric("diagnostic"))
             {
-                // 6. Collect diagnostics
+                // Collect diagnostics
                 compiler.DiagnoseMethods();
                 compiler.DiagnoseTypes();
                 //compiler.DiagnoseFiles();

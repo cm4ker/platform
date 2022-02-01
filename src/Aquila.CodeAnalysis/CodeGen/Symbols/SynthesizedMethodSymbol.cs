@@ -8,7 +8,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 {
     internal partial class SynthesizedMethodSymbol
     {
-        public Func<PEModuleBuilder, DiagnosticBag, Action<ILBuilder>> MethodBuilder { get; private set; }
+        public Func<PEModuleBuilder, DiagnosticBag, Action<ILBuilder>> MethodBuilder { get; protected set; }
 
         public SynthesizedMethodSymbol SetMethodBuilder(Func<PEModuleBuilder, DiagnosticBag, Action<ILBuilder>> value)
         {

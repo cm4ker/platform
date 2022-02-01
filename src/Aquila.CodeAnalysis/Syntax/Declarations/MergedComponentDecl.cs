@@ -46,7 +46,8 @@ namespace Aquila.Syntax.Declarations
                     list.Add(extendDecl);
                 }
                 else
-                    merged.Add($"{Identifier.GetUnqualifiedName().Identifier.Text}.{extendDecl.Name.GetUnqualifiedName().Identifier.Text}",
+                    merged.Add(
+                        $"{Identifier.GetUnqualifiedName().Identifier.Text}.{extendDecl.Name.GetUnqualifiedName().Identifier.Text}",
                         new List<ExtendDecl> { extendDecl });
             }
 

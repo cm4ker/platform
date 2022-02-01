@@ -68,6 +68,7 @@ namespace Aquila.CodeAnalysis.Semantics
             return _stack.Peek();
         }
 
+
         /*
 Component
     - ComponentItem
@@ -296,6 +297,8 @@ Binder
     abstract class Binder
     {
         private readonly Binder _next;
+        
+
 
         public Binder(Binder next)
         {
@@ -323,6 +326,8 @@ Binder
         public virtual SourceMethodSymbol Method { get; }
         public virtual NamespaceOrTypeSymbol Container { get; }
         public LocalsTable Locals => Method.LocalsTable;
+
+        
 
         #region Bind statements
 
@@ -472,11 +477,122 @@ Binder
 
             if (expr is ThrowEx throwEx)
                 return new BoundThrowEx(BindExpression(throwEx.Expression, BoundAccess.Read), null);
-
+            if (expr is AllocEx allocEx)
+                return BindAllocEx(allocEx).WithAccess(access);
             //
             Diagnostics.Add(GetLocation(expr), ErrorCode.ERR_NotYetImplemented,
                 $"Expression of type '{expr.GetType().Name}'");
             return new BoundLiteral(null, null);
+        }
+
+        private BoundExpression BindAllocEx(AllocEx ex)
+        {
+            var type = (NamedTypeSymbol)BindType(ex.Name);
+            var inits = new List<BoundAllocExAssign>();
+                        
+            if (ex.Initializer.Expressions.Any())
+                switch (ex.Initializer.Kind())
+                {
+                    case SyntaxKind.ObjectInitializerExpression:
+                        foreach (var iex in ex.Initializer.Expressions)
+                        {
+                            var ae = iex as AssignEx;
+
+                            var left = (ae.Left as IdentifierEx);
+                            var right = BindExpression(ae.Right);
+
+                            var mems = type.GetMembers(left.Identifier.Text)
+                                .Where(x => !x.IsStatic && ((x.Kind & SymbolKind.Property) > 0
+                                                            || (x.Kind & SymbolKind.Field) > 0))
+                                .ToImmutableArray();
+                            if (mems.Length > 1)
+                            {
+                                //ambiguity
+                            }
+                            else if (mems.Length == 1)
+                            {
+                                var item = mems[0];
+
+                                inits.Add(new BoundAllocExAssign(item, right));
+                            }
+                        }
+
+                        break;
+
+                    default:
+                        throw new NotImplementedException();
+                }
+
+            return new BoundAllocEx(type, inits, type);
+
+            // //we need parameterless constructor 
+            // var ctor = type.InstanceConstructors.FirstOrDefault(x => x.ParameterCount == 0);
+            //
+            // if (ctor == null)
+            //     throw new Exception("Parameterless constructor not found");
+            //
+            // var boundNewEx = new BoundNewEx(ctor, type, ImmutableArray<BoundArgument>.Empty,
+            //     ImmutableArray<ITypeSymbol>.Empty, type);
+            //
+            // if (!ex.Initializer.Expressions.Any())
+            // {
+            //     //we just create new type
+            //     return boundNewEx;
+            // }
+            //
+            // var instance = new BoundTemporalVariableRef(new BoundVariableName(NextTmpVariableName(), type), type);
+            // var tmpVar = Locals.BindTemporalVariable(instance.Name.NameValue, type);
+            //
+            // var firstAssign = new BoundAssignEx(instance, boundNewEx.WithAccess(BoundAccess.Read));
+            //
+            // var kind = ex.Initializer.Kind();
+            //
+            // switch (kind)
+            // {
+            //     case SyntaxKind.ObjectInitializerExpression:
+            //         var list = new List<BoundAssignEx>();
+            //         list.Add(firstAssign);
+            //
+            //         foreach (var iex in ex.Initializer.Expressions)
+            //         {
+            //             var ae = iex as AssignEx;
+            //
+            //             var left = (ae.Left as IdentifierEx);
+            //             var right = BindExpression(ae.Right);
+            //
+            //             var mems = type.GetMembers(left.Identifier.Text)
+            //                 .Where(x => !x.IsStatic && (x.Kind & (SymbolKind.Field | SymbolKind.Property)) > 0)
+            //                 .ToImmutableArray();
+            //             if (mems.Length > 1)
+            //             {
+            //                 //ambiguity
+            //             }
+            //             else if (mems.Length == 1)
+            //             {
+            //                 var item = mems[0];
+            //
+            //                 BoundReferenceEx target = item.Kind switch
+            //                 {
+            //                     SymbolKind.Field => new BoundFieldRef((IFieldSymbol)item, instance),
+            //                     SymbolKind.Property => new BoundPropertyRef((IPropertySymbol)item, instance),
+            //                     _ => throw new NotImplementedException("this symbol kind is not implemented")
+            //                 };
+            //
+            //                 list.Add(new BoundAssignEx(target.WithAccess(BoundAccess.Write),
+            //                     right.WithAccess(BoundAccess.Read)));
+            //             }
+            //         }
+            //
+            //         return new BoundMultiAssignEx(instance, list);
+            //
+            //         break;
+            //     case SyntaxKind.CollectionInitializerExpression:
+            //     case SyntaxKind.ArrayInitializerExpression:
+            //         throw new NotImplementedException();
+            //         break;
+            // }
+            //
+            // return null;
         }
 
         private BoundExpression BindMatchEx(MatchEx me)
@@ -1089,6 +1205,8 @@ Binder
                     {
                         return new BoundPropertyRef(ps, boundLeft);
                     }
+                    else if (member is FieldSymbol fs)
+                        return new BoundFieldRef(fs, boundLeft);
                 }
             }
 

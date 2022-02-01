@@ -351,6 +351,8 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             return x.Update(expression, updatedArms, lastArm.ResultType);
         }
+        
+        
 
         public override object VisitUnaryEx(BoundUnaryEx x)
         {
@@ -443,10 +445,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public override object VisitFieldRef(BoundFieldRef x)
         {
-            return x.Update(
-                (BoundExpression)Accept(x.Instance),
-                x.ContainingType,
-                (BoundVariableName)Accept(x.FieldName));
+            return x.Update((BoundExpression)Accept(x.Instance));
         }
 
         public override object VisitArrayEx(BoundArrayEx x)

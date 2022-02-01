@@ -27,6 +27,37 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
+    partial class BoundNewEx
+    {
+        internal override TypeSymbol Emit(CodeGenerator cg)
+        {
+            return cg.EmitCall(ILOpCode.Newobj, this.MethodSymbol, Instance, Arguments);
+        }
+    }
+
+    partial class BoundGroupedEx
+    {
+        internal override TypeSymbol Emit(CodeGenerator cg)
+        {
+            TypeSymbol result = null;
+
+            if (!_expressions.Any())
+                return new MissingMetadataTypeSymbol("<unknown>", 0, false);
+
+            var last = _expressions.Last();
+            result = (TypeSymbol)last.Type;
+
+            foreach (var be in _expressions)
+            {
+                if (be != last)
+                    cg.EmitPop(be.Emit(cg));
+            }
+
+            last.Emit(cg);
+            return result;
+        }
+    }
+
     partial class BoundReferenceEx
     {
         /// <summary>
@@ -148,12 +179,18 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         internal override IVariableReference BindPlace(CodeGenerator cg)
         {
-            throw new NotImplementedException();
+            return new FieldReference(this._instance, (FieldSymbol)_field);
         }
 
         internal override IPlace Place()
         {
-            throw new NotImplementedException();
+            return new FieldPlace((FieldSymbol)_field);
+        }
+
+        internal override TypeSymbol Emit(CodeGenerator cg)
+        {
+            _instance.Emit(cg);
+            return Place().EmitLoad(cg.Builder);
         }
     }
 

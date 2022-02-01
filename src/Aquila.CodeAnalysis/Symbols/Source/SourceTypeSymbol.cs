@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Reflection.Metadata;
+using Aquila.CodeAnalysis.CodeGen;
+using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.CodeAnalysis.Syntax;
 using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
+using TypeLayout = Microsoft.CodeAnalysis.TypeLayout;
 
 namespace Aquila.CodeAnalysis.Symbols.Source
 {
@@ -87,7 +91,24 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         private void CoreEnsureMembers()
         {
             if (_members == null || _members.IsDefaultOrEmpty)
+            {
                 _members = _typeSyntax.Fields.Select(x => (Symbol)new SourceFieldSymbol(x, this)).ToImmutableArray();
+
+                var ctor = new SynthesizedCtorSymbol(this);
+                var thisPlace = new ThisArgPlace(this);
+
+                ctor.SetMethodBuilder((m, db) =>
+                {
+                    return il =>
+                    {
+                        thisPlace.EmitLoad(il);
+                        il.EmitCall(m, db, ILOpCode.Call, this.BaseType.Ctor());
+                        il.EmitRet(true);
+                    };
+                });
+
+                _members = _members.Add(ctor);
+            }
         }
 
         public override TypeKind TypeKind => TypeKind.Class;

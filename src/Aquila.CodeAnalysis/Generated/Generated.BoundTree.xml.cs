@@ -38,6 +38,9 @@ public enum BoundKind
     StaticCallEx,
     NewEx,
     ThrowEx,
+    AllocEx,
+    AllocExAssign,
+    GroupedEx,
     ArrayItemEx,
     ArrayItemOrdEx,
     FieldRef,
@@ -1409,13 +1412,13 @@ namespace Aquila.CodeAnalysis.Semantics
     partial class BoundNewEx : BoundCallEx
     {
         private ITypeSymbol _typeRef;
-        internal BoundNewEx(MethodSymbol methodSymbol, BoundMethodName name, ITypeSymbol typeRef, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, ITypeSymbol resultType): base(methodSymbol, name, arguments, typeArguments, null, resultType)
+        internal BoundNewEx(MethodSymbol methodSymbol, ITypeSymbol typeRef, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, ITypeSymbol resultType): base(methodSymbol, null, arguments, typeArguments, null, resultType)
         {
             _typeRef = typeRef;
-            OnCreateImpl(methodSymbol, name, typeRef, arguments, typeArguments, resultType);
+            OnCreateImpl(methodSymbol, typeRef, arguments, typeArguments, resultType);
         }
 
-        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, ITypeSymbol typeRef, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, ITypeSymbol resultType);
+        partial void OnCreateImpl(MethodSymbol methodSymbol, ITypeSymbol typeRef, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, ITypeSymbol resultType);
         public ITypeSymbol TypeRef
         {
             get
@@ -1448,7 +1451,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (ResultType == resultType)
                 return this;
-            return new BoundNewEx(this.MethodSymbol, this.Name, this.TypeRef, this.Arguments, this.TypeArguments, resultType);
+            return new BoundNewEx(this.MethodSymbol, this.TypeRef, this.Arguments, this.TypeArguments, resultType);
         }
     }
 }
@@ -1499,6 +1502,169 @@ namespace Aquila.CodeAnalysis.Semantics
             if (_thrown == thrown && ResultType == resultType)
                 return this;
             return new BoundThrowEx(thrown, resultType);
+        }
+    }
+}
+
+namespace Aquila.CodeAnalysis.Semantics
+{
+    partial class BoundAllocEx : BoundExpression
+    {
+        private ITypeSymbol _typeRef;
+        private List<BoundAllocExAssign> _initializer;
+        internal BoundAllocEx(ITypeSymbol typeRef, List<BoundAllocExAssign> initializer, ITypeSymbol resultType): base(resultType)
+        {
+            _typeRef = typeRef;
+            _initializer = initializer;
+            OnCreateImpl(typeRef, initializer, resultType);
+        }
+
+        partial void OnCreateImpl(ITypeSymbol typeRef, List<BoundAllocExAssign> initializer, ITypeSymbol resultType);
+        public ITypeSymbol TypeRef
+        {
+            get
+            {
+                return _typeRef;
+            }
+        }
+
+        public List<BoundAllocExAssign> Initializer
+        {
+            get
+            {
+                return _initializer;
+            }
+        }
+
+        public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.AllocEx;
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
+        partial void AcceptImpl(OperationVisitor visitor);
+        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
+        {
+            TRes res = default;
+            AcceptImpl(visitor, argument, ref res);
+            return res;
+        }
+
+        public override void Accept(OperationVisitor visitor)
+        {
+            AcceptImpl(visitor);
+        }
+
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        {
+            return visitor.VisitAllocEx(this);
+        }
+
+        internal BoundAllocEx Update(List<BoundAllocExAssign> initializer, ITypeSymbol resultType)
+        {
+            if (_initializer == initializer && ResultType == resultType)
+                return this;
+            return new BoundAllocEx(this.TypeRef, initializer, resultType);
+        }
+    }
+}
+
+namespace Aquila.CodeAnalysis.Semantics
+{
+    partial class BoundAllocExAssign : BoundExpression
+    {
+        private ISymbol _receiverSymbol;
+        private BoundExpression _expression;
+        internal BoundAllocExAssign(ISymbol receiverSymbol, BoundExpression expression): base(expression.Type)
+        {
+            _receiverSymbol = receiverSymbol;
+            _expression = expression;
+            OnCreateImpl(receiverSymbol, expression);
+        }
+
+        partial void OnCreateImpl(ISymbol receiverSymbol, BoundExpression expression);
+        public ISymbol ReceiverSymbol
+        {
+            get
+            {
+                return _receiverSymbol;
+            }
+        }
+
+        public BoundExpression Expression
+        {
+            get
+            {
+                return _expression;
+            }
+        }
+
+        public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.AllocExAssign;
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
+        partial void AcceptImpl(OperationVisitor visitor);
+        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
+        {
+            TRes res = default;
+            AcceptImpl(visitor, argument, ref res);
+            return res;
+        }
+
+        public override void Accept(OperationVisitor visitor)
+        {
+            AcceptImpl(visitor);
+        }
+
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        {
+            return visitor.VisitAllocExAssign(this);
+        }
+    }
+}
+
+namespace Aquila.CodeAnalysis.Semantics
+{
+    partial class BoundGroupedEx : BoundExpression
+    {
+        private List<BoundExpression> _expressions;
+        internal BoundGroupedEx(List<BoundExpression> expressions, ITypeSymbol resultType): base(resultType)
+        {
+            _expressions = expressions;
+            OnCreateImpl(expressions, resultType);
+        }
+
+        partial void OnCreateImpl(List<BoundExpression> expressions, ITypeSymbol resultType);
+        public List<BoundExpression> Expressions
+        {
+            get
+            {
+                return _expressions;
+            }
+        }
+
+        public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.GroupedEx;
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
+        partial void AcceptImpl(OperationVisitor visitor);
+        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
+        {
+            TRes res = default;
+            AcceptImpl(visitor, argument, ref res);
+            return res;
+        }
+
+        public override void Accept(OperationVisitor visitor)
+        {
+            AcceptImpl(visitor);
+        }
+
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        {
+            return visitor.VisitGroupedEx(this);
+        }
+
+        internal BoundGroupedEx Update(List<BoundExpression> expressions, ITypeSymbol resultType)
+        {
+            if (_expressions == expressions && ResultType == resultType)
+                return this;
+            return new BoundGroupedEx(expressions, resultType);
         }
     }
 }
@@ -1646,41 +1812,29 @@ namespace Aquila.CodeAnalysis.Semantics
 {
     partial class BoundFieldRef : BoundReferenceEx
     {
+        private IFieldSymbol _field;
         private BoundExpression _instance;
-        private ITypeSymbol _containingType;
-        private BoundVariableName _fieldName;
-        private FieldType _fieldType;
-        internal BoundFieldRef(BoundExpression instance, ITypeSymbol containingType, BoundVariableName fieldName, FieldType fieldType, ITypeSymbol resultType): base(resultType)
+        internal BoundFieldRef(IFieldSymbol field, BoundExpression instance): base(field.Type)
         {
+            _field = field;
             _instance = instance;
-            _containingType = containingType;
-            _fieldName = fieldName;
-            _fieldType = fieldType;
-            OnCreateImpl(instance, containingType, fieldName, fieldType, resultType);
+            OnCreateImpl(field, instance);
         }
 
-        partial void OnCreateImpl(BoundExpression instance, ITypeSymbol containingType, BoundVariableName fieldName, FieldType fieldType, ITypeSymbol resultType);
-        public ITypeSymbol ContainingType
+        partial void OnCreateImpl(IFieldSymbol field, BoundExpression instance);
+        public IFieldSymbol Field
         {
             get
             {
-                return _containingType;
+                return _field;
             }
         }
 
-        public BoundVariableName FieldName
+        public BoundExpression Instance
         {
             get
             {
-                return _fieldName;
-            }
-        }
-
-        public FieldType fieldType
-        {
-            get
-            {
-                return _fieldType;
+                return _instance;
             }
         }
 
@@ -1703,13 +1857,6 @@ namespace Aquila.CodeAnalysis.Semantics
         public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
         {
             return visitor.VisitFieldRef(this);
-        }
-
-        internal BoundFieldRef Update(ITypeSymbol resultType)
-        {
-            if (ResultType == resultType)
-                return this;
-            return new BoundFieldRef(this.Instance, this.ContainingType, this.FieldName, this.fieldType, resultType);
         }
     }
 }
@@ -2616,6 +2763,9 @@ namespace Aquila.CodeAnalysis.Semantics
         public virtual TResult VisitStaticCallEx(BoundStaticCallEx x) => VisitDefault(x);
         public virtual TResult VisitNewEx(BoundNewEx x) => VisitDefault(x);
         public virtual TResult VisitThrowEx(BoundThrowEx x) => VisitDefault(x);
+        public virtual TResult VisitAllocEx(BoundAllocEx x) => VisitDefault(x);
+        public virtual TResult VisitAllocExAssign(BoundAllocExAssign x) => VisitDefault(x);
+        public virtual TResult VisitGroupedEx(BoundGroupedEx x) => VisitDefault(x);
         public virtual TResult VisitReferenceEx(BoundReferenceEx x) => VisitDefault(x);
         public virtual TResult VisitArrayItemEx(BoundArrayItemEx x) => VisitDefault(x);
         public virtual TResult VisitArrayItemOrdEx(BoundArrayItemOrdEx x) => VisitDefault(x);

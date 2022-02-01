@@ -134,13 +134,6 @@ namespace Aquila.CodeAnalysis.Symbols
                     tsymbol = (TypeSymbol)binder
                         .BindExpression(_decl.Variables.First().Initializer.Value, BoundAccess.ReadAndWrite)
                         .Type;
-
-                    if (tsymbol == null)
-                    {
-                        tsymbol = (TypeSymbol)binder
-                            .BindExpression(_decl.Variables.First().Initializer.Value, BoundAccess.ReadAndWrite)
-                            .Type;
-                    }
                 }
                 else
 

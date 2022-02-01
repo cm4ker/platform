@@ -179,8 +179,8 @@ namespace Aquila.Syntax.Metadata
             var dtoPS = new ParamPlace(dtoParam);
             var ctxPS = new ParamPlace(ctxParam);
 
-            var dtoFieldPlace = new FieldPlace(dtoField, thisPlace);
-            var ctxFieldPlace = new FieldPlace(ctxField, thisPlace);
+            var dtoFieldPlace = new FieldPlace(dtoField);
+            var ctxFieldPlace = new FieldPlace(ctxField);
 
             ctor
                 .SetParameters(ctxParam, dtoParam)

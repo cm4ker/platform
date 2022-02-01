@@ -2,13 +2,10 @@
 using Aquila.CodeAnalysis.Symbols;
 using Roslyn.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Semantics.TypeRef;
-using Aquila.Compiler.Utilities;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Syntax;
 
@@ -52,23 +49,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         #region Helpers
 
         /// <summary>
-        /// In case given expression is a local or parameter reference,
-        /// gets its variable handle within <see cref="State"/>.
-        /// </summary>
-        VariableHandle TryGetVariableHandle(BoundExpression expr)
-        {
-            var varname = AsVariableName(expr as BoundReferenceEx);
-            if (varname.IsValid())
-            {
-                return State.GetLocalHandle(varname);
-            }
-            else
-            {
-                return default(VariableHandle);
-            }
-        }
-
-        /// <summary>
         /// In case of a local variable or parameter, gets its name.
         /// </summary>
         VariableName AsVariableName(BoundReferenceEx r)
@@ -81,69 +61,10 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return default;
         }
 
-        bool IsLongConstant(BoundExpression expr, long value)
-        {
-            if (expr.ConstantValue.HasValue)
-            {
-                if (expr.ConstantValue.Value is long) return ((long)expr.ConstantValue.Value) == value;
-                if (expr.ConstantValue.Value is int) return ((int)expr.ConstantValue.Value) == value;
-            }
-
-            return false;
-        }
-
-        bool BindConstantValue(BoundExpression target, FieldSymbol symbol)
-        {
-            // if (symbol != null && symbol.IsConst)
-            // {
-            //     var cvalue = symbol.GetConstantValue(false);
-            //     target.ConstantValue = (cvalue != null) ? new Optional<object>(cvalue.Value) : null;
-            //
-            //     if (cvalue != null && cvalue.IsNull)
-            //     {
-            //         target.TypeRefMask = TypeCtx.GetNullTypeMask();
-            //         return true;
-            //     }
-            //
-            //     target.TypeRefMask = TypeRefFactory.CreateMask(TypeCtx, symbol.Type, notNull: true);
-            //
-            //     return true;
-            // }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Finds the root of given chain, i.e.:
-        /// $a : $a
-        /// $$a : $a
-        /// $a->b : $a
-        /// $a[..] : $a
-        /// $a->foo() : $a
-        /// etc.
-        /// </summary>
-        /// <remarks>If given expression 'isset', its root returned by this method must be set as well.</remarks>
-        internal BoundExpression TryGetExpressionChainRoot(BoundExpression x)
-        {
-            if (x != null)
-            {
-                if (x is BoundVariableRef v)
-                    return v.Name.IsDirect ? v : TryGetExpressionChainRoot(v.Name.NameExpression);
-                // if (x is BoundFieldRef f)
-                //     return TryGetExpressionChainRoot(f.Instance ??
-                //                                      (f.ContainingType)?.TypeExpression);
-                // if (x is BoundInstanceFunctionCall m) return TryGetExpressionChainRoot(m.Instance);
-                if (x is BoundArrayItemEx a) return TryGetExpressionChainRoot(a.Array);
-            }
-
-            return null;
-        }
-
         /// <summary>
         /// Gets current visibility scope.
         /// </summary>
-        protected OverloadsList.VisibilityScope VisibilityScope =>
-            new OverloadsList.VisibilityScope((NamedTypeSymbol)TypeCtx.SelfType, Method);
+        protected OverloadsList.VisibilityScope VisibilityScope => new((NamedTypeSymbol)TypeCtx.SelfType, Method);
 
         protected void PingSubscribers(ExitBlock exit)
         {
@@ -281,6 +202,13 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return default;
         }
 
+        public override T VisitGroupedEx(BoundGroupedEx arg)
+        {
+            arg.Expressions.ForEach(x => Visit(x, x.Access));
+
+            return default;
+        }
+
         public override T VisitCompoundAssignEx(BoundCompoundAssignEx x)
         {
             Debug.Assert(x.Target.Access.IsRead && x.Target.Access.IsWrite);
@@ -326,19 +254,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
             //
             State.VisitLocal(local);
-
-            // update state
-            if (x.Access.IsRead)
-            {
-            }
-
-            if (x.Access.IsWrite)
-            {
-            }
-
-            if (x.Access.IsUnset)
-            {
-            }
         }
 
         public override T VisitVariableRef(BoundVariableRef x)
@@ -580,7 +495,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             {
                 bool isStrict = (cmpExpr.Operation == Operations.Identical ||
                                  cmpExpr.Operation == Operations.NotIdentical);
-                
+
                 bool isPositive = (cmpExpr.Operation == Operations.Equal || cmpExpr.Operation == Operations.Identical);
 
                 // We cannot say much about the type of $x in the true branch of ($x == null) and the false branch of ($x != null),
@@ -779,7 +694,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         public override T VisitFieldRef(BoundFieldRef x)
         {
             Accept(x.Instance);
-            Accept(x.FieldName);
 
             return default;
         }
@@ -867,11 +781,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         public override T VisitConditionalEx(BoundConditionalEx x)
         {
             return default;
-        }
-
-        public override T VisitExpressionStmt(BoundExpressionStmt x)
-        {
-            return base.VisitExpressionStmt(x);
         }
 
         public override T VisitReturnStmt(BoundReturnStmt x)

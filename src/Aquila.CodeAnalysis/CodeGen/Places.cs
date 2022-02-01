@@ -233,10 +233,10 @@ namespace Aquila.CodeAnalysis.CodeGen
             _holder = holder;
         }
 
-        virtual protected void EmitHolder(ILBuilder il)
+        protected virtual void EmitHolder(ILBuilder il)
         {
-            // if (!_field.IsStatic)
-            //     _holder?.EmitLoad(il);
+            if (!_field.IsStatic)
+                _holder?.EmitLoad(il);
         }
 
         void EmitOpCode(ILBuilder il, ILOpCode code)

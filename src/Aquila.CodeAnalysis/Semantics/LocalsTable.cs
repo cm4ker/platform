@@ -86,6 +86,17 @@ namespace Aquila.CodeAnalysis.Semantics
             return new LocalVariableReference(kind, Method, locSym, new BoundVariableName(name, locSym.Type));
         }
 
+        LocalVariableReference CreateLocal(VariableName name, VariableKind kind, TypeSymbol type)
+        {
+            Debug.Assert(!name.IsAutoGlobal);
+            var locSym = new SynthesizedLocalSymbol(Method, name.Value, type);
+
+            Method.Flags |= MethodFlags.UsesLocals;
+
+            return new LocalVariableReference(kind, Method, locSym, new BoundVariableName(name, locSym.Type));
+        }
+
+
         #region Public methods
 
         public bool TryGetVariable(VariableName varname, out LocalVariableReference variable) =>
@@ -110,8 +121,9 @@ namespace Aquila.CodeAnalysis.Semantics
         public IVariableReference BindLocalVariable(VariableName varname, VariableInit decl) => BindVariable(varname,
             decl.Span, (name, span) => CreateLocal(name, VariableKind.LocalVariable, decl));
 
-        // public IVariableReference BindTemporalVariable(VariableName varname) => BindVariable(varname, default,
-        //     (name, span) => CreateLocal(name, VariableKind.LocalTemporalVariable, span));
+        public IVariableReference BindTemporalVariable(VariableName varname, TypeSymbol type) =>
+            BindVariable(varname, default, (name, _) 
+                => CreateLocal(name, VariableKind.LocalTemporalVariable, type));
         //
         // public IVariableReference BindAutoGlobalVariable(VariableName varname) =>
         //     BindVariable(varname, default, (name, span) => CreateAutoGlobal(name, span));

@@ -18,12 +18,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// </summary>
         /// <remarks>CFG has to be analysed prior to getting this property.</remarks>
         internal FlowContext.TypeRefInfo GetLocalType(string varname) =>
-            this.FlowContext.GetVarType(new VariableName(varname));
-        //
-        // /// <summary>
-        // /// Gets type of return value within this CFG.
-        // /// </summary>
-        // /// <remarks>CFG has to be analysed prior to getting this property.</remarks>
-        // public TypeRefMask ReturnTypeMask => (this.Exit.FlowState ?? this.Start.FlowState).GetReturnType(); // (this.Exit.FlowState != null) ? this.Exit.FlowState.GetReturnType() : default(TypeRefMask);
+            this.FlowContext?.GetVarType(new VariableName(varname));
     }
 }

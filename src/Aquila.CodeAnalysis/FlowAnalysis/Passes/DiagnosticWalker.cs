@@ -277,7 +277,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 
         public override T VisitFieldRef(BoundFieldRef x)
         {
-            if (x.ContainingType != null)
+            if (x.Field != null)
             {
                 // class const
                 // static field
