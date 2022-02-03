@@ -315,7 +315,7 @@ namespace Aquila.Core.Querying.Model
     {
         public override string ToString()
         {
-            return "Query";
+            return "Select Query";
         }
     }
 
@@ -469,6 +469,22 @@ namespace Aquila.Core.Querying.Model
         public override string ToString()
         {
             return $"Variable {Name}";
+        }
+    }
+
+    public partial class QInsert
+    {
+        public override string ToString()
+        {
+            return "Insert";
+        }
+    }
+
+    public partial class QInsertQuery
+    {
+        public override string ToString()
+        {
+            return "Insert query";
         }
     }
 }

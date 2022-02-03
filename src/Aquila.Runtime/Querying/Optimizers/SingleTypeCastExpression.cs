@@ -9,7 +9,7 @@ namespace Aquila.Core.Querying.Optimizers
     {
         private readonly QCast _cast;
 
-        public SingleTypeCastExpression(QCast cast, RealWalker rw, QueryMachine qm) : base(rw, qm)
+        public SingleTypeCastExpression(QCast cast, SelectionRealWalker rw, QueryMachine qm) : base(rw, qm)
         {
             _cast = cast;
         }

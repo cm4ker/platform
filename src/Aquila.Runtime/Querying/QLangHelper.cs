@@ -18,7 +18,7 @@ namespace Aquila.Core.Querying
             var pwalker = new PhysicalNameWalker(drContext);
             pwalker.Visit(logicalTree);
 
-            var realWalker = new RealWalker(drContext);
+            var realWalker = new SelectionRealWalker(drContext);
             realWalker.Visit(logicalTree);
 
             var syntax = (realWalker.QueryMachine.pop() as SSyntaxNode);

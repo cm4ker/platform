@@ -7,7 +7,7 @@ namespace Aquila.Core.Querying.Optimizers
 {
     public abstract class MultiTypedExpr : TypedExpr
     {
-        protected MultiTypedExpr(RealWalker rw, QueryMachine qm) : base(rw, qm)
+        protected MultiTypedExpr(SelectionRealWalker rw, QueryMachine qm) : base(rw, qm)
         {
         }
 

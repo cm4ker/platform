@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Aquila.Core;
@@ -87,6 +88,45 @@ namespace Aquila.Runtime.Querying
             var builder = new MsSqlBuilder();
 
             return builder.Visit((SSyntaxNode)qm.peek());
+        }
+
+        public static QInsertQuery GetSaveInsertSingleQuery(SMEntity entity, EntityMetadataCollection em)
+        {
+            var qm = new QLang(em);
+
+            var name = entity.FullName;
+            qm.new_scope()
+                .ld_source(name)
+                .create(QObjectType.SourceFieldList);
+
+            var props = entity.Properties.ToImmutableArray();
+            foreach (var property in props)
+            {
+                qm.ld_source(name)
+                    .ld_field(property.Name)
+                    .st_elem();
+            }
+
+            qm.insert()
+                .create(QObjectType.ExpressionSet)
+                .create(QObjectType.ExpressionList);
+
+            foreach (var property in props)
+            {
+                qm.ld_param(property.Name)
+                    .st_elem();
+            }
+
+            qm.st_elem()
+                .new_insert_query();
+
+            return qm.top<QInsertQuery>();
+        }
+
+        public QInsertQuery TransformQuery(QInsertQuery query)
+        {
+            //SecurityVisitor sec = new SecurityVisitor();
+            throw new NotImplementedException();
         }
 
         public static string GetLoad(SMEntity entity, DatabaseRuntimeContext drc)

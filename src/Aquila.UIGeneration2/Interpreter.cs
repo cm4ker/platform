@@ -13,6 +13,52 @@ using Aquila.Runtime.Querying;
 
 namespace Aquila.UIBuilder
 {
+    public class PrinterWalker : QLangWalker
+    {
+        private readonly StringWriter _output;
+
+        public PrinterWalker(StringWriter output)
+        {
+            _output = output;
+        }
+
+        public override void DefaultVisit(QLangElement visitable)
+        {
+            if (visitable is null)
+                return;
+
+            if (string.IsNullOrEmpty(visitable.ToString()))
+            {
+                base.DefaultVisit(visitable);
+                return;
+            }
+
+            _output.Write(new String(' ', Depth * 4) + visitable ?? "");
+
+            switch (visitable)
+            {
+                case QField:
+                    _output.Write($"(Name : {visitable.GetDbName() ?? ""})");
+                    break;
+                case QDataSource:
+                    _output.Write($"(DS : {visitable.GetDbName() ?? ""})");
+                    break;
+                case QFromItem:
+                    _output.Write($"(JOIN : {visitable.GetDbName() ?? ""})");
+                    break;
+            }
+
+
+            if (visitable is QExpression e)
+                _output.Write(
+                    $"(Type : {e.GetExpressionType().Aggregate("", (s, type) => $"{s}|{type.Name}")})");
+
+            _output.WriteLine();
+
+            base.DefaultVisit(visitable);
+        }
+    }
+
     public class Interpreter
     {
         private readonly DatabaseRuntimeContext _drContext;
@@ -20,51 +66,6 @@ namespace Aquila.UIBuilder
         private QLang _m;
         private readonly UserSecTable _ust;
 
-        private class PrinterWalker : QLangWalker
-        {
-            private readonly StringWriter _output;
-
-            public PrinterWalker(StringWriter output)
-            {
-                _output = output;
-            }
-
-            public override void DefaultVisit(QLangElement visitable)
-            {
-                if (visitable is null)
-                    return;
-
-                if (string.IsNullOrEmpty(visitable.ToString()))
-                {
-                    base.DefaultVisit(visitable);
-                    return;
-                }
-
-                _output.Write(new String(' ', Depth * 4) + visitable ?? "");
-
-                switch (visitable)
-                {
-                    case QField:
-                        _output.Write($"(Name : {visitable.GetDbName() ?? ""})");
-                        break;
-                    case QDataSource:
-                        _output.Write($"(DS : {visitable.GetDbName() ?? ""})");
-                        break;
-                    case QFromItem:
-                        _output.Write($"(JOIN : {visitable.GetDbName() ?? ""})");
-                        break;
-                }
-
-
-                if (visitable is QExpression e)
-                    _output.Write(
-                        $"(Type : {e.GetExpressionType().Aggregate("", (s, type) => $"{s}|{type.Name}")})");
-
-                _output.WriteLine();
-
-                base.DefaultVisit(visitable);
-            }
-        }
 
         public Interpreter(DatabaseRuntimeContext drContext)
         {
@@ -108,7 +109,7 @@ namespace Aquila.UIBuilder
                     var pwalker = new PhysicalNameWalker(_drContext);
                     pwalker.Visit(translated);
 
-                    var realWalker = new RealWalker(_drContext);
+                    var realWalker = new SelectionRealWalker(_drContext);
                     realWalker.Visit(translated);
 
                     var syntax = (realWalker.QueryMachine.pop() as SSyntaxNode);

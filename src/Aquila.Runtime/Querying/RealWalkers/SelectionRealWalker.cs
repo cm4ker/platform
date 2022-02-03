@@ -7,7 +7,6 @@ using Aquila.Core.Querying.Model;
 using Aquila.Core.Querying.Optimizers;
 using Aquila.Metadata;
 using Aquila.Migrations;
-using Aquila.QueryBuilder;
 using Aquila.Runtime;
 using Aquila.Runtime.Querying;
 
@@ -16,42 +15,26 @@ namespace Aquila.Core.Querying
     /// <summary>
     /// Visit logical tree of query and build query for real DBMS 
     /// </summary>
-    public class RealWalker : QLangWalker
+    public class SelectionRealWalker : RealWalkerBase
     {
-        private readonly DatabaseRuntimeContext _drContext;
-
-        private QueryMachine _qm;
-        private StringWriter _l;
         private bool _hasNamedSource = false;
         private bool _hasAlias = false;
 
-        public string Log => _l.ToString();
-
-        internal DatabaseRuntimeContext DrContext => _drContext;
-
-        /// <summary>
-        /// Create instance of real walker class
-        /// </summary>
-        /// <param name="drContext"></param>
-        public RealWalker(DatabaseRuntimeContext drContext)
+        /// <inheritdoc />
+        public SelectionRealWalker(DatabaseRuntimeContext drContext) : base(drContext)
         {
-            _drContext = drContext;
-
-            _qm = new QueryMachine();
-            _l = new StringWriter();
         }
 
-        public QueryMachine QueryMachine => _qm;
+   
 
         public override void VisitQParameter(QParameter arg)
         {
-            _qm.ld_param(arg.GetDbName());
+            Qm.ld_param(arg.GetDbName());
         }
 
         public override void VisitQSelectQuery(QSelectQuery node)
         {
-            _qm.bg_query();
-            _l.WriteLine("ct_query");
+            Qm.bg_query();
 
             Visit(node.From);
             Visit(node.Where);
@@ -61,20 +44,18 @@ namespace Aquila.Core.Querying
 
             VisitQCriterionList(node.Criteria, node.From);
 
-            _qm.st_query();
-            _l.WriteLine("st_query");
+            Qm.st_query();
         }
 
 
         public override void VisitQCast(QCast node)
         {
-            TypedExprFactory.CreateSingleTypeExpr(node, _qm, this).Emit();
+            TypedExprFactory.CreateSingleTypeExpr(node, Qm, this).Emit();
         }
 
         public override void VisitQSelect(QSelect node)
         {
-            _qm.m_select();
-            _l.WriteLine("m_select");
+            Qm.m_select();
 
             base.VisitQSelect(node);
         }
@@ -110,7 +91,7 @@ namespace Aquila.Core.Querying
                 {
                     if (tlSec.Count() == 1)
                     {
-                        _qm.ld_str(tlSec.First())
+                        Qm.ld_str(tlSec.First())
                             .ld_str("_sec")
                             .ld_column();
                     }
@@ -119,11 +100,11 @@ namespace Aquila.Core.Querying
                         var isFirst = true;
 
                         //total result expression
-                        _qm.ld_const(1);
+                        Qm.ld_const(1);
 
                         foreach (var sec in tlSec)
                         {
-                            _qm.ld_str(sec)
+                            Qm.ld_str(sec)
                                 .ld_str("_sec")
                                 .ld_column()
                                 .ld_const(1)
@@ -135,12 +116,12 @@ namespace Aquila.Core.Querying
                                 continue;
                             }
 
-                            _qm.and();
+                            Qm.and();
                         }
 
-                        _qm.when();
-                        _qm.ld_const(0);
-                        _qm.@case()
+                        Qm.when();
+                        Qm.ld_const(0);
+                        Qm.@case()
                             .@as("_sec");
                     }
                 }
@@ -151,16 +132,16 @@ namespace Aquila.Core.Querying
             var emitOr = false;
 
             //expr
-            _qm.ld_const(1);
+            Qm.ld_const(1);
 
             foreach (var item in arg)
             {
                 //condition
                 VisitQCriterion(item);
-                _qm.exists();
+                Qm.exists();
 
                 if (emitOr)
-                    _qm.or();
+                    Qm.or();
 
                 emitOr = true;
             }
@@ -172,7 +153,7 @@ namespace Aquila.Core.Querying
                     {
                         LoadNamedSource(fromItem.Joined.GetDbName());
 
-                        _qm.ld_str("_sec")
+                        Qm.ld_str("_sec")
                             .ld_column()
                             .ld_const(1)
                             .is_null()
@@ -182,28 +163,28 @@ namespace Aquila.Core.Querying
                     }
                 }
 
-            _qm.when();
+            Qm.when();
 
             //else
-            _qm.ld_const(0);
-            _qm.@case();
+            Qm.ld_const(0);
+            Qm.@case();
 
-            _qm.@as("_sec");
+            Qm.@as("_sec");
         }
 
         public override void VisitQCriterion(QCriterion arg)
         {
-            _qm.bg_query();
-            _qm.m_from();
-            _qm.bg_query().m_select().ld_const(1).@as("_sec_fld").st_query().@as("_sec_dummy");
+            Qm.bg_query();
+            Qm.m_from();
+            Qm.bg_query().m_select().ld_const(1).@as("_sec_fld").st_query().@as("_sec_dummy");
 
             Visit(arg.From.Joins);
             Visit(arg.Where);
 
-            _qm.m_select();
-            _qm.ld_const(1);
+            Qm.m_select();
+            Qm.ld_const(1);
 
-            _qm.st_query();
+            Qm.st_query();
         }
 
         public override void VisitQObjectTable(QObjectTable node)
@@ -211,10 +192,10 @@ namespace Aquila.Core.Querying
             var ot = node.ObjectType;
 
             //Inject data source - the idea
-            _qm.ld_table(ot.GetDescriptor(_drContext).DatabaseName);
+            Qm.ld_table(ot.GetDescriptor(DrContext).DatabaseName);
 
             if (!_hasAlias)
-                _qm.@as(node.GetDbName());
+                Qm.@as(node.GetDbName());
 
 
             _hasAlias = false;
@@ -225,35 +206,35 @@ namespace Aquila.Core.Querying
         public override void VisitQTable(QTable node)
         {
             if (!_hasAlias)
-                _qm.@as(node.GetDbName());
+                Qm.@as(node.GetDbName());
 
             _hasAlias = false;
         }
 
         public override void VisitQAdd(QAdd node)
         {
-            if (!OptimizeOperation(node, () => _qm.eq(), () => _qm.and()))
+            if (!OptimizeOperation(node, () => Qm.eq(), () => Qm.and()))
             {
                 base.VisitQAdd(node);
-                _qm.add();
+                Qm.add();
             }
         }
 
         public override void VisitQEquals(QEquals node)
         {
-            if (!OptimizeOperation(node, () => _qm.eq(), () => _qm.and()))
+            if (!OptimizeOperation(node, () => Qm.eq(), () => Qm.and()))
             {
                 base.VisitQEquals(node);
-                _qm.eq();
+                Qm.eq();
             }
         }
 
         public override void VisitQNotEquals(QNotEquals node)
         {
-            if (!OptimizeOperation(node, () => _qm.ne(), () => _qm.or()))
+            if (!OptimizeOperation(node, () => Qm.ne(), () => Qm.or()))
             {
                 base.VisitQNotEquals(node);
-                _qm.ne();
+                Qm.ne();
             }
         }
 
@@ -291,8 +272,8 @@ namespace Aquila.Core.Querying
 
             if (leftTypes.Count > 1 && rightTypes.Count > 1)
             {
-                MultiTypedExpr left = TypedExprFactory.CreateMultiTypedExpr(op.Left, _qm, this);
-                MultiTypedExpr right = TypedExprFactory.CreateMultiTypedExpr(op.Right, _qm, this);
+                MultiTypedExpr left = TypedExprFactory.CreateMultiTypedExpr(op.Left, Qm, this);
+                MultiTypedExpr right = TypedExprFactory.CreateMultiTypedExpr(op.Right, Qm, this);
 
                 var commonTypes = CommonTypes(leftTypes, rightTypes);
 
@@ -344,7 +325,7 @@ namespace Aquila.Core.Querying
             List<SMType> leftTypes,
             bool flip = false)
         {
-            var mt = TypedExprFactory.CreateMultiTypedExpr(right, _qm, this);
+            var mt = TypedExprFactory.CreateMultiTypedExpr(right, Qm, this);
 
             var leftType = leftTypes[0];
 
@@ -366,12 +347,12 @@ namespace Aquila.Core.Querying
             compareAction();
 
             if (flip)
-                _qm.ld_const(leftType.GetTypeId(_drContext));
+                Qm.ld_const(leftType.GetTypeId(DrContext));
 
             mt.EmitTypeColumn();
 
             if (!flip)
-                _qm.ld_const(leftType.GetTypeId(_drContext));
+                Qm.ld_const(leftType.GetTypeId(DrContext));
             compareAction();
 
             concatAction();
@@ -379,8 +360,7 @@ namespace Aquila.Core.Querying
 
         public override void VisitQFrom(QFrom node)
         {
-            _qm.m_from();
-            _l.WriteLine("m_from");
+            Qm.m_from();
 
             Visit(node.Source);
 
@@ -394,22 +374,20 @@ namespace Aquila.Core.Querying
 
         public override void VisitQGroupBy(QGroupBy arg)
         {
-            _qm.m_group_by();
+            Qm.m_group_by();
             Visit(arg.Expressions);
         }
 
         public override void VisitQWhere(QWhere node)
         {
-            _qm.m_where();
-            _l.WriteLine("m_where");
+            Qm.m_where();
 
             Visit(node.Expression);
         }
 
         public override void VisitQOrderBy(QOrderBy arg)
         {
-            _qm.m_order_by();
-            _l.WriteLine("m_order_by");
+            Qm.m_order_by();
 
             Visit(arg.Expressions);
         }
@@ -418,20 +396,20 @@ namespace Aquila.Core.Querying
         {
             Visit(arg.Expression);
             if (arg.SortingDirection == QSortDirection.Descending)
-                _qm.desc();
+                Qm.desc();
             else
-                _qm.asc();
+                Qm.asc();
         }
 
         public override void VisitQConst(QConst node)
         {
             string alias = "";
             if (_hasAlias)
-                alias = (string)_qm.pop();
-            _qm.ld_const(node.Value);
+                alias = (string)Qm.pop();
+            Qm.ld_const(node.Value);
 
             if (_hasAlias)
-                _qm.@as(alias);
+                Qm.@as(alias);
             _hasAlias = false;
         }
 
@@ -440,7 +418,7 @@ namespace Aquila.Core.Querying
             Visit(node.Joined);
             Visit(node.Condition);
 
-            _qm.@join();
+            Qm.@join();
         }
 
         public override void VisitQAliasedDataSource(QAliasedDataSource node)
@@ -449,14 +427,14 @@ namespace Aquila.Core.Querying
 
             base.VisitQAliasedDataSource(node);
 
-            _qm.@as(node.GetDbName());
+            Qm.@as(node.GetDbName());
         }
 
         private void LoadNamedSource(string arg)
         {
             if (_hasNamedSource) return;
 
-            _qm.ld_str(arg);
+            Qm.ld_str(arg);
             _hasNamedSource = true;
         }
 
@@ -492,7 +470,7 @@ namespace Aquila.Core.Querying
 
         public override void VisitQSourceFieldExpression(QSourceFieldExpression node)
         {
-            var schema = node.Property.GetSchema(_drContext);
+            var schema = node.Property.GetSchema(DrContext);
 
             LoadNamedSource(node.PlatformSource.GetDbName());
 
@@ -505,19 +483,19 @@ namespace Aquila.Core.Querying
             string alias = null;
 
             if (_hasNamedSource)
-                tabName = (string)_qm.pop();
+                tabName = (string)Qm.pop();
 
             if (_hasAlias)
-                alias = (string)_qm.pop();
+                alias = (string)Qm.pop();
 
             foreach (var def in schema)
             {
-                _qm.ld_str(tabName);
-                _qm.ld_str(def.FullName);
-                _qm.ld_column();
+                Qm.ld_str(tabName);
+                Qm.ld_str(def.FullName);
+                Qm.ld_column();
 
                 if (_hasAlias)
-                    _qm.@as(def.Prefix + alias + def.Postfix);
+                    Qm.@as(def.Prefix + alias + def.Postfix);
             }
 
             _hasNamedSource = false;
@@ -527,16 +505,16 @@ namespace Aquila.Core.Querying
         public override void VisitQAliasedSelectExpression(QAliasedSelectExpression node)
         {
             _hasAlias = true;
-            _qm.ld_str(node.GetDbName());
+            Qm.ld_str(node.GetDbName());
 
             base.VisitQAliasedSelectExpression(node);
 
             if (_hasAlias) //alias not handled
             {
-                var item = _qm.pop(); //item
-                _qm.pop(); //alias
-                _qm.push(item);
-                _qm.@as(node.GetDbName());
+                var item = Qm.pop(); //item
+                Qm.pop(); //alias
+                Qm.push(item);
+                Qm.@as(node.GetDbName());
             }
         }
     }

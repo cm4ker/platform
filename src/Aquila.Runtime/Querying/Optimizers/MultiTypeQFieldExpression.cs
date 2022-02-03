@@ -29,7 +29,7 @@ namespace Aquila.Core.Querying.Optimizers
             return (field, null);
         }
 
-        public MultiTypeQFieldExpression(QField field, RealWalker rw, QueryMachine qm) : base(rw, qm)
+        public MultiTypeQFieldExpression(QField field, SelectionRealWalker rw, QueryMachine qm) : base(rw, qm)
         {
             if (field.GetExpressionType().Count() == 1)
                 throw new Exception($"Use {nameof(MultiTypedExpr)} for this field");
@@ -86,7 +86,7 @@ namespace Aquila.Core.Querying.Optimizers
             return (field, field.Name);
         }
 
-        public MultiTypeQParameterExpression(QParameter parameter, RealWalker rw, QueryMachine qm) : base(rw, qm)
+        public MultiTypeQParameterExpression(QParameter parameter, SelectionRealWalker rw, QueryMachine qm) : base(rw, qm)
         {
             if (parameter.GetExpressionType().Count() == 1)
                 throw new Exception($"Use {nameof(MultiTypedExpr)} for this field");

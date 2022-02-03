@@ -1,8 +1,12 @@
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
+using Aquila.Core.Querying;
 using Aquila.Data;
 using Aquila.Metadata;
+using Aquila.QueryBuilder.Model;
+using Aquila.QueryBuilder.Visitor;
 using Aquila.Runtime;
 using Aquila.Runtime.Querying;
 using JetBrains.Annotations;
@@ -84,7 +88,15 @@ namespace Aquila.UIBuilder
                 var update = CRUDQueryGenerator.GetSaveUpdate(invoice, _drContext);
                 var select = CRUDQueryGenerator.GetLoad(invoice, _drContext);
 
-                Input = $"{insert}\n{update}\n{select}";
+
+                var model = CRUDQueryGenerator.GetSaveInsertSingleQuery(invoice, md);
+                var translatedOutput = new StringWriter();
+                new PrinterWalker(translatedOutput).Visit(model);
+                var iw = new InsertionRealWalker(_drContext);
+                iw.Visit(model);
+                var result = new MsSqlBuilder().Visit((SSyntaxNode)iw.QueryMachine.peek());
+
+                Input = $"{insert}\n{update}\n{select}\n{translatedOutput}\n{result}";
             }
             catch (Exception ex)
             {

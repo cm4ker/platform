@@ -15,7 +15,6 @@ namespace Aquila.Core.Querying.Model
         private readonly UserSecTable _sec;
         private QLang _m;
         private Dictionary<QDataSource, QDataSource> _subs = new();
-
         public Stack<List<QCriterion>> _criteriaStack = new();
 
         public SecurityVisitor(EntityMetadataCollection em, UserSecTable sec)
@@ -80,6 +79,7 @@ namespace Aquila.Core.Querying.Model
 
             if (arg.Source is QObjectTable ot)
             {
+                //TODO: potential here can be a collision. Need create deterministic randomizer witout collisio
                 var ds = new QAliasedDataSource(ot, RandomString(10));
                 EmitCriteria(ds, ot);
                 _subs[ot] = ds;
@@ -129,7 +129,7 @@ namespace Aquila.Core.Querying.Model
         {
             if (_subs.TryGetValue(arg.DataSource, out var subs))
             {
-                return subs.GetFields().Where(x => x.GetName() == arg.GetName()).First();
+                return subs.GetField(arg.GetName());
             }
 
             return arg;
@@ -139,7 +139,7 @@ namespace Aquila.Core.Querying.Model
         {
             if (_subs.TryGetValue(arg.PlatformSource, out var subs))
             {
-                return subs.GetFields().Where(x => x.GetName() == arg.GetName()).First();
+                return subs.GetField(arg.GetName());
             }
 
             return arg;

@@ -4,10 +4,10 @@ namespace Aquila.Core.Querying.Optimizers
 {
     public abstract class TypedExpr
     {
-        protected RealWalker Rw { get; }
+        protected SelectionRealWalker Rw { get; }
         protected QueryMachine Qm { get; }
 
-        protected TypedExpr(RealWalker rw, QueryMachine qm)
+        protected TypedExpr(SelectionRealWalker rw, QueryMachine qm)
         {
             Rw = rw;
             Qm = qm;
