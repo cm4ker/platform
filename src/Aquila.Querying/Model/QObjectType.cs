@@ -7,6 +7,7 @@ namespace Aquila.Core.Querying.Model
     public enum QObjectType
     {
         FieldList,
+        SourceFieldList,
         DataSourceList,
         WhenList,
         ExpressionList,
@@ -16,6 +17,7 @@ namespace Aquila.Core.Querying.Model
         GroupList,
         OrderExpression,
         GroupExpression,
-        ResultColumn
+        ResultColumn,
+        ExpressionSet,
     }
 }

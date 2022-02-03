@@ -766,15 +766,15 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QInsert : QLangElement
     {
-        public QInsert(QPlatformDataSource target, QSourceFieldList fields) : base()
+        public QInsert(QSourceFieldList fields, QPlatformDataSource target) : base()
         {
-            this.target = target;
             this.fields = fields;
+            this.target = target;
         }
 
-        public QPlatformDataSource Target { get => this.target; init => this.target = value; }
-
         public QSourceFieldList Fields { get => this.fields; init => this.fields = value; }
+
+        public QPlatformDataSource Target { get => this.target; init => this.target = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -788,15 +788,15 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            if (this.target != null)
-                yield return this.target;
             if (this.fields != null)
                 yield return this.fields;
+            if (this.target != null)
+                yield return this.target;
             yield break;
         }
 
-        private QPlatformDataSource target;
         private QSourceFieldList fields;
+        private QPlatformDataSource target;
     }
 }
 

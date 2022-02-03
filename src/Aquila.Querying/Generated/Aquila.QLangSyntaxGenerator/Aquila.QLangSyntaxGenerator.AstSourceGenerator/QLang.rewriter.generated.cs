@@ -97,9 +97,9 @@ var expression = (QExpression)Visit(arg.Expression);
 return new QHaving(expression);
 }
 public override QLangElement VisitQInsert(QInsert arg) {
-var target = (QPlatformDataSource)Visit(arg.Target);
 var fields = (QSourceFieldList)Visit(arg.Fields);
-return new QInsert(target,fields);
+var target = (QPlatformDataSource)Visit(arg.Target);
+return new QInsert(fields,target);
 }
 public override QLangElement VisitQAliasedDataSource(QAliasedDataSource arg) {
 var parentSource = (QDataSource)Visit(arg.ParentSource);

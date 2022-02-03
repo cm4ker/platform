@@ -86,10 +86,11 @@
 
     <Syntax Name="QInsert">
         <Arguments>
-            <!--NOTE: as target on insertion we can use only platform destination source-->
-            <Single Name="Target" Type="QPlatformDataSource"/>
             <!--NOTE: in insertion we have to use platform field list-->
             <Single Name="Fields" Type="QSourceFieldList"/>
+
+            <!--NOTE: as target on insertion we can use only platform destination source-->
+            <Single Name="Target" Type="QPlatformDataSource"/>
         </Arguments>
     </Syntax>
 

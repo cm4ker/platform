@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
+using System.Linq.Expressions;
 using Antlr4.Runtime;
 using Aquila.Metadata;
 using Aquila.Runtime.Querying;
@@ -56,25 +57,31 @@ namespace Aquila.Core.Querying.Model
             switch (type)
             {
                 case QObjectType.FieldList:
-                    _logicStack.Push(new QFieldList(ImmutableArray<QField>.Empty));
+                    _logicStack.Push(QFieldList.Empty);
+                    break;
+                case QObjectType.SourceFieldList:
+                    _logicStack.Push(QSourceFieldList.Empty);
                     break;
                 case QObjectType.DataSourceList:
-                    _logicStack.Push(new QDataSourceList(ImmutableArray<QDataSource>.Empty));
+                    _logicStack.Push(QDataSourceList.Empty);
                     break;
                 case QObjectType.WhenList:
-                    _logicStack.Push(new QWhenList(ImmutableArray<QWhen>.Empty));
+                    _logicStack.Push(QWhenList.Empty);
                     break;
                 case QObjectType.ExpressionList:
-                    _logicStack.Push(new QExpressionList(ImmutableArray<QExpression>.Empty));
+                    _logicStack.Push(QExpressionList.Empty);
                     break;
                 case QObjectType.JoinList:
-                    _logicStack.Push(new QJoinList(ImmutableArray<QFromItem>.Empty));
+                    _logicStack.Push(QJoinList.Empty);
                     break;
                 case QObjectType.QueryList:
-                    _logicStack.Push(new QQueryList(ImmutableArray<QQueryBase>.Empty));
+                    _logicStack.Push(QQueryList.Empty);
                     break;
                 case QObjectType.OrderList:
-                    _logicStack.Push(new QOrderList(ImmutableArray<QOrderExpression>.Empty));
+                    _logicStack.Push(QOrderList.Empty);
+                    break;
+                case QObjectType.ExpressionSet:
+                    _logicStack.Push(QExpressionSet.Empty);
                     break;
                 case QObjectType.OrderExpression:
                     _logicStack.Push(new QOrderExpression(_logicStack.PopItem<QSortDirection>(),
@@ -88,7 +95,15 @@ namespace Aquila.Core.Querying.Model
                     _logicStack.Push(new QGroupExpression(_logicStack.PopExpression()));
                     break;
                 case QObjectType.ResultColumn:
-                    new_result_column();
+                    var expr = pop();
+                    if (expr is QField item)
+                    {
+                        _logicStack.Push(new QSelectExpression(item));
+                    }
+                    else if (expr is QExpression exp)
+                    {
+                        _logicStack.Push(new QSelectExpression(exp));
+                    }
 
                     break;
                 default:
@@ -107,6 +122,12 @@ namespace Aquila.Core.Querying.Model
             return this;
         }
 
+        /// <summary>
+        /// For saving element onto list not need dup reference! because all collections are immutable
+        /// Stack machine make it for you internally
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public QLang st_elem()
         {
             var element = _logicStack.Pop();
@@ -226,7 +247,8 @@ namespace Aquila.Core.Querying.Model
         public QLang ld_source(string qualifiedName)
         {
             //load entity type
-            var type = _metadata.GetSemanticByName(qualifiedName);
+            var type = _metadata.GetSemanticByName(qualifiedName) ??
+                       throw new Exception($"Source not found '{qualifiedName}'");
             var ds = new QObjectTable(type);
             _logicStack.Push(ds);
             if (CurrentScope != null)
@@ -422,6 +444,8 @@ namespace Aquila.Core.Querying.Model
                 _logicStack.PopItem<QInsert>(),
                 QCriterionList.Empty);
 
+            _logicStack.Push(insert);
+
             return this;
         }
 
@@ -439,16 +463,13 @@ namespace Aquila.Core.Querying.Model
 
         public QLang new_result_column()
         {
-            var expr = pop();
-            if (expr is QField item)
-            {
-                _logicStack.Push(new QSelectExpression(item));
-            }
-            else if (expr is QExpression exp)
-            {
-                _logicStack.Push(new QSelectExpression(exp));
-            }
+            create(QObjectType.ResultColumn);
+            return this;
+        }
 
+        public QLang new_group_ex()
+        {
+            create(QObjectType.GroupExpression);
             return this;
         }
 
@@ -639,6 +660,15 @@ namespace Aquila.Core.Querying.Model
         {
             _logicStack.Push(new QConst(new SMType(SMType.Numeric, 0, 10, 10), number));
 
+            return this;
+        }
+
+        public QLang insert()
+        {
+            var fields = _logicStack.PopItem<QSourceFieldList>();
+            var ds = _logicStack.PopDataSource() as QPlatformDataSource;
+
+            _logicStack.Push(new QInsert(fields, ds));
             return this;
         }
     }
