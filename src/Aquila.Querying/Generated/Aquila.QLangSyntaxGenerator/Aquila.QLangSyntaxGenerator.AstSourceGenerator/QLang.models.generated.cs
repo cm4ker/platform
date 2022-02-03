@@ -210,18 +210,18 @@ namespace Aquila.Core.Querying.Model
 
 namespace Aquila.Core.Querying.Model
 {
-    public class QQueryList : QLangCollection<QQuery>
+    public class QQueryList : QLangCollection<QQueryBase>
     {
-        public static QQueryList Empty => new QQueryList(ImmutableArray<QQuery>.Empty);
-        public QQueryList(ImmutableArray<QQuery> elements) : base(elements)
+        public static QQueryList Empty => new QQueryList(ImmutableArray<QQueryBase>.Empty);
+        public QQueryList(ImmutableArray<QQueryBase> elements) : base(elements)
         {
         }
 
         public override QQueryList Add(QLangElement element)
         {
-            var item = element as QQuery;
+            var item = element as QQueryBase;
             if (item == null)
-                throw new Exception("Element is not QQuery");
+                throw new Exception("Element is not QQueryBase");
             return new QQueryList(Elements.Add(item));
         }
 
@@ -318,9 +318,69 @@ namespace Aquila.Core.Querying.Model
 
 namespace Aquila.Core.Querying.Model
 {
-    public partial class QQuery : QLangElement
+    public partial class QInsertQuery : QQueryBase
     {
-        public QQuery(QOrderBy orderBy, QSelect select, QHaving having, QGroupBy groupBy, QWhere where, QFrom from, QCriterionList criteria) : base()
+        public QInsertQuery() : base()
+        {
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQInsertQuery(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQInsertQuery(this);
+        }
+
+        public override IEnumerable<QLangElement> GetChildren()
+        {
+            foreach (var item in base.GetChildren())
+            {
+                yield return item;
+            }
+
+            yield break;
+        }
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
+    public partial class QUpdateQuery : QQueryBase
+    {
+        public QUpdateQuery() : base()
+        {
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQUpdateQuery(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQUpdateQuery(this);
+        }
+
+        public override IEnumerable<QLangElement> GetChildren()
+        {
+            foreach (var item in base.GetChildren())
+            {
+                yield return item;
+            }
+
+            yield break;
+        }
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
+    public partial class QSelectQuery : QQueryBase
+    {
+        public QSelectQuery(QOrderBy orderBy, QSelect select, QHaving having, QGroupBy groupBy, QWhere where, QFrom from, QCriterionList criteria) : base()
         {
             this.orderBy = orderBy;
             this.select = select;
@@ -347,12 +407,12 @@ namespace Aquila.Core.Querying.Model
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
-            return visitor.VisitQQuery(this);
+            return visitor.VisitQSelectQuery(this);
         }
 
         public override void Accept(QLangVisitorBase visitor)
         {
-            visitor.VisitQQuery(this);
+            visitor.VisitQSelectQuery(this);
         }
 
         public override IEnumerable<QLangElement> GetChildren()
@@ -371,6 +431,11 @@ namespace Aquila.Core.Querying.Model
                 yield return this.from;
             if (this.criteria != null)
                 yield return this.criteria;
+            foreach (var item in base.GetChildren())
+            {
+                yield return item;
+            }
+
             yield break;
         }
 
@@ -727,12 +792,12 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QNestedQuery : QDataSource
     {
-        public QNestedQuery(QQuery nested) : base()
+        public QNestedQuery(QSelectQuery nested) : base()
         {
             this.nested = nested;
         }
 
-        public QQuery Nested { get => this.nested; init => this.nested = value; }
+        public QSelectQuery Nested { get => this.nested; init => this.nested = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -756,7 +821,7 @@ namespace Aquila.Core.Querying.Model
             yield break;
         }
 
-        private QQuery nested;
+        private QSelectQuery nested;
     }
 }
 
@@ -1878,7 +1943,17 @@ namespace Aquila.Core.Querying
             return DefaultVisit(arg);
         }
 
-        public virtual T VisitQQuery(QQuery arg)
+        public virtual T VisitQInsertQuery(QInsertQuery arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitQUpdateQuery(QUpdateQuery arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitQSelectQuery(QSelectQuery arg)
         {
             return DefaultVisit(arg);
         }
@@ -2126,7 +2201,17 @@ namespace Aquila.Core.Querying
             DefaultVisit(arg);
         }
 
-        public virtual void VisitQQuery(QQuery arg)
+        public virtual void VisitQInsertQuery(QInsertQuery arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQUpdateQuery(QUpdateQuery arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQSelectQuery(QSelectQuery arg)
         {
             DefaultVisit(arg);
         }

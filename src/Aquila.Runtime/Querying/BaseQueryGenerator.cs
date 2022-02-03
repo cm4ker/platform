@@ -131,8 +131,8 @@ namespace Aquila.Runtime.Querying
 
             if (ust.TryClaimPermission(md, SecPermission.Update, out var claim))
             {
-                QLang q = new QLang();
-                q.@select();
+                //QLang q = new QLang();
+                //q.@select();
             }
             else
             {

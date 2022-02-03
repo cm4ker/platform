@@ -71,7 +71,7 @@ namespace Aquila.Core.Querying.Model
                     _logicStack.Push(new QJoinList(ImmutableArray<QFromItem>.Empty));
                     break;
                 case QObjectType.QueryList:
-                    _logicStack.Push(new QQueryList(ImmutableArray<QQuery>.Empty));
+                    _logicStack.Push(new QQueryList(ImmutableArray<QQueryBase>.Empty));
                     break;
                 case QObjectType.OrderList:
                     _logicStack.Push(new QOrderList(ImmutableArray<QOrderExpression>.Empty));
@@ -401,7 +401,7 @@ namespace Aquila.Core.Querying.Model
         {
             var scope = pop_scope();
 
-            var query = new QQuery(_logicStack.PopItem<QOrderBy>(),
+            var query = new QSelectQuery(_logicStack.PopItem<QOrderBy>(),
                 _logicStack.PopItem<QSelect>(), _logicStack.PopItem<QHaving>(),
                 _logicStack.PopItem<QGroupBy>(), _logicStack.PopItem<QWhere>(),
                 _logicStack.PopItem<QFrom>(), QCriterionList.Empty);

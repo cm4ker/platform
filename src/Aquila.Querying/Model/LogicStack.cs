@@ -35,9 +35,9 @@ namespace Aquila.Core.Querying.Model
             return (QFrom)this.Pop();
         }
 
-        public QQuery PopQuery()
+        public QSelectQuery PopQuery()
         {
-            return (QQuery)this.Pop();
+            return (QSelectQuery)this.Pop();
         }
 
         /// <summary>

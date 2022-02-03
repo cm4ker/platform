@@ -33,7 +33,7 @@ public override QLangElement VisitQWhenList(QWhenList arg) {
 return new QWhenList(arg.Select(x => (QWhen)Visit(x)).ToImmutableArray());
 }
 public override QLangElement VisitQQueryList(QQueryList arg) {
-return new QQueryList(arg.Select(x => (QQuery)Visit(x)).ToImmutableArray());
+return new QQueryList(arg.Select(x => (QQueryBase)Visit(x)).ToImmutableArray());
 }
 public override QLangElement VisitQCriterionList(QCriterionList arg) {
 return new QCriterionList(arg.Select(x => (QCriterion)Visit(x)).ToImmutableArray());
@@ -41,7 +41,13 @@ return new QCriterionList(arg.Select(x => (QCriterion)Visit(x)).ToImmutableArray
 public override QLangElement VisitQExpression(QExpression arg) {
 return new QExpression();
 }
-public override QLangElement VisitQQuery(QQuery arg) {
+public override QLangElement VisitQInsertQuery(QInsertQuery arg) {
+return new QInsertQuery();
+}
+public override QLangElement VisitQUpdateQuery(QUpdateQuery arg) {
+return new QUpdateQuery();
+}
+public override QLangElement VisitQSelectQuery(QSelectQuery arg) {
 var orderBy = (QOrderBy)Visit(arg.OrderBy);
 var select = (QSelect)Visit(arg.Select);
 var having = (QHaving)Visit(arg.Having);
@@ -49,7 +55,7 @@ var groupBy = (QGroupBy)Visit(arg.GroupBy);
 var where = (QWhere)Visit(arg.Where);
 var from = (QFrom)Visit(arg.From);
 var criteria = (QCriterionList)Visit(arg.Criteria);
-return new QQuery(orderBy,select,having,groupBy,where,from,criteria);
+return new QSelectQuery(orderBy,select,having,groupBy,where,from,criteria);
 }
 public override QLangElement VisitQCriterion(QCriterion arg) {
 var where = (QWhere)Visit(arg.Where);
@@ -91,7 +97,7 @@ var dataSources = (QDataSourceList)Visit(arg.DataSources);
 return new QCombinedDataSource(dataSources);
 }
 public override QLangElement VisitQNestedQuery(QNestedQuery arg) {
-var nested = (QQuery)Visit(arg.Nested);
+var nested = (QSelectQuery)Visit(arg.Nested);
 return new QNestedQuery(nested);
 }
 public override QLangElement VisitQObjectTable(QObjectTable arg) {

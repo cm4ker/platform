@@ -24,7 +24,7 @@ namespace Aquila.Core.Querying
             _params = new Dictionary<string, int>();
         }
 
-        public override void VisitQQuery(QQuery node)
+        public override void VisitQSelectQuery(QSelectQuery node)
         {
             VisitQFrom(node.From);
             VisitQWhere(node.Where);

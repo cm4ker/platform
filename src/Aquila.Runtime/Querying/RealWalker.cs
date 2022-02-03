@@ -48,7 +48,7 @@ namespace Aquila.Core.Querying
             _qm.ld_param(arg.GetDbName());
         }
 
-        public override void VisitQQuery(QQuery node)
+        public override void VisitQSelectQuery(QSelectQuery node)
         {
             _qm.bg_query();
             _l.WriteLine("ct_query");

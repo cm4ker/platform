@@ -12,7 +12,7 @@ using Aquila.Runtime;
 
 namespace Aquila.Core
 {
-    public class AqQuery
+    public class AqQuery : IDisposable
     {
         private string _text;
         private string _compiled;
@@ -54,7 +54,10 @@ namespace Aquila.Core
 
             FillParametersCore();
 
-            return new AqCachedReader(_command.ExecuteReader(), _logicalTree.Last(), _context);
+            //we think what last query in chain is select Query
+            //TODO: throw platform exception if sQuery is null
+            var sQuery = _logicalTree.Last() as QSelectQuery;
+            return new AqCachedReader(_command.ExecuteReader(), sQuery, _context);
         }
 
         private void FillParametersCore()
@@ -165,6 +168,12 @@ namespace Aquila.Core
         public void set_param(string paramName, object value)
         {
             _parameters.Add(paramName, value);
+        }
+
+        public void Dispose()
+        {
+            //Dispose command after using it (no memory consumption)
+            _command?.Dispose();
         }
     }
 

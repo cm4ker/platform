@@ -15,13 +15,13 @@ namespace Aquila.Core.Querying
             _qm = new QueryMachine();
         }
 
-        public object Convert(QQuery query)
+        public object Convert(QSelectQuery query)
         {
             GenerateQuery(query);
             return _qm.pop();
         }
 
-        private void GenerateQuery(QQuery q)
+        private void GenerateQuery(QSelectQuery q)
         {
             _qm.bg_query();
 

@@ -15,14 +15,14 @@ namespace Aquila.Data
     public class AqCachedReader : AqReader
     {
         private readonly DbDataReader _reader;
-        private readonly QQuery _logicalQuery;
+        private readonly QSelectQuery _logicalQuery;
         private readonly AqContext _context;
         private BufferedData _buffered;
         private BufferedDataReader _bufferedReader;
 
         private Dictionary<string, IColumnReader> _readers;
 
-        public AqCachedReader(DbDataReader reader, QQuery logicalQuery, AqContext context)
+        public AqCachedReader(DbDataReader reader, QSelectQuery logicalQuery, AqContext context)
         {
             _reader = reader;
             _logicalQuery = logicalQuery;

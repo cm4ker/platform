@@ -24,7 +24,7 @@ namespace Aquila.Core.Querying.Model
             _sec = sec;
         }
 
-        public override QLangElement VisitQQuery(QQuery arg)
+        public override QLangElement VisitQSelectQuery(QSelectQuery arg)
         {
             var from = (QFrom)Visit(arg.From);
             var where = (QWhere)Visit(arg.Where);
@@ -37,7 +37,7 @@ namespace Aquila.Core.Querying.Model
                 list = new();
 
             //Fill the criteria for this query
-            var query = new QQuery(orderby, select, having, groupby, where, from,
+            var query = new QSelectQuery(orderby, select, having, groupby, where, from,
                 new QCriterionList(list.ToImmutableArray()));
 
             return query;
@@ -184,7 +184,7 @@ namespace Aquila.Core.Querying.Model
                 var from = new QFrom(QJoinList.Empty, arg.Joined);
 
                 //TODO: optimize selection in inner query (only used field needs remaining)
-                var query = new QQuery(null, select, null, null, null, from,
+                var query = new QSelectQuery(null, select, null, null, null, from,
                     new QCriterionList(_criteriaStack.Pop().ToImmutableArray()));
 
                 var newDs = new QAliasedDataSource(new QNestedQuery(query), ads.Alias);

@@ -8,14 +8,22 @@
     <Syntax IsList="true" Base="QOrderExpression" Name="QOrderList"/>
     <Syntax IsList="true" Base="QGroupExpression" Name="QGroupList"/>
     <Syntax IsList="true" Base="QWhen" Name="QWhenList"/>
-    <Syntax IsList="true" Base="QQuery" Name="QQueryList"/>
+    <Syntax IsList="true" Base="QQueryBase" Name="QQueryList"/>
     <Syntax IsList="true" Base="QCriterion" Name="QCriterionList"/>
 
     <Syntax Name="QExpression"/>
 
     <Syntax IsAbstract="true" Name="QQueryBase"/>
 
-    <Syntax Name="QQuery">
+    <Syntax Name="QInsertQuery" Base="QQueryBase">
+
+    </Syntax>
+
+    <Syntax Name="QUpdateQuery" Base="QQueryBase">
+
+    </Syntax>
+
+    <Syntax Name="QSelectQuery" Base="QQueryBase">
         <Arguments>
             <Single Name="OrderBy" Type="QOrderBy"/>
             <Single Name="Select" Type="QSelect"/>
@@ -87,7 +95,7 @@
 
     <Syntax Name="QNestedQuery" Base="QDataSource">
         <Arguments>
-            <Single Name="Nested" Type="QQuery"/>
+            <Single Name="Nested" Type="QSelectQuery"/>
         </Arguments>
     </Syntax>
 

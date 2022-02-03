@@ -311,7 +311,7 @@ namespace Aquila.Core.Querying.Model
     /// <summary>
     /// Заппрос
     /// </summary>
-    public partial class QQuery
+    public partial class QSelectQuery
     {
         public override string ToString()
         {
