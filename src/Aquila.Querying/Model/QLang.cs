@@ -51,7 +51,7 @@ namespace Aquila.Core.Querying.Model
         /// <summary>
         /// Load on the stack list
         /// </summary>
-        public void create(QObjectType type)
+        public QLang create(QObjectType type)
         {
             switch (type)
             {
@@ -94,17 +94,20 @@ namespace Aquila.Core.Querying.Model
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
+
+            return this;
         }
 
         /// <summary>
         /// Duplicate item on stack
         /// </summary>
-        public void dup()
+        public QLang dup()
         {
             _logicStack.Push(_logicStack.Peek());
+            return this;
         }
 
-        public void st_elem()
+        public QLang st_elem()
         {
             var element = _logicStack.Pop();
             var objColl = _logicStack.Pop();
@@ -118,49 +121,59 @@ namespace Aquila.Core.Querying.Model
                     $"Stack corrupted. The collection is not an instance of the IQCollection. Current type is ({objColl.GetType()})");
 
             _logicStack.Push(coll.Add(elem));
+            return this;
         }
 
-        public void order_by()
+        public QLang order_by()
         {
             _logicStack.Push(new QOrderBy(_logicStack.PopItem<QOrderList>()));
+            return this;
         }
 
-        private void having()
+        private QLang having()
         {
             _logicStack.Push(new QHaving(_logicStack.PopExpression()));
+            return this;
         }
 
-        public void from()
+        public QLang from()
         {
             _logicStack.Push(new QFrom(_logicStack.PopItem<QJoinList>(), _logicStack.PopDataSource()));
+            return this;
         }
 
-        public void select()
+        public QLang select()
         {
             _logicStack.Push(new QSelect(_logicStack.PopItem<QFieldList>()));
+            return this;
         }
 
-        public void where()
+        public QLang where()
         {
             _logicStack.Push(new QWhere(_logicStack.PopExpression()));
+            return this;
         }
 
-        public void group_by()
+        public QLang group_by()
         {
             _logicStack.Push(new QGroupBy(_logicStack.PopItem<QGroupList>()));
+            return this;
         }
 
-        public void ld_component(string componentName)
+        public QLang ld_component(string componentName)
         {
             // var component = _tm.FindComponentByName(componentName);
             // _logicStack.Push(component);
 
             //TODO: Epic: Implement component support
+
+            return this;
         }
 
-        public void ld_type(string typeName)
+        public QLang ld_type(string typeName)
         {
             _logicStack.Push(_tb.Parse(typeName));
+            return this;
         }
 
 
@@ -168,7 +181,7 @@ namespace Aquila.Core.Querying.Model
         /// used for load subject then criterion build
         /// need pass CriterionContext parameter to constructor for using this feature
         /// </summary>
-        public void ld_subject()
+        public QLang ld_subject()
         {
             var ds = (QDataSource)top();
 
@@ -178,9 +191,11 @@ namespace Aquila.Core.Querying.Model
                 if (CurrentScope != null)
                     CurrentScope.AddDS(ds);
             }
+
+            return this;
         }
 
-        public void ld_table(string tableName)
+        public QLang ld_table(string tableName)
         {
             var ds = _logicStack.PopDataSource();
             var table = ds.FindTable(tableName);
@@ -191,11 +206,14 @@ namespace Aquila.Core.Querying.Model
                 CurrentScope.AddDS(table);
                 CurrentScope.RemoveDS(ds);
             }
+
+            return this;
         }
 
-        public void ld_ref(QLangElement element)
+        public QLang ld_ref(QLangElement element)
         {
             _logicStack.Push(element);
+            return this;
         }
 
 
@@ -205,7 +223,7 @@ namespace Aquila.Core.Querying.Model
         /// <param name="componentName"></param>
         /// <param name="typeName"></param>
         /// <param name="alias"></param>
-        public void ld_source(string qualifiedName)
+        public QLang ld_source(string qualifiedName)
         {
             //load entity type
             var type = _metadata.GetSemanticByName(qualifiedName);
@@ -213,26 +231,32 @@ namespace Aquila.Core.Querying.Model
             _logicStack.Push(ds);
             if (CurrentScope != null)
                 CurrentScope.AddDS(ds);
+
+            return this;
         }
 
-
-        public void ld_param(string name)
+        public QLang ld_param(string name)
         {
             _logicStack.Push(new QParameter(name));
+
+            return this;
         }
 
-        public void ld_var(string name)
+        public QLang ld_var(string name)
         {
             _logicStack.Push(new QVar(name));
+            return this;
         }
 
-        public void ld_source_context()
+        public QLang ld_source_context()
         {
             _logicStack.Push(
                 new QCombinedDataSource(new QDataSourceList(CurrentScope.GetScopedDS())));
+
+            return this;
         }
 
-        public void ld_name(string name)
+        public QLang ld_name(string name)
         {
             if (CurrentScope.TryGetDS(name, out var source))
             {
@@ -242,19 +266,25 @@ namespace Aquila.Core.Querying.Model
             {
                 throw new Exception($"The name :'{name}' not found in scope");
             }
+
+            return this;
         }
 
-        public void ld_sort(QSortDirection direction)
+        public QLang ld_sort(QSortDirection direction)
         {
             _logicStack.Push(direction);
+
+            return this;
         }
 
-        public void ld_nothing()
+        public QLang ld_nothing()
         {
             _logicStack.Push(null);
+
+            return this;
         }
 
-        public void ld_star()
+        public QLang ld_star()
         {
             var fields = CurrentScope.GetScopedDS().SelectMany(x => x.GetFields());
 
@@ -263,9 +293,11 @@ namespace Aquila.Core.Querying.Model
                 _logicStack.Push(field);
                 st_elem();
             }
+
+            return this;
         }
 
-        public void ld_field(string name)
+        public QLang ld_field(string name)
         {
             var ds = _logicStack.PopDataSource();
 
@@ -282,9 +314,11 @@ namespace Aquila.Core.Querying.Model
             }
 
             _logicStack.Push(result.First());
+
+            return this;
         }
 
-        public void @as(string alias)
+        public QLang @as(string alias)
         {
             var item = _logicStack.Pop();
 
@@ -292,7 +326,7 @@ namespace Aquila.Core.Querying.Model
             {
                 CurrentScope.RemoveDS(aqds);
                 CurrentScope.AddDS(aqds, alias);
-                return;
+                return this;
             }
 
             if (item is QAliasedDataSource || item is QAliasedSelectExpression)
@@ -314,6 +348,8 @@ namespace Aquila.Core.Querying.Model
             {
                 throw new Exception("Element on stack not available for aliasing");
             }
+
+            return this;
         }
 
         /// <summary>
@@ -321,9 +357,10 @@ namespace Aquila.Core.Querying.Model
         /// scope automatically close then you invoke closing-scope instruction
         /// like new_query()
         /// </summary>
-        public void new_scope()
+        public QLang new_scope()
         {
             _scope.Push(new LogicScope());
+            return this;
         }
 
         private LogicScope pop_scope()
@@ -331,15 +368,18 @@ namespace Aquila.Core.Querying.Model
             return _scope.Pop();
         }
 
-        public void lookup(string propName)
+        public QLang lookup(string propName)
         {
             _logicStack.Push(new QLookupField(propName, _logicStack.PopExpression()));
+            return this;
         }
 
-        public void st_data_request()
+        public QLang st_data_request()
         {
             pop_scope();
             _logicStack.Push(new QDataRequest(_logicStack.PopItem<QFieldList>()));
+
+            return this;
         }
 
         /// <summary>
@@ -353,7 +393,7 @@ namespace Aquila.Core.Querying.Model
         ///
         /// in that order
         /// </summary>
-        public void new_select_query()
+        public QLang new_select_query()
         {
             var scope = pop_scope();
 
@@ -369,9 +409,11 @@ namespace Aquila.Core.Querying.Model
 
             if (_scope.Count > 0) //we are inside the nested query
                 _logicStack.Push(new QNestedQuery(_logicStack.PopQuery()));
+
+            return this;
         }
 
-        public void new_insert_query()
+        public QLang new_insert_query()
         {
             pop_scope();
 
@@ -379,9 +421,11 @@ namespace Aquila.Core.Querying.Model
                 _logicStack.PopItem<QExpressionSet>(),
                 _logicStack.PopItem<QInsert>(),
                 QCriterionList.Empty);
+
+            return this;
         }
 
-        public void new_criterion()
+        public QLang new_criterion()
         {
             var scope = pop_scope();
             var criterion = new QCriterion(_logicStack.PopItem<QWhere>(), _logicStack.PopItem<QFrom>());
@@ -389,9 +433,11 @@ namespace Aquila.Core.Querying.Model
             //we need validate query before push it to the stack            
 
             _logicStack.Push(criterion);
+
+            return this;
         }
 
-        public void new_result_column()
+        public QLang new_result_column()
         {
             var expr = pop();
             if (expr is QField item)
@@ -402,19 +448,22 @@ namespace Aquila.Core.Querying.Model
             {
                 _logicStack.Push(new QSelectExpression(exp));
             }
+
+            return this;
         }
 
         /// <summary>
         /// Creates inner join 
         /// </summary>
-        public void join(QJoinType joinType)
+        public QLang join(QJoinType joinType)
         {
-            join_with_type(QJoinType.Inner);
+            return join_with_type(QJoinType.Inner);
         }
 
-        private void join_with_type(QJoinType type)
+        private QLang join_with_type(QJoinType type)
         {
             _logicStack.Push(new QFromItem(_logicStack.PopExpression(), _logicStack.PopDataSource(), type));
+            return this;
         }
 
         /// <summary>
@@ -443,113 +492,136 @@ namespace Aquila.Core.Querying.Model
         /// <summary>
         /// Логическое И
         /// </summary>
-        public void and()
+        public QLang and()
         {
             _logicStack.Push(new QAnd(_logicStack.PopExpression(), _logicStack.PopExpression()));
+            
+            return this;
         }
 
         /// <summary>
         /// Конкатенация
         /// </summary>
-        public void add()
+        public QLang add()
         {
             _logicStack.Push(new QAdd(_logicStack.PopExpression(), _logicStack.PopExpression()));
+            return this;
         }
 
 
         /// <summary>
         /// Равно
         /// </summary>
-        public void eq()
+        public QLang eq()
         {
             _logicStack.Push(new QEquals(_logicStack.PopExpression(), _logicStack.PopExpression()));
+            return this;
         }
 
 
         /// <summary>
         /// Равно
         /// </summary>
-        public void gt()
+        public QLang gt()
         {
             _logicStack.Push(new QGreatThen(_logicStack.PopExpression(), _logicStack.PopExpression()));
+            return this;
         }
 
         /// <summary>
         /// Great or equals then
         /// Great or equals then
         /// </summary>
-        public void gte()
+        public QLang gte()
         {
             _logicStack.Push(new QGreatThenOrEquals(_logicStack.PopExpression(), _logicStack.PopExpression()));
+            return this;
         }
 
         /// <summary>
         /// Less or equals then
         /// </summary>
-        public void lte()
+        public QLang lte()
         {
             _logicStack.Push(new QLessThenOrEquals(_logicStack.PopExpression(), _logicStack.PopExpression()));
+            return this;
         }
 
         /// <summary>
         /// Less then
         /// </summary>
-        public void lt()
+        public QLang lt()
         {
             _logicStack.Push(new QLessThen(_logicStack.PopExpression(), _logicStack.PopExpression()));
+            return this;
         }
 
 
         /// <summary>
         /// Не равно
         /// </summary>
-        public void ne()
+        public QLang ne()
         {
             _logicStack.Push(new QNotEquals(_logicStack.PopExpression(), _logicStack.PopExpression()));
+            return this;
         }
 
         /// <summary>
         /// Очистить стэк
         /// </summary>
-        public void reset()
+        public QLang reset()
         {
             _logicStack.Clear();
             _scope.Clear();
+
+            return this;
         }
 
 
         /// <summary>
         /// Загрузить на стэк пустой аргумент (null для языка)
         /// </summary>
-        public void ld_empty()
+        public QLang ld_empty()
         {
             _logicStack.Push(null);
+
+            return this;
         }
 
-        public void @case()
+        public QLang @case()
         {
             _logicStack.Push(new QCase(_logicStack.PopExpression(), _logicStack.PopItem<QWhenList>()));
+
+            return this;
         }
 
-        public void when()
+        public QLang when()
         {
             _logicStack.Push(new QWhen(_logicStack.PopExpression(),
                 _logicStack.PopOpExpression()));
+
+            return this;
         }
 
-        public void cast()
+        public QLang cast()
         {
             _logicStack.Push(new QCast(_logicStack.PopType(), _logicStack.PopExpression()));
+
+            return this;
         }
 
-        public void ld_const(string str)
+        public QLang ld_const(string str)
         {
             _logicStack.Push(new QConst(new SMType(SMType.String), str));
+
+            return this;
         }
 
-        public void ld_const(double number)
+        public QLang ld_const(double number)
         {
             _logicStack.Push(new QConst(new SMType(SMType.Numeric, 0, 10, 10), number));
+
+            return this;
         }
     }
 }
