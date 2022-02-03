@@ -13,7 +13,6 @@ using Aquila.Runtime.Querying;
 
 namespace Aquila.Core.Querying
 {
-
     /// <summary>
     /// Visit logical tree of query and build query for real DBMS 
     /// </summary>
