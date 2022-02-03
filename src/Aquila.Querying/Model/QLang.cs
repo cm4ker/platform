@@ -213,50 +213,6 @@ namespace Aquila.Core.Querying.Model
             _logicStack.Push(ds);
             if (CurrentScope != null)
                 CurrentScope.AddDS(ds);
-
-            // if (string.IsNullOrEmpty(p_alias))
-            // {
-            //     //force aliasing the sources because we need it at adding security level
-            //     p_alias = RandomString(10);
-            // }
-            //
-            // @as(p_alias);
-
-            //NOTE: Important create subject context after aliasing the source
-            // if (_ust != null)
-            // {
-            //     if (!_ust.TryClaimPermission(type, SecPermission.Read, out var claim))
-            //     {
-            //         //access denied!
-            //         // throw new Exception("Access denied");
-            //     }
-            //
-            //     // /*
-            //     //  Need register query
-            //     //  
-            //     //  SELECT ( CASE WHEN EXISTS(SELECT 1 FROM (QUERY)) THEN 0x01 (ALLOW) ELSE 0x00 (DENIED) END  ) SEC_FLAG
-            //     //  
-            //     //  FROM (SOURCE_TABLE)
-            //     //
-            //     //  NOTE: where SOURCE_TABLE - table subject                            
-            //     // */
-            //
-            //     if (claim != null)
-            //     {
-            //         var qCriterial = claim.Criteria.SelectMany(x => x.Value).Select(x =>
-            //         {
-            //             var c = x.cString;
-            //
-            //             new_scope();
-            //
-            //             Parse(this, c);
-            //             pop_scope();
-            //
-            //             return (QCriterion)pop();
-            //         });
-            //         CurrentScope.Criteria.AddRange(qCriterial);
-            //     }
-            // }
         }
 
 
