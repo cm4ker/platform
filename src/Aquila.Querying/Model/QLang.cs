@@ -490,17 +490,17 @@ namespace Aquila.Core.Querying.Model
         }
 
         /// <summary>
-        /// Логическое И
+        /// And operator
         /// </summary>
         public QLang and()
         {
             _logicStack.Push(new QAnd(_logicStack.PopExpression(), _logicStack.PopExpression()));
-            
+
             return this;
         }
 
         /// <summary>
-        /// Конкатенация
+        /// Additional operator
         /// </summary>
         public QLang add()
         {
@@ -510,7 +510,7 @@ namespace Aquila.Core.Querying.Model
 
 
         /// <summary>
-        /// Равно
+        /// Equals operator
         /// </summary>
         public QLang eq()
         {
@@ -520,7 +520,7 @@ namespace Aquila.Core.Querying.Model
 
 
         /// <summary>
-        /// Равно
+        /// Equals
         /// </summary>
         public QLang gt()
         {
@@ -529,7 +529,6 @@ namespace Aquila.Core.Querying.Model
         }
 
         /// <summary>
-        /// Great or equals then
         /// Great or equals then
         /// </summary>
         public QLang gte()
@@ -558,7 +557,7 @@ namespace Aquila.Core.Querying.Model
 
 
         /// <summary>
-        /// Не равно
+        /// Not equals operator
         /// </summary>
         public QLang ne()
         {
@@ -567,7 +566,7 @@ namespace Aquila.Core.Querying.Model
         }
 
         /// <summary>
-        /// Очистить стэк
+        /// Reset machine to the initial state
         /// </summary>
         public QLang reset()
         {
@@ -579,7 +578,7 @@ namespace Aquila.Core.Querying.Model
 
 
         /// <summary>
-        /// Загрузить на стэк пустой аргумент (null для языка)
+        /// load null on top of the stack
         /// </summary>
         public QLang ld_empty()
         {
@@ -588,6 +587,7 @@ namespace Aquila.Core.Querying.Model
             return this;
         }
 
+        //Create case
         public QLang @case()
         {
             _logicStack.Push(new QCase(_logicStack.PopExpression(), _logicStack.PopItem<QWhenList>()));
@@ -595,6 +595,10 @@ namespace Aquila.Core.Querying.Model
             return this;
         }
 
+        /// <summary>
+        /// Create when 
+        /// </summary>
+        /// <returns></returns>
         public QLang when()
         {
             _logicStack.Push(new QWhen(_logicStack.PopExpression(),
@@ -603,6 +607,10 @@ namespace Aquila.Core.Querying.Model
             return this;
         }
 
+        /// <summary>
+        /// Casting argument on top of stack
+        /// </summary>
+        /// <returns></returns>
         public QLang cast()
         {
             _logicStack.Push(new QCast(_logicStack.PopType(), _logicStack.PopExpression()));
@@ -610,6 +618,11 @@ namespace Aquila.Core.Querying.Model
             return this;
         }
 
+        /// <summary>
+        /// Load constant value on top of the stack
+        /// </summary>
+        /// <param name="str">string value</param>
+        /// <returns></returns>
         public QLang ld_const(string str)
         {
             _logicStack.Push(new QConst(new SMType(SMType.String), str));
@@ -617,6 +630,11 @@ namespace Aquila.Core.Querying.Model
             return this;
         }
 
+        /// <summary>
+        /// Load constant value on top of the stack
+        /// </summary>
+        /// <param name="number">numeric value. Note: default format is (scale = 10, precision = 10)</param>
+        /// <returns></returns>
         public QLang ld_const(double number)
         {
             _logicStack.Push(new QConst(new SMType(SMType.Numeric, 0, 10, 10), number));
