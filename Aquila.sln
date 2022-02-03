@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquila.UIBuilder", "src\Aqu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{60F9DF35-0F24-4B1B-AE89-43D43BAF8160}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{A81AD719-77EB-4159-9DE9-8E8C2C0229AA}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{C8A35A6D-FEE3-489C-87D4-7E56BEC2AF86}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquila.CodeAnalysis", "src\Aquila.CodeAnalysis\Aquila.CodeAnalysis.csproj", "{E90E3BA8-D1B1-4D68-8C4A-A8B3CD3AA02F}"
