@@ -1,0 +1,85 @@
+﻿/*
+ Invoice
+ (
+    MyProperty  (int, string, ContractRef)
+    MyProperty2 (int) = 0;
+
+    struct Prop10
+    {
+        public int Type;
+        public int Int;
+        public string String;
+        public ContractLink ContractRef;
+    }
+   
+    Invoice.MyProperty
+ )
+      
+ 1) Сопоставить типы обеих сторон
+    String        String
+    Int           Int
+    Data
+ 2) 
+ 
+ A = CASE 1 > 0 THEN A ELSE B (Types(A) + Types(B))
+  V
+ AI = BI
+ AND AS = BS
+ AND AD = BD
+ AND AB = BB
+ AND AType = BType 
+ 
+ E1:
+ A (int, string) = B (int, string) => 
+ 
+ A.Type = B.Type
+ AND A.Int = B.Int
+ AND A.String = B.String
+ 
+ E2:
+ A(int, string) = B(int) =>
+ 
+ A.Type = 1
+ AND A.Int = B.Int
+ 
+ E3:
+ Cast(A (int, string) as int) = B (int, string) => 
+ 
+ CASE When A.Type = 1 THEN A.Int
+      When A.Type = 2 THEN CAST(A.String AS int) END = B.Int
+ 
+ E4:
+ Case 1 > n Then A (int, string) 
+            Else B (date, string, Ref) End = C (int, Ref) => 
+      
+ Case 1 > n Then
+                A.Type
+            Else
+                B.Type 
+ End = C.Type
+ AND     
+ Case 1 > n Then
+                A.Int
+            Else
+                default(int) 
+ End = C.Int
+ AND
+ Case 1 > n Then
+                default(ref)
+            Else
+                B.Ref End = C.Ref
+ End
+      
+ E5:
+ Cast(Case 1 > n Then A (int, string) 
+            Else B (date, string, Ref) End as int) = C (int, Ref) =>    
+ 
+ Case when 1 > n Then 
+                    Case
+                        When A.Type = 1 Then A.Int
+                        When A.Type = 2 Then CAST(A.String AS int) 
+                    End 
+                 Else
+                  Cast(B.String AS int)
+ End = C.Int
+ */
