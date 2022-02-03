@@ -91,7 +91,7 @@ namespace Aquila.Core.Querying.Model
         }
 
         /// <summary>
-        /// Пытается поднять сверху объект типа <see cref="T"/>, если сверху нет этого объекта, значит ничего не происходит
+        /// Try to pop from the stuck <see cref="T"/>, returns default if object not this type (stack not changed)
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>

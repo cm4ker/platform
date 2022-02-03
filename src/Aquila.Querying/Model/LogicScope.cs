@@ -7,37 +7,20 @@ using Aquila.Runtime.Querying;
 
 namespace Aquila.Core.Querying.Model
 {
-    public enum QueryContext
-    {
-        None = 0,
-        From = 1,
-        GroupBy = 2,
-        Having = 3,
-        Where = 4,
-        Select = 5,
-        OrderBy = 6
-    }
-
     public class LogicScope
     {
+        private ImmutableArray<QDataSource> _scopedDS;
+
         public LogicScope()
         {
             _aliasedDS = new Dictionary<string, QDataSource>();
             _scopedDS = ImmutableArray<QDataSource>.Empty;
-            Criteria = new();
         }
-
-        public QueryContext QueryContext;
 
         /// <summary>
         /// Names of datasources
         /// </summary>
         private Dictionary<string, QDataSource> _aliasedDS { get; }
-
-        private ImmutableArray<QDataSource> _scopedDS;
-
-        public List<QCriterion> Criteria { get; set; }
-
 
         /// <summary>
         /// Push data to the scope. Data from this DS will be available in this scope

@@ -401,12 +401,10 @@ namespace Aquila.Core.Querying.Model
         {
             var scope = pop_scope();
 
-            var clist = new QCriterionList(scope.Criteria.Select(x => x).ToImmutableArray());
-
             var query = new QQuery(_logicStack.PopItem<QOrderBy>(),
                 _logicStack.PopItem<QSelect>(), _logicStack.PopItem<QHaving>(),
                 _logicStack.PopItem<QGroupBy>(), _logicStack.PopItem<QWhere>(),
-                _logicStack.PopItem<QFrom>(), clist);
+                _logicStack.PopItem<QFrom>(), QCriterionList.Empty);
 
             //we need validate query before push it to the stack            
 

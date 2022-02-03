@@ -131,6 +131,8 @@ namespace Aquila.Runtime.Querying
 
             if (ust.TryClaimPermission(md, SecPermission.Update, out var claim))
             {
+                QLang q = new QLang();
+                q.@select();
             }
             else
             {
@@ -139,5 +141,24 @@ namespace Aquila.Runtime.Querying
 
             return baseQuery + "";
         }
+        /*
+         We need create query in context of the object and user
+         
+         User have some security rights and we have to apply this information to result query
+         
+         now we generate this code:
+         
+         var cmd = <ctx>.CreateCommand(InsertObjectQuery); <-- problem here. We need transform query with sec aspect
+         
+         cmd.AddParam("p0", value0);
+         ... more params
+         
+         cmd.ExecuteNonQuery();
+         cmd.Dispose();
+         
+         
+                
+         
+         */
     }
 }
