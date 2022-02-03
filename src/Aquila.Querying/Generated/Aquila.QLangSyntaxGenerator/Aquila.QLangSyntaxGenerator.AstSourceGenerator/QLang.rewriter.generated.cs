@@ -14,11 +14,17 @@ public class QLangTreeRewriter : QLangVisitorBase<QLangElement> {
 public override QLangElement VisitQFieldList(QFieldList arg) {
 return new QFieldList(arg.Select(x => (QField)Visit(x)).ToImmutableArray());
 }
+public override QLangElement VisitQSourceFieldList(QSourceFieldList arg) {
+return new QSourceFieldList(arg.Select(x => (QSourceFieldExpression)Visit(x)).ToImmutableArray());
+}
 public override QLangElement VisitQJoinList(QJoinList arg) {
 return new QJoinList(arg.Select(x => (QFromItem)Visit(x)).ToImmutableArray());
 }
 public override QLangElement VisitQExpressionList(QExpressionList arg) {
 return new QExpressionList(arg.Select(x => (QExpression)Visit(x)).ToImmutableArray());
+}
+public override QLangElement VisitQExpressionSet(QExpressionSet arg) {
+return new QExpressionSet(arg.Select(x => (QExpressionList)Visit(x)).ToImmutableArray());
 }
 public override QLangElement VisitQDataSourceList(QDataSourceList arg) {
 return new QDataSourceList(arg.Select(x => (QDataSource)Visit(x)).ToImmutableArray());
@@ -42,7 +48,10 @@ public override QLangElement VisitQExpression(QExpression arg) {
 return new QExpression();
 }
 public override QLangElement VisitQInsertQuery(QInsertQuery arg) {
-return new QInsertQuery();
+var values = (QExpressionSet)Visit(arg.Values);
+var insert = (QInsert)Visit(arg.Insert);
+var criteria = (QCriterionList)Visit(arg.Criteria);
+return new QInsertQuery(values,insert,criteria);
 }
 public override QLangElement VisitQUpdateQuery(QUpdateQuery arg) {
 return new QUpdateQuery();
@@ -86,6 +95,11 @@ return new QWhere(expression);
 public override QLangElement VisitQHaving(QHaving arg) {
 var expression = (QExpression)Visit(arg.Expression);
 return new QHaving(expression);
+}
+public override QLangElement VisitQInsert(QInsert arg) {
+var target = (QPlatformDataSource)Visit(arg.Target);
+var fields = (QSourceFieldList)Visit(arg.Fields);
+return new QInsert(target,fields);
 }
 public override QLangElement VisitQAliasedDataSource(QAliasedDataSource arg) {
 var parentSource = (QDataSource)Visit(arg.ParentSource);

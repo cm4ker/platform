@@ -397,7 +397,7 @@ namespace Aquila.Core.Querying.Model
         ///
         /// in that order
         /// </summary>
-        public void new_query()
+        public void new_select_query()
         {
             var scope = pop_scope();
 
@@ -413,6 +413,16 @@ namespace Aquila.Core.Querying.Model
 
             if (_scope.Count > 0) //we are inside the nested query
                 _logicStack.Push(new QNestedQuery(_logicStack.PopQuery()));
+        }
+
+        public void new_insert_query()
+        {
+            pop_scope();
+
+            var insert = new QInsertQuery(
+                _logicStack.PopItem<QExpressionSet>(),
+                _logicStack.PopItem<QInsert>(),
+                QCriterionList.Empty);
         }
 
         public void new_criterion()

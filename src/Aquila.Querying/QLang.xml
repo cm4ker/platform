@@ -2,8 +2,10 @@
 
 <Config>
     <Syntax IsList="true" Base="QField" Name="QFieldList"/>
+    <Syntax IsList="true" Base="QSourceFieldExpression" Name="QSourceFieldList"/>
     <Syntax IsList="true" Base="QFromItem" Name="QJoinList"/>
     <Syntax IsList="true" Base="QExpression" Name="QExpressionList"/>
+    <Syntax IsList="true" Base="QExpressionList" Name="QExpressionSet"/>
     <Syntax IsList="true" Base="QDataSource" Name="QDataSourceList"/>
     <Syntax IsList="true" Base="QOrderExpression" Name="QOrderList"/>
     <Syntax IsList="true" Base="QGroupExpression" Name="QGroupList"/>
@@ -16,7 +18,11 @@
     <Syntax IsAbstract="true" Name="QQueryBase"/>
 
     <Syntax Name="QInsertQuery" Base="QQueryBase">
-
+        <Arguments>
+            <Single Name="Values" Type="QExpressionSet"/>
+            <Single Name="Insert" Type="QInsert"/>
+            <Single Name="Criteria" Type="QCriterionList"/>
+        </Arguments>
     </Syntax>
 
     <Syntax Name="QUpdateQuery" Base="QQueryBase">
@@ -75,6 +81,15 @@
     <Syntax Name="QHaving">
         <Arguments>
             <Single Name="Expression" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QInsert">
+        <Arguments>
+            <!--NOTE: as target on insertion we can use only platform destination source-->
+            <Single Name="Target" Type="QPlatformDataSource"/>
+            <!--NOTE: in insertion we have to use platform field list-->
+            <Single Name="Fields" Type="QSourceFieldList"/>
         </Arguments>
     </Syntax>
 

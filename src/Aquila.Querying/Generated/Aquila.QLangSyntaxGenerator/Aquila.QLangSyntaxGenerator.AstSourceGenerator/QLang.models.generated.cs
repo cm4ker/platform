@@ -36,6 +36,35 @@ namespace Aquila.Core.Querying.Model
 
 namespace Aquila.Core.Querying.Model
 {
+    public class QSourceFieldList : QLangCollection<QSourceFieldExpression>
+    {
+        public static QSourceFieldList Empty => new QSourceFieldList(ImmutableArray<QSourceFieldExpression>.Empty);
+        public QSourceFieldList(ImmutableArray<QSourceFieldExpression> elements) : base(elements)
+        {
+        }
+
+        public override QSourceFieldList Add(QLangElement element)
+        {
+            var item = element as QSourceFieldExpression;
+            if (item == null)
+                throw new Exception("Element is not QSourceFieldExpression");
+            return new QSourceFieldList(Elements.Add(item));
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQSourceFieldList(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQSourceFieldList(this);
+        }
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
     public class QJoinList : QLangCollection<QFromItem>
     {
         public static QJoinList Empty => new QJoinList(ImmutableArray<QFromItem>.Empty);
@@ -88,6 +117,35 @@ namespace Aquila.Core.Querying.Model
         public override void Accept(QLangVisitorBase visitor)
         {
             visitor.VisitQExpressionList(this);
+        }
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
+    public class QExpressionSet : QLangCollection<QExpressionList>
+    {
+        public static QExpressionSet Empty => new QExpressionSet(ImmutableArray<QExpressionList>.Empty);
+        public QExpressionSet(ImmutableArray<QExpressionList> elements) : base(elements)
+        {
+        }
+
+        public override QExpressionSet Add(QLangElement element)
+        {
+            var item = element as QExpressionList;
+            if (item == null)
+                throw new Exception("Element is not QExpressionList");
+            return new QExpressionSet(Elements.Add(item));
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQExpressionSet(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQExpressionSet(this);
         }
     }
 }
@@ -320,9 +378,18 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QInsertQuery : QQueryBase
     {
-        public QInsertQuery() : base()
+        public QInsertQuery(QExpressionSet values, QInsert insert, QCriterionList criteria) : base()
         {
+            this.values = values;
+            this.insert = insert;
+            this.criteria = criteria;
         }
+
+        public QExpressionSet Values { get => this.values; init => this.values = value; }
+
+        public QInsert Insert { get => this.insert; init => this.insert = value; }
+
+        public QCriterionList Criteria { get => this.criteria; init => this.criteria = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -336,6 +403,12 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
+            if (this.values != null)
+                yield return this.values;
+            if (this.insert != null)
+                yield return this.insert;
+            if (this.criteria != null)
+                yield return this.criteria;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -343,6 +416,10 @@ namespace Aquila.Core.Querying.Model
 
             yield break;
         }
+
+        private QExpressionSet values;
+        private QInsert insert;
+        private QCriterionList criteria;
     }
 }
 
@@ -682,6 +759,44 @@ namespace Aquila.Core.Querying.Model
         }
 
         private QExpression expression;
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
+    public partial class QInsert : QLangElement
+    {
+        public QInsert(QPlatformDataSource target, QSourceFieldList fields) : base()
+        {
+            this.target = target;
+            this.fields = fields;
+        }
+
+        public QPlatformDataSource Target { get => this.target; init => this.target = value; }
+
+        public QSourceFieldList Fields { get => this.fields; init => this.fields = value; }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQInsert(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQInsert(this);
+        }
+
+        public override IEnumerable<QLangElement> GetChildren()
+        {
+            if (this.target != null)
+                yield return this.target;
+            if (this.fields != null)
+                yield return this.fields;
+            yield break;
+        }
+
+        private QPlatformDataSource target;
+        private QSourceFieldList fields;
     }
 }
 
@@ -1898,12 +2013,22 @@ namespace Aquila.Core.Querying
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitQSourceFieldList(QSourceFieldList arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitQJoinList(QJoinList arg)
         {
             return DefaultVisit(arg);
         }
 
         public virtual T VisitQExpressionList(QExpressionList arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitQExpressionSet(QExpressionSet arg)
         {
             return DefaultVisit(arg);
         }
@@ -1989,6 +2114,11 @@ namespace Aquila.Core.Querying
         }
 
         public virtual T VisitQHaving(QHaving arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitQInsert(QInsert arg)
         {
             return DefaultVisit(arg);
         }
@@ -2156,12 +2286,22 @@ namespace Aquila.Core.Querying
             DefaultVisit(arg);
         }
 
+        public virtual void VisitQSourceFieldList(QSourceFieldList arg)
+        {
+            DefaultVisit(arg);
+        }
+
         public virtual void VisitQJoinList(QJoinList arg)
         {
             DefaultVisit(arg);
         }
 
         public virtual void VisitQExpressionList(QExpressionList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQExpressionSet(QExpressionSet arg)
         {
             DefaultVisit(arg);
         }
@@ -2247,6 +2387,11 @@ namespace Aquila.Core.Querying
         }
 
         public virtual void VisitQHaving(QHaving arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQInsert(QInsert arg)
         {
             DefaultVisit(arg);
         }

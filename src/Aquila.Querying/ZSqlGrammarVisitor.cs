@@ -64,7 +64,7 @@ namespace Aquila.Core.Querying
             if (context.orderby_stmt() != null)
                 Visit(context.orderby_stmt());
 
-            _stack.new_query();
+            _stack.new_select_query();
 
 
             return null;
