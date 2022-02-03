@@ -176,7 +176,7 @@ join_clause
 
 join_operator
  : ','
- | NATURAL? ( LEFT OUTER? | INNER | CROSS )? JOIN
+ | NATURAL? ( LEFT OUTER? | INNER | CROSS | RIGHT OUTER? | FULL OUTER? )? JOIN
  ;
 
 join_constraint

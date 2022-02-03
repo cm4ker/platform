@@ -391,7 +391,6 @@ namespace Aquila.Core.Querying.Model
             _logicStack.Push(criterion);
         }
 
-
         public void new_result_column()
         {
             var expr = pop();
@@ -406,40 +405,11 @@ namespace Aquila.Core.Querying.Model
         }
 
         /// <summary>
-        /// Внутреннее соединение 
+        /// Creates inner join 
         /// </summary>
-        public void join()
+        public void join(QJoinType joinType)
         {
             join_with_type(QJoinType.Inner);
-        }
-
-        /// <summary>
-        /// Левое соединение
-        /// </summary>
-        public void left_join()
-        {
-            join_with_type(QJoinType.Left);
-        }
-
-        /// <summary>
-        /// Правое соединение
-        /// </summary>
-        public void right_join()
-        {
-            join_with_type(QJoinType.Right);
-        }
-
-        public void cross_join()
-        {
-            join_with_type(QJoinType.Cross);
-        }
-
-        /// <summary>
-        /// Полное соединение
-        /// </summary>
-        public void full_join()
-        {
-            join_with_type(QJoinType.Full);
         }
 
         private void join_with_type(QJoinType type)

@@ -111,8 +111,23 @@ namespace Aquila.Core.Querying
                 Visit(context.table_or_subquery(i));
                 Visit(context.join_constraint(i - 1));
 
-                //TODO: Handle join types (left, right, cross, full)
-                _stack.@join();
+                var op = context.join_operator(i - 1);
+                QJoinType type;
+
+                if (op.LEFT() != null)
+                    type = QJoinType.Left;
+                else if (op.RIGHT() != null)
+                    type = QJoinType.Right;
+                else if (op.FULL() != null)
+                    type = QJoinType.Full;
+                else if (op.INNER() != null)
+                    type = QJoinType.Inner;
+                else if (op.CROSS() != null)
+                    type = QJoinType.Cross;
+                else
+                    type = QJoinType.Inner;
+
+                _stack.@join(type);
                 _stack.st_elem();
             }
 
