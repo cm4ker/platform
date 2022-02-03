@@ -540,33 +540,4 @@ namespace Aquila.Core.Querying
             }
         }
     }
-
-    public class SecMachine
-    {
-        private Stack<List<Action<QueryMachine>>> _stack = new();
-
-        //machine for emit delayed securities
-        /*
-         we have get sec for executing query on emitting FROM construction
-         here we have to register for emitting permission (if we have a criterion)
-         
-         
-         SELECT
-            (0x00 || 0x01) && T0._sec
-         FROM
-          ...
-          (SELECT (0x00 || 0x01) AS _sec) AS T0  
-         */
-
-
-        public void PushAnCriterion(QObjectTable source, string criterion)
-        {
-            //TODO: we need to compile criterion on this stage already
-            //_stack
-        }
-
-        // public bool PullNextCriterionCheck(out Action<QueryMachine> qm)
-        // {
-        // }
-    }
 }
