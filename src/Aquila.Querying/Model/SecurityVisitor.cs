@@ -23,6 +23,52 @@ namespace Aquila.Core.Querying.Model
             _sec = sec;
         }
 
+        public override QLangElement VisitQInsertQuery(QInsertQuery arg)
+        {
+            /*
+            TRANSFORM 
+            INSERT INTO Table(ColList) VALUES(@p1, @p2... @pn)
+            
+            into
+            
+            INSERT INTO Table(ColList)
+            SELECT *
+            FROM (SELECT @p1 AS NameField1, @p2 AS NameField2, @p3 AS NameField3 ..) AS TS
+            WHERE            
+             Criteria
+             */
+
+            var target = arg.Insert.Target;
+            if (target is QObjectTable ot)
+            {
+                if (_sec.TryClaimPermission(ot.ObjectType, SecPermission.Create, out var claim))
+                {
+                    var select = new QSelect(new QFieldList(arg.Values[0]
+                        .Select(x => (QField)new QAliasedSelectExpression(x, ((QParameter)x).Name))
+                        .ToImmutableArray()));
+
+                    var nq = new QAliasedDataSource(new QNestedQuery(new QSelectQuery(null, select, null, null, null,
+                        null,
+                        QCriterionList.Empty)), "TS");
+
+                    var criteria = claim.Criteria.SelectMany(x => x.Value).Select(x =>
+                    {
+                        _m.ld_ref(nq);
+                        var c = x.cString;
+                        QLang.Parse(_m, c);
+                        return (QCriterion)_m.pop();
+                    }).ToImmutableArray();
+
+                    var q = new QSelectQuery(null, new QSelect(new QFieldList(nq.GetFields().ToImmutableArray())), null,
+                        null, null, new QFrom(null, nq), new QCriterionList(criteria));
+
+                    return new QInsertSelectQuery(q, arg.Insert, arg.Criteria);
+                }
+            }
+
+            return arg;
+        }
+
         public override QLangElement VisitQSelectQuery(QSelectQuery arg)
         {
             var from = (QFrom)Visit(arg.From);

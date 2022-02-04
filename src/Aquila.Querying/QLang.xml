@@ -25,6 +25,14 @@
         </Arguments>
     </Syntax>
 
+    <Syntax Name="QInsertSelectQuery" Base="QQueryBase">
+        <Arguments>
+            <Single Name="Select" Type="QSelectQuery"/>
+            <Single Name="Insert" Type="QInsert"/>
+            <Single Name="Criteria" Type="QCriterionList"/>
+        </Arguments>
+    </Syntax>
+
     <Syntax Name="QUpdateQuery" Base="QQueryBase">
 
     </Syntax>

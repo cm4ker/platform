@@ -1,4 +1,5 @@
 using Aquila.Core.Querying.Model;
+using Microsoft.IdentityModel.Protocols;
 
 namespace Aquila.Core.Querying
 {

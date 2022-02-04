@@ -425,6 +425,55 @@ namespace Aquila.Core.Querying.Model
 
 namespace Aquila.Core.Querying.Model
 {
+    public partial class QInsertSelectQuery : QQueryBase
+    {
+        public QInsertSelectQuery(QSelectQuery select, QInsert insert, QCriterionList criteria) : base()
+        {
+            this.select = select;
+            this.insert = insert;
+            this.criteria = criteria;
+        }
+
+        public QSelectQuery Select { get => this.select; init => this.select = value; }
+
+        public QInsert Insert { get => this.insert; init => this.insert = value; }
+
+        public QCriterionList Criteria { get => this.criteria; init => this.criteria = value; }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQInsertSelectQuery(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQInsertSelectQuery(this);
+        }
+
+        public override IEnumerable<QLangElement> GetChildren()
+        {
+            if (this.select != null)
+                yield return this.select;
+            if (this.insert != null)
+                yield return this.insert;
+            if (this.criteria != null)
+                yield return this.criteria;
+            foreach (var item in base.GetChildren())
+            {
+                yield return item;
+            }
+
+            yield break;
+        }
+
+        private QSelectQuery select;
+        private QInsert insert;
+        private QCriterionList criteria;
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
     public partial class QUpdateQuery : QQueryBase
     {
         public QUpdateQuery() : base()
@@ -2073,6 +2122,11 @@ namespace Aquila.Core.Querying
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitQInsertSelectQuery(QInsertSelectQuery arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitQUpdateQuery(QUpdateQuery arg)
         {
             return DefaultVisit(arg);
@@ -2342,6 +2396,11 @@ namespace Aquila.Core.Querying
         }
 
         public virtual void VisitQInsertQuery(QInsertQuery arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQInsertSelectQuery(QInsertSelectQuery arg)
         {
             DefaultVisit(arg);
         }

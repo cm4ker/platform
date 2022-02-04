@@ -90,8 +90,15 @@ namespace Aquila.Runtime.Querying
             return builder.Visit((SSyntaxNode)qm.peek());
         }
 
+
         public static QInsertQuery GetSaveInsertSingleQuery(SMEntity entity, EntityMetadataCollection em)
         {
+            /*
+             NOTE:
+             We must insert tables BEFORE object insertion.
+             In this way platform can handle sec rights dependent on tables 
+             */
+
             var qm = new QLang(em);
 
             var name = entity.FullName;

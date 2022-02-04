@@ -1,10 +1,13 @@
 ﻿using Aquila.Core.Querying.Model;
 using Aquila.Runtime;
+using MoreLinq;
 
 namespace Aquila.Core.Querying
 {
     public class InsertionRealWalker : RealWalkerBase
     {
+        private int parameterIndex = 0;
+
         public InsertionRealWalker(DatabaseRuntimeContext drContext) : base(drContext)
         {
         }
@@ -15,8 +18,7 @@ namespace Aquila.Core.Querying
             Qm.bg_query();
 
             //load values section
-            Qm.m_values();
-            Visit(arg.Values);
+            TransformValuesIntoSelect(arg.Values, arg.Criteria);
 
             //load insert section
             Visit(arg.Insert);
@@ -25,19 +27,36 @@ namespace Aquila.Core.Querying
             Qm.st_query();
         }
 
-        public override void VisitQExpression(QExpression arg)
+        public void TransformValuesIntoSelect(QExpressionSet set, QCriterionList criteria)
         {
-            Qm.ld_column("test");
+            if (criteria.Any())
+            {
+                //transform criteria here
+                Qm.m_where()
+                    .ld_const(1)
+                    .ld_const(1)
+                    .eq();
+            }
+
+            //extract to the select statement
+            Qm.m_select();
+            var list = set[0];
+
+            foreach (var qExpression in list)
+            {
+                Visit(qExpression);
+            }
         }
 
         public override void VisitQParameter(QParameter arg)
         {
-            Qm.ld_param("p1");
+            var p = $"p{parameterIndex++}";
+            Qm.ld_param(p);
         }
 
         public override void VisitQSourceFieldExpression(QSourceFieldExpression arg)
         {
-            Qm.ld_column(arg.GetName());
+            Qm.ld_column(arg.GetDbName());
         }
 
         public override void VisitQInsert(QInsert arg)
@@ -50,7 +69,7 @@ namespace Aquila.Core.Querying
 
         public override void VisitQObjectTable(QObjectTable arg)
         {
-            Qm.ld_table(arg.ObjectType.Name);
+            Qm.ld_table(arg.GetDbName());
         }
     }
 }

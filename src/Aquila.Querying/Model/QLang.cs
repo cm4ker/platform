@@ -231,6 +231,11 @@ namespace Aquila.Core.Querying.Model
             return this;
         }
 
+        /// <summary>
+        /// load element reference on top of stuck
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
         public QLang ld_ref(QLangElement element)
         {
             _logicStack.Push(element);
@@ -439,12 +444,17 @@ namespace Aquila.Core.Querying.Model
         {
             pop_scope();
 
-            var insert = new QInsertQuery(
-                _logicStack.PopItem<QExpressionSet>(),
-                _logicStack.PopItem<QInsert>(),
-                QCriterionList.Empty);
+            var item = _logicStack.Pop();
+            var insert = _logicStack.PopItem<QInsert>();
 
-            _logicStack.Push(insert);
+            object insert_query = item switch
+            {
+                QSelectQuery select => new QInsertSelectQuery(select, insert, QCriterionList.Empty),
+                QExpressionSet exprSet => new QInsertQuery(exprSet, insert, QCriterionList.Empty),
+                _ => throw new NotSupportedException()
+            };
+
+            _logicStack.Push(insert_query);
 
             return this;
         }

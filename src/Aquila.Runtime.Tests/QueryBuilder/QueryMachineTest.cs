@@ -74,7 +74,7 @@ namespace Aquila.Runtime.Tests
                 .ld_column("Column")
                 .st_query();
 
-            Assert.Equal("SELECT Column,\nCASE WHEN  1 = 1 THEN 2 \n  END\nFROM\nTable\n", CompileMsSql(machine));
+            Assert.Equal("SELECT CASE WHEN  1 = 1 THEN 2 \n  END,\nColumn\nFROM\nTable\n", CompileMsSql(machine));
         }
 
 
@@ -133,7 +133,7 @@ namespace Aquila.Runtime.Tests
 
 
             var expected =
-                "SELECT A.F1 as MyColumn\nFROM\nT1 as A\nJOIN (SELECT @param3 + @param2 as Summ\n) as subQuery ON A.F2 = subQuery.Summ\nJOIN T2 as B ON A.F1 = B.F1\nWHERE\nB.F2 = A.F2 and B.F1 = A.F1\nGROUP BY\nA.F1\nHAVING\n@param4 > sum(A.F1)\n";
+                "SELECT A.F1 as MyColumn\nFROM\nT1 as A\nJOIN (SELECT @param3 + @param2 as Summ\n) as subQuery ON subQuery.Summ = A.F2\nJOIN T2 as B ON B.F1 = A.F1\nWHERE\n(A.F1 = B.F1 AND A.F2 = B.F2)\nGROUP BY\nA.F1\nHAVING\n@param4 > sum(A.F1)\n";
 
             Assert.Equal(expected, actual
             );
@@ -169,7 +169,7 @@ namespace Aquila.Runtime.Tests
 
             Assert.Equal(res,
                 res =
-                    "UPDATE table2 as t2\nSET t2.column2 = t1.column2, t2.column1 = t1.column1\nFROM\ntable1 as t1\nWHERE\n@value1 = t1.column1\n");
+                    "UPDATE table2 as t2\nSET t2.column2 = t1.column2, t2.column1 = t1.column1\nFROM\ntable1 as t1\nWHERE\nt1.column1 = @value1\n");
         }
 
         [Fact]
@@ -197,9 +197,9 @@ namespace Aquila.Runtime.Tests
             var res = visitor.Visit((SSyntaxNode)machine.pop());
             Assert.Equal(res,
                 res =
-                    "INSERT INTO table2(column1)\nSELECT t1.column1\nFROM\ntable1 as t1\nWHERE\n@value1 = t1.column1\n");
+                    "INSERT INTO table2(column1)\nSELECT t1.column1\nFROM\ntable1 as t1\nWHERE\nt1.column1 = @value1\n");
         }
-        
+
         [Fact]
         public void InsertIntoSelectTest2()
         {
@@ -248,7 +248,7 @@ namespace Aquila.Runtime.Tests
             Assert.Equal(res,
                 res = "INSERT INTO table2(column3, column2, column1)\nVALUES\n(@value3, @value2, @value1)\n");
         }
-        
+
         [Fact]
         public void QueryInSelectTest()
         {
@@ -259,8 +259,6 @@ namespace Aquila.Runtime.Tests
                 .m_from()
                 .ld_table("Table")
                 .m_select()
-                
-                
                 .bg_query()
                 .m_from()
                 .ld_table("Table")
@@ -268,8 +266,6 @@ namespace Aquila.Runtime.Tests
                 .ld_column("Column")
                 .st_query()
                 .ld_scalar()
-                
-                
                 .ld_column("Column")
                 .st_query();
 

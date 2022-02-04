@@ -53,6 +53,12 @@ var insert = (QInsert)Visit(arg.Insert);
 var criteria = (QCriterionList)Visit(arg.Criteria);
 return new QInsertQuery(values,insert,criteria);
 }
+public override QLangElement VisitQInsertSelectQuery(QInsertSelectQuery arg) {
+var select = (QSelectQuery)Visit(arg.Select);
+var insert = (QInsert)Visit(arg.Insert);
+var criteria = (QCriterionList)Visit(arg.Criteria);
+return new QInsertSelectQuery(select,insert,criteria);
+}
 public override QLangElement VisitQUpdateQuery(QUpdateQuery arg) {
 return new QUpdateQuery();
 }

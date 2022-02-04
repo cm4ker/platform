@@ -1,8 +1,10 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Aquila.Core.Querying;
+using Aquila.Core.Querying.Model;
 using Aquila.Data;
 using Aquila.Metadata;
 using Aquila.QueryBuilder.Model;
@@ -24,6 +26,7 @@ namespace Aquila.UIBuilder
         private DatabaseRuntimeContext _drContext;
         private DataConnectionContext _dcContext;
         private string _translated;
+        private readonly UserSecTable _ust;
 
         public VM()
         {
@@ -31,6 +34,9 @@ namespace Aquila.UIBuilder
             _dcContext = new DataConnectionContext(SqlDatabaseType.SqlServer, _connectionString);
             _drContext = new DatabaseRuntimeContext();
             _drContext.LoadAll(_dcContext);
+
+            _ust = new UserSecTable();
+            _ust.Init(TestMetadata.GetTestMetadata().GetSecPolicies().ToList(), TestMetadata.GetTestMetadata());
         }
 
         public string Input
@@ -89,9 +95,13 @@ namespace Aquila.UIBuilder
                 var select = CRUDQueryGenerator.GetLoad(invoice, _drContext);
 
 
-                var model = CRUDQueryGenerator.GetSaveInsertSingleQuery(invoice, md);
+                //Immutable part
+                QLangElement model = CRUDQueryGenerator.GetSaveInsertSingleQuery(invoice, md);
                 var translatedOutput = new StringWriter();
                 new PrinterWalker(translatedOutput).Visit(model);
+                model = new SecurityVisitor(md, _ust).Visit(model);
+                new PhysicalNameWalker(_drContext).Visit(model);
+
                 var iw = new InsertionRealWalker(_drContext);
                 iw.Visit(model);
                 var result = new MsSqlBuilder().Visit((SSyntaxNode)iw.QueryMachine.peek());
