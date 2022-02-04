@@ -7,9 +7,11 @@ namespace Aquila.Core.Querying
     public class InsertionRealWalker : RealWalkerBase
     {
         private int parameterIndex = 0;
+        private SelectionRealWalker srw;
 
         public InsertionRealWalker(DatabaseRuntimeContext drContext) : base(drContext)
         {
+            srw = new SelectionRealWalker(drContext, Qm);
         }
 
         public override void VisitQInsertQuery(QInsertQuery arg)
@@ -19,6 +21,27 @@ namespace Aquila.Core.Querying
 
             //load values section
             TransformValuesIntoSelect(arg.Values, arg.Criteria);
+
+            //load insert section
+            Visit(arg.Insert);
+
+            //store query
+            Qm.st_query();
+        }
+
+
+        public override void VisitQInsertSelectQuery(QInsertSelectQuery arg)
+        {
+            //begin insertion query
+            Qm.bg_query();
+
+            //Emitting toplevel select
+            var s = arg.Select;
+
+            Qm.bg_query();
+            srw.Visit(s.From);
+            srw.Visit(s.Select);
+            Qm.st_query();
 
             //load insert section
             Visit(arg.Insert);

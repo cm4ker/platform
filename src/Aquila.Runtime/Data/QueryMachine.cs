@@ -50,7 +50,7 @@ namespace Aquila.QueryBuilder
             return (T)pop();
         }
 
-        private List<T> TryPopList<T>(int count = 0, bool needReverse = false)
+        private List<T> TryPopList<T>(int count = 0, bool needReverse = true)
         {
             List<T> result = new List<T>();
             int i = 0;
@@ -62,6 +62,7 @@ namespace Aquila.QueryBuilder
             TryPop<SMarker>();
             if (needReverse)
                 result.Reverse();
+            
             return result;
         }
 
@@ -256,7 +257,7 @@ namespace Aquila.QueryBuilder
             {
                 case MachineContextType.Select:
                     push(new SSelect(
-                        TryPopList<SExpression>(0, needReverse: true),
+                        TryPopList<SExpression>(),
                         TryPop<SOrderBy>(),
                         TryPop<STop>(),
                         TryPop<SHaving>(),

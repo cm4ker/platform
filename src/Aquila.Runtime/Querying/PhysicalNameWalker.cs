@@ -36,6 +36,8 @@ namespace Aquila.Core.Querying
 
         public override void VisitQFrom(QFrom arg)
         {
+            if (arg == null) return;
+
             Visit(arg.Source);
             Visit(arg.Joins);
         }

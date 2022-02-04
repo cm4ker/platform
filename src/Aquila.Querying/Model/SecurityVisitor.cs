@@ -23,6 +23,36 @@ namespace Aquila.Core.Querying.Model
             _sec = sec;
         }
 
+
+        public override QLangElement VisitQInsertSelectQuery(QInsertSelectQuery arg)
+        {
+            var target = arg.Insert.Target;
+            if (target is QObjectTable ot)
+            {
+                if (_sec.TryClaimPermission(ot.ObjectType, SecPermission.Create, out var claim))
+                {
+                    var oldSelect = arg.Select;
+
+                    var criteria = claim.Criteria.SelectMany(x => x.Value).Select(x =>
+                    {
+                        //force load source table
+                        _m.ld_ref(oldSelect.From.Source);
+                        var c = x.cString;
+                        QLang.Parse(_m, c);
+                        return (QCriterion)_m.pop();
+                    }).ToImmutableArray();
+
+                    var newSelect =
+                        new QSelectQuery(null, oldSelect.Select, null, null, null, oldSelect.From,
+                            new QCriterionList(criteria));
+
+                    return new QInsertSelectQuery(newSelect, arg.Insert);
+                }
+            }
+
+            return arg;
+        }
+
         public override QLangElement VisitQInsertQuery(QInsertQuery arg)
         {
             /*
@@ -62,7 +92,7 @@ namespace Aquila.Core.Querying.Model
                     var q = new QSelectQuery(null, new QSelect(new QFieldList(nq.GetFields().ToImmutableArray())), null,
                         null, null, new QFrom(null, nq), new QCriterionList(criteria));
 
-                    return new QInsertSelectQuery(q, arg.Insert, arg.Criteria);
+                    return new QInsertSelectQuery(q, arg.Insert);
                 }
             }
 

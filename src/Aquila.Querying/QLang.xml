@@ -27,9 +27,9 @@
 
     <Syntax Name="QInsertSelectQuery" Base="QQueryBase">
         <Arguments>
+            <!--NOTE: Use criterion from the QSelectQuery. Because on Selection level we apply filtering-->
             <Single Name="Select" Type="QSelectQuery"/>
             <Single Name="Insert" Type="QInsert"/>
-            <Single Name="Criteria" Type="QCriterionList"/>
         </Arguments>
     </Syntax>
 

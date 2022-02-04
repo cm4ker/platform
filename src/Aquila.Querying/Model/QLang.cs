@@ -449,7 +449,7 @@ namespace Aquila.Core.Querying.Model
 
             object insert_query = item switch
             {
-                QSelectQuery select => new QInsertSelectQuery(select, insert, QCriterionList.Empty),
+                QSelectQuery select => new QInsertSelectQuery(select, insert),
                 QExpressionSet exprSet => new QInsertQuery(exprSet, insert, QCriterionList.Empty),
                 _ => throw new NotSupportedException()
             };

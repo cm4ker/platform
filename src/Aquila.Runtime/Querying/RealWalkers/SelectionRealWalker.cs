@@ -7,6 +7,7 @@ using Aquila.Core.Querying.Model;
 using Aquila.Core.Querying.Optimizers;
 using Aquila.Metadata;
 using Aquila.Migrations;
+using Aquila.QueryBuilder;
 using Aquila.Runtime;
 using Aquila.Runtime.Querying;
 
@@ -25,7 +26,11 @@ namespace Aquila.Core.Querying
         {
         }
 
-   
+        /// <inheritdoc />
+        public SelectionRealWalker(DatabaseRuntimeContext drContext, QueryMachine qm) : base(drContext, qm)
+        {
+        }
+
 
         public override void VisitQParameter(QParameter arg)
         {
@@ -58,10 +63,16 @@ namespace Aquila.Core.Querying
             Qm.m_select();
 
             base.VisitQSelect(node);
+
+            _hasAlias = false;
+            _hasNamedSource = false;
         }
 
         public void VisitQCriterionList(QCriterionList arg, QFrom from)
         {
+            //NOTE: if have not from block then we haven't data source => we can't apply criterion
+            if (from == null) return;
+
             //if no criteria then we move forward
             if (arg == null || !arg.Any())
             {
@@ -440,6 +451,10 @@ namespace Aquila.Core.Querying
 
         public override void VisitQIntermediateSourceField(QIntermediateSourceField node)
         {
+            //NOTE: Intermidiate field representation contextual source change
+            //For example from NotAliasedObject to Aliased
+            //From NestedQuery to FromItem
+
             LoadNamedSource(node.DataSource.GetDbName());
 
             if (node.DataSource is QAliasedDataSource ads)
@@ -463,8 +478,37 @@ namespace Aquila.Core.Querying
             }
             else if (node.DataSource is QNestedQuery)
             {
-                var schema = DRContextHelper.GetPropertySchemas(node.GetDbName(), node.GetExpressionType().ToList());
-                GenColumn(schema);
+                var types = node.GetExpressionType().ToList();
+
+                if (types.Any())
+                {
+                    var schema = DRContextHelper.GetPropertySchemas(node.GetDbName(), types);
+                    GenColumn(schema);
+                }
+                else
+                {
+                    //possible it parameter. it has not types
+                    //we can't predict what user passthrough
+                    //just try to render it AS IS 
+
+                    string tabName = null;
+                    string alias = null;
+
+                    if (_hasNamedSource)
+                        tabName = (string)Qm.pop();
+
+                    var columnName = "";
+
+                    if (node.Field is QAliasedSelectExpression)
+                        columnName = node.GetDbName();
+                    else
+                        columnName = node.Field.GetDbName();
+
+                    Qm.ld_column(columnName, tabName);
+
+                    _hasNamedSource = false;
+                    _hasAlias = false;
+                }
             }
         }
 

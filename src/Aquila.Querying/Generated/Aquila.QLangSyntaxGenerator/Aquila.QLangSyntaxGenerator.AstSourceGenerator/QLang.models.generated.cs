@@ -427,18 +427,15 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QInsertSelectQuery : QQueryBase
     {
-        public QInsertSelectQuery(QSelectQuery select, QInsert insert, QCriterionList criteria) : base()
+        public QInsertSelectQuery(QSelectQuery select, QInsert insert) : base()
         {
             this.select = select;
             this.insert = insert;
-            this.criteria = criteria;
         }
 
         public QSelectQuery Select { get => this.select; init => this.select = value; }
 
         public QInsert Insert { get => this.insert; init => this.insert = value; }
-
-        public QCriterionList Criteria { get => this.criteria; init => this.criteria = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -456,8 +453,6 @@ namespace Aquila.Core.Querying.Model
                 yield return this.select;
             if (this.insert != null)
                 yield return this.insert;
-            if (this.criteria != null)
-                yield return this.criteria;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -468,7 +463,6 @@ namespace Aquila.Core.Querying.Model
 
         private QSelectQuery select;
         private QInsert insert;
-        private QCriterionList criteria;
     }
 }
 

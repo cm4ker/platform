@@ -91,7 +91,7 @@ namespace Aquila.Runtime.Querying
         }
 
 
-        public static QInsertQuery GetSaveInsertSingleQuery(SMEntity entity, EntityMetadataCollection em)
+        public static QInsertSelectQuery GetSaveInsertSingleQuery(SMEntity entity, EntityMetadataCollection em)
         {
             /*
              NOTE:
@@ -99,35 +99,59 @@ namespace Aquila.Runtime.Querying
              In this way platform can handle sec rights dependent on tables 
              */
 
-            var qm = new QLang(em);
+            var ds = new QObjectTable(entity);
+            var insert =
+                new QInsert(
+                    new QSourceFieldList(entity.Properties.Select(x => new QSourceFieldExpression(ds, x))
+                        .ToImmutableArray()), ds);
 
-            var name = entity.FullName;
-            qm.new_scope()
-                .ld_source(name)
-                .create(QObjectType.SourceFieldList);
+            var select = new QSelect(new QFieldList(
+                entity.Properties
+                    .Select(x => (QField)new QAliasedSelectExpression(new QParameter(x.Name), x.Name))
+                    .ToImmutableArray()));
 
-            var props = entity.Properties.ToImmutableArray();
-            foreach (var property in props)
-            {
-                qm.ld_source(name)
-                    .ld_field(property.Name)
-                    .st_elem();
-            }
+            var nq = new QAliasedDataSource(new QNestedQuery(new QSelectQuery(null, select, null, null, null,
+                null,
+                QCriterionList.Empty)), "TS");
 
-            qm.insert()
-                .create(QObjectType.ExpressionSet)
-                .create(QObjectType.ExpressionList);
 
-            foreach (var property in props)
-            {
-                qm.ld_param(property.Name)
-                    .st_elem();
-            }
+            var q = new QSelectQuery(null,
+                new QSelect(new QFieldList(nq.GetFields().Select(x => (QField)new QSelectExpression(x))
+                    .ToImmutableArray())),
+                null,
+                null, null, new QFrom(null, nq), QCriterionList.Empty);
 
-            qm.st_elem()
-                .new_insert_query();
+            return new QInsertSelectQuery(q, insert);
 
-            return qm.top<QInsertQuery>();
+            // var qm = new QLang(em);
+            //
+            // var name = entity.FullName;
+            // qm.new_scope()
+            //     .ld_source(name)
+            //     .create(QObjectType.SourceFieldList);
+            //
+            // var props = entity.Properties.ToImmutableArray();
+            // foreach (var property in props)
+            // {
+            //     qm.ld_source(name)
+            //         .ld_field(property.Name)
+            //         .st_elem();
+            // }
+            //
+            // qm.insert()
+            //     .create(QObjectType.ExpressionSet)
+            //     .create(QObjectType.ExpressionList);
+            //
+            // foreach (var property in props)
+            // {
+            //     qm.ld_param(property.Name)
+            //         .st_elem();
+            // }
+            //
+            // qm.st_elem()
+            //     .new_insert_query();
+            //
+            // return qm.top<QInsertQuery>();
         }
 
         public QInsertQuery TransformQuery(QInsertQuery query)
