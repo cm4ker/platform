@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Aquila.Core;
+using Aquila.Core.Querying;
 using Aquila.Core.Querying.Model;
 using Aquila.Metadata;
 using Aquila.QueryBuilder;
@@ -107,7 +108,8 @@ namespace Aquila.Runtime.Querying
 
             var select = new QSelect(new QFieldList(
                 entity.Properties
-                    .Select(x => (QField)new QAliasedSelectExpression(new QParameter(x.Name), x.Name))
+                    .SelectMany(x => x.GetFullFlattenNames())
+                    .Select(x => (QField)new QAliasedSelectExpression(new QParameter(x), x))
                     .ToImmutableArray()));
 
             var nq = new QAliasedDataSource(new QNestedQuery(new QSelectQuery(null, select, null, null, null,

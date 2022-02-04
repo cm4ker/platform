@@ -35,8 +35,13 @@ namespace Aquila.Core.Querying.Model
 
                     var criteria = claim.Criteria.SelectMany(x => x.Value).Select(x =>
                     {
+                        //make it substituted
+                        oldSelect.From.Source.Substituted = true;
+
                         //force load source table
                         _m.ld_ref(oldSelect.From.Source);
+
+
                         var c = x.cString;
                         QLang.Parse(_m, c);
                         return (QCriterion)_m.pop();

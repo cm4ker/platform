@@ -18,7 +18,7 @@ namespace Aquila.Metadata
         {
             var smTypes = types.OrderBy(x => x.Name).ToImmutableArray();
 
-            var isComplexType = smTypes.Count() > 1;
+            var isComplexType = smTypes.Length > 1;
 
             if (isComplexType)
             {
@@ -40,6 +40,21 @@ namespace Aquila.Metadata
             GetOrderedFlattenTypes(this SMProperty prop)
         {
             return prop.Types.GetOrderedFlattenTypes();
+        }
+
+        /// <summary>
+        /// Return names of fields for property
+        /// For example:
+        /// PropName = Test
+        /// Types = int, string, Invoice, datetime
+        /// return = {"Test_T", "Test_I", "Test_R", "Test_D"}
+        /// IMPORTANT: The result will be ordered. In example fields not ordered  
+        /// </summary>
+        /// <param name="prop"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetFullFlattenNames(this SMProperty prop)
+        {
+            return prop.GetOrderedFlattenTypes().Select(x => $"{x.prefix}{prop.Name}{x.postfix}").Distinct();
         }
 
         private static string GetPropertyPostfix(SMType type)

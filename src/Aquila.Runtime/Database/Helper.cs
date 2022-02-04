@@ -63,7 +63,6 @@ namespace Aquila.Runtime
             return GetPropertySchemas(descriptor.DatabaseName, prop.Types);
         }
 
-
         public static IEnumerable<ColumnSchemaDefinition> GetSchema(this SMProperty prop,
             DatabaseRuntimeContext drContext)
         {
@@ -78,7 +77,6 @@ namespace Aquila.Runtime
 
             return GetPropertySchemas(descriptor.DatabaseName, prop.Types);
         }
-
 
         public static EntityDescriptor GetDescriptor(this SMProperty prop, DatabaseRuntimeContext runtimeContext)
         {

@@ -30,7 +30,7 @@ namespace Aquila.Metadata
         }
     }
 
-    public sealed class SMEntity
+    public sealed class SMEntity : IEquatable<SMEntity>
     {
         private readonly EntityMetadata _md;
         private readonly SMCache _cache;
@@ -111,6 +111,36 @@ namespace Aquila.Metadata
         public string FullName => $"{Namespace}.{Name}";
 
         public string ReferenceName => $"{FullName}{LinkPostfix}";
+
+
+        //TODO: make normal equality members. Now it uses only name
+
+        public bool Equals(SMEntity other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(_md.Name, other._md.Name);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return ReferenceEquals(this, obj) || obj is SMEntity other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_md.Name);
+        }
+
+        public static bool operator ==(SMEntity left, SMEntity right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(SMEntity left, SMEntity right)
+        {
+            return !Equals(left, right);
+        }
     }
 
     public sealed class SMProperty

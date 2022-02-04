@@ -1,4 +1,7 @@
-﻿using Aquila.Core.Querying.Model;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+using Aquila.Core.Querying.Model;
+using Aquila.Metadata;
 using Aquila.Runtime;
 using MoreLinq;
 
@@ -14,18 +17,48 @@ namespace Aquila.Core.Querying
             srw = new SelectionRealWalker(drContext, Qm);
         }
 
-        public override void VisitQInsertQuery(QInsertQuery arg)
+
+        public override void VisitQCriterionList(QCriterionList arg)
         {
-            //begin insertion query
+            if (!arg.Any())
+            {
+                return;
+            }
+
+            //we have some criteria. starting!
+            Qm.m_where();
+
+            //then
+            Qm.ld_const(0);
+            foreach (var item in arg)
+            {
+                //condition
+                VisitQCriterion(item);
+                Qm.exists();
+            }
+
+            Qm.when();
+            //else
+            Qm.ld_const(int.MaxValue);
+            Qm.@case()
+                .ld_const(int.MaxValue)
+                .add()
+                .ld_const(int.MaxValue)
+                .eq();
+        }
+
+        public override void VisitQCriterion(QCriterion arg)
+        {
             Qm.bg_query();
+            Qm.m_from();
+            Qm.bg_query().m_select().ld_const(1).@as("_sec_fld").st_query().@as("_sec_dummy");
 
-            //load values section
-            TransformValuesIntoSelect(arg.Values, arg.Criteria);
+            srw.Visit(arg.From.Joins);
+            srw.Visit(arg.Where);
 
-            //load insert section
-            Visit(arg.Insert);
+            Qm.m_select();
+            Qm.ld_const(1);
 
-            //store query
             Qm.st_query();
         }
 
@@ -40,7 +73,15 @@ namespace Aquila.Core.Querying
 
             Qm.bg_query();
             srw.Visit(s.From);
+
+            //Emit criteria here
+
+
+            Visit(s.Criteria);
+
+            //emitting select
             srw.Visit(s.Select);
+
             Qm.st_query();
 
             //load insert section
@@ -73,13 +114,25 @@ namespace Aquila.Core.Querying
 
         public override void VisitQParameter(QParameter arg)
         {
-            var p = $"p{parameterIndex++}";
-            Qm.ld_param(p);
+            var paramCount = arg.GetProp<int?>(QLangExtensions.ParamCountComplexHidden) ?? 1;
+
+            for (int i = 0; i < paramCount; i++)
+            {
+                var p = $"p{parameterIndex++}";
+                Qm.ld_param(p);
+            }
         }
 
         public override void VisitQSourceFieldExpression(QSourceFieldExpression arg)
         {
-            Qm.ld_column(arg.GetDbName());
+            //we heed get flatten ordered columns
+            var types = arg.Property.GetOrderedFlattenTypes().ToImmutableList();
+            var schemas = DRContextHelper.GetPropertySchemas(arg.GetDbName(), arg.GetExpressionType());
+
+            foreach (var schema in schemas)
+            {
+                Qm.ld_column(schema.FullName);
+            }
         }
 
         public override void VisitQInsert(QInsert arg)

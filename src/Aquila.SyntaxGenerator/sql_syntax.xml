@@ -206,7 +206,7 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="SExists" Base="SExpression">
+    <Syntax Name="SExists" Base="SCondition">
         <Arguments>
             <Single Name="Argument" Type="SDataSourceNestedQuery"/>
         </Arguments>

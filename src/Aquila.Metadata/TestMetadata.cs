@@ -63,12 +63,14 @@ namespace Aquila.Metadata
                 Name = TestSecName,
                 Subjects = new()
                 {
-                    new() { Name = "Store", Permission = SecPermission.Read }
+                    new() { Name = "Store", Permission = SecPermission.Read },
+                    new() { Name = "Invoice", Permission = SecPermission.Read | SecPermission.Create}
                 },
                 Criteria = new()
                 {
                     new() { Permission = SecPermission.Read, Query = "FROM Subject s WHERE Name = 'Test'", Subject = "Store" },
-                    new() { Permission = SecPermission.Read, Query = "FROM Subject s WHERE Name = 'Hello'", Subject = "Store" }
+                    new() { Permission = SecPermission.Read, Query = "FROM Subject s WHERE Name = 'Hello'", Subject = "Store" },
+                    new() { Permission = SecPermission.Create, Query = "FROM Subject s WHERE Name = 'CreateMe'", Subject = "Invoice" }
                 }
             }
         };
