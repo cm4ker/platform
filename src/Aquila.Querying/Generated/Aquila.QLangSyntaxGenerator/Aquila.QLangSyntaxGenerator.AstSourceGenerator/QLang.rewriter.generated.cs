@@ -114,7 +114,7 @@ var target = (QPlatformDataSource)Visit(arg.Target);
 return new QInsert(fields,target);
 }
 public override QLangElement VisitQUpdate(QUpdate arg) {
-var target = (QPlatformDataSource)Visit(arg.Target);
+var target = (QDataSource)Visit(arg.Target);
 return new QUpdate(target);
 }
 public override QLangElement VisitQSet(QSet arg) {

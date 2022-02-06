@@ -112,7 +112,7 @@
     <Syntax Name="QUpdate">
         <Arguments>
             <!--NOTE: as target on update we can use only platform destination source-->
-            <Single Name="Target" Type="QPlatformDataSource"/>
+            <Single Name="Target" Type="QDataSource"/>
         </Arguments>
     </Syntax>
 

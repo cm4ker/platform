@@ -98,7 +98,16 @@ namespace Aquila.Runtime.Querying
              User can't update objects that user's has not access
              We have to check values before and after update
              */
-            return new QUpdateQuery();
+
+            var ds = new QObjectTable(entity);
+            var aliased = new QAliasedDataSource(ds, "TS");
+
+            var assigns = ds.GetFields()
+                .Select(x => new QAssign((QSourceFieldExpression)x, new QParameter(x.GetName()))).ToImmutableArray();
+            var qset = new QSet(new QAssignList(assigns));
+
+
+            return new QUpdateQuery(new QUpdate(aliased), qset, new QFrom(QJoinList.Empty, aliased), null);
         }
 
         public static QInsertSelectQuery GetSaveInsertSingleQuery(SMEntity entity, EntityMetadataCollection em)

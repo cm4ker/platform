@@ -901,12 +901,12 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QUpdate : QLangElement
     {
-        public QUpdate(QPlatformDataSource target) : base()
+        public QUpdate(QDataSource target) : base()
         {
             this.target = target;
         }
 
-        public QPlatformDataSource Target { get => this.target; init => this.target = value; }
+        public QDataSource Target { get => this.target; init => this.target = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -925,7 +925,7 @@ namespace Aquila.Core.Querying.Model
             yield break;
         }
 
-        private QPlatformDataSource target;
+        private QDataSource target;
     }
 }
 
