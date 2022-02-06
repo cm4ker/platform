@@ -326,6 +326,35 @@ namespace Aquila.Core.Querying.Model
 
 namespace Aquila.Core.Querying.Model
 {
+    public class QAssignList : QLangCollection<QAssign>
+    {
+        public static QAssignList Empty => new QAssignList(ImmutableArray<QAssign>.Empty);
+        public QAssignList(ImmutableArray<QAssign> elements) : base(elements)
+        {
+        }
+
+        public override QAssignList Add(QLangElement element)
+        {
+            var item = element as QAssign;
+            if (item == null)
+                throw new Exception("Element is not QAssign");
+            return new QAssignList(Elements.Add(item));
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQAssignList(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQAssignList(this);
+        }
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
     public partial class QExpression : QLangElement
     {
         public QExpression() : base()
@@ -470,9 +499,21 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QUpdateQuery : QQueryBase
     {
-        public QUpdateQuery() : base()
+        public QUpdateQuery(QUpdate update, QSet set, QFrom from, QWhere where) : base()
         {
+            this.update = update;
+            this.set = set;
+            this.from = from;
+            this.where = where;
         }
+
+        public QUpdate Update { get => this.update; init => this.update = value; }
+
+        public QSet Set { get => this.set; init => this.set = value; }
+
+        public QFrom From { get => this.from; init => this.from = value; }
+
+        public QWhere Where { get => this.where; init => this.where = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -486,6 +527,14 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
+            if (this.update != null)
+                yield return this.update;
+            if (this.set != null)
+                yield return this.set;
+            if (this.from != null)
+                yield return this.from;
+            if (this.where != null)
+                yield return this.where;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -493,6 +542,11 @@ namespace Aquila.Core.Querying.Model
 
             yield break;
         }
+
+        private QUpdate update;
+        private QSet set;
+        private QFrom from;
+        private QWhere where;
     }
 }
 
@@ -840,6 +894,108 @@ namespace Aquila.Core.Querying.Model
 
         private QSourceFieldList fields;
         private QPlatformDataSource target;
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
+    public partial class QUpdate : QLangElement
+    {
+        public QUpdate(QPlatformDataSource target) : base()
+        {
+            this.target = target;
+        }
+
+        public QPlatformDataSource Target { get => this.target; init => this.target = value; }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQUpdate(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQUpdate(this);
+        }
+
+        public override IEnumerable<QLangElement> GetChildren()
+        {
+            if (this.target != null)
+                yield return this.target;
+            yield break;
+        }
+
+        private QPlatformDataSource target;
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
+    public partial class QSet : QLangElement
+    {
+        public QSet(QAssignList assigns) : base()
+        {
+            this.assigns = assigns;
+        }
+
+        public QAssignList Assigns { get => this.assigns; init => this.assigns = value; }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQSet(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQSet(this);
+        }
+
+        public override IEnumerable<QLangElement> GetChildren()
+        {
+            if (this.assigns != null)
+                yield return this.assigns;
+            yield break;
+        }
+
+        private QAssignList assigns;
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
+    public partial class QAssign : QLangElement
+    {
+        public QAssign(QSourceFieldExpression target, QExpression value) : base()
+        {
+            this.target = target;
+            this.value = value;
+        }
+
+        public QSourceFieldExpression Target { get => this.target; init => this.target = value; }
+
+        public QExpression Value { get => this.value; init => this.value = value; }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQAssign(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQAssign(this);
+        }
+
+        public override IEnumerable<QLangElement> GetChildren()
+        {
+            if (this.target != null)
+                yield return this.target;
+            if (this.value != null)
+                yield return this.value;
+            yield break;
+        }
+
+        private QSourceFieldExpression target;
+        private QExpression value;
     }
 }
 
@@ -2106,6 +2262,11 @@ namespace Aquila.Core.Querying
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitQAssignList(QAssignList arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitQExpression(QExpression arg)
         {
             return DefaultVisit(arg);
@@ -2167,6 +2328,21 @@ namespace Aquila.Core.Querying
         }
 
         public virtual T VisitQInsert(QInsert arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitQUpdate(QUpdate arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitQSet(QSet arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitQAssign(QAssign arg)
         {
             return DefaultVisit(arg);
         }
@@ -2384,6 +2560,11 @@ namespace Aquila.Core.Querying
             DefaultVisit(arg);
         }
 
+        public virtual void VisitQAssignList(QAssignList arg)
+        {
+            DefaultVisit(arg);
+        }
+
         public virtual void VisitQExpression(QExpression arg)
         {
             DefaultVisit(arg);
@@ -2445,6 +2626,21 @@ namespace Aquila.Core.Querying
         }
 
         public virtual void VisitQInsert(QInsert arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQUpdate(QUpdate arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQSet(QSet arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQAssign(QAssign arg)
         {
             DefaultVisit(arg);
         }

@@ -44,6 +44,9 @@ return new QQueryList(arg.Select(x => (QQueryBase)Visit(x)).ToImmutableArray());
 public override QLangElement VisitQCriterionList(QCriterionList arg) {
 return new QCriterionList(arg.Select(x => (QCriterion)Visit(x)).ToImmutableArray());
 }
+public override QLangElement VisitQAssignList(QAssignList arg) {
+return new QAssignList(arg.Select(x => (QAssign)Visit(x)).ToImmutableArray());
+}
 public override QLangElement VisitQExpression(QExpression arg) {
 return new QExpression();
 }
@@ -59,7 +62,11 @@ var insert = (QInsert)Visit(arg.Insert);
 return new QInsertSelectQuery(select,insert);
 }
 public override QLangElement VisitQUpdateQuery(QUpdateQuery arg) {
-return new QUpdateQuery();
+var update = (QUpdate)Visit(arg.Update);
+var set = (QSet)Visit(arg.Set);
+var from = (QFrom)Visit(arg.From);
+var where = (QWhere)Visit(arg.Where);
+return new QUpdateQuery(update,set,from,where);
 }
 public override QLangElement VisitQSelectQuery(QSelectQuery arg) {
 var orderBy = (QOrderBy)Visit(arg.OrderBy);
@@ -105,6 +112,19 @@ public override QLangElement VisitQInsert(QInsert arg) {
 var fields = (QSourceFieldList)Visit(arg.Fields);
 var target = (QPlatformDataSource)Visit(arg.Target);
 return new QInsert(fields,target);
+}
+public override QLangElement VisitQUpdate(QUpdate arg) {
+var target = (QPlatformDataSource)Visit(arg.Target);
+return new QUpdate(target);
+}
+public override QLangElement VisitQSet(QSet arg) {
+var assigns = (QAssignList)Visit(arg.Assigns);
+return new QSet(assigns);
+}
+public override QLangElement VisitQAssign(QAssign arg) {
+var target = (QSourceFieldExpression)Visit(arg.Target);
+var value = (QExpression)Visit(arg.Value);
+return new QAssign(target,value);
 }
 public override QLangElement VisitQAliasedDataSource(QAliasedDataSource arg) {
 var parentSource = (QDataSource)Visit(arg.ParentSource);

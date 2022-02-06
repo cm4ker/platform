@@ -12,6 +12,7 @@
     <Syntax IsList="true" Base="QWhen" Name="QWhenList"/>
     <Syntax IsList="true" Base="QQueryBase" Name="QQueryList"/>
     <Syntax IsList="true" Base="QCriterion" Name="QCriterionList"/>
+    <Syntax IsList="true" Base="QAssign" Name="QAssignList"/>
 
     <Syntax Name="QExpression"/>
 
@@ -34,7 +35,13 @@
     </Syntax>
 
     <Syntax Name="QUpdateQuery" Base="QQueryBase">
-
+        <Arguments>
+            <!--NOTE: Use criterion from the QSelectQuery. Because on Selection level we apply filtering-->
+            <Single Name="Update" Type="QUpdate"/>
+            <Single Name="Set" Type="QSet"/>
+            <Single Name="From" Type="QFrom"/>
+            <Single Name="Where" Type="QWhere"/>
+        </Arguments>
     </Syntax>
 
     <Syntax Name="QSelectQuery" Base="QQueryBase">
@@ -101,6 +108,28 @@
             <Single Name="Target" Type="QPlatformDataSource"/>
         </Arguments>
     </Syntax>
+
+    <Syntax Name="QUpdate">
+        <Arguments>
+            <!--NOTE: as target on update we can use only platform destination source-->
+            <Single Name="Target" Type="QPlatformDataSource"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QSet">
+        <Arguments>
+            <Single Name="Assigns" Type="QAssignList"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QAssign">
+        <Arguments>
+            <!--NOTE: as target on insertion we can use only platform destination source-->
+            <Single Name="Target" Type="QSourceFieldExpression"/>
+            <Single Name="Value" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+
 
     <!-- DataSource -->
     <Syntax IsAbstract="true" Name="QDataSource"/>

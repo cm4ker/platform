@@ -91,6 +91,15 @@ namespace Aquila.Runtime.Querying
             return builder.Visit((SSyntaxNode)qm.peek());
         }
 
+        public static QUpdateQuery GetSaveUpdateQuery(SMEntity entity, EntityMetadataCollection em)
+        {
+            /*
+             NOTE:
+             User can't update objects that user's has not access
+             We have to check values before and after update
+             */
+            return new QUpdateQuery();
+        }
 
         public static QInsertSelectQuery GetSaveInsertSingleQuery(SMEntity entity, EntityMetadataCollection em)
         {
@@ -106,6 +115,9 @@ namespace Aquila.Runtime.Querying
                     new QSourceFieldList(entity.Properties.Select(x => new QSourceFieldExpression(ds, x))
                         .ToImmutableArray()), ds);
 
+            //TODO this is a hack! We create more parameters then we need but in insert clause we create 1 - 1 fields.
+            //TODO (because field can be more than 1 column)
+            //TODO make parameters 1 - 1 and handle this at the render query level
             var select = new QSelect(new QFieldList(
                 entity.Properties
                     .SelectMany(x => x.GetFullFlattenNames())
