@@ -88,7 +88,6 @@ namespace Aquila.Runtime.Tests
                 .m_from()
                 .ld_table("T1")
                 .@as("A")
-                
                 .bg_query()
                 .m_select()
                 .ld_param("param3")
@@ -101,14 +100,12 @@ namespace Aquila.Runtime.Tests
                 .ld_column("F2", "A")
                 .eq()
                 .left_join()
-                
                 .ld_table("T2")
                 .@as("B")
                 .ld_column("F1", "B")
                 .ld_column("F1", "A")
                 .eq()
                 .join()
-                
                 .m_where()
                 .ld_column("F1", "A")
                 .ld_column("F1", "B")
@@ -158,11 +155,9 @@ namespace Aquila.Runtime.Tests
                 .ld_column("column2", "t2")
                 .ld_column("column2", "t1")
                 .assign()
-                
                 .ld_column("column1", "t2")
                 .ld_column("column1", "t1")
                 .assign()
-                
                 .m_update()
                 .ld_table("table2")
                 .@as("t2")
@@ -173,8 +168,7 @@ namespace Aquila.Runtime.Tests
             var res = visitor.Visit((SSyntaxNode)machine.pop());
 
             Assert.Equal(res,
-                res =
-                    "UPDATE table2 as t2\nSET t2.column2 = t1.column2, t2.column1 = t1.column1\nFROM\ntable1 as t1\nWHERE\nt1.column1 = @value1\n");
+                "UPDATE table2 as t2\nSET t2.column2 = t1.column2, t2.column1 = t1.column1\nFROM\ntable1 as t1\nWHERE\nt1.column1 = @value1\n");
         }
 
         [Fact]

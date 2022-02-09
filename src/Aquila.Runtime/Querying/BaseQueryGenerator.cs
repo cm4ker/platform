@@ -102,15 +102,39 @@ namespace Aquila.Runtime.Querying
             var ds = new QObjectTable(entity);
             var aliased = new QAliasedDataSource(ds, "TS");
 
-            var assigns = ds.GetFields()
-                .Select(x => new QAssign((QSourceFieldExpression)x, new QParameter(x.GetName()))).ToImmutableArray();
+
+            QParameter idParam = null;
+
+            var assigns = aliased.GetFields()
+                .Select(x =>
+                {
+                    var name = x.GetName();
+                    QParameter param = new QParameter(name);
+
+                    if (name == "Id")
+                    {
+                        idParam = param;
+                    }
+
+                    if (x.IsComplexExprType)
+                        param.SetProp(QLangExtensions.ParamCountComplexHidden, x.GetExpressionType().Count());
+
+                    return new QAssign(x, param);
+                })
+                .ToImmutableArray();
+
+            if (idParam == null)
+                throw new Exception("The id param is null");
+
             var qset = new QSet(new QAssignList(assigns));
 
+            var where = new QWhere(new QEquals(ds.GetField(entity.IdProperty.Name), idParam));
 
-            return new QUpdateQuery(new QUpdate(aliased), qset, new QFrom(QJoinList.Empty, aliased), null);
+            return new QUpdateQuery(new QUpdate(aliased), qset, new QFrom(QJoinList.Empty, aliased), where,
+                QCriterionList.Empty);
         }
 
-        public static QInsertSelectQuery GetSaveInsertSingleQuery(SMEntity entity, EntityMetadataCollection em)
+        public static QInsertSelectQuery GetSaveInsertQuery(SMEntity entity, EntityMetadataCollection em)
         {
             /*
              NOTE:

@@ -30,11 +30,17 @@ namespace Aquila.Core.Querying
 
             //then
             Qm.ld_const(0);
+            var needOr = false;
             foreach (var item in arg)
             {
                 //condition
                 VisitQCriterion(item);
                 Qm.exists();
+
+                if (needOr)
+                    Qm.or();
+
+                needOr = true;
             }
 
             Qm.when();

@@ -237,6 +237,7 @@ namespace Aquila.Core.Querying.Model
         private List<QField> _fields;
         private List<QTable> _tables;
 
+
         public override IEnumerable<QField> GetFields()
         {
             return _fields ??= ObjectType.Properties.Select(x => (QField)new QSourceFieldExpression(this, x))

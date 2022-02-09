@@ -12,6 +12,7 @@ using Aquila.QueryBuilder.Visitor;
 using Aquila.Runtime;
 using Aquila.Runtime.Querying;
 using JetBrains.Annotations;
+using Npgsql.Replication.PgOutput.Messages;
 
 namespace Aquila.UIBuilder
 {
@@ -95,18 +96,34 @@ namespace Aquila.UIBuilder
                 var select = CRUDQueryGenerator.GetLoad(invoice, _drContext);
 
 
-                //Immutable part
-                QLangElement model = CRUDQueryGenerator.GetSaveInsertSingleQuery(invoice, md);
                 var translatedOutput = new StringWriter();
-                new PrinterWalker(translatedOutput).Visit(model);
-                model = new SecurityVisitor(md, _ust).Visit(model);
-                new PhysicalNameWalker(_drContext).Visit(model);
+
+                translatedOutput.WriteLine("====INSERT====");
+
+                //Immutable part
+                QLangElement insertModel = CRUDQueryGenerator.GetSaveInsertQuery(invoice, md);
+                insertModel = new SecurityVisitor(md, _ust).Visit(insertModel);
+                new PrinterWalker(translatedOutput).Visit(insertModel);
+                new PhysicalNameWalker(_drContext).Visit(insertModel);
 
                 var iw = new InsertionRealWalker(_drContext);
-                iw.Visit(model);
-                var result = new MsSqlBuilder().Visit((SSyntaxNode)iw.QueryMachine.peek());
+                iw.Visit(insertModel);
+                translatedOutput.WriteLine(new MsSqlBuilder().Visit((SSyntaxNode)iw.QueryMachine.peek()));
 
-                Input = $"{insert}\n{update}\n{select}\n{translatedOutput}\n{result}";
+                translatedOutput.WriteLine("\n\n====UPDATE====");
+
+                //Immutable part
+                QLangElement updateModel = CRUDQueryGenerator.GetSaveUpdateQuery(invoice, md);
+                updateModel = new SecurityVisitor(md, _ust).Visit(updateModel);
+                new PrinterWalker(translatedOutput).Visit(updateModel);
+                new PhysicalNameWalker(_drContext).Visit(updateModel);
+
+                var uw = new UpdationRealWalker(_drContext);
+                uw.Visit(updateModel);
+                translatedOutput.WriteLine(new MsSqlBuilder().Visit((SSyntaxNode)uw.QueryMachine.peek()));
+
+
+                Input = $"{insert}\n{update}\n{select}\n{translatedOutput}";
             }
             catch (Exception ex)
             {

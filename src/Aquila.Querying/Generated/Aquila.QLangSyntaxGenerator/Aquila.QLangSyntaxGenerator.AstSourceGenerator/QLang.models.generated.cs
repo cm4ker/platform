@@ -499,12 +499,13 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QUpdateQuery : QQueryBase
     {
-        public QUpdateQuery(QUpdate update, QSet set, QFrom from, QWhere where) : base()
+        public QUpdateQuery(QUpdate update, QSet set, QFrom from, QWhere where, QCriterionList criteria) : base()
         {
             this.update = update;
             this.set = set;
             this.from = from;
             this.where = where;
+            this.criteria = criteria;
         }
 
         public QUpdate Update { get => this.update; init => this.update = value; }
@@ -514,6 +515,8 @@ namespace Aquila.Core.Querying.Model
         public QFrom From { get => this.from; init => this.from = value; }
 
         public QWhere Where { get => this.where; init => this.where = value; }
+
+        public QCriterionList Criteria { get => this.criteria; init => this.criteria = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -535,6 +538,8 @@ namespace Aquila.Core.Querying.Model
                 yield return this.from;
             if (this.where != null)
                 yield return this.where;
+            if (this.criteria != null)
+                yield return this.criteria;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -547,6 +552,7 @@ namespace Aquila.Core.Querying.Model
         private QSet set;
         private QFrom from;
         private QWhere where;
+        private QCriterionList criteria;
     }
 }
 
@@ -965,13 +971,13 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QAssign : QLangElement
     {
-        public QAssign(QSourceFieldExpression target, QExpression value) : base()
+        public QAssign(QField target, QExpression value) : base()
         {
             this.target = target;
             this.value = value;
         }
 
-        public QSourceFieldExpression Target { get => this.target; init => this.target = value; }
+        public QField Target { get => this.target; init => this.target = value; }
 
         public QExpression Value { get => this.value; init => this.value = value; }
 
@@ -994,7 +1000,7 @@ namespace Aquila.Core.Querying.Model
             yield break;
         }
 
-        private QSourceFieldExpression target;
+        private QField target;
         private QExpression value;
     }
 }
@@ -1431,6 +1437,49 @@ namespace Aquila.Core.Querying.Model
 
         private QPlatformDataSource platformSource;
         private SMProperty property;
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
+    public partial class QSourceFieldTyped : QField
+    {
+        public QSourceFieldTyped(QPlatformDataSource platformSource, SMProperty property, SMType type) : base(platformSource)
+        {
+            PlatformSource = platformSource;
+            Property = property;
+            Type = type;
+        }
+
+        public QPlatformDataSource PlatformSource { get => this.platformSource; init => this.platformSource = value; }
+
+        public SMProperty Property { get => this.property; init => this.property = value; }
+
+        public SMType Type { get => this.type; init => this.type = value; }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQSourceFieldTyped(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQSourceFieldTyped(this);
+        }
+
+        public override IEnumerable<QLangElement> GetChildren()
+        {
+            foreach (var item in base.GetChildren())
+            {
+                yield return item;
+            }
+
+            yield break;
+        }
+
+        private QPlatformDataSource platformSource;
+        private SMProperty property;
+        private SMType type;
     }
 }
 
@@ -2392,6 +2441,11 @@ namespace Aquila.Core.Querying
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitQSourceFieldTyped(QSourceFieldTyped arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitQOrderExpression(QOrderExpression arg)
         {
             return DefaultVisit(arg);
@@ -2686,6 +2740,11 @@ namespace Aquila.Core.Querying
         }
 
         public virtual void VisitQSourceFieldExpression(QSourceFieldExpression arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQSourceFieldTyped(QSourceFieldTyped arg)
         {
             DefaultVisit(arg);
         }

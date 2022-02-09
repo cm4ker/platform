@@ -33,7 +33,18 @@ namespace Aquila.Runtime.Querying
 
         public SecPermission Permission { get; set; }
 
-        public Dictionary<SecPermission, List<(string cString, QCriterion cModel)>> Criteria { get; set; }
+        public Dictionary<SecPermission, List<(string cString, QCriterion cModel)>> Criteria { get; internal set; }
+
+        /// <summary>
+        /// Returns permission with aspect to certain permission
+        /// </summary>
+        /// <param name="sp"></param>
+        /// <returns></returns>
+        public UserSecPermission WithAspectPermission(SecPermission sp) => new UserSecPermission
+        {
+            Permission = this.Permission,
+            Criteria = this.Criteria.Where(x => x.Key.HasFlag(sp)).ToDictionary(x => x.Key, x => x.Value)
+        };
     }
 
     public class UserSecTable
@@ -75,9 +86,6 @@ namespace Aquila.Runtime.Querying
                     {
                         var subject = criterion.Subject;
                         var sCriterion = criterion.Query;
-                        // var qCriterion =
-                        //     QLang.Parse(sCriterion, md, null, subject) as QCriterion ??
-                        //     throw new Exception("can't compile criterion");
 
                         if (up.Criteria.TryGetValue(criterion.Permission, out var pList))
                             pList.Add((criterion.Query, null));
@@ -93,6 +101,7 @@ namespace Aquila.Runtime.Querying
             // we need more complex algo for this
             // 1. Check for the same criterion query
             // 2. Merge UserSecPermission then we have many secs;
+            // 3. Filtering criteria then we claim certain criterion
 
             _rows = result;
         }
@@ -142,6 +151,7 @@ namespace Aquila.Runtime.Querying
                 return false;
             }
 
+            claim = claim.WithAspectPermission(permission);
             return true;
         }
     }

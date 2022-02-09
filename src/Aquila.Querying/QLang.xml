@@ -41,6 +41,7 @@
             <Single Name="Set" Type="QSet"/>
             <Single Name="From" Type="QFrom"/>
             <Single Name="Where" Type="QWhere"/>
+            <Single Name="Criteria" Type="QCriterionList"/>
         </Arguments>
     </Syntax>
 
@@ -125,7 +126,7 @@
     <Syntax Name="QAssign">
         <Arguments>
             <!--NOTE: as target on insertion we can use only platform destination source-->
-            <Single Name="Target" Type="QSourceFieldExpression"/>
+            <Single Name="Target" Type="QField"/>
             <Single Name="Value" Type="QExpression"/>
         </Arguments>
     </Syntax>
@@ -194,10 +195,19 @@
             <Single Name="BaseExpression" Type="QExpression" PassBase="true" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
+
     <Syntax Name="QSourceFieldExpression" Base="QField">
         <Arguments>
             <Single Name="PlatformSource" Type="QPlatformDataSource" PassBase="true" DenyChildrenFill="true"/>
             <Single Name="Property" Type="SMProperty" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QSourceFieldTyped" Base="QField">
+        <Arguments>
+            <Single Name="PlatformSource" Type="QPlatformDataSource" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Property" Type="SMProperty" DenyChildrenFill="true"/>
+            <Single Name="Type" Type="SMType" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
 

@@ -66,7 +66,8 @@ var update = (QUpdate)Visit(arg.Update);
 var set = (QSet)Visit(arg.Set);
 var from = (QFrom)Visit(arg.From);
 var where = (QWhere)Visit(arg.Where);
-return new QUpdateQuery(update,set,from,where);
+var criteria = (QCriterionList)Visit(arg.Criteria);
+return new QUpdateQuery(update,set,from,where,criteria);
 }
 public override QLangElement VisitQSelectQuery(QSelectQuery arg) {
 var orderBy = (QOrderBy)Visit(arg.OrderBy);
@@ -122,7 +123,7 @@ var assigns = (QAssignList)Visit(arg.Assigns);
 return new QSet(assigns);
 }
 public override QLangElement VisitQAssign(QAssign arg) {
-var target = (QSourceFieldExpression)Visit(arg.Target);
+var target = (QField)Visit(arg.Target);
 var value = (QExpression)Visit(arg.Value);
 return new QAssign(target,value);
 }
@@ -166,6 +167,12 @@ public override QLangElement VisitQSourceFieldExpression(QSourceFieldExpression 
 var platformSource = (QPlatformDataSource)Visit(arg.PlatformSource);
 var property = arg.Property;
 return new QSourceFieldExpression(platformSource,property);
+}
+public override QLangElement VisitQSourceFieldTyped(QSourceFieldTyped arg) {
+var platformSource = (QPlatformDataSource)Visit(arg.PlatformSource);
+var property = arg.Property;
+var type = arg.Type;
+return new QSourceFieldTyped(platformSource,property,type);
 }
 public override QLangElement VisitQOrderExpression(QOrderExpression arg) {
 var sortingDirection = arg.SortingDirection;
