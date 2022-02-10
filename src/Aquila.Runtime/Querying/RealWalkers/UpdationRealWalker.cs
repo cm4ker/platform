@@ -55,17 +55,29 @@ namespace Aquila.Core.Querying
 
             //then
             Qm.ld_const(0);
-            var needAnd = false;
+
+            int criterionOnStack = 0;
+            int andOnStack = 0;
             foreach (var item in arg)
             {
                 //condition
                 VisitQCriterion(item);
                 Qm.exists();
 
-                if (needAnd)
-                    Qm.and();
+                criterionOnStack++;
 
-                needAnd = true;
+                if (criterionOnStack == 2)
+                {
+                    Qm.and();
+                    criterionOnStack = 0;
+                    andOnStack++;
+                }
+
+                if (andOnStack == 2)
+                {
+                    Qm.or();
+                    andOnStack = 0;
+                }
             }
 
             Qm.when();
