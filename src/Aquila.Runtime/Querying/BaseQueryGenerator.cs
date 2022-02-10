@@ -109,6 +109,8 @@ namespace Aquila.Runtime.Querying
                 .Select(x =>
                 {
                     var name = x.GetName();
+
+                    //TODO: not update Id field
                     QParameter param = new QParameter(name);
 
                     if (name == "Id")
@@ -128,7 +130,7 @@ namespace Aquila.Runtime.Querying
 
             var qset = new QSet(new QAssignList(assigns));
 
-            var where = new QWhere(new QEquals(ds.GetField(entity.IdProperty.Name), idParam));
+            var where = new QWhere(new QEquals(aliased.GetField(entity.IdProperty.Name), idParam));
 
             return new QUpdateQuery(new QUpdate(aliased), qset, new QFrom(QJoinList.Empty, aliased), where,
                 QCriterionList.Empty);
