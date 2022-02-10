@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text;
 using Aquila.Metadata;
 
 namespace Aquila.Core.Querying.Model
@@ -145,6 +146,28 @@ namespace Aquila.Core.Querying.Model
         }
 
         public bool IsComplexExprType => GetExpressionType().Count() > 1;
+
+
+        /// <summary>
+        /// Returns null if can't get source
+        /// </summary>
+        /// <returns></returns>
+        public QDataSource GetSource()
+        {
+            QField result;
+
+            if (this is QIntermediateSourceField isf1)
+            {
+                if (isf1.Field is QIntermediateSourceField isf)
+                    result = isf.Field;
+                else
+                    result = isf1.Field;
+
+                return isf1.DataSource;
+            }
+
+            return null;
+        }
     }
 
     /// <summary>
@@ -486,6 +509,15 @@ namespace Aquila.Core.Querying.Model
         public override string ToString()
         {
             return "Insert query";
+        }
+    }
+
+
+    public partial class QTypedParameter
+    {
+        public override IEnumerable<SMType> GetExpressionType()
+        {
+            return Types;
         }
     }
 }

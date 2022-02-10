@@ -128,7 +128,24 @@ namespace Aquila.QueryBuilder.Visitor
 
         public override string VisitSJoin(SJoin node)
         {
-            return string.Format("JOIN {0} ON {1}",
+            var joinType = node.JoinType switch
+            {
+                JoinType.Inner => "INNER",
+                JoinType.Left => "LEFT",
+                JoinType.Right => "RIGHT",
+                JoinType.Full => "FULL",
+                JoinType.Cross => "CROSS",
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
+            if (node.JoinType == JoinType.Cross)
+                return string.Format("{0} JOIN {1} ", joinType
+                    , node.DataSource.Accept(this)
+                );
+
+
+            return string.Format("{0} JOIN {1} ON {2}",
+                joinType,
                 node.DataSource.Accept(this),
                 node.Condition.Accept(this)
             );

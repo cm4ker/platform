@@ -62,7 +62,7 @@ namespace Aquila.QueryBuilder
             TryPop<SMarker>();
             if (needReverse)
                 result.Reverse();
-            
+
             return result;
         }
 
@@ -541,7 +541,10 @@ namespace Aquila.QueryBuilder
 
         private void join_with_type(JoinType joinType)
         {
-            push(new SJoin(Pop<SCondition>(), Pop<SDataSource>(), joinType));
+            if (joinType != JoinType.Cross)
+                push(new SJoin(Pop<SCondition>(), Pop<SDataSource>(), joinType));
+            else
+                push(new SJoin(null, Pop<SDataSource>(), joinType));
         }
 
         public QueryMachine @join()
@@ -570,12 +573,14 @@ namespace Aquila.QueryBuilder
 
         public QueryMachine full_join()
         {
-            throw new NotSupportedException();
+            join_with_type(JoinType.Full);
+            return this;
         }
 
         public QueryMachine cross_join()
         {
-            throw new NotSupportedException();
+            join_with_type(JoinType.Cross);
+            return this;
         }
 
         #endregion

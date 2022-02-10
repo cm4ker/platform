@@ -13,6 +13,7 @@
     <Syntax IsList="true" Base="QQueryBase" Name="QQueryList"/>
     <Syntax IsList="true" Base="QCriterion" Name="QCriterionList"/>
     <Syntax IsList="true" Base="QAssign" Name="QAssignList"/>
+    <Syntax IsList="true" Base="QTypedParameter" Name="QTypedParameterList"/>
 
     <Syntax Name="QExpression"/>
 
@@ -248,6 +249,13 @@
     <Syntax Name="QParameter" Base="QExpression">
         <Arguments>
             <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QTypedParameter" Base="QExpression">
+        <Arguments>
+            <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+            <Single Name="Types" Type="IEnumerable&lt;SMType&gt;" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
 

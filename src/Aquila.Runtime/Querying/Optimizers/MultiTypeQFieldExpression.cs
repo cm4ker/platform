@@ -12,7 +12,7 @@ namespace Aquila.Core.Querying.Optimizers
     {
         private readonly QField _field;
 
-        public (QField, string) HandleIntermediate(QField field)
+        private (QField, string) HandleIntermediate(QField field)
         {
             QField result;
 
@@ -29,7 +29,7 @@ namespace Aquila.Core.Querying.Optimizers
             return (field, null);
         }
 
-        public MultiTypeQFieldExpression(QField field, SelectionRealWalker rw, QueryMachine qm) : base(rw, qm)
+        public MultiTypeQFieldExpression(QField field, RealWalkerBase rw, QueryMachine qm) : base(rw, qm)
         {
             if (field.GetExpressionType().Count() == 1)
                 throw new Exception($"Use {nameof(MultiTypedExpr)} for this field");
@@ -86,7 +86,8 @@ namespace Aquila.Core.Querying.Optimizers
             return (field, field.Name);
         }
 
-        public MultiTypeQParameterExpression(QParameter parameter, SelectionRealWalker rw, QueryMachine qm) : base(rw, qm)
+        public MultiTypeQParameterExpression(QParameter parameter, RealWalkerBase rw, QueryMachine qm) : base(rw,
+            qm)
         {
             if (parameter.GetExpressionType().Count() == 1)
                 throw new Exception($"Use {nameof(MultiTypedExpr)} for this field");
@@ -112,6 +113,62 @@ namespace Aquila.Core.Querying.Optimizers
                 // Qm.ld_str(res.Item2);
                 Qm.ld_param($"{schema.Prefix}{res.Item1.GetDbName()}{schema.Postfix}");
                 // Qm.ld_column();
+            }
+        }
+
+        public override void EmitTypeColumn()
+        {
+            EmitColumn(x => x.SchemaType == ColumnSchemaType.Type);
+        }
+
+        public override void EmitValueColumn(SMType ipType)
+        {
+            EmitColumn(x => x.SchemaType == ColumnSchemaType.Value && x.Type.IsAssignableFrom(ipType));
+        }
+
+        public override void EmitRefColumn()
+        {
+            EmitColumn(x => x.SchemaType == ColumnSchemaType.Ref);
+        }
+    }
+
+
+    public class MultiTypeQTypedParameterExpression : MultiTypedExpr
+    {
+        private readonly QTypedParameter _parameter;
+
+        public (QTypedParameter, string) HandleIntermediate(QTypedParameter field)
+        {
+            QTypedParameter result;
+
+            return (field, field.Name);
+        }
+
+        public MultiTypeQTypedParameterExpression(QTypedParameter parameter, RealWalkerBase rw, QueryMachine qm) :
+            base(rw, qm)
+        {
+            if (parameter.GetExpressionType().Count() == 1)
+                throw new Exception($"Use {nameof(MultiTypedExpr)} for this field");
+
+            _parameter = parameter;
+        }
+
+        private void EmitColumn(Func<ColumnSchemaDefinition, bool> criteria)
+        {
+            var res = HandleIntermediate(_parameter);
+
+            var schemas =
+                DRContextHelper.GetPropertySchemas(res.Item1.GetDbName(),
+                    res.Item1.GetExpressionType().ToList());
+            var schema = schemas.FirstOrDefault(criteria);
+
+
+            //if (schema is null) throw new Exception($"Can't load column for field: {_field}");
+            if (schema is null)
+                Qm.ld_null();
+            else
+            {
+                Qm.ld_param($"{schema.Prefix}{res.Item1.GetDbName()}{schema.Postfix}");
             }
         }
 

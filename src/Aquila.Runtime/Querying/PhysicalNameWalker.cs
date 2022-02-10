@@ -86,6 +86,12 @@ namespace Aquila.Core.Querying
             node.SetDbName(node.Field.GetDbName());
         }
 
+        public override void VisitQTypedParameter(QTypedParameter arg)
+        {
+            arg.SetDbNameIfEmpty($"p{_paramCount++}");
+        }
+
+
         public override void VisitQParameter(QParameter arg)
         {
             if (_params.TryGetValue(arg.Name, out var index))

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
 using Aquila.Core.Querying.Model;
+using Aquila.Core.Querying.Optimizers;
 using Aquila.Metadata;
 using Aquila.Runtime;
 
@@ -54,17 +55,17 @@ namespace Aquila.Core.Querying
 
             //then
             Qm.ld_const(0);
-            var needOr = false;
+            var needAnd = false;
             foreach (var item in arg)
             {
                 //condition
                 VisitQCriterion(item);
                 Qm.exists();
 
-                if (needOr)
-                    Qm.or();
+                if (needAnd)
+                    Qm.and();
 
-                needOr = true;
+                needAnd = true;
             }
 
             Qm.when();
@@ -111,21 +112,43 @@ namespace Aquila.Core.Querying
                 //if complex type then we have to unwrap columns
                 if (a.Target.IsComplexExprType)
                 {
-                    //NOTE: the underneath must be QSourceFieldExpression     
-                    var f = a.Target.Find<QSourceFieldExpression>().FirstOrDefault();
-                    var schema = f.Property.GetSchema(DrContext);
+                    var leftExpr = a.Target;
+                    var rightExpr = a.Value;
 
-                    foreach (var type in schema)
+                    MultiTypedExpr left = TypedExprFactory.CreateMultiTypedExpr(leftExpr, Qm, this);
+                    MultiTypedExpr right = TypedExprFactory.CreateMultiTypedExpr(rightExpr, Qm, this);
+
+                    left.EmitTypeColumn();
+                    right.EmitTypeColumn();
+                    Qm.assign();
+
+                    var needEmitRef = true;
+                    foreach (var type in leftExpr.GetExpressionType())
                     {
-                        Qm.ld_column(type.FullName);
-                        Qm.ld_param($"p{parameterIndex++}");
-                        Qm.assign();
+                        if (type.IsReference && needEmitRef)
+                        {
+                            left.EmitRefColumn();
+                            right.EmitRefColumn();
+                            Qm.assign();
+
+                            needEmitRef = false;
+                            continue;
+                        }
+
+                        if (!type.IsReference)
+                        {
+                            left.EmitValueColumn(type);
+                            right.EmitValueColumn(type);
+                            Qm.assign();
+                        }
                     }
                 }
                 else
                 {
-                    Qm.ld_column(a.Target.GetDbName());
-                    Qm.ld_param($"p{parameterIndex++}");
+                    //Qm.ld_column(a.Target.GetDbName(), a.Target.GetSource().GetDbName());
+                    srw.Visit(a.Target);
+                    srw.Visit(a.Value);
+                    //Qm.ld_column(a.Value.GetDbName(), );
                     Qm.assign();
                 }
             }

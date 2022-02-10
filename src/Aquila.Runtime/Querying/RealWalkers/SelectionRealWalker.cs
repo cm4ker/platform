@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -429,7 +430,26 @@ namespace Aquila.Core.Querying
             Visit(node.Joined);
             Visit(node.Condition);
 
-            Qm.@join();
+            switch (node.JoinType)
+            {
+                case QJoinType.Inner:
+                    Qm.@join();
+                    break;
+                case QJoinType.Left:
+                    Qm.left_join();
+                    break;
+                case QJoinType.Right:
+                    Qm.right_join();
+                    break;
+                case QJoinType.Full:
+                    Qm.full_join();
+                    break;
+                case QJoinType.Cross:
+                    Qm.cross_join();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public override void VisitQAliasedDataSource(QAliasedDataSource node)
@@ -483,7 +503,7 @@ namespace Aquila.Core.Querying
                 if (types.Any())
                 {
                     var schema = DRContextHelper.GetPropertySchemas(node.GetDbName(), types);
-                    GenColumn(schema);
+                    GenTableColumn(schema);
                 }
                 else
                 {
@@ -518,10 +538,28 @@ namespace Aquila.Core.Querying
 
             LoadNamedSource(node.PlatformSource.GetDbName());
 
-            GenColumn(schema);
+            GenTableColumn(schema);
         }
 
-        private void GenColumn(IEnumerable<ColumnSchemaDefinition> schema)
+
+        private void GenTableColumn(IEnumerable<ColumnSchemaDefinition> schema)
+        {
+            GenColumnCore(schema, (tabName, def) =>
+            {
+                Qm.ld_str(tabName);
+                Qm.ld_str(def.FullName);
+                Qm.ld_column();
+            });
+        }
+
+        private void GenParamColumn(IEnumerable<ColumnSchemaDefinition> schema)
+        {
+            GenColumnCore(schema, (tabName, def) => { Qm.ld_param(def.FullName); });
+        }
+
+
+        private void GenColumnCore(IEnumerable<ColumnSchemaDefinition> schema,
+            Action<string, ColumnSchemaDefinition> action)
         {
             string tabName = null;
             string alias = null;
@@ -534,9 +572,7 @@ namespace Aquila.Core.Querying
 
             foreach (var def in schema)
             {
-                Qm.ld_str(tabName);
-                Qm.ld_str(def.FullName);
-                Qm.ld_column();
+                action(tabName, def);
 
                 if (_hasAlias)
                     Qm.@as(def.Prefix + alias + def.Postfix);
@@ -544,6 +580,12 @@ namespace Aquila.Core.Querying
 
             _hasNamedSource = false;
             _hasAlias = false;
+        }
+
+
+        public override void VisitQTypedParameter(QTypedParameter arg)
+        {
+            GenParamColumn(DRContextHelper.GetPropertySchemas(arg.GetDbName(), arg.Types));
         }
 
         public override void VisitQAliasedSelectExpression(QAliasedSelectExpression node)

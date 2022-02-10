@@ -47,6 +47,9 @@ return new QCriterionList(arg.Select(x => (QCriterion)Visit(x)).ToImmutableArray
 public override QLangElement VisitQAssignList(QAssignList arg) {
 return new QAssignList(arg.Select(x => (QAssign)Visit(x)).ToImmutableArray());
 }
+public override QLangElement VisitQTypedParameterList(QTypedParameterList arg) {
+return new QTypedParameterList(arg.Select(x => (QTypedParameter)Visit(x)).ToImmutableArray());
+}
 public override QLangElement VisitQExpression(QExpression arg) {
 return new QExpression();
 }
@@ -204,6 +207,11 @@ return new QConst();
 public override QLangElement VisitQParameter(QParameter arg) {
 var name = arg.Name;
 return new QParameter(name);
+}
+public override QLangElement VisitQTypedParameter(QTypedParameter arg) {
+var name = arg.Name;
+var types = arg.Types;
+return new QTypedParameter(name,types);
 }
 public override QLangElement VisitQVar(QVar arg) {
 var name = arg.Name;

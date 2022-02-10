@@ -5,7 +5,7 @@ namespace Aquila.Core.Querying.Optimizers
 {
     public class SingleTypeExpr : TypedExpr
     {
-        public SingleTypeExpr(SelectionRealWalker rw, QueryMachine qm) : base(rw, qm)
+        public SingleTypeExpr(RealWalkerBase rw, QueryMachine qm) : base(rw, qm)
         {
         }
 

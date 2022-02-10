@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -58,30 +59,49 @@ namespace Aquila.Core.Querying.Model
             return arg;
         }
 
+        private IEnumerable<QCriterion> GetUpdateCriteria(QDataSource s1, QDataSource s2, UserSecPermission claim)
+        {
+            foreach (var criteria in claim.Criteria)
+            {
+                foreach (var criterion in criteria.Value)
+                {
+                    //1st load main table and make criterion and next load newvalues table and again make criterion
+
+                    //make it substituted
+                    s1.Substituted = true;
+
+                    //force load source table
+                    _m.ld_ref(s1);
+
+                    QLang.Parse(_m, criterion.cString);
+                    yield return (QCriterion)_m.pop();
+
+
+                    //make it substituted
+                    s2.Substituted = true;
+
+                    //force load source table
+                    _m.ld_ref(s1);
+
+                    QLang.Parse(_m, criterion.cString);
+                    yield return (QCriterion)_m.pop();
+                }
+            }
+        }
+
         public override QLangElement VisitQUpdateQuery(QUpdateQuery arg)
         {
             var ot = arg.From.Source.Find<QObjectTable>().FirstOrDefault();
             var target = arg.From.Source;
-            
+            var newValues = arg.From.Joins[0].Joined;
+
+
             if (ot != null)
             {
                 if (_sec.TryClaimPermission(ot.ObjectType, SecPermission.Update, out var claim))
                 {
-                    var criteria = claim.Criteria.SelectMany(x => x.Value).Select(x =>
-                    {
-                        //make it substituted
-                        target.Substituted = true;
-
-                        //force load source table
-                        _m.ld_ref(target);
-
-                        var c = x.cString;
-                        QLang.Parse(_m, c);
-                        return (QCriterion)_m.pop();
-                    }).ToImmutableArray();
-
-
-                    return new QUpdateQuery(arg.Update, arg.Set, arg.From, arg.Where, new QCriterionList(criteria));
+                    return new QUpdateQuery(arg.Update, arg.Set, arg.From, arg.Where,
+                        new QCriterionList(GetUpdateCriteria(target, newValues, claim).ToImmutableArray()));
                 }
             }
 

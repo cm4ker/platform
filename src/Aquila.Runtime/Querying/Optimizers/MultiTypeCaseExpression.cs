@@ -11,7 +11,7 @@ namespace Aquila.Core.Querying.Optimizers
     {
         private readonly QCase _c;
 
-        public MultiTypeCaseExpression(QCase c, SelectionRealWalker rw, QueryMachine qm) : base(rw, qm)
+        public MultiTypeCaseExpression(QCase c, RealWalkerBase rw, QueryMachine qm) : base(rw, qm)
         {
             _c = c;
         }

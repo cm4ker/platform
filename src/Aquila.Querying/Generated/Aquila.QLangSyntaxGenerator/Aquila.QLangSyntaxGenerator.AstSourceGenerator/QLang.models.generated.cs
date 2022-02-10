@@ -355,6 +355,35 @@ namespace Aquila.Core.Querying.Model
 
 namespace Aquila.Core.Querying.Model
 {
+    public class QTypedParameterList : QLangCollection<QTypedParameter>
+    {
+        public static QTypedParameterList Empty => new QTypedParameterList(ImmutableArray<QTypedParameter>.Empty);
+        public QTypedParameterList(ImmutableArray<QTypedParameter> elements) : base(elements)
+        {
+        }
+
+        public override QTypedParameterList Add(QLangElement element)
+        {
+            var item = element as QTypedParameter;
+            if (item == null)
+                throw new Exception("Element is not QTypedParameter");
+            return new QTypedParameterList(Elements.Add(item));
+        }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQTypedParameterList(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQTypedParameterList(this);
+        }
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
     public partial class QExpression : QLangElement
     {
         public QExpression() : base()
@@ -1744,6 +1773,45 @@ namespace Aquila.Core.Querying.Model
 
 namespace Aquila.Core.Querying.Model
 {
+    public partial class QTypedParameter : QExpression
+    {
+        public QTypedParameter(String name, IEnumerable<SMType> types) : base()
+        {
+            Name = name;
+            Types = types;
+        }
+
+        public String Name { get => this.name; init => this.name = value; }
+
+        public IEnumerable<SMType> Types { get => this.types; init => this.types = value; }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQTypedParameter(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQTypedParameter(this);
+        }
+
+        public override IEnumerable<QLangElement> GetChildren()
+        {
+            foreach (var item in base.GetChildren())
+            {
+                yield return item;
+            }
+
+            yield break;
+        }
+
+        private String name;
+        private IEnumerable<SMType> types;
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
     public partial class QVar : QExpression
     {
         public QVar(String name) : base()
@@ -2316,6 +2384,11 @@ namespace Aquila.Core.Querying
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitQTypedParameterList(QTypedParameterList arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitQExpression(QExpression arg)
         {
             return DefaultVisit(arg);
@@ -2481,6 +2554,11 @@ namespace Aquila.Core.Querying
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitQTypedParameter(QTypedParameter arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitQVar(QVar arg)
         {
             return DefaultVisit(arg);
@@ -2615,6 +2693,11 @@ namespace Aquila.Core.Querying
         }
 
         public virtual void VisitQAssignList(QAssignList arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQTypedParameterList(QTypedParameterList arg)
         {
             DefaultVisit(arg);
         }
@@ -2780,6 +2863,11 @@ namespace Aquila.Core.Querying
         }
 
         public virtual void VisitQParameter(QParameter arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQTypedParameter(QTypedParameter arg)
         {
             DefaultVisit(arg);
         }

@@ -58,6 +58,7 @@ namespace Aquila.Runtime.Querying
         public static string GetSaveInsert(SMEntity entity, DatabaseRuntimeContext drc)
         {
             var e_desc = drc.Descriptors.GetEntityDescriptor(entity.FullName);
+
             var qm = new QueryMachine();
             var paramNum = 0;
 
@@ -100,28 +101,36 @@ namespace Aquila.Runtime.Querying
              */
 
             var ds = new QObjectTable(entity);
-            var aliased = new QAliasedDataSource(ds, "TS");
+            var targetSource = new QAliasedDataSource(ds, "TS");
+
+            var select = new QSelect(new QFieldList(
+                entity.Properties.Select(x =>
+                        (QField)new QAliasedSelectExpression(new QTypedParameter(x.Name, x.Types), x.Name))
+                    .ToImmutableArray()));
+
+            var joinedValues = new QFromItem(null,
+                new QAliasedDataSource(
+                    new QNestedQuery(new QSelectQuery(null, select, null, null, null, null, QCriterionList.Empty)),
+                    "Values"), QJoinType.Cross);
+
+            QExpression idParam = null;
 
 
-            QParameter idParam = null;
-
-            var assigns = aliased.GetFields()
+            var assigns = targetSource.GetFields()
                 .Select(x =>
                 {
                     var name = x.GetName();
+                    var field = joinedValues.Joined.GetField(name);
 
                     //TODO: not update Id field
-                    QParameter param = new QParameter(name);
+                    //QTypedParameter param = new QTypedParameter(name, x.GetExpressionType());
 
                     if (name == "Id")
                     {
-                        idParam = param;
+                        idParam = field;
                     }
 
-                    if (x.IsComplexExprType)
-                        param.SetProp(QLangExtensions.ParamCountComplexHidden, x.GetExpressionType().Count());
-
-                    return new QAssign(x, param);
+                    return new QAssign(x, field);
                 })
                 .ToImmutableArray();
 
@@ -130,9 +139,10 @@ namespace Aquila.Runtime.Querying
 
             var qset = new QSet(new QAssignList(assigns));
 
-            var where = new QWhere(new QEquals(aliased.GetField(entity.IdProperty.Name), idParam));
+            var where = new QWhere(new QEquals(targetSource.GetField(entity.IdProperty.Name), idParam));
 
-            return new QUpdateQuery(new QUpdate(aliased), qset, new QFrom(QJoinList.Empty, aliased), where,
+            return new QUpdateQuery(new QUpdate(targetSource), qset,
+                new QFrom(new QJoinList(new[] { joinedValues }.ToImmutableArray()), targetSource), where,
                 QCriterionList.Empty);
         }
 
@@ -150,13 +160,9 @@ namespace Aquila.Runtime.Querying
                     new QSourceFieldList(entity.Properties.Select(x => new QSourceFieldExpression(ds, x))
                         .ToImmutableArray()), ds);
 
-            //TODO this is a hack! We create more parameters then we need but in insert clause we create 1 - 1 fields.
-            //TODO (because field can be more than 1 column)
-            //TODO make parameters 1 - 1 and handle this at the render query level
             var select = new QSelect(new QFieldList(
-                entity.Properties
-                    .SelectMany(x => x.GetFullFlattenNames())
-                    .Select(x => (QField)new QAliasedSelectExpression(new QParameter(x), x))
+                entity.Properties.Select(x =>
+                        (QField)new QAliasedSelectExpression(new QTypedParameter(x.Name, x.Types), x.Name))
                     .ToImmutableArray()));
 
             var nq = new QAliasedDataSource(new QNestedQuery(new QSelectQuery(null, select, null, null, null,
