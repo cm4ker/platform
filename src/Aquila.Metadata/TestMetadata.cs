@@ -4,7 +4,7 @@ namespace Aquila.Metadata
 {
     public class TestMetadata
     {
-        public static string DefaultConnetionString = "Data Source=.;Initial Catalog=TestDb;Integrated Security=true";
+        public static string DefaultConnetionString = "Data Source=.;Initial Catalog=TestDb;Integrated Security=true;TrustServerCertificate=True";
 
         public static EntityMetadataCollection GetTestMetadata()
         {

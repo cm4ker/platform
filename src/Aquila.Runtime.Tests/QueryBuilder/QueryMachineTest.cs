@@ -52,7 +52,7 @@ namespace Aquila.Runtime.Tests
                 .ld_column("Column")
                 .st_query();
 
-            Assert.Equal("SELECT Column\nFROM\nTable\nJOIN Table2 ON 1 = 1\n", CompileMsSql(machine));
+            Assert.Equal("SELECT Column\nFROM\nTable\nINNER JOIN Table2 ON 1 = 1\n", CompileMsSql(machine));
         }
 
         [Fact]
@@ -133,7 +133,7 @@ namespace Aquila.Runtime.Tests
 
 
             var expected =
-                "SELECT A.F1 as MyColumn\nFROM\nT1 as A\nJOIN (SELECT @param3 + @param2 as Summ\n) as subQuery ON subQuery.Summ = A.F2\nJOIN T2 as B ON B.F1 = A.F1\nWHERE\n(A.F1 = B.F1 AND A.F2 = B.F2)\nGROUP BY\nA.F1\nHAVING\n@param4 > sum(A.F1)\n";
+                "SELECT A.F1 as MyColumn\nFROM\nT1 as A\nLEFT JOIN (SELECT @param3 + @param2 as Summ\n) as subQuery ON subQuery.Summ = A.F2\nINNER JOIN T2 as B ON B.F1 = A.F1\nWHERE\n(A.F1 = B.F1 AND A.F2 = B.F2)\nGROUP BY\nA.F1\nHAVING\n@param4 > sum(A.F1)\n";
 
             Assert.Equal(expected, actual
             );

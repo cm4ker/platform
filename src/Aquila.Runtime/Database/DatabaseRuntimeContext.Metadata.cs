@@ -82,8 +82,10 @@ namespace Aquila.Runtime
                 {
                     q.bg_query()
                         .ld_table(_tableName)
+                        .@as("T0")
                         .m_from()
                         .m_delete()
+                        .ld_table("T0")
                         .st_query();
                 }).ExecuteNonQuery();
 
@@ -148,11 +150,13 @@ namespace Aquila.Runtime
                         .bg_query()
                         .m_from()
                         .ld_table(_tableName)
+                        .@as("T0")
                         .m_where()
                         .ld_const("1")
                         .ld_const("1")
                         .eq()
                         .m_delete()
+                        .ld_table("T0")
                         .st_query();
                 }
 

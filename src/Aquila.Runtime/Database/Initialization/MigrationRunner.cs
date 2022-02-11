@@ -14,7 +14,7 @@ using Npgsql;
 namespace Aquila.Initializer
 {
     /// <summary>
-    /// Миграции. Используется стандартный пакет, котоырй теперь работает исключительно через DI контейнер
+    /// Migration runner
     /// </summary>
     public static class MigrationRunner
     {
@@ -61,7 +61,7 @@ namespace Aquila.Initializer
         }
 
         /// <summary>
-        /// Обновить базу данных допоследней доступной миграции
+        /// Update internal structures to the last version
         /// </summary>
         /// <param name="serviceProvider"></param>
         private static void UpdateDatabase(IServiceProvider serviceProvider)

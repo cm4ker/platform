@@ -19,18 +19,18 @@ namespace Aquila.Core.Test
             _o = o;
         }
 
-        [Fact]
-        public void TestServer() 
-        {
-        //     var serverServices = TestEnvSetup.GetServerServiceWithDatabase(_o);
-        //
-        //     var accessPoint = serverServices.GetRequiredService<IAccessPoint>();
-        //     accessPoint.Start();
-        //     //need check listing
-        //
-        //     var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
-        //     Assert.NotEmpty(environmentManager.GetEnvironmentList());
-        }
+        // [Fact]
+        // public void TestServer() 
+        // {
+        // //     var serverServices = TestEnvSetup.GetServerServiceWithDatabase(_o);
+        // //
+        // //     var accessPoint = serverServices.GetRequiredService<IAccessPoint>();
+        // //     accessPoint.Start();
+        // //     //need check listing
+        // //
+        // //     var environmentManager = serverServices.GetRequiredService<IPlatformEnvironmentManager>();
+        // //     Assert.NotEmpty(environmentManager.GetEnvironmentList());
+        // }
 
 
     // [Fact]

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Aquila.Core.Settings;
 using Aquila.Data;
+using Aquila.Metadata;
 
 namespace Aquila.Core.Test
 {
@@ -28,7 +29,7 @@ namespace Aquila.Core.Test
             {
                 new StartupConfig()
                 {
-                    ConnectionString = "Data Source=.;Initial Catalog=TestDb;Integrated Security=true",
+                    ConnectionString = TestMetadata.DefaultConnetionString,
                     DatabaseType = SqlDatabaseType.SqlServer
                 }
             }

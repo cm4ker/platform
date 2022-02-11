@@ -9,12 +9,22 @@ using Aquila.Core.Sessions;
 using Aquila.Core.Test;
 using Aquila.Library.Scripting;
 using Aquila.Metadata;
+using Aquila.Runtime.Tests.DB;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace ScriptsTest
 {
+    [CollectionDefinition("Database collection")]
+    public class DatabaseCollection : ICollectionFixture<DatabaseFixture>
+    {
+        // This class has no code, and is never created. Its purpose is simply
+        // to be the place to apply [CollectionDefinition] and all the
+        // ICollectionFixture<> interfaces.
+    }
+
+    [Collection("Database collection")]
     public class ScriptsTest
     {
         /// <summary>

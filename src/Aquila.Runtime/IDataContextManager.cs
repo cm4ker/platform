@@ -9,18 +9,16 @@ using Aquila.QueryBuilder;
 namespace Aquila.Data
 {
     /// <summary>
-    /// Менеджер контекста данных
-    /// Позволяет получить доступ к данным
-    /// Клиент может получить доступ к контексту
+    /// Data context manager layer for manipulating and managing contexts
     /// </summary>
-    public class DataContextManager
+    public class DataContextManager : IDisposable
     {
         private SqlDatabaseType _dbType;
         private string _connectionString;
         private readonly ConcurrentDictionary<int, DataConnectionContext> _contexts;
 
         /// <summary>
-        /// Создать новый менеджер контекстов
+        /// Create new context manager
         /// </summary>
         /// <param name="connectionString"></param>
         public DataContextManager()
@@ -44,11 +42,9 @@ namespace Aquila.Data
         public SqlCompiler SqlCompiler { get; private set; }
 
         /// <summary>
-        /// Получить контекст данных.
-        /// Внимание, на каждый поток выдаётся отдельный контекст данных.
-        /// Так что транзакция обязана выполниться в одном потоке.
+        /// Get data context. Hides logic of creating connection from user
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Ready for work <see cref="DataConnectionContext"/></returns>
         public DataConnectionContext GetContext()
         {
             if (_dbType == SqlDatabaseType.Unknown)
@@ -60,16 +56,30 @@ namespace Aquila.Data
             if (!_contexts.TryGetValue(Thread.CurrentThread.ManagedThreadId, out var context))
             {
                 context = new DataConnectionContext(_dbType, _connectionString, IsolationLevel.ReadCommitted);
-                _contexts.TryAdd(Thread.CurrentThread.ManagedThreadId, context);
+
+                //NOTE: After start using AspNetCore for the backend hosting we not need hold here the contexts
+                //TODO: remove this code in the future 
+                //_contexts.TryAdd(Thread.CurrentThread.ManagedThreadId, context);
             }
 
             return context;
         }
 
+        /// <summary>
+        /// Release context from pool
+        /// </summary>
+        /// <param name="context"></param>
         public void ReleaseContext(DataConnectionContext context)
         {
             var key = _contexts.FirstOrDefault(x => x.Value == context).Key;
             _contexts.TryRemove(key, out context);
+        }
+
+        /// <summary>
+        /// Dispose manager and all contexts created by
+        /// </summary>
+        public void Dispose()
+        {
         }
     }
 }

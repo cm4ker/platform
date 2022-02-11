@@ -14,6 +14,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Aquila.Library.Scripting\Aquila.Library.Scripting.csproj" />
+      <ProjectReference Include="..\Aquila.Runtime.Tests\Aquila.Runtime.Tests.csproj" />
       <ProjectReference Include="..\Aquila.Test.Tools\Aquila.Test.Tools.csproj" />
     </ItemGroup>
     

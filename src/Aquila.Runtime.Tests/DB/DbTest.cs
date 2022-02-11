@@ -8,34 +8,47 @@ using Aquila.Core.Sessions;
 using Aquila.Data;
 using Aquila.Initializer;
 using Aquila.Library.Scripting;
+using Aquila.Logging;
 using Aquila.Metadata;
+using Aquila.Migrations;
+using Microsoft.VisualStudio.TestPlatform.Utilities;
 using SqlInMemory;
 using Xunit;
+using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Aquila.Runtime.Tests.DB
 {
     public class DbTest
     {
-        [Fact]
+        private readonly ITestOutputHelper _t;
+
+        public DbTest(ITestOutputHelper t)
+        {
+            _t = t;
+        }
+
         public void TestDbProvider()
         {
-            var cs = "Data Source=.;Initial Catalog=TestDb;Integrated Security=true";
-            SqlInMemoryDb.Create(cs);
-            Assert.True(SqlHelper.DatabaseExists(cs));
-            MigrationRunner.Migrate(cs, SqlDatabaseType.SqlServer);
+            var cs = "Data Source=.;Initial Catalog=TestDb;Integrated Security=true;TrustServerCertificate=True";
 
-            DatabaseRuntimeContext db = new DatabaseRuntimeContext();
-            DataConnectionContext dc =
-                new DataConnectionContext(SqlDatabaseType.SqlServer, cs, IsolationLevel.ReadCommitted);
+            using (SqlInMemoryDb.Create(cs))
+            {
+                Assert.True(SqlHelper.DatabaseExists(cs));
+                MigrationRunner.Migrate(cs, SqlDatabaseType.SqlServer);
+
+                DatabaseRuntimeContext db = new DatabaseRuntimeContext();
+                DataConnectionContext dc =
+                    new DataConnectionContext(SqlDatabaseType.SqlServer, cs, IsolationLevel.ReadCommitted);
 
 
-            var d1 = db.Descriptors.CreateDescriptor(dc);
-            var d2 = db.Descriptors.CreateDescriptor(dc);
+                var d1 = db.Descriptors.CreateDescriptor(dc);
+                var d2 = db.Descriptors.CreateDescriptor(dc);
 
-            AqContext.IScriptingProvider provider = new ScriptingProvider();
+                AqContext.IScriptingProvider provider = new ScriptingProvider();
 
-            var code =
-                @"
+                var code =
+                    @"
 import Entity;
 
 [endpoint] public static int endpoint_test() { return 100500; }
@@ -70,39 +83,46 @@ import Entity;
 }
 ";
 
-            var script = provider.CreateScript(new AqContext.ScriptOptions()
-            {
-                IsSubmission = false,
-                EmitDebugInformation = true,
-                Location = new Location("unknown", 0, 0),
-                //AdditionalReferences = AdditionalReferences,
-            }, code, TestMetadata.GetTestMetadata());
-
-            db.PendingFiles.SaveFile(dc,
-                new FileDescriptor
+                var script = provider.CreateScript(new AqContext.ScriptOptions()
                 {
-                    Name = "AssemblyName",
-                    Type = FileType.MainAssembly,
-                }, script.Image.ToArray());
+                    IsSubmission = false,
+                    EmitDebugInformation = true,
+                    Location = new Location("unknown", 0, 0),
+                    //AdditionalReferences = AdditionalReferences,
+                }, code, TestMetadata.GetTestMetadata());
 
-            Assert.NotEmpty(db.Descriptors.GetEntityDescriptors());
+                db.PendingFiles.SaveFile(dc,
+                    new FileDescriptor
+                    {
+                        Name = "AssemblyName",
+                        Type = FileType.MainAssembly,
+                    }, script.Image.ToArray());
 
-            d1.DatabaseName = "some_name";
-            d2.DatabaseName = $"Tbl_{d2.DatabaseId}";
-            d2.MetadataId = "test";
+                Assert.NotEmpty(db.Descriptors.GetEntityDescriptors());
 
-            db.PendingMetadata.SetMetadata(TestMetadata.GetTestMetadata());
-            db.SaveAll(dc);
+                d1.DatabaseName = "some_name";
+                d2.DatabaseName = $"Tbl_{d2.DatabaseId}";
+                d2.MetadataId = "test";
 
-            //NOTE: First 0x100 type ids are reserved 
-            Assert.Equal(257, d1.DatabaseId);
-            Assert.Equal(258, d2.DatabaseId);
+                db.PendingMetadata.SetMetadata(TestMetadata.GetTestMetadata());
+                db.SaveAll(dc);
 
-            DatabaseRuntimeContext db2 = new DatabaseRuntimeContext();
+                //NOTE: First 0x100 type ids are reserved 
+                Assert.Equal(257, d1.DatabaseId);
+                Assert.Equal(258, d2.DatabaseId);
 
-            db2.LoadAll(dc);
-            Assert.True(db.PendingMetadata.GetMetadata().Metadata.Any());
-            
+                DatabaseRuntimeContext db2 = new DatabaseRuntimeContext();
+
+                db2.LoadAll(dc);
+                Assert.True(db.PendingMetadata.GetMetadata().Metadata.Any());
+
+
+                var cm = new DataContextManager();
+                cm.Initialize(SqlDatabaseType.SqlServer, cs);
+                var mm = new MigrationManager(cm, new NLogger<MigrationManager>());
+
+                mm.Migrate();
+            }
         }
     }
 }

@@ -104,9 +104,8 @@ namespace Aquila.Migrations
             return drc.PendingMetadata.GetMetadata().Metadata.Any();
         }
 
-        public void Migrate()
+        public void Migrate(DataConnectionContext context)
         {
-            var context = _dataContextManager.GetContext();
             var runtimeContext = DatabaseRuntimeContext.CreateAndLoad(context);
 
             _logger.Info("Check last migration.");
@@ -135,6 +134,11 @@ namespace Aquila.Migrations
                 CompliteMigration(context, id);
                 _logger.Info($"Migration '{id}' complite.");
             }
+        }
+
+        public void Migrate()
+        {
+            Migrate(_dataContextManager.GetContext());
         }
 
         private void ClearMigrationStatus(Guid id, DataConnectionContext context)
