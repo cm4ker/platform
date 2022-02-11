@@ -72,6 +72,13 @@ var where = (QWhere)Visit(arg.Where);
 var criteria = (QCriterionList)Visit(arg.Criteria);
 return new QUpdateQuery(update,set,from,where,criteria);
 }
+public override QLangElement VisitQDeleteQuery(QDeleteQuery arg) {
+var delete = (QDelete)Visit(arg.Delete);
+var from = (QFrom)Visit(arg.From);
+var where = (QWhere)Visit(arg.Where);
+var criteria = (QCriterionList)Visit(arg.Criteria);
+return new QDeleteQuery(delete,from,where,criteria);
+}
 public override QLangElement VisitQSelectQuery(QSelectQuery arg) {
 var orderBy = (QOrderBy)Visit(arg.OrderBy);
 var select = (QSelect)Visit(arg.Select);
@@ -116,6 +123,10 @@ public override QLangElement VisitQInsert(QInsert arg) {
 var fields = (QSourceFieldList)Visit(arg.Fields);
 var target = (QPlatformDataSource)Visit(arg.Target);
 return new QInsert(fields,target);
+}
+public override QLangElement VisitQDelete(QDelete arg) {
+var target = (QDataSource)Visit(arg.Target);
+return new QDelete(target);
 }
 public override QLangElement VisitQUpdate(QUpdate arg) {
 var target = (QDataSource)Visit(arg.Target);

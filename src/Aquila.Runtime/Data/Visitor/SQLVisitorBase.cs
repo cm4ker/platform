@@ -210,7 +210,8 @@ namespace Aquila.QueryBuilder.Visitor
 
         public override string VisitSDelete(SDelete node)
         {
-            return string.Format("DELETE\n{0}{1}",
+            return string.Format("DELETE {0}\n{1}{2}",
+                node.Delete.Accept(this),
                 node.From == null ? "" : node.From.Accept(this),
                 node.Where == null ? "" : node.Where.Accept(this)
             );

@@ -108,6 +108,32 @@ namespace Aquila.Core.Querying.Model
             return arg;
         }
 
+        public override QLangElement VisitQDeleteQuery(QDeleteQuery arg)
+        {
+            var ot = arg.Delete.Target.Find<QObjectTable>().FirstOrDefault();
+            var target = arg.Delete.Target;
+
+            if (ot != null)
+            {
+                if (_sec.TryClaimPermission(ot.ObjectType, SecPermission.Delete, out var claim))
+                {
+                    var criteria = claim.Criteria.SelectMany(x => x.Value).Select(x =>
+                    {
+                        var sub = arg.Delete.Target;
+                        sub.Substituted = true;
+                        _m.ld_ref(sub);
+                        var c = x.cString;
+                        QLang.Parse(_m, c);
+                        return (QCriterion)_m.pop();
+                    }).ToImmutableArray();
+
+                    return new QDeleteQuery(arg.Delete, arg.From, arg.Where, new QCriterionList(criteria));
+                }
+            }
+
+            return arg;
+        }
+
         public override QLangElement VisitQInsertQuery(QInsertQuery arg)
         {
             /*

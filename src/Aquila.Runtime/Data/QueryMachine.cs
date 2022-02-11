@@ -295,6 +295,7 @@ namespace Aquila.QueryBuilder
                     break;
                 case MachineContextType.Delete:
                     push(new SDelete(
+                        Pop<SDataSource>(),
                         TryPop<SWhere>(),
                         Pop<SFrom>()));
                     break;

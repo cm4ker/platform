@@ -46,6 +46,16 @@
         </Arguments>
     </Syntax>
 
+    <Syntax Name="QDeleteQuery" Base="QQueryBase">
+        <Arguments>
+            <!--NOTE: Use criterion from the QSelectQuery. Because on Selection level we apply filtering-->
+            <Single Name="Delete" Type="QDelete"/>
+            <Single Name="From" Type="QFrom"/>
+            <Single Name="Where" Type="QWhere"/>
+            <Single Name="Criteria" Type="QCriterionList"/>
+        </Arguments>
+    </Syntax>
+
     <Syntax Name="QSelectQuery" Base="QQueryBase">
         <Arguments>
             <Single Name="OrderBy" Type="QOrderBy"/>
@@ -108,6 +118,12 @@
 
             <!--NOTE: as target on insertion we can use only platform destination source-->
             <Single Name="Target" Type="QPlatformDataSource"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QDelete">
+        <Arguments>
+            <Single Name="Target" Type="QDataSource"/>
         </Arguments>
     </Syntax>
 

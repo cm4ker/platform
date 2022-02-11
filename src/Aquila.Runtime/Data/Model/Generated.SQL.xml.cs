@@ -425,11 +425,14 @@ namespace Aquila.QueryBuilder.Model
 {
     public partial class SDelete : SSyntaxNode
     {
-        public SDelete(SWhere where, SFrom from): base()
+        public SDelete(SDataSource delete, SWhere where, SFrom from): base()
         {
+            Delete = delete;
             Where = where;
             From = from;
         }
+
+        public SDataSource Delete { get; set; }
 
         public SWhere Where { get; set; }
 
@@ -438,12 +441,12 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( SDelete ) obj ;  return  ( Compare ( this . Where ,  node . Where ) && Compare ( this . From ,  node . From ) ) ; 
+                return false; var  node  =  ( SDelete ) obj ;  return  ( Compare ( this . Delete ,  node . Delete ) && Compare ( this . Where ,  node . Where ) && Compare ( this . From ,  node . From ) ) ; 
         }
 
         public override int GetHashCode()
         {
-            return (Where == null ? 0 : Where.GetHashCode()) ^ (From == null ? 0 : From.GetHashCode());
+            return (Delete == null ? 0 : Delete.GetHashCode()) ^ (Where == null ? 0 : Where.GetHashCode()) ^ (From == null ? 0 : From.GetHashCode());
         }
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)

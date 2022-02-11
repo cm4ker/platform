@@ -270,5 +270,30 @@ namespace Aquila.Runtime.Tests
 
             Assert.Equal("SELECT (SELECT Column\nFROM\nTable\n),\nColumn\nFROM\nTable\n", CompileMsSql(machine));
         }
+
+        [Fact]
+        public void QueryDeleteTest()
+        {
+            var machine = new QueryMachine();
+
+            machine
+                .bg_query()
+                .m_from()
+                .ld_table("Test")
+                .@as("A")
+                .m_where()
+                .ld_column("Fld1")
+                .ld_param("p0")
+                .eq()
+                .ld_column("Fld2")
+                .ld_param("p1")
+                .eq()
+                .and()
+                .m_delete()
+                .ld_table("A")
+                .st_query();
+
+            Assert.Equal("DELETE A\nFROM\nTest as A\nWHERE\n(Fld1 = @p0 AND Fld2 = @p1)\n", CompileMsSql(machine));
+        }
     }
 }

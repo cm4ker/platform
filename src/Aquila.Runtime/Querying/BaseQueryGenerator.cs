@@ -209,6 +209,16 @@ namespace Aquila.Runtime.Querying
             // return qm.top<QInsertQuery>();
         }
 
+        public static QDeleteQuery GetDeleteQuery(SMEntity entity, EntityMetadataCollection em)
+        {
+            var source = new QAliasedDataSource(new QObjectTable(entity), "TS");
+            QDelete delete = new QDelete(source);
+            QFrom from = new QFrom(null, source);
+            QParameter param = new QParameter("Id");
+            QWhere where = new QWhere(new QEquals(source.GetField("Id"), param));
+            return new QDeleteQuery(delete, from, where, QCriterionList.Empty);
+        }
+
         public QInsertQuery TransformQuery(QInsertQuery query)
         {
             //SecurityVisitor sec = new SecurityVisitor();

@@ -587,6 +587,61 @@ namespace Aquila.Core.Querying.Model
 
 namespace Aquila.Core.Querying.Model
 {
+    public partial class QDeleteQuery : QQueryBase
+    {
+        public QDeleteQuery(QDelete delete, QFrom from, QWhere where, QCriterionList criteria) : base()
+        {
+            this.delete = delete;
+            this.from = from;
+            this.where = where;
+            this.criteria = criteria;
+        }
+
+        public QDelete Delete { get => this.delete; init => this.delete = value; }
+
+        public QFrom From { get => this.from; init => this.from = value; }
+
+        public QWhere Where { get => this.where; init => this.where = value; }
+
+        public QCriterionList Criteria { get => this.criteria; init => this.criteria = value; }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQDeleteQuery(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQDeleteQuery(this);
+        }
+
+        public override IEnumerable<QLangElement> GetChildren()
+        {
+            if (this.delete != null)
+                yield return this.delete;
+            if (this.from != null)
+                yield return this.from;
+            if (this.where != null)
+                yield return this.where;
+            if (this.criteria != null)
+                yield return this.criteria;
+            foreach (var item in base.GetChildren())
+            {
+                yield return item;
+            }
+
+            yield break;
+        }
+
+        private QDelete delete;
+        private QFrom from;
+        private QWhere where;
+        private QCriterionList criteria;
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
     public partial class QSelectQuery : QQueryBase
     {
         public QSelectQuery(QOrderBy orderBy, QSelect select, QHaving having, QGroupBy groupBy, QWhere where, QFrom from, QCriterionList criteria) : base()
@@ -929,6 +984,38 @@ namespace Aquila.Core.Querying.Model
 
         private QSourceFieldList fields;
         private QPlatformDataSource target;
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
+    public partial class QDelete : QLangElement
+    {
+        public QDelete(QDataSource target) : base()
+        {
+            this.target = target;
+        }
+
+        public QDataSource Target { get => this.target; init => this.target = value; }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            return visitor.VisitQDelete(this);
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            visitor.VisitQDelete(this);
+        }
+
+        public override IEnumerable<QLangElement> GetChildren()
+        {
+            if (this.target != null)
+                yield return this.target;
+            yield break;
+        }
+
+        private QDataSource target;
     }
 }
 
@@ -2409,6 +2496,11 @@ namespace Aquila.Core.Querying
             return DefaultVisit(arg);
         }
 
+        public virtual T VisitQDeleteQuery(QDeleteQuery arg)
+        {
+            return DefaultVisit(arg);
+        }
+
         public virtual T VisitQSelectQuery(QSelectQuery arg)
         {
             return DefaultVisit(arg);
@@ -2450,6 +2542,11 @@ namespace Aquila.Core.Querying
         }
 
         public virtual T VisitQInsert(QInsert arg)
+        {
+            return DefaultVisit(arg);
+        }
+
+        public virtual T VisitQDelete(QDelete arg)
         {
             return DefaultVisit(arg);
         }
@@ -2722,6 +2819,11 @@ namespace Aquila.Core.Querying
             DefaultVisit(arg);
         }
 
+        public virtual void VisitQDeleteQuery(QDeleteQuery arg)
+        {
+            DefaultVisit(arg);
+        }
+
         public virtual void VisitQSelectQuery(QSelectQuery arg)
         {
             DefaultVisit(arg);
@@ -2763,6 +2865,11 @@ namespace Aquila.Core.Querying
         }
 
         public virtual void VisitQInsert(QInsert arg)
+        {
+            DefaultVisit(arg);
+        }
+
+        public virtual void VisitQDelete(QDelete arg)
         {
             DefaultVisit(arg);
         }

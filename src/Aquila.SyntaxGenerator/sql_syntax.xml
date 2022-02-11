@@ -87,6 +87,7 @@
 
     <Syntax Name="SDelete">
         <Arguments>
+            <Single Name="Delete" Type="SDataSource"/>
             <Single Name="Where" Type="SWhere"/>
             <Single Name="From" Type="SFrom"/>
         </Arguments>
