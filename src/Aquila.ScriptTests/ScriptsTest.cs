@@ -56,7 +56,7 @@ namespace ScriptsTest
                 new Regex(@"^skip(\([^)]*\))?_.*$"); // matches either skip_<smth>.aq or skip(<reason>)_<smth>.aq
             Skip.If(isSkipTest.IsMatch(fname));
 
-            var service = TestEnvSetup.GetServerService(_output);
+            var service = TestEnvSetup.GetServerService();
             var manager = service.GetService<IAqInstanceManager>();
             var instance = manager.GetInstance("Library");
             instance.Migrate();

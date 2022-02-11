@@ -101,7 +101,7 @@ namespace Aquila.Migrations
         {
             var context = _dataContextManager.GetContext();
             var drc = DatabaseRuntimeContext.CreateAndLoad(context);
-            return drc.PendingMetadata.GetMetadata().Metadata.Any();
+            return drc.PendingMetadata.GetMetadata().EntityMetadata.Any();
         }
 
         public void Migrate(DataConnectionContext context)

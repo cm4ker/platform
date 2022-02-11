@@ -27,7 +27,7 @@ namespace Aquila.UIBuilder
         private DatabaseRuntimeContext _drContext;
         private DataConnectionContext _dcContext;
         private string _translated;
-        private readonly UserSecTable _ust;
+        private readonly ContextSecTable _ust;
 
         public VM()
         {
@@ -36,7 +36,7 @@ namespace Aquila.UIBuilder
             _drContext = new DatabaseRuntimeContext();
             _drContext.LoadAll(_dcContext);
 
-            _ust = new UserSecTable();
+            _ust = new ContextSecTable();
             _ust.Init(TestMetadata.GetTestMetadata().GetSecPolicies().ToList(), TestMetadata.GetTestMetadata());
         }
 

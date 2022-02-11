@@ -24,9 +24,9 @@ namespace Aquila.Runtime.Querying
             Where x* - is permission with lookup query (more complex case) NOTE: Lookup queries can be more than one
          */
 
-    public class UserSecPermission
+    public class ContextSecPermission
     {
-        public UserSecPermission()
+        public ContextSecPermission()
         {
             Criteria = new Dictionary<SecPermission, List<(string, QCriterion)>>();
         }
@@ -40,7 +40,7 @@ namespace Aquila.Runtime.Querying
         /// </summary>
         /// <param name="sp"></param>
         /// <returns></returns>
-        public UserSecPermission WithAspectPermission(SecPermission sp) => new UserSecPermission
+        public ContextSecPermission WithAspectPermission(SecPermission sp) => new ContextSecPermission
         {
             Permission = this.Permission,
             Criteria = this.Criteria.Where(x => x.Key.HasFlag(sp)).ToDictionary(x => x.Key, x => x.Value)
@@ -51,20 +51,22 @@ namespace Aquila.Runtime.Querying
     /// Security table for certain user
     /// in Init method we must pass filtered data
     /// </summary>
-    public class UserSecTable
+    public class ContextSecTable
     {
-        private Dictionary<SMEntity, UserSecPermission> _rows;
+        private Dictionary<SMEntity, ContextSecPermission> _rows;
 
-        public UserSecTable()
+        public ContextSecTable()
         {
         }
 
-        public void Init(List<SMSecPolicy> policies, MetadataProvider md)
+        public void Init(IEnumerable<SMSecPolicy> policies)
         {
-            var subjects = policies.SelectMany(x => x.Subjects);
-            var criteria = policies.SelectMany(x => x.Criteria);
+            var smSecPolicies = policies as SMSecPolicy[] ?? policies.ToArray();
 
-            var result = new Dictionary<SMEntity, UserSecPermission>();
+            var subjects = smSecPolicies.SelectMany(x => x.Subjects);
+            var criteria = smSecPolicies.SelectMany(x => x.Criteria);
+
+            var result = new Dictionary<SMEntity, ContextSecPermission>();
 
             var a = (
                 from s in subjects
@@ -79,7 +81,7 @@ namespace Aquila.Runtime.Querying
 
             foreach (var t in a)
             {
-                var up = new UserSecPermission();
+                var up = new ContextSecPermission();
 
                 foreach (var values in t.Items)
                 {
@@ -110,17 +112,17 @@ namespace Aquila.Runtime.Querying
             _rows = result;
         }
 
-        public UserSecPermission this[SMEntity md]
+        public ContextSecPermission this[SMEntity md]
         {
             get { return _rows[md]; }
         }
 
-        public bool TryClaimSec(SMEntity md, out UserSecPermission permission)
+        public bool TryClaimSec(SMEntity md, out ContextSecPermission permission)
         {
             return _rows.TryGetValue(md, out permission);
         }
 
-        public bool TryClaimPermission(SMEntity md, SecPermission permission, out UserSecPermission claim)
+        public bool TryClaimPermission(SMEntity md, SecPermission permission, out ContextSecPermission claim)
         {
             if (TryClaimSec(md, out var result))
             {

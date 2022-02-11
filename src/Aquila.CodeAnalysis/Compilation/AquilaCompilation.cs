@@ -196,7 +196,7 @@ namespace Aquila.CodeAnalysis
                 reuseReferenceManager,
                 EventQueue);
 
-            compilation.MetadataProvider.AddMetadataRange(metadata ?? MetadataProvider.Metadata);
+            compilation.MetadataProvider.AddMetadataRange(metadata ?? MetadataProvider.EntityMetadata);
             compilation.SourceSymbolCollection.AddSyntaxTreeRange(syntaxTrees ?? SyntaxTrees);
 
             return compilation;

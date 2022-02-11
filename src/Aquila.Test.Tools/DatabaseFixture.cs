@@ -1,23 +1,30 @@
 ﻿using System;
 using System.Linq;
+using Aquila.Core;
+using Aquila.Core.Instance;
+using Aquila.Core.Test;
 using Aquila.Data;
 using Aquila.Initializer;
 using Aquila.Logging;
 using Aquila.Metadata;
 using Aquila.Migrations;
 using Aquila.Runtime.Querying;
+using Microsoft.Extensions.DependencyInjection;
 using RamDisk;
 using SqlInMemory;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Aquila.Runtime.Tests.DB
 {
     public class DatabaseFixture : IDisposable
     {
         private IDisposable _inmemDb;
-        public UserSecTable Ust { get; private set; }
-        public DatabaseRuntimeContext DrContext { get; private set; }
-        public DataConnectionContext DcContext { get; private set; }
+        public ContextSecTable Ust { get; private set; }
+
+        public AqInstance Instance { get; private set; }
+
+        public AqContext Context { get; private set; }
 
         public DatabaseFixture()
         {
@@ -47,25 +54,24 @@ namespace Aquila.Runtime.Tests.DB
             Assert.True(SqlHelper.DatabaseExists(TestMetadata.DefaultConnetionString));
             MigrationRunner.Migrate(TestMetadata.DefaultConnetionString, SqlDatabaseType.SqlServer);
 
-            var cm = new DataContextManager();
-            cm.Initialize(SqlDatabaseType.SqlServer, TestMetadata.DefaultConnetionString);
+            var service = TestEnvSetup.GetServerService();
+            var manager = service.GetService<IAqInstanceManager>();
+            Instance = manager.GetInstance("Library");
 
-            DrContext = new DatabaseRuntimeContext();
-            DcContext = cm.GetContext();
+            var drContext = Instance.DatabaseRuntimeContext;
+            var dcContext = Instance.DataContextManager.GetContext();
 
-            Ust = new UserSecTable();
-            Ust.Init(TestMetadata.GetTestMetadata().GetSecPolicies().ToList(), TestMetadata.GetTestMetadata());
+            Ust = new ContextSecTable();
+            Ust.Init(TestMetadata.GetTestMetadata().GetSecPolicies().ToList());
 
-            DrContext.PendingMetadata.SetMetadata(TestMetadata.GetTestMetadata());
-            DrContext.SaveAll(DcContext);
+            drContext.PendingMetadata.SetMetadata(TestMetadata.GetTestMetadata());
+            drContext.SaveAll(dcContext);
 
-            Assert.True(DrContext.PendingMetadata.GetMetadata().Metadata.Any());
+            Assert.True(drContext.PendingMetadata.GetMetadata().EntityMetadata.Any());
 
-            var mm = new MigrationManager(cm, new NLogger<MigrationManager>());
-            mm.Migrate();
+            Instance.Migrate();
 
-            DrContext = new DatabaseRuntimeContext();
-            DrContext.LoadAll(DcContext);
+            Context = new AqContext(Instance) { User = "Test", Roles = new[] { TestMetadata.TestSecName } };
         }
 
 

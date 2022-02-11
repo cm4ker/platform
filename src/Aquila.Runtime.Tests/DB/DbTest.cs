@@ -114,7 +114,7 @@ import Entity;
                 DatabaseRuntimeContext db2 = new DatabaseRuntimeContext();
 
                 db2.LoadAll(dc);
-                Assert.True(db.PendingMetadata.GetMetadata().Metadata.Any());
+                Assert.True(db.PendingMetadata.GetMetadata().EntityMetadata.Any());
 
 
                 var cm = new DataContextManager();

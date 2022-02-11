@@ -256,7 +256,7 @@ namespace Aquila.Library.Scripting
                     //.WithLangVersion(languageVersion)
                     .WithAssemblyName(name.Name)
                     .AddSyntaxTrees(tree)
-                    .AddMetadata(metadata.Metadata)
+                    .AddMetadata(metadata.EntityMetadata)
                     .AddReferences(metadatareferences);
 
                 var emitOptions = new EmitOptions();

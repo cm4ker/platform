@@ -1,4 +1,5 @@
-﻿using Aquila.Core.Querying;
+﻿using Aquila.Core;
+using Aquila.Core.Querying;
 using Aquila.Core.Querying.Model;
 using Aquila.QueryBuilder.Model;
 using Aquila.QueryBuilder.Visitor;
@@ -32,17 +33,12 @@ namespace Aquila.Runtime.Tests.DB
         [Fact]
         public void InsertEntityQueryGenerationTest()
         {
-            var drc = fixture.DrContext;
-            var md = drc.Metadata.GetMetadata();
+            var md = fixture.Context.MetadataProvider;
             var invoice = md.GetSemanticByName("Entity.Invoice");
 
-            QLangElement insertModel = CRUDQueryGenerator.GetSaveInsertQuery(invoice, md);
-            insertModel = new SecurityVisitor(md, fixture.Ust).Visit(insertModel);
-            new PhysicalNameWalker(drc).Visit(insertModel);
-            var iw = new InsertionRealWalker(drc);
-            iw.Visit(insertModel);
+            Assert.NotNull(invoice);
 
-            var actual = new MsSqlBuilder().Visit((SSyntaxNode)iw.QueryMachine.peek()).ReplaceLineEndings();
+            var actual = CRUDQueryGenerator.CompileInsert(invoice, fixture.Context);
             var expect =
                 @"INSERT INTO Tbl_257(Fld_260, Fld_261_T, Fld_261_R, Fld_261_I, Fld_261_S, Fld_262, Fld_263, Fld_264)
 (SELECT T0.A0,
@@ -73,27 +69,20 @@ WHERE
 ) THEN 0 
  ELSE 2147483647
  END + 2147483647 = 2147483647
-)".ReplaceLineEndings();
+)";
 
-            Assert.Equal(expect, actual);
+            Assert.Equal(expect.ReplaceLineEndings(), actual.ReplaceLineEndings());
         }
 
         [Fact]
         public void UpdateEntityQueryGenerationTest()
         {
-            var drc = fixture.DrContext;
-            var md = drc.Metadata.GetMetadata();
+            var md = fixture.Context.MetadataProvider;
             var invoice = md.GetSemanticByName("Entity.Invoice");
 
-            //Immutable part
-            QLangElement updateModel = CRUDQueryGenerator.GetSaveUpdateQuery(invoice, md);
-            updateModel = new SecurityVisitor(md, fixture.Ust).Visit(updateModel);
-            //new PrinterWalker(translatedOutput).Visit(updateModel);
-            new PhysicalNameWalker(drc).Visit(updateModel);
+            Assert.NotNull(invoice);
 
-            var uw = new UpdationRealWalker(drc);
-            uw.Visit(updateModel);
-            var actual = new MsSqlBuilder().Visit((SSyntaxNode)uw.QueryMachine.peek());
+            var actual = CRUDQueryGenerator.CompileUpdate(invoice, fixture.Context);
             var expected = @"UPDATE T0
 SET T0.Fld_260 = T1.A0, T0.Fld_261_T = T1.A1_T, T0.Fld_261_S = T1.A1_S, T0.Fld_261_I = T1.A1_I, T0.Fld_261_R = T1.A1_R, T0.Fld_262 = T1.A2, T0.Fld_263 = T1.A3, T0.Fld_264 = T1.A4
 FROM

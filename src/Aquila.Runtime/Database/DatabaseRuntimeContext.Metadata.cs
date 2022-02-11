@@ -102,7 +102,7 @@ namespace Aquila.Runtime
                         .st_query();
                 });
 
-                foreach (var md in _md)
+                foreach (var md in _md.EntityMetadata)
                 {
                     var yaml = EntityMetadata.ToYaml(md);
 
@@ -113,8 +113,15 @@ namespace Aquila.Runtime
                     cmd.ExecuteNonQuery();
                 }
 
-                foreach (var in)
+                foreach (var sec in _md.SecMetadata)
                 {
+                    var yaml = SecPolicyMetadata.ToYaml(sec);
+
+                    //TODO: remove this static
+                    cmd.AddOrSetParameterWithValue(DBConsts.BLOB_NAME_COLUMN, $"Sec.{sec.Name}");
+                    cmd.AddOrSetParameterWithValue(DBConsts.DATA_COLUMN, Encoding.UTF8.GetBytes(yaml));
+
+                    cmd.ExecuteNonQuery();
                 }
 
                 context.CommitTransaction();

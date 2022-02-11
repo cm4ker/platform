@@ -71,7 +71,7 @@ namespace Aquila.Core.Instance
             UpdateDBRContext();
 
             _logger.Info("Current configuration was loaded. It contains {0} elements",
-                DatabaseRuntimeContext.Metadata.GetMetadata().Metadata.Count());
+                DatabaseRuntimeContext.Metadata.GetMetadata().EntityMetadata.Count());
 
             // AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
             // _logger.Info("Auth provider was registered");
@@ -82,6 +82,8 @@ namespace Aquila.Core.Instance
             {
                 var asm = Assembly.Load(currentAssembly);
                 var loadContext = AssemblyLoadContext.GetLoadContext(asm);
+
+                //TODO: remove this ugly hack
                 loadContext.LoadFromAssemblyPath(
                     @"C:\projects\AquilaPlatform\src\Aquila.Runner\bin\Debug\net5.0\Aquila.Library.dll");
                 LoadAssembly(asm);

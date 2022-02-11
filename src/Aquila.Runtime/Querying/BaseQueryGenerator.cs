@@ -221,9 +221,28 @@ namespace Aquila.Runtime.Querying
 
         public static string CompileInsert(SMEntity entity, AqContext context)
         {
-            var query = GetSaveInsertQuery(entity, context.MetadataProvider);
+            QLangElement query = GetSaveInsertQuery(entity, context.MetadataProvider);
+            return CompileCore(query, context, new InsertionRealWalker(context.DataRuntimeContext));
+        }
 
-            return string.Empty;
+        public static string CompileUpdate(SMEntity entity, AqContext context)
+        {
+            QLangElement query = GetSaveUpdateQuery(entity, context.MetadataProvider);
+            return CompileCore(query, context, new UpdationRealWalker(context.DataRuntimeContext));
+        }
+
+        public static string CompileDelete(SMEntity entity, AqContext context)
+        {
+            QLangElement query = GetDeleteQuery(entity, context.MetadataProvider);
+            return CompileCore(query, context, new DeletionRealWalker(context.DataRuntimeContext));
+        }
+
+        private static string CompileCore(QLangElement query, AqContext context, RealWalkerBase rw)
+        {
+            query = new SecurityVisitor(context.MetadataProvider, context.SecTable).Visit(query);
+            new PhysicalNameWalker(context.DataRuntimeContext).Visit(query);
+            rw.Visit(query);
+            return context.DataContext.SqlCompiller.Compile((SSyntaxNode)rw.QueryMachine.peek());
         }
 
         public static string GetLoad(SMEntity entity, DatabaseRuntimeContext drc)
@@ -260,8 +279,8 @@ namespace Aquila.Runtime.Querying
 
         public static string GetSecUpdate(string baseQuery, int typeId, AqContext context)
         {
-            var ust = new UserSecTable();
-            ust.Init(new List<SMSecPolicy>(), context.MetadataProvider);
+            var ust = new ContextSecTable();
+            ust.Init(new List<SMSecPolicy>());
             var desc = context.DataRuntimeContext.Descriptors.GetEntityDescriptor(typeId);
             var mdId = desc.MetadataId;
             var md = context.MetadataProvider.GetSemanticByName(mdId);

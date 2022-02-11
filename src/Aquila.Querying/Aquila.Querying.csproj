@@ -1,20 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="..\Props\target.props"/>
+    <Import Project="..\Props\target.props" />
 
     <ItemGroup>
         <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; analyzers</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Antlr4.Runtime" Version="4.6.6"/>
+        <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
     </ItemGroup>
 
     <ItemGroup>
         <AdditionalFiles Include="QLang.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </AdditionalFiles>
-        <Content Include="ZSqlGrammar.g4"/>
+        <Content Include="ZSqlGrammar.g4" />
         <Antlr4 Update="ZSqlGrammar.g4">
             <Generator>MSBuild:Compile</Generator>
             <CustomToolNamespace>Aquila.Core.Querying</CustomToolNamespace>
@@ -22,17 +22,17 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Aquila.Metadata\Aquila.Metadata.csproj"/>
+        <ProjectReference Include="..\Aquila.Metadata\Aquila.Metadata.csproj" />
     </ItemGroup>
 
     <ItemGroup>
         <!-- Note that this is not a "normal" ProjectReference.
              It needs the additional 'OutputItemType' and 'ReferenceOutputAssmbly' attributes. -->
-        <ProjectReference Include="..\Aquila.QLangSyntaxGenerator\Aquila.QLangSyntaxGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+        <ProjectReference Include="..\Aquila.QLangSyntaxGenerator\Aquila.QLangSyntaxGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Generated\Aquila.QLangSyntaxGenerator\Aquila.QLangSyntaxGenerator.AstSourceGenerator"/>
+        <Folder Include="Generated\Aquila.QLangSyntaxGenerator\Aquila.QLangSyntaxGenerator.AstSourceGenerator" />
     </ItemGroup>
 
     <PropertyGroup>
@@ -42,12 +42,12 @@
 
     <Target Name="RemoveSourceGeneratedFiles" BeforeTargets="CoreCompile">
         <ItemGroup>
-            <Compile Remove="Generated\**"/>
+            <Compile Remove="Generated\**" />
         </ItemGroup>
     </Target>
     <Target Name="AddSourceGeneratedFiles" AfterTargets="CoreCompile">
         <ItemGroup>
-            <Compile Include="Generated\**"/>
+            <Compile Include="Generated\**" />
         </ItemGroup>
     </Target>
 

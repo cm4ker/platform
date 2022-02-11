@@ -249,7 +249,7 @@ namespace Aquila.AspNetCore.Web
 
             var md = aqctx.DataRuntimeContext.Metadata.GetMetadata();
 
-            var list = md.Metadata.ToList();
+            var list = md.EntityMetadata.ToList();
 
             await context.Response.WriteAsJsonAsync(list);
         }

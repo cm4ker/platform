@@ -64,7 +64,7 @@ namespace Aquila.UIBuilder
         private readonly DatabaseRuntimeContext _drContext;
         private readonly MetadataProvider _mdProvider;
         private QLang _m;
-        private readonly UserSecTable _ust;
+        private readonly ContextSecTable _ust;
 
 
         public Interpreter(DatabaseRuntimeContext drContext)
@@ -73,7 +73,7 @@ namespace Aquila.UIBuilder
             _mdProvider = TestMetadata.GetTestMetadata();
 
 
-            _ust = new UserSecTable();
+            _ust = new ContextSecTable();
             _ust.Init(_mdProvider.GetSecPolicies().ToList(), _mdProvider);
 
             _m = new QLang(_mdProvider);

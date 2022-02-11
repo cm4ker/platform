@@ -20,12 +20,12 @@ namespace Aquila.Core.Test
 {
     public static class TestEnvSetup
     {
-        public static ServiceProvider GetServerService(ITestOutputHelper testOutput)
+        public static ServiceProvider GetServerService()
         {
             IServiceCollection services = new ServiceCollection();
 
             services.AddTransient<IConnectionManager, ConnectionManager>();
-            services.AddSingleton(testOutput);
+            // services.AddSingleton(testOutput);
             //services.AddTransient(typeof(ILogger<>), typeof(XUnitLogger<>));
             services.AddTransient(typeof(ILogger<>), typeof(SimpleConsoleLogger<>));
             services.AddScoped<IInvokeService, InvokeService>();

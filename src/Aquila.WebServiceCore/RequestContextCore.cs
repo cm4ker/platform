@@ -23,14 +23,14 @@ namespace Aquila.AspNetCore.Web
     {
         readonly HttpContext _httpctx;
 
-        public AqHttpContext(HttpContext httpcontext, AqInstance instance) : base(instance)
+        public AqHttpContext(HttpContext httpContext, AqInstance instance) : base(instance)
         {
-            Debug.Assert(httpcontext != null);
+            Debug.Assert(httpContext != null);
 
-            _httpctx = httpcontext;
+            _httpctx = httpContext;
 
-            httpcontext.Items[HttpContextItemKey] = this;
-            var bodyControl = httpcontext.Features.Get<IHttpBodyControlFeature>();
+            httpContext.Items[HttpContextItemKey] = this;
+            var bodyControl = httpContext.Features.Get<IHttpBodyControlFeature>();
             if (bodyControl != null)
             {
                 bodyControl.AllowSynchronousIO = true;

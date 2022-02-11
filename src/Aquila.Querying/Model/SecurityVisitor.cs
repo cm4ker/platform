@@ -13,12 +13,12 @@ namespace Aquila.Core.Querying.Model
     /// </summary>
     public class SecurityVisitor : QLangTreeRewriter
     {
-        private readonly UserSecTable _sec;
+        private readonly ContextSecTable _sec;
         private QLang _m;
         private Dictionary<QDataSource, QDataSource> _subs = new();
         public Stack<List<QCriterion>> _criteriaStack = new();
 
-        public SecurityVisitor(MetadataProvider em, UserSecTable sec)
+        public SecurityVisitor(MetadataProvider em, ContextSecTable sec)
         {
             _m = new QLang(em);
             _sec = sec;
@@ -59,7 +59,7 @@ namespace Aquila.Core.Querying.Model
             return arg;
         }
 
-        private IEnumerable<QCriterion> GetUpdateCriteria(QDataSource s1, QDataSource s2, UserSecPermission claim)
+        private IEnumerable<QCriterion> GetUpdateCriteria(QDataSource s1, QDataSource s2, ContextSecPermission claim)
         {
             foreach (var criteria in claim.Criteria)
             {

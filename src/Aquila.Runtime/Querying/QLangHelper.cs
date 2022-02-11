@@ -30,17 +30,11 @@ namespace Aquila.Core.Querying
             var drc = context.DataRuntimeContext;
             var md = drc.Metadata.GetMetadata();
 
-            var sec = drc.Metadata.GetMetadata().GetSecPoliciesFromRoles(context.Roles).ToList();
-
-            //TODO: restrict user
-            var ust = new UserSecTable();
-            ust.Init(sec, md);
-
             var logicalTree = QLang.Parse(sql, md) as QQueryList ??
                               throw new Exception("Query stack machine after parsing MUST return the QueryList");
 
             //Transform tree
-            logicalTree = (QQueryList)(new SecurityVisitor(md, ust).Visit(logicalTree));
+            logicalTree = (QQueryList)(new SecurityVisitor(md, context.SecTable).Visit(logicalTree));
 
             return (logicalTree.Compile(drc), logicalTree);
         }

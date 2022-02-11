@@ -10,7 +10,7 @@ namespace Aquila.Metadata
     /// </summary>
     public class MetadataProvider
     {
-        private List<EntityMetadata> _metadata;
+        private List<EntityMetadata> _entityMetadata;
         private List<SecPolicyMetadata> _secMetadata;
         private List<SMEntity> _semanticMetadata;
         private List<SMSecPolicy> _secPolicies;
@@ -23,18 +23,19 @@ namespace Aquila.Metadata
         /// </summary>
         public MetadataProvider()
         {
-            _metadata = new List<EntityMetadata>();
+            _entityMetadata = new List<EntityMetadata>();
             _secMetadata = new List<SecPolicyMetadata>();
         }
 
         public MetadataProvider(IEnumerable<EntityMetadata> metadata,
             IEnumerable<SecPolicyMetadata> secMetadata) : this()
         {
-            _metadata = metadata.ToList();
+            _entityMetadata = metadata.ToList();
             _secMetadata = secMetadata.ToList();
         }
 
-        public IEnumerable<EntityMetadata> Metadata => _metadata;
+        public IEnumerable<EntityMetadata> EntityMetadata => _entityMetadata;
+        public IEnumerable<SecPolicyMetadata> SecMetadata => _secMetadata;
 
         public IEnumerable<SMEntity> GetSemanticMetadata()
         {
@@ -56,7 +57,7 @@ namespace Aquila.Metadata
         {
             _cache = new SMCache();
 
-            _semanticMetadata = _metadata.Select(x =>
+            _semanticMetadata = _entityMetadata.Select(x =>
             {
                 var t = new SMEntity(x, _cache);
                 _cache.AddType(t, t.ReferenceName, SMTypeKind.Reference);
@@ -83,12 +84,9 @@ namespace Aquila.Metadata
         public IEnumerable<SMSecPolicy> GetSecPoliciesFromRoles(IEnumerable<string> roles) =>
             GetSecPolicies((x => roles.Contains(x.Name)));
 
-
-        public IEnumerator<EntityMetadata> GetEnumerator() => _metadata.GetEnumerator();
-
         public void AddMetadata(EntityMetadata metadata)
         {
-            _metadata.Add(metadata);
+            _entityMetadata.Add(metadata);
             _needUpdate = true;
         }
 
@@ -96,7 +94,7 @@ namespace Aquila.Metadata
         {
             foreach (var md in metadatas)
             {
-                _metadata.Add(md);
+                _entityMetadata.Add(md);
             }
 
             _needUpdate = true;
@@ -104,12 +102,12 @@ namespace Aquila.Metadata
 
         public bool IsEmpty()
         {
-            return !_metadata.Any();
+            return !_entityMetadata.Any();
         }
 
         public void Clear()
         {
-            _metadata.Clear();
+            _entityMetadata.Clear();
             _semanticMetadata = null;
         }
     }
