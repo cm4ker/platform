@@ -6,7 +6,7 @@ namespace Aquila.Metadata
     {
         public static string DefaultConnetionString = "Data Source=.;Initial Catalog=TestDb;Integrated Security=true;TrustServerCertificate=True";
 
-        public static EntityMetadataCollection GetTestMetadata()
+        public static MetadataProvider GetTestMetadata()
         {
             var em1 = new EntityMetadata
             {
@@ -51,7 +51,7 @@ namespace Aquila.Metadata
                 }
             };
 
-            return new EntityMetadataCollection(new[] { em1, em2, em3 }, getTestSecPolicyMetadatas);
+            return new MetadataProvider(new[] { em1, em2, em3 }, getTestSecPolicyMetadatas);
         }
 
         public static string TestSecName = "TestSec";
@@ -77,6 +77,6 @@ namespace Aquila.Metadata
             }
         };
 
-        public static EntityMetadataCollection GetEmptyMetadata() => new EntityMetadataCollection();
+        public static MetadataProvider GetEmptyMetadata() => new MetadataProvider();
     }
 }

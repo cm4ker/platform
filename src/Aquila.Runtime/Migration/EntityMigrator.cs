@@ -266,7 +266,7 @@ namespace Aquila.Migrations
         }
 
         public void DeleteProperty(EntityMigrationScope plan, SMProperty property, string tableName,
-            EntityMetadataCollection mdCol, EntityMigratorDataContext context)
+            MetadataProvider mdCol, EntityMigratorDataContext context)
         {
             property.GetOrCreateSchema(context).ForEach(s => plan.DeleteColumn(s, tableName));
         }

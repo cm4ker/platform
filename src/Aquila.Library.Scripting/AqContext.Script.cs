@@ -194,7 +194,7 @@ namespace Aquila.Library.Scripting
         /// <param name="previousSubmissions">Enumeration of scripts that were evaluated within current context. New submission may reference them.</param>
         /// <returns>New script representing the compiled code.</returns>
         public static Script Create(AqContext.ScriptOptions options, string code, AquilaCompilationFactory builder,
-            IEnumerable<Script> previousSubmissions, EntityMetadataCollection metadata)
+            IEnumerable<Script> previousSubmissions, MetadataProvider metadata)
         {
             // use the language version of the requesting context
             var languageVersion = options.LanguageVersion;

@@ -138,7 +138,7 @@ namespace Aquila.CodeAnalysis.Public
                     Interlocked.CompareExchange(ref _lazySynthesizedTypes, types, null);
                     Interlocked.CompareExchange(ref _lazySynthesizedNamespaces, namespaces, null);
 
-                    PopulateMetadata(Compilation.MetadataCollection.GetSemanticMetadata());
+                    PopulateMetadata(Compilation.MetadataProvider.GetSemanticMetadata());
                 }
         }
 

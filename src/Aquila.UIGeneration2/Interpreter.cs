@@ -62,7 +62,7 @@ namespace Aquila.UIBuilder
     public class Interpreter
     {
         private readonly DatabaseRuntimeContext _drContext;
-        private readonly EntityMetadataCollection _mdCollection;
+        private readonly MetadataProvider _mdProvider;
         private QLang _m;
         private readonly UserSecTable _ust;
 
@@ -70,13 +70,13 @@ namespace Aquila.UIBuilder
         public Interpreter(DatabaseRuntimeContext drContext)
         {
             _drContext = drContext;
-            _mdCollection = TestMetadata.GetTestMetadata();
+            _mdProvider = TestMetadata.GetTestMetadata();
 
 
             _ust = new UserSecTable();
-            _ust.Init(_mdCollection.GetSecPolicies().ToList(), _mdCollection);
+            _ust.Init(_mdProvider.GetSecPolicies().ToList(), _mdProvider);
 
-            _m = new QLang(_mdCollection);
+            _m = new QLang(_mdProvider);
         }
 
         public (string Output1, string Output2, string Translated) RunQuery(string sql)
@@ -100,7 +100,7 @@ namespace Aquila.UIBuilder
                 try
                 {
                     var element = _m.top() as QLangElement;
-                    var t = new SecurityVisitor(_mdCollection, _ust);
+                    var t = new SecurityVisitor(_mdProvider, _ust);
 
                     var translated = t.Visit(element);
                     new PrinterWalker(translatedOutput).Visit(translated);

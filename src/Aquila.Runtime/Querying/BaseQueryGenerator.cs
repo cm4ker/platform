@@ -92,7 +92,7 @@ namespace Aquila.Runtime.Querying
             return builder.Visit((SSyntaxNode)qm.peek());
         }
 
-        public static QUpdateQuery GetSaveUpdateQuery(SMEntity entity, EntityMetadataCollection em)
+        public static QUpdateQuery GetSaveUpdateQuery(SMEntity entity, MetadataProvider em)
         {
             /*
              NOTE:
@@ -146,7 +146,7 @@ namespace Aquila.Runtime.Querying
                 QCriterionList.Empty);
         }
 
-        public static QInsertSelectQuery GetSaveInsertQuery(SMEntity entity, EntityMetadataCollection em)
+        public static QInsertSelectQuery GetSaveInsertQuery(SMEntity entity, MetadataProvider em)
         {
             /*
              NOTE:
@@ -209,7 +209,7 @@ namespace Aquila.Runtime.Querying
             // return qm.top<QInsertQuery>();
         }
 
-        public static QDeleteQuery GetDeleteQuery(SMEntity entity, EntityMetadataCollection em)
+        public static QDeleteQuery GetDeleteQuery(SMEntity entity, MetadataProvider em)
         {
             var source = new QAliasedDataSource(new QObjectTable(entity), "TS");
             QDelete delete = new QDelete(source);
@@ -219,10 +219,11 @@ namespace Aquila.Runtime.Querying
             return new QDeleteQuery(delete, from, where, QCriterionList.Empty);
         }
 
-        public QInsertQuery TransformQuery(QInsertQuery query)
+        public static string CompileInsert(SMEntity entity, AqContext context)
         {
-            //SecurityVisitor sec = new SecurityVisitor();
-            throw new NotImplementedException();
+            var query = GetSaveInsertQuery(entity, context.MetadataProvider);
+
+            return string.Empty;
         }
 
         public static string GetLoad(SMEntity entity, DatabaseRuntimeContext drc)
@@ -260,10 +261,10 @@ namespace Aquila.Runtime.Querying
         public static string GetSecUpdate(string baseQuery, int typeId, AqContext context)
         {
             var ust = new UserSecTable();
-            ust.Init(new List<SMSecPolicy>(), context.MetadataCollection);
+            ust.Init(new List<SMSecPolicy>(), context.MetadataProvider);
             var desc = context.DataRuntimeContext.Descriptors.GetEntityDescriptor(typeId);
             var mdId = desc.MetadataId;
-            var md = context.MetadataCollection.GetSemanticByName(mdId);
+            var md = context.MetadataProvider.GetSemanticByName(mdId);
 
             if (ust.TryClaimPermission(md, SecPermission.Update, out var claim))
             {

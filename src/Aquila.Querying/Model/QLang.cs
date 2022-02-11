@@ -12,13 +12,13 @@ namespace Aquila.Core.Querying.Model
 {
     public class QLang
     {
-        private readonly EntityMetadataCollection _metadata;
+        private readonly MetadataProvider _metadata;
 
         private LogicStack _logicStack;
         private Stack<LogicScope> _scope;
         private QLangTypeBuilder _tb;
 
-        public QLang(EntityMetadataCollection metadata)
+        public QLang(MetadataProvider metadata)
         {
             _metadata = metadata;
 
@@ -27,7 +27,7 @@ namespace Aquila.Core.Querying.Model
             _tb = new QLangTypeBuilder();
         }
 
-        public static QLangElement Parse(string sql, EntityMetadataCollection md)
+        public static QLangElement Parse(string sql, MetadataProvider md)
         {
             var m = new QLang(md);
             return Parse(m, sql);

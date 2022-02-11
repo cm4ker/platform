@@ -33,7 +33,7 @@ namespace Aquila.Core
 
         public DatabaseRuntimeContext DataRuntimeContext => _drc;
 
-        public EntityMetadataCollection MetadataCollection => _drc.Metadata.GetMetadata();
+        public MetadataProvider MetadataProvider => _drc.Metadata.GetMetadata();
 
         public DbCommand CreateCommand() => DataContext.CreateCommand();
 

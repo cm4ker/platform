@@ -57,7 +57,7 @@ namespace Aquila.Core
             /// <param name="options">Compilation options.</param>
             /// <param name="code">Script source code.</param>
             /// <returns>Compiled script instance.</returns>
-            IScript CreateScript(ScriptOptions options, string code, EntityMetadataCollection metadata);
+            IScript CreateScript(ScriptOptions options, string code, MetadataProvider metadata);
         }
 
         /// <summary>

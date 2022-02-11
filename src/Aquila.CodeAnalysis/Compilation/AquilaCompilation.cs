@@ -34,7 +34,7 @@ namespace Aquila.CodeAnalysis
     public sealed partial class AquilaCompilation : Compilation
     {
         readonly SourceSymbolCollection _sourceSymbolCollection;
-        private readonly EntityMetadataCollection _metadataCollection;
+        private readonly MetadataProvider _metadataProvider;
 
         MethodSymbol _lazyMainMethod;
         readonly AquilaCompilationOptions _options;
@@ -89,7 +89,7 @@ namespace Aquila.CodeAnalysis
         /// </summary>
         internal SourceSymbolCollection SourceSymbolCollection => _sourceSymbolCollection;
 
-        internal EntityMetadataCollection MetadataCollection => _metadataCollection;
+        internal MetadataProvider MetadataProvider => _metadataProvider;
 
         private IEnumerable<ResourceDescription> SynthesizedResources = null;
 
@@ -164,7 +164,7 @@ namespace Aquila.CodeAnalysis
 
             _platformSymbolCollection = new PlatformSymbolCollection(this);
             _sourceSymbolCollection = new SourceSymbolCollection(this);
-            _metadataCollection = new EntityMetadataCollection();
+            _metadataProvider = new MetadataProvider();
         }
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace Aquila.CodeAnalysis
                 reuseReferenceManager,
                 EventQueue);
 
-            compilation.MetadataCollection.AddMetadataRange(metadata ?? MetadataCollection.Metadata);
+            compilation.MetadataProvider.AddMetadataRange(metadata ?? MetadataProvider.Metadata);
             compilation.SourceSymbolCollection.AddSyntaxTreeRange(syntaxTrees ?? SyntaxTrees);
 
             return compilation;
@@ -345,7 +345,7 @@ namespace Aquila.CodeAnalysis
                 compilation.SourceSymbolCollection.AddSyntaxTreeRange(syntaxTrees);
 
             if (metadata != null)
-                compilation.MetadataCollection.AddMetadataRange(metadata);
+                compilation.MetadataProvider.AddMetadataRange(metadata);
 
             //Delegate to component
 

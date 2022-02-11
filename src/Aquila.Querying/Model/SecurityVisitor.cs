@@ -18,7 +18,7 @@ namespace Aquila.Core.Querying.Model
         private Dictionary<QDataSource, QDataSource> _subs = new();
         public Stack<List<QCriterion>> _criteriaStack = new();
 
-        public SecurityVisitor(EntityMetadataCollection em, UserSecTable sec)
+        public SecurityVisitor(MetadataProvider em, UserSecTable sec)
         {
             _m = new QLang(em);
             _sec = sec;

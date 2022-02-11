@@ -14,19 +14,19 @@ namespace Aquila.Runtime
         public class MetadataRC
         {
             private readonly string _tableName;
-            protected EntityMetadataCollection _md;
+            protected MetadataProvider _md;
 
             public MetadataRC(string tableName)
             {
                 _tableName = tableName;
-                _md = new EntityMetadataCollection();
+                _md = new MetadataProvider();
             }
 
             /// <summary>
             /// Returns metadata model for current database (from moment then DatabaseRuntimeContext being loaded) state
             /// </summary>
             /// <returns></returns>
-            public EntityMetadataCollection GetMetadata()
+            public MetadataProvider GetMetadata()
             {
                 //return TestMetadata.GetTestMetadata();
                 return _md;
@@ -71,7 +71,7 @@ namespace Aquila.Runtime
                     }
                 }
 
-                _md = new EntityMetadataCollection(list, secList);
+                _md = new MetadataProvider(list, secList);
             }
 
             public void SaveMetadata(DataConnectionContext context)
@@ -113,6 +113,10 @@ namespace Aquila.Runtime
                     cmd.ExecuteNonQuery();
                 }
 
+                foreach (var in)
+                {
+                }
+
                 context.CommitTransaction();
             }
 
@@ -135,14 +139,14 @@ namespace Aquila.Runtime
                 dcc.CommitTransaction();
             }
 
-            public void SetMetadata(EntityMetadataCollection md)
+            public void SetMetadata(MetadataProvider md)
             {
                 _md = md;
             }
 
             public void Clear(DataConnectionContext dcc)
             {
-                _md = new EntityMetadataCollection();
+                _md = new MetadataProvider();
 
                 void Gen(QueryMachine qm)
                 {

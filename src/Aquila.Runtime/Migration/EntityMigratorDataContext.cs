@@ -34,11 +34,11 @@ namespace Aquila.Migrations
         /// <summary>
         /// We migrate form this schema
         /// </summary>
-        public EntityMetadataCollection Current => RuntimeContext.Metadata.GetMetadata();
+        public MetadataProvider Current => RuntimeContext.Metadata.GetMetadata();
 
         /// <summary>
         /// We migrate to this schema
         /// </summary>
-        public EntityMetadataCollection Pending => RuntimeContext.PendingMetadata.GetMetadata();
+        public MetadataProvider Pending => RuntimeContext.PendingMetadata.GetMetadata();
     }
 }

@@ -8,7 +8,7 @@ namespace Aquila.Metadata
     /// <summary>
     /// Provider semantic in metadata
     /// </summary>
-    public class EntityMetadataCollection
+    public class MetadataProvider
     {
         private List<EntityMetadata> _metadata;
         private List<SecPolicyMetadata> _secMetadata;
@@ -21,13 +21,13 @@ namespace Aquila.Metadata
         /// <summary>
         /// Constructor
         /// </summary>
-        public EntityMetadataCollection()
+        public MetadataProvider()
         {
             _metadata = new List<EntityMetadata>();
             _secMetadata = new List<SecPolicyMetadata>();
         }
 
-        public EntityMetadataCollection(IEnumerable<EntityMetadata> metadata,
+        public MetadataProvider(IEnumerable<EntityMetadata> metadata,
             IEnumerable<SecPolicyMetadata> secMetadata) : this()
         {
             _metadata = metadata.ToList();

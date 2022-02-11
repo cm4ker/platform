@@ -47,6 +47,10 @@ namespace Aquila.Runtime.Querying
         };
     }
 
+    /// <summary>
+    /// Security table for certain user
+    /// in Init method we must pass filtered data
+    /// </summary>
     public class UserSecTable
     {
         private Dictionary<SMEntity, UserSecPermission> _rows;
@@ -55,7 +59,7 @@ namespace Aquila.Runtime.Querying
         {
         }
 
-        public void Init(List<SMSecPolicy> policies, EntityMetadataCollection md)
+        public void Init(List<SMSecPolicy> policies, MetadataProvider md)
         {
             var subjects = policies.SelectMany(x => x.Subjects);
             var criteria = policies.SelectMany(x => x.Criteria);
