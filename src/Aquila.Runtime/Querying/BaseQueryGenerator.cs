@@ -177,36 +177,6 @@ namespace Aquila.Runtime.Querying
                 null, null, new QFrom(null, nq), QCriterionList.Empty);
 
             return new QInsertSelectQuery(q, insert);
-
-            // var qm = new QLang(em);
-            //
-            // var name = entity.FullName;
-            // qm.new_scope()
-            //     .ld_source(name)
-            //     .create(QObjectType.SourceFieldList);
-            //
-            // var props = entity.Properties.ToImmutableArray();
-            // foreach (var property in props)
-            // {
-            //     qm.ld_source(name)
-            //         .ld_field(property.Name)
-            //         .st_elem();
-            // }
-            //
-            // qm.insert()
-            //     .create(QObjectType.ExpressionSet)
-            //     .create(QObjectType.ExpressionList);
-            //
-            // foreach (var property in props)
-            // {
-            //     qm.ld_param(property.Name)
-            //         .st_elem();
-            // }
-            //
-            // qm.st_elem()
-            //     .new_insert_query();
-            //
-            // return qm.top<QInsertQuery>();
         }
 
         public static QDeleteQuery GetDeleteQuery(SMEntity entity, MetadataProvider em)
@@ -311,10 +281,6 @@ namespace Aquila.Runtime.Querying
          
          cmd.ExecuteNonQuery();
          cmd.Dispose();
-         
-         
-                
-         
          */
     }
 }
