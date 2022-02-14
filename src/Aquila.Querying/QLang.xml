@@ -262,15 +262,23 @@
         </Arguments>
     </Syntax>
     <Syntax Name="QConst" Base="QExpression"/>
-    <Syntax Name="QParameter" Base="QExpression">
+
+    <Syntax Name="QParameterBase" IsAbstract="true" Base="QExpression">
         <Arguments>
             <Single Name="Name" Type="String" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
 
-    <Syntax Name="QTypedParameter" Base="QExpression">
+
+    <Syntax Name="QParameter" Base="QParameterBase">
         <Arguments>
-            <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+            <Single Name="Name" Type="String" DenyChildrenFill="true" OnlyArgument="true" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QTypedParameter" Base="QParameterBase">
+        <Arguments>
+            <Single Name="Name" Type="String" DenyChildrenFill="true" OnlyArgument="true" PassBase="true"/>
             <Single Name="Types" Type="IEnumerable&lt;SMType&gt;" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>

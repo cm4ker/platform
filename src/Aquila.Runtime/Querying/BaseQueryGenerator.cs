@@ -189,29 +189,34 @@ namespace Aquila.Runtime.Querying
             return new QDeleteQuery(delete, from, where, QCriterionList.Empty);
         }
 
-        public static string CompileInsert(SMEntity entity, AqContext context)
+        public static string CompileInsert(SMEntity entity, AqContext context,
+            out QLangElement query)
         {
-            QLangElement query = GetSaveInsertQuery(entity, context.MetadataProvider);
-            return CompileCore(query, context, new InsertionRealWalker(context.DataRuntimeContext));
+            query = GetSaveInsertQuery(entity, context.MetadataProvider);
+            return CompileCore(query, context, new InsertionRealWalker(context.DataRuntimeContext),
+                out query);
         }
 
-        public static string CompileUpdate(SMEntity entity, AqContext context)
+        public static string CompileUpdate(SMEntity entity, AqContext context, out QLangElement query)
         {
-            QLangElement query = GetSaveUpdateQuery(entity, context.MetadataProvider);
-            return CompileCore(query, context, new UpdationRealWalker(context.DataRuntimeContext));
+            query = GetSaveUpdateQuery(entity, context.MetadataProvider);
+            return CompileCore(query, context, new UpdationRealWalker(context.DataRuntimeContext),
+                out query);
         }
 
-        public static string CompileDelete(SMEntity entity, AqContext context)
+        public static string CompileDelete(SMEntity entity, AqContext context, out QLangElement query)
         {
-            QLangElement query = GetDeleteQuery(entity, context.MetadataProvider);
-            return CompileCore(query, context, new DeletionRealWalker(context.DataRuntimeContext));
+            query = GetDeleteQuery(entity, context.MetadataProvider);
+            return CompileCore(query, context, new DeletionRealWalker(context.DataRuntimeContext),
+                out query);
         }
 
-        private static string CompileCore(QLangElement query, AqContext context, RealWalkerBase rw)
+        private static string CompileCore(QLangElement query, AqContext context, RealWalkerBase rw,
+            out QLangElement transformedQuery)
         {
-            query = new SecurityVisitor(context.MetadataProvider, context.SecTable).Visit(query);
-            new PhysicalNameWalker(context.DataRuntimeContext).Visit(query);
-            rw.Visit(query);
+            transformedQuery = new SecurityVisitor(context.MetadataProvider, context.SecTable).Visit(query);
+            new PhysicalNameWalker(context.DataRuntimeContext).Visit(transformedQuery);
+            rw.Visit(transformedQuery);
             return context.DataContext.SqlCompiller.Compile((SSyntaxNode)rw.QueryMachine.peek());
         }
 

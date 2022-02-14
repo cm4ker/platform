@@ -38,7 +38,10 @@ namespace Aquila.Runtime.Tests.DB
 
             Assert.NotNull(invoice);
 
-            var actual = CRUDQueryGenerator.CompileInsert(invoice, fixture.Context);
+            var actual = CRUDQueryGenerator.CompileInsert(invoice, fixture.Context, out var q);
+
+            Assert.NotNull(q);
+
             var expect =
                 @"INSERT INTO Tbl_257(Fld_260, Fld_261_T, Fld_261_R, Fld_261_I, Fld_261_S, Fld_262, Fld_263, Fld_264)
 (SELECT T0.A0,
@@ -82,7 +85,7 @@ WHERE
 
             Assert.NotNull(invoice);
 
-            var actual = CRUDQueryGenerator.CompileUpdate(invoice, fixture.Context);
+            var actual = CRUDQueryGenerator.CompileUpdate(invoice, fixture.Context, out var q);
             var expected = @"UPDATE T0
 SET T0.Fld_260 = T1.A0, T0.Fld_261_T = T1.A1_T, T0.Fld_261_S = T1.A1_S, T0.Fld_261_I = T1.A1_I, T0.Fld_261_R = T1.A1_R, T0.Fld_262 = T1.A2, T0.Fld_263 = T1.A3, T0.Fld_264 = T1.A4
 FROM

@@ -304,7 +304,7 @@ namespace Aquila.Core.Querying.Model
     /// <summary>
     /// Представляет параметр
     /// </summary>
-    public partial class QParameter : QExpression
+    public partial class QParameter
     {
         private List<SMType> _types = new List<SMType>();
 

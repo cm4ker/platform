@@ -1,10 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
+using Aquila.Core.Querying;
+using Aquila.Core.Querying.Model;
+using Aquila.Metadata;
+using Aquila.Runtime;
+using Aquila.Runtime.Querying;
 
 namespace Aquila.Core
 {
+    public class AqParamValue
+    {
+        public AqParamValue(string name, object value)
+        {
+            Name = name;
+            Value = value;
+        }
+
+        public string Name { get; }
+        public object Value { get; }
+    }
+
     public static class AqHelper
     {
         private static Dictionary<Type, DbType> typeMap = new Dictionary<Type, DbType>()
@@ -72,6 +91,68 @@ namespace Aquila.Core
             param.Value = value ?? DBNull.Value;
 
             command.Parameters.Add(param);
+        }
+
+
+        public static void InvokeInsert(AqContext context, string mdName, AqParamValue[] parameters)
+        {
+            var semantic = context.MetadataProvider.GetSemanticByName(mdName);
+            var commandText = CRUDQueryGenerator.CompileInsert(semantic, context, out var q);
+            var result = q.Find<QParameterBase>().DistinctBy(x => x.Name)
+                .Select(x => new { QParam = x, QName = x.Name, RName = x.GetDbName() });
+
+            DbCommand cmd = context.CreateCommand();
+            cmd.CommandText = commandText;
+            foreach (var param in result)
+            {
+                var types = param.QParam.GetExpressionType().ToImmutableArray();
+                if (types.Length > 1)
+                {
+                    //Complex type
+                    var schema = DRContextHelper.GetPropertySchemas(param.QName, types);
+
+                    foreach (var sh in schema)
+                    {
+                        var dbParam = cmd.CreateParameter();
+                        dbParam.ParameterName = sh.Prefix + param.RName + sh.Postfix;
+
+                        var pValue = parameters.FirstOrDefault(x => x.Name == sh.FullName);
+
+                        if (pValue != null)
+                        {
+                            dbParam.DbType = typeMap[pValue.Value.GetType()];
+                        }
+
+                        cmd.Parameters.Add(dbParam);
+                    }
+                }
+                else
+                {
+                    var dbParam = cmd.CreateParameter();
+                    dbParam.ParameterName = param.RName;
+
+                    //try to find passed real params
+                    var pValue = parameters.FirstOrDefault(x => x.Name == param.QName);
+
+                    if (pValue != null)
+                    {
+                        dbParam.DbType = typeMap[pValue.Value.GetType()];
+                        dbParam.Value = pValue.Value;
+                    }
+
+                    cmd.Parameters.Add(dbParam);
+                }
+
+                //TODO: try to find parameter in global parameters
+            }
+
+            int rows = cmd.ExecuteNonQuery();
+
+            cmd.Dispose();
+        }
+
+        public static void InvokeUpdate(AqContext context, int typeId, AqParamValue[] paramValues)
+        {
         }
     }
 }

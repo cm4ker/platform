@@ -1825,14 +1825,46 @@ namespace Aquila.Core.Querying.Model
 
 namespace Aquila.Core.Querying.Model
 {
-    public partial class QParameter : QExpression
+    public abstract partial class QParameterBase : QExpression
     {
-        public QParameter(String name) : base()
+        public QParameterBase(String name) : base()
         {
             Name = name;
         }
 
         public String Name { get => this.name; init => this.name = value; }
+
+        public override T Accept<T>(QLangVisitorBase<T> visitor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Accept(QLangVisitorBase visitor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<QLangElement> GetChildren()
+        {
+            foreach (var item in base.GetChildren())
+            {
+                yield return item;
+            }
+
+            yield break;
+        }
+
+        private String name;
+    }
+}
+
+namespace Aquila.Core.Querying.Model
+{
+    public partial class QParameter : QParameterBase
+    {
+        public QParameter(String name) : base(name)
+        {
+        }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -1853,22 +1885,17 @@ namespace Aquila.Core.Querying.Model
 
             yield break;
         }
-
-        private String name;
     }
 }
 
 namespace Aquila.Core.Querying.Model
 {
-    public partial class QTypedParameter : QExpression
+    public partial class QTypedParameter : QParameterBase
     {
-        public QTypedParameter(String name, IEnumerable<SMType> types) : base()
+        public QTypedParameter(String name, IEnumerable<SMType> types) : base(name)
         {
-            Name = name;
             Types = types;
         }
-
-        public String Name { get => this.name; init => this.name = value; }
 
         public IEnumerable<SMType> Types { get => this.types; init => this.types = value; }
 
@@ -1892,7 +1919,6 @@ namespace Aquila.Core.Querying.Model
             yield break;
         }
 
-        private String name;
         private IEnumerable<SMType> types;
     }
 }

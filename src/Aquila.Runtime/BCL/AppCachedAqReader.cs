@@ -241,6 +241,7 @@ namespace Aquila.Data
                 if (colType.IsReference)
                 {
                     _runtimeType = _context.Instance.BLAssembly.GetType(colType.GetSemantic().ReferenceName);
+                    _isReference = true;
                 }
                 else
                 {

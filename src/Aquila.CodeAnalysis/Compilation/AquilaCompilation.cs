@@ -278,7 +278,7 @@ namespace Aquila.CodeAnalysis
             get
             {
                 Debug.Assert(this.CoreTypes.Object.Symbol != null);
-                return this.CoreTypes.Object.Symbol;
+                return (INamedTypeSymbol)this.CoreTypes.Object.Symbol;
             }
         }
 

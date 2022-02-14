@@ -18,34 +18,62 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         public readonly string FullName;
 
+        private readonly CoreTypes _ct;
+        private TypeSymbol _symbol;
+
+        private bool _isArray;
+        private CoreType _elementType;
+
         /// <summary>
         /// Gets associated symbol.
         /// </summary>
         /// <remarks>Assuming single singleton instance of library.</remarks>
-        public NamedTypeSymbol Symbol { get; private set; }
+        public TypeSymbol Symbol
+        {
+            get
+            {
+                if (_isArray && _symbol == null)
+                {
+                    var arrSymbol =
+                        ArrayTypeSymbol.CreateSZArray(_ct.Array.Symbol.ContainingAssembly, _elementType._symbol);
 
-        public CoreType(string fullName)
+                    _symbol = arrSymbol;
+                }
+
+                return _symbol;
+            }
+        }
+
+        public CoreType(string fullName, CoreTypes ct)
         {
             Debug.Assert(!string.IsNullOrEmpty(fullName));
             this.FullName = fullName;
+            _ct = ct;
         }
 
         internal void Update(NamedTypeSymbol symbol)
         {
             Contract.ThrowIfNull(symbol);
             Debug.Assert(this.Symbol == null);
-            this.Symbol = symbol;
+            _symbol = symbol;
         }
+
+        public CoreType AsSZArray()
+        {
+            return new CoreType(this.FullName + "[]", _ct) { _isArray = true, _elementType = this };
+        }
+
 
         /// <summary>
         /// Implicit cast to type symbol.
         /// </summary>
-        public static implicit operator NamedTypeSymbol(CoreType t) => t.Symbol;
+        public static implicit operator NamedTypeSymbol(CoreType t) => (NamedTypeSymbol)t.Symbol;
 
         /// <summary>
         /// Implicit cast to type symbol.
         /// </summary>
         public static explicit operator TypeSymbol(CoreType t) => t.Symbol;
+
 
         #region IEquatable
 
@@ -63,16 +91,6 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             return this.Symbol == other;
         }
-
-        //public static bool operator ==(TypeSymbol s, CoreType t)
-        //{
-        //    return ((IEquatable<TypeSymbol>)t).Equals(s);
-        //}
-
-        //public static bool operator !=(TypeSymbol s, CoreType t)
-        //{
-        //    return !((IEquatable<TypeSymbol>)t).Equals(s);
-        //}
 
         #endregion
     }
@@ -134,6 +152,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public const string AquilaHttpMethodKindFullName = AquilaRuntimeNamespace + ".HttpMethodKind";
 
+        public const string AquilaParamValueFullName = AquilaRuntimeNamespace + ".AqParamValue";
         //System.Data
 
         /// <summary>
@@ -188,6 +207,7 @@ namespace Aquila.CodeAnalysis.Symbols
             AqContext,
             AqHelper,
             AqComparison,
+            AqParamValue,
 
             //System.Data.Common Types
             DbCommand,
@@ -247,6 +267,8 @@ namespace Aquila.CodeAnalysis.Symbols
             AqQuery = CreateFromFullName(AquilaPlatformQueryFullName);
             AqContext = CreateFromFullName(AquilaPlatformContextFullName);
             AqHelper = CreateFromFullName(AquilaPlatformHelperFullName);
+            AqParamValue = CreateFromFullName(AquilaParamValueFullName);
+
             AqComparison = Create("AqComparison");
 
             #endregion
@@ -275,7 +297,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         CoreType CreateFromFullName(string fullName)
         {
-            var type = new CoreType(fullName);
+            var type = new CoreType(fullName, this);
 
             _table.Add(fullName, type);
 

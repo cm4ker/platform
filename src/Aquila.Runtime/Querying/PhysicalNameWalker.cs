@@ -88,9 +88,16 @@ namespace Aquila.Core.Querying
 
         public override void VisitQTypedParameter(QTypedParameter arg)
         {
-            arg.SetDbNameIfEmpty($"p{_paramCount++}");
+            if (_params.TryGetValue(arg.Name, out var index))
+            {
+                arg.SetDbNameIfEmpty($"p{index}");
+            }
+            else
+            {
+                _params.Add(arg.Name, _paramCount);
+                arg.SetDbNameIfEmpty($"p{_paramCount++}");
+            }
         }
-
 
         public override void VisitQParameter(QParameter arg)
         {
@@ -104,9 +111,10 @@ namespace Aquila.Core.Querying
                 arg.SetDbNameIfEmpty($"p{_paramCount++}");
             }
 
+            //TODO: Erase this? We must calculate type on build real tree 
+
             //Calculate type
             var binaryExpr = CurrentStackTree.FirstOrDefault(x => x is QOperationExpression) as QOperationExpression;
-
             if (binaryExpr != null)
             {
                 QExpression expr;

@@ -12,6 +12,7 @@ using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.Syntax;
 using Aquila.Syntax.Text;
+using Microsoft.Cci;
 using Microsoft.CodeAnalysis.Text;
 
 
@@ -663,10 +664,10 @@ namespace Aquila.CodeAnalysis.CodeGen
 
 
         public static LocalDefinition DefineSynthLocal(this ILBuilder il, MethodSymbol method, string name,
-            NamedTypeSymbol type)
+            TypeSymbol type)
         {
             var loc = new SynthesizedLocalSymbol(method, name, type);
-            var locDef = il.LocalSlotManager.DeclareLocal(type, loc,
+            var locDef = il.LocalSlotManager.DeclareLocal((ITypeReference)type, loc,
                 loc.Name, loc.SynthesizedKind, LocalDebugId.None, LocalVariableAttributes.None,
                 LocalSlotConstraints.None, ImmutableArray<bool>.Empty, ImmutableArray<string>.Empty, false);
 

@@ -20,6 +20,9 @@ using SpecialTypeExtensions = Microsoft.CodeAnalysis.SpecialTypeExtensions;
 
 namespace Aquila.Syntax.Metadata
 {
+    /// <summary>
+    /// Provides symbols witch generated from metadata
+    /// </summary>
     internal class MetadataSymbolProvider
     {
         private readonly AquilaCompilation _declaredCompilation;
@@ -597,10 +600,26 @@ namespace Aquila.Syntax.Metadata
                                 .ToImmutableArray(), ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty))
                 ;
 
+
+            var typeIdField = _ps.SynthesizeField(managerType)
+                .SetName("TypeId")
+                .SetAccess(Accessibility.Public)
+                .SetIsStatic(true)
+                .AddAttribute(
+                    new SynthesizedAttributeData(_ct.RuntimeInitAttribute.Ctor(_ct.RuntimeInitKind, _ct.Object),
+                        new[]
+                            {
+                                new TypedConstant(_ct.RuntimeInitKind.Symbol, TypedConstantKind.Enum, 0),
+                                new TypedConstant(_ct.String.Symbol, TypedConstantKind.Primitive, md.FullName)
+                            }
+                            .ToImmutableArray(), ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty))
+                .SetType(_ct.Int32);
+
+
             var updateQueryFieldPlace = new FieldPlace(updateQueryfield);
             var loadQueryFieldPlace = new FieldPlace(loadQueryField);
             var insertQueryFieldPlace = new FieldPlace(insertQueryField);
-
+            var typeIdFieldPlace = new FieldPlace(typeIdField);
 
             var saveApiMethod = _ps.SynthesizeMethod(managerType);
 
@@ -680,10 +699,10 @@ namespace Aquila.Syntax.Metadata
                             dtoType.GetMembers(md.IdProperty.Name).OfType<PropertySymbol>().FirstOrDefault() ??
                             throw new Exception("The id property is null");
 
-                        ctx.EmitLoad(il);
-                        il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.CreateCommand);
-
-                        dbLoc.EmitStore(il);
+                        // ctx.EmitLoad(il);
+                        // il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.CreateCommand);
+                        //
+                        // dbLoc.EmitStore(il);
 
                         //_dto.Id
                         sdpp.EmitLoad(il);
@@ -706,35 +725,32 @@ namespace Aquila.Syntax.Metadata
 
                         il.EmitBranch(ILOpCode.Brfalse, elseLabel);
 
-                        //set insert query
-                        dbLoc.EmitLoad(il);
-                        insertQueryFieldPlace.EmitLoad(il);
-                        il.EmitCall(m, d, ILOpCode.Callvirt, dbTextProp.Setter);
-
                         //set to id new value
                         sdpp.EmitLoad(il);
                         il.EmitCall(m, d, ILOpCode.Call, _cm.Operators.NewGuid);
                         il.EmitCall(m, d, ILOpCode.Callvirt, idClrProp.SetMethod);
 
+                        #region Load prop values into array
 
-                        il.EmitBranch(ILOpCode.Br_s, endLabel);
+                        var properties = md.Properties.ToImmutableArray();
 
+                        var sym = _ct.AqParamValue.AsSZArray().Symbol;
+                        var arrLoc = new LocalPlace(il.DefineSynthLocal(saveMethod, "", sym));
 
-                        il.MarkLabel(elseLabel);
+                        il.EmitIntConstant(properties.Select(x => x.GetOrderedFlattenTypes().Count()).Sum());
+                        il.EmitOpCode(ILOpCode.Newarr);
+                        il.EmitSymbolToken(m, d, _ct.AqParamValue, null);
+                        arrLoc.EmitStore(il);
 
-                        dbLoc.EmitLoad(il);
-                        updateQueryFieldPlace.EmitLoad(il);
-                        il.EmitCall(m, d, ILOpCode.Callvirt, dbTextProp.Setter);
-
-                        il.MarkLabel(endLabel);
-
-                        var paramNumber = 0;
-
-                        foreach (var prop in md.Properties)
+                        var elemIndex = 0;
+                        foreach (var prop in properties)
                         {
                             var visitRef = false;
-                            foreach (var typeInfo in prop.Types.GetOrderedFlattenTypes())
+                            var flattenTypes = prop.Types.GetOrderedFlattenTypes().ToImmutableArray();
+
+                            for (var index = 0; index < flattenTypes.Length; index++)
                             {
+                                var typeInfo = flattenTypes[index];
                                 if (visitRef && typeInfo.type.IsReference)
                                     continue;
 
@@ -749,21 +765,96 @@ namespace Aquila.Syntax.Metadata
                                     throw new NullReferenceException(
                                         $"Clr prop with name {prop.Name}{typeInfo.postfix} not found");
 
-                                dbLoc.EmitLoad(il);
-                                il.EmitStringConstant($"p_{paramNumber++}");
+                                //Load values array
+                                arrLoc.EmitLoad(il);
+                                il.EmitIntConstant(elemIndex++);
+
+                                //emit object
+                                //dbLoc.EmitLoad(il);
+                                il.EmitStringConstant(clrProp.Name);
 
                                 sdpp.EmitLoad(il);
                                 il.EmitCall(m, d, ILOpCode.Call, clrProp.GetMethod);
                                 il.EmitOpCode(ILOpCode.Box);
                                 il.EmitSymbolToken(m, d, clrProp.Type, null);
 
-                                il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.CreateParameterHelper);
+                                il.EmitCall(m, d, ILOpCode.Newobj, _ct.AqParamValue.Ctor(_ct.String, _ct.Object));
+
+                                il.EmitOpCode(ILOpCode.Stelem_ref);
+
+                                //il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.CreateParameterHelper);
                             }
                         }
 
-                        dbLoc.EmitLoad(il);
-                        il.EmitCall(m, d, ILOpCode.Call, _ct.DbCommand.Method("ExecuteNonQuery"));
-                        il.EmitOpCode(ILOpCode.Pop);
+                        //set insert query
+                        ctx.EmitLoad(il);
+                        il.EmitStringConstant(md.FullName);
+                        //typeIdFieldPlace.EmitLoad(il);
+                        arrLoc.EmitLoad(il);
+                        //il.EmitNullConstant();
+                        il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.InvokeInsert);
+                        il.MarkLabel(elseLabel);
+
+                        #endregion
+
+
+                        // dbLoc.EmitLoad(il);
+                        // insertQueryFieldPlace.EmitLoad(il);
+                        // il.EmitCall(m, d, ILOpCode.Callvirt, dbTextProp.Setter);
+                        //
+                        // //set to id new value
+                        // sdpp.EmitLoad(il);
+                        // il.EmitCall(m, d, ILOpCode.Call, _cm.Operators.NewGuid);
+                        // il.EmitCall(m, d, ILOpCode.Callvirt, idClrProp.SetMethod);
+                        //
+                        //
+                        // il.EmitBranch(ILOpCode.Br_s, endLabel);
+                        //
+                        //
+                        // il.MarkLabel(elseLabel);
+                        //
+                        // dbLoc.EmitLoad(il);
+                        // updateQueryFieldPlace.EmitLoad(il);
+                        // il.EmitCall(m, d, ILOpCode.Callvirt, dbTextProp.Setter);
+                        //
+                        // il.MarkLabel(endLabel);
+                        //
+                        // var paramNumber = 0;
+                        //
+                        // foreach (var prop in md.Properties)
+                        // {
+                        //     var visitRef = false;
+                        //     foreach (var typeInfo in prop.Types.GetOrderedFlattenTypes())
+                        //     {
+                        //         if (visitRef && typeInfo.type.IsReference)
+                        //             continue;
+                        //
+                        //         if (typeInfo.isComplex && typeInfo.type.IsReference)
+                        //             visitRef = true;
+                        //
+                        //         var clrProp = dtoType.GetMembers($"{prop.Name}{typeInfo.postfix}")
+                        //             .OfType<PropertySymbol>()
+                        //             .FirstOrDefault();
+                        //
+                        //         if (clrProp == null)
+                        //             throw new NullReferenceException(
+                        //                 $"Clr prop with name {prop.Name}{typeInfo.postfix} not found");
+                        //
+                        //         dbLoc.EmitLoad(il);
+                        //         il.EmitStringConstant($"p_{paramNumber++}");
+                        //
+                        //         sdpp.EmitLoad(il);
+                        //         il.EmitCall(m, d, ILOpCode.Call, clrProp.GetMethod);
+                        //         il.EmitOpCode(ILOpCode.Box);
+                        //         il.EmitSymbolToken(m, d, clrProp.Type, null);
+                        //
+                        //         il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.CreateParameterHelper);
+                        //     }
+                        // }
+                        //
+                        // dbLoc.EmitLoad(il);
+                        // il.EmitCall(m, d, ILOpCode.Call, _ct.DbCommand.Method("ExecuteNonQuery"));
+                        // il.EmitOpCode(ILOpCode.Pop);
                         il.EmitRet(true);
                     });
             }
@@ -950,19 +1041,7 @@ namespace Aquila.Syntax.Metadata
                         il.EmitRet(false);
                     });
             }
-            var typeIdField = _ps.SynthesizeField(managerType)
-                .SetName("TypeId")
-                .SetAccess(Accessibility.Public)
-                .SetIsStatic(true)
-                .AddAttribute(
-                    new SynthesizedAttributeData(_ct.RuntimeInitAttribute.Ctor(_ct.RuntimeInitKind, _ct.Object),
-                        new[]
-                            {
-                                new TypedConstant(_ct.RuntimeInitKind.Symbol, TypedConstantKind.Enum, 0),
-                                new TypedConstant(_ct.String.Symbol, TypedConstantKind.Primitive, md.FullName)
-                            }
-                            .ToImmutableArray(), ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty))
-                .SetType(_ct.Int32);
+
 
             managerType.AddMember(saveMethod);
             managerType.AddMember(saveApiMethod);

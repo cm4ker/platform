@@ -61,7 +61,7 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        protected abstract T ResolveSymbol(NamedTypeSymbol declaringType);
+        protected abstract T ResolveSymbol(TypeSymbol declaringType);
     }
 
     /// <summary>
@@ -83,7 +83,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// <summary>
         /// Resolves <see cref="MethodSymbol"/> of this descriptor.
         /// </summary>
-        protected override MethodSymbol ResolveSymbol(NamedTypeSymbol declaringType)
+        protected override MethodSymbol ResolveSymbol(TypeSymbol declaringType)
         {
             return declaringType.GetMembers(MemberName).OfType<MethodSymbol>().First(MatchesSignature);
         }
@@ -95,7 +95,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 return false;
 
             for (int i = 0; i < ps.Length; i++)
-                if (_ptypes[i] != ps[i].Type)
+                if ((TypeSymbol)_ptypes[i] != ps[i].Type)
                     return false;
 
             return true;
@@ -109,7 +109,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
         }
 
-        protected override FieldSymbol ResolveSymbol(NamedTypeSymbol declaringType)
+        protected override FieldSymbol ResolveSymbol(TypeSymbol declaringType)
         {
             return declaringType.GetMembers(MemberName).OfType<FieldSymbol>().FirstOrDefault();
         }
@@ -126,7 +126,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public MethodSymbol Setter => Symbol.SetMethod;
 
-        protected override PropertySymbol ResolveSymbol(NamedTypeSymbol declaringType)
+        protected override PropertySymbol ResolveSymbol(TypeSymbol declaringType)
         {
             return declaringType.GetMembers(MemberName).OfType<PropertySymbol>().FirstOrDefault();
         }
@@ -142,9 +142,12 @@ namespace Aquila.CodeAnalysis.Symbols
         {
         }
 
-        protected override MethodSymbol ResolveSymbol(NamedTypeSymbol declaringType)
+        protected override MethodSymbol ResolveSymbol(TypeSymbol declaringType)
         {
-            return declaringType.InstanceConstructors.FirstOrDefault(MatchesSignature);
+            if (declaringType is NamedTypeSymbol nst)
+                return nst.InstanceConstructors.FirstOrDefault(MatchesSignature);
+
+            return null;
         }
     }
 
@@ -165,7 +168,7 @@ namespace Aquila.CodeAnalysis.Symbols
             Debug.Assert(name.StartsWith("op_"));
         }
 
-        protected override MethodSymbol ResolveSymbol(NamedTypeSymbol declaringType)
+        protected override MethodSymbol ResolveSymbol(TypeSymbol declaringType)
         {
             return declaringType.GetMembers(MemberName)
                 .OfType<MethodSymbol>()
@@ -190,7 +193,7 @@ namespace Aquila.CodeAnalysis.Symbols
             _castTo = castTo ?? throw new ArgumentNullException(nameof(castTo));
         }
 
-        static MethodSymbol ResolveMethod(NamedTypeSymbol declaringType, TypeSymbol castfrom, TypeSymbol castTo,
+        static MethodSymbol ResolveMethod(TypeSymbol declaringType, TypeSymbol castfrom, TypeSymbol castTo,
             string memberName)
         {
             var methods = declaringType.GetMembers(memberName);
@@ -210,7 +213,7 @@ namespace Aquila.CodeAnalysis.Symbols
             return null;
         }
 
-        protected override MethodSymbol ResolveSymbol(NamedTypeSymbol declaringType)
+        protected override MethodSymbol ResolveSymbol(TypeSymbol declaringType)
         {
             // {castTo}.op_implicit({castFrom}) : {castTo}
             // {castFrom}.op_implicit({castFrom}) : {castTo}
@@ -320,13 +323,16 @@ namespace Aquila.CodeAnalysis.Symbols
                 DataRuntimeContext = ct.AqContext.Property("DataRuntimeContext");
                 CreateCommand = ct.AqContext.Method("CreateCommand");
                 CreateParameterHelper = ct.AqHelper.Method("AddParameter", ct.DbCommand, ct.String, ct.Object);
+
+                InvokeInsert = ct.AqHelper.Method("InvokeInsert", ct.AqContext, ct.String, ct.AqParamValue.AsSZArray());
             }
 
             public readonly CoreMethod
 
                 //Aquila.Runtime methods
                 CreateCommand,
-                CreateParameterHelper;
+                CreateParameterHelper,
+                InvokeInsert;
 
             public readonly CoreProperty
                 DataContext,
