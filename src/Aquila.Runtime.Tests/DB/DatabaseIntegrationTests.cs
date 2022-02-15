@@ -29,7 +29,6 @@ namespace Aquila.Runtime.Tests.DB
             _logger = logger;
         }
 
-
         [Fact]
         public void InsertEntityQueryGenerationTest()
         {
@@ -73,6 +72,37 @@ WHERE
  ELSE 2147483647
  END + 2147483647 = 2147483647
 )";
+
+            Assert.Equal(expect.ReplaceLineEndings(), actual.ReplaceLineEndings());
+        }
+
+        [Fact]
+        public void DeleteEntityQueryGenerationTest()
+        {
+            var md = fixture.Context.MetadataProvider;
+            var invoice = md.GetSemanticByName("Entity.Invoice");
+
+            Assert.NotNull(invoice);
+
+            var actual = CRUDQueryGenerator.CompileDelete(invoice, fixture.Context, out var q);
+
+            Assert.NotNull(q);
+
+            var expect =
+                @"DELETE T0
+FROM
+Tbl_257 as T0
+WHERE
+(T0.Fld_260 = @p0 AND CASE WHEN  EXISTS (SELECT 1
+FROM
+(SELECT 1 as _sec_fld
+) as _sec_dummy
+WHERE
+'DeleteMe' = T0.Fld_263
+) THEN 0 
+ ELSE 2147483647
+ END + 2147483647 = 2147483647)
+";
 
             Assert.Equal(expect.ReplaceLineEndings(), actual.ReplaceLineEndings());
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Data;
 using System.Linq;
 using System.Reflection.Metadata;
 using Aquila.CodeAnalysis;
@@ -527,12 +528,43 @@ namespace Aquila.Syntax.Metadata
                 });
 
             #endregion
+            
+            #region void Delete()
+
+            var deleteMethod = _ps.SynthesizeMethod(objectType)
+                .SetName("delete")
+                .SetAccess(Accessibility.Public);
+
+            deleteMethod
+                .SetMethodBuilder((m, d) =>
+                {
+                    return (il) =>
+                    {
+                        var managerType =
+                            _ps.GetType(QualifiedName.Parse($"{Namespace}.{md.Name}{ManagerPostfix}", true));
+                        var mrgDelete = managerType.GetMembers("delete").OfType<MethodSymbol>().FirstOrDefault() ??
+                                      throw new Exception("Method save not found in manager type");
+
+                        thisPlace.EmitLoad(il);
+                        ctxFieldPlace.EmitLoad(il);
+
+                        thisPlace.EmitLoad(il);
+                        dtoFieldPlace.EmitLoad(il);
+
+
+                        il.EmitCall(m, d, ILOpCode.Call, mrgDelete);
+                        il.EmitRet(true);
+                    };
+                });
+
+            #endregion
 
             objectType.AddMember(dtoField);
             objectType.AddMember(ctxField);
 
             objectType.AddMember(ctor);
             objectType.AddMember(saveMethod);
+            objectType.AddMember(deleteMethod);
 
             objectType.AddMember(linkGetMethod);
             objectType.AddMember(linkProperty);
@@ -817,6 +849,62 @@ namespace Aquila.Syntax.Metadata
 
             #endregion
 
+            #region Delete()
+
+            var deleteMethod = _ps.SynthesizeMethod(managerType)
+                .SetName("delete")
+                .SetAccess(Accessibility.Public)
+                .SetIsStatic(true);
+            {
+                var deleteDtoPerameter = new SynthesizedParameterSymbol(saveMethod, dtoType, 1, RefKind.None);
+                var ctxParameter =
+                    new SpecialParameterSymbol(saveMethod, _ct.AqContext, SpecialParameterSymbol.ContextName, 0);
+                var ddpp = new ParamPlace(deleteDtoPerameter);
+                var ctx = new ParamPlace(ctxParameter);
+
+                deleteMethod
+                    .SetParameters(ctxParameter, deleteDtoPerameter)
+                    .SetMethodBuilder((m, d) => il =>
+                    {
+                        var dbLoc = new LocalPlace(il.DefineSynthLocal(saveMethod, "dbCommand", _ct.DbCommand));
+                        var paramLoc = new LocalPlace(il.DefineSynthLocal(saveMethod, "dbParameter", _ct.DbParameter));
+                        var idClrProp =
+                            dtoType.GetMembers(md.IdProperty.Name).OfType<PropertySymbol>().FirstOrDefault() ??
+                            throw new Exception("The id property is null");
+
+
+                        var sym = _ct.AqParamValue.AsSZArray().Symbol;
+                        var arrLoc = new LocalPlace(il.DefineSynthLocal(saveMethod, "", sym));
+
+                        il.EmitIntConstant(1);
+                        il.EmitOpCode(ILOpCode.Newarr);
+                        il.EmitSymbolToken(m, d, _ct.AqParamValue, null);
+                        arrLoc.EmitStore(il);
+
+
+                        //Load values array
+                        arrLoc.EmitLoad(il);
+                        il.EmitIntConstant(0);
+                        il.EmitStringConstant(idClrProp.Name);
+
+                        ddpp.EmitLoad(il);
+                        il.EmitCall(m, d, ILOpCode.Call, idClrProp.GetMethod);
+                        il.EmitOpCode(ILOpCode.Box);
+                        il.EmitSymbolToken(m, d, idClrProp.Type, null);
+                        il.EmitCall(m, d, ILOpCode.Newobj, _ct.AqParamValue.Ctor(_ct.String, _ct.Object));
+                        il.EmitOpCode(ILOpCode.Stelem_ref);
+
+                        ctx.EmitLoad(il);
+                        il.EmitStringConstant(md.FullName);
+                        arrLoc.EmitLoad(il);
+                        il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.InvokeDelete);
+
+                        il.EmitRet(true);
+                    });
+            }
+
+            #endregion
+
             #region Create()
 
             var createMethod = _ps.SynthesizeMethod(managerType);
@@ -1000,6 +1088,7 @@ namespace Aquila.Syntax.Metadata
 
 
             managerType.AddMember(saveMethod);
+            managerType.AddMember(deleteMethod);
             managerType.AddMember(saveApiMethod);
             managerType.AddMember(createMethod);
             managerType.AddMember(loadDtoMethod);
