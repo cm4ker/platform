@@ -1,0 +1,10 @@
+import Entity;
+
+public static int Main()
+{
+    var store = StoreManager.create();
+    store.Name = "My store";
+    store.save();
+
+    return 0;
+}
