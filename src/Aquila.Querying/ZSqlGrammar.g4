@@ -596,7 +596,7 @@ NUMERIC_LITERAL
  ;
 
 STRING_LITERAL
- : '\'' ( ~'\'' | '\'\'' )* '\''
+ : '\'' ( ~'\'' | '\'\'' )* '\'' {Text = Text.Substring(1, Text.Length - 2);}
  ;
 
 BLOB_LITERAL

@@ -14,6 +14,7 @@ using Aquila.Metadata;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
+using MoreLinq;
 using MoreLinq.Extensions;
 using Roslyn.Utilities;
 using SpecialTypeExtensions = Microsoft.CodeAnalysis.SpecialTypeExtensions;
@@ -699,10 +700,10 @@ namespace Aquila.Syntax.Metadata
                             dtoType.GetMembers(md.IdProperty.Name).OfType<PropertySymbol>().FirstOrDefault() ??
                             throw new Exception("The id property is null");
 
-                        // ctx.EmitLoad(il);
-                        // il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.CreateCommand);
-                        //
-                        // dbLoc.EmitStore(il);
+
+                        var sym = _ct.AqParamValue.AsSZArray().Symbol;
+                        var arrLoc = new LocalPlace(il.DefineSynthLocal(saveMethod, "", sym));
+
 
                         //_dto.Id
                         sdpp.EmitLoad(il);
@@ -722,7 +723,6 @@ namespace Aquila.Syntax.Metadata
                         var elseLabel = new NamedLabel("<e_o1>");
                         var endLabel = new NamedLabel("<end>");
 
-
                         il.EmitBranch(ILOpCode.Brfalse, elseLabel);
 
                         //set to id new value
@@ -730,131 +730,87 @@ namespace Aquila.Syntax.Metadata
                         il.EmitCall(m, d, ILOpCode.Call, _cm.Operators.NewGuid);
                         il.EmitCall(m, d, ILOpCode.Callvirt, idClrProp.SetMethod);
 
+
                         #region Load prop values into array
 
-                        var properties = md.Properties.ToImmutableArray();
-
-                        var sym = _ct.AqParamValue.AsSZArray().Symbol;
-                        var arrLoc = new LocalPlace(il.DefineSynthLocal(saveMethod, "", sym));
-
-                        il.EmitIntConstant(properties.Select(x => x.GetOrderedFlattenTypes().Count()).Sum());
-                        il.EmitOpCode(ILOpCode.Newarr);
-                        il.EmitSymbolToken(m, d, _ct.AqParamValue, null);
-                        arrLoc.EmitStore(il);
-
-                        var elemIndex = 0;
-                        foreach (var prop in properties)
+                        void EmitLocalValuesArray()
                         {
-                            var visitRef = false;
-                            var flattenTypes = prop.Types.GetOrderedFlattenTypes().ToImmutableArray();
+                            var properties = md.Properties.ToImmutableArray();
 
-                            for (var index = 0; index < flattenTypes.Length; index++)
+                            il.EmitIntConstant(properties
+                                .Select(x => Enumerable.DistinctBy(x.GetOrderedFlattenTypes(), a => a.postfix).Count())
+                                .Sum());
+                            il.EmitOpCode(ILOpCode.Newarr);
+                            il.EmitSymbolToken(m, d, _ct.AqParamValue, null);
+                            arrLoc.EmitStore(il);
+
+                            var elemIndex = 0;
+                            foreach (var prop in properties)
                             {
-                                var typeInfo = flattenTypes[index];
-                                if (visitRef && typeInfo.type.IsReference)
-                                    continue;
+                                var visitRef = false;
+                                var flattenTypes = prop.Types.GetOrderedFlattenTypes().ToImmutableArray();
 
-                                if (typeInfo.isComplex && typeInfo.type.IsReference)
-                                    visitRef = true;
+                                for (var index = 0; index < flattenTypes.Length; index++)
+                                {
+                                    var typeInfo = flattenTypes[index];
+                                    if (visitRef && typeInfo.type.IsReference)
+                                        continue;
 
-                                var clrProp = dtoType.GetMembers($"{prop.Name}{typeInfo.postfix}")
-                                    .OfType<PropertySymbol>()
-                                    .FirstOrDefault();
+                                    if (typeInfo.isComplex && typeInfo.type.IsReference)
+                                        visitRef = true;
 
-                                if (clrProp == null)
-                                    throw new NullReferenceException(
-                                        $"Clr prop with name {prop.Name}{typeInfo.postfix} not found");
+                                    var clrProp = dtoType.GetMembers($"{prop.Name}{typeInfo.postfix}")
+                                        .OfType<PropertySymbol>()
+                                        .FirstOrDefault();
 
-                                //Load values array
-                                arrLoc.EmitLoad(il);
-                                il.EmitIntConstant(elemIndex++);
+                                    if (clrProp == null)
+                                        throw new NullReferenceException(
+                                            $"Clr prop with name {prop.Name}{typeInfo.postfix} not found");
 
-                                //emit object
-                                //dbLoc.EmitLoad(il);
-                                il.EmitStringConstant(clrProp.Name);
+                                    //Load values array
+                                    arrLoc.EmitLoad(il);
+                                    il.EmitIntConstant(elemIndex++);
 
-                                sdpp.EmitLoad(il);
-                                il.EmitCall(m, d, ILOpCode.Call, clrProp.GetMethod);
-                                il.EmitOpCode(ILOpCode.Box);
-                                il.EmitSymbolToken(m, d, clrProp.Type, null);
+                                    //emit object
+                                    //dbLoc.EmitLoad(il);
+                                    il.EmitStringConstant(clrProp.Name);
 
-                                il.EmitCall(m, d, ILOpCode.Newobj, _ct.AqParamValue.Ctor(_ct.String, _ct.Object));
+                                    sdpp.EmitLoad(il);
+                                    il.EmitCall(m, d, ILOpCode.Call, clrProp.GetMethod);
+                                    il.EmitOpCode(ILOpCode.Box);
+                                    il.EmitSymbolToken(m, d, clrProp.Type, null);
 
-                                il.EmitOpCode(ILOpCode.Stelem_ref);
+                                    il.EmitCall(m, d, ILOpCode.Newobj, _ct.AqParamValue.Ctor(_ct.String, _ct.Object));
 
-                                //il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.CreateParameterHelper);
+                                    il.EmitOpCode(ILOpCode.Stelem_ref);
+                                }
                             }
                         }
+
+                        #endregion
+
+                        EmitLocalValuesArray();
 
                         //set insert query
                         ctx.EmitLoad(il);
                         il.EmitStringConstant(md.FullName);
-                        //typeIdFieldPlace.EmitLoad(il);
                         arrLoc.EmitLoad(il);
-                        //il.EmitNullConstant();
+
                         il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.InvokeInsert);
+
+                        il.EmitBranch(ILOpCode.Br, endLabel);
                         il.MarkLabel(elseLabel);
 
-                        #endregion
+                        //fill array by local values
+                        EmitLocalValuesArray();
+                        ctx.EmitLoad(il);
+                        il.EmitStringConstant(md.FullName);
+                        arrLoc.EmitLoad(il);
 
+                        il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.InvokeUpdate);
 
-                        // dbLoc.EmitLoad(il);
-                        // insertQueryFieldPlace.EmitLoad(il);
-                        // il.EmitCall(m, d, ILOpCode.Callvirt, dbTextProp.Setter);
-                        //
-                        // //set to id new value
-                        // sdpp.EmitLoad(il);
-                        // il.EmitCall(m, d, ILOpCode.Call, _cm.Operators.NewGuid);
-                        // il.EmitCall(m, d, ILOpCode.Callvirt, idClrProp.SetMethod);
-                        //
-                        //
-                        // il.EmitBranch(ILOpCode.Br_s, endLabel);
-                        //
-                        //
-                        // il.MarkLabel(elseLabel);
-                        //
-                        // dbLoc.EmitLoad(il);
-                        // updateQueryFieldPlace.EmitLoad(il);
-                        // il.EmitCall(m, d, ILOpCode.Callvirt, dbTextProp.Setter);
-                        //
-                        // il.MarkLabel(endLabel);
-                        //
-                        // var paramNumber = 0;
-                        //
-                        // foreach (var prop in md.Properties)
-                        // {
-                        //     var visitRef = false;
-                        //     foreach (var typeInfo in prop.Types.GetOrderedFlattenTypes())
-                        //     {
-                        //         if (visitRef && typeInfo.type.IsReference)
-                        //             continue;
-                        //
-                        //         if (typeInfo.isComplex && typeInfo.type.IsReference)
-                        //             visitRef = true;
-                        //
-                        //         var clrProp = dtoType.GetMembers($"{prop.Name}{typeInfo.postfix}")
-                        //             .OfType<PropertySymbol>()
-                        //             .FirstOrDefault();
-                        //
-                        //         if (clrProp == null)
-                        //             throw new NullReferenceException(
-                        //                 $"Clr prop with name {prop.Name}{typeInfo.postfix} not found");
-                        //
-                        //         dbLoc.EmitLoad(il);
-                        //         il.EmitStringConstant($"p_{paramNumber++}");
-                        //
-                        //         sdpp.EmitLoad(il);
-                        //         il.EmitCall(m, d, ILOpCode.Call, clrProp.GetMethod);
-                        //         il.EmitOpCode(ILOpCode.Box);
-                        //         il.EmitSymbolToken(m, d, clrProp.Type, null);
-                        //
-                        //         il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.CreateParameterHelper);
-                        //     }
-                        // }
-                        //
-                        // dbLoc.EmitLoad(il);
-                        // il.EmitCall(m, d, ILOpCode.Call, _ct.DbCommand.Method("ExecuteNonQuery"));
-                        // il.EmitOpCode(ILOpCode.Pop);
+                        il.MarkLabel(endLabel);
+
                         il.EmitRet(true);
                     });
             }

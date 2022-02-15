@@ -325,6 +325,8 @@ namespace Aquila.CodeAnalysis.Symbols
                 CreateParameterHelper = ct.AqHelper.Method("AddParameter", ct.DbCommand, ct.String, ct.Object);
 
                 InvokeInsert = ct.AqHelper.Method("InvokeInsert", ct.AqContext, ct.String, ct.AqParamValue.AsSZArray());
+                InvokeUpdate = ct.AqHelper.Method("InvokeUpdate", ct.AqContext, ct.String, ct.AqParamValue.AsSZArray());
+                InvokeDelete = ct.AqHelper.Method("InvokeDelete", ct.AqContext, ct.String, ct.AqParamValue.AsSZArray());
             }
 
             public readonly CoreMethod
@@ -332,7 +334,9 @@ namespace Aquila.CodeAnalysis.Symbols
                 //Aquila.Runtime methods
                 CreateCommand,
                 CreateParameterHelper,
-                InvokeInsert;
+                InvokeInsert,
+                InvokeUpdate,
+                InvokeDelete;
 
             public readonly CoreProperty
                 DataContext,

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading;
 using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Symbols;
@@ -254,6 +255,24 @@ namespace Aquila.CodeAnalysis.Public
                 {
                     thisArg.EmitLoad(il);
                     field.EmitLoad(il);
+
+                    //TODO: this hack. initialize possible null fields in ctor
+                    if (field.Type.SpecialType == SpecialType.System_String)
+                    {
+                        var elseLabel = new NamedLabel("<else>");
+
+                        il.EmitOpCode(ILOpCode.Ldnull);
+                        il.EmitOpCode(ILOpCode.Ceq);
+                        il.EmitBranch(ILOpCode.Brfalse, elseLabel);
+                        il.EmitStringConstant("");
+                        il.EmitRet(false);
+
+                        il.MarkLabel(elseLabel);
+
+                        thisArg.EmitLoad(il);
+                        field.EmitLoad(il);
+                    }
+
                     il.EmitRet(false);
                 });
 
@@ -266,7 +285,6 @@ namespace Aquila.CodeAnalysis.Public
 
             var paramPlace = new ParamPlace(param);
 
-
             setter
                 .SetMethodBuilder((m, d) => (il) =>
                 {
@@ -276,7 +294,6 @@ namespace Aquila.CodeAnalysis.Public
                     field.EmitStore(il);
                     il.EmitRet(true);
                 });
-
 
             var peProp = ps.SynthesizeProperty(type);
             peProp

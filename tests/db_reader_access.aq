@@ -8,7 +8,7 @@ public static int Main()
 
 
     var obj = InvoiceManager.create();
-    obj.Name = "test";
+    obj.Name = "CreateMe";
     obj.ComplexProperty = "Complex";
     obj.ComplexProperty = 10;
     obj.ComplexProperty = store.link;

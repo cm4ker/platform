@@ -41,10 +41,12 @@ namespace ScriptsTest
             _provider = new ScriptingProvider(); // use IScriptingProvider singleton
 
         private readonly ITestOutputHelper _output;
+        private readonly DatabaseFixture _fixture;
 
-        public ScriptsTest(ITestOutputHelper output)
+        public ScriptsTest(ITestOutputHelper output, DatabaseFixture fixture)
         {
             _output = output;
+            _fixture = fixture;
         }
 
         [SkippableTheory]
@@ -56,15 +58,10 @@ namespace ScriptsTest
                 new Regex(@"^skip(\([^)]*\))?_.*$"); // matches either skip_<smth>.aq or skip(<reason>)_<smth>.aq
             Skip.If(isSkipTest.IsMatch(fname));
 
-            var service = TestEnvSetup.GetServerService();
-            var manager = service.GetService<IAqInstanceManager>();
-            var instance = manager.GetInstance("Library");
-            instance.Migrate();
-
             _output.WriteLine("Testing {0} ...", fname);
 
             // test script compilation and run it
-            var result = CompileAndRun(path, new AqContext(instance));
+            var result = CompileAndRun(path, _fixture.Context);
 
             // Skip if platform wants it to
             Skip.If(result == SkippedTestReturn);

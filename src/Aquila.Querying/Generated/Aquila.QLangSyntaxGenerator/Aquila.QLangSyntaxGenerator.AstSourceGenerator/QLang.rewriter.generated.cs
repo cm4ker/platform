@@ -239,54 +239,54 @@ var @when = (QOperationExpression)Visit(arg.When);
 return new QWhen(then,@when);
 }
 public override QLangElement VisitQOperationExpression(QOperationExpression arg) {
-var left = (QExpression)Visit(arg.Left);
 var right = (QExpression)Visit(arg.Right);
-return new QOperationExpression(left,right);
+var left = (QExpression)Visit(arg.Left);
+return new QOperationExpression(right,left);
 }
 public override QLangElement VisitQAnd(QAnd arg) {
-var left = (QExpression)Visit(arg.Left);
 var right = (QExpression)Visit(arg.Right);
-return new QAnd(left,right);
+var left = (QExpression)Visit(arg.Left);
+return new QAnd(right,left);
 }
 public override QLangElement VisitQAdd(QAdd arg) {
-var left = (QExpression)Visit(arg.Left);
 var right = (QExpression)Visit(arg.Right);
-return new QAdd(left,right);
+var left = (QExpression)Visit(arg.Left);
+return new QAdd(right,left);
 }
 public override QLangElement VisitQOr(QOr arg) {
-var left = (QExpression)Visit(arg.Left);
 var right = (QExpression)Visit(arg.Right);
-return new QOr(left,right);
+var left = (QExpression)Visit(arg.Left);
+return new QOr(right,left);
 }
 public override QLangElement VisitQEquals(QEquals arg) {
-var left = (QExpression)Visit(arg.Left);
 var right = (QExpression)Visit(arg.Right);
-return new QEquals(left,right);
+var left = (QExpression)Visit(arg.Left);
+return new QEquals(right,left);
 }
 public override QLangElement VisitQNotEquals(QNotEquals arg) {
-var left = (QExpression)Visit(arg.Left);
 var right = (QExpression)Visit(arg.Right);
-return new QNotEquals(left,right);
+var left = (QExpression)Visit(arg.Left);
+return new QNotEquals(right,left);
 }
 public override QLangElement VisitQGreatThen(QGreatThen arg) {
-var left = (QExpression)Visit(arg.Left);
 var right = (QExpression)Visit(arg.Right);
-return new QGreatThen(left,right);
+var left = (QExpression)Visit(arg.Left);
+return new QGreatThen(right,left);
 }
 public override QLangElement VisitQLessThen(QLessThen arg) {
-var left = (QExpression)Visit(arg.Left);
 var right = (QExpression)Visit(arg.Right);
-return new QLessThen(left,right);
+var left = (QExpression)Visit(arg.Left);
+return new QLessThen(right,left);
 }
 public override QLangElement VisitQLessThenOrEquals(QLessThenOrEquals arg) {
-var left = (QExpression)Visit(arg.Left);
 var right = (QExpression)Visit(arg.Right);
-return new QLessThenOrEquals(left,right);
+var left = (QExpression)Visit(arg.Left);
+return new QLessThenOrEquals(right,left);
 }
 public override QLangElement VisitQGreatThenOrEquals(QGreatThenOrEquals arg) {
-var left = (QExpression)Visit(arg.Left);
 var right = (QExpression)Visit(arg.Right);
-return new QGreatThenOrEquals(left,right);
+var left = (QExpression)Visit(arg.Left);
+return new QGreatThenOrEquals(right,left);
 }
 public override QLangElement VisitQCast(QCast arg) {
 var type = arg.Type;

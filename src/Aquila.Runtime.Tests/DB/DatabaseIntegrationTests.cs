@@ -68,7 +68,7 @@ FROM
 (SELECT 1 as _sec_fld
 ) as _sec_dummy
 WHERE
-''CreateMe'' = T0.A3
+'CreateMe' = T0.A3
 ) THEN 0 
  ELSE 2147483647
  END + 2147483647 = 2147483647
@@ -105,13 +105,13 @@ FROM
 (SELECT 1 as _sec_fld
 ) as _sec_dummy
 WHERE
-''UpdateMe'' = T0.Fld_263
+'UpdateMe' = T0.Fld_263
 ) AND EXISTS (SELECT 1
 FROM
 (SELECT 1 as _sec_fld
 ) as _sec_dummy
 WHERE
-''UpdateMe'' = T0.Fld_263
+'UpdateMe' = T0.Fld_263
 )) THEN 0 
  ELSE 2147483647
  END + 2147483647 = 2147483647)

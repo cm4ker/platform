@@ -2043,15 +2043,15 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QOperationExpression : QExpression
     {
-        public QOperationExpression(QExpression left, QExpression right) : base()
+        public QOperationExpression(QExpression right, QExpression left) : base()
         {
-            this.left = left;
             this.right = right;
+            this.left = left;
         }
 
-        public QExpression Left { get => this.left; init => this.left = value; }
-
         public QExpression Right { get => this.right; init => this.right = value; }
+
+        public QExpression Left { get => this.left; init => this.left = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -2065,10 +2065,10 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            if (this.left != null)
-                yield return this.left;
             if (this.right != null)
                 yield return this.right;
+            if (this.left != null)
+                yield return this.left;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -2077,8 +2077,8 @@ namespace Aquila.Core.Querying.Model
             yield break;
         }
 
-        protected QExpression left;
         protected QExpression right;
+        protected QExpression left;
     }
 }
 
@@ -2086,7 +2086,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QAnd : QOperationExpression
     {
-        public QAnd(QExpression left, QExpression right) : base(left, right)
+        public QAnd(QExpression right, QExpression left) : base(right, left)
         {
         }
 
@@ -2102,10 +2102,10 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            if (this.left != null)
-                yield return this.left;
             if (this.right != null)
                 yield return this.right;
+            if (this.left != null)
+                yield return this.left;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -2120,7 +2120,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QAdd : QOperationExpression
     {
-        public QAdd(QExpression left, QExpression right) : base(left, right)
+        public QAdd(QExpression right, QExpression left) : base(right, left)
         {
         }
 
@@ -2136,10 +2136,10 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            if (this.left != null)
-                yield return this.left;
             if (this.right != null)
                 yield return this.right;
+            if (this.left != null)
+                yield return this.left;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -2154,7 +2154,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QOr : QOperationExpression
     {
-        public QOr(QExpression left, QExpression right) : base(left, right)
+        public QOr(QExpression right, QExpression left) : base(right, left)
         {
         }
 
@@ -2184,7 +2184,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QEquals : QOperationExpression
     {
-        public QEquals(QExpression left, QExpression right) : base(left, right)
+        public QEquals(QExpression right, QExpression left) : base(right, left)
         {
         }
 
@@ -2214,7 +2214,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QNotEquals : QOperationExpression
     {
-        public QNotEquals(QExpression left, QExpression right) : base(left, right)
+        public QNotEquals(QExpression right, QExpression left) : base(right, left)
         {
         }
 
@@ -2244,7 +2244,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QGreatThen : QOperationExpression
     {
-        public QGreatThen(QExpression left, QExpression right) : base(left, right)
+        public QGreatThen(QExpression right, QExpression left) : base(right, left)
         {
         }
 
@@ -2274,7 +2274,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QLessThen : QOperationExpression
     {
-        public QLessThen(QExpression left, QExpression right) : base(left, right)
+        public QLessThen(QExpression right, QExpression left) : base(right, left)
         {
         }
 
@@ -2304,7 +2304,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QLessThenOrEquals : QOperationExpression
     {
-        public QLessThenOrEquals(QExpression left, QExpression right) : base(left, right)
+        public QLessThenOrEquals(QExpression right, QExpression left) : base(right, left)
         {
         }
 
@@ -2334,7 +2334,7 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QGreatThenOrEquals : QOperationExpression
     {
-        public QGreatThenOrEquals(QExpression left, QExpression right) : base(left, right)
+        public QGreatThenOrEquals(QExpression right, QExpression left) : base(right, left)
         {
         }
 

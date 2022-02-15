@@ -9,6 +9,7 @@ using Aquila.Core.Querying.Model;
 using Aquila.Metadata;
 using Aquila.Runtime;
 using Aquila.Runtime.Querying;
+using Microsoft.IdentityModel.Protocols;
 
 namespace Aquila.Core
 {
@@ -93,12 +94,33 @@ namespace Aquila.Core
             command.Parameters.Add(param);
         }
 
-
         public static void InvokeInsert(AqContext context, string mdName, AqParamValue[] parameters)
         {
+            InvokeCore(context, parameters, mdName, (SMEntity semantic, out QLangElement element) =>
+                CRUDQueryGenerator.CompileInsert(semantic, context, out element));
+        }
+
+        public static void InvokeUpdate(AqContext context, string mdName, AqParamValue[] parameters)
+        {
+            InvokeCore(context, parameters, mdName, (SMEntity semantic, out QLangElement element) =>
+                CRUDQueryGenerator.CompileUpdate(semantic, context, out element));
+        }
+
+        public static void InvokeDelete(AqContext context, string mdName, AqParamValue[] parameters)
+        {
+            InvokeCore(context, parameters, mdName, (SMEntity semantic, out QLangElement element) =>
+                CRUDQueryGenerator.CompileDelete(semantic, context, out element));
+        }
+
+        private delegate string CompileQueryDelegate(SMEntity semantic, out QLangElement model);
+
+        private static void InvokeCore(AqContext context, AqParamValue[] parameters, string mdName,
+            CompileQueryDelegate action)
+        {
             var semantic = context.MetadataProvider.GetSemanticByName(mdName);
-            var commandText = CRUDQueryGenerator.CompileInsert(semantic, context, out var q);
-            var result = q.Find<QParameterBase>().DistinctBy(x => x.Name)
+            var commandText = action(semantic, out QLangElement model);
+
+            var result = model.Find<QParameterBase>().DistinctBy(x => x.Name)
                 .Select(x => new { QParam = x, QName = x.Name, RName = x.GetDbName() });
 
             DbCommand cmd = context.CreateCommand();
@@ -121,6 +143,7 @@ namespace Aquila.Core
                         if (pValue != null)
                         {
                             dbParam.DbType = typeMap[pValue.Value.GetType()];
+                            dbParam.Value = pValue.Value;
                         }
 
                         cmd.Parameters.Add(dbParam);
