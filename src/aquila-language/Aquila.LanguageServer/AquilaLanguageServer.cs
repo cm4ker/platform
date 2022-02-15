@@ -144,7 +144,7 @@ namespace Aquila.LanguageServer
 
             try
             {
-                newProject = await ProjectUtils.TryGetFirstPhpProjectAsync(_rootPath, this);
+                newProject = await ProjectUtils.TryGetFirstAquilaProjectAsync(_rootPath, this);
             }
             catch (Exception ex)
             {

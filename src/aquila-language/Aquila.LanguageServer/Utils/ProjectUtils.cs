@@ -39,7 +39,7 @@ namespace Aquila.LanguageServer
 
         private static SemaphoreSlim _buildManagerSemaphore = new SemaphoreSlim(1);
 
-        public static async Task<ProjectHandler> TryGetFirstPhpProjectAsync(string directory, ILogTarget log)
+        public static async Task<ProjectHandler> TryGetFirstAquilaProjectAsync(string directory, ILogTarget log)
         {
             foreach (var solutionPath in Directory.GetFiles(directory, SolutionNamePattern))
             {
@@ -49,12 +49,12 @@ namespace Aquila.LanguageServer
                     foreach (var project in solution.ProjectsInOrder)
                     {
                         if (project.ProjectType != SolutionProjectType.KnownToBeMSBuildFormat ||
-                            project.RelativePath.EndsWith(".csproj"))
+                            project.RelativePath.EndsWith(".aqproj"))
                         {
                             continue;
                         }
 
-                        var projectHandler = await TryGetPhpProjectAsync(project.AbsolutePath, log);
+                        var projectHandler = await TryGetAquilaProjectAsync(project.AbsolutePath, log);
                         if (projectHandler != null)
                         {
                             return projectHandler;
@@ -65,7 +65,7 @@ namespace Aquila.LanguageServer
 
             foreach (var projectPath in Directory.GetFiles(directory, ProjectNamePattern, SearchOption.AllDirectories))
             {
-                var projectHandler = await TryGetPhpProjectAsync(projectPath, log);
+                var projectHandler = await TryGetAquilaProjectAsync(projectPath, log);
                 if (projectHandler != null)
                 {
                     return projectHandler;
@@ -75,13 +75,13 @@ namespace Aquila.LanguageServer
             return null;
         }
 
-        private static async Task<ProjectHandler> TryGetPhpProjectAsync(string projectFile, ILogTarget log)
+        private static async Task<ProjectHandler> TryGetAquilaProjectAsync(string projectFile, ILogTarget log)
         {
             try
             {
                 Project project = LoadProject(projectFile);
 
-                if (!IsPhpProject(project))
+                if (!IsAquilaProject(project))
                 {
                     return null;
                 }
@@ -193,7 +193,7 @@ namespace Aquila.LanguageServer
             return new Project(projectRoot, properties, toolsVersion: null, projectCollection: projectCollection);
         }
 
-        private static bool IsPeachPieCompilerImport(ResolvedImport import)
+        private static bool IsAquilaCompilerImport(ResolvedImport import)
         {
             return import
                 .ImportedProject
@@ -201,9 +201,9 @@ namespace Aquila.LanguageServer
                 .IndexOf("aquila.net.sdk", StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
-        private static bool IsPhpProject(Project project)
+        private static bool IsAquilaProject(Project project)
         {
-            return project.Imports.Any(IsPeachPieCompilerImport);
+            return project.Imports.Any(IsAquilaCompilerImport);
         }
 
         private static bool IsMultitargetingProject(Project project)
@@ -215,7 +215,7 @@ namespace Aquila.LanguageServer
         {
             if (IsMultitargetingProject(project))
             {
-                // Force DispatchToInnerBuilds target to run a helper target from Peachpie SDK instead of Build
+                // Force DispatchToInnerBuilds target to run a helper target from Aquila SDK instead of Build
                 project.SetProperty("InnerTargets", HelperReferenceReturnTarget);
                 project.ReevaluateIfNecessary();
             }

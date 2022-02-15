@@ -8,7 +8,7 @@
 
     <!-- Properties -->
     <PropertyGroup>
-        <TemplateLanguage Condition="'$(TemplateLanguage)' == ''">PeachPie</TemplateLanguage>
+        <TemplateLanguage Condition="'$(TemplateLanguage)' == ''">Aquila</TemplateLanguage>
     </PropertyGroup>
 
     <!-- Schemas -->
