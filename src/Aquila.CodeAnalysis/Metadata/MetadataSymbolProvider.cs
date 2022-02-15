@@ -528,7 +528,7 @@ namespace Aquila.Syntax.Metadata
                 });
 
             #endregion
-            
+
             #region void Delete()
 
             var deleteMethod = _ps.SynthesizeMethod(objectType)
@@ -543,7 +543,7 @@ namespace Aquila.Syntax.Metadata
                         var managerType =
                             _ps.GetType(QualifiedName.Parse($"{Namespace}.{md.Name}{ManagerPostfix}", true));
                         var mrgDelete = managerType.GetMembers("delete").OfType<MethodSymbol>().FirstOrDefault() ??
-                                      throw new Exception("Method save not found in manager type");
+                                        throw new Exception("Method save not found in manager type");
 
                         thisPlace.EmitLoad(il);
                         ctxFieldPlace.EmitLoad(il);
@@ -930,7 +930,7 @@ namespace Aquila.Syntax.Metadata
 
             #endregion
 
-            #region LoadDto
+            #region GetLink
 
             var getLink = _ps.SynthesizeMethod(managerType);
 
@@ -962,12 +962,81 @@ namespace Aquila.Syntax.Metadata
 
             #endregion
 
+
+            #region ReaderVoid
+
+            var readerVoid = _ps.SynthesizeMethod(managerType);
+            var dbParam = new SynthesizedParameterSymbol(readerVoid, _ct.DbReader, 0, RefKind.None);
+            var dbp = new ParamPlace(dbParam);
+
+            readerVoid
+                .SetParameters(dbParam)
+                .SetName("reader_void")
+                .SetIsStatic(true)
+                .SetReturn(_ct.Object)
+                .SetMethodBuilder((m, d) => il =>
+                {
+                    var dtoLoc = new LocalPlace(il.DefineSynthLocal(readerVoid, "dto", dtoType));
+
+                    il.EmitCall(m, d, ILOpCode.Newobj, dtoType.InstanceConstructors.First());
+                    dtoLoc.EmitStore(il);
+
+                    var getValueMethod = _ct.DbReader.Method("get_Item", _ct.Int32);
+
+                    var index = 0;
+                    foreach (var prop in md.Properties)
+                    {
+                        var visitRef = false;
+
+                        foreach (var typeInfo in prop.Types.GetOrderedFlattenTypes())
+                        {
+                            if (visitRef && typeInfo.type.IsReference)
+                                continue;
+
+                            if (typeInfo.isComplex && typeInfo.type.IsReference)
+                                visitRef = true;
+
+                            var clrProp = dtoType.GetMembers($"{prop.Name}{typeInfo.postfix}")
+                                .OfType<PropertySymbol>()
+                                .FirstOrDefault();
+
+                            if (clrProp == null)
+                                throw new NullReferenceException(
+                                    $"Clr prop with name {prop.Name}{typeInfo.postfix} not found");
+
+                            dtoLoc.EmitLoad(il);
+                            dbp.EmitLoad(il);
+                            il.EmitIntConstant(index++);
+                            il.EmitCall(m, d, ILOpCode.Callvirt, getValueMethod);
+
+                            if (clrProp.Type.IsValueType)
+                                il.EmitOpCode(ILOpCode.Unbox_any);
+                            else
+                                il.EmitOpCode(ILOpCode.Castclass);
+                            il.EmitSymbolToken(m, d, clrProp.Type, null);
+
+                            il.EmitCall(m, d, ILOpCode.Call, clrProp.SetMethod);
+                        }
+                    }
+
+                    dtoLoc.EmitLoad(il);
+                    il.EmitOpCode(ILOpCode.Box);
+                    il.EmitSymbolToken(m, d, dtoType, null);
+                    il.EmitRet(false);
+                });
+
+            #endregion
+
+
+            #region Load dto
+
             var loadDtoMethod = _ps.SynthesizeMethod(managerType);
             {
                 var ctxParam =
                     new SpecialParameterSymbol(createMethod, _ct.AqContext, SpecialParameterSymbol.ContextName, 0);
                 var idParam = new SynthesizedParameterSymbol(createMethod, _ct.Guid, 1, RefKind.None, "id");
                 var ctxPS = new ParamPlace(ctxParam);
+                var idPl = new ParamPlace(idParam);
 
                 loadDtoMethod
                     .SetName("load_dto")
@@ -992,103 +1061,62 @@ namespace Aquila.Syntax.Metadata
                         }.ToImmutableArray(), ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty))
                     .SetMethodBuilder((m, d) => il =>
                     {
-                        var dbLoc = new LocalPlace(il.DefineSynthLocal(loadDtoMethod, "dbCommand", _ct.DbCommand));
-                        var paramLoc =
-                            new LocalPlace(il.DefineSynthLocal(loadDtoMethod, "dbParameter", _ct.DbParameter));
-                        var readerLoc = new LocalPlace(il.DefineSynthLocal(loadDtoMethod, "reader", _ct.DbReader));
-                        var idPlace = new ParamPlace(idParam);
+                        var idClrProp =
+                            dtoType.GetMembers(md.IdProperty.Name).OfType<PropertySymbol>().FirstOrDefault() ??
+                            throw new Exception("The id property is null");
 
+                        var sym = _ct.AqParamValue.AsSZArray().Symbol;
+                        var arrLoc = new LocalPlace(il.DefineSynthLocal(loadDtoMethod, "", sym));
 
-                        ctxParam.EmitLoad(il);
-                        il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.CreateCommand);
+                        il.EmitIntConstant(1);
+                        il.EmitOpCode(ILOpCode.Newarr);
+                        il.EmitSymbolToken(m, d, _ct.AqParamValue, null);
+                        arrLoc.EmitStore(il);
+                        
+                        //Load values array
+                        arrLoc.EmitLoad(il);
+                        il.EmitIntConstant(0);
+                        il.EmitStringConstant(md.IdProperty.Name);
 
-                        dbLoc.EmitStore(il);
-
-                        dbLoc.EmitLoad(il);
-                        loadQueryFieldPlace.EmitLoad(il);
-                        il.EmitCall(m, d, ILOpCode.Callvirt, dbTextProp.Setter);
-
-
-                        dbLoc.EmitLoad(il);
-                        il.EmitStringConstant($"@p0");
-
-                        idPlace.EmitLoad(il);
+                        idPl.EmitLoad(il);
                         il.EmitOpCode(ILOpCode.Box);
-                        il.EmitSymbolToken(m, d, idParam.Type, null);
+                        il.EmitSymbolToken(m, d, idPl.Type, null);
+                        il.EmitCall(m, d, ILOpCode.Newobj, _ct.AqParamValue.Ctor(_ct.String, _ct.Object));
+                        il.EmitOpCode(ILOpCode.Stelem_ref);
 
-                        il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.CreateParameterHelper);
-
-                        dbLoc.EmitLoad(il);
-                        il.EmitCall(m, d, ILOpCode.Call, _ct.DbCommand.Method("ExecuteReader"));
-                        readerLoc.EmitStore(il);
-
-                        var lbl = new NamedLabel("<return>");
-
-                        var dtoLoc = new LocalPlace(il.DefineSynthLocal(loadDtoMethod, "dto", dtoType));
-
-                        il.EmitCall(m, d, ILOpCode.Newobj, dtoType.InstanceConstructors.First());
-                        dtoLoc.EmitStore(il);
-
-                        readerLoc.EmitLoad(il);
-                        il.EmitCall(m, d, ILOpCode.Callvirt, _ct.DbReader.Method("Read"));
-
-                        // if (Read())
-                        il.EmitBranch(ILOpCode.Brfalse, lbl);
+                        ctxPS.EmitLoad(il);
+                        il.EmitStringConstant(md.FullName);
+                        arrLoc.EmitLoad(il);
+                        //load return_void function
 
 
-                        var getValueMethod = _ct.DbReader.Method("get_Item", _ct.Int32);
+                        // Func<,>(object @object, IntPtr method)
+                        var func_ctor = ((NamedTypeSymbol)_ct.AqReadDelegate).InstanceConstructors.Single(m =>
+                            m.ParameterCount == 2 &&
+                            m.Parameters[0].Type.SpecialType == SpecialType.System_Object &&
+                            m.Parameters[1].Type.SpecialType == SpecialType.System_IntPtr
+                        );
 
-                        var index = 0;
-                        foreach (var prop in md.Properties)
-                        {
-                            var visitRef = false;
+                        il.EmitNullConstant();
+                        il.EmitOpCode(ILOpCode.Ldftn);
+                        il.EmitSymbolToken(m, d, readerVoid, null);
+                        il.EmitCall(m, d, ILOpCode.Newobj, func_ctor);
 
-                            foreach (var typeInfo in prop.Types.GetOrderedFlattenTypes())
-                            {
-                                if (visitRef && typeInfo.type.IsReference)
-                                    continue;
-
-                                if (typeInfo.isComplex && typeInfo.type.IsReference)
-                                    visitRef = true;
-
-                                var clrProp = dtoType.GetMembers($"{prop.Name}{typeInfo.postfix}")
-                                    .OfType<PropertySymbol>()
-                                    .FirstOrDefault();
-
-                                if (clrProp == null)
-                                    throw new NullReferenceException(
-                                        $"Clr prop with name {prop.Name}{typeInfo.postfix} not found");
-
-                                dtoLoc.EmitLoad(il);
-                                readerLoc.EmitLoad(il);
-                                il.EmitIntConstant(index++);
-                                il.EmitCall(m, d, ILOpCode.Callvirt, getValueMethod);
-
-                                if (clrProp.Type.IsValueType)
-                                    il.EmitOpCode(ILOpCode.Unbox_any);
-                                else
-                                    il.EmitOpCode(ILOpCode.Castclass);
-                                il.EmitSymbolToken(m, d, clrProp.Type, null);
-
-                                il.EmitCall(m, d, ILOpCode.Call, clrProp.SetMethod);
-                            }
-                        }
-
-                        //else
-                        il.MarkLabel(lbl);
-
-
-                        readerLoc.EmitLoad(il);
-                        il.EmitCall(m, d, ILOpCode.Callvirt, _ct.DbReader.Method("Close"));
-
-                        dtoLoc.EmitLoad(il);
+                        il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.InvokeSelect);
+                        
+                        il.EmitOpCode(ILOpCode.Castclass);
+                        il.EmitSymbolToken(m, d, dtoType, null);
+                        
                         il.EmitRet(false);
                     });
             }
 
+            #endregion
+
 
             managerType.AddMember(saveMethod);
             managerType.AddMember(deleteMethod);
+            managerType.AddMember(readerVoid);
             managerType.AddMember(saveApiMethod);
             managerType.AddMember(createMethod);
             managerType.AddMember(loadDtoMethod);

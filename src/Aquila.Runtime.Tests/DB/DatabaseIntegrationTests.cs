@@ -148,5 +148,33 @@ WHERE
 ";
             Assert.Equal(expected.ReplaceLineEndings(), actual.ReplaceLineEndings());
         }
+
+        [Fact]
+        public void SelectEntityQueryGenerationTest()
+        {
+            var md = fixture.Context.MetadataProvider;
+            var invoice = md.GetSemanticByName("Entity.Invoice");
+
+            Assert.NotNull(invoice);
+
+            var actual = CRUDQueryGenerator.CompileSelect(invoice, fixture.Context, out var q);
+            var expected = @"SELECT T0.Fld_260,
+T0.Fld_261_T,
+T0.Fld_261_R,
+T0.Fld_261_I,
+T0.Fld_261_S,
+T0.Fld_262,
+T0.Fld_263,
+T0.Fld_264
+FROM
+Tbl_257 as T0
+WHERE
+T0.Fld_260 = @p0
+";
+            
+            _logger.WriteLine(actual);
+            
+            Assert.Equal(expected.ReplaceLineEndings(), actual.ReplaceLineEndings());
+        }
     }
 }

@@ -96,25 +96,65 @@ namespace Aquila.Core
 
         public static void InvokeInsert(AqContext context, string mdName, AqParamValue[] parameters)
         {
-            InvokeCore(context, parameters, mdName, (SMEntity semantic, out QLangElement element) =>
+            using var cmd = PrepareCore(context, parameters, mdName, (SMEntity semantic, out QLangElement element) =>
                 CRUDQueryGenerator.CompileInsert(semantic, context, out element));
+            cmd.ExecuteNonQuery();
         }
 
         public static void InvokeUpdate(AqContext context, string mdName, AqParamValue[] parameters)
         {
-            InvokeCore(context, parameters, mdName, (SMEntity semantic, out QLangElement element) =>
+            using var cmd = PrepareCore(context, parameters, mdName, (SMEntity semantic, out QLangElement element) =>
                 CRUDQueryGenerator.CompileUpdate(semantic, context, out element));
+            cmd.ExecuteNonQuery();
         }
 
         public static void InvokeDelete(AqContext context, string mdName, AqParamValue[] parameters)
         {
-            InvokeCore(context, parameters, mdName, (SMEntity semantic, out QLangElement element) =>
+            using var cmd = PrepareCore(context, parameters, mdName, (SMEntity semantic, out QLangElement element) =>
                 CRUDQueryGenerator.CompileDelete(semantic, context, out element));
+            cmd.ExecuteNonQuery();
+        }
+
+        public static object InvokeSelect(AqContext context, string mdName, AqParamValue[] parameters,
+            AqReadDelegate readAction)
+        {
+            var needCheckSec = false;
+
+            using var cmd = PrepareCore(context, parameters, mdName,
+                (SMEntity semantic, out QLangElement element) =>
+                {
+                    return CRUDQueryGenerator.CompileSelect(semantic, context, out element);
+                });
+
+            var dataReader = cmd.ExecuteReader();
+            object result = null;
+
+            while (dataReader.Read())
+            {
+                if (needCheckSec)
+                {
+                    //Last field is security field
+                    var secRes = dataReader.GetInt32(dataReader.FieldCount - 1);
+
+                    if (secRes == 0)
+                    {
+                        //TODO: throw security exception
+                    }
+                }
+
+                result = readAction(dataReader);
+            }
+
+            dataReader.Close();
+            dataReader.Dispose();
+
+            //TODO: throw not found exception if result is null
+            return result;
         }
 
         private delegate string CompileQueryDelegate(SMEntity semantic, out QLangElement model);
 
-        private static void InvokeCore(AqContext context, AqParamValue[] parameters, string mdName,
+        private static DbCommand PrepareCore(AqContext context, AqParamValue[] parameters, string mdName,
             CompileQueryDelegate action)
         {
             var semantic = context.MetadataProvider.GetSemanticByName(mdName);
@@ -169,13 +209,9 @@ namespace Aquila.Core
                 //TODO: try to find parameter in global parameters
             }
 
-            int rows = cmd.ExecuteNonQuery();
-
-            cmd.Dispose();
-        }
-
-        public static void InvokeUpdate(AqContext context, int typeId, AqParamValue[] paramValues)
-        {
+            return cmd;
         }
     }
+
+    public delegate object AqReadDelegate(DbDataReader reader);
 }

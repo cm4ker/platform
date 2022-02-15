@@ -189,6 +189,24 @@ namespace Aquila.Runtime.Querying
             return new QDeleteQuery(delete, from, where, QCriterionList.Empty);
         }
 
+        public static QSelectQuery GetSelectQuery(SMEntity entity, MetadataProvider em)
+        {
+            var source = new QAliasedDataSource(new QObjectTable(entity), "TS");
+            QSelect select = new QSelect(new QFieldList(source.GetFields().ToImmutableArray()));
+            QFrom from = new QFrom(null, source);
+            QParameter param = new QParameter("Id");
+            QWhere where = new QWhere(new QEquals(source.GetField("Id"), param));
+            return new QSelectQuery(null, select, null, null, where, from, QCriterionList.Empty);
+        }
+
+        public static string CompileSelect(SMEntity entity, AqContext context, out QLangElement query)
+        {
+            query = GetSelectQuery(entity, context.MetadataProvider);
+            return CompileCore(query, context, new SelectionRealWalker(context.DataRuntimeContext),
+                out query);
+        }
+
+
         public static string CompileInsert(SMEntity entity, AqContext context,
             out QLangElement query)
         {

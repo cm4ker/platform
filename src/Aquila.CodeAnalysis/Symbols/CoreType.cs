@@ -153,6 +153,7 @@ namespace Aquila.CodeAnalysis.Symbols
         public const string AquilaHttpMethodKindFullName = AquilaRuntimeNamespace + ".HttpMethodKind";
 
         public const string AquilaParamValueFullName = AquilaRuntimeNamespace + ".AqParamValue";
+        public const string AquilaReadDelegateFullName = AquilaRuntimeNamespace + ".AqReadDelegate";
         //System.Data
 
         /// <summary>
@@ -187,6 +188,7 @@ namespace Aquila.CodeAnalysis.Symbols
             Exception,
             RuntimeTypeHandle,
             RuntimeMethodHandle,
+            @Action,
 
             //Attributes
             RuntimeInitAttribute,
@@ -208,6 +210,7 @@ namespace Aquila.CodeAnalysis.Symbols
             AqHelper,
             AqComparison,
             AqParamValue,
+            AqReadDelegate,
 
             //System.Data.Common Types
             DbCommand,
@@ -268,7 +271,7 @@ namespace Aquila.CodeAnalysis.Symbols
             AqContext = CreateFromFullName(AquilaPlatformContextFullName);
             AqHelper = CreateFromFullName(AquilaPlatformHelperFullName);
             AqParamValue = CreateFromFullName(AquilaParamValueFullName);
-
+            AqReadDelegate = CreateFromFullName(AquilaReadDelegateFullName);
             AqComparison = Create("AqComparison");
 
             #endregion
