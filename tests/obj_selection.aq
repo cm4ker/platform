@@ -1,0 +1,12 @@
+import Entity;
+
+public static int Main()
+{
+    var store = StoreManager.create();
+    store.Name = "My store";
+    store.save();
+
+    var name = store.link.Name;
+
+    return 0;
+}
