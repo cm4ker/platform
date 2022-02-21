@@ -28,11 +28,11 @@ namespace Aquila.LanguageServer
         {
             // if (args.Length > 0 && args[0] == "debug")
             // {
-                Debugger.Launch();
-                while (!Debugger.IsAttached)
-                {
-                    await Task.Delay(100).ConfigureAwait(false);
-                }
+            Debugger.Launch();
+            while (!Debugger.IsAttached)
+            {
+                await Task.Delay(100).ConfigureAwait(false);
+            }
             // }
 
             Log.Logger = new LoggerConfiguration()
@@ -45,7 +45,6 @@ namespace Aquila.LanguageServer
             Log.Logger.Information("Starting language server");
 
             IObserver<WorkDoneProgressReport> workDone = null!;
-
 
             var server = OmniSharp.Extensions.LanguageServer.Server.LanguageServer.Create(
                 options =>

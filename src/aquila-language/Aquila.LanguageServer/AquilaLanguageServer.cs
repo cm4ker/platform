@@ -129,7 +129,7 @@ namespace Aquila.LanguageServer
 
         private async Task ProcessFileChangesAsync(DidChangeWatchedFilesParams changeWatchedParams)
         {
-            // We now watch only .msbuildproj and project.assets.json files, forcing us to reload the project
+            // We now watch only .aqproj and project.assets.json files, forcing us to reload the project
             await TryReloadProjectAsync();
         }
 
@@ -293,7 +293,7 @@ namespace Aquila.LanguageServer
                 {
                     TextDocumentSync = TextDocumentSyncKind.Full, // TODO: change to incremental to improve perf.
                     HoverProvider = true,
-                    DefinitionProvider = true,
+                    DefinitionProvider = true
                 }
             };
             _messageWriter.WriteResponse(request.Id, initializeResult);
@@ -303,7 +303,6 @@ Aquila Language Server
   PID: {Process.GetCurrentProcess().Id}
   Path: {System.Reflection.Assembly.GetEntryAssembly().Location}
 ");
-
             if (_options.IsDebug)
             {
                 SendGreetingMessage();

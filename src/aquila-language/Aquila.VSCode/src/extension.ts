@@ -51,28 +51,21 @@ function startLanguageServer(context: vscode.ExtensionContext): vscode.Disposabl
 
     // Options to control the language client
     let clientOptions: LanguageClientOptions = {
-        // Register the server for Aquila documents
-        documentSelector: [
-            {
-                pattern: "**/*.aq",
-            },
-            {
-                pattern: "**/*.yaml",
-            },
-            {
-                pattern: "**/*.md",
-            },
-        ],
+        // Register the server for plain text documents
+        documentSelector: [{language : "aquila"}],
         progressOnInitialization: true,
         synchronize: {
-            configurationSection: "aqLanguageServer",
-            // Notify the server when running dotnet restore on a project in the workspace
+            // Synchronize the setting section 'languageServerExample' to the server
+            
             fileEvents: [
-                workspace.createFileSystemWatcher("**/*.aq"),
-                workspace.createFileSystemWatcher('**/*.aqproj')
-            ]
-        }
+                workspace.createFileSystemWatcher("**/"), //folder change
+                workspace.createFileSystemWatcher("**/*.{md,aq}"), //aquila files change
+                workspace.createFileSystemWatcher("**/*.aqproj"), //aquila project
+            ],
+        },
     }
+
+    showInfo("Staring Aquila Language server");
 
     // Create the language client and start the server
     return new LanguageClient("Aquila Language Server", serverOptions, clientOptions).start();
@@ -244,5 +237,6 @@ function execChildProcess(command: string, workingDirectory: string): Promise<st
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {
+export function deactivate() 
+{
 }

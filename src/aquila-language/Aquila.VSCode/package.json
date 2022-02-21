@@ -2,7 +2,6 @@
   "name": "aqlang-vscode",
   "displayName": "Aquila for Visual Studio Code",
   "description": "Visual Studio Code extension for AqLang",
-  "icon": "",
   "version": "1.0.0",
   "publisher": "aqlang",
   "preview": true,
@@ -17,7 +16,7 @@
     "url": ""
   },
   "engines": {
-    "vscode": "^1.63.0"
+    "vscode": "^1.64.0"
   },
   "categories": [
     "Programming Languages",
@@ -50,14 +49,10 @@
     ],
     "debuggers": [
       {
-        "type": "dummy",
-        "enableBreakpointsFor": {
-          "languageIds": [
-            "aqlang"
-          ]
-        }
+        "type": "dummy"
       }
     ],
+  
     "languages": [
       {
         "id": "xml",
@@ -68,15 +63,23 @@
       {
         "id": "aqlang",
         "aliases": [
-          "aqlang",
-          "aqlang"
+          "aqlang", "aq", "AqLang"
         ],
         "extensions": [
           ".aq"
         ],
+        
         "configuration": "./language-configuration.json"
       }
     ],
+
+    "grammars": [
+      {
+          "language": "aqlang",
+          "scopeName": "source.aqlang",
+          "path": "./syntaxes/aqlang.tmLanguage.json"
+      }
+  ],
     "configuration": {
       "type": "object",
       "title": "Example configuration",
@@ -110,12 +113,10 @@
     "@types/mocha": "^8.0.0",
     "@types/node": "^14.0.25",
     "typescript": "^3.9.7",
-    "@types/vscode": "^1.63.0"
+    "@types/vscode": "^1.64.0"
   },
   "dependencies": {
     "vscode-languageclient": "^7.0.0",
-    "vscode-languageserver": "^7.0.0",
-    "vscode-languageserver-protocol": "^3.16.0-next.6",
     "vscode-nls": "^3.2.2",
     "@xmldom/xmldom": "^0.8.0",
     "xpath": "^0.0.27",

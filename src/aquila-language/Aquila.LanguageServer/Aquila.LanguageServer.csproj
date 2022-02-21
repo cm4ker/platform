@@ -26,6 +26,13 @@
         <PackageReference Include="Nuget.Packaging.Core" Version="6.0.0" />
         <PackageReference Include="Nuget.ProjectModel" Version="6.0.0" />
         <PackageReference Include="Nuget.Versioning" Version="6.0.0" />
+        <PackageReference Include="OmniSharp.Extensions.LanguageServer" Version="0.19.5" />
+        <PackageReference Include="OmniSharp.Extensions.LanguageServer.Shared" Version="0.19.5" />
+        <PackageReference Include="OmniSharp.Shared" Version="1.38.1" />
+        
+        <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
+        <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
+        <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
     </ItemGroup>
 
     <ItemGroup>

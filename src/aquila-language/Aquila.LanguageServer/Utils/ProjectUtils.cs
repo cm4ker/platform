@@ -174,9 +174,8 @@ namespace Aquila.LanguageServer
             Environment.SetEnvironmentVariable("MSBuildSDKsPath", EnvironmentUtils.MSBuildSDKsPath);
 
             // TODO: Make properly async
-            var fileContents =
-                new StringReader(
-                    File.ReadAllText(projectFile)); // read {projectFile} separately in order to avoid locking it on FS
+            var fileContents = new StringReader(File.ReadAllText(projectFile));
+            // read {projectFile} separately in order to avoid locking it on FS
             var xmlReader = XmlReader.Create(fileContents, XmlSettings);
             var projectRoot = ProjectRootElement.Create(xmlReader, projectCollection);
 
@@ -358,18 +357,9 @@ namespace Aquila.LanguageServer
             Parallel.For(0, sourceFiles.Length, i =>
             {
                 var path = PathUtils.NormalizePath(sourceFiles[i]);
-                if (path.EndsWith(".phar"))
-                {
-                    // TODO: process phar archives
-                    syntaxTrees[i] = (AquilaSyntaxTree)AquilaSyntaxTree.ParseText(SourceText.From(string.Empty),
-                        AquilaParseOptions.Default, path);
-                }
-                else
-                {
-                    syntaxTrees[i] = (AquilaSyntaxTree)AquilaSyntaxTree.ParseText(
-                        SourceText.From(File.OpenRead(path), encoding),
-                        AquilaParseOptions.Default, path);
-                }
+                syntaxTrees[i] = (AquilaSyntaxTree)AquilaSyntaxTree.ParseText(
+                    SourceText.From(File.OpenRead(path), encoding),
+                    AquilaParseOptions.Default, path);
             });
 
             return syntaxTrees;

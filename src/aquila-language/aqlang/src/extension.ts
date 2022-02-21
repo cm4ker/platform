@@ -55,22 +55,16 @@ export function activate(context: ExtensionContext) {
     // Options to control the language client
     let clientOptions: LanguageClientOptions = {
         // Register the server for plain text documents
-        documentSelector: [
-            {
-                pattern: "**/*.aq",
-            },
-            {
-                pattern: "**/*.yaml",
-            },
-            {
-                pattern: "**/*.md",
-            },
-        ],
+        documentSelector: [{language : "aquila"}],
         progressOnInitialization: true,
         synchronize: {
             // Synchronize the setting section 'languageServerExample' to the server
-            configurationSection: "aqLanguageServer",
-            fileEvents: workspace.createFileSystemWatcher("**/*.{md,aq}"),
+            
+            fileEvents: [
+                workspace.createFileSystemWatcher("**/"), //folder change
+                workspace.createFileSystemWatcher("**/*.{md,aq}"), //aquila files change
+                workspace.createFileSystemWatcher("**/*.aqproj"), //aquila project
+            ],
         },
     };
 

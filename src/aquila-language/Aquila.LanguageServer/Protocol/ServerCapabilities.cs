@@ -30,6 +30,10 @@ namespace Aquila.LanguageServer.Protocol
         [JsonProperty("workspaceSymbolProvider")]
         public bool? WorkspaceSymbolProvider { get; set; }
 
+        [JsonProperty("semanticTokensProvider")]
+        public bool? SemanticTokensProvider { get; set; }
+
+
         /// <summary>
         /// Code Action options.
         /// </summary>
@@ -77,12 +81,8 @@ namespace Aquila.LanguageServer.Protocol
         /// 
         /// Since 3.10.0
         /// </summary>
-        public bool
-            foldingRangeProvider
-        {
-            get;
-            set;
-        } // boolean | FoldingRangeProviderOptions | (FoldingRangeProviderOptions & TextDocumentRegistrationOptions & StaticRegistrationOptions);
+        public bool foldingRangeProvider { get; set; }
+        // boolean | FoldingRangeProviderOptions | (FoldingRangeProviderOptions & TextDocumentRegistrationOptions & StaticRegistrationOptions);
 
         internal class Workspace
         {

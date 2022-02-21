@@ -232,50 +232,50 @@ namespace Aquila.LanguageServer
             // }
             else if (expression is BoundFieldRef fld)
             {
-                if (fld.FieldName.IsDirect)
-                {
-                    string containedType = null;
-
-                    if (fld.IsClassConstant)
-                    {
-                        kind = "class constant";
-                    }
-                    else
-                    {
-                        result.Append(fld.IsStaticField ? "static" : "var");
-                    }
-
-                    ;
-
-                    if (fld.Instance != null)
-                    {
-                        //if (fld.Instance.TypeRefMask.IsAnyType || fld.Instance.TypeRefMask.IsVoid) return null;
-
-                        //containedType = ctx.ToString(fld.Instance.Type);
-                    }
-                    else
-                    {
-                        containedType = fld.ContainingType?.ToString();
-                    }
-
-                    result.Append(' ');
-                    if (containedType != null)
-                    {
-                        result.Append(containedType);
-                        result.Append(Name.ClassMemberSeparator);
-                    }
-
-                    if (!fld.IsClassConstant)
-                    {
-                        result.Append("$");
-                    }
-
-                    result.Append(fld.FieldName.NameValue.Value);
-                }
-                else
-                {
+                // if (fld.FieldName.IsDirect)
+                // {
+                //     string containedType = null;
+                //
+                //     if (fld.IsClassConstant)
+                //     {
+                //         kind = "class constant";
+                //     }
+                //     else
+                //     {
+                //         result.Append(fld.IsStaticField ? "static" : "var");
+                //     }
+                //
+                //     ;
+                //
+                //     if (fld.Instance != null)
+                //     {
+                //         //if (fld.Instance.TypeRefMask.IsAnyType || fld.Instance.TypeRefMask.IsVoid) return null;
+                //
+                //         //containedType = ctx.ToString(fld.Instance.Type);
+                //     }
+                //     else
+                //     {
+                //         containedType = fld.ContainingType?.ToString();
+                //     }
+                //
+                //     result.Append(' ');
+                //     if (containedType != null)
+                //     {
+                //         result.Append(containedType);
+                //         result.Append(Name.ClassMemberSeparator);
+                //     }
+                //
+                //     if (!fld.IsClassConstant)
+                //     {
+                //         result.Append("$");
+                //     }
+                //
+                //     result.Append(fld.FieldName.NameValue.Value);
+                // }
+                // else
+                // {
                     return null;
-                }
+                // }
             }
             // else if (symbol is IPhpTypeSymbol phpt)
             // {
