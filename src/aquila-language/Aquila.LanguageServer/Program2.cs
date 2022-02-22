@@ -23,7 +23,6 @@ using OmniSharp.Services;
 using Serilog;
 using OSLanguageServer = OmniSharp.Extensions.LanguageServer.Server.LanguageServer;
 
-
 namespace Aquila.LanguageServer
 {
     internal class Program
@@ -36,11 +35,11 @@ namespace Aquila.LanguageServer
 
             // if (args.Length > 0 && args[0] == "debug")
             // {
-            Debugger.Launch();
-            while (!Debugger.IsAttached)
-            {
-                await Task.Delay(100).ConfigureAwait(false);
-            }
+            // Debugger.Launch();
+            // while (!Debugger.IsAttached)
+            // {
+            //     await Task.Delay(100).ConfigureAwait(false);
+            // }
             // }
 
             Log.Logger = new LoggerConfiguration()
@@ -72,7 +71,6 @@ namespace Aquila.LanguageServer
                         .WithHandler<MyWorkspaceSymbolsHandler>()
                         .WithHandler<MyDocumentSymbolHandler>()
                         .WithHandler<SemanticTokensHandler>()
-                        
                         .WithServices(x => x.AddLogging(b => b.SetMinimumLevel(LogLevel.Trace)))
                         .WithServices(x =>
                         {

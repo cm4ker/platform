@@ -77,7 +77,7 @@
       {
           "language": "aqlang",
           "scopeName": "source.aqlang",
-          "path": "./syntaxes/aqlang.tmLanguage.json"
+          "path": "./syntaxes/aqlang.tmLanguage"
       }
   ],
     "configuration": {
