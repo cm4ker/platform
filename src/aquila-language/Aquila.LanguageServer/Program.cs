@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Aquila.CodeAnalysis;
 using Aquila.LanguageServer.Utils;
-using Bicep.LanguageServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
