@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Aquila.CodeAnalysis;
 using Aquila.LanguageServer.Utils;
+using Bicep.LanguageServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -36,65 +37,8 @@ namespace Aquila.LanguageServer
             await EnvironmentUtils.InitializeAsync();
             AssemblyLoadContext.Default.Resolving += Assembly_Resolving;
 
-            // if (args.Length > 0 && args[0] == "debug")
-            // {
-            // Debugger.Launch();
-            // while (!Debugger.IsAttached)
-            // {
-            //     await Task.Delay(100).ConfigureAwait(false);
-            // }
-            // }
-
-
-            Log.Logger = new LoggerConfiguration()
-                .Enrich.FromLogContext()
-                .WriteTo.Debug()
-                .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)
-                .MinimumLevel.Verbose()
-                .CreateLogger();
-
-            Log.Logger.Information("Starting language server");
-
-            IObserver<WorkDoneProgressReport> workDone = null!;
-
-
-            var server = OSLanguageServer.PreInit(
-                options =>
-                    options
-                        .WithInput(Console.OpenStandardInput())
-                        .WithOutput(Console.OpenStandardOutput())
-                        .ConfigureLogging(
-                            x => x
-                                .AddSerilog(Log.Logger)
-                                .AddLanguageProtocolLogging()
-                                .SetMinimumLevel(LogLevel.Debug)
-                        )
-                        .WithHandler<TextDocumentHandler>()
-                        .WithHandler<DidChangeWatchedFilesHandler>()
-                        .WithHandler<FoldingRangeHandler>()
-                        .WithHandler<MyWorkspaceSymbolsHandler>()
-                        .WithHandler<MyDocumentSymbolHandler>()
-                        .WithHandler<SemanticTokensHandler>()
-                        .WithServices(x => x.AddLogging(b => b.SetMinimumLevel(LogLevel.Trace)))
-                        .WithServices(x =>
-                        {
-                            x.AddSingleton<IEventEmitter, LanguageServerEventEmitter>();
-                            x.AddSingleton<IOmniSharpEnvironment, OmniSharpEnvironment>();
-                            x.AddSingleton<DocumentVersions>();
-                            x.AddSingleton<ProjectHolder>();
-                            x.AddSingleton<CompilationManager>();
-                        })
-                        .OnInitialize((server, request, token) =>
-                            {
-                                server.GetService<ProjectHolder>()?
-                                    .Initialize(PathUtils.NormalizePath(request.RootPath));
-                                return Task.CompletedTask;
-                            }
-                        )
-            );
-            //var opt = new OptionsWrapper<DotNetCliOptions>(new DotNetCliOptions { LocationPaths = new[] { "" } });
-            await server.Initialize(CancellationToken.None).ConfigureAwait(false);
-            await server.WaitForExit.ConfigureAwait(false);
+            var server = new Server(a => { });
+            await server.RunAsync(CancellationToken.None).ConfigureAwait(false);
         }
 
 
