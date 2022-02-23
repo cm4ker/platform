@@ -1,6 +1,6 @@
 <Project>
     <PropertyGroup>
-        <LangVersion>9</LangVersion>
+        <LangVersion>10</LangVersion>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <TargetFramework>net6.0</TargetFramework>
         <Configurations>Debug;Release;DebugServer</Configurations>

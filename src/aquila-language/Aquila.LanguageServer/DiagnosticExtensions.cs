@@ -45,7 +45,7 @@ public static class DiagnosticExtensions
 
             var path = PathUtils.NormalizePath(diagnostic.Location.SourceTree?.FilePath);
 
-            return new(path, new CodeDescription() { Href = new Uri(path) });
+            return new(diagnostic.Id, new CodeDescription() { Href = new Uri(path) });
         }
 
         // no additional documentation

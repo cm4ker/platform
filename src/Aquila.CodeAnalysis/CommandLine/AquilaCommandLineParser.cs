@@ -18,8 +18,8 @@ namespace Aquila.CodeAnalysis.CommandLine
     {
         public static AquilaCommandLineParser Default { get; } = new AquilaCommandLineParser();
 
-        protected override string RegularFileExtension { get; } = Constants.ScriptFileExtension;
-        protected override string ScriptFileExtension { get; } = Constants.ScriptFileExtension;
+        protected override string RegularFileExtension { get; } = LanguageConstants.ScriptFileExtension;
+        protected override string ScriptFileExtension { get; } = LanguageConstants.ScriptFileExtension;
 
         internal AquilaCommandLineParser()
             : base(Errors.MessageProvider.Instance, false)

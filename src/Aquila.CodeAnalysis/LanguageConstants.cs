@@ -2,9 +2,9 @@
 
 namespace Aquila.CodeAnalysis
 {
-    internal static class Constants
+    public static class LanguageConstants
     {
-        public const string AquilaLanguageName = "AQLang";
+        public const string LanguageId = "aqlang";
         public const string ScriptFileExtension = ".aq";
 
         /// <summary>

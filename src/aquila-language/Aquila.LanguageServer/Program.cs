@@ -1,33 +1,14 @@
 using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Threading;
 using System.Threading.Tasks;
-using Aquila.CodeAnalysis;
-using Aquila.LanguageServer.Utils;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
-using OmniSharp;
-using OmniSharp.Eventing;
-using OmniSharp.Extensions.LanguageServer.Protocol.General;
-using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Server;
-using OmniSharp.LanguageServerProtocol.Eventing;
-using OmniSharp.LanguageServerProtocol.Handlers;
-using OmniSharp.Options;
-using OmniSharp.Services;
-using Serilog;
 using OSLanguageServer = OmniSharp.Extensions.LanguageServer.Server.LanguageServer;
 
 namespace Aquila.LanguageServer
 {
-    internal class Program
+    public class Program
     {
         private static async Task Main(string[] args) => await MainAsync(args);
 
@@ -36,7 +17,13 @@ namespace Aquila.LanguageServer
             await EnvironmentUtils.InitializeAsync();
             AssemblyLoadContext.Default.Resolving += Assembly_Resolving;
 
-            var server = new Server(a => { });
+            //Debugger.Launch();
+            
+            var server = new Server(a =>
+            {
+                a.WithInput(Console.OpenStandardInput())
+                    .WithOutput(Console.OpenStandardOutput());
+            });
             await server.RunAsync(CancellationToken.None).ConfigureAwait(false);
         }
 

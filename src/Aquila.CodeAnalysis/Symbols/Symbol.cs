@@ -998,7 +998,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public string Language
         {
-            get { return Constants.AquilaLanguageName; }
+            get { return LanguageConstants.LanguageId; }
         }
 
         string ISymbol.Name

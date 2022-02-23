@@ -145,7 +145,7 @@ namespace Aquila.CodeAnalysis
             get { return ImmutableArray<string>.Empty; }
         }
 
-        public override string Language => Constants.AquilaLanguageName;
+        public override string Language => LanguageConstants.LanguageId;
 
         internal bool IsFeatureEnabled(MessageID feature)
         {

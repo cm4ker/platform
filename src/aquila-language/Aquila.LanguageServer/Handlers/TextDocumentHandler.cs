@@ -61,9 +61,19 @@ namespace Aquila.LanguageServer
 
         public override async Task<Unit> Handle(DidOpenTextDocumentParams notification, CancellationToken token)
         {
-            await Task.Yield();
-            _logger.LogInformation("Hello from open document");
-            await _configuration.GetScopedConfiguration(notification.TextDocument.Uri, token).ConfigureAwait(false);
+            var handler = await _holder.GetHandlerAsync();
+
+            string path = PathUtils.NormalizePath(notification.TextDocument.Uri.ToString());
+            string text = notification.TextDocument.Text;
+
+            try
+            {
+                handler.UpdateFile(path, text);
+            }
+            catch (Exception ex)
+            {
+            }
+
             return Unit.Value;
         }
 

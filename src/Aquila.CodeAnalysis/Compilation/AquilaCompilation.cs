@@ -250,7 +250,7 @@ namespace Aquila.CodeAnalysis
         /// </summary>
         public override bool IsCaseSensitive => false;
 
-        public override string Language { get; } = Constants.AquilaLanguageName;
+        public override string Language { get; } = LanguageConstants.LanguageId;
 
         internal AnonymousTypeManager AnonymousTypeManager => _anonymousTypeManager;
 
@@ -729,7 +729,7 @@ namespace Aquila.CodeAnalysis
 
         public new ImmutableArray<AquilaSyntaxTree> SyntaxTrees => this.SourceSymbolCollection.SyntaxTrees;
 
-        internal override Guid DebugSourceDocumentLanguageId => Constants.CorSymLanguageTypeAquila;
+        internal override Guid DebugSourceDocumentLanguageId => LanguageConstants.CorSymLanguageTypeAquila;
 
         protected override bool CommonContainsSyntaxTree(SyntaxTree syntaxTree)
         {

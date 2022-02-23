@@ -31,13 +31,13 @@ namespace Aquila.CodeAnalysis.CodeGen
             {
                 return new Cci.DebugSourceDocument(
                     normalizedPath,
-                    Constants.CorSymLanguageTypeAquila,
+                    LanguageConstants.CorSymLanguageTypeAquila,
                     srctext.GetChecksum(),
                     SourceHashAlgorithms.GetAlgorithmGuid(srctext.ChecksumAlgorithm));
             }
             else
             {
-                return new Cci.DebugSourceDocument(normalizedPath, Constants.CorSymLanguageTypeAquila);
+                return new Cci.DebugSourceDocument(normalizedPath, LanguageConstants.CorSymLanguageTypeAquila);
             }
         }
 

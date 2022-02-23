@@ -21,7 +21,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         #endregion
 
-        public string Language => Constants.AquilaLanguageName;
+        public string Language => LanguageConstants.LanguageId;
 
         public virtual bool IsImplicit => false;
 

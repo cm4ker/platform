@@ -292,7 +292,7 @@ namespace Aquila.CodeAnalysis.CommandLine
             CommonMessageProvider messageProvider, bool skipAnalyzers, out ImmutableArray<DiagnosticAnalyzer> analyzers,
             out ImmutableArray<ISourceGenerator> generators)
         {
-            Arguments.ResolveAnalyzersFromArguments(Constants.AquilaLanguageName, diagnostics, messageProvider,
+            Arguments.ResolveAnalyzersFromArguments(LanguageConstants.LanguageId, diagnostics, messageProvider,
                 AssemblyLoader, skipAnalyzers, out analyzers, out generators);
         }
 

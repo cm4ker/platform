@@ -266,7 +266,7 @@ namespace Aquila.CodeAnalysis
             Autoload_PSR4 = other.Autoload_PSR4;
         }
 
-        public override string Language => Constants.AquilaLanguageName;
+        public override string Language => LanguageConstants.LanguageId;
 
         internal override ImmutableArray<string> GetImports() => ImmutableArray<string>.Empty; // Usings;
 

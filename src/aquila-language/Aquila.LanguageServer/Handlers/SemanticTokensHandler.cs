@@ -85,15 +85,13 @@ public class SemanticTokensHandler : SemanticTokensHandlerBase
         }
     }
 
+    private readonly SemanticTokensLegend legend = new();
+    
     protected override SemanticTokensRegistrationOptions CreateRegistrationOptions(SemanticTokensCapability capability,
         ClientCapabilities clientCapabilities) => new SemanticTokensRegistrationOptions
     {
         DocumentSelector = DocumentSelector.ForLanguage("aqlang"),
-        Legend = new SemanticTokensLegend()
-        {
-            TokenModifiers = capability.TokenModifiers,
-            TokenTypes = capability.TokenTypes
-        },
+        Legend = this.legend,
         Full = new SemanticTokensCapabilityRequestFull
         {
             Delta = true
