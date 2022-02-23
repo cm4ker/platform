@@ -82,6 +82,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Formatting" />
       <Folder Include="Syntax2" />
     </ItemGroup>
 
