@@ -1,0 +1,110 @@
+// // Copyright (c) Microsoft Corporation.
+// // Licensed under the MIT License.
+//
+// using System;
+// using System.Collections.Generic;
+// using System.Diagnostics.CodeAnalysis;
+// using System.IO;
+// using System.Linq;
+// using Aquila.LanguageServer.IntegrationTests.Completions;
+// using Bicep.Core.Diagnostics;
+// using Bicep.Core.FileSystem;
+// using Bicep.Core.Parsing;
+// using Bicep.Core.Semantics;
+// using Bicep.Core.Syntax;
+// using Bicep.Core.UnitTests;
+// using Bicep.Core.UnitTests.Assertions;
+// using Bicep.Core.UnitTests.Utils;
+// using FluentAssertions;
+// using Microsoft.VisualStudio.TestTools.UnitTesting;
+//
+// namespace Aquila.LanguageServer.IntegrationTests
+// {
+//     [TestClass]
+//     public class SnippetTemplatesTests
+//     {
+//         [NotNull]
+//         public TestContext? TestContext { get; set; }
+//
+//         [DataTestMethod]
+//         [DynamicData(nameof(GetSnippetCompletionData), DynamicDataSourceType.Method, DynamicDataDisplayNameDeclaringType = typeof(CompletionData), DynamicDataDisplayName = nameof(CompletionData.GetDisplayName))]
+//         [TestCategory(BaselineHelper.BaselineTestCategory)]
+//         public void VerifySnippetTemplatesAreErrorFree(CompletionData completionData)
+//         {
+//             string pathPrefix = $"Completions/SnippetTemplates/{completionData.Prefix}";
+//
+//             var outputDirectory = FileHelper.SaveEmbeddedResourcesWithPathPrefix(TestContext, typeof(SnippetTemplatesTests).Assembly, pathPrefix);
+//
+//             var mainUri = PathHelper.FilePathToFileUrl(Path.Combine(outputDirectory, "main.bicep"));
+//             var bicepContents = completionData.SnippetText;
+//             var files = new Dictionary<Uri, string>
+//             {
+//                 [mainUri] = bicepContents,
+//             };
+//
+//             // overrides for certain snippets which have contextual dependencies (e.g. external files)
+//             switch (completionData.Prefix)
+//             {
+//                 case "module":
+//                     var paramUri = PathHelper.FilePathToFileUrl(Path.Combine(outputDirectory, "param.bicep"));
+//                     files.Add(paramUri, "param myParam string = 'test'");
+//                     break;
+//                 case "res-logic-app-from-file":
+//                     var requiredFile = PathHelper.FilePathToFileUrl(Path.Combine(outputDirectory, "REQUIRED"));
+//                     files.Add(requiredFile, @"{""definition"":{""$schema"":""https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#"",""contentVersion"":""1.0.0.0"",""outputs"":{}}}");
+//                     return;
+//             }
+//
+//             var compilation = new Compilation(BicepTestConstants.Features, TestTypeHelper.CreateEmptyProvider(), SourceFileGroupingFactory.CreateForFiles(files, mainUri, BicepTestConstants.FileResolver, BicepTestConstants.BuiltInConfiguration), BicepTestConstants.BuiltInConfiguration, BicepTestConstants.LinterAnalyzer);
+//             var semanticModel = compilation.GetEntrypointSemanticModel();
+//
+//             if (semanticModel.HasErrors())
+//             {
+//                 var errors = semanticModel.GetAllDiagnostics().Where(x => x.Level == DiagnosticLevel.Error);
+//                 var sourceTextWithDiags = OutputHelper.AddDiagsToSourceText(bicepContents, "\n", errors, diag => OutputHelper.GetDiagLoggingString(bicepContents, outputDirectory, diag));
+//                 Assert.Fail("Template with prefix {0} contains errors. Please fix following errors:\n {1}", completionData.Prefix, sourceTextWithDiags);
+//             }
+//         }
+//
+//         [DataTestMethod]
+//         [DynamicData(nameof(GetSnippetCompletionData), DynamicDataSourceType.Method, DynamicDataDisplayNameDeclaringType = typeof(CompletionData), DynamicDataDisplayName = nameof(CompletionData.GetDisplayName))]
+//         [TestCategory(BaselineHelper.BaselineTestCategory)]
+//         public void VerifySnippetTemplatesDoNotContainTargetScope(CompletionData completionData)
+//         {
+//             var parser = new Parser(completionData.SnippetText);
+//             var programSyntax = parser.Program();
+//             var children = programSyntax.Children;
+//
+//             if (children.Any(x => x is TargetScopeSyntax targetScopeSyntax && targetScopeSyntax is not null))
+//             {
+//                 Assert.Fail("Snippet templates should not contain targetScope. Please remove targetScope from template with prefix {0}.", completionData.Prefix);
+//             }
+//         }
+//
+//         [DataTestMethod]
+//         [DynamicData(nameof(GetSnippetCompletionData), DynamicDataSourceType.Method, DynamicDataDisplayNameDeclaringType = typeof(CompletionData), DynamicDataDisplayName = nameof(CompletionData.GetDisplayName))]
+//         public void VerifySnippetTemplatesDoNotContainResourceGroupLocation(CompletionData completionData)
+//         {
+//             if (
+//                 completionData.SnippetText.Contains("resourceGroup().location")
+//                 || completionData.SnippetText.Contains("deployment().location")
+//                 )
+//             {
+//                 Assert.Fail("Snippet templates should not contain resourceGroup().location or deployment().location. Snippet: {0}.", completionData.Prefix);
+//             }
+//         }
+//
+//         [DataTestMethod]
+//         [DynamicData(nameof(GetSnippetCompletionData), DynamicDataSourceType.Method, DynamicDataDisplayNameDeclaringType = typeof(CompletionData), DynamicDataDisplayName = nameof(CompletionData.GetDisplayName))]
+//         public void VerifySnippetTemplatesUseCorrectLocationSyntax(CompletionData completionData)
+//         {
+//             if (completionData.SnippetText.Contains("location:") && !completionData.SnippetText.Contains("location: 'global'")) // location: 'global' is okay
+//             {
+//                 completionData.SnippetText.Should().MatchRegex("location: \\/\\*\\$\\{[0-9]+:location\\}\\*\\/", "All snippets that include a location property should use this format for it: \"location: /*${xxx:location}*/'location'\". (Snippet: " + completionData.Prefix + ")");
+//             }
+//         }
+//
+//
+//         private static IEnumerable<object[]> GetSnippetCompletionData() => CompletionDataHelper.GetSnippetCompletionData();
+//     }
+// }
