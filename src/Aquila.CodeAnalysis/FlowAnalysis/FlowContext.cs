@@ -121,7 +121,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// </summary>
         public VariableHandle GetVarIndex(VariableName name)
         {
-            Debug.Assert(name.IsValid());
+            Debug.Assert(name.IsValid(), $"Invalid variable name '{name.Value}' in method '{_method.Name}'");
 
             // TODO: RW lock
 
@@ -139,7 +139,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             }
 
             //
-            return new VariableHandle() {Slot = index, Name = name};
+            return new VariableHandle() { Slot = index, Name = name };
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         {
             if (varindex >= 0 && varindex < BitsCount)
             {
-                _usedMask |= (ulong) 1 << varindex;
+                _usedMask |= (ulong)1 << varindex;
             }
         }
 
@@ -201,13 +201,13 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// </summary>
         public void SetAllUsed()
         {
-            _usedMask = ~(ulong) 0;
+            _usedMask = ~(ulong)0;
         }
 
         public bool IsUsed(int varindex)
         {
             // anything >= 64 is used
-            return varindex < 0 || varindex >= BitsCount || (_usedMask & (ulong) 1 << varindex) != 0;
+            return varindex < 0 || varindex >= BitsCount || (_usedMask & (ulong)1 << varindex) != 0;
         }
 
         /// <summary>

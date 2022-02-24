@@ -108,6 +108,11 @@
           "System.Xml.XmlDocument": "4.3.0"
         }
       },
+      "CommandLineParser": {
+        "type": "Transitive",
+        "resolved": "2.8.0",
+        "contentHash": "eco2HlKQBY4Joz9odHigzGpVzv6pjsXnY5lziioMveQxr+i2Z7xYcIOMeZTgYiqnMtMAbXMXsVhrNfWO5vJS8Q=="
+      },
       "McMaster.Extensions.CommandLineUtils": {
         "type": "Transitive",
         "resolved": "2.2.4",
@@ -1953,6 +1958,7 @@
         "type": "Project",
         "dependencies": {
           "Aquila.CodeAnalysis": "1.0.0",
+          "CommandLineParser": "2.8.0",
           "Microsoft.Build": "17.0.0",
           "Microsoft.Build.Locator": "1.4.1",
           "Microsoft.Build.NuGetSdkResolver": "5.10.0-rc.7240",

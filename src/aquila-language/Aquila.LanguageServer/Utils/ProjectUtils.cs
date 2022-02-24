@@ -1,23 +1,26 @@
-﻿using Microsoft.Build.Construction;
-using Microsoft.Build.Evaluation;
-using Microsoft.CodeAnalysis;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using Aquila.CodeAnalysis;
+using Aquila.LanguageServer.Workspaces;
+using Microsoft.Build.Construction;
+using Microsoft.Build.Evaluation;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
-using System.Threading;
 using Microsoft.Build.Logging;
-using Microsoft.CodeAnalysis.Text;
-using System.Text;
-using System.Globalization;
-using Aquila.CodeAnalysis;
-using Aquila.LanguageServer.Utils;
-using Aquila.LanguageServer.Workspaces;
 using Microsoft.Build.Utilities;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.Extensions.Logging;
+using OmniSharp.Extensions.LanguageServer.Protocol.Server;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
+using BuildILogger = Microsoft.Build.Framework.ILogger;
 
 namespace Aquila.LanguageServer
 {
@@ -39,7 +42,7 @@ namespace Aquila.LanguageServer
 
         private static SemaphoreSlim _buildManagerSemaphore = new SemaphoreSlim(1);
 
-        public static async Task<ProjectHandler> TryGetFirstAquilaProjectAsync(string directory, ILogTarget log)
+        public static async Task<ProjectHandler> TryGetFirstAquilaProjectAsync(string directory, ILogger log)
         {
             foreach (var solutionPath in Directory.GetFiles(directory, SolutionNamePattern))
             {
@@ -75,10 +78,12 @@ namespace Aquila.LanguageServer
             return null;
         }
 
-        private static async Task<ProjectHandler> TryGetAquilaProjectAsync(string projectFile, ILogTarget log)
+        private static async Task<ProjectHandler> TryGetAquilaProjectAsync(string projectFile, ILogger log)
         {
             try
             {
+                log.LogTrace("Start loading project");
+
                 Project project = LoadProject(projectFile);
 
                 if (!IsAquilaProject(project))
@@ -99,19 +104,22 @@ namespace Aquila.LanguageServer
                 if (metadataReferences.Length == 0)
                 {
                     // dotnet restore hasn't run yet
-                    log?.LogMessage($"{Path.GetFileName(projectFile)}: could not be built; ");
+                    log?.LogWarning($"{Path.GetFileName(projectFile)}: could not be built; ");
                     return null;
                 }
 
                 var options = new AquilaCompilationOptions(
                     outputKind: OutputKind.DynamicallyLinkedLibrary,
-                    baseDirectory: Path.GetDirectoryName(
-                        projectFile), // compilation expects platform-specific slashes (backslashes on windows)
+                    baseDirectory: Path.GetDirectoryName(projectFile),
                     specificDiagnosticOptions: null,
                     sdkDirectory: null);
 
-                // TODO: Get from MSBuild
-                string projectName = Path.GetFileNameWithoutExtension(projectFile);
+                string projectName;
+                projectName = projectInstance.GetPropertyValue("ProjectName");
+
+                //if project name property is empty then use file name as project name
+                if (projectName == null)
+                    projectName = Path.GetFileNameWithoutExtension(projectFile);
 
                 var encoding = TryParseEncodingName(projectInstance.GetPropertyValue("CodePage")) ?? Encoding.UTF8;
 
@@ -133,7 +141,7 @@ namespace Aquila.LanguageServer
             }
             catch (Exception ex)
             {
-                log?.LogMessage($"{Path.GetFileName(projectFile)}: {ex.Message}");
+                log?.LogError($"{Path.GetFileName(projectFile)}: {ex.Message}");
                 return null;
             }
         }
@@ -268,20 +276,22 @@ namespace Aquila.LanguageServer
             var buildParameters = new BuildParameters(project.ProjectCollection);
 
 #if DEBUG
-            // Log output in debug mode
-            string logFilePath = Path.Combine(
-                project.DirectoryPath,
-                projectInstance.GetPropertyValue("BaseIntermediateOutputPath"), // "obj" subfolder
-                LogFileName);
+            //TODO: Make log output optional
 
-            buildParameters.Loggers = new ILogger[]
-            {
-                new FileLogger()
-                {
-                    Verbosity = LoggerVerbosity.Detailed,
-                    Parameters = $"LogFile={logFilePath}"
-                }
-            };
+            // // Log output in debug mode
+            // string logFilePath = Path.Combine(
+            //     project.DirectoryPath,
+            //     projectInstance.GetPropertyValue("BaseIntermediateOutputPath"), // "obj" subfolder
+            //     LogFileName);
+            //
+            // buildParameters.Loggers = new BuildILogger[]
+            // {
+            //     new FileLogger()
+            //     {
+            //         Verbosity = LoggerVerbosity.Detailed,
+            //         Parameters = $"LogFile={logFilePath}"
+            //     }
+            // };
 #endif
 
             await _buildManagerSemaphore.WaitAsync();

@@ -33,11 +33,17 @@ public class Server : IDisposable
         server = OmnisharpLanguageServer.PreInit(options =>
         {
             options
+                .ConfigureLogging(
+                    x => x
+                        .AddSerilog(Log.Logger)
+                        .AddLanguageProtocolLogging()
+                        .SetMinimumLevel(LogLevel.Debug)
+                )
                 .WithHandler<TextDocumentHandler>()
                 .WithHandler<DidChangeWatchedFilesHandler>()
                 .WithHandler<FoldingRangeHandler>()
-                .WithHandler<MyWorkspaceSymbolsHandler>()
-                .WithHandler<MyDocumentSymbolHandler>()
+                .WithHandler<WorkspaceSymbolsHandler>()
+                .WithHandler<DocumentSymbolHandler>()
                 .WithHandler<SemanticTokensHandler>()
                 .WithServices(services => RegisterServices(services))
                 .OnInitialize((lgsrv, request, token) =>
@@ -65,7 +71,7 @@ public class Server : IDisposable
     {
         // using type based registration so dependencies can be injected automatically
         // without manually constructing up the graph
-        x.AddLogging(b => b.SetMinimumLevel(LogLevel.Trace));
+        //x.AddLogging(b => { b.SetMinimumLevel(LogLevel.Trace); });
         x.AddSingleton<IEventEmitter, LanguageServerEventEmitter>();
         x.AddSingleton<IOmniSharpEnvironment, OmniSharpEnvironment>();
         x.AddSingleton<DocumentVersions>();

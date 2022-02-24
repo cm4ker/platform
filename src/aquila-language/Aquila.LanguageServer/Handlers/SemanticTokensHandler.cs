@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,45 +14,26 @@ namespace Aquila.LanguageServer;
 public class SemanticTokensHandler : SemanticTokensHandlerBase
 {
     private readonly ILogger _logger;
+    private readonly ProjectHolder _holder;
+    private readonly SemanticTokensLegend legend = new();
 
-    public SemanticTokensHandler(ILogger<SemanticTokensHandler> logger) =>
+    public SemanticTokensHandler(ILogger<SemanticTokensHandler> logger, ProjectHolder holder)
+    {
         _logger = logger;
-
-    public override async Task<SemanticTokens?> Handle(
-        SemanticTokensParams request, CancellationToken cancellationToken
-    )
-    {
-        var result = await base.Handle(request, cancellationToken).ConfigureAwait(false);
-        return result;
+        _holder = holder;
     }
 
-    public override async Task<SemanticTokens?> Handle(
-        SemanticTokensRangeParams request, CancellationToken cancellationToken
-    )
-    {
-        var result = await base.Handle(request, cancellationToken).ConfigureAwait(false);
-        return result;
-    }
-
-    public override async Task<SemanticTokensFullOrDelta?> Handle(
-        SemanticTokensDeltaParams request,
-        CancellationToken cancellationToken
-    )
-    {
-        var result = await base.Handle(request, cancellationToken).ConfigureAwait(false);
-        return result;
-    }
-
-    protected override async Task Tokenize(
-        SemanticTokensBuilder builder, ITextDocumentIdentifierParams identifier,
-        CancellationToken cancellationToken
-    )
+    protected override async Task Tokenize(SemanticTokensBuilder builder, ITextDocumentIdentifierParams identifier,
+        CancellationToken cancellationToken)
     {
         using var typesEnumerator = RotateEnum(SemanticTokenType.Defaults).GetEnumerator();
         using var modifiersEnumerator = RotateEnum(SemanticTokenModifier.Defaults).GetEnumerator();
         // you would normally get this from a common source that is managed by current open editor, current active editor, etc.
-        var content = await File.ReadAllTextAsync(DocumentUri.GetFileSystemPath(identifier), cancellationToken)
-            .ConfigureAwait(false);
+
+        var handler = await _holder.GetHandlerAsync();
+        var syntaxTree = handler.GetFile(DocumentUri.GetFileSystemPath(identifier));
+
+        var content = (await syntaxTree.GetTextAsync(cancellationToken)).ToString();
         await Task.Yield();
 
         foreach (var (line, text) in content.Split('\n').Select((text, line) => (line, text)))
@@ -71,9 +51,9 @@ public class SemanticTokensHandler : SemanticTokensHandlerBase
         }
     }
 
-    protected override Task<SemanticTokensDocument>
-        GetSemanticTokensDocument(ITextDocumentIdentifierParams @params, CancellationToken cancellationToken) =>
-        Task.FromResult(new SemanticTokensDocument(RegistrationOptions.Legend));
+    protected override Task<SemanticTokensDocument> GetSemanticTokensDocument(ITextDocumentIdentifierParams @params,
+        CancellationToken cancellationToken) =>
+        Task.FromResult(new SemanticTokensDocument(this.legend));
 
 
     private IEnumerable<T> RotateEnum<T>(IEnumerable<T> values)
@@ -85,8 +65,7 @@ public class SemanticTokensHandler : SemanticTokensHandlerBase
         }
     }
 
-    private readonly SemanticTokensLegend legend = new();
-    
+
     protected override SemanticTokensRegistrationOptions CreateRegistrationOptions(SemanticTokensCapability capability,
         ClientCapabilities clientCapabilities) => new SemanticTokensRegistrationOptions
     {
@@ -99,4 +78,5 @@ public class SemanticTokensHandler : SemanticTokensHandlerBase
         Range = true
     };
 }
+
 #pragma warning restore 618

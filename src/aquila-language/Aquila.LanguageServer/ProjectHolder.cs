@@ -1,5 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
@@ -8,14 +10,16 @@ namespace Aquila.LanguageServer;
 
 public class ProjectHolder
 {
-    private readonly ILanguageServerFacade _server;
+    private readonly ILanguageServerFacade _serverFacade;
+    private readonly  ILogger<ProjectHolder> _logger;
     private ProjectHandler _handler;
     private string _rootPath;
 
 
-    public ProjectHolder(ILanguageServerFacade server)
+    public ProjectHolder(ILanguageServerFacade serverFacade, ILogger<ProjectHolder> logger)
     {
-        _server = server;
+        _serverFacade = serverFacade;
+        _logger = logger;
     }
 
 
@@ -37,7 +41,7 @@ public class ProjectHolder
 
     private void DiagnosticsChanged(object? sender, ProjectHandler.DocumentDiagnosticsEventArgs e)
     {
-        _server.TextDocument.PublishDiagnostics(new PublishDiagnosticsParams
+        _serverFacade.TextDocument.PublishDiagnostics(new PublishDiagnosticsParams
         {
             Uri = PathUtils.NormalizePath(e.DocumentPath),
             Diagnostics = new Container<Diagnostic>(e.Diagnostics.ToDiagnostics())
@@ -52,6 +56,6 @@ public class ProjectHolder
 
     private async Task<ProjectHandler> GetHandlerCore()
     {
-        return await ProjectUtils.TryGetFirstAquilaProjectAsync(_rootPath, null);
+        return await ProjectUtils.TryGetFirstAquilaProjectAsync(_rootPath, _logger);
     }
 }

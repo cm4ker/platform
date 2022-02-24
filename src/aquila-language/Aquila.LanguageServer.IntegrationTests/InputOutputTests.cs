@@ -6,8 +6,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Pipes;
-using System.Net;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Aquila.LanguageServer.IntegrationTests.Helpers;
@@ -23,25 +21,6 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Window;
 
 namespace Aquila.LanguageServer.IntegrationTests
 {
-    public static class TestConstant
-    {
-        public static string RootPath = Path.Combine(GetRootDirectory(), "Build", "library");
-
-        public static string TestFilePath = Path.Combine(RootPath, "test.aq");
-
-
-        static string GetRootDirectory()
-        {
-            var d = Directory.GetCurrentDirectory();
-            while (!File.Exists(Path.Combine(d, "Aquila.sln")))
-            {
-                d = Path.GetDirectoryName(d);
-            }
-
-            return d;
-        }
-    }
-
     [TestClass]
     public class InputOutputTests
     {
@@ -75,7 +54,7 @@ namespace Aquila.LanguageServer.IntegrationTests
             return process;
         }
 
-        private static Process StartServerProcessWithNamedPipeIo(string pipeName)
+        private static Process StartServerProcessWithNamedPipeIo(string pipeName, TestContext context)
         {
             var exePath = typeof(LanguageServer.Program).Assembly.Location;
 
@@ -91,28 +70,8 @@ namespace Aquila.LanguageServer.IntegrationTests
                     RedirectStandardInput = true,
                 },
             };
+            process.OutputDataReceived += (sender, args) => context.WriteLine(args.Data);
 
-            process.Start();
-
-            return process;
-        }
-
-        private static Process StartServerProcessWithSocketIo(int port)
-        {
-            var exePath = typeof(LanguageServer.Program).Assembly.Location;
-
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "dotnet",
-                    Arguments = $"{exePath} --socket {port}",
-                    UseShellExecute = false,
-                    RedirectStandardError = true,
-                    RedirectStandardOutput = true,
-                    RedirectStandardInput = true,
-                },
-            };
 
             process.Start();
 
@@ -156,6 +115,7 @@ namespace Aquila.LanguageServer.IntegrationTests
             return client;
         }
 
+        [Ignore("Not run this test simultaneously with other test")]
         [TestMethod]
         public async Task ServerProcess_e2e_test_with_console_io()
         {
@@ -177,6 +137,47 @@ public static int Test()
 
                 using var client =
                     await InitializeLanguageClient(input, output, publishDiagsListener, cancellationToken);
+
+                client.DidOpenTextDocument(
+                    TextDocumentParamHelper.CreateDidOpenDocumentParams(documentUri, aqTextFile, 0));
+                var publishDiagsResult = await publishDiagsListener.WaitNext(60000);
+
+                publishDiagsResult.Diagnostics.Should().SatisfyRespectively(
+                    d =>
+                    {
+                        d.Range.Should().HaveRange((3, 12), (3, 12));
+                        d.Should().HaveCodeAndSeverity("AQ4003", DiagnosticSeverity.Error);
+                    });
+            }
+            finally
+            {
+                process.Kill(entireProcessTree: true);
+                process.Dispose();
+            }
+        }
+
+        [TestMethod]
+        public async Task ServerProcess_e2e_test_with_named_pipes_io()
+        {
+            var cancellationToken = GetCancellationTokenWithTimeout(TimeSpan.FromSeconds(60));
+            var publishDiagsListener = new MultipleMessageListener<PublishDiagnosticsParams>();
+            var documentUri = DocumentUri.From(TestConstant.TestFilePath);
+            var aqTextFile = @"
+public static int Test()
+{
+    return 0
+}
+";
+            var pipeName = Guid.NewGuid().ToString();
+            using var pipeStream = new NamedPipeServerStream(pipeName, PipeDirection.InOut,
+                NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+            using var process = StartServerProcessWithNamedPipeIo(pipeName, TestContext);
+            try
+            {
+                await pipeStream.WaitForConnectionAsync(cancellationToken);
+
+                using var client =
+                    await InitializeLanguageClient(pipeStream, pipeStream, publishDiagsListener, cancellationToken);
 
                 client.DidOpenTextDocument(
                     TextDocumentParamHelper.CreateDidOpenDocumentParams(documentUri, aqTextFile, 0));

@@ -76,7 +76,6 @@ namespace Aquila.LanguageServer
 
             var diags = syntaxTree.GetDiagnostics().ToImmutableArray();
 
-
             if (diags.Length != 0)
             {
                 _parserDiagnostics[path] = diags;
@@ -93,8 +92,7 @@ namespace Aquila.LanguageServer
             }
 
             // Update the compilation
-            if (diags.All(d => d.Severity != DiagnosticSeverity.Error) &&
-                _diagnosticBroker.Compilation != null)
+            if (_diagnosticBroker.Compilation != null)
             {
                 var currentTree =
                     _diagnosticBroker.Compilation.SyntaxTrees.FirstOrDefault(tree => tree.FilePath == path);
@@ -105,6 +103,11 @@ namespace Aquila.LanguageServer
 
                 _diagnosticBroker.UpdateCompilation(updatedCompilation);
             }
+        }
+
+        public AquilaSyntaxTree GetFile(string path)
+        {
+            return _diagnosticBroker.Compilation.SyntaxTrees.FirstOrDefault(x => x.FilePath == path);
         }
 
         internal IEnumerable<Protocol.Location> ObtainDefinition(string filepath, int line, int character)

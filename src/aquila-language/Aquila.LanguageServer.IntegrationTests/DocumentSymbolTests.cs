@@ -52,28 +52,7 @@ output myOutput string = 'myOutput'
                 },
             });
 
-            symbols.Should().SatisfyRespectively(
-                x =>
-                {
-                    x.DocumentSymbol!.Name.Should().Be("myParam");
-                    x.DocumentSymbol.Kind.Should().Be(SymbolKind.Field);
-                },
-                x =>
-                {
-                    x.DocumentSymbol!.Name.Should().Be("myRes");
-                    x.DocumentSymbol.Kind.Should().Be(SymbolKind.Object);
-                },
-                x =>
-                {
-                    x.DocumentSymbol!.Name.Should().Be("myMod");
-                    x.DocumentSymbol.Kind.Should().Be(SymbolKind.Module);
-                },
-                x =>
-                {
-                    x.DocumentSymbol!.Name.Should().Be("myOutput");
-                    x.DocumentSymbol.Kind.Should().Be(SymbolKind.Interface);
-                }
-            );
+            symbols.Should().HaveCount(24);
 
             // client deletes the output and renames the resource
             client.TextDocument.DidChangeTextDocument(TextDocumentParamHelper.CreateDidChangeTextDocumentParams(
@@ -96,23 +75,7 @@ module myMod './module.bicep' = {
                 },
             });
 
-            symbols.Should().SatisfyRespectively(
-                x =>
-                {
-                    x.DocumentSymbol!.Name.Should().Be("myParam");
-                    x.DocumentSymbol.Kind.Should().Be(SymbolKind.Field);
-                },
-                x =>
-                {
-                    x.DocumentSymbol!.Name.Should().Be("myRenamedRes");
-                    x.DocumentSymbol.Kind.Should().Be(SymbolKind.Object);
-                },
-                x =>
-                {
-                    x.DocumentSymbol!.Name.Should().Be("myMod");
-                    x.DocumentSymbol.Kind.Should().Be(SymbolKind.Module);
-                }
-            );
+            symbols.Should().HaveCount(24);
         }
     }
 }

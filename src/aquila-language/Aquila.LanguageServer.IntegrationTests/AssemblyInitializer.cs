@@ -11,7 +11,7 @@ namespace Aquila.LanguageServer.IntegrationTests
         [AssemblyInitialize()]
         public static void AssemblyInitialize(TestContext testContext)
         {
-            //BicepDeploymentsInterop.Initialize();
+            EnvironmentUtils.InitializeAsync().GetAwaiter().GetResult();
         }
     }
 }

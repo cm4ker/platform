@@ -765,7 +765,7 @@ namespace Aquila.CodeAnalysis
         {
             if (oldTree == null)
             {
-                throw CodeAnalysis.Utilities.ExceptionUtilities.ArgumentNull(nameof(oldTree));
+                throw ExceptionUtilities.ArgumentNull(nameof(oldTree));
             }
 
             if (newTree == null)
