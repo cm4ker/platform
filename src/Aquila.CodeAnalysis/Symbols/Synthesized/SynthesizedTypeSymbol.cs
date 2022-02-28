@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
-using Aquila.Syntax.Parser;
 using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
 

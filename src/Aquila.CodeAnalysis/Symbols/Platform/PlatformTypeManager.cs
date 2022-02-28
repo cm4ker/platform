@@ -1,26 +1,17 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Threading;
 using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Symbols;
-using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
-using Aquila.CodeAnalysis.Syntax;
-using Aquila.CodeAnalysis.Utilities;
 using Aquila.Compiler.Utilities;
 using Aquila.Metadata;
 using Aquila.Syntax.Metadata;
-using Aquila.Syntax.Parser;
 using Aquila.Syntax.Syntax;
-using Microsoft.Cci;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.PooledObjects;
-using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Public
 {

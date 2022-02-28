@@ -31,12 +31,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="Syntax\Parser\ZSharpLexer.g4" />
-        <Content Include="Syntax\Parser\ZSharpParser.g4" />
-        <Content Include="Syntax\Parser\ZSharpPreprocessorParser.g4" />
-    </ItemGroup>
-
-    <ItemGroup>
         <Compile Update="AquilaResources.Designer.cs">
             <AutoGen>True</AutoGen>
             <DependentUpon>AquilaResources.resx</DependentUpon>
@@ -83,7 +77,6 @@
 
     <ItemGroup>
       <Folder Include="Formatting" />
-      <Folder Include="Syntax2" />
     </ItemGroup>
 
     <ItemGroup>

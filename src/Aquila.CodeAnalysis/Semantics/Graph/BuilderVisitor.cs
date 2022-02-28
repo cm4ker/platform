@@ -1,16 +1,10 @@
-﻿using Aquila.CodeAnalysis.Symbols;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using Aquila.CodeAnalysis.Errors;
 using Aquila.CodeAnalysis.Syntax;
-using Aquila.Syntax;
-using Aquila.Syntax.Ast;
-using Aquila.Syntax.Ast.Expressions;
 using Aquila.Syntax.Syntax;
-using Aquila.Syntax.Text;
 using Microsoft.CodeAnalysis.Text;
 
 namespace Aquila.CodeAnalysis.Semantics.Graph

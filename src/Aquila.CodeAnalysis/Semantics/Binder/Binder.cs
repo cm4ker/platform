@@ -11,14 +11,9 @@ using Aquila.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Syntax;
 using Aquila.CodeAnalysis.Utilities;
-using Aquila.Core.Querying.Model;
-using Aquila.Syntax;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Declarations;
-using Aquila.Syntax.Errors;
-using Aquila.Syntax.Metadata;
 using Aquila.Syntax.Syntax;
-using Aquila.Syntax.Text;
 using Microsoft.CodeAnalysis;
 using EnumerableExtensions = Roslyn.Utilities.EnumerableExtensions;
 using SpecialTypeExtensions = Aquila.CodeAnalysis.Symbols.SpecialTypeExtensions;
@@ -190,7 +185,7 @@ Binder
             {
                 node.Imports
                     .Reverse()
-                    .Foreach(x =>
+                    .ForEach(x =>
                     {
                         var b = Visit(x);
                         Push(b);
@@ -297,7 +292,6 @@ Binder
     abstract class Binder
     {
         private readonly Binder _next;
-        
 
 
         public Binder(Binder next)
@@ -327,7 +321,6 @@ Binder
         public virtual NamespaceOrTypeSymbol Container { get; }
         public LocalsTable Locals => Method.LocalsTable;
 
-        
 
         #region Bind statements
 
@@ -489,7 +482,7 @@ Binder
         {
             var type = (NamedTypeSymbol)BindType(ex.Name);
             var inits = new List<BoundAllocExAssign>();
-                        
+
             if (ex.Initializer.Expressions.Any())
                 switch (ex.Initializer.Kind())
                 {
@@ -829,11 +822,8 @@ Binder
                     // $this is only valid in global code and instance methods:
                     if (Method != null && Method.IsStatic && !Method.IsGlobalScope)
                     {
-                        // WARN:
-                        Diagnostics.Add(DiagnosticBagExtensions.ParserDiagnostic(expr.SyntaxTree, expr.Span,
-                            Warnings.ThisOutOfMethod));
-                        // ERR: // NOTE: causes a lot of project to not compile // CONSIDER: uncomment
-                        // Diagnostics.Add(GetLocation(expr), Errors.ErrorCode.ERR_ThisOutOfObjectContext);
+                        //TODO: Add diagnostics
+                        throw new NotImplementedException();
                     }
                 }
             }

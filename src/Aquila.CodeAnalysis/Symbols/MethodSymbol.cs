@@ -333,7 +333,7 @@ namespace Aquila.CodeAnalysis.Symbols
         }
 
         IMethodSymbolInternal IMethodSymbolInternal.Construct(params ITypeSymbolInternal[] typeArguments) =>
-            Construct(typeArguments.CastToArray<ITypeSymbol>());
+            Construct(typeArguments.Cast<ITypeSymbol>().ToArray());
 
         bool IMethodSymbolInternal.IsIterator => false;
 

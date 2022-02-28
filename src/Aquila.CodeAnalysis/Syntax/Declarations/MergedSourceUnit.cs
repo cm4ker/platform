@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Syntax;
 using Aquila.Syntax.Ast;
 using Aquila.Syntax.Syntax;
@@ -51,7 +52,7 @@ namespace Aquila.Syntax.Declarations
 
         public void AddRange(IEnumerable<CompilationUnitSyntax> units)
         {
-            units.Foreach(Add);
+            units.ForEach(Add);
         }
     }
 }

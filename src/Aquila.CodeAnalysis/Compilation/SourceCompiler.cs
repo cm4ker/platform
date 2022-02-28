@@ -150,7 +150,7 @@ namespace Aquila.CodeAnalysis
             _worklist.Enqueue(method.ControlFlowGraph?.Start);
 
             // enqueue method parameter default values
-            method.SourceParameters.Foreach(p =>
+            method.SourceParameters.ForEach(p =>
             {
                 if (p.Initializer != null)
                 {

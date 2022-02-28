@@ -1,5 +1,3 @@
-using Aquila.Syntax.Parser;
-
 namespace Aquila.Compiler.Test2
 {
     public record B(int A)
@@ -11,7 +9,7 @@ namespace Aquila.Compiler.Test2
         private int _a;
 
 
-        public Test(int a) :base(a)
+        public Test(int a) : base(a)
         {
             _a = a;
         }

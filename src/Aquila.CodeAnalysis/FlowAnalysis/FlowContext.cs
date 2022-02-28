@@ -77,7 +77,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         internal TypeRefInfo[] VarsType => _varsType;
 
         TypeRefInfo[]
-            _varsType = EmptyArray<TypeRefInfo>.Instance;
+            _varsType = Array.Empty<TypeRefInfo>();
 
         /// <summary>
         /// Merged return expressions type.
@@ -227,7 +227,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             // Reset internal structures to prevent possible bugs in re-analysis
             _usedMask = 0;
             _varsIndex.Clear();
-            _varsType = EmptyArray<TypeRefInfo>.Instance;
+            _varsType = Array.Empty<TypeRefInfo>();
 
             // Revert the information regarding the return type to the default state
             ReturnType = default;

@@ -1,10 +1,7 @@
-﻿using System;
-using Microsoft.CodeAnalysis.Text;
-using System.Net.Mime;
+﻿using Microsoft.CodeAnalysis.Text;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Syntax;
 using Aquila.Syntax.Ast;
-using Aquila.Syntax.Text;
 
 namespace Aquila.CodeAnalysis
 {
@@ -137,17 +134,6 @@ namespace Aquila.CodeAnalysis
         //         return Span.Invalid;
         //     }
         // }
-
-        /// <summary>
-        /// Gets <see cref="Microsoft.CodeAnalysis.Text.LinePosition"/> from source position.
-        /// </summary>
-        public static LinePosition LinePosition(this ILineBreaks lines, int pos)
-        {
-            lines.GetLineColumnFromPosition(pos, out int line, out int col);
-
-            // https://github.com/dotnet/corefx/blob/master/src/System.Reflection.Metadata/specs/PortablePdb-Metadata.md#sequence-points-blob - column must be less than 0x10000
-            return new LinePosition(line, Math.Min(col, 0x09999));
-        }
 
 
         /// <summary>

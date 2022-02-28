@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Globalization;
-using Aquila.Syntax.Errors;
 using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
 
@@ -14,8 +13,6 @@ namespace Aquila.CodeAnalysis.Errors
     /// </summary>
     internal class ParserMessageProvider : CommonMessageProvider, IObjectWritable
     {
-        private ConcurrentDictionary<int, ErrorInfo> _errorInfos = new ConcurrentDictionary<int, ErrorInfo>();
-
         public static readonly ParserMessageProvider Instance = new ParserMessageProvider();
 
         private ParserMessageProvider()
@@ -205,8 +202,7 @@ namespace Aquila.CodeAnalysis.Errors
 
         public override DiagnosticSeverity GetSeverity(int code)
         {
-            var parserSeverity = _errorInfos[code].Severity;
-            return ConvertSeverity(parserSeverity);
+            return ErrorFacts.GetSeverity((ErrorCode)code);
         }
 
         public override LocalizableString GetTitle(int code)
@@ -221,7 +217,7 @@ namespace Aquila.CodeAnalysis.Errors
 
         public override string LoadMessage(int code, CultureInfo language)
         {
-            return _errorInfos[code].FormatString;
+            return ErrorFacts.GetMessage((ErrorCode)code, language);
         }
 
         protected override void ReportAttributeParameterRequired(DiagnosticBag diagnostics, SyntaxNode attributeSyntax,
@@ -278,28 +274,6 @@ namespace Aquila.CodeAnalysis.Errors
             int namedArgumentIndex)
         {
             throw new NotImplementedException();
-        }
-
-        public void RegisterError(ErrorInfo errorInfo)
-        {
-            _errorInfos.GetOrAdd(errorInfo.Id, errorInfo);
-        }
-
-        private static DiagnosticSeverity ConvertSeverity(ErrorSeverity severity)
-        {
-            switch (severity)
-            {
-                case ErrorSeverity.Information:
-                    return DiagnosticSeverity.Info;
-                case ErrorSeverity.Warning:
-                case ErrorSeverity.WarningAsError: // TODO: Check if it is right
-                    return DiagnosticSeverity.Warning;
-                case ErrorSeverity.Error:
-                case ErrorSeverity.FatalError:
-                    return DiagnosticSeverity.Error;
-                default:
-                    throw new ArgumentException(nameof(severity));
-            }
         }
 
         void IObjectWritable.WriteTo(ObjectWriter writer)

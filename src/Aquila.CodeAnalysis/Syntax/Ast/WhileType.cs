@@ -1,3 +1,0 @@
-namespace Aquila.Syntax.Ast
-{
-}

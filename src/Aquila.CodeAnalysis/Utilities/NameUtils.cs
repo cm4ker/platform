@@ -329,29 +329,6 @@ namespace Aquila.Compiler.Utilities
         public static bool StringsEqual(this string str1, string str2, bool ignoreCase) => string.Equals(str1, str2,
             ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 
-        public static bool IsAssertFunctionName(this TranslatedQualifiedName qname)
-        {
-            return qname.OriginalName == SpecialNames.assert;
-        }
-
-        /// <summary>Gets <c>true</c> if name corresponds to func_num_args, func_get_arg, func_get_args.</summary>
-        public static bool IsGetArgsOrArgsNumFunctionName(this TranslatedQualifiedName qname)
-        {
-            // func_num_args, func_get_arg, func_get_args
-            if (qname.OriginalName.IsSimpleName &&
-                qname.OriginalName.Name.Value.StartsWith("func_", StringComparison.OrdinalIgnoreCase))
-            {
-                if (qname.OriginalName.Name == new Name("func_num_args") ||
-                    qname.OriginalName.Name == new Name("func_func_get_argnum_args") ||
-                    qname.OriginalName.Name == new Name("func_get_args"))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         /// <summary>
         /// Special Aquila type and function names.
         /// </summary>

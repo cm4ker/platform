@@ -2,16 +2,12 @@
 using Microsoft.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection.Metadata;
 using Aquila.CodeAnalysis.Emit;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols;
-using Aquila.Syntax;
-using Aquila.Syntax.Text;
 using Microsoft.Cci;
 using Microsoft.CodeAnalysis.Text;
 

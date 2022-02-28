@@ -2,12 +2,8 @@
 using Microsoft.CodeAnalysis;
 using System.Diagnostics;
 using System.Linq;
-using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.CodeAnalysis.Symbols;
-using Aquila.CodeAnalysis.Symbols.Source;
-using Aquila.Syntax;
-using Aquila.Syntax.Text;
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 
 namespace Aquila.CodeAnalysis
@@ -44,24 +40,6 @@ namespace Aquila.CodeAnalysis
         {
             var diag = MessageProvider.Instance.CreateDiagnostic(code, location, args);
             diagnostics.Add(diag);
-        }
-
-        public static Diagnostic ParserDiagnostic(SourceMethodSymbol method, TextSpan span,
-            Aquila.Syntax.Errors.ErrorInfo info, params string[] argsOpt)
-        {
-            return ParserDiagnostic(method.Syntax.SyntaxTree, span, info, argsOpt);
-        }
-
-        public static Diagnostic ParserDiagnostic(SyntaxTree tree, TextSpan span, Aquila.Syntax.Errors.ErrorInfo info,
-            params string[] argsOpt)
-        {
-            ParserMessageProvider.Instance.RegisterError(info);
-
-            return ParserMessageProvider.Instance.CreateDiagnostic(
-                info.Severity == Aquila.Syntax.Errors.ErrorSeverity.WarningAsError,
-                info.Id,
-                new SourceLocation(tree, span),
-                argsOpt);
         }
 
         /// <summary>

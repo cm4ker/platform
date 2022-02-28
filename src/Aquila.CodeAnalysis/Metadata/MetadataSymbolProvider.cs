@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Data;
 using System.Linq;
 using System.Reflection.Metadata;
 using Aquila.CodeAnalysis;
@@ -10,15 +9,10 @@ using Aquila.CodeAnalysis.Public;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Attributes;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
-using Aquila.CodeAnalysis.Syntax.Parser;
 using Aquila.Metadata;
 using Aquila.Syntax.Syntax;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeGen;
-using MoreLinq;
-using MoreLinq.Extensions;
 using Roslyn.Utilities;
-using SpecialTypeExtensions = Microsoft.CodeAnalysis.SpecialTypeExtensions;
 
 namespace Aquila.Syntax.Metadata
 {

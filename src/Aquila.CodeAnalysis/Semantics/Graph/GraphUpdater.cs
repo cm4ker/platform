@@ -2,12 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using Aquila.CodeAnalysis.Semantics.TypeRef;
-using Aquila.CodeAnalysis.Utilities;
-using Aquila.Syntax.Ast.Expressions;
-using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis.Semantics.Graph
 {

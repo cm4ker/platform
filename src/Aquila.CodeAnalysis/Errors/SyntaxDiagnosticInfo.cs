@@ -7,7 +7,6 @@
 using System;
 using System.Diagnostics;
 using Aquila.CodeAnalysis.Errors;
-using Aquila.Syntax.Errors;
 using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
 

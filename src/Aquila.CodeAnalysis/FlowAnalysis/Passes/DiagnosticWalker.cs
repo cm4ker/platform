@@ -11,10 +11,7 @@ using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Syntax;
 using Aquila.CodeAnalysis.Utilities;
-using Aquila.Syntax.Errors;
 using Aquila.Syntax.Syntax;
-using Aquila.Syntax.Text;
-using Microsoft.CodeAnalysis.Text;
 
 namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 {
@@ -36,11 +33,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 // error: use of primitive type {0} is misused // primitive type does not make any sense in this context
                 _diagnostics.Add(_method, tref.AquilaSyntax, ErrorCode.ERR_PrimitiveTypeNameMisused, tref);
             }
-        }
-
-        void Add(TextSpan span, ErrorInfo err, params string[] args)
-        {
-            _diagnostics.Add(DiagnosticBagExtensions.ParserDiagnostic(_method, span, err, args));
         }
 
         void CannotInstantiate(IAquilaOperation op, string kind, IBoundTypeRef t)
@@ -203,7 +195,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 var flags = labels[i].Flags;
                 if ((flags & ControlFlowGraph.LabelBlockFlags.Defined) == 0)
                 {
-                    Add(labels[i].LabelSpan, Aquila.Syntax.Errors.Errors.UndefinedLabel, labels[i].Label);
+                    //TODO: Create diagnostics here
+                    throw new NotImplementedException();
                 }
 
                 if ((flags & ControlFlowGraph.LabelBlockFlags.Used) == 0)
@@ -213,7 +206,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 
                 if ((flags & ControlFlowGraph.LabelBlockFlags.Redefined) != 0)
                 {
-                    Add(labels[i].LabelSpan, Aquila.Syntax.Errors.Errors.LabelRedeclared, labels[i].Label);
+                    //TODO: Create diagnostics here
+                    throw new NotImplementedException();
                 }
             }
         }
@@ -412,7 +406,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                     {
                         if (x.Right.ConstantValue.IsZero())
                         {
-                            Add(x.Right.AquilaSyntax.Span, Warnings.DivisionByZero);
+                            //TODO: Create diagnostics here
+                            throw new NotImplementedException();
                         }
                     }
 

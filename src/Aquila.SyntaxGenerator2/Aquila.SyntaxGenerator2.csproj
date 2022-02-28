@@ -21,7 +21,7 @@
     <!-- If we're building the command line tool, we have to include some dependencies used for grammar generation -->
 <!--    <Compile Include="..\..\..\Aquila.Microsoft.CodeAnalysis\src\Compilers\Core\Portable\Symbols\WellKnownMemberNames.cs" Link="Grammar\WellKnownMemberNames.cs" Condition="'$(TargetFramework)' != 'netstandard2.0'" />-->
     <Compile Include="..\Aquila.CodeAnalysis\Declarations\DeclarationModifiers.cs" Link="Grammar\DeclarationModifiers.cs" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
-    <Compile Include="..\Aquila.CodeAnalysis\Syntax2\Syntax\SyntaxKind.cs" Link="Grammar\SyntaxKind.cs" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
-    <Compile Include="..\Aquila.CodeAnalysis\Syntax2\Syntax\SyntaxKindFacts.cs" Link="Grammar\SyntaxKindFacts.cs" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
+    <Compile Include="..\Aquila.CodeAnalysis\Syntax\SyntaxKind.cs" Link="Grammar\SyntaxKind.cs" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
+    <Compile Include="..\Aquila.CodeAnalysis\Syntax\SyntaxKindFacts.cs" Link="Grammar\SyntaxKindFacts.cs" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
   </ItemGroup>
 </Project>
