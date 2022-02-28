@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 using BufferedDataReaderDotNet.Extensions;
@@ -19,10 +20,12 @@ namespace BufferedDataReaderDotNet.UnitTests.ExtensionsTests
             using (var memoryStream = new MemoryStream())
             {
                 using (var binaryWriter = new BinaryWriter(memoryStream, Encoding.UTF8, true))
+                {
+                    binaryWriter.Write(bytes.Length);
                     binaryWriter.Write(bytes);
+                }
 
                 memoryStream.Seek(0, SeekOrigin.Begin);
-
                 using (var binaryReader = new BinaryReader(memoryStream))
                 {
                     Assert.Equal(bytes.Length, binaryReader.ReadInt32());
@@ -30,6 +33,14 @@ namespace BufferedDataReaderDotNet.UnitTests.ExtensionsTests
                     Assert.Equal(memoryStream.Length, memoryStream.Position);
                 }
             }
+        }
+
+        public static string ByteArrayToString(byte[] ba)
+        {
+            StringBuilder hex = new StringBuilder(ba.Length * 2);
+            foreach (byte b in ba)
+                hex.AppendFormat("{0:x2}", b);
+            return hex.ToString();
         }
 
         [Fact]

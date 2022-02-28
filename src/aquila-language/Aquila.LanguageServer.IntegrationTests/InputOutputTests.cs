@@ -115,7 +115,6 @@ namespace Aquila.LanguageServer.IntegrationTests
             return client;
         }
 
-        [Ignore("Not run this test simultaneously with other test")]
         [TestMethod]
         public async Task ServerProcess_e2e_test_with_console_io()
         {

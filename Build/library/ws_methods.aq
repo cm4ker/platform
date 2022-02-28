@@ -1,14 +1,5 @@
 [endpoint]
 public static int get_books_count()
 {
-    var a = "asdf";
-    
-    var c = 19;
-    
-    var b = my_type{};
-
-    var e = "test";
-    var f = "f";
-    
     return 0;
 }

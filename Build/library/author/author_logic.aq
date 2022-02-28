@@ -1,7 +1,0 @@
-component Entity
-{
-  extend AuthorObject 
-  {
-      
-  }
-}
