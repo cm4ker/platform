@@ -1,0 +1,11 @@
+type i_type
+{
+    string msg;    
+    int val;
+}
+
+fn main()
+{
+    var some_var = i_type { msg = "test", val = 1 };
+    print(some_var.msg);    
+}

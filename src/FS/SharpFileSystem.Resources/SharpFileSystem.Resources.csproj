@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <Description>A virtual file system for .NET written in C#</Description>
+        <version>1.0.0</version>
+        <PackageVersion>1.0.0</PackageVersion>
+    </PropertyGroup>
+
+    <Import Project="..\..\Props\target.props"/>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <NoWarn>1701;1702;1705;1591</NoWarn>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\SharpFileSystem\SharpFileSystem.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Remove="SharpFileSystem.Resources.nuspec"/>
+    </ItemGroup>
+</Project>

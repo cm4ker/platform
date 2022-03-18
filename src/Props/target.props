@@ -1,0 +1,13 @@
+<Project>
+    <PropertyGroup>
+        <LangVersion>10</LangVersion>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <TargetFramework>net6.0</TargetFramework>
+        <Configurations>Debug;Release;DebugServer</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <NoWarn>,NU5048,CS8632,CS1591</NoWarn>
+    </PropertyGroup>
+</Project>

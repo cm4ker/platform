@@ -1,0 +1,5 @@
+fn main() 
+{
+    var d = get_date();
+    print(d.Day != 0);
+}

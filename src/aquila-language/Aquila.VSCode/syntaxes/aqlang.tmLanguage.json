@@ -1,0 +1,185 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "fileTypes": [
+    "aqlang"
+  ],
+  "name": "aqlang",
+  "patterns": [
+    {
+      "include": "#main"
+    }
+  ],
+  "scopeName": "source.aqlang",
+  "uuid": "",
+  "repository": {
+    "main": {
+      "patterns": [
+        {
+          "include": "#numeric"
+        },
+        {
+          "include": "#comments"
+        },
+        {
+          "include": "#punctuation"
+        },
+        {
+          "include": "#keyword"
+        },
+        {
+          "match": "([0-9]*)",
+          "name": "constant.numeric.aqlang"
+        }
+      ]
+    },
+    "comments": {
+      "patterns": [
+        {
+          "match": "(//.*)",
+          "name": "comment.aqlang"
+        },
+        {
+          "begin": "(/\\*)",
+          "beginCaptures": {
+            "1": {
+              "name": "comment.aqlang"
+            }
+          },
+          "contentName": "comment.aqlang",
+          "end": "(\\*/)",
+          "endCaptures": {
+            "1": {
+              "name": "comment.aqlang"
+            }
+          }
+        }
+      ]
+    },
+    "comments__1": {
+      "patterns": []
+    },
+    "keyword": {
+      "patterns": [
+        {
+          "match": "(\\b(int|string|double|datetime)\\b)",
+          "name": "keyword.aqlang"
+        },
+        {
+          "match": "(\\b(var|return|static|public|private|match)\\b)",
+          "name": "keyword.aqlang"
+        }
+      ]
+    },
+    "numeric": {
+      "patterns": [
+        {
+          "match": "(\\b\\d+)",
+          "name": "constant.numeric.aqlang"
+        }
+      ]
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "begin": "(\\[)",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.aqlang"
+            }
+          },
+          "contentName": "keyword.aqlang",
+          "end": "(\\])",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.aqlang"
+            }
+          }
+        },
+        {
+          "begin": "(\\{)",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.aqlang"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#punctuation__2"
+            }
+          ],
+          "end": "(\\})",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.aqlang"
+            }
+          }
+        },
+        {
+          "match": "(;)",
+          "name": "punctuation.aqlang"
+        },
+        {
+          "begin": "(\\\")",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.aqlang"
+            }
+          },
+          "contentName": "text.aqlang",
+          "end": "(\\\")",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.aqlang"
+            }
+          }
+        },
+        {
+          "begin": "(\\()",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.aqlang"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#punctuation__4"
+            }
+          ],
+          "end": "(\\))",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.aqlang"
+            }
+          }
+        }
+      ]
+    },
+    "punctuation__1": {
+      "patterns": []
+    },
+    "punctuation__2": {
+      "patterns": [
+        {
+          "include": "#main"
+        }
+      ]
+    },
+    "punctuation__3": {
+      "patterns": []
+    },
+    "punctuation__4": {
+      "patterns": [
+        {
+          "include": "#numeric"
+        },
+        {
+          "match": "(,)",
+          "name": "punctuation.aqlang"
+        },
+        {
+          "include": "#main"
+        }
+      ]
+    }
+  }
+}

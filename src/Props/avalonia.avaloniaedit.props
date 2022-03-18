@@ -1,0 +1,5 @@
+<Project>
+    <ItemGroup>
+        <PackageReference Include="Avalonia.AvaloniaEdit" Version="0.10.4" />
+    </ItemGroup>
+</Project>

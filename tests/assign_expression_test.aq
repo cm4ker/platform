@@ -1,0 +1,5 @@
+fn main()
+{ 
+    string a = "HELLO " + "WORLD";
+    print(a.Length); 
+}

@@ -1,0 +1,51 @@
+import Entity;
+
+fn take_book(user UserLink, book BookLink)
+{
+    //1. We can't give a book that we not have
+    if(is_book_available(book))
+    {
+        var history = HistoryManager.create();
+        history.Book = book;
+        history.User = user;
+        history.Date = get_date();
+        history.Operation = -1;
+
+        history.save();
+    }
+}
+
+fn is_book_available(book BookLink) bool
+{
+    var q = query();
+    q.text = @"FROM History 
+               WHERE Book = @book 
+               GROUP BY Book
+               HAVING SUM(Operation) > 0
+               SELECT 1";
+
+    q.set_param("book", book);
+    var reader = q.exec();
+    
+    if(reader.read())
+        return true;
+
+    return false;
+}
+
+fn return_book(user UserLink, book BookLink)
+{
+    if(is_book_available(book))
+    {
+        //we can't return book twice throw the error
+        return;
+    }
+
+    var history = HistoryManager.create();
+    history.Book = book;
+    history.User = user;
+    history.Date = get_date();
+    history.Operation = 1;
+    
+    history.save();
+}

@@ -1,0 +1,171 @@
+name               = aqlang
+file_extensions [] = aqlang;
+
+styles [] {
+   .comment : style {
+   color                 = light_green
+   italic                = true
+   ace_scope             = comment
+   textmate_scope        = comment
+   pygments_scope        = Comment
+}
+
+.keyword : style {
+   color     = cyan
+   ace_scope             = keyword
+   textmate_scope        = keyword
+   pygments_scope        = Keyword
+}
+
+.numeric : style {
+   color                 = gold
+   ace_scope             = constant.numeric
+   textmate_scope        = constant.numeric
+   pygments_scope        = Number
+}
+
+.punctuation : style {
+   color     = red_2
+   ace_scope             = punctuation
+   textmate_scope        = punctuation
+   pygments_scope        = Punctuation
+}
+
+.quote : style 
+{
+   color = red_2
+   textmate_scope        = markup.quote
+}
+
+.string : style {
+   color                 = gold
+   ace_scope             = string
+   textmate_scope        = string
+   pygments_scope        = String
+}
+
+.illegal : style {
+   color                 = white
+   background_color      = red
+   ace_scope             = invalid
+   textmate_scope        = invalid
+   pygments_scope        = Generic.Error
+}
+}
+
+contexts[] {
+main : context {
+      
+      : include "keyword"; 
+      : include "numeric";
+      : include "comments" ;
+      : include "punctuation";
+      
+      //: pattern 
+      //{
+      //   regex    \= ([0-9]*)
+      //   styles [] = .numeric;
+      //}
+}
+   
+   
+keyword : context {
+   //: pattern {
+   //      regex    \= (\[([a-z]|_)*])
+   //      styles [] = .keyword;
+   //   }
+     
+      : pattern {
+         regex    \= (\b(int|string|double|datetime)\b)
+         styles [] = .keyword;
+      }
+     
+      : pattern {
+         regex    \= (\b(var|return|static|public|private|match|import)\b)
+         styles [] = .keyword;
+      }
+}   
+
+punctuation: context {
+
+: inline_push {
+      regex          \= (\[)
+      styles []       = .punctuation;
+      default_style   = .keyword
+      : pop {  
+         regex       \= (\])
+         styles []    = .punctuation;
+         
+      }
+      //: include "main" ;
+   }
+      
+
+
+: inline_push {
+      regex          \= (\{)
+      styles []       = .punctuation;
+      : pop {  
+         regex       \= (\})
+         styles []    = .punctuation;
+      }
+      : include "main" ;
+   }
+   
+   : pattern {
+      regex          \= (;)
+      styles []       = .punctuation;
+   }
+   
+   : inline_push {
+      regex          \= (\")
+      styles []       = .quote;
+      default_style   = .string
+      : pop {
+         regex       \= (\")
+         styles []    = .quote;
+      }
+   }
+   
+   : inline_push {
+      regex          \= (\()
+      styles []       = .punctuation;
+      : pop {
+         regex       \= (\))
+         styles []    = .punctuation;
+      }
+      : include "numeric" ;
+      
+      : pattern {
+         regex       \= (,)
+         styles []    = .punctuation;
+      }
+      
+      : include "main" ;
+   }
+
+}
+
+numeric : context {
+   : pattern {
+      regex          \= (\b\d+)
+      styles []       = .numeric;
+   }
+}
+   
+comments : context {
+        : pattern {
+            regex         \= (//.*)
+            styles[]       = .comment;
+        }
+        : inline_push {
+            regex         \= (/\*)
+            styles []      = .comment;
+            default_style  = .comment
+            : pop {
+               regex      \= (\*/)
+               styles []   = .comment;
+          }
+       }   
+   }
+}

@@ -1,0 +1,12 @@
+fn test() bool 
+{
+    return true;
+} 
+
+fn main() 
+{
+    if(test()) 
+        print(1); 
+    else
+        print(0);
+}

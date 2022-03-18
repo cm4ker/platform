@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Config>
+    <Syntax IsList="true" Base="QField" Name="QFieldList"/>
+    <Syntax IsList="true" Base="QSourceFieldExpression" Name="QSourceFieldList"/>
+    <Syntax IsList="true" Base="QFromItem" Name="QJoinList"/>
+    <Syntax IsList="true" Base="QExpression" Name="QExpressionList"/>
+    <Syntax IsList="true" Base="QExpressionList" Name="QExpressionSet"/>
+    <Syntax IsList="true" Base="QDataSource" Name="QDataSourceList"/>
+    <Syntax IsList="true" Base="QOrderExpression" Name="QOrderList"/>
+    <Syntax IsList="true" Base="QGroupExpression" Name="QGroupList"/>
+    <Syntax IsList="true" Base="QWhen" Name="QWhenList"/>
+    <Syntax IsList="true" Base="QQueryBase" Name="QQueryList"/>
+    <Syntax IsList="true" Base="QCriterion" Name="QCriterionList"/>
+    <Syntax IsList="true" Base="QAssign" Name="QAssignList"/>
+    <Syntax IsList="true" Base="QTypedParameter" Name="QTypedParameterList"/>
+
+    <Syntax Name="QExpression"/>
+
+    <Syntax IsAbstract="true" Name="QQueryBase"/>
+
+    <Syntax Name="QInsertQuery" Base="QQueryBase">
+        <Arguments>
+            <Single Name="Values" Type="QExpressionSet"/>
+            <Single Name="Insert" Type="QInsert"/>
+            <Single Name="Criteria" Type="QCriterionList"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QInsertSelectQuery" Base="QQueryBase">
+        <Arguments>
+            <!--NOTE: Use criterion from the QSelectQuery. Because on Selection level we apply filtering-->
+            <Single Name="Select" Type="QSelectQuery"/>
+            <Single Name="Insert" Type="QInsert"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QUpdateQuery" Base="QQueryBase">
+        <Arguments>
+            <!--NOTE: Use criterion from the QSelectQuery. Because on Selection level we apply filtering-->
+            <Single Name="Update" Type="QUpdate"/>
+            <Single Name="Set" Type="QSet"/>
+            <Single Name="From" Type="QFrom"/>
+            <Single Name="Where" Type="QWhere"/>
+            <Single Name="Criteria" Type="QCriterionList"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QDeleteQuery" Base="QQueryBase">
+        <Arguments>
+            <!--NOTE: Use criterion from the QSelectQuery. Because on Selection level we apply filtering-->
+            <Single Name="Delete" Type="QDelete"/>
+            <Single Name="From" Type="QFrom"/>
+            <Single Name="Where" Type="QWhere"/>
+            <Single Name="Criteria" Type="QCriterionList"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QSelectQuery" Base="QQueryBase">
+        <Arguments>
+            <Single Name="OrderBy" Type="QOrderBy"/>
+            <Single Name="Select" Type="QSelect"/>
+            <Single Name="Having" Type="QHaving"/>
+            <Single Name="GroupBy" Type="QGroupBy"/>
+            <Single Name="Where" Type="QWhere"/>
+            <Single Name="From" Type="QFrom"/>
+            <Single Name="Criteria" Type="QCriterionList"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QCriterion">
+        <Arguments>
+            <Single Name="Where" Type="QWhere"/>
+            <Single Name="From" Type="QFrom"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QSelect">
+        <Arguments>
+            <List Name="Fields" Type="QFieldList"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QFrom">
+        <Arguments>
+            <List Name="Joins" Type="QJoinList"/>
+            <Single Name="Source" Type="QDataSource"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QGroupBy">
+        <Arguments>
+            <List Name="Expressions" Type="QGroupList"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QOrderBy">
+        <Arguments>
+            <List Name="Expressions" Type="QOrderList"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="QWhere">
+        <Arguments>
+            <Single Name="Expression" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QHaving">
+        <Arguments>
+            <Single Name="Expression" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QInsert">
+        <Arguments>
+            <!--NOTE: in insertion we have to use platform field list-->
+            <Single Name="Fields" Type="QSourceFieldList"/>
+
+            <!--NOTE: as target on insertion we can use only platform destination source-->
+            <Single Name="Target" Type="QPlatformDataSource"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QDelete">
+        <Arguments>
+            <Single Name="Target" Type="QDataSource"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QUpdate">
+        <Arguments>
+            <!--NOTE: as target on update we can use only platform destination source-->
+            <Single Name="Target" Type="QDataSource"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QSet">
+        <Arguments>
+            <Single Name="Assigns" Type="QAssignList"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QAssign">
+        <Arguments>
+            <!--NOTE: as target on insertion we can use only platform destination source-->
+            <Single Name="Target" Type="QField"/>
+            <Single Name="Value" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+
+
+    <!-- DataSource -->
+    <Syntax IsAbstract="true" Name="QDataSource"/>
+    <Syntax Name="QAliasedDataSource" Base="QDataSource">
+        <Arguments>
+            <Single Type="QDataSource" Name="ParentSource"/>
+            <Single Type="String" Name="Alias" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QCombinedDataSource" Base="QDataSource">
+        <Arguments>
+            <List Name="DataSources" Type="QDataSourceList"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QNestedQuery" Base="QDataSource">
+        <Arguments>
+            <Single Name="Nested" Type="QSelectQuery"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax IsAbstract="true" Name="QPlatformDataSource" Base="QDataSource"/>
+
+    <Syntax Name="QObjectTable" Base="QPlatformDataSource">
+        <Arguments>
+            <Single Name="ObjectType" Type="SMEntity" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QTable" Base="QPlatformDataSource">
+        <Arguments>
+            <Single Name="ObjectTable" Type="QObjectTable"/>
+        </Arguments>
+    </Syntax>
+    <!-- End DataSource -->
+
+    <!-- Fields -->
+    <Syntax Name="QField" Base="QExpression" IsAbstract="true">
+        <Arguments>
+            <Single Name="Element" Type="QLangElement"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QIntermediateSourceField" Base="QField">
+        <Arguments>
+            <Single Name="Field" Type="QField" DenyChildrenFill="true" PassBase="true"/>
+            <Single Name="DataSource" Type="QDataSource" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QNestedQueryField" Base="QField">
+        <Arguments>
+            <Single Name="Field" Type="QField" DenyChildrenFill="true" PassBase="true"/>
+            <Single Name="DataSource" Type="QDataSource" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QLookupField" Base="QField">
+        <Arguments>
+            <Single Name="PropName" Type="String" DenyChildrenFill="true"/>
+            <Single Name="BaseExpression" Type="QExpression" PassBase="true" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QSourceFieldExpression" Base="QField">
+        <Arguments>
+            <Single Name="PlatformSource" Type="QPlatformDataSource" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Property" Type="SMProperty" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QSourceFieldTyped" Base="QField">
+        <Arguments>
+            <Single Name="PlatformSource" Type="QPlatformDataSource" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Property" Type="SMProperty" DenyChildrenFill="true"/>
+            <Single Name="Type" Type="SMType" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QOrderExpression" Base="QExpression">
+        <Arguments>
+            <Single Name="SortingDirection" Type="QSortDirection" DenyChildrenFill="true"/>
+            <Single Name="Expression" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QGroupExpression" Base="QExpression">
+        <Arguments>
+            <Single Name="Expression" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QSelectExpression" Base="QField">
+        <Arguments>
+            <Single Name="Expression" Type="QExpression" PassBase="true" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="QAliasedSelectExpression" Base="QSelectExpression">
+        <Arguments>
+            <Single Name="AliasedExpression" Type="QExpression" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Alias" Type="String" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+    <!-- End Fields -->
+
+    <Syntax Name="QFromItem">
+        <Arguments>
+            <Single Name="Condition" Type="QExpression"/>
+            <Single Name="Joined" Type="QDataSource"/>
+            <Single Name="JoinType" Type="QJoinType" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="QConst" Base="QExpression"/>
+
+    <Syntax Name="QParameterBase" IsAbstract="true" Base="QExpression">
+        <Arguments>
+            <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+
+    <Syntax Name="QParameter" Base="QParameterBase">
+        <Arguments>
+            <Single Name="Name" Type="String" DenyChildrenFill="true" OnlyArgument="true" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QTypedParameter" Base="QParameterBase">
+        <Arguments>
+            <Single Name="Name" Type="String" DenyChildrenFill="true" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Types" Type="IEnumerable&lt;SMType&gt;" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QVar" Base="QExpression">
+        <Arguments>
+            <Single Name="Name" Type="String" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QCase" Base="QExpression">
+        <Arguments>
+            <Single Name="Else" Type="QExpression"/>
+            <List Name="Whens" Type="QWhenList"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QWhen">
+        <Arguments>
+
+            <Single Name="Then" Type="QExpression"/>
+            <Single Name="When" Type="QOperationExpression"/>
+        </Arguments>
+    </Syntax>
+    <!-- Operation expression -->
+
+    <Syntax Name="QOperationExpression" Base="QExpression">
+        <Arguments>
+            <Single Name="Right" IsProtected="true" Type="QExpression"/>
+            <Single Name="Left" IsProtected="true" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QAnd" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QAdd" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>            
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QOr" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QEquals" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>            
+        </Arguments>
+    </Syntax>
+    <Syntax Name="QNotEquals" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="QGreatThen" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="QLessThen" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="QLessThenOrEquals" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QGreatThenOrEquals" Base="QOperationExpression">
+        <Arguments>
+            <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
+        </Arguments>
+    </Syntax>
+    <!-- End Operation expression -->
+
+    <Syntax Name="QCast" Base="QExpression">
+        <Arguments>
+            <Single Name="Type" Type="SMType" DenyChildrenFill="true"/>
+            <Single Name="BaseExpression" Type="QExpression"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QCount" Base="QExpression">
+        <Arguments>
+            
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="QDataRequest">
+        <Arguments>
+            <Single Name="Source" Type="QFieldList"/>
+        </Arguments>
+    </Syntax>
+</Config>

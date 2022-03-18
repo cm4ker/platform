@@ -1,0 +1,11 @@
+import Entity;
+
+fn main() 
+{
+    var invoice = InvoiceManager.create();
+    invoice.Name = "CreateMe";
+    invoice.ComplexProperty = "My store";
+    invoice.save();
+
+    print(0);
+}

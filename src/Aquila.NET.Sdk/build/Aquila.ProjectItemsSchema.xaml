@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ProjectSchemaDefinitions xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+    <ContentType
+        Name="AqilaSourceFile"
+        DisplayName="Aquila file"
+        ItemType="Compile">
+    </ContentType>
+
+    <ItemType Name="Compile" UpToDateCheckInput="true" DisplayName="Compile"/>
+    
+    <FileExtension Name=".aq" ContentType="AquilaSourceFile"/>
+</ProjectSchemaDefinitions>

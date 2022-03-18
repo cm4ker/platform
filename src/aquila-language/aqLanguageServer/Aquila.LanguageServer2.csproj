@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="..\..\Props\target.props" />
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <IsPackable>false</IsPackable>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <OutputPath>..\Build\Debug</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <OutputPath>..\Build\Release</OutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+        <PackageReference Include="OmniSharp.Abstractions" Version="1.37.16" />
+        <PackageReference Include="OmniSharp.Extensions.LanguageServer" Version="0.19.5" />
+        <PackageReference Include="OmniSharp.Extensions.LanguageServer.Shared" Version="0.19.5" />
+        <PackageReference Include="OmniSharp.Shared" Version="1.37.16" />
+        <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
+        <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
+        <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
+        <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+        <PackageReference Include="System.IO" Version="4.3.0" />
+        <PackageReference Include="System.Runtime.Handles" Version="4.3.0" />
+        <PackageReference Include="System.Text.Encoding" Version="4.3.0" />
+        <PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" />
+        <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
+        <PackageReference Include="System.IO.Pipelines" Version="4.7.3" />
+        <PackageReference Include="Nerdbank.Streams" Version="2.6.81" />
+
+        <PackageReference Include="Microsoft.Build" Version="17.0.0" />
+        <PackageReference Include="Microsoft.Build.Runtime" Version="17.0.0" />
+        <PackageReference Include="Microsoft.Build.NuGetSdkResolver" Version="5.11.0-rc.10" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Aquila.CodeAnalysis\Aquila.CodeAnalysis.csproj" />
+    </ItemGroup>
+
+</Project>

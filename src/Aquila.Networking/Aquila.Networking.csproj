@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="..\Props\target.props" />
+
+    <ItemGroup>
+        <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj" />
+        <ProjectReference Include="..\Aquila.Serializer\Aquila.Serializer.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Instance" />
+    </ItemGroup>
+
+</Project>

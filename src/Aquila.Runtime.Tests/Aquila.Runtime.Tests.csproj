@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <Import Project="..\Props\target.props" />
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+        <PackageReference Include="xunit" Version="2.4.1" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+        <PackageReference Include="coverlet.collector" Version="1.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Aquila.Library.Scripting\Aquila.Library.Scripting.csproj" />
+        <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj" />
+        <ProjectReference Include="..\Aquila.Test.Tools\Aquila.Test.Tools.csproj" />
+    </ItemGroup>
+
+</Project>

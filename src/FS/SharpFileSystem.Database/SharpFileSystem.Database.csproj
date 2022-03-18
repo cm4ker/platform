@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="..\..\Props\target.props"/>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Aquila.Runtime\Aquila.Runtime.csproj"/>
+        <ProjectReference Include="..\SharpFileSystem\SharpFileSystem.csproj"/>
+    </ItemGroup>
+
+</Project>

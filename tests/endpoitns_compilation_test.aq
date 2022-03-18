@@ -1,0 +1,37 @@
+import Entity;
+
+fn main() 
+{
+    print("success compiled");
+}
+
+[endpoint] fn endpoint_test() int { return 100500; }
+[endpoint] fn current_time() datetime { return get_date(); }
+[endpoint] fn echo(ping int) int { return ping; }
+[endpoint] fn create_invoice_with_store() int 
+{
+    var store = StoreManager.create();
+    store.Name = "My store";
+    store.save();
+    var obj = InvoiceManager.create();
+    obj.Name = "test";
+    obj.ComplexProperty = "Complex";
+    obj.ComplexProperty = 10;
+    obj.ComplexProperty = store.link;
+    obj.Store = store.link;
+    obj.save();
+    
+    var q = query();
+    q.text = "FROM Entity.Invoice SELECT ComplexProperty";
+    q.set_param("p0", 1);
+
+    var r = q.exec();
+
+    if(r.read())
+    {
+        var id = r["ComplexProperty"];
+        return 1;
+    }
+
+    return 0;
+}

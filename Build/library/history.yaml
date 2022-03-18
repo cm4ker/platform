@@ -1,0 +1,18 @@
+Name: History
+Properties:
+  - Name: User
+    Types:
+      - Name: Entity.UserLink
+  
+  #before we hadn't enums use int. (-1 is consumption and 1 is income of books)
+  - Name: Operation
+    Types:
+      - Name: int
+
+  - Name: Book
+    Types:
+      - Name: Entity.BookLink
+  
+  - Name: Date
+    Types:
+      - Name: datetime

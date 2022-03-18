@@ -1,0 +1,37 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <!-- Import Microsoft.Managed.DesignTime.targets -->
+    <PropertyGroup>
+        <ManagedDesignTimeTargetsPath Condition="'$(ManagedDesignTimeTargetsPath)'==''">$(MSBuildExtensionsPath)\Microsoft\VisualStudio\Managed\Microsoft.Managed.DesignTime.targets</ManagedDesignTimeTargetsPath>
+    </PropertyGroup>
+    <Import Project="$(ManagedDesignTimeTargetsPath)" Condition="'$(ManagedDesignTimeTargetsPath)' != '' and Exists('$(ManagedDesignTimeTargetsPath)')"/>
+
+    <!-- Properties -->
+    <PropertyGroup>
+        <TemplateLanguage Condition="'$(TemplateLanguage)' == ''">Aquila</TemplateLanguage>
+    </PropertyGroup>
+
+    <!-- Schemas -->
+    <ItemGroup>
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Aquila.ProjectItemsSchema.xaml;"/>
+        <PropertyPageSchema Include="$(ManagedXamlResourcesDirectory)Compile.xaml;">
+            <Context>File</Context>
+        </PropertyPageSchema>
+        <PropertyPageSchema Include="$(ManagedXamlResourcesDirectory)Compile.BrowseObject.xaml;">
+            <Context>BrowseObject</Context>
+        </PropertyPageSchema>
+    </ItemGroup>
+
+    <!-- ProjectCapability -->
+    <ItemGroup Condition="'$(DefineCommonManagedCapabilities)' == 'true'">
+        <ProjectCapability Include="Aquila;Managed;Pack;Publish;AppDesigner;OpenProjectFile;GenerateDocumentationFile;LaunchProfiles;"/>
+    </ItemGroup>
+
+    <!-- Returns command-line arguments for the language service -->
+    <Target Name="CompileDesignTime" Returns="@(_CompilerCommandLineArgs)">
+        <ItemGroup>
+            <_CompilerCommandLineArgs Include="@(AquilaCommandLineArgs)"/>
+        </ItemGroup>
+    </Target>
+
+</Project>

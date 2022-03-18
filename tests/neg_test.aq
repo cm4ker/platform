@@ -1,0 +1,5 @@
+fn main()
+{ 
+    println(-1);
+    println(-(10+20)); 
+}

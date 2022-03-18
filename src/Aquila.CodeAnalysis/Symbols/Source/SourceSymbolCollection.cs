@@ -1,0 +1,196 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Linq;
+using Aquila.CodeAnalysis.Symbols.Synthesized;
+using Aquila.Compiler.Utilities;
+using Aquila.Syntax;
+using Microsoft.CodeAnalysis;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Utilities;
+using Aquila.Syntax.Declarations;
+using Roslyn.Utilities;
+using Xunit;
+
+namespace Aquila.CodeAnalysis.Symbols.Source
+{
+    /// <summary>
+    /// Collection of source symbols.
+    /// </summary>
+    internal class SourceSymbolCollection
+    {
+        /// <summary>
+        /// Gets reference to containing compilation object.
+        /// </summary>
+        public AquilaCompilation Compilation => _compilation;
+
+        readonly AquilaCompilation _compilation;
+
+        private MergedSourceCode _sourceCode = new MergedSourceCode();
+
+
+        private List<SourceMethodSymbol> _extendMethods;
+        private List<SourceMethodSymbol> _globalMethods;
+        private List<NamedTypeSymbol> _types;
+
+
+        /// <summary>
+        /// Class holding app-static constants defined in compile-time.
+        /// <code>static class &lt;constants&gt; { ... }</code>
+        /// </summary>
+        internal SynthesizedTypeSymbol DefinedConstantsContainer { get; }
+
+        internal NamespaceOrTypeSymbol SourceTypeContainer { get; set; }
+
+        public IDictionary<SyntaxTree, int> OrdinalMap => _sourceCode.OrdinalMap;
+
+        public SourceSymbolCollection(AquilaCompilation compilation)
+        {
+            Contract.ThrowIfNull(compilation);
+            _compilation = compilation;
+
+            _extendMethods = new List<SourceMethodSymbol>();
+            _globalMethods = new List<SourceMethodSymbol>();
+            _types = new List<NamedTypeSymbol>();
+
+            // class <constants> { ... }
+
+            this.DefinedConstantsContainer =
+                _compilation.AnonymousTypeManager.SynthesizeType("<Constants>", true);
+
+            PopulateDefinedConstants(DefinedConstantsContainer, _compilation.Options.Defines);
+
+
+            SourceTypeContainer = (NamespaceSymbol)_compilation.SourceModule.GlobalNamespace;
+        }
+
+        void PopulateDefinedConstants(SynthesizedTypeSymbol container,
+            ImmutableDictionary<string, string> defines)
+        {
+            if (defines == null || defines.IsEmpty)
+            {
+                return;
+            }
+
+            foreach (var d in defines)
+            {
+            }
+        }
+
+        private void UpdateSymbolsCore()
+        {
+            var modules = _sourceCode.GetModules();
+
+            foreach (var module in modules)
+            {
+                _types.Add(new SourceModuleTypeSymbol(SourceTypeContainer, module));
+
+                // foreach (var type in module.Types)
+                // {
+                //     _types.Add(new SourceTypeSymbol(SourceTypeContainer, type));
+                // }
+
+                foreach (var function in module.OwnedFunctions)
+                {
+                    if (function.FuncOwner != null && AstUtils.GetModifiers(function.Modifiers).IsPartial())
+                    {
+                        Assert.NotNull(function.FuncOwner);
+
+                        var binder = _compilation.GetBinder(function.Parent);
+                        var type = binder.BindType(function.FuncOwner.OwnerType);
+
+                        if (type is SynthesizedTypeSymbol sts)
+                        {
+                            var m = new SourceMethodSymbol(sts, function);
+
+                            _extendMethods.Add(m);
+                            sts.AddMember(m);
+                        }
+                    }
+                    // else
+                    // {
+                    //     var method = new SourceGlobalMethodSymbol(DefinedConstantsContainer, function);
+                    //
+                    //     _globalMethods.Add(method);
+                    //     DefinedConstantsContainer.AddMember(method);
+                    // }
+                }
+            }
+        }
+
+        public bool RemoveSyntaxTree(string fname)
+        {
+            var relative = AquilaFileUtilities.GetRelativePath(fname, _compilation.Options.BaseDirectory);
+            // if (_files.Remove(relative))
+            // {
+            //     _version++;
+            //
+            //     return true;
+            // }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Gets compilation syntax trees.
+        /// </summary>
+        public ImmutableArray<AquilaSyntaxTree> SyntaxTrees => _sourceCode.SyntaxTrees;
+
+        public IEnumerable<MethodSymbol> GetMethods()
+        {
+            foreach (var g in _globalMethods)
+            {
+                yield return g;
+            }
+
+            foreach (var em in _extendMethods)
+            {
+                yield return em;
+            }
+
+            foreach (var m in _types.SelectMany(x => x.GetMembers().OfType<MethodSymbol>()))
+            {
+                yield return m;
+            }
+
+            foreach (var m in _types.SelectMany(x =>
+                         x.GetTypeMembers().SelectMany(y => y.GetMembers().OfType<MethodSymbol>())))
+            {
+                yield return m;
+            }
+        }
+
+        /// <summary>
+        /// Gets enumeration of all methods (global code, functions, lambdas and class methods) in source code.
+        /// </summary>
+        public IEnumerable<SourceMethodSymbol> GetSourceMethods() => GetMethods().OfType<SourceMethodSymbol>();
+
+        public IEnumerable<SourceModuleTypeSymbol> GetModuleTypes() => _types.OfType<SourceModuleTypeSymbol>();
+
+        public MergedSourceCode GetMergedSourceCode() => _sourceCode;
+
+        public NamedTypeSymbol GetType(QualifiedName name, Dictionary<QualifiedName, INamedTypeSymbol> resolved = null)
+        {
+            var resolvedTypes = _types.Where(x => x.MakeQualifiedName() == name).ToImmutableArray();
+
+            if (resolvedTypes.Length == 1)
+            {
+                return resolvedTypes.First();
+            }
+            else if (resolvedTypes.Length > 1)
+            {
+                return new AmbiguousErrorTypeSymbol(resolvedTypes);
+            }
+
+            return new MissingMetadataTypeSymbol(name.ClrName(), 0, false);
+        }
+
+        public void AddSyntaxTreeRange(IEnumerable<AquilaSyntaxTree> syntaxTrees)
+        {
+            _sourceCode.AddSyntaxTreeRange(syntaxTrees);
+            UpdateSymbolsCore();
+        }
+    }
+}

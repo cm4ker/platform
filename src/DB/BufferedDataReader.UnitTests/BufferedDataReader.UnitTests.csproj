@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <RootNamespace>BufferedDataReaderDotNet.UnitTests</RootNamespace>
+    </PropertyGroup>
+
+    <Import Project="..\..\Props\target.props"/>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0"/>
+        <PackageReference Include="xunit" Version="2.4.1"/>
+        <PackageReference Include="xunit.core" Version="2.4.1"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\BufferedDataReader\BufferedDataReader.csproj"/>
+    </ItemGroup>
+</Project>

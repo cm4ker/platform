@@ -1,0 +1,7 @@
+﻿import clr System;
+
+pub fn main()
+{
+    console_write_line("hello");
+    print("Passed successful");
+}

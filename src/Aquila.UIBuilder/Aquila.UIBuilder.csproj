@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+
+    <Import Project="..\Props\target.props" />
+    
+    <ItemGroup>
+        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj" />
+        <ProjectReference Include="..\Aquila.Test.Tools\Aquila.Test.Tools.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="App.xaml">
+            <SubType>Designer</SubType>
+        </EmbeddedResource>
+        <EmbeddedResource Include="MainWindow.xaml">
+            <SubType>Designer</SubType>
+        </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+      <PackageReference Include="Avalonia.Diagnostics" Version="0.10.6" />
+    </ItemGroup>
+
+    <Import Project="..\Props\avalonia.props" />
+    <Import Project="..\Props\avalonia.desktop.props" />
+    <Import Project="..\Props\avalonia.reactiveui.props" />
+</Project>

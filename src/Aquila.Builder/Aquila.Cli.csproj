@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\Props\target.props" />
+    
+    <ItemGroup>
+        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.4.1"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj"/>
+    </ItemGroup>
+</Project>

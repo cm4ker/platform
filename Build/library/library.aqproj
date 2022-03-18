@@ -1,0 +1,8 @@
+﻿<!-- use our own building system-->
+<Project Sdk="Aquila.NET.Sdk/1.0.0">
+  <PropertyGroup>
+    <ProjectName>Library</ProjectName>
+    <TargetFramework>net6.0</TargetFramework>
+    <DebuggerAttach>false</DebuggerAttach>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,78 @@
+﻿@startuml
+header some_header
+title myTitle
+'skinparam monochrome reverse
+'!theme black-knight
+!include https://raw.githubusercontent.com/bschwarz/puml-themes/master/themes/cyborg/puml-theme-cyborg.puml
+'left to right direction
+scale 2/3
+
+SyntaxNode <|-- AqLangNode
+
+AqLangNode <|-- ExprSyntax
+AqLangNode <|-- StmtSyntax
+AqLangNode <|-- DeclSyntax
+AqLangNode <|-- TokenSyntax
+
+AqLangNode <|-- VarDeclarator
+AqLangNode <|-- CatchItem
+AqLangNode <|-- FinallyItem
+
+TokenSyntax <|-- ModifierTok
+TokenSyntax <|-- IdentifierTok
+TokenSyntax <|-- QualifiedIdentifierTok
+
+ExprSyntax <|-- AssignEx
+ExprSyntax <|-- MemberAccessEx
+ExprSyntax <|-- MatchEx
+ExprSyntax <|-- MatchArm
+ExprSyntax <|-- UnaryExBase
+ExprSyntax <|-- CastEx
+ExprSyntax <|-- IndexerEx
+ExprSyntax <|-- UnaryEx
+ExprSyntax <|-- BinaryEx
+ExprSyntax <|-- TypeEx
+ExprSyntax <|-- MissingEx
+ExprSyntax <|-- CallEx
+ExprSyntax <|-- ArgumentEx
+ExprSyntax <|-- NewEx
+ExprSyntax <|-- LiteralEx
+ExprSyntax <|-- IncDecEx
+ExprSyntax <|-- ThrowEx
+
+TypeEx <|-- NameEx
+    NameEx <|-- IdentifierEx
+    NameEx <|-- NamedTypeEx
+TypeEx <|-- PredefinedTypeEx
+TypeEx <|-- ArrayTypeEx
+TypeEx <|-- UnionTypeEx
+
+StmtSyntax <|-- ExprStmt
+StmtSyntax <|-- BlockStmt
+StmtSyntax <|-- ReturnStmt
+StmtSyntax <|-- BreakStmt
+StmtSyntax <|-- ContinueStmt
+StmtSyntax <|-- VarDecl
+StmtSyntax <|-- TryStmt
+StmtSyntax <|-- ForStmt
+StmtSyntax <|-- WhileStmt
+StmtSyntax <|-- DoWhileStmt
+StmtSyntax <|-- IfStmt
+
+DeclSyntax <|-- SourceUnit
+DeclSyntax <|-- ExtendDecl
+DeclSyntax <|-- ComponentDecl
+DeclSyntax <|-- ImportDeclBase
+DeclSyntax <|-- AnnotationDecl
+DeclSyntax <|-- ParameterDecl
+
+DeclSyntax <|-- MemberDecl
+
+MemberDecl <|-- MethodDecl
+MemberDecl <|-- FieldDecl
+
+ImportDeclBase <|-- ImportDecl
+ImportDeclBase <|-- A
+ImportDeclBase <|-- ImportAliasDecl 
+
+@enduml

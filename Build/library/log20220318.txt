@@ -1,0 +1,595 @@
+2022-03-18 15:32:46.209 +06:00 [INF] Starting language server
+2022-03-18 15:32:47.583 +06:00 [INF] Folding register
+2022-03-18 15:32:47.587 +06:00 [INF] Init!!!! MyDocumentSymbolHandler
+2022-03-18 15:32:47.704 +06:00 [DBG] Finding descriptors for initialize
+2022-03-18 15:32:47.879 +06:00 [DBG] Queueing "Serial":initialize:0 request for processing
+2022-03-18 15:32:47.894 +06:00 [DBG] Starting: Processing request initialize 0
+2022-03-18 15:32:47.900 +06:00 [DBG] Starting: Routing Request (0) initialize
+2022-03-18 15:32:47.908 +06:00 [VRB] Converting params for Request (0) initialize to OmniSharp.Extensions.LanguageServer.Protocol.Models.InternalInitializeParams
+2022-03-18 15:32:47.909 +06:00 [VRB] Converting params for Notification initialize to OmniSharp.Extensions.LanguageServer.Protocol.Models.InternalInitializeParams
+2022-03-18 15:32:48.199 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.InitializeResult
+2022-03-18 15:32:48.201 +06:00 [DBG] Finished: Routing Request (0) initialize in 299ms
+2022-03-18 15:32:48.201 +06:00 [DBG] Finished: Processing request initialize 0 in 303ms
+2022-03-18 15:32:48.246 +06:00 [DBG] Finding descriptors for initialized
+2022-03-18 15:32:48.247 +06:00 [DBG] Queueing "Serial":initialized request for processing
+2022-03-18 15:32:48.250 +06:00 [DBG] Starting: Processing notification initialized
+2022-03-18 15:32:48.252 +06:00 [DBG] Starting: Routing Notification initialized
+2022-03-18 15:32:48.253 +06:00 [VRB] Converting params for Notification initialized to OmniSharp.Extensions.LanguageServer.Protocol.Models.InitializedParams
+2022-03-18 15:32:48.296 +06:00 [WRN] No ConfigurationItems have been defined, configuration won't surface any configuration from the client!
+2022-03-18 15:32:48.321 +06:00 [DBG] Finished: Routing Notification initialized in 68ms
+2022-03-18 15:32:48.321 +06:00 [DBG] Finished: Processing notification initialized in 70ms
+2022-03-18 15:32:48.322 +06:00 [DBG] Finding descriptors for textDocument/didOpen
+2022-03-18 15:32:48.328 +06:00 [VRB] Created attribute aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq
+2022-03-18 15:32:48.330 +06:00 [VRB] Looking for handler for descriptors textDocument/didOpen
+2022-03-18 15:32:48.330 +06:00 [VRB] Checking handler textDocument/didOpen:Aquila.LanguageServer.TextDocumentHandler
+2022-03-18 15:32:48.330 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.TextDocumentOpenRegistrationOptions
+2022-03-18 15:32:48.330 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:32:48.331 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.TextDocumentHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcNotificationHandler`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DidOpenTextDocumentParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:32:48.331 +06:00 [DBG] Queueing "Serial":textDocument/didOpen request for processing
+2022-03-18 15:32:48.331 +06:00 [DBG] Starting: Processing notification textDocument/didOpen
+2022-03-18 15:32:48.331 +06:00 [DBG] Starting: Routing Notification textDocument/didOpen
+2022-03-18 15:32:48.331 +06:00 [VRB] Converting params for Notification textDocument/didOpen to OmniSharp.Extensions.LanguageServer.Protocol.Models.DidOpenTextDocumentParams
+2022-03-18 15:32:48.561 +06:00 [VRB] Start loading project
+2022-03-18 15:32:49.240 +06:00 [DBG] Finding descriptors for textDocument/documentSymbol
+2022-03-18 15:32:49.243 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:32:49.243 +06:00 [VRB] Looking for handler for descriptors textDocument/documentSymbol
+2022-03-18 15:32:49.244 +06:00 [VRB] Checking handler textDocument/documentSymbol:Aquila.LanguageServer.DocumentSymbolHandler
+2022-03-18 15:32:49.244 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolRegistrationOptions
+2022-03-18 15:32:49.244 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:32:49.244 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.DocumentSymbolHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcRequestHandler`2[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022],[OmniSharp.Extensions.LanguageServer.Protocol.Models.SymbolInformationOrDocumentSymbolContainer, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:32:49.244 +06:00 [DBG] Swapping from "Serial" to "Parallel"
+2022-03-18 15:32:49.244 +06:00 [DBG] Completing existing request process type "Serial"
+2022-03-18 15:32:49.245 +06:00 [DBG] Queueing "Parallel":textDocument/documentSymbol:1 request for processing
+2022-03-18 15:32:49.245 +06:00 [DBG] Finding descriptors for textDocument/foldingRange
+2022-03-18 15:32:49.247 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:32:49.247 +06:00 [VRB] Looking for handler for descriptors textDocument/foldingRange
+2022-03-18 15:32:49.247 +06:00 [VRB] Checking handler textDocument/foldingRange:Aquila.LanguageServer.FoldingRangeHandler
+2022-03-18 15:32:49.247 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRegistrationOptions
+2022-03-18 15:32:49.247 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:32:49.247 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.FoldingRangeHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcRequestHandler`2[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022],[OmniSharp.Extensions.LanguageServer.Protocol.Models.Container`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRange, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]], OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:32:49.247 +06:00 [DBG] Queueing "Parallel":textDocument/foldingRange:2 request for processing
+2022-03-18 15:32:50.273 +06:00 [DBG] Finished: Routing Notification textDocument/didOpen in 1942ms
+2022-03-18 15:32:50.274 +06:00 [DBG] Finished: Processing notification textDocument/didOpen in 1942ms
+2022-03-18 15:32:50.275 +06:00 [DBG] Starting: Processing request textDocument/documentSymbol 1
+2022-03-18 15:32:50.275 +06:00 [DBG] Starting: Routing Request (1) textDocument/documentSymbol
+2022-03-18 15:32:50.275 +06:00 [VRB] Converting params for Request (1) textDocument/documentSymbol to OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams
+2022-03-18 15:32:50.275 +06:00 [VRB] Converting params for Notification textDocument/documentSymbol to OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams
+2022-03-18 15:32:50.280 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.SymbolInformationOrDocumentSymbolContainer
+2022-03-18 15:32:50.283 +06:00 [DBG] Finished: Routing Request (1) textDocument/documentSymbol in 7ms
+2022-03-18 15:32:50.283 +06:00 [DBG] Finished: Processing request textDocument/documentSymbol 1 in 7ms
+2022-03-18 15:32:50.304 +06:00 [DBG] Starting: Processing request textDocument/foldingRange 2
+2022-03-18 15:32:50.304 +06:00 [DBG] Starting: Routing Request (2) textDocument/foldingRange
+2022-03-18 15:32:50.304 +06:00 [VRB] Converting params for Request (2) textDocument/foldingRange to OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam
+2022-03-18 15:32:50.304 +06:00 [VRB] Converting params for Notification textDocument/foldingRange to OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam
+2022-03-18 15:32:50.305 +06:00 [INF] Create folding
+2022-03-18 15:32:50.306 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.Container`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRange, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]]
+2022-03-18 15:32:50.306 +06:00 [DBG] Finished: Routing Request (2) textDocument/foldingRange in 2ms
+2022-03-18 15:32:50.306 +06:00 [DBG] Finished: Processing request textDocument/foldingRange 2 in 2ms
+2022-03-18 15:33:00.251 +06:00 [DBG] Finding descriptors for textDocument/didChange
+2022-03-18 15:33:00.259 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:33:00.259 +06:00 [VRB] Looking for handler for descriptors textDocument/didChange
+2022-03-18 15:33:00.259 +06:00 [VRB] Checking handler textDocument/didChange:Aquila.LanguageServer.TextDocumentHandler
+2022-03-18 15:33:00.259 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.TextDocumentChangeRegistrationOptions
+2022-03-18 15:33:00.259 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:33:00.259 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.TextDocumentHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcNotificationHandler`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DidChangeTextDocumentParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:33:00.260 +06:00 [DBG] Swapping from "Parallel" to "Serial"
+2022-03-18 15:33:00.260 +06:00 [DBG] Cancelling any outstanding requests (switch from parallel to serial)
+2022-03-18 15:33:00.260 +06:00 [DBG] Completing existing request process type "Parallel"
+2022-03-18 15:33:00.261 +06:00 [DBG] Queueing "Serial":textDocument/didChange request for processing
+2022-03-18 15:33:00.261 +06:00 [DBG] Starting: Processing notification textDocument/didChange
+2022-03-18 15:33:00.261 +06:00 [DBG] Starting: Routing Notification textDocument/didChange
+2022-03-18 15:33:00.261 +06:00 [VRB] Converting params for Notification textDocument/didChange to OmniSharp.Extensions.LanguageServer.Protocol.Models.DidChangeTextDocumentParams
+2022-03-18 15:33:00.296 +06:00 [DBG] Finished: Routing Notification textDocument/didChange in 35ms
+2022-03-18 15:33:00.296 +06:00 [DBG] Finished: Processing notification textDocument/didChange in 35ms
+2022-03-18 15:33:02.060 +06:00 [INF] Starting language server
+2022-03-18 15:33:02.588 +06:00 [INF] Folding register
+2022-03-18 15:33:02.591 +06:00 [INF] Init!!!! MyDocumentSymbolHandler
+2022-03-18 15:33:02.695 +06:00 [DBG] Finding descriptors for initialize
+2022-03-18 15:33:02.844 +06:00 [DBG] Queueing "Serial":initialize:0 request for processing
+2022-03-18 15:33:02.861 +06:00 [DBG] Starting: Processing request initialize 0
+2022-03-18 15:33:02.867 +06:00 [DBG] Starting: Routing Request (0) initialize
+2022-03-18 15:33:02.873 +06:00 [VRB] Converting params for Request (0) initialize to OmniSharp.Extensions.LanguageServer.Protocol.Models.InternalInitializeParams
+2022-03-18 15:33:02.874 +06:00 [VRB] Converting params for Notification initialize to OmniSharp.Extensions.LanguageServer.Protocol.Models.InternalInitializeParams
+2022-03-18 15:33:03.139 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.InitializeResult
+2022-03-18 15:33:03.141 +06:00 [DBG] Finished: Routing Request (0) initialize in 273ms
+2022-03-18 15:33:03.141 +06:00 [DBG] Finished: Processing request initialize 0 in 277ms
+2022-03-18 15:33:03.185 +06:00 [DBG] Finding descriptors for initialized
+2022-03-18 15:33:03.185 +06:00 [DBG] Queueing "Serial":initialized request for processing
+2022-03-18 15:33:03.188 +06:00 [DBG] Starting: Processing notification initialized
+2022-03-18 15:33:03.190 +06:00 [DBG] Starting: Routing Notification initialized
+2022-03-18 15:33:03.190 +06:00 [VRB] Converting params for Notification initialized to OmniSharp.Extensions.LanguageServer.Protocol.Models.InitializedParams
+2022-03-18 15:33:03.233 +06:00 [WRN] No ConfigurationItems have been defined, configuration won't surface any configuration from the client!
+2022-03-18 15:33:03.239 +06:00 [DBG] Finished: Routing Notification initialized in 48ms
+2022-03-18 15:33:03.239 +06:00 [DBG] Finished: Processing notification initialized in 50ms
+2022-03-18 15:33:03.266 +06:00 [DBG] Finding descriptors for textDocument/didOpen
+2022-03-18 15:33:03.272 +06:00 [VRB] Created attribute aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq
+2022-03-18 15:33:03.273 +06:00 [VRB] Looking for handler for descriptors textDocument/didOpen
+2022-03-18 15:33:03.273 +06:00 [VRB] Checking handler textDocument/didOpen:Aquila.LanguageServer.TextDocumentHandler
+2022-03-18 15:33:03.273 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.TextDocumentOpenRegistrationOptions
+2022-03-18 15:33:03.274 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:33:03.274 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.TextDocumentHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcNotificationHandler`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DidOpenTextDocumentParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:33:03.274 +06:00 [DBG] Queueing "Serial":textDocument/didOpen request for processing
+2022-03-18 15:33:03.274 +06:00 [DBG] Starting: Processing notification textDocument/didOpen
+2022-03-18 15:33:03.274 +06:00 [DBG] Starting: Routing Notification textDocument/didOpen
+2022-03-18 15:33:03.274 +06:00 [VRB] Converting params for Notification textDocument/didOpen to OmniSharp.Extensions.LanguageServer.Protocol.Models.DidOpenTextDocumentParams
+2022-03-18 15:33:03.287 +06:00 [VRB] Start loading project
+2022-03-18 15:33:03.905 +06:00 [DBG] Finding descriptors for textDocument/documentSymbol
+2022-03-18 15:33:03.909 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:33:03.909 +06:00 [VRB] Looking for handler for descriptors textDocument/documentSymbol
+2022-03-18 15:33:03.910 +06:00 [VRB] Checking handler textDocument/documentSymbol:Aquila.LanguageServer.DocumentSymbolHandler
+2022-03-18 15:33:03.910 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolRegistrationOptions
+2022-03-18 15:33:03.910 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:33:03.910 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.DocumentSymbolHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcRequestHandler`2[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022],[OmniSharp.Extensions.LanguageServer.Protocol.Models.SymbolInformationOrDocumentSymbolContainer, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:33:03.910 +06:00 [DBG] Swapping from "Serial" to "Parallel"
+2022-03-18 15:33:03.910 +06:00 [DBG] Completing existing request process type "Serial"
+2022-03-18 15:33:03.911 +06:00 [DBG] Queueing "Parallel":textDocument/documentSymbol:1 request for processing
+2022-03-18 15:33:03.966 +06:00 [DBG] Found cancellation request $/cancelRequest
+2022-03-18 15:33:03.969 +06:00 [DBG] Cancelling pending request
+2022-03-18 15:33:03.970 +06:00 [DBG] Finding descriptors for textDocument/documentSymbol
+2022-03-18 15:33:03.970 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:33:03.970 +06:00 [VRB] Looking for handler for descriptors textDocument/documentSymbol
+2022-03-18 15:33:03.970 +06:00 [VRB] Checking handler textDocument/documentSymbol:Aquila.LanguageServer.DocumentSymbolHandler
+2022-03-18 15:33:03.970 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolRegistrationOptions
+2022-03-18 15:33:03.970 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:33:03.970 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.DocumentSymbolHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcRequestHandler`2[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022],[OmniSharp.Extensions.LanguageServer.Protocol.Models.SymbolInformationOrDocumentSymbolContainer, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:33:03.970 +06:00 [DBG] Queueing "Parallel":textDocument/documentSymbol:2 request for processing
+2022-03-18 15:33:04.698 +06:00 [DBG] Finished: Routing Notification textDocument/didOpen in 1423ms
+2022-03-18 15:33:04.698 +06:00 [DBG] Finished: Processing notification textDocument/didOpen in 1423ms
+2022-03-18 15:33:04.699 +06:00 [DBG] Starting: Processing request textDocument/documentSymbol 1
+2022-03-18 15:33:04.700 +06:00 [DBG] Starting: Routing Request (1) textDocument/documentSymbol
+2022-03-18 15:33:04.700 +06:00 [VRB] Converting params for Request (1) textDocument/documentSymbol to OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams
+2022-03-18 15:33:04.700 +06:00 [VRB] Converting params for Notification textDocument/documentSymbol to OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams
+2022-03-18 15:33:04.703 +06:00 [DBG] Finished: Routing Request (1) textDocument/documentSymbol in 3ms
+2022-03-18 15:33:04.704 +06:00 [VRB] Request 1 was cancelled
+2022-03-18 15:33:04.704 +06:00 [DBG] Finished: Processing request textDocument/documentSymbol 1 in 4ms
+2022-03-18 15:33:04.707 +06:00 [DBG] Starting: Processing request textDocument/documentSymbol 2
+2022-03-18 15:33:04.707 +06:00 [DBG] Starting: Routing Request (2) textDocument/documentSymbol
+2022-03-18 15:33:04.707 +06:00 [VRB] Converting params for Request (2) textDocument/documentSymbol to OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams
+2022-03-18 15:33:04.707 +06:00 [VRB] Converting params for Notification textDocument/documentSymbol to OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams
+2022-03-18 15:33:04.710 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.SymbolInformationOrDocumentSymbolContainer
+2022-03-18 15:33:04.711 +06:00 [DBG] Finished: Routing Request (2) textDocument/documentSymbol in 4ms
+2022-03-18 15:33:04.711 +06:00 [DBG] Finished: Processing request textDocument/documentSymbol 2 in 4ms
+2022-03-18 15:33:05.081 +06:00 [DBG] Finding descriptors for textDocument/foldingRange
+2022-03-18 15:33:05.084 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:33:05.084 +06:00 [VRB] Looking for handler for descriptors textDocument/foldingRange
+2022-03-18 15:33:05.084 +06:00 [VRB] Checking handler textDocument/foldingRange:Aquila.LanguageServer.FoldingRangeHandler
+2022-03-18 15:33:05.084 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRegistrationOptions
+2022-03-18 15:33:05.084 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:33:05.085 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.FoldingRangeHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcRequestHandler`2[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022],[OmniSharp.Extensions.LanguageServer.Protocol.Models.Container`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRange, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]], OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:33:05.085 +06:00 [DBG] Queueing "Parallel":textDocument/foldingRange:3 request for processing
+2022-03-18 15:33:05.085 +06:00 [DBG] Starting: Processing request textDocument/foldingRange 3
+2022-03-18 15:33:05.085 +06:00 [DBG] Starting: Routing Request (3) textDocument/foldingRange
+2022-03-18 15:33:05.085 +06:00 [VRB] Converting params for Request (3) textDocument/foldingRange to OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam
+2022-03-18 15:33:05.085 +06:00 [VRB] Converting params for Notification textDocument/foldingRange to OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam
+2022-03-18 15:33:05.088 +06:00 [INF] Create folding
+2022-03-18 15:33:05.089 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.Container`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRange, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]]
+2022-03-18 15:33:05.090 +06:00 [DBG] Finished: Routing Request (3) textDocument/foldingRange in 4ms
+2022-03-18 15:33:05.090 +06:00 [DBG] Finished: Processing request textDocument/foldingRange 3 in 4ms
+2022-03-18 15:33:06.739 +06:00 [INF] Starting language server
+2022-03-18 15:33:07.119 +06:00 [INF] Folding register
+2022-03-18 15:33:07.122 +06:00 [INF] Init!!!! MyDocumentSymbolHandler
+2022-03-18 15:33:07.190 +06:00 [DBG] Finding descriptors for initialize
+2022-03-18 15:33:07.304 +06:00 [DBG] Queueing "Serial":initialize:0 request for processing
+2022-03-18 15:33:07.315 +06:00 [DBG] Starting: Processing request initialize 0
+2022-03-18 15:33:07.320 +06:00 [DBG] Starting: Routing Request (0) initialize
+2022-03-18 15:33:07.325 +06:00 [VRB] Converting params for Request (0) initialize to OmniSharp.Extensions.LanguageServer.Protocol.Models.InternalInitializeParams
+2022-03-18 15:33:07.326 +06:00 [VRB] Converting params for Notification initialize to OmniSharp.Extensions.LanguageServer.Protocol.Models.InternalInitializeParams
+2022-03-18 15:33:07.548 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.InitializeResult
+2022-03-18 15:33:07.550 +06:00 [DBG] Finished: Routing Request (0) initialize in 229ms
+2022-03-18 15:33:07.550 +06:00 [DBG] Finished: Processing request initialize 0 in 232ms
+2022-03-18 15:33:07.589 +06:00 [DBG] Finding descriptors for initialized
+2022-03-18 15:33:07.589 +06:00 [DBG] Queueing "Serial":initialized request for processing
+2022-03-18 15:33:07.592 +06:00 [DBG] Starting: Processing notification initialized
+2022-03-18 15:33:07.593 +06:00 [DBG] Starting: Routing Notification initialized
+2022-03-18 15:33:07.593 +06:00 [VRB] Converting params for Notification initialized to OmniSharp.Extensions.LanguageServer.Protocol.Models.InitializedParams
+2022-03-18 15:33:07.630 +06:00 [WRN] No ConfigurationItems have been defined, configuration won't surface any configuration from the client!
+2022-03-18 15:33:07.655 +06:00 [DBG] Finished: Routing Notification initialized in 61ms
+2022-03-18 15:33:07.655 +06:00 [DBG] Finished: Processing notification initialized in 63ms
+2022-03-18 15:33:07.656 +06:00 [DBG] Finding descriptors for textDocument/didOpen
+2022-03-18 15:33:07.661 +06:00 [VRB] Created attribute aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq
+2022-03-18 15:33:07.662 +06:00 [VRB] Looking for handler for descriptors textDocument/didOpen
+2022-03-18 15:33:07.663 +06:00 [VRB] Checking handler textDocument/didOpen:Aquila.LanguageServer.TextDocumentHandler
+2022-03-18 15:33:07.663 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.TextDocumentOpenRegistrationOptions
+2022-03-18 15:33:07.663 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:33:07.663 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.TextDocumentHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcNotificationHandler`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DidOpenTextDocumentParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:33:07.663 +06:00 [DBG] Queueing "Serial":textDocument/didOpen request for processing
+2022-03-18 15:33:07.663 +06:00 [DBG] Starting: Processing notification textDocument/didOpen
+2022-03-18 15:33:07.663 +06:00 [DBG] Starting: Routing Notification textDocument/didOpen
+2022-03-18 15:33:07.663 +06:00 [VRB] Converting params for Notification textDocument/didOpen to OmniSharp.Extensions.LanguageServer.Protocol.Models.DidOpenTextDocumentParams
+2022-03-18 15:33:07.675 +06:00 [VRB] Start loading project
+2022-03-18 15:33:08.271 +06:00 [DBG] Finding descriptors for textDocument/documentSymbol
+2022-03-18 15:33:08.274 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:33:08.274 +06:00 [VRB] Looking for handler for descriptors textDocument/documentSymbol
+2022-03-18 15:33:08.274 +06:00 [VRB] Checking handler textDocument/documentSymbol:Aquila.LanguageServer.DocumentSymbolHandler
+2022-03-18 15:33:08.274 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolRegistrationOptions
+2022-03-18 15:33:08.274 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:33:08.274 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.DocumentSymbolHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcRequestHandler`2[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022],[OmniSharp.Extensions.LanguageServer.Protocol.Models.SymbolInformationOrDocumentSymbolContainer, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:33:08.275 +06:00 [DBG] Swapping from "Serial" to "Parallel"
+2022-03-18 15:33:08.275 +06:00 [DBG] Completing existing request process type "Serial"
+2022-03-18 15:33:08.276 +06:00 [DBG] Queueing "Parallel":textDocument/documentSymbol:1 request for processing
+2022-03-18 15:33:08.276 +06:00 [DBG] Finding descriptors for textDocument/foldingRange
+2022-03-18 15:33:08.277 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:33:08.277 +06:00 [VRB] Looking for handler for descriptors textDocument/foldingRange
+2022-03-18 15:33:08.277 +06:00 [VRB] Checking handler textDocument/foldingRange:Aquila.LanguageServer.FoldingRangeHandler
+2022-03-18 15:33:08.277 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRegistrationOptions
+2022-03-18 15:33:08.277 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:33:08.277 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.FoldingRangeHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcRequestHandler`2[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022],[OmniSharp.Extensions.LanguageServer.Protocol.Models.Container`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRange, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]], OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:33:08.277 +06:00 [DBG] Queueing "Parallel":textDocument/foldingRange:2 request for processing
+2022-03-18 15:33:08.880 +06:00 [DBG] Finished: Routing Notification textDocument/didOpen in 1216ms
+2022-03-18 15:33:08.881 +06:00 [DBG] Finished: Processing notification textDocument/didOpen in 1217ms
+2022-03-18 15:33:08.882 +06:00 [DBG] Starting: Processing request textDocument/documentSymbol 1
+2022-03-18 15:33:08.882 +06:00 [DBG] Starting: Routing Request (1) textDocument/documentSymbol
+2022-03-18 15:33:08.883 +06:00 [VRB] Converting params for Request (1) textDocument/documentSymbol to OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams
+2022-03-18 15:33:08.883 +06:00 [VRB] Converting params for Notification textDocument/documentSymbol to OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams
+2022-03-18 15:33:08.887 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.SymbolInformationOrDocumentSymbolContainer
+2022-03-18 15:33:08.890 +06:00 [DBG] Finished: Routing Request (1) textDocument/documentSymbol in 7ms
+2022-03-18 15:33:08.890 +06:00 [DBG] Finished: Processing request textDocument/documentSymbol 1 in 7ms
+2022-03-18 15:33:08.907 +06:00 [DBG] Starting: Processing request textDocument/foldingRange 2
+2022-03-18 15:33:08.907 +06:00 [DBG] Starting: Routing Request (2) textDocument/foldingRange
+2022-03-18 15:33:08.907 +06:00 [VRB] Converting params for Request (2) textDocument/foldingRange to OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam
+2022-03-18 15:33:08.907 +06:00 [VRB] Converting params for Notification textDocument/foldingRange to OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam
+2022-03-18 15:33:08.909 +06:00 [INF] Create folding
+2022-03-18 15:33:08.909 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.Container`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRange, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]]
+2022-03-18 15:33:08.909 +06:00 [DBG] Finished: Routing Request (2) textDocument/foldingRange in 2ms
+2022-03-18 15:33:08.909 +06:00 [DBG] Finished: Processing request textDocument/foldingRange 2 in 2ms
+2022-03-18 15:33:10.919 +06:00 [INF] Starting language server
+2022-03-18 15:33:11.230 +06:00 [INF] Folding register
+2022-03-18 15:33:11.232 +06:00 [INF] Init!!!! MyDocumentSymbolHandler
+2022-03-18 15:33:11.301 +06:00 [DBG] Finding descriptors for initialize
+2022-03-18 15:33:11.409 +06:00 [DBG] Queueing "Serial":initialize:0 request for processing
+2022-03-18 15:33:11.420 +06:00 [DBG] Starting: Processing request initialize 0
+2022-03-18 15:33:11.425 +06:00 [DBG] Starting: Routing Request (0) initialize
+2022-03-18 15:33:11.430 +06:00 [VRB] Converting params for Request (0) initialize to OmniSharp.Extensions.LanguageServer.Protocol.Models.InternalInitializeParams
+2022-03-18 15:33:11.431 +06:00 [VRB] Converting params for Notification initialize to OmniSharp.Extensions.LanguageServer.Protocol.Models.InternalInitializeParams
+2022-03-18 15:33:11.662 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.InitializeResult
+2022-03-18 15:33:11.664 +06:00 [DBG] Finished: Routing Request (0) initialize in 239ms
+2022-03-18 15:33:11.665 +06:00 [DBG] Finished: Processing request initialize 0 in 242ms
+2022-03-18 15:33:11.706 +06:00 [DBG] Finding descriptors for initialized
+2022-03-18 15:33:11.706 +06:00 [DBG] Queueing "Serial":initialized request for processing
+2022-03-18 15:33:11.709 +06:00 [DBG] Starting: Processing notification initialized
+2022-03-18 15:33:11.710 +06:00 [DBG] Starting: Routing Notification initialized
+2022-03-18 15:33:11.710 +06:00 [VRB] Converting params for Notification initialized to OmniSharp.Extensions.LanguageServer.Protocol.Models.InitializedParams
+2022-03-18 15:33:11.747 +06:00 [WRN] No ConfigurationItems have been defined, configuration won't surface any configuration from the client!
+2022-03-18 15:33:11.771 +06:00 [DBG] Finished: Routing Notification initialized in 61ms
+2022-03-18 15:33:11.772 +06:00 [DBG] Finished: Processing notification initialized in 62ms
+2022-03-18 15:33:11.772 +06:00 [DBG] Finding descriptors for textDocument/didOpen
+2022-03-18 15:33:11.778 +06:00 [VRB] Created attribute aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq
+2022-03-18 15:33:11.779 +06:00 [VRB] Looking for handler for descriptors textDocument/didOpen
+2022-03-18 15:33:11.779 +06:00 [VRB] Checking handler textDocument/didOpen:Aquila.LanguageServer.TextDocumentHandler
+2022-03-18 15:33:11.779 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.TextDocumentOpenRegistrationOptions
+2022-03-18 15:33:11.779 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:33:11.780 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.TextDocumentHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcNotificationHandler`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DidOpenTextDocumentParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:33:11.780 +06:00 [DBG] Queueing "Serial":textDocument/didOpen request for processing
+2022-03-18 15:33:11.780 +06:00 [DBG] Starting: Processing notification textDocument/didOpen
+2022-03-18 15:33:11.780 +06:00 [DBG] Starting: Routing Notification textDocument/didOpen
+2022-03-18 15:33:11.780 +06:00 [VRB] Converting params for Notification textDocument/didOpen to OmniSharp.Extensions.LanguageServer.Protocol.Models.DidOpenTextDocumentParams
+2022-03-18 15:33:11.792 +06:00 [VRB] Start loading project
+2022-03-18 15:33:12.342 +06:00 [DBG] Finding descriptors for textDocument/documentSymbol
+2022-03-18 15:33:12.345 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:33:12.345 +06:00 [VRB] Looking for handler for descriptors textDocument/documentSymbol
+2022-03-18 15:33:12.345 +06:00 [VRB] Checking handler textDocument/documentSymbol:Aquila.LanguageServer.DocumentSymbolHandler
+2022-03-18 15:33:12.345 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolRegistrationOptions
+2022-03-18 15:33:12.345 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:33:12.345 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.DocumentSymbolHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcRequestHandler`2[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022],[OmniSharp.Extensions.LanguageServer.Protocol.Models.SymbolInformationOrDocumentSymbolContainer, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:33:12.346 +06:00 [DBG] Swapping from "Serial" to "Parallel"
+2022-03-18 15:33:12.346 +06:00 [DBG] Completing existing request process type "Serial"
+2022-03-18 15:33:12.347 +06:00 [DBG] Queueing "Parallel":textDocument/documentSymbol:1 request for processing
+2022-03-18 15:33:12.347 +06:00 [DBG] Finding descriptors for textDocument/foldingRange
+2022-03-18 15:33:12.348 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:33:12.348 +06:00 [VRB] Looking for handler for descriptors textDocument/foldingRange
+2022-03-18 15:33:12.349 +06:00 [VRB] Checking handler textDocument/foldingRange:Aquila.LanguageServer.FoldingRangeHandler
+2022-03-18 15:33:12.349 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRegistrationOptions
+2022-03-18 15:33:12.349 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:33:12.349 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.FoldingRangeHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcRequestHandler`2[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022],[OmniSharp.Extensions.LanguageServer.Protocol.Models.Container`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRange, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]], OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:33:12.349 +06:00 [DBG] Queueing "Parallel":textDocument/foldingRange:2 request for processing
+2022-03-18 15:33:12.955 +06:00 [DBG] Finished: Routing Notification textDocument/didOpen in 1174ms
+2022-03-18 15:33:12.955 +06:00 [DBG] Finished: Processing notification textDocument/didOpen in 1175ms
+2022-03-18 15:33:12.957 +06:00 [DBG] Starting: Processing request textDocument/documentSymbol 1
+2022-03-18 15:33:12.957 +06:00 [DBG] Starting: Routing Request (1) textDocument/documentSymbol
+2022-03-18 15:33:12.957 +06:00 [VRB] Converting params for Request (1) textDocument/documentSymbol to OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams
+2022-03-18 15:33:12.958 +06:00 [VRB] Converting params for Notification textDocument/documentSymbol to OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams
+2022-03-18 15:33:12.961 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.SymbolInformationOrDocumentSymbolContainer
+2022-03-18 15:33:12.965 +06:00 [DBG] Finished: Routing Request (1) textDocument/documentSymbol in 7ms
+2022-03-18 15:33:12.965 +06:00 [DBG] Finished: Processing request textDocument/documentSymbol 1 in 7ms
+2022-03-18 15:33:12.982 +06:00 [DBG] Starting: Processing request textDocument/foldingRange 2
+2022-03-18 15:33:12.982 +06:00 [DBG] Starting: Routing Request (2) textDocument/foldingRange
+2022-03-18 15:33:12.982 +06:00 [VRB] Converting params for Request (2) textDocument/foldingRange to OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam
+2022-03-18 15:33:12.982 +06:00 [VRB] Converting params for Notification textDocument/foldingRange to OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam
+2022-03-18 15:33:12.983 +06:00 [INF] Create folding
+2022-03-18 15:33:12.984 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.Container`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRange, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]]
+2022-03-18 15:33:12.984 +06:00 [DBG] Finished: Routing Request (2) textDocument/foldingRange in 1ms
+2022-03-18 15:33:12.984 +06:00 [DBG] Finished: Processing request textDocument/foldingRange 2 in 1ms
+2022-03-18 15:33:14.999 +06:00 [INF] Starting language server
+2022-03-18 15:33:15.319 +06:00 [INF] Folding register
+2022-03-18 15:33:15.321 +06:00 [INF] Init!!!! MyDocumentSymbolHandler
+2022-03-18 15:33:15.378 +06:00 [DBG] Finding descriptors for initialize
+2022-03-18 15:33:15.483 +06:00 [DBG] Queueing "Serial":initialize:0 request for processing
+2022-03-18 15:33:15.494 +06:00 [DBG] Starting: Processing request initialize 0
+2022-03-18 15:33:15.498 +06:00 [DBG] Starting: Routing Request (0) initialize
+2022-03-18 15:33:15.504 +06:00 [VRB] Converting params for Request (0) initialize to OmniSharp.Extensions.LanguageServer.Protocol.Models.InternalInitializeParams
+2022-03-18 15:33:15.505 +06:00 [VRB] Converting params for Notification initialize to OmniSharp.Extensions.LanguageServer.Protocol.Models.InternalInitializeParams
+2022-03-18 15:33:15.749 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.InitializeResult
+2022-03-18 15:33:15.751 +06:00 [DBG] Finished: Routing Request (0) initialize in 252ms
+2022-03-18 15:33:15.752 +06:00 [DBG] Finished: Processing request initialize 0 in 255ms
+2022-03-18 15:33:15.794 +06:00 [DBG] Finding descriptors for initialized
+2022-03-18 15:33:15.795 +06:00 [DBG] Queueing "Serial":initialized request for processing
+2022-03-18 15:33:15.797 +06:00 [DBG] Starting: Processing notification initialized
+2022-03-18 15:33:15.799 +06:00 [DBG] Starting: Routing Notification initialized
+2022-03-18 15:33:15.799 +06:00 [VRB] Converting params for Notification initialized to OmniSharp.Extensions.LanguageServer.Protocol.Models.InitializedParams
+2022-03-18 15:33:15.836 +06:00 [WRN] No ConfigurationItems have been defined, configuration won't surface any configuration from the client!
+2022-03-18 15:33:15.861 +06:00 [DBG] Finished: Routing Notification initialized in 61ms
+2022-03-18 15:33:15.861 +06:00 [DBG] Finished: Processing notification initialized in 63ms
+2022-03-18 15:33:15.861 +06:00 [DBG] Finding descriptors for textDocument/didOpen
+2022-03-18 15:33:15.867 +06:00 [VRB] Created attribute aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq
+2022-03-18 15:33:15.869 +06:00 [VRB] Looking for handler for descriptors textDocument/didOpen
+2022-03-18 15:33:15.869 +06:00 [VRB] Checking handler textDocument/didOpen:Aquila.LanguageServer.TextDocumentHandler
+2022-03-18 15:33:15.869 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.TextDocumentOpenRegistrationOptions
+2022-03-18 15:33:15.869 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:33:15.869 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.TextDocumentHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcNotificationHandler`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DidOpenTextDocumentParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:33:15.870 +06:00 [DBG] Queueing "Serial":textDocument/didOpen request for processing
+2022-03-18 15:33:15.870 +06:00 [DBG] Starting: Processing notification textDocument/didOpen
+2022-03-18 15:33:15.870 +06:00 [DBG] Starting: Routing Notification textDocument/didOpen
+2022-03-18 15:33:15.870 +06:00 [VRB] Converting params for Notification textDocument/didOpen to OmniSharp.Extensions.LanguageServer.Protocol.Models.DidOpenTextDocumentParams
+2022-03-18 15:33:15.881 +06:00 [VRB] Start loading project
+2022-03-18 15:33:16.419 +06:00 [DBG] Finding descriptors for textDocument/documentSymbol
+2022-03-18 15:33:16.422 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:33:16.422 +06:00 [VRB] Looking for handler for descriptors textDocument/documentSymbol
+2022-03-18 15:33:16.422 +06:00 [VRB] Checking handler textDocument/documentSymbol:Aquila.LanguageServer.DocumentSymbolHandler
+2022-03-18 15:33:16.422 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolRegistrationOptions
+2022-03-18 15:33:16.422 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:33:16.422 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.DocumentSymbolHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcRequestHandler`2[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022],[OmniSharp.Extensions.LanguageServer.Protocol.Models.SymbolInformationOrDocumentSymbolContainer, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:33:16.422 +06:00 [DBG] Swapping from "Serial" to "Parallel"
+2022-03-18 15:33:16.422 +06:00 [DBG] Completing existing request process type "Serial"
+2022-03-18 15:33:16.424 +06:00 [DBG] Queueing "Parallel":textDocument/documentSymbol:1 request for processing
+2022-03-18 15:33:16.424 +06:00 [DBG] Finding descriptors for textDocument/foldingRange
+2022-03-18 15:33:16.425 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:33:16.425 +06:00 [VRB] Looking for handler for descriptors textDocument/foldingRange
+2022-03-18 15:33:16.425 +06:00 [VRB] Checking handler textDocument/foldingRange:Aquila.LanguageServer.FoldingRangeHandler
+2022-03-18 15:33:16.425 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRegistrationOptions
+2022-03-18 15:33:16.425 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:33:16.425 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.FoldingRangeHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcRequestHandler`2[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022],[OmniSharp.Extensions.LanguageServer.Protocol.Models.Container`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRange, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]], OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:33:16.425 +06:00 [DBG] Queueing "Parallel":textDocument/foldingRange:2 request for processing
+2022-03-18 15:33:17.046 +06:00 [DBG] Finished: Routing Notification textDocument/didOpen in 1175ms
+2022-03-18 15:33:17.046 +06:00 [DBG] Finished: Processing notification textDocument/didOpen in 1176ms
+2022-03-18 15:33:17.048 +06:00 [DBG] Starting: Processing request textDocument/documentSymbol 1
+2022-03-18 15:33:17.048 +06:00 [DBG] Starting: Routing Request (1) textDocument/documentSymbol
+2022-03-18 15:33:17.048 +06:00 [VRB] Converting params for Request (1) textDocument/documentSymbol to OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams
+2022-03-18 15:33:17.048 +06:00 [VRB] Converting params for Notification textDocument/documentSymbol to OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams
+2022-03-18 15:33:17.052 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.SymbolInformationOrDocumentSymbolContainer
+2022-03-18 15:33:17.055 +06:00 [DBG] Finished: Routing Request (1) textDocument/documentSymbol in 7ms
+2022-03-18 15:33:17.056 +06:00 [DBG] Finished: Processing request textDocument/documentSymbol 1 in 7ms
+2022-03-18 15:33:17.072 +06:00 [DBG] Starting: Processing request textDocument/foldingRange 2
+2022-03-18 15:33:17.072 +06:00 [DBG] Starting: Routing Request (2) textDocument/foldingRange
+2022-03-18 15:33:17.072 +06:00 [VRB] Converting params for Request (2) textDocument/foldingRange to OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam
+2022-03-18 15:33:17.072 +06:00 [VRB] Converting params for Notification textDocument/foldingRange to OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam
+2022-03-18 15:33:17.073 +06:00 [INF] Create folding
+2022-03-18 15:33:17.074 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.Container`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRange, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]]
+2022-03-18 15:33:17.074 +06:00 [DBG] Finished: Routing Request (2) textDocument/foldingRange in 1ms
+2022-03-18 15:33:17.074 +06:00 [DBG] Finished: Processing request textDocument/foldingRange 2 in 1ms
+2022-03-18 15:35:40.674 +06:00 [INF] Starting language server
+2022-03-18 15:35:41.083 +06:00 [INF] Folding register
+2022-03-18 15:35:41.085 +06:00 [INF] Init!!!! MyDocumentSymbolHandler
+2022-03-18 15:35:41.167 +06:00 [DBG] Finding descriptors for initialize
+2022-03-18 15:35:41.308 +06:00 [DBG] Queueing "Serial":initialize:0 request for processing
+2022-03-18 15:35:41.329 +06:00 [DBG] Starting: Processing request initialize 0
+2022-03-18 15:35:41.336 +06:00 [DBG] Starting: Routing Request (0) initialize
+2022-03-18 15:35:41.344 +06:00 [VRB] Converting params for Request (0) initialize to OmniSharp.Extensions.LanguageServer.Protocol.Models.InternalInitializeParams
+2022-03-18 15:35:41.345 +06:00 [VRB] Converting params for Notification initialize to OmniSharp.Extensions.LanguageServer.Protocol.Models.InternalInitializeParams
+2022-03-18 15:35:41.608 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.InitializeResult
+2022-03-18 15:35:41.610 +06:00 [DBG] Finished: Routing Request (0) initialize in 272ms
+2022-03-18 15:35:41.610 +06:00 [DBG] Finished: Processing request initialize 0 in 276ms
+2022-03-18 15:35:41.650 +06:00 [DBG] Finding descriptors for initialized
+2022-03-18 15:35:41.650 +06:00 [DBG] Queueing "Serial":initialized request for processing
+2022-03-18 15:35:41.653 +06:00 [DBG] Starting: Processing notification initialized
+2022-03-18 15:35:41.654 +06:00 [DBG] Starting: Routing Notification initialized
+2022-03-18 15:35:41.654 +06:00 [VRB] Converting params for Notification initialized to OmniSharp.Extensions.LanguageServer.Protocol.Models.InitializedParams
+2022-03-18 15:35:41.697 +06:00 [WRN] No ConfigurationItems have been defined, configuration won't surface any configuration from the client!
+2022-03-18 15:35:41.702 +06:00 [DBG] Finished: Routing Notification initialized in 48ms
+2022-03-18 15:35:41.702 +06:00 [DBG] Finished: Processing notification initialized in 49ms
+2022-03-18 15:35:41.741 +06:00 [DBG] Finding descriptors for textDocument/didOpen
+2022-03-18 15:35:41.748 +06:00 [VRB] Created attribute aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq
+2022-03-18 15:35:41.751 +06:00 [VRB] Looking for handler for descriptors textDocument/didOpen
+2022-03-18 15:35:41.751 +06:00 [VRB] Checking handler textDocument/didOpen:Aquila.LanguageServer.TextDocumentHandler
+2022-03-18 15:35:41.751 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.TextDocumentOpenRegistrationOptions
+2022-03-18 15:35:41.751 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:35:41.752 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.TextDocumentHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcNotificationHandler`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DidOpenTextDocumentParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:35:41.752 +06:00 [DBG] Queueing "Serial":textDocument/didOpen request for processing
+2022-03-18 15:35:41.752 +06:00 [DBG] Starting: Processing notification textDocument/didOpen
+2022-03-18 15:35:41.752 +06:00 [DBG] Starting: Routing Notification textDocument/didOpen
+2022-03-18 15:35:41.752 +06:00 [VRB] Converting params for Notification textDocument/didOpen to OmniSharp.Extensions.LanguageServer.Protocol.Models.DidOpenTextDocumentParams
+2022-03-18 15:35:41.766 +06:00 [VRB] Start loading project
+2022-03-18 15:35:42.308 +06:00 [DBG] Finding descriptors for textDocument/documentSymbol
+2022-03-18 15:35:42.311 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:35:42.311 +06:00 [VRB] Looking for handler for descriptors textDocument/documentSymbol
+2022-03-18 15:35:42.311 +06:00 [VRB] Checking handler textDocument/documentSymbol:Aquila.LanguageServer.DocumentSymbolHandler
+2022-03-18 15:35:42.311 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolRegistrationOptions
+2022-03-18 15:35:42.311 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:35:42.311 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.DocumentSymbolHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcRequestHandler`2[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022],[OmniSharp.Extensions.LanguageServer.Protocol.Models.SymbolInformationOrDocumentSymbolContainer, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:35:42.311 +06:00 [DBG] Swapping from "Serial" to "Parallel"
+2022-03-18 15:35:42.311 +06:00 [DBG] Completing existing request process type "Serial"
+2022-03-18 15:35:42.313 +06:00 [DBG] Queueing "Parallel":textDocument/documentSymbol:1 request for processing
+2022-03-18 15:35:42.313 +06:00 [DBG] Finding descriptors for textDocument/foldingRange
+2022-03-18 15:35:42.314 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:35:42.314 +06:00 [VRB] Looking for handler for descriptors textDocument/foldingRange
+2022-03-18 15:35:42.314 +06:00 [VRB] Checking handler textDocument/foldingRange:Aquila.LanguageServer.FoldingRangeHandler
+2022-03-18 15:35:42.314 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRegistrationOptions
+2022-03-18 15:35:42.314 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:35:42.314 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.FoldingRangeHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcRequestHandler`2[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022],[OmniSharp.Extensions.LanguageServer.Protocol.Models.Container`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRange, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]], OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:35:42.314 +06:00 [DBG] Queueing "Parallel":textDocument/foldingRange:2 request for processing
+2022-03-18 15:35:42.314 +06:00 [DBG] Finding descriptors for workspace/didChangeWatchedFiles
+2022-03-18 15:35:42.317 +06:00 [DBG] Queueing "Parallel":workspace/didChangeWatchedFiles request for processing
+2022-03-18 15:35:42.890 +06:00 [DBG] Finished: Routing Notification textDocument/didOpen in 1138ms
+2022-03-18 15:35:42.891 +06:00 [DBG] Finished: Processing notification textDocument/didOpen in 1138ms
+2022-03-18 15:35:42.892 +06:00 [DBG] Starting: Processing request textDocument/documentSymbol 1
+2022-03-18 15:35:42.892 +06:00 [DBG] Starting: Routing Request (1) textDocument/documentSymbol
+2022-03-18 15:35:42.893 +06:00 [VRB] Converting params for Request (1) textDocument/documentSymbol to OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams
+2022-03-18 15:35:42.893 +06:00 [VRB] Converting params for Notification textDocument/documentSymbol to OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams
+2022-03-18 15:35:42.897 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.SymbolInformationOrDocumentSymbolContainer
+2022-03-18 15:35:42.900 +06:00 [DBG] Finished: Routing Request (1) textDocument/documentSymbol in 7ms
+2022-03-18 15:35:42.900 +06:00 [DBG] Finished: Processing request textDocument/documentSymbol 1 in 7ms
+2022-03-18 15:35:42.919 +06:00 [DBG] Starting: Processing request textDocument/foldingRange 2
+2022-03-18 15:35:42.919 +06:00 [DBG] Starting: Routing Request (2) textDocument/foldingRange
+2022-03-18 15:35:42.919 +06:00 [VRB] Converting params for Request (2) textDocument/foldingRange to OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam
+2022-03-18 15:35:42.919 +06:00 [VRB] Converting params for Notification textDocument/foldingRange to OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam
+2022-03-18 15:35:42.921 +06:00 [INF] Create folding
+2022-03-18 15:35:42.921 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.Container`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRange, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]]
+2022-03-18 15:35:42.922 +06:00 [DBG] Finished: Routing Request (2) textDocument/foldingRange in 2ms
+2022-03-18 15:35:42.922 +06:00 [DBG] Finished: Processing request textDocument/foldingRange 2 in 2ms
+2022-03-18 15:35:42.926 +06:00 [DBG] Starting: Processing notification workspace/didChangeWatchedFiles
+2022-03-18 15:35:42.926 +06:00 [DBG] Starting: Routing Notification workspace/didChangeWatchedFiles
+2022-03-18 15:35:42.926 +06:00 [VRB] Converting params for Notification workspace/didChangeWatchedFiles to OmniSharp.Extensions.LanguageServer.Protocol.Models.DidChangeWatchedFilesParams
+2022-03-18 15:35:42.928 +06:00 [DBG] Finished: Routing Notification workspace/didChangeWatchedFiles in 1ms
+2022-03-18 15:35:42.928 +06:00 [DBG] Finished: Processing notification workspace/didChangeWatchedFiles in 1ms
+2022-03-18 15:35:43.216 +06:00 [DBG] Finding descriptors for workspace/didChangeWatchedFiles
+2022-03-18 15:35:43.216 +06:00 [DBG] Queueing "Parallel":workspace/didChangeWatchedFiles request for processing
+2022-03-18 15:35:43.217 +06:00 [DBG] Starting: Processing notification workspace/didChangeWatchedFiles
+2022-03-18 15:35:43.217 +06:00 [DBG] Starting: Routing Notification workspace/didChangeWatchedFiles
+2022-03-18 15:35:43.217 +06:00 [VRB] Converting params for Notification workspace/didChangeWatchedFiles to OmniSharp.Extensions.LanguageServer.Protocol.Models.DidChangeWatchedFilesParams
+2022-03-18 15:35:43.218 +06:00 [DBG] Finished: Routing Notification workspace/didChangeWatchedFiles in 1ms
+2022-03-18 15:35:43.219 +06:00 [DBG] Finished: Processing notification workspace/didChangeWatchedFiles in 1ms
+2022-03-18 15:36:31.051 +06:00 [DBG] Finding descriptors for textDocument/didSave
+2022-03-18 15:36:31.054 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:36:31.054 +06:00 [VRB] Looking for handler for descriptors textDocument/didSave
+2022-03-18 15:36:31.054 +06:00 [VRB] Checking handler textDocument/didSave:Aquila.LanguageServer.TextDocumentHandler
+2022-03-18 15:36:31.054 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.TextDocumentSaveRegistrationOptions
+2022-03-18 15:36:31.054 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:36:31.054 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.TextDocumentHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcNotificationHandler`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DidSaveTextDocumentParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:36:31.054 +06:00 [DBG] Swapping from "Parallel" to "Serial"
+2022-03-18 15:36:31.054 +06:00 [DBG] Cancelling any outstanding requests (switch from parallel to serial)
+2022-03-18 15:36:31.055 +06:00 [DBG] Completing existing request process type "Parallel"
+2022-03-18 15:36:31.055 +06:00 [DBG] Queueing "Serial":textDocument/didSave request for processing
+2022-03-18 15:36:31.055 +06:00 [DBG] Starting: Processing notification textDocument/didSave
+2022-03-18 15:36:31.055 +06:00 [DBG] Starting: Routing Notification textDocument/didSave
+2022-03-18 15:36:31.055 +06:00 [VRB] Converting params for Notification textDocument/didSave to OmniSharp.Extensions.LanguageServer.Protocol.Models.DidSaveTextDocumentParams
+2022-03-18 15:36:31.059 +06:00 [DBG] Finished: Routing Notification textDocument/didSave in 3ms
+2022-03-18 15:36:31.059 +06:00 [DBG] Finished: Processing notification textDocument/didSave in 3ms
+2022-03-18 15:36:31.230 +06:00 [DBG] Finding descriptors for textDocument/didSave
+2022-03-18 15:36:31.230 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:36:31.230 +06:00 [VRB] Looking for handler for descriptors textDocument/didSave
+2022-03-18 15:36:31.230 +06:00 [VRB] Checking handler textDocument/didSave:Aquila.LanguageServer.TextDocumentHandler
+2022-03-18 15:36:31.230 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.TextDocumentSaveRegistrationOptions
+2022-03-18 15:36:31.230 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:36:31.230 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.TextDocumentHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcNotificationHandler`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DidSaveTextDocumentParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:36:31.230 +06:00 [DBG] Queueing "Serial":textDocument/didSave request for processing
+2022-03-18 15:36:31.230 +06:00 [DBG] Starting: Processing notification textDocument/didSave
+2022-03-18 15:36:31.230 +06:00 [DBG] Starting: Routing Notification textDocument/didSave
+2022-03-18 15:36:31.231 +06:00 [VRB] Converting params for Notification textDocument/didSave to OmniSharp.Extensions.LanguageServer.Protocol.Models.DidSaveTextDocumentParams
+2022-03-18 15:36:31.232 +06:00 [DBG] Finished: Routing Notification textDocument/didSave in 1ms
+2022-03-18 15:36:31.232 +06:00 [DBG] Finished: Processing notification textDocument/didSave in 1ms
+2022-03-18 15:36:31.544 +06:00 [DBG] Finding descriptors for workspace/didChangeWatchedFiles
+2022-03-18 15:36:31.544 +06:00 [DBG] Swapping from "Serial" to "Parallel"
+2022-03-18 15:36:31.544 +06:00 [DBG] Completing existing request process type "Serial"
+2022-03-18 15:36:31.544 +06:00 [DBG] Queueing "Parallel":workspace/didChangeWatchedFiles request for processing
+2022-03-18 15:36:31.545 +06:00 [DBG] Starting: Processing notification workspace/didChangeWatchedFiles
+2022-03-18 15:36:31.545 +06:00 [DBG] Starting: Routing Notification workspace/didChangeWatchedFiles
+2022-03-18 15:36:31.545 +06:00 [VRB] Converting params for Notification workspace/didChangeWatchedFiles to OmniSharp.Extensions.LanguageServer.Protocol.Models.DidChangeWatchedFilesParams
+2022-03-18 15:36:31.545 +06:00 [DBG] Finished: Routing Notification workspace/didChangeWatchedFiles in 0ms
+2022-03-18 15:36:31.545 +06:00 [DBG] Finished: Processing notification workspace/didChangeWatchedFiles in 0ms
+2022-03-18 15:36:45.860 +06:00 [DBG] Finding descriptors for textDocument/didChange
+2022-03-18 15:36:45.864 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:36:45.864 +06:00 [VRB] Looking for handler for descriptors textDocument/didChange
+2022-03-18 15:36:45.864 +06:00 [VRB] Checking handler textDocument/didChange:Aquila.LanguageServer.TextDocumentHandler
+2022-03-18 15:36:45.864 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.TextDocumentChangeRegistrationOptions
+2022-03-18 15:36:45.864 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:36:45.864 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.TextDocumentHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcNotificationHandler`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DidChangeTextDocumentParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:36:45.864 +06:00 [DBG] Swapping from "Parallel" to "Serial"
+2022-03-18 15:36:45.864 +06:00 [DBG] Cancelling any outstanding requests (switch from parallel to serial)
+2022-03-18 15:36:45.864 +06:00 [DBG] Completing existing request process type "Parallel"
+2022-03-18 15:36:45.864 +06:00 [DBG] Queueing "Serial":textDocument/didChange request for processing
+2022-03-18 15:36:45.864 +06:00 [DBG] Starting: Processing notification textDocument/didChange
+2022-03-18 15:36:45.864 +06:00 [DBG] Starting: Routing Notification textDocument/didChange
+2022-03-18 15:36:45.864 +06:00 [VRB] Converting params for Notification textDocument/didChange to OmniSharp.Extensions.LanguageServer.Protocol.Models.DidChangeTextDocumentParams
+2022-03-18 15:36:45.867 +06:00 [VRB] Start loading project
+2022-03-18 15:36:46.059 +06:00 [DBG] Finished: Routing Notification textDocument/didChange in 195ms
+2022-03-18 15:36:46.060 +06:00 [DBG] Finished: Processing notification textDocument/didChange in 195ms
+2022-03-18 15:36:46.349 +06:00 [DBG] Finding descriptors for workspace/didChangeWatchedFiles
+2022-03-18 15:36:46.349 +06:00 [DBG] Swapping from "Serial" to "Parallel"
+2022-03-18 15:36:46.349 +06:00 [DBG] Completing existing request process type "Serial"
+2022-03-18 15:36:46.349 +06:00 [DBG] Queueing "Parallel":workspace/didChangeWatchedFiles request for processing
+2022-03-18 15:36:46.349 +06:00 [DBG] Starting: Processing notification workspace/didChangeWatchedFiles
+2022-03-18 15:36:46.349 +06:00 [DBG] Starting: Routing Notification workspace/didChangeWatchedFiles
+2022-03-18 15:36:46.349 +06:00 [VRB] Converting params for Notification workspace/didChangeWatchedFiles to OmniSharp.Extensions.LanguageServer.Protocol.Models.DidChangeWatchedFilesParams
+2022-03-18 15:36:46.350 +06:00 [DBG] Finished: Routing Notification workspace/didChangeWatchedFiles in 0ms
+2022-03-18 15:36:46.350 +06:00 [DBG] Finished: Processing notification workspace/didChangeWatchedFiles in 0ms
+2022-03-18 15:36:46.636 +06:00 [DBG] Finding descriptors for textDocument/foldingRange
+2022-03-18 15:36:46.637 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:36:46.637 +06:00 [VRB] Looking for handler for descriptors textDocument/foldingRange
+2022-03-18 15:36:46.637 +06:00 [VRB] Checking handler textDocument/foldingRange:Aquila.LanguageServer.FoldingRangeHandler
+2022-03-18 15:36:46.637 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRegistrationOptions
+2022-03-18 15:36:46.637 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:36:46.637 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.FoldingRangeHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcRequestHandler`2[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022],[OmniSharp.Extensions.LanguageServer.Protocol.Models.Container`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRange, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]], OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:36:46.646 +06:00 [DBG] Queueing "Parallel":textDocument/foldingRange:3 request for processing
+2022-03-18 15:36:46.646 +06:00 [DBG] Starting: Processing request textDocument/foldingRange 3
+2022-03-18 15:36:46.646 +06:00 [DBG] Starting: Routing Request (3) textDocument/foldingRange
+2022-03-18 15:36:46.646 +06:00 [VRB] Converting params for Request (3) textDocument/foldingRange to OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam
+2022-03-18 15:36:46.646 +06:00 [VRB] Converting params for Notification textDocument/foldingRange to OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRangeRequestParam
+2022-03-18 15:36:46.648 +06:00 [INF] Create folding
+2022-03-18 15:36:46.649 +06:00 [VRB] Response value was OmniSharp.Extensions.LanguageServer.Protocol.Models.Container`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.FoldingRange, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]]
+2022-03-18 15:36:46.649 +06:00 [DBG] Finished: Routing Request (3) textDocument/foldingRange in 3ms
+2022-03-18 15:36:46.649 +06:00 [DBG] Finished: Processing request textDocument/foldingRange 3 in 3ms
+2022-03-18 15:36:46.826 +06:00 [DBG] Finding descriptors for textDocument/documentSymbol
+2022-03-18 15:36:46.826 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:36:46.826 +06:00 [VRB] Looking for handler for descriptors textDocument/documentSymbol
+2022-03-18 15:36:46.826 +06:00 [VRB] Checking handler textDocument/documentSymbol:Aquila.LanguageServer.DocumentSymbolHandler
+2022-03-18 15:36:46.826 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolRegistrationOptions
+2022-03-18 15:36:46.826 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:36:46.826 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.DocumentSymbolHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcRequestHandler`2[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022],[OmniSharp.Extensions.LanguageServer.Protocol.Models.SymbolInformationOrDocumentSymbolContainer, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:36:46.826 +06:00 [DBG] Queueing "Parallel":textDocument/documentSymbol:4 request for processing
+2022-03-18 15:36:46.826 +06:00 [DBG] Starting: Processing request textDocument/documentSymbol 4
+2022-03-18 15:36:46.826 +06:00 [DBG] Starting: Routing Request (4) textDocument/documentSymbol
+2022-03-18 15:36:46.826 +06:00 [VRB] Converting params for Request (4) textDocument/documentSymbol to OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams
+2022-03-18 15:36:46.826 +06:00 [VRB] Converting params for Notification textDocument/documentSymbol to OmniSharp.Extensions.LanguageServer.Protocol.Models.DocumentSymbolParams
+2022-03-18 15:36:46.828 +06:00 [VRB] Start loading project
+2022-03-18 15:36:46.987 +06:00 [DBG] Finished: Routing Request (4) textDocument/documentSymbol in 160ms
+2022-03-18 15:36:46.987 +06:00 [FTL] Failed to handle request textDocument/documentSymbol 4
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Aquila.LanguageServer.DocumentSymbolHandler.Handle(DocumentSymbolParams request, CancellationToken cancellationToken) in C:\projects\AquilaPlatform\src\aquila-language\Aquila.LanguageServer\Handlers\DocumentSymbolHandler.cs:line 32
+   at OmniSharp.Extensions.LanguageServer.Server.Pipelines.SemanticTokensDeltaPipeline`2.Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate`1 next)
+   at OmniSharp.Extensions.LanguageServer.Server.Pipelines.ResolveCommandPipeline`2.Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate`1 next)
+   at MediatR.Pipeline.RequestPreProcessorBehavior`2.Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate`1 next)
+   at MediatR.Pipeline.RequestPostProcessorBehavior`2.Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate`1 next)
+   at MediatR.Pipeline.RequestExceptionProcessorBehavior`2.Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate`1 next)
+   at MediatR.Pipeline.RequestExceptionProcessorBehavior`2.Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate`1 next)
+   at MediatR.Pipeline.RequestExceptionActionProcessorBehavior`2.Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate`1 next)
+   at MediatR.Pipeline.RequestExceptionActionProcessorBehavior`2.Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate`1 next)
+   at OmniSharp.Extensions.JsonRpc.RequestRouterBase`1.<RouteRequest>g__InnerRoute|7_0(IServiceScopeFactory serviceScopeFactory, Request request, TDescriptor descriptor, Object params, CancellationToken token, ILogger logger)
+   at OmniSharp.Extensions.JsonRpc.RequestRouterBase`1.RouteRequest(IRequestDescriptor`1 descriptors, Request request, CancellationToken token)
+   at OmniSharp.Extensions.JsonRpc.DefaultRequestInvoker.<>c__DisplayClass10_0.<<RouteRequest>b__5>d.MoveNext()
+2022-03-18 15:36:47.013 +06:00 [DBG] Finished: Processing request textDocument/documentSymbol 4 in 186ms
+2022-03-18 15:37:23.603 +06:00 [DBG] Finding descriptors for textDocument/didSave
+2022-03-18 15:37:23.604 +06:00 [VRB] Found attributes 1, ["aqlang::file:///c:/projects/AquilaPlatform/Build/library/internal.aq"]
+2022-03-18 15:37:23.604 +06:00 [VRB] Looking for handler for descriptors textDocument/didSave
+2022-03-18 15:37:23.604 +06:00 [VRB] Checking handler textDocument/didSave:Aquila.LanguageServer.TextDocumentHandler
+2022-03-18 15:37:23.604 +06:00 [VRB] Registration options OmniSharp.Extensions.LanguageServer.Protocol.Models.TextDocumentSaveRegistrationOptions
+2022-03-18 15:37:23.604 +06:00 [VRB] Document Selector [aqlang]
+2022-03-18 15:37:23.604 +06:00 [VRB] Handler Selected: Aquila.LanguageServer.TextDocumentHandler  via [aqlang] (targeting OmniSharp.Extensions.JsonRpc.IJsonRpcNotificationHandler`1[[OmniSharp.Extensions.LanguageServer.Protocol.Models.DidSaveTextDocumentParams, OmniSharp.Extensions.LanguageProtocol, Version=0.19.0.0, Culture=neutral, PublicKeyToken=6d868dff454e6022]])
+2022-03-18 15:37:23.604 +06:00 [DBG] Swapping from "Parallel" to "Serial"
+2022-03-18 15:37:23.604 +06:00 [DBG] Cancelling any outstanding requests (switch from parallel to serial)
+2022-03-18 15:37:23.604 +06:00 [DBG] Completing existing request process type "Parallel"
+2022-03-18 15:37:23.604 +06:00 [DBG] Queueing "Serial":textDocument/didSave request for processing
+2022-03-18 15:37:23.604 +06:00 [DBG] Starting: Processing notification textDocument/didSave
+2022-03-18 15:37:23.604 +06:00 [DBG] Starting: Routing Notification textDocument/didSave
+2022-03-18 15:37:23.604 +06:00 [VRB] Converting params for Notification textDocument/didSave to OmniSharp.Extensions.LanguageServer.Protocol.Models.DidSaveTextDocumentParams
+2022-03-18 15:37:23.605 +06:00 [DBG] Finished: Routing Notification textDocument/didSave in 0ms
+2022-03-18 15:37:23.605 +06:00 [DBG] Finished: Processing notification textDocument/didSave in 0ms
+2022-03-18 15:37:23.911 +06:00 [DBG] Finding descriptors for workspace/didChangeWatchedFiles
+2022-03-18 15:37:23.912 +06:00 [DBG] Swapping from "Serial" to "Parallel"
+2022-03-18 15:37:23.912 +06:00 [DBG] Completing existing request process type "Serial"
+2022-03-18 15:37:23.912 +06:00 [DBG] Queueing "Parallel":workspace/didChangeWatchedFiles request for processing
+2022-03-18 15:37:23.912 +06:00 [DBG] Starting: Processing notification workspace/didChangeWatchedFiles
+2022-03-18 15:37:23.912 +06:00 [DBG] Starting: Routing Notification workspace/didChangeWatchedFiles
+2022-03-18 15:37:23.912 +06:00 [VRB] Converting params for Notification workspace/didChangeWatchedFiles to OmniSharp.Extensions.LanguageServer.Protocol.Models.DidChangeWatchedFilesParams
+2022-03-18 15:37:23.912 +06:00 [DBG] Finished: Routing Notification workspace/didChangeWatchedFiles in 0ms
+2022-03-18 15:37:23.913 +06:00 [DBG] Finished: Processing notification workspace/didChangeWatchedFiles in 0ms
+2022-03-18 15:37:27.434 +06:00 [DBG] Finding descriptors for shutdown
+2022-03-18 15:37:27.435 +06:00 [DBG] Swapping from "Parallel" to "Serial"
+2022-03-18 15:37:27.435 +06:00 [DBG] Cancelling any outstanding requests (switch from parallel to serial)
+2022-03-18 15:37:27.435 +06:00 [DBG] Completing existing request process type "Parallel"
+2022-03-18 15:37:27.435 +06:00 [DBG] Queueing "Serial":shutdown:5 request for processing
+2022-03-18 15:37:27.435 +06:00 [DBG] Starting: Processing request shutdown 5
+2022-03-18 15:37:27.435 +06:00 [DBG] Starting: Routing Request (5) shutdown
+2022-03-18 15:37:27.435 +06:00 [VRB] Converting params for Request (5) shutdown to OmniSharp.Extensions.LanguageServer.Protocol.Models.ShutdownParams
+2022-03-18 15:37:27.435 +06:00 [VRB] Converting params for Notification shutdown to OmniSharp.Extensions.LanguageServer.Protocol.Models.ShutdownParams
+2022-03-18 15:37:27.438 +06:00 [VRB] Response value was null
+2022-03-18 15:37:27.438 +06:00 [DBG] Finished: Routing Request (5) shutdown in 3ms
+2022-03-18 15:37:27.438 +06:00 [DBG] Finished: Processing request shutdown 5 in 3ms

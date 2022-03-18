@@ -1,0 +1,10 @@
+import Entity;
+
+fn main()
+{
+    var store = StoreManager.create();
+    var invoice = InvoiceManager.create();
+    invoice.Store = store.link;
+    
+    print(0);
+}

@@ -1,0 +1,8 @@
+[endpoint]
+pub fn get_books_count() int
+{
+    var q = query();
+    q.text = "FROM Books SELECT Count()";
+    
+    return q.scalar<int>();
+}

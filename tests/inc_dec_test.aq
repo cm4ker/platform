@@ -1,0 +1,9 @@
+﻿fn inc(a int) int 
+{
+    return a++;
+} 
+
+fn main()
+{
+    print(inc(1));
+}

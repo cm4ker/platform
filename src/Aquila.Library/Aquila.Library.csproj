@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\Props\target.props" />
+
+    <PropertyGroup>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <LangVersion>preview</LangVersion>
+    </PropertyGroup>
+    
+    
+    <ItemGroup>
+      <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj" />
+    </ItemGroup>
+</Project>

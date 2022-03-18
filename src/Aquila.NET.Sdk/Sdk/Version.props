@@ -1,0 +1,4 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- helper import to get $(AquilaVersion) property -->
+  <Import Project="$(MSBuildThisFileDirectory)..\build\Aquila.Version.props" />
+</Project>
