@@ -46,6 +46,6 @@ fn return_book(user UserLink, book BookLink)
     history.User = user;
     history.Date = get_date();
     history.Operation = 1;
-    
+        
     history.save();
 }

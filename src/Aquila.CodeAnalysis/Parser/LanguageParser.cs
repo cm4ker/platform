@@ -2824,6 +2824,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     break;
             }
 
+            if (string.IsNullOrWhiteSpace(name.GetValueText()))
+            {
+                throw new Exception("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            }
+
             return _syntaxFactory.VariableInit(name, argumentList, initializer);
         }
 

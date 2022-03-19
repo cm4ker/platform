@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Concurrent;
+using System.IO;
 using Aquila.CodeAnalysis;
 
 namespace Aquila.LanguageServer
@@ -107,7 +108,10 @@ namespace Aquila.LanguageServer
 
         public AquilaSyntaxTree GetFile(string path)
         {
-            return _diagnosticBroker.Compilation.SyntaxTrees.FirstOrDefault(x => x.FilePath == path);
+            path = Path.GetFullPath(path); //normalize path
+
+            return _diagnosticBroker.Compilation.SyntaxTrees.FirstOrDefault(x =>
+                Path.GetFullPath(x.FilePath) == path);
         }
 
         internal IEnumerable<Protocol.Location> ObtainDefinition(string filepath, int line, int character)

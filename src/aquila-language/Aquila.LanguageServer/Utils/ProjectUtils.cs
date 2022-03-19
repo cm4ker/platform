@@ -18,6 +18,7 @@ using Microsoft.Build.Utilities;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.Extensions.Logging;
+using MoreLinq;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using BuildILogger = Microsoft.Build.Framework.ILogger;
@@ -275,8 +276,7 @@ namespace Aquila.LanguageServer
             var buildManager = BuildManager.DefaultBuildManager;
             var buildParameters = new BuildParameters(project.ProjectCollection);
 
-            
-            
+
 #if DEBUG
             //TODO: Make log output optional
 
@@ -289,7 +289,7 @@ namespace Aquila.LanguageServer
             buildParameters.Loggers = new BuildILogger[]
             {
                 //new ConsoleLogger()
-                
+
                 // new FileLogger()
                 // {
                 //     Verbosity = LoggerVerbosity.Detailed,
