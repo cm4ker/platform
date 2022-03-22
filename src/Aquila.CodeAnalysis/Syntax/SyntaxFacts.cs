@@ -258,76 +258,76 @@ namespace Aquila.CodeAnalysis
         //     return false;
         // }
 
-        // /// <summary>
-        // /// Is the node the name of a named argument of an invocation, object creation expression, 
-        // /// constructor initializer, or element access, but not an attribute.
-        // /// </summary>
-        // public static bool IsNamedArgumentName(SyntaxNode node)
-        // {
-        //     // An argument name is an IdentifierName inside a NameColon, inside an Argument, inside an ArgumentList, inside an
-        //     // Invocation, ObjectCreation, ObjectInitializer, ElementAccess or Subpattern.
-        //
-        //     if (!node.IsKind(IdentifierName))
-        //     {
-        //         return false;
-        //     }
-        //
-        //     var parent1 = node.Parent;
-        //     if (parent1 == null || !parent1.IsKind(NameColon))
-        //     {
-        //         return false;
-        //     }
-        //
-        //     var parent2 = parent1.Parent;
-        //     if (parent2.IsKind(SyntaxKind.Subpattern))
-        //     {
-        //         return true;
-        //     }
-        //
-        //     if (parent2 == null || !(parent2.IsKind(Argument) || parent2.IsKind(AttributeArgument)))
-        //     {
-        //         return false;
-        //     }
-        //
-        //     var parent3 = parent2.Parent;
-        //     if (parent3 == null)
-        //     {
-        //         return false;
-        //     }
-        //
-        //     if (parent3.IsKind(SyntaxKind.TupleExpression))
-        //     {
-        //         return true;
-        //     }
-        //
-        //     if (!(parent3 is BaseArgumentListSyntax || parent3.IsKind(AttributeArgumentList)))
-        //     {
-        //         return false;
-        //     }
-        //
-        //     var parent4 = parent3.Parent;
-        //     if (parent4 == null)
-        //     {
-        //         return false;
-        //     }
-        //
-        //     switch (parent4.Kind())
-        //     {
-        //         case InvocationExpression:
-        //         case TupleExpression:
-        //         case ObjectCreationExpression:
-        //         case ImplicitObjectCreationExpression:
-        //         case ObjectInitializerExpression:
-        //         case ElementAccessExpression:
-        //         case Attribute:
-        //         case BaseConstructorInitializer:
-        //         case ThisConstructorInitializer:
-        //         case PrimaryConstructorBaseType:
-        //             return true;
-        //         default:
-        //             return false;
-        //     }
-        // }
+        /// <summary>
+        /// Is the node the name of a named argument of an invocation, object creation expression, 
+        /// constructor initializer, or element access, but not an attribute.
+        /// </summary>
+        public static bool IsNamedArgumentName(SyntaxNode node)
+        {
+            // An argument name is an IdentifierName inside a NameColon, inside an Argument, inside an ArgumentList, inside an
+            // Invocation, ObjectCreation, ObjectInitializer, ElementAccess or Subpattern.
+        
+            if (!node.IsKind(IdentifierName))
+            {
+                return false;
+            }
+        
+            var parent1 = node.Parent;
+            if (parent1 == null || !parent1.IsKind(NameColon))
+            {
+                return false;
+            }
+        
+            var parent2 = parent1.Parent;
+            if (parent2.IsKind(SyntaxKind.Subpattern))
+            {
+                return true;
+            }
+        
+            if (parent2 == null || !(parent2.IsKind(Argument) || parent2.IsKind(AttributeArgument)))
+            {
+                return false;
+            }
+        
+            var parent3 = parent2.Parent;
+            if (parent3 == null)
+            {
+                return false;
+            }
+        
+            if (parent3.IsKind(SyntaxKind.TupleExpression))
+            {
+                return true;
+            }
+        
+            if (!(parent3 is BaseArgumentListSyntax || parent3.IsKind(AttributeArgumentList)))
+            {
+                return false;
+            }
+        
+            var parent4 = parent3.Parent;
+            if (parent4 == null)
+            {
+                return false;
+            }
+        
+            switch (parent4.Kind())
+            {
+                case InvocationExpression:
+                case TupleExpression:
+                case ObjectCreationExpression:
+                case ImplicitObjectCreationExpression:
+                case ObjectInitializerExpression:
+                case ElementAccessExpression:
+                case Attribute:
+                case BaseConstructorInitializer:
+                case ThisConstructorInitializer:
+                case PrimaryConstructorBaseType:
+                    return true;
+                default:
+                    return false;
+            }
+        }
 
         /// <summary>
         /// Is the expression the initializer in a fixed statement?

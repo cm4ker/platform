@@ -1,15 +1,81 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Syntax;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Aquila.LanguageServer;
+
+public class SemanticsTokensVisitor : AquilaSyntaxWalker
+{
+    private readonly SemanticTokensBuilder _builder;
+
+    public SemanticsTokensVisitor(SemanticTokensBuilder builder)
+    {
+        _builder = builder;
+    }
+
+    public override void VisitImportDecl(ImportDecl node)
+    {
+        PushKeyword(node.ImportKeyword);
+    }
+
+
+    public override void VisitInvocationEx(InvocationEx node)
+    {
+        if (node.Expression is IdentifierEx ie)
+            Push(ie.Identifier, SemanticTokenType.Function);
+    }
+
+    public override void VisitFuncDecl(FuncDecl node)
+    {
+        Push(node.FnKeyword, SemanticTokenType.Keyword);
+        Push(node.Identifier, SemanticTokenType.Function);
+        
+        VisitParameterList(node.ParameterList);
+        Visit(node.Body);
+    }
+
+    public override void VisitParameter(ParameterSyntax node)
+    {
+        Push(node.Identifier, SemanticTokenType.Variable);
+        PushType(node.Type);
+    }
+
+
+    private void PushType(TypeEx type)
+    {
+        switch (type.Kind())
+        {
+            case SyntaxKind.IdentifierEx when type is IdentifierEx ie:
+                Push(ie.Identifier, SemanticTokenType.Type);
+                break;
+            case SyntaxKind.PredefinedType when type is PredefinedTypeEx pt:
+                Push(pt.Keyword, SemanticTokenType.Type);
+                break;
+        }
+    }
+
+    private void Push(SyntaxToken token, SemanticTokenType type, SemanticTokenModifier decl = default)
+    {
+        if (decl == default)
+            decl = SemanticTokenModifier.Declaration;
+
+        var range = token.GetLocation().AsRange2();
+        _builder.Push(range, type, decl);
+    }
+
+    private void PushKeyword(SyntaxToken token)
+    {
+        Push(token, SemanticTokenType.Keyword);
+    }
+}
 
 public class SemanticTokensHandler : SemanticTokensHandlerBase
 {
@@ -26,45 +92,15 @@ public class SemanticTokensHandler : SemanticTokensHandlerBase
     protected override async Task Tokenize(SemanticTokensBuilder builder, ITextDocumentIdentifierParams identifier,
         CancellationToken cancellationToken)
     {
-        using var typesEnumerator = RotateEnum(SemanticTokenType.Defaults).GetEnumerator();
-        using var modifiersEnumerator = RotateEnum(SemanticTokenModifier.Defaults).GetEnumerator();
-        // you would normally get this from a common source that is managed by current open editor, current active editor, etc.
-
         var handler = await _holder.GetHandlerAsync();
         var syntaxTree = handler.GetFile(DocumentUri.GetFileSystemPath(identifier));
 
-        var content = (await syntaxTree.GetTextAsync(cancellationToken)).ToString();
-        await Task.Yield();
-
-        foreach (var (line, text) in content.Split('\n').Select((text, line) => (line, text)))
-        {
-            var parts = text.TrimEnd().Split(';', ' ', '.', '"', '(', ')');
-            var index = 0;
-            foreach (var part in parts)
-            {
-                typesEnumerator.MoveNext();
-                modifiersEnumerator.MoveNext();
-                if (string.IsNullOrWhiteSpace(part)) continue;
-                index = text.IndexOf(part, index, StringComparison.Ordinal);
-                builder.Push(line, index, part.Length, typesEnumerator.Current, modifiersEnumerator.Current);
-            }
-        }
+        new SemanticsTokensVisitor(builder).Visit(syntaxTree.GetCompilationUnitRoot());
     }
 
     protected override Task<SemanticTokensDocument> GetSemanticTokensDocument(ITextDocumentIdentifierParams @params,
         CancellationToken cancellationToken) =>
         Task.FromResult(new SemanticTokensDocument(this.legend));
-
-
-    private IEnumerable<T> RotateEnum<T>(IEnumerable<T> values)
-    {
-        while (true)
-        {
-            foreach (var item in values)
-                yield return item;
-        }
-    }
-
 
     protected override SemanticTokensRegistrationOptions CreateRegistrationOptions(SemanticTokensCapability capability,
         ClientCapabilities clientCapabilities) => new SemanticTokensRegistrationOptions
@@ -73,7 +109,7 @@ public class SemanticTokensHandler : SemanticTokensHandlerBase
         Legend = this.legend,
         Full = new SemanticTokensCapabilityRequestFull
         {
-            Delta = true
+            Delta = false
         },
         Range = true
     };

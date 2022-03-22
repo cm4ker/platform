@@ -140,11 +140,12 @@ namespace Aquila.CodeAnalysis
             bool isSubmission,
             ReferenceManager referenceManager = null,
             bool reuseReferenceManager = false,
-            //SyntaxAndDeclarationManager syntaxAndDeclarations
+            //SyntaxAndDeclarationManager syntaxAndDeclarations,
+            SemanticModelProvider semanticModelProvider = null,
             AsyncQueue<CompilationEvent> eventQueue = null
         )
             : base(assemblyName, references, SyntaxTreeCommonFeatures(ImmutableArray<SyntaxTree>.Empty), isSubmission,
-                semanticModelProvider: null, eventQueue)
+                semanticModelProvider: new CachingSemanticModelProvider(), eventQueue)
         {
             _wellKnownMemberSignatureComparer = new WellKnownMembersSignatureComparer(this);
 
@@ -181,6 +182,7 @@ namespace Aquila.CodeAnalysis
             IEnumerable<MetadataReference> references = null,
             ReferenceManager referenceManager = null,
             bool reuseReferenceManager = false,
+            SemanticModelProvider semanticModelProvider = null,
             IEnumerable<AquilaSyntaxTree> syntaxTrees = null,
             IEnumerable<EntityMetadata> metadata = null)
         {
@@ -191,6 +193,7 @@ namespace Aquila.CodeAnalysis
                 this.IsSubmission,
                 referenceManager ?? _referenceManager,
                 reuseReferenceManager,
+                semanticModelProvider ?? SemanticModelProvider,
                 EventQueue);
 
             compilation.MetadataProvider.AddMetadataRange(metadata ?? MetadataProvider.EntityMetadata);
@@ -789,13 +792,23 @@ namespace Aquila.CodeAnalysis
 
         protected override SemanticModel CommonGetSemanticModel(SyntaxTree syntaxTree, bool ignoreAccessibility)
         {
-            throw new NotImplementedException();
+            if (syntaxTree == null)
+            {
+                throw new ArgumentNullException(nameof(syntaxTree));
+            }
+
+            SemanticModel? model = null;
+            if (SemanticModelProvider != null)
+            {
+                model = SemanticModelProvider.GetSemanticModel(syntaxTree, this, ignoreAccessibility);
+                Debug.Assert(model != null);
+            }
+
+            return model ?? CreateSemanticModel(syntaxTree, ignoreAccessibility);
         }
 
         internal override SemanticModel CreateSemanticModel(SyntaxTree syntaxTree, bool ignoreAccessibility)
-        {
-            throw new NotImplementedException();
-        }
+            => new AquilaSemanticModel(this, syntaxTree);
 
         protected override Compilation CommonAddSyntaxTrees(IEnumerable<SyntaxTree> trees)
         {
@@ -1370,7 +1383,19 @@ namespace Aquila.CodeAnalysis
 
         internal override Compilation WithSemanticModelProvider(SemanticModelProvider semanticModelProvider)
         {
-            throw new NotImplementedException();
+            if (this.SemanticModelProvider == semanticModelProvider)
+            {
+                return this;
+            }
+
+            return new AquilaCompilation(
+                this.AssemblyName,
+                _options,
+                this.ExternalReferences,
+                this.IsSubmission,
+                _referenceManager,
+                reuseReferenceManager: true,
+                semanticModelProvider);
         }
 
         internal override void AddDebugSourceDocumentsForChecksumDirectives(DebugDocumentsBuilder documentsBuilder,

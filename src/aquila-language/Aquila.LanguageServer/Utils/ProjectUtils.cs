@@ -137,6 +137,8 @@ namespace Aquila.LanguageServer
                     syntaxTrees,
                     references: metadataReferences,
                     options: options);
+                
+                
 
                 return new ProjectHandler(compilation, projectInstance, encoding);
             }

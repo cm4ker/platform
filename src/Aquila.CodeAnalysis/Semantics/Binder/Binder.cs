@@ -634,7 +634,7 @@ namespace Aquila.CodeAnalysis.Semantics
             };
         }
 
-        protected BoundExpression BindNameEx(NameEx expr, BoundAccess access)
+        protected virtual BoundExpression BindNameEx(NameEx expr, BoundAccess access)
         {
             //handle special wildcard symbol
             var identifier = expr.GetUnqualifiedName().Identifier.Text;
@@ -807,7 +807,6 @@ namespace Aquila.CodeAnalysis.Semantics
                     return new BoundUnaryEx(BindExpression(expr.Operand, operandAccess), ToOp(expr.Kind()), null);
             }
         }
-
 
         private static Operations ToOp(SyntaxKind kind)
         {

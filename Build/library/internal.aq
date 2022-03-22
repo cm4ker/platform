@@ -8,6 +8,7 @@ fn take_book(user UserLink, book BookLink)
         var history = HistoryManager.create();
         history.Book = book;
         history.User = user;
+
         history.Date = get_date();
         history.Operation = -1;
 
@@ -46,6 +47,6 @@ fn return_book(user UserLink, book BookLink)
     history.User = user;
     history.Date = get_date();
     history.Operation = 1;
-        
+    
     history.save();
 }

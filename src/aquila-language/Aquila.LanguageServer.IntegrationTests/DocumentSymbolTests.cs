@@ -33,14 +33,12 @@ namespace Aquila.LanguageServer.IntegrationTests
 
             // client opens the document
             client.TextDocument.DidOpenTextDocument(TextDocumentParamHelper.CreateDidOpenDocumentParams(documentUri, @"
-param myParam string = 'test'
-resource myRes 'myRp/provider@2019-01-01' = {
-  name: 'test'
+import Entity;
+
+pub fn test(a int) int
+{
+    return a;
 }
-module myMod './module.bicep' = {
-  name: 'test' 
-}
-output myOutput string = 'myOutput'
 ", 0));
 
             // client requests symbols
@@ -57,12 +55,11 @@ output myOutput string = 'myOutput'
             // client deletes the output and renames the resource
             client.TextDocument.DidChangeTextDocument(TextDocumentParamHelper.CreateDidChangeTextDocumentParams(
                 documentUri, @"
-param myParam string = 'test'
-resource myRenamedRes 'myRp/provider@2019-01-01' = {
-  name: 'test'
-}
-module myMod './module.bicep' = {
-  name: 'test'
+import Entity;
+
+pub fn test() int
+{
+    return 0;
 }
 ", 1));
 
