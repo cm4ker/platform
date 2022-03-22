@@ -41,9 +41,6 @@
         <_ExplicitReference Include="$(FrameworkPathOverride)\mscorlib.dll"/>
     </ItemGroup>
 
-    <PropertyGroup>
-        <SomeVariable>foo</SomeVariable>
-    </PropertyGroup>
     <!--
         The CreateManifestResourceNames target create the manifest resource names from the .RESX
         files.
