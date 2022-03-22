@@ -223,7 +223,7 @@ namespace Aquila.SyntaxGenerator.BoundTree
                 isTwoOrMore = true;
             }
 
-            sb.Append(");");
+            sb.Append(").WithSyntax(this.AquilaSyntax);");
 
 
             sb.AppendLine("}");

@@ -243,6 +243,9 @@ namespace Aquila.CodeAnalysis.Semantics
                 case Operations.Add:
                     cg.EmitOpCode(ILOpCode.Add);
                     break;
+                case Operations.Sub:
+                    cg.EmitOpCode(ILOpCode.Sub);
+                    break;
                 case Operations.Mul:
                     cg.EmitOpCode(ILOpCode.Mul);
                     break;

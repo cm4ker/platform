@@ -137,7 +137,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_span == span)
                 return this;
-            return new BoundEmptyStmt(span);
+            return new BoundEmptyStmt(span).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -197,7 +197,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         {
             if (_statements == statements && _nextEdge == nextEdge)
                 return this;
-            return new BoundBlock(statements, nextEdge);
+            return new BoundBlock(statements, nextEdge).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -280,7 +280,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_expression == expression)
                 return this;
-            return new BoundExpressionStmt(expression);
+            return new BoundExpressionStmt(expression).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -330,7 +330,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_method == method)
                 return this;
-            return new BoundMethodDeclStmt(method);
+            return new BoundMethodDeclStmt(method).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -390,7 +390,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_name == name && _value == value)
                 return this;
-            return new BoundGlobalConstDeclStmt(name, value);
+            return new BoundGlobalConstDeclStmt(name, value).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -440,7 +440,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_returned == returned)
                 return this;
-            return new BoundReturnStmt(returned);
+            return new BoundReturnStmt(returned).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -596,7 +596,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_items == items && ResultType == resultType)
                 return this;
-            return new BoundArrayEx(items, resultType);
+            return new BoundArrayEx(items, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -655,7 +655,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_target == target && _value == value && ResultType == resultType)
                 return this;
-            return new BoundAssignEx(target, value, resultType);
+            return new BoundAssignEx(target, value, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -705,7 +705,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (Target == target && Value == value && _operation == operation && ResultType == resultType)
                 return this;
-            return new BoundCompoundAssignEx(target, value, operation, resultType);
+            return new BoundCompoundAssignEx(target, value, operation, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -764,7 +764,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (Target == target && _isIncrement == isIncrement && _isPostfix == isPostfix && ResultType == resultType)
                 return this;
-            return new BoundIncDecEx(target, isIncrement, isPostfix, resultType);
+            return new BoundIncDecEx(target, isIncrement, isPostfix, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -824,7 +824,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_operand == operand && _operation == operation && ResultType == resultType)
                 return this;
-            return new BoundUnaryEx(operand, operation, resultType);
+            return new BoundUnaryEx(operand, operation, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -894,7 +894,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_left == left && _right == right && _operation == operation && ResultType == resultType)
                 return this;
-            return new BoundBinaryEx(left, right, operation, resultType);
+            return new BoundBinaryEx(left, right, operation, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -963,7 +963,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_condition == condition && _ifTrue == ifTrue && _ifFalse == ifFalse && ResultType == resultType)
                 return this;
-            return new BoundConditionalEx(condition, ifTrue, ifFalse, resultType);
+            return new BoundConditionalEx(condition, ifTrue, ifFalse, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -1022,7 +1022,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_operand == operand && _targetType == targetType && ResultType == resultType)
                 return this;
-            return new BoundConversionEx(operand, targetType, resultType);
+            return new BoundConversionEx(operand, targetType, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -1071,7 +1071,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_value == value && ResultType == resultType)
                 return this;
-            return new BoundLiteral(value, resultType);
+            return new BoundLiteral(value, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -1111,7 +1111,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (ResultType == resultType)
                 return this;
-            return new BoundWildcardEx(resultType);
+            return new BoundWildcardEx(resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -1171,7 +1171,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_expression == expression && _arms == arms && ResultType == resultType)
                 return this;
-            return new BoundMatchEx(expression, arms, resultType);
+            return new BoundMatchEx(expression, arms, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -1241,7 +1241,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_pattern == pattern && _whenGuard == whenGuard && _matchResult == matchResult && ResultType == resultType)
                 return this;
-            return new BoundMatchArm(pattern, whenGuard, matchResult, resultType);
+            return new BoundMatchArm(pattern, whenGuard, matchResult, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -1281,7 +1281,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (ResultType == resultType)
                 return this;
-            return new BoundBadEx(resultType);
+            return new BoundBadEx(resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -1402,7 +1402,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (ResultType == resultType)
                 return this;
-            return new BoundInstanceCallEx(this.MethodSymbol, this.Name, this.Arguments, this.TypeArguments, this.Instance, resultType);
+            return new BoundInstanceCallEx(this.MethodSymbol, this.Name, this.Arguments, this.TypeArguments, this.Instance, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -1441,7 +1441,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (ResultType == resultType)
                 return this;
-            return new BoundStaticCallEx(this.MethodSymbol, this.Name, this.Arguments, this.TypeArguments, resultType);
+            return new BoundStaticCallEx(this.MethodSymbol, this.Name, this.Arguments, this.TypeArguments, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -1490,7 +1490,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (ResultType == resultType)
                 return this;
-            return new BoundNewEx(this.MethodSymbol, this.TypeRef, this.Arguments, this.TypeArguments, resultType);
+            return new BoundNewEx(this.MethodSymbol, this.TypeRef, this.Arguments, this.TypeArguments, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -1540,7 +1540,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_thrown == thrown && ResultType == resultType)
                 return this;
-            return new BoundThrowEx(thrown, resultType);
+            return new BoundThrowEx(thrown, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -1600,7 +1600,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_initializer == initializer && ResultType == resultType)
                 return this;
-            return new BoundAllocEx(this.TypeRef, initializer, resultType);
+            return new BoundAllocEx(this.TypeRef, initializer, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -1703,7 +1703,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_expressions == expressions && ResultType == resultType)
                 return this;
-            return new BoundGroupedEx(expressions, resultType);
+            return new BoundGroupedEx(expressions, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -1803,7 +1803,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (ResultType == resultType)
                 return this;
-            return new BoundArrayItemEx(this.DeclaringCompilation, this.Array, this.Index, resultType);
+            return new BoundArrayItemEx(this.DeclaringCompilation, this.Array, this.Index, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -1842,7 +1842,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (ResultType == resultType)
                 return this;
-            return new BoundArrayItemOrdEx(this.DeclaringCompilation, this.Array, this.Index, resultType);
+            return new BoundArrayItemOrdEx(this.DeclaringCompilation, this.Array, this.Index, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -1945,7 +1945,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_items == items && ResultType == resultType)
                 return this;
-            return new BoundListEx(items, resultType);
+            return new BoundListEx(items, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -1995,7 +1995,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_name == name && ResultType == resultType)
                 return this;
-            return new BoundVariableRef(name, resultType);
+            return new BoundVariableRef(name, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -2034,7 +2034,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (Name == name && ResultType == resultType)
                 return this;
-            return new BoundTemporalVariableRef(name, resultType);
+            return new BoundTemporalVariableRef(name, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -2146,7 +2146,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_value == value && _argumentKind == argumentKind)
                 return this;
-            return new BoundArgument(value, argumentKind);
+            return new BoundArgument(value, argumentKind).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -2205,7 +2205,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_name == name && _nameExpr == nameExpr)
                 return this;
-            return new BoundMethodName(name, nameExpr);
+            return new BoundMethodName(name, nameExpr).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -2275,7 +2275,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         {
             if (ResultType == resultType)
                 return this;
-            return new BoundArrayTypeRef(resultType);
+            return new BoundArrayTypeRef(resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -2344,7 +2344,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         {
             if (ResultType == resultType)
                 return this;
-            return new BoundClassTypeRef(this.QName, this.Method, resultType, this.Arity);
+            return new BoundClassTypeRef(this.QName, this.Method, resultType, this.Arity).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -2383,7 +2383,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         {
             if (ResultType == resultType)
                 return this;
-            return new BoundGenericClassTypeRef(resultType);
+            return new BoundGenericClassTypeRef(resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -2432,7 +2432,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         {
             if (ResultType == resultType)
                 return this;
-            return new BoundPrimitiveTypeRef(this.Type, resultType);
+            return new BoundPrimitiveTypeRef(this.Type, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -2471,7 +2471,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         {
             if (ResultType == resultType)
                 return this;
-            return new BoundTypeRefFromSymbol(resultType);
+            return new BoundTypeRefFromSymbol(resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -2763,7 +2763,7 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             if (_resultType == resultType)
                 return this;
-            return new BoundVariableName(this.NameValue, this.NameExpression, resultType);
+            return new BoundVariableName(this.NameValue, this.NameExpression, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -2799,7 +2799,7 @@ namespace Aquila.CodeAnalysis.Semantics
         public virtual TResult VisitMatchArm(BoundMatchArm x) => VisitDefault(x);
         public virtual TResult VisitBadEx(BoundBadEx x) => VisitDefault(x);
         public virtual TResult VisitCallEx(BoundCallEx x) => VisitDefault(x);
-        public virtual TResult VisitInstanceCallEx(BoundInstanceCallEx arg) => VisitDefault(arg);
+        public virtual TResult VisitInstanceCallEx(BoundInstanceCallEx x) => VisitDefault(x);
         public virtual TResult VisitStaticCallEx(BoundStaticCallEx x) => VisitDefault(x);
         public virtual TResult VisitNewEx(BoundNewEx x) => VisitDefault(x);
         public virtual TResult VisitThrowEx(BoundThrowEx x) => VisitDefault(x);

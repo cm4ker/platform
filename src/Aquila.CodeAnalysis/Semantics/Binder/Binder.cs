@@ -308,7 +308,7 @@ namespace Aquila.CodeAnalysis.Semantics
                 expr = BindExpression(stmt.Expression, BoundAccess.Read);
             }
 
-            return new BoundReturnStmt(expr).WithSyntax(stmt);
+            return new BoundReturnStmt(expr);
         }
 
         public BoundStatement BindEmptyStmt(Microsoft.CodeAnalysis.Text.TextSpan span)

@@ -13,6 +13,10 @@ namespace Aquila.CodeAnalysis.Symbols
 {
     internal partial class Symbol : Cci.IReference
     {
+        
+        internal Symbol AdaptedSymbol => this;
+        internal Symbol GetCciAdapter() => this;
+        
         /// <summary>
         /// Checks if this symbol is a definition and its containing module is a SourceModuleSymbol.
         /// </summary>
@@ -69,9 +73,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public int MetadataToken { get; }
 
-        public Cci.IReference GetCciAdapter()
-        {
-            throw new NotImplementedException();
-        }
+        Cci.IReference ISymbolInternal.GetCciAdapter() => this;
     }
 }

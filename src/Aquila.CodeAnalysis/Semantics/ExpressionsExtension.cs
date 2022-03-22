@@ -10,7 +10,8 @@ namespace Aquila.CodeAnalysis.Semantics
             return expr;
         }
 
-        public static T WithAccess<T>(this T expr, BoundExpression other) where T : BoundExpression => WithAccess(expr, other.Access);
+        public static T WithAccess<T>(this T expr, BoundExpression other) where T : BoundExpression =>
+            WithAccess(expr, other.Access);
 
         public static T WithSyntax<T>(this T expr, AquilaSyntaxNode syntax) where T : IAquilaOperation
         {
@@ -26,9 +27,6 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             expr.Access = other.Access;
             expr.AquilaSyntax = other.AquilaSyntax;
-
-            // expr.TypeRefMask has to be set by the type analysis
-            // expr.ConstantValue the same
 
             return expr;
         }
@@ -53,7 +51,8 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// Returns whether the expression can possibly have any side effects.
         /// </summary>
-        public static bool CanHaveSideEffects(this BoundExpression expr) =>  // TODO: Make more precise and less defensive
+        public static bool CanHaveSideEffects(this BoundExpression expr) =>  
+            // TODO: Make more precise and less defensive
             !(expr.ConstantValue.HasValue
               || expr is BoundVariableRef varExpr && varExpr.Name.IsDirect
               || expr is BoundLiteral);
