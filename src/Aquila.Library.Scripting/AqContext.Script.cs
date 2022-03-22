@@ -252,7 +252,8 @@ namespace Aquila.Library.Scripting
                     compilation = compilation.WithAquilaOptions(compilation.Options
                         .WithOptimizationLevel(OptimizationLevel.Debug)
                         .WithDebugPlusMode(true)
-                        .WithConcurrentBuild(false));
+                        .WithConcurrentBuild(true)
+                    );
 
                     if (options.IsSubmission)
                     {

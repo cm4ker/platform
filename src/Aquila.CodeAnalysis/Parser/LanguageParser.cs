@@ -2645,7 +2645,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                                     currentTokenKind == SyntaxKind.LessThanToken;
 
                                 // Make sure this isn't a local function
-                                if (!isPossibleLocalFunctionToken)
+                                if (!isPossibleLocalFunctionToken || !IsLocalFunctionAfterIdentifier())
                                 {
                                     var missingIdentifier = CreateMissingIdentifierToken();
                                     missingIdentifier = this.AddError(missingIdentifier, offset, width,
@@ -2830,6 +2830,35 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             }
 
             return _syntaxFactory.VariableInit(name, argumentList, initializer);
+        }
+        
+        // Is there a local function after an eaten identifier?
+        private bool IsLocalFunctionAfterIdentifier()
+        {
+            Debug.Assert(this.CurrentToken.Kind == SyntaxKind.OpenParenToken ||
+                         this.CurrentToken.Kind == SyntaxKind.LessThanToken);
+            var resetPoint = this.GetResetPoint();
+
+            try
+            {
+                var typeParameterListOpt = this.ParseTypeParameterList();
+                var paramList = ParseParenthesizedParameterList();
+
+                if (!paramList.IsMissing &&
+                    (this.CurrentToken.Kind == SyntaxKind.OpenBraceToken ||
+                     this.CurrentToken.Kind == SyntaxKind.EqualsGreaterThanToken ||
+                     this.CurrentToken.ContextualKind == SyntaxKind.WhereKeyword))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            finally
+            {
+                Reset(ref resetPoint);
+                Release(ref resetPoint);
+            }
         }
 
         private bool IsPossibleEndOfVariableDeclaration()

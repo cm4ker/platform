@@ -223,7 +223,15 @@ namespace Aquila.CodeAnalysis.Semantics
 
             foreach (var decl in decl1.Variables)
             {
+                if (string.IsNullOrWhiteSpace(decl.Identifier.Text) || decl.Initializer == null)
+                {
+                    Diagnostics.Add(GetLocation(varDecl), ErrorCode.ERR_MissingIdentifierSymbol);
+                    return new BoundExpressionStmt(
+                        new BoundBadEx(this.Compilation.GetSpecialType(SpecialType.System_Void)));
+                }
+
                 var localVar = Method.LocalsTable.BindLocalVariable(new VariableName(decl.Identifier.Text), decl);
+
                 var boundExpression = BindExpression(decl.Initializer.Value);
 
                 return new BoundExpressionStmt(new BoundAssignEx(

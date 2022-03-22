@@ -350,8 +350,12 @@ import clr System;
         {
             var tp = new TreePrinter(_output);
             var tree = AquilaSyntaxTree.ParseText(@"
-public static void Test()
+fn main()
 {
+    print
+    println(""123"");
+    println(get_date());
+}
 }
 ");
             tp.Visit(tree.GetRoot());

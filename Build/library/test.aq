@@ -1,8 +1,10 @@
+import Entity;
+
 fn main()
 {
     var a = 1;
     a++;
-
+    
     println(a);
 
     a = 10;

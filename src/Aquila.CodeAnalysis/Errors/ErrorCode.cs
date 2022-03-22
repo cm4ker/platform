@@ -43,7 +43,7 @@ namespace Aquila.CodeAnalysis.Errors
         ERR_IllegalEscape,
         ERR_NewlineInConst,
         ERR_BadDirectivePlacement,
-        
+
         WRN_ErrorOverride,
         WRN_BadXMLRefSyntax,
         ERR_TypeParamMustBeIdentifier,
@@ -54,7 +54,7 @@ namespace Aquila.CodeAnalysis.Errors
         ERR_EndRegionDirectiveExpected,
         ERR_UnexpectedCharacter,
         ERR_InternalError,
-        
+
         ERR_FeatureIsExperimental,
         ERR_FeatureInPreview,
         WRN_LowercaseEllSuffix,
@@ -65,7 +65,7 @@ namespace Aquila.CodeAnalysis.Errors
         ERR_FloatOverflow,
         ERR_OpenEndedComment,
         ERR_Merge_conflict_marker_encountered,
-        
+
         ERR_InsufficientStack,
         ERR_NamespaceNotAllowedInScript,
         ERR_GlobalDefinitionOrStatementExpected,
@@ -281,6 +281,7 @@ namespace Aquila.CodeAnalysis.Errors
         /// <summary>Method '{0}' not found for type {1}.</summary>
         ERR_MethodNotFound,
 
+        ERR_MissingIdentifierSymbol,
 
         //
         // Warnings
