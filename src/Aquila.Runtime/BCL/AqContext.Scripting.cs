@@ -29,7 +29,7 @@ namespace Aquila.Core
             public bool EmitDebugInformation { get; set; }
 
             /// <summary>
-            /// Value indicating the script is a submission (without opening PHP tag).
+            /// Value indicating the script is a submission
             /// </summary>
             public bool IsSubmission { get; set; }
 

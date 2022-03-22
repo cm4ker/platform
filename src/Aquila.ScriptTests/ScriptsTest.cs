@@ -28,11 +28,6 @@ namespace ScriptsTest
     public class ScriptsTest
     {
         /// <summary>
-        /// Environment variable, if set to "0" then we do not compare results with current `php` installed on the machine.
-        /// </summary>
-        const string AQUILA_TEST_AQ = "AQUILA_TEST_AQ";
-
-        /// <summary>
         /// If the test returns this string, skip it.
         /// </summary>
         const string SkippedTestReturn = "***SKIP***";

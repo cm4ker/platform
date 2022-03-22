@@ -5,8 +5,6 @@ using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis
 {
-    
-    
     /// <summary>
     /// Level of optimization.
     /// </summary>

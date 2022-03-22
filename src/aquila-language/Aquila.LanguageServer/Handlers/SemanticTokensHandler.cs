@@ -31,13 +31,15 @@ public class SemanticsTokensVisitor : AquilaSyntaxWalker
     {
         if (node.Expression is IdentifierEx ie)
             Push(ie.Identifier, SemanticTokenType.Function);
+
+        VisitArgumentList(node.ArgumentList);
     }
 
     public override void VisitFuncDecl(FuncDecl node)
     {
         Push(node.FnKeyword, SemanticTokenType.Keyword);
         Push(node.Identifier, SemanticTokenType.Function);
-        
+
         VisitParameterList(node.ParameterList);
         Visit(node.Body);
     }
