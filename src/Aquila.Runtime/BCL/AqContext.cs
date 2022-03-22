@@ -18,19 +18,23 @@ namespace Aquila.Core
     //Context. Not static. Immutable. Thread safe
     public partial class AqContext : IDisposable
     {
-        private readonly AqInstance _instance;
+        private readonly IAqInstance _instance;
         private readonly DataConnectionContext _dcc;
         private readonly DatabaseRuntimeContext _drc;
         private ContextSecTable _usc;
 
-        public AqContext(AqInstance instance)
+        public AqContext(IAqInstance instance)
         {
             _instance = instance;
-            _dcc = instance.DataContextManager.GetContext();
-            _drc = instance.DatabaseRuntimeContext;
+
+            if (instance is AqInstance)
+            {
+                _dcc = instance.DataContextManager.GetContext();
+                _drc = instance.DatabaseRuntimeContext;
+            }
         }
 
-        public AqInstance Instance => _instance;
+        public IAqInstance Instance => _instance;
 
         public DataConnectionContext DataContext => _dcc;
 

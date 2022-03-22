@@ -3,7 +3,9 @@ using Microsoft.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Symbols;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection.Metadata;
+using System.Threading;
 using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
 
@@ -14,29 +16,58 @@ namespace Aquila.CodeAnalysis.Emit
         /// <summary>
         /// Create real CIL entry point, where it calls given method.
         /// </summary>
-        internal void CreateEntryPoint(DiagnosticBag diagnostic)
+        internal void CreateEntryPoint(MethodSymbol sourceEP, DiagnosticBag diagnostic)
         {
             // "static int Main(string[] args)"
-            var realmethod = new SynthesizedMethodSymbol(this.EntryPointType, "Main", true, false,
+            var epMethodSymbol = new SynthesizedMethodSymbol(this.EntryPointType, "Main", true, false,
                 _compilation.CoreTypes.Int32, Accessibility.Private);
 
-            realmethod.SetParameters(new SynthesizedParameterSymbol(realmethod,
-                ArrayTypeSymbol.CreateSZArray(this.Compilation.SourceAssembly, this.Compilation.CoreTypes.Object), 0,
+            epMethodSymbol.SetParameters(new SynthesizedParameterSymbol(epMethodSymbol,
+                ArrayTypeSymbol.CreateSZArray(this.Compilation.SourceAssembly, this.Compilation.CoreTypes.String), 0,
                 RefKind.None, "args"));
 
             //
-            var body = MethodGenerator.GenerateMethodBody(this, realmethod,
+            var body = MethodGenerator.GenerateMethodBody(this, epMethodSymbol,
                 (il) =>
                 {
-                    il.EmitIntConstant(0);
-                    il.EmitRet(false);
+                    if (_compilation.Options.OutputKind == OutputKind.ConsoleApplication)
+                    {
+                       var types = this.Compilation.CoreTypes;
+                        var args_place = new ParamPlace(epMethodSymbol.Parameters[0]);
+
+                        // CreateConsole(string mainscript, params string[] args)
+                        var create_method = types.AqContext.Symbol.LookupMember<MethodSymbol>("CreateConsole",
+                            m => m.ParameterCount == 1 &&
+                                 m.Parameters[0].Type == args_place.Type); // params string[] args
+
+                        Debug.Assert(create_method != null);
+
+                        args_place.EmitLoad(il); // args
+
+                        //il.EmitCall(this, diagnostic, ILOpCode.Call, create_method);
+                        il.EmitOpCode(ILOpCode.Call, +1);
+                        il.EmitToken(create_method, null, diagnostic);
+
+                        il.EmitCall(this, diagnostic, ILOpCode.Call, sourceEP);
+
+                        if (sourceEP.ReturnType.IsVoid())
+                        {
+                            il.EmitIntConstant(0);
+                            il.EmitRet(false);
+                        }
+                    }
+                    else
+                    {
+                        il.EmitIntConstant(0);
+                        il.EmitRet(false);
+                    }
                 },
                 null, diagnostic, false);
 
-            SetMethodBody(realmethod, body);
+            SetMethodBody(epMethodSymbol, body);
 
             //
-            this.EntryPointType.EntryPointSymbol = realmethod;
+            this.EntryPointType.EntryPointSymbol = epMethodSymbol;
         }
 
         /// <summary>

@@ -382,10 +382,16 @@ namespace Aquila.CodeAnalysis
 
         void CompileEntryPoint()
         {
-            if (_moduleBuilder != null)
+            if (_compilation.Options.OutputKind.IsApplication() && _moduleBuilder != null)
             {
-                //Create entry point for platform
-                _moduleBuilder.CreateEntryPoint(_diagnostics);
+                var entryPoint = _compilation.GetEntryPoint(_cancellationToken);
+                if (entryPoint != null && !(entryPoint is ErrorMethodSymbol))
+                {
+                    _moduleBuilder.CreateEntryPoint((MethodSymbol)entryPoint, _diagnostics);
+
+                    Debug.Assert(_moduleBuilder.EntryPointType.EntryPointSymbol != null);
+                    _moduleBuilder.SetPEEntryPoint(_moduleBuilder.EntryPointType.EntryPointSymbol, _diagnostics);
+                }
             }
         }
 
@@ -454,7 +460,7 @@ namespace Aquila.CodeAnalysis
             {
                 compiler.AnalyzeMetadata();
             }
-            
+
             if (diagnostics.HasAnyErrors())
                 return diagnostics.AsEnumerable();
 

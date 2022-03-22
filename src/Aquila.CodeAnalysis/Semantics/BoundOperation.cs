@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.Operations;
 
 namespace Aquila.CodeAnalysis.Semantics
 {
+    //TODO: separate Operation And Bound nodes into different subjects
     public abstract class BoundOperation : IOperation
     {
         #region Unsupported
@@ -29,6 +30,9 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public abstract BoundKind BoundKind { get; }
 
+        /// <summary>
+        /// Null type if the operation not produce result
+        /// </summary>
         public virtual ITypeSymbol Type => null;
 
         /// <summary>

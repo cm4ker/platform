@@ -238,9 +238,13 @@ namespace Aquila.CodeAnalysis
         public SymbolInfo GetSymbolInfo(ExprSyntax expression,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            //TODO: separate the Bound nodes and Operations
+            //bound nodes need to result ISymbol type because
+            //bounding between the SyntaxNode and Symbol
+            return SymbolInfo.None;
+
             var binder = _binderFactory.GetBinder(expression);
             var type = binder.BindExpression(expression, BoundAccess.None);
-
             return new SymbolInfo(type.ResultType);
         }
     }

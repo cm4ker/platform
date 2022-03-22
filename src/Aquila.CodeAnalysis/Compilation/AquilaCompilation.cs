@@ -775,7 +775,8 @@ namespace Aquila.CodeAnalysis
 
         MethodSymbol FindEntryPoint(CancellationToken cancellationToken)
         {
-            return null;
+            return SourceSymbolCollection.GetModuleType("main")
+                ?.GetMembers("main").OfType<MethodSymbol>().FirstOrDefault();
         }
 
         protected override ImmutableArray<SyntaxTree> CommonSyntaxTrees =>
@@ -1401,7 +1402,6 @@ namespace Aquila.CodeAnalysis
         internal override void AddDebugSourceDocumentsForChecksumDirectives(DebugDocumentsBuilder documentsBuilder,
             SyntaxTree tree, DiagnosticBag diagnostics)
         {
-            //throw new NotImplementedException();
         }
 
         internal override void ReportUnusedImports(DiagnosticBag diagnostics, CancellationToken cancellationToken)

@@ -169,6 +169,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public IEnumerable<SourceModuleTypeSymbol> GetModuleTypes() => _types.OfType<SourceModuleTypeSymbol>();
 
+        public SourceModuleTypeSymbol GetModuleType(string name) => GetModuleTypes().FirstOrDefault(x => x.Name == name);
+
         public MergedSourceCode GetMergedSourceCode() => _sourceCode;
 
         public NamedTypeSymbol GetType(QualifiedName name, Dictionary<QualifiedName, INamedTypeSymbol> resolved = null)

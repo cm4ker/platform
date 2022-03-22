@@ -4,13 +4,25 @@ using Aquila.Core.Instance;
 
 namespace Aquila.Core;
 
-public class AqConsoleContext : AqContext
+public partial class AqContext
 {
-    private readonly Stream _output;
-
-    public AqConsoleContext(AqInstance instance, Stream output) : base(instance)
+    public class AqConsoleContext : AqContext
     {
-        _output = output;
-        InitOutput(_output);
+        private readonly Stream _output;
+
+        public AqConsoleContext(IAqInstance instance, Stream output) : base(instance)
+        {
+            _output = output ?? Console.OpenStandardOutput();
+            InitOutput(_output);
+        }
+    }
+
+    public static AqContext CreateConsole() => CreateConsole(args: Array.Empty<string>());
+
+    public static AqContext CreateConsole(params string[] args) => CreateConsole(null, args);
+
+    public static AqContext CreateConsole(Stream output, params string[] args)
+    {
+        return new AqConsoleContext(new AqDummyInstance(), output);
     }
 }

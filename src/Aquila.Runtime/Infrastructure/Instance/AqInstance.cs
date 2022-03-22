@@ -26,14 +26,13 @@ namespace Aquila.Core.Instance
     /// <summary>
     /// Platfrom instace
     /// </summary>
-    public class AqInstance
+    public class AqInstance : IAqInstance
     {
         private object _locking;
 
         public AqInstance(IInvokeService invokeService, ILogger<AqInstance> logger, IServiceProvider serviceProvider,
             DataContextManager contextManager, UserManager userManager, ICacheService cacheService,
-            MigrationManager manager
-        )
+            MigrationManager manager)
         {
             _locking = new object();
             _serviceProvider = serviceProvider;
@@ -261,7 +260,7 @@ namespace Aquila.Core.Instance
         public Dictionary<string, object> Globals { get; set; }
 
         /// <summary>
-        /// Создаёт сессию для пользователя
+        /// Create session for user
         /// </summary>
         /// <param name="user">Пользователь</param>
         /// <returns></returns>
