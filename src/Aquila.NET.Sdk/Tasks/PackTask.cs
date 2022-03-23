@@ -71,6 +71,8 @@ namespace Aquila.NET.Sdk.Tools
                 }
             }
 
+            
+            
             using (var package = ZipFile.Open(OutputPackageFullPath, ZipArchiveMode.Create))
             {
                 foreach (var file in info.GetFiles())

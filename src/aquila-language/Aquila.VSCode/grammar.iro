@@ -119,11 +119,11 @@ punctuation: context {
    
    : inline_push {
       regex          \= (\")
-      styles []       = .quote;
+      styles []       = .string;
       default_style   = .string
       : pop {
          regex       \= (\")
-         styles []    = .quote;
+         styles []    = .string;
       }
    }
    
