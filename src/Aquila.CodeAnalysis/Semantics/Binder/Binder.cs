@@ -751,6 +751,8 @@ namespace Aquila.CodeAnalysis.Semantics
                 SyntaxKind.DivideExpression => Operations.Div,
                 SyntaxKind.SubtractExpression => Operations.Sub,
                 SyntaxKind.NotEqualsExpression => Operations.NotEqual,
+                SyntaxKind.GreaterThanExpression => Operations.GreaterThan,
+                SyntaxKind.LessThanExpression => Operations.LessThan,
                 SyntaxKind.EqualsExpression => Operations.Equal,
                 SyntaxKind.BitwiseOrExpression => Operations.BitOr,
                 SyntaxKind.BitwiseAndExpression => Operations.BitAnd,

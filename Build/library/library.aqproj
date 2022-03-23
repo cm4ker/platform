@@ -3,7 +3,7 @@
   <PropertyGroup>
     <ProjectName>Library</ProjectName>
     <TargetFramework>net6.0</TargetFramework>
-    <DebuggerAttach>true</DebuggerAttach>
+    <DebuggerAttach>false</DebuggerAttach>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 </Project>

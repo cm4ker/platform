@@ -3,14 +3,13 @@ import Entity;
 fn main()
 {
     var a = 1;
-    a++;
-    
-    println(a);
 
-    a = 10;
-
-    a = 1 - 15;
-    
-    println("123");
-    println(get_date());
+    if(a > 3)
+    {
+        print(a);        
+    }
+    else
+    {
+        print("Less than 3");
+    }
 }
