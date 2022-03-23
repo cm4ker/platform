@@ -4,8 +4,11 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using Aquila.Core.Contracts;
 using Aquila.Data;
 using Aquila.Data.Tools;
@@ -102,9 +105,11 @@ namespace Aquila.Tools
         [Option(ShortName = "i", Description = "Instance name")]
         public string Instance { get; set; }
 
-        public void OnExecute()
+        public async Task OnExecuteAsync()
         {
             Action<string> dpl = (s) => Console.WriteLine(s);
+
+            PackagePath = PackagePath.Replace("\"", "");
 
             dpl(@"Starting deploy...");
 
@@ -139,21 +144,33 @@ namespace Aquila.Tools
             // var md5 = CreateChecksum(totalCrc.ToString());
             // dpl(@$"Checksum: {md5}");
 
-            var deployUri = $"http://{Endpoint}/api/{Instance}/deploy";
+            var deployUri = $"https://{Endpoint}/api/{Instance}/deploy";
             dpl($"Starting deploy package to {deployUri}...");
 
-            HttpWebRequest request = WebRequest.CreateHttp(deployUri);
-            request.Method = WebRequestMethods.Http.Post;
+            //TODO: remove ugly hack!
+            var handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback += (message, certificate2, arg3, arg4) => true;
+
+            var client = new HttpClient(handler);
+
+            if (!File.Exists(PackagePath))
+            {
+                dpl("Package file not found");
+                return;
+            }
 
 
-            var reqStream = request.GetRequestStream();
             var packageStream = File.OpenRead(PackagePath);
-            packageStream.CopyTo(reqStream);
 
-            using HttpWebResponse responce = (HttpWebResponse)request.GetResponse();
-            if (responce.StatusCode == HttpStatusCode.OK)
+            var response = await client.PostAsync(deployUri, new StreamContent(packageStream));
+
+            if (response.StatusCode == HttpStatusCode.OK)
             {
                 dpl("OK!");
+            }
+            else
+            {
+                dpl($"Error: {response.StatusCode} : {response.ReasonPhrase}");
             }
 
             dpl(@"Done!");
@@ -197,18 +214,22 @@ namespace Aquila.Tools
         [Option(ShortName = "i", Description = "Instance name")]
         public string Instance { get; set; }
 
-        public void OnExecute()
+        public async Task OnExecuteAsync()
         {
             Action<string> dpl = (s) => Console.WriteLine(s);
 
-            var deployUri = $"http://{Endpoint}/api/{Instance}/migrate";
+            //TODO: remove ugly hack!
+            var handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback += (message, certificate2, arg3, arg4) => true;
+
+            var client = new HttpClient(handler);
+
+            var deployUri = $"https://{Endpoint}/api/{Instance}/migrate";
             dpl($"Starting migrate package on {deployUri}...");
+            var response = await client.PostAsync(deployUri, new StringContent(""));
 
-            HttpWebRequest request = WebRequest.CreateHttp(deployUri);
-            request.Method = WebRequestMethods.Http.Post;
 
-            using HttpWebResponse responce = (HttpWebResponse)request.GetResponse();
-            if (responce.StatusCode == HttpStatusCode.OK)
+            if (response.StatusCode == HttpStatusCode.OK)
             {
                 dpl("OK!");
             }

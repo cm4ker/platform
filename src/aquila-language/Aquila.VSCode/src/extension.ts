@@ -100,7 +100,7 @@ async function createTemplate(templatename: string) {
     }
 
     // const templatename = "console"
-    const templatefilename = templatename + ".msbuildproj"
+    const templatefilename = templatename + ".aqproj"
 
     // Create .msbuildproj project file:
     let projectPath = path.join(rootPath, templatefilename);
@@ -235,7 +235,6 @@ function execChildProcess(command: string, workingDirectory: string): Promise<st
         });
     });
 }
-
 // this method is called when your extension is deactivated
 export function deactivate() 
 {

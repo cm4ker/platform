@@ -2,7 +2,6 @@
 using System.Net;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
-using Aquila.Cli;
 using Aquila.Core.Instance;
 using Aquila.Core.Network;
 using Aquila.Logging;
@@ -134,7 +133,7 @@ namespace Aquila.Shell
             IServiceCollection services = new ServiceCollection();
 
 
-            services.AddScoped<ICommandLineInterface, CliInterface>();
+            //services.AddScoped<ICommandLineInterface, CliInterface>();
             services.AddSingleton(f => _serviceProvider.GetRequiredService<AqInstanceManager>());
             services.AddTransient(typeof(ILogger<>), typeof(NLogger<>));
 
@@ -179,9 +178,9 @@ namespace Aquila.Shell
                 var serviceProvider = services.BuildServiceProvider();
 
                 var scope = serviceProvider.CreateScope();
-                var runner = scope.ServiceProvider.GetRequiredService<ICommandLineInterface>();
-
-                e.Channel.SendClose((uint)runner.Execute(e.CommandText.Split(' ')));
+                // var runner = scope.ServiceProvider.GetRequiredService<ICommandLineInterface>();
+                //
+                // e.Channel.SendClose((uint)runner.Execute(e.CommandText.Split(' ')));
             }
             else if (e.ShellType == "client")
             {

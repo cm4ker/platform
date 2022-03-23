@@ -7,6 +7,7 @@
         <ToolCommandName>aq</ToolCommandName>
         <RootNamespace>Aquila.Tools</RootNamespace>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+<!--        <PackageOutputPath>./nupkg</PackageOutputPath>-->
     </PropertyGroup>
 
     <Import Project="..\..\Props\target.props"/>

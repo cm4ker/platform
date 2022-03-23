@@ -8,20 +8,26 @@ export var defaultTasksJson =
   "tasks": [
     {
       "label": "build",
-      "command": "dotnet",
-      "type": "shell",
-      "args": [
-        "build",
-        // Ask dotnet build to generate full paths for file names.
-        "/property:GenerateFullPaths=true",
-        // Do not generate summary otherwise it leads to duplicate errors in Problems panel
-        "/consoleloggerparameters:NoSummary"
-      ],
-      "group": "build",
-      "presentation": {
-        "reveal": "silent"
-      },
-      "problemMatcher": "$msCompile"
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build"               
+                ],
+            "problemMatcher": "$msCompile"
+    },
+    {
+      "label" : "deploy",
+      "command" : "aq",
+      "type" : "process",
+      "args" : ["deploy", "-pkg \"${workspaceRoot}/bin/Debug/net6.0/Package/${workspaceFolderBasename}.aqpk\"", "-e 127.0.0.1:5000" , "-i ${workspaceFolderBasename}"],
+      "dependsOn": ["build"],
+    },
+    {
+      "label" : "migrate",
+      "command" : "aq migrate",
+      "type" : "process",
+      "args" : ["-e 127.0.0.1:5000" , "-i ${workspaceFolderBasename}"] ,
+      "dependsOn": ["build"],
     }
   ]
 };
@@ -35,7 +41,8 @@ export var defaultLaunchJson =
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceRoot}/bin/Debug/netcoreapp3.0/console.dll",
+      "justMyCode": false,
+      "program": "${workspaceRoot}/bin/Debug/net6.0/${workspaceFolderBasename}.dll",
       "args": [],
       "cwd": "${workspaceRoot}",
       "externalConsole": false,

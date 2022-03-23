@@ -1,20 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using Aquila.Cli;
 using Aquila.Shell.Ansi;
 using Aquila.Shell.Contracts;
 using Aquila.Shell.Contracts.Ansi;
-using Aquila.Shell.Utility;
-using Aquila.SSH;
 
 
 namespace Aquila.Shell.Terminal
@@ -30,8 +20,7 @@ namespace Aquila.Shell.Terminal
 
         private int _cursorX;
         private int _cursorY;
-       
-        
+
 
         private List<TerminalBufferChar> _line;
 
@@ -40,6 +29,7 @@ namespace Aquila.Shell.Terminal
 
         private int _currentLineIndex = -1;
         private IServiceProvider _serviceProvider;
+
         public CommandApplication(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
@@ -80,6 +70,7 @@ namespace Aquila.Shell.Terminal
             _cursorX = 0;
             _terminal.Send(AnsiBuilder.Build(new TerminalCode(TerminalCodeType.LineFeed)));
         }
+
         private void WriteLine(string text)
         {
             Write(text);
@@ -262,8 +253,6 @@ namespace Aquila.Shell.Terminal
             SyncCursor();
         }
 
-  
-
 
         private void SyncCursor()
         {
@@ -278,14 +267,13 @@ namespace Aquila.Shell.Terminal
             //var fakeConsole = _serviceProvider.GetRequiredService<McMaster.Extensions.CommandLineUtils.IConsole>();
 
             //var app = CliBuilder.Build(fakeConsole);
-            var app = _serviceProvider.GetRequiredService<ICommandLineInterface>();
-
-            _terminal.LookInput();
-            var result = app.Execute(args);
-            _terminal.UnLookInput();
+            // var app = _serviceProvider.GetRequiredService<ICommandLineInterface>();
+            //
+            // _terminal.LookInput();
+            // var result = app.Execute(args);
+            // _terminal.UnLookInput();
             // fakeConsole.Out.Flush();
             /// Write(fakeConsole.Out.ToString());
-
         }
     }
 }
