@@ -1,0 +1,28 @@
+{
+    "version" : "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/library.aqproj"
+                ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label" : "deploy",
+            "command" : "aq",
+            "type" : "process",
+            "args" : ["deploy", "-pkg \"${workspaceRoot}/bin/Debug/net6.0/Package/${workspaceFolderBasename}.aqpk\"", "-e 127.0.0.1:5000" , "-i ${workspaceFolderBasename}"],
+            "dependsOn": ["build"]     
+          },
+          {
+            "label" : "migrate",
+            "command" : "aq migrate",
+            "type" : "process",
+            "args" : ["-e 127.0.0.1:5000" , "-i ${workspaceFolderBasename}"]      
+          }
+    ]
+}
