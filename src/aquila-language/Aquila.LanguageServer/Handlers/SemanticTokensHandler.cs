@@ -41,7 +41,17 @@ public class SemanticsTokensVisitor : AquilaSyntaxWalker
         Push(node.Identifier, SemanticTokenType.Function);
 
         VisitParameterList(node.ParameterList);
-        Visit(node.Body);
+        
+        base.VisitFuncDecl(node);
+    }
+
+    public override void VisitIfStmt(IfStmt node)
+    {
+        PushKeyword(node.IfKeyword);
+        if (node.Else != null)
+            PushKeyword(node.Else.ElseKeyword);
+
+        base.VisitIfStmt(node);
     }
 
     public override void VisitParameter(ParameterSyntax node)
