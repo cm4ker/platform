@@ -1,0 +1,15 @@
+import Entity;
+
+fn main()
+{
+    var a = 1;
+
+    if(a > 3)
+    {
+        print(a);        
+    }
+    else
+    {
+        print("Less than 3");
+    }
+}

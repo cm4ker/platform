@@ -81,7 +81,7 @@ keyword : context {
       }
      
       : pattern {
-         regex    \= (\b(var|return|static|public|private|match|import)\b)
+         regex    \= (\b(var|return|static|public|private|match|import|if|else)\b)
          styles [] = .keyword;
       }
 }   

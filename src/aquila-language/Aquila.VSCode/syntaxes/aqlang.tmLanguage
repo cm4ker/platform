@@ -98,7 +98,7 @@
         </dict>
         <dict>
           <key>match</key>
-          <string>(\b(var|return|pub|match|fn|import)\b)</string>
+          <string>(\b(var|return|pub|match|fn|import|if|else)\b)</string>
           <key>name</key>
           <string>keyword.aqlang</string>
         </dict>
