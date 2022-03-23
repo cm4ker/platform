@@ -163,7 +163,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         {
             return x.Update(
                 VisitList(x.Statements),
-                AcceptEdge(x, x.NextEdge));
+                AcceptEdge(x, x.NextEdge)).WithLocalPropertiesFrom(x);
         }
 
         public override object VisitCFGStartBlock(StartBlock x)

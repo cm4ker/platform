@@ -73,6 +73,16 @@ namespace Aquila.Library
         {
             ctx.OutputText.Write(obj);
         }
+        
+        public static void print(AqContext ctx, string obj)
+        {
+            ctx.OutputText.Write(obj);
+        }
+        
+        public static void print(AqContext ctx, int obj)
+        {
+            ctx.OutputText.Write(obj);
+        }
 
         public static void println(AqContext ctx, object obj)
         {
@@ -83,5 +93,6 @@ namespace Aquila.Library
         {
             ctx.OutputText.WriteLine(obj);
         }
+        
     }
 }

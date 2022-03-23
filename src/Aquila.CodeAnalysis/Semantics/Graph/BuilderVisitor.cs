@@ -556,7 +556,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             var condition = x.Condition;
 
             // if (Condition) ...
-            BoundBlock elseBlock = end;
+            BoundBlock elseBlock = (x.Else != null) ? NewBlock() : end;
 
             _current = Connect(_current, NewBlock(), elseBlock, condition);
 
@@ -564,23 +564,18 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             Visit(x.Statement);
             CloseScope();
 
+            //connect if brunch to the end
             Connect(_current, end);
             _current = WithNewOrdinal(elseBlock);
 
             if (x.Else != null) // else ...
             {
-                elseBlock = NewBlock();
-                
-                var body = elseBlock;
-                elseBlock = end; // last ConditionalStmt
-                _current = WithNewOrdinal(body);
-
                 OpenScope(_current);
                 Visit(x.Else.Statement);
                 CloseScope();
 
                 Connect(_current, end);
-                _current = WithNewOrdinal(elseBlock);
+                _current = WithNewOrdinal(end);
             }
 
             Debug.Assert(_current == end);
