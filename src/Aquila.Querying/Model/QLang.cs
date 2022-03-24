@@ -217,7 +217,7 @@ namespace Aquila.Core.Querying.Model
             return this;
         }
 
-        public QLang ld_table(string tableName)
+        public QLang lookup_table(string tableName)
         {
             var ds = _logicStack.PopDataSource();
             var table = ds.FindTable(tableName);

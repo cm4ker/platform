@@ -298,7 +298,7 @@ namespace Aquila.Core.Querying.Test
             _m.reset()
                 .new_scope()
                 .ld_source("Entity.Invoice")
-                .ld_table("Nomenclatures")
+                .lookup_table("Nomenclatures")
                 .@as("A")
                 .@from()
                 .create(QObjectType.FieldList)

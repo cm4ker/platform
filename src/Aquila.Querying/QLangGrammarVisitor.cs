@@ -210,9 +210,17 @@ namespace Aquila.Core.Querying
         public override object VisitTable_qualified_name(QLangGrammarParser.Table_qualified_nameContext context)
         {
             var list = context.any_name();
-            if (list.Length > 1)
+            if (list.Length == 2)
             {
                 _stack.ld_source(context.GetText());
+            }
+            else if (list.Length == 3)
+            {
+                var objectName = $"{list[0].GetText()}.{list[1].GetText()}";
+                var tableName = list[2].GetText();
+                
+                _stack.ld_source(objectName);
+                _stack.lookup_table(tableName);
             }
             else if (list.Length == 1 && list[0].GetText().ToLower() == "subject")
             {
@@ -237,7 +245,7 @@ namespace Aquila.Core.Querying
             Visit(context.component_name());
             Visit(context.object_name());
 
-            _stack.ld_table(context.table_name().GetText());
+            _stack.lookup_table(context.table_name().GetText());
 
             if (context.table_alias() != null)
                 Visit(context.table_alias());
