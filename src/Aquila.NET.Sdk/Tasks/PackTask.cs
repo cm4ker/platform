@@ -6,9 +6,13 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Xml;
+using System.Xml.Serialization;
+using Aquila.Metadata;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using SimpleJSON;
+using YamlDotNet.Serialization;
 
 namespace Aquila.NET.Sdk.Tools
 {
@@ -71,26 +75,36 @@ namespace Aquila.NET.Sdk.Tools
                 }
             }
 
-            
-            
-            using (var package = ZipFile.Open(OutputPackageFullPath, ZipArchiveMode.Create))
+            PackageManifest manifest = new PackageManifest
             {
-                foreach (var file in info.GetFiles())
-                {
-                    if (Path.GetFileName(file.Name) == OutputName)
-                    {
-                    }
+                Author = "",
+                Version = "",
+                MainAssembly = OutputName,
+                ProjectName = ""
+            };
 
-                    package.CreateEntryFromFile(file.FullName, file.Name);
-                }
+            using var package = ZipFile.Open(OutputPackageFullPath, ZipArchiveMode.Create);
 
-                foreach (var md in Metadata)
-                {
-                    var sourceFileName = Path.Combine(ProjectDirectory, md.ToString());
-                    var destinationPath = Path.Combine("Metadata", md.ToString());
+            var entry = package.CreateEntry("manifest.xml");
 
-                    package.CreateEntryFromFile(sourceFileName, destinationPath);
-                }
+            XmlSerializer s = new XmlSerializer(typeof(PackageManifest));
+
+            using (var manifestStream = entry.Open())
+            {
+                s.Serialize(manifestStream, manifest);
+            }
+
+            foreach (var file in info.GetFiles())
+            {
+                package.CreateEntryFromFile(file.FullName, file.Name);
+            }
+
+            foreach (var md in Metadata)
+            {
+                var sourceFileName = Path.Combine(ProjectDirectory, md.ToString());
+                var destinationPath = Path.Combine("Metadata", md.ToString());
+
+                package.CreateEntryFromFile(sourceFileName, destinationPath);
             }
 
             return true;

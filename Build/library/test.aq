@@ -9,11 +9,11 @@ fn main()
     a++;
     a++;
     a = a + 10;
-
+    
     if(a > 3)
     {
-        print(a); 
-        print("HELLO WORLD");
+        println(a); 
+        println("HELLO WORLD");
     }
     else
     {

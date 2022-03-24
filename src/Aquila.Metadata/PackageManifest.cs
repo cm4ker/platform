@@ -6,4 +6,5 @@ public class PackageManifest
     public string ProjectName { get; set; }
     public string Version { get; set; }
     public string Author { get; set; }
+    public string RuntimeVersion { get; set; }
 }

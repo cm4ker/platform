@@ -17,16 +17,6 @@ using SourceFieldSymbol = Aquila.CodeAnalysis.Symbols.SourceFieldSymbol;
 
 namespace Aquila.CodeAnalysis.DocumentationComments
 {
-    public class AquilaProjectManifest
-    {
-        public string ProjectName { get; set; }
-
-        public string RuntimeVersion { get; set; }
-
-        public List<string> References { get; set; } = new List<string>();
-    }
-
-
     internal class DocumentationCommentCompiler
     {
         internal static void WriteDocumentationCommentXml(AquilaCompilation compilation, string assemblyName,
@@ -98,19 +88,19 @@ namespace Aquila.CodeAnalysis.DocumentationComments
 
         DocumentationCommentCompiler WriteCompilation(AquilaCompilation compilation, string assemblyName)
         {
-            //Aquila uses document writer for the manifest
-
-            var manifest = new AquilaProjectManifest()
-            {
-                ProjectName = assemblyName,
-                RuntimeVersion = compilation.AquilaCorLibrary.Identity.Version.ToString()
-            };
-
-            XmlSerializer s = new XmlSerializer(typeof(AquilaProjectManifest));
-
-            s.Serialize(_writer, manifest);
-
+            // //Aquila uses document writer for the manifest
             //
+            // var manifest = new AquilaProjectManifest()
+            // {
+            //     ProjectName = assemblyName,
+            //     RuntimeVersion = compilation.AquilaCorLibrary.Identity.Version.ToString()
+            // };
+            //
+            // XmlSerializer s = new XmlSerializer(typeof(AquilaProjectManifest));
+            //
+            // s.Serialize(_writer, manifest);
+            //
+            // //
             return this;
         }
 
