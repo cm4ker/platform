@@ -127,6 +127,7 @@ namespace Aquila.Metadata
         }
 
         public IEnumerable<SMProperty> Properties => GetPropertiesCore();
+        public IEnumerable<SMTable> Tables => GetTablesCore();
 
 
         public string Name => _md.Name;

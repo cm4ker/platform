@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Aquila.Metadata;
 using Aquila.Runtime;
@@ -13,17 +14,12 @@ namespace Aquila.Migrations
     /// </summary>
     public class EntityMigratorContext
     {
-        /// <summary>
-        /// Создать новую миграцию для сущности
-        /// </summary>
-        /// <param name="store">хранилище настроек</param>
-        /// <param name="old">Старая конфигурация</param>
-        /// <param name="actual">Новая конфигурация</param>
-        public EntityMigratorContext()
+        private bool CheckDBChangesMainObject(SMEntity x, SMEntity y)
         {
+            return !x.Properties.SequenceEqual(y.Properties);
         }
 
-        private bool CheckDBChangesMainObject(SMEntity x, SMEntity y)
+        private bool CheckDBChangesTable(SMTable x, SMTable y)
         {
             return !x.Properties.SequenceEqual(y.Properties);
         }
@@ -44,11 +40,28 @@ namespace Aquila.Migrations
             return descriptor.DatabaseName;
         }
 
-        // private bool CheckDBChangesTable(ITable x, ITable y)
-        // {
-        //     return !y.Properties.SequenceEqual(y.Properties);
-        // }
-        //
+        private string GetDbName(SMTable md, EntityMigratorDataContext context)
+        {
+            var mdId = md.FullName;
+            return GetDbName(mdId, context);
+        }
+
+        private string GetDbName(string mdId, EntityMigratorDataContext context)
+        {
+            var descriptor = context.RuntimeContext.Descriptors.GetEntityDescriptor(mdId);
+
+            if (descriptor == null)
+            {
+                descriptor = context.RuntimeContext.Descriptors.CreateDescriptor(context.ConnectionContext);
+                descriptor.DatabaseName = $"Tbl_{descriptor.DatabaseId}";
+                descriptor.MetadataId = mdId;
+                context.RuntimeContext.SaveAll(context.ConnectionContext);
+            }
+
+            return descriptor.DatabaseName;
+        }
+
+
         private void ChangeDatabaseTable(EntityMigrationScope scope, SMEntity old, SMEntity actual,
             EntityMigratorDataContext context)
         {
@@ -59,17 +72,17 @@ namespace Aquila.Migrations
             AnalyzeProperties(scope, old.Properties, actual.Properties, tableName, context);
         }
 
-        //
-        // private void ChangeDatabaseTable(IEntityMigrationScope scope, ITable old,
-        //     ITable actual)
-        // {
-        //     string tableName = $"{actual.GetSettings().DatabaseName}_tmp";
-        //
-        //     //var task = new MigrationTaskAction(step, $"Change table {tableName}");
-        //
-        //     AnalyzeProperties(scope, old.Properties, actual.Properties, tableName);
-        // }
-        //
+
+        private void ChangeDatabaseTable(EntityMigrationScope scope, SMTable old, SMTable actual,
+            EntityMigratorDataContext context)
+        {
+            string tableName = $"{GetDbName(actual, context)}_tmp";
+
+            //var task = new MigrationTaskAction(step, $"Change table {tableName}");
+
+            AnalyzeProperties(scope, old.Properties, actual.Properties, tableName, context);
+        }
+
         private void AnalyzeProperties(EntityMigrationScope scope, IEnumerable<SMProperty> old,
             IEnumerable<SMProperty> actual, string tableName, EntityMigratorDataContext context)
         {
@@ -115,12 +128,11 @@ namespace Aquila.Migrations
                                 e.Properties.SelectMany(p =>
                                     p.GetOrCreateSchema(context)));
 
-                            //TODO: Add support for nested tables for Entity
-                            // foreach (var table in e.Tables)
-                            // {
-                            //     scope.CreateTable(table.GetSettings().DatabaseName,
-                            //         table.Properties.SelectMany(x => x.GetDbSchema()));
-                            // }
+                            foreach (var table in e.Tables)
+                            {
+                                scope.CreateTable(GetDbName(table, context),
+                                    table.Properties.SelectMany(x => x.GetOrCreateSchema(context)));
+                            }
                         }, 20));
             }
             else if (oldState.Any() && !actualState.Any())
@@ -164,12 +176,11 @@ namespace Aquila.Migrations
                                     actual.Properties.SelectMany(p => p.GetOrCreateSchema(context)));
 
 
-                                //TODO: Add support for nested tables for Entity
-                                // foreach (var table in actual.Tables)
-                                // {
-                                //     scope.CreateTable(table.GetSettings().DatabaseName,
-                                //         table.Properties.SelectMany(x => x.GetDbSchema()));
-                                // }
+                                foreach (var table in actual.Tables)
+                                {
+                                    scope.CreateTable(GetDbName(table, context),
+                                        table.Properties.SelectMany(x => x.GetOrCreateSchema(context)));
+                                }
                             }, 20);
                     }
                     else
@@ -204,58 +215,58 @@ namespace Aquila.Migrations
                             }, 40);
                         }
 
-                        // //Не забываем. У нас ещё есть табличные части, которые лежат в отдельных таблицах
-                        // var oldTabes = old.Tables;
-                        // var actualTables = actual.Tables;
-                        //
-                        // var tables = oldTabes.FullJoin(actualTables, x => x.Id,
-                        //     x => new { old = x, actual = default(ITable) },
-                        //     x => new { old = default(ITable), actual = x },
-                        //     (x, y) => new { old = x, actual = y });
-                        //
-                        // foreach (var t in tables)
-                        // {
-                        //     if (CheckDBChangesTable(t.old, t.actual))
-                        //     {
-                        //         MigrateTable(plan, t.old, t.actual);
-                        //     }
-                        // }
+                        var oldTabes = old.Tables;
+                        var actualTables = actual.Tables;
+
+                        var tables = oldTabes.FullJoin(actualTables, x => x.FullName,
+                            x => new { old = x, actual = default(SMTable) },
+                            x => new { old = default(SMTable), actual = x },
+                            (x, y) => new { old = x, actual = y });
+
+                        foreach (var t in tables)
+                        {
+                            if (CheckDBChangesTable(t.old, t.actual))
+                            {
+                                MigrateTable(plan, t.old, t.actual, context);
+                            }
+                        }
                     }
                 }
             }
         }
 
-        //
-        // private void MigrateTable(IEntityMigrationPlan plan, ITable old, ITable actual)
-        // {
-        //     var actualDbName = actual.GetSettings().DatabaseName;
-        //     var oldDbName = old.GetSettings().DatabaseName;
-        //
-        //     plan.AddScope(scope =>
-        //     {
-        //         scope.CopyTable(oldDbName, $"{actualDbName}_tmp");
-        //         scope.SetFlagCopyTable(oldDbName, $"{actualDbName}_tmp");
-        //     }, 10);
-        //
-        //     plan.AddScope(scope =>
-        //     {
-        //         ChangeDatabaseTable(scope, old, actual);
-        //         scope.SetFlagChangeTable(actualDbName);
-        //     }, 20);
-        //
-        //     plan.AddScope(scope =>
-        //     {
-        //         scope.DeleteTable(oldDbName);
-        //         scope.SetFlagDeleteTable(oldDbName);
-        //     }, 30);
-        //
-        //     plan.AddScope(scope =>
-        //     {
-        //         scope.RenameTable($"{actualDbName}_tmp", oldDbName);
-        //         scope.SetFlagRenameTable($"{actualDbName}_tmp");
-        //     }, 40);
-        // }
-        //
+
+        private void MigrateTable(EntityMigrationPlan plan, SMTable old, SMTable actual,
+            EntityMigratorDataContext context)
+        {
+            var actualDbName = GetDbName(actual, context);
+            var oldDbName = GetDbName(old, context);
+
+            plan.AddScope(scope =>
+            {
+                scope.CopyTable(oldDbName, $"{actualDbName}_tmp");
+                scope.SetFlagCopyTable(oldDbName, $"{actualDbName}_tmp");
+            }, 10);
+
+            plan.AddScope(scope =>
+            {
+                ChangeDatabaseTable(scope, old, actual, context);
+                scope.SetFlagChangeTable(actualDbName);
+            }, 20);
+
+            plan.AddScope(scope =>
+            {
+                scope.DeleteTable(oldDbName);
+                scope.SetFlagDeleteTable(oldDbName);
+            }, 30);
+
+            plan.AddScope(scope =>
+            {
+                scope.RenameTable($"{actualDbName}_tmp", oldDbName);
+                scope.SetFlagRenameTable($"{actualDbName}_tmp");
+            }, 40);
+        }
+
         public void CreateProperty(EntityMigrationScope plan, SMProperty property, string tableName,
             EntityMigratorDataContext context)
         {
@@ -271,27 +282,33 @@ namespace Aquila.Migrations
             property.GetOrCreateSchema(context).ForEach(s => plan.DeleteColumn(s, tableName));
         }
 
-        // public void ChangeTable(IEntityMigrationScope plan, ITable old, ITable actual, string tableName)
-        // {
-        //     AnalyzeProperties(plan, old.Properties, old.Properties, tableName);
-        // }
-        //
+        public void ChangeTable(EntityMigrationScope plan, SMTable old, SMTable actual, string tableName,
+            EntityMigratorDataContext context)
+        {
+            AnalyzeProperties(plan, old.Properties, old.Properties, tableName, context);
+        }
+
         public void ChangeProperty(EntityMigrationScope plan, SMProperty old, SMProperty actual,
             string tableName, EntityMigratorDataContext context)
         {
             var oldMdCol = context.Current;
             var actualMdCol = context.Pending;
 
-            //случай если в свойстве был один тип а стало много 
+            //case then count types 1 => many
             if (old.Types.Count() == 1 && actual.Types.Count() > 1)
             {
-                //ищем колонку для переименования
+                //get rename column
                 var rename = old.GetOrCreateSchema(context).Join(
                     actual.GetOrCreateSchema(context),
                     o => o.Type,
                     a => a.Type,
                     (x, y) => new { old = x, actual = y }
                 ).FirstOrDefault();
+
+                if (rename is null)
+                {
+                    throw new Exception($"Column {old.Name} can't handle");
+                }
 
                 //находим колонки которые нужно создать, это все кроме той что нужно переименовать
                 var toCreate = actual.GetOrCreateSchema(context)
