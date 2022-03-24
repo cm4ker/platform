@@ -10,6 +10,7 @@ namespace Aquila.Metadata
         public EntityMetadata()
         {
             Properties = new List<EntityProperty>();
+            Tables = new List<EntityTable>();
         }
 
         /// <summary>
@@ -18,6 +19,7 @@ namespace Aquila.Metadata
         public string Name { get; set; }
 
         public List<EntityProperty> Properties { get; set; }
+        public List<EntityTable> Tables { get; set; }
 
 
         private static readonly IDeserializer Deserializer = new DeserializerBuilder()

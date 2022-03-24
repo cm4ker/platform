@@ -21,6 +21,18 @@ namespace Aquila.Metadata
         public List<MetadataType> Types { get; set; }
     }
 
+    public sealed class EntityTable
+    {
+        public EntityTable()
+        {
+            Properties = new List<EntityProperty>();
+        }
+
+        public string Name { get; set; }
+
+        public List<EntityProperty> Properties { get; set; }
+    }
+
     public class MetadataType
     {
         /// <summary>
