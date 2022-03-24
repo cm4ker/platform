@@ -30,7 +30,7 @@ namespace Aquila.Metadata
         }
     }
 
-    public sealed class SMEntity : IEquatable<SMEntity>
+    public sealed class SMEntity : IEquatable<SMEntity>, ISMPropertyHolder
     {
         private readonly EntityMetadata _md;
         private readonly SMCache _cache;
@@ -53,6 +53,7 @@ namespace Aquila.Metadata
 
         private List<SMProperty> _props;
         private SMProperty _idProperty;
+        private List<SMTable> _tables;
 
         private void CoreLazyPropertiesOrdered()
         {
@@ -69,6 +70,17 @@ namespace Aquila.Metadata
             }
         }
 
+        private void CoreLazyTablesOrdered()
+        {
+            _tables = new List<SMTable>();
+
+            foreach (var t in _md.Tables.OrderBy(x => x.Name))
+            {
+                var table = new SMTable(t, _cache);
+                AddTable(table);
+            }
+        }
+
         public SMProperty FindProperty(string name) => GetPropertiesCore().FirstOrDefault(x => x.Name == name);
 
         public SMProperty IdProperty
@@ -80,7 +92,7 @@ namespace Aquila.Metadata
             }
         }
 
-        public void AddProperty(SMProperty prop)
+        private void AddProperty(SMProperty prop)
         {
             if (_props.Exists(x => x.Name == prop.Name))
                 throw new Exception($"Property with name {prop.Name} already declared");
@@ -89,12 +101,29 @@ namespace Aquila.Metadata
             _props.Add(prop);
         }
 
+        private void AddTable(SMTable table)
+        {
+            if (_props.Exists(x => x.Name == table.Name))
+                throw new Exception($"Table with name {table.Name} already declared");
+
+            table.UpdateParent(this);
+            _tables.Add(table);
+        }
+
         IEnumerable<SMProperty> GetPropertiesCore()
         {
             if (_props == null)
                 CoreLazyPropertiesOrdered();
 
             return _props;
+        }
+
+        IEnumerable<SMTable> GetTablesCore()
+        {
+            if (_tables == null)
+                CoreLazyTablesOrdered();
+
+            return _tables;
         }
 
         public IEnumerable<SMProperty> Properties => GetPropertiesCore();
@@ -154,6 +183,11 @@ namespace Aquila.Metadata
         }
     }
 
+    public interface ISMPropertyHolder
+    {
+        string FullName { get; }
+    }
+
     public sealed class SMProperty
     {
         private readonly EntityProperty _mdProp;
@@ -170,11 +204,11 @@ namespace Aquila.Metadata
 
         public string FullName => $"{Parent.FullName}.{Name}";
 
-        public SMEntity Parent { get; private set; }
+        public ISMPropertyHolder Parent { get; private set; }
 
         public bool IsIdProperty => Name == "Id";
 
-        internal void UpdateParent(SMEntity entity)
+        internal void UpdateParent(ISMPropertyHolder entity)
         {
             Parent = entity;
         }
@@ -217,6 +251,71 @@ namespace Aquila.Metadata
         {
             get { return Types.All(x => !x.IsUnknown); }
         }
+    }
+
+    public sealed class SMTable : ISMPropertyHolder
+    {
+        private readonly EntityTable _md;
+        private readonly SMCache _cache;
+        private List<SMProperty> _props;
+        private SMProperty _parentProperty;
+
+        private EntityProperty _parentProp = new EntityProperty
+        {
+            Name = "Parent", Types = { new MetadataType { Name = SMType.Guid } }
+        };
+
+
+        public SMTable(EntityTable md, SMCache cache)
+        {
+            _md = md;
+            _cache = cache;
+        }
+
+        public string Name => _md.Name;
+        public string FullName => $"{Parent.FullName}.{Name}";
+
+        public SMEntity Parent { get; private set; }
+
+        internal void UpdateParent(SMEntity entity)
+        {
+            Parent = entity;
+        }
+
+
+        private void AddProperty(SMProperty prop)
+        {
+            if (_props.Exists(x => x.Name == prop.Name))
+                throw new Exception($"Property with name {prop.Name} already declared");
+
+            prop.UpdateParent(this);
+            _props.Add(prop);
+        }
+
+        private void CoreLazyPropertiesOrdered()
+        {
+            _props = new List<SMProperty>();
+
+            var id = new SMProperty(_parentProp, _cache);
+            _parentProperty = id;
+            AddProperty(id);
+
+            foreach (var p in _md.Properties.OrderBy(x => x.Name))
+            {
+                var prop = new SMProperty(p, _cache);
+                AddProperty(prop);
+            }
+        }
+
+        IEnumerable<SMProperty> GetPropertiesCore()
+        {
+            if (_props == null)
+                CoreLazyPropertiesOrdered();
+
+            return _props;
+        }
+
+        public IEnumerable<SMProperty> Properties => GetPropertiesCore();
     }
 
     public enum SMTypeKind
