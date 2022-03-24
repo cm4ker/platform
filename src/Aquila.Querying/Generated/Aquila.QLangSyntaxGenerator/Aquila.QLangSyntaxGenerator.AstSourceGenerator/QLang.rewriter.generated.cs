@@ -154,13 +154,14 @@ public override QLangElement VisitQNestedQuery(QNestedQuery arg) {
 var nested = (QSelectQuery)Visit(arg.Nested);
 return new QNestedQuery(nested);
 }
-public override QLangElement VisitQObjectTable(QObjectTable arg) {
+public override QLangElement VisitQObject(QObject arg) {
 var objectType = arg.ObjectType;
-return new QObjectTable(objectType);
+return new QObject(objectType);
 }
 public override QLangElement VisitQTable(QTable arg) {
-var objectTable = (QObjectTable)Visit(arg.ObjectTable);
-return new QTable(objectTable);
+var parentObject = (QObject)Visit(arg.ParentObject);
+var tableType = arg.TableType;
+return new QTable(parentObject,tableType);
 }
 public override QLangElement VisitQIntermediateSourceField(QIntermediateSourceField arg) {
 var field = (QField)Visit(arg.Field);
