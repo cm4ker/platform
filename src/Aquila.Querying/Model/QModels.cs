@@ -62,6 +62,14 @@ namespace Aquila.Core.Querying.Model
         }
     }
 
+    public partial class QCount
+    {
+        public override IEnumerable<SMType> GetExpressionType()
+        {
+            yield return new SMType(SMType.Int);
+        }
+    }
+
     /// <summary>
     /// Константное значение
     /// </summary>

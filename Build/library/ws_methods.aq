@@ -8,3 +8,13 @@ pub fn get_books_count() int
     
     return q.scalar<int>();
 }
+
+[endpoint]
+pub fn create_new_book() bool
+{
+    var book = BookManager.create();
+    book.Caption = "Some caption";
+    book.save();
+    
+    return true;
+}

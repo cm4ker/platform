@@ -92,6 +92,7 @@ namespace Aquila.Data
 
             _readers = new Dictionary<string, IColumnReader>();
             _readersIndex = new Dictionary<int, IColumnReader>();
+            var colIndex = 0; //first column
 
             foreach (var column in results)
             {
@@ -105,6 +106,8 @@ namespace Aquila.Data
                 {
                     reader = new SimpleColumnReader(_context, column);
                 }
+
+                reader.Init(ref colIndex);
 
                 _readers[column.GetName()] = reader;
                 _readersIndex[_readersIndex.Count] = reader;
@@ -129,11 +132,9 @@ namespace Aquila.Data
             {
                 _context = context;
                 _column = column;
-
-                Init();
             }
 
-            private void Init()
+            public void Init(ref int colIndex)
             {
                 var types = _column.GetExpressionType().GetOrderedFlattenTypes();
                 foreach (var type in types)
@@ -142,7 +143,7 @@ namespace Aquila.Data
 
                     if (type.isType)
                     {
-                        _typeCol = colName;
+                        _typeCol = colIndex++;
                         continue;
                     }
 
@@ -152,22 +153,22 @@ namespace Aquila.Data
                             throw new Exception("Unknown type");
                             break;
                         case SMTypeKind.String:
-                            _stringCol = colName;
+                            _stringCol = colIndex++;
                             break;
                         case SMTypeKind.Int:
-                            _intCol = colName;
+                            _intCol = colIndex++;
                             break;
                         case SMTypeKind.Long:
                             break;
                         case SMTypeKind.Bool:
-                            _boolCol = colName;
+                            _boolCol = colIndex++;
                             break;
                         case SMTypeKind.Double:
                             break;
                         case SMTypeKind.Decimal:
                             break;
                         case SMTypeKind.DateTime:
-                            _dateTimeCol = colName;
+                            _dateTimeCol = colIndex++;
                             break;
                         case SMTypeKind.Numeric:
                             break;
@@ -176,8 +177,8 @@ namespace Aquila.Data
                         case SMTypeKind.Guid:
                             break;
                         case SMTypeKind.Reference:
-                            if (string.IsNullOrEmpty(_refCol))
-                                _refCol = colName;
+                            if (_refCol == -1)
+                                _refCol = colIndex++;
 
                             var runtimeType =
                                 _context.Instance.BLAssembly.GetType(type.type.GetSemantic().ReferenceName);
@@ -193,12 +194,12 @@ namespace Aquila.Data
                 }
             }
 
-            private string _typeCol;
-            private string _refCol;
-            private string _intCol;
-            private string _boolCol;
-            private string _stringCol;
-            private string _dateTimeCol;
+            private int _typeCol = -1;
+            private int _refCol = -1;
+            private int _intCol = -1;
+            private int _boolCol = -1;
+            private int _stringCol = -1;
+            private int _dateTimeCol = -1;
 
             public string ColumnName => _column.GetName();
 
@@ -241,18 +242,19 @@ namespace Aquila.Data
             {
                 _context = context;
                 _column = column;
-
-                Init();
             }
 
-            private string _colName;
+            //private string _colName;
+            private int _colIndex;
+
             private int _typeId;
             private bool _isReference;
             private Type _runtimeType;
 
-            private void Init()
+            public void Init(ref int colIndex)
             {
-                _colName = _column.GetDbName();
+                _colIndex = colIndex++;
+                //_colName = _column.GetDbName();
                 var colType = _column.GetExpressionType().FirstOrDefault() ??
                               throw new Exception("Result type is empty");
                 if (colType.IsReference)
@@ -270,9 +272,9 @@ namespace Aquila.Data
             public object ReadValue(BufferedDataReader dataReader)
             {
                 if (_isReference)
-                    return Activator.CreateInstance(_runtimeType, _context, (Guid)dataReader[_colName]);
+                    return Activator.CreateInstance(_runtimeType, _context, (Guid)dataReader[_colIndex]);
 
-                return dataReader[_colName];
+                return dataReader[_colIndex];
             }
         }
 
@@ -280,6 +282,9 @@ namespace Aquila.Data
         {
             string ColumnName { get; }
             object ReadValue(BufferedDataReader dataReader);
+
+            //Initialize column and move index for internal columns count
+            void Init(ref int colIndex);
         }
     }
 }
