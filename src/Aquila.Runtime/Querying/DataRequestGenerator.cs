@@ -37,7 +37,7 @@ namespace Aquila.Core.Querying
             var source = sfe.PlatformSource;
             throw source switch
             {
-                QObjectTable ot => new NotImplementedException("Can't inject object table"),
+                QObject ot => new NotImplementedException("Can't inject object table"),
                 QTable t => new NotImplementedException("Can't inject table"),
                 _ => new Exception("Not supported object in gen source field or field source This should never happen")
             };

@@ -204,7 +204,7 @@ namespace Aquila.Core.Querying
             Qm.st_query();
         }
 
-        public override void VisitQObjectTable(QObjectTable node)
+        public override void VisitQObject(QObject node)
         {
             var ot = node.ObjectType;
 
@@ -217,7 +217,7 @@ namespace Aquila.Core.Querying
 
             _hasAlias = false;
 
-            base.VisitQObjectTable(node);
+            base.VisitQObject(node);
         }
 
         public override void VisitQTable(QTable node)

@@ -42,10 +42,10 @@ namespace Aquila.Core.Querying
             Visit(arg.Joins);
         }
 
-        public override void VisitQObjectTable(QObjectTable node)
+        public override void VisitQObject(QObject node)
         {
             node.SetDbNameIfEmpty($"{node.ObjectType.GetDescriptor(_context).DatabaseName}");
-            base.VisitQObjectTable(node);
+            base.VisitQObject(node);
         }
 
         // public override void VisitQTable(QTable node)

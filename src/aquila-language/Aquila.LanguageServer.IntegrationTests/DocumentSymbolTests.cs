@@ -50,7 +50,7 @@ pub fn test(a int) int
                 },
             });
 
-            symbols.Should().HaveCount(24);
+            symbols.Should().HaveCount(1);
 
             // client deletes the output and renames the resource
             client.TextDocument.DidChangeTextDocument(TextDocumentParamHelper.CreateDidChangeTextDocumentParams(
@@ -72,7 +72,7 @@ pub fn test() int
                 },
             });
 
-            symbols.Should().HaveCount(24);
+            symbols.Should().HaveCount(1);
         }
 
     }

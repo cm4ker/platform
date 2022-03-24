@@ -263,11 +263,10 @@ namespace Aquila.Core.Querying.Model
     /// <summary>
     /// Describes object table by the matadata
     /// </summary>
-    public partial class QObjectTable
+    public partial class QObject
     {
         private List<QField> _fields;
         private List<QTable> _tables;
-
 
         public override IEnumerable<QField> GetFields()
         {
@@ -277,10 +276,7 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QTable> GetTables()
         {
-            throw new NotImplementedException();
-
-            // return _tables ??= ObjectType.Tables.Select(x => new QTable(this, x))
-            //     .ToList();
+            return _tables ??= ObjectType.Tables.Select(x => new QTable(this, x)).ToList();
         }
 
         public override string ToString()
@@ -293,11 +289,17 @@ namespace Aquila.Core.Querying.Model
     {
         private List<QField> _fields;
 
-        public string Name => null;
+        public string Name => this.tableType.Name;
 
         public override IEnumerable<QField> GetFields()
         {
-            return _fields ?? throw new NotImplementedException();
+            return _fields ??= TableType.Properties.Select(x => (QField)new QSourceFieldExpression(this, x))
+                .ToList();
+        }
+
+        public override string ToString()
+        {
+            return "Object: " + Name;
         }
     }
 

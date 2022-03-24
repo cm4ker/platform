@@ -103,7 +103,7 @@ namespace Aquila.Metadata
 
         private void AddTable(SMTable table)
         {
-            if (_props.Exists(x => x.Name == table.Name))
+            if (_tables.Exists(x => x.Name == table.Name))
                 throw new Exception($"Table with name {table.Name} already declared");
 
             table.UpdateParent(this);

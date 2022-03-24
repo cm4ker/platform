@@ -293,6 +293,22 @@ namespace Aquila.Core.Querying.Test
         }
 
         [Fact]
+        public void TableTest()
+        {
+            _m.reset()
+                .new_scope()
+                .ld_source("Entity.Invoice")
+                .ld_table("Nomenclatures")
+                .@as("A")
+                .@from()
+                .create(QObjectType.FieldList)
+                .ld_name("A")
+                .ld_field("Parent")
+                .st_elem()
+                .@select();
+        }
+
+        [Fact]
         public void OrderByTest()
         {
             _m.reset();

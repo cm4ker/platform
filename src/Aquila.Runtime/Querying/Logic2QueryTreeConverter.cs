@@ -33,7 +33,7 @@ namespace Aquila.Core.Querying
             _qm.st_query();
         }
 
-        private void GenerateSource(QObjectTable ot)
+        private void GenerateSource(QObject ot)
         {
             /*
              FROM
@@ -78,7 +78,7 @@ namespace Aquila.Core.Querying
             {
                 GenerateQuery(nq.Nested);
             }
-            else if (ds is QObjectTable ot)
+            else if (ds is QObject ot)
             {
                 GenerateSource(ot);
             }

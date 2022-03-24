@@ -172,7 +172,7 @@
 
     <Syntax IsAbstract="true" Name="QPlatformDataSource" Base="QDataSource"/>
 
-    <Syntax Name="QObjectTable" Base="QPlatformDataSource">
+    <Syntax Name="QObject" Base="QPlatformDataSource">
         <Arguments>
             <Single Name="ObjectType" Type="SMEntity" DenyChildrenFill="true"/>
         </Arguments>
@@ -180,7 +180,8 @@
 
     <Syntax Name="QTable" Base="QPlatformDataSource">
         <Arguments>
-            <Single Name="ObjectTable" Type="QObjectTable"/>
+            <Single Name="ParentObject" Type="QObject" DenyChildrenFill="true"/>
+            <Single Name="TableType" Type="SMTable" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
     <!-- End DataSource -->
@@ -322,7 +323,7 @@
     <Syntax Name="QAdd" Base="QOperationExpression">
         <Arguments>
             <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true"/>
-            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>            
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true"/>
         </Arguments>
     </Syntax>
 
@@ -336,7 +337,7 @@
     <Syntax Name="QEquals" Base="QOperationExpression">
         <Arguments>
             <Single Name="Right" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
-            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>            
+            <Single Name="Left" Type="QExpression" OnlyArgument="true" PassBase="true" DenyChildrenFill="true"/>
         </Arguments>
     </Syntax>
     <Syntax Name="QNotEquals" Base="QOperationExpression">
@@ -381,7 +382,7 @@
 
     <Syntax Name="QCount" Base="QExpression">
         <Arguments>
-            
+
         </Arguments>
     </Syntax>
 

@@ -1293,9 +1293,9 @@ namespace Aquila.Core.Querying.Model
 
 namespace Aquila.Core.Querying.Model
 {
-    public partial class QObjectTable : QPlatformDataSource
+    public partial class QObject : QPlatformDataSource
     {
-        public QObjectTable(SMEntity objectType) : base()
+        public QObject(SMEntity objectType) : base()
         {
             ObjectType = objectType;
         }
@@ -1304,12 +1304,12 @@ namespace Aquila.Core.Querying.Model
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
-            return visitor.VisitQObjectTable(this);
+            return visitor.VisitQObject(this);
         }
 
         public override void Accept(QLangVisitorBase visitor)
         {
-            visitor.VisitQObjectTable(this);
+            visitor.VisitQObject(this);
         }
 
         public override IEnumerable<QLangElement> GetChildren()
@@ -1330,12 +1330,15 @@ namespace Aquila.Core.Querying.Model
 {
     public partial class QTable : QPlatformDataSource
     {
-        public QTable(QObjectTable objectTable) : base()
+        public QTable(QObject parentObject, SMTable tableType) : base()
         {
-            this.objectTable = objectTable;
+            ParentObject = parentObject;
+            TableType = tableType;
         }
 
-        public QObjectTable ObjectTable { get => this.objectTable; init => this.objectTable = value; }
+        public QObject ParentObject { get => this.parentObject; init => this.parentObject = value; }
+
+        public SMTable TableType { get => this.tableType; init => this.tableType = value; }
 
         public override T Accept<T>(QLangVisitorBase<T> visitor)
         {
@@ -1349,8 +1352,6 @@ namespace Aquila.Core.Querying.Model
 
         public override IEnumerable<QLangElement> GetChildren()
         {
-            if (this.objectTable != null)
-                yield return this.objectTable;
             foreach (var item in base.GetChildren())
             {
                 yield return item;
@@ -1359,7 +1360,8 @@ namespace Aquila.Core.Querying.Model
             yield break;
         }
 
-        private QObjectTable objectTable;
+        private QObject parentObject;
+        private SMTable tableType;
     }
 }
 
@@ -2637,7 +2639,7 @@ namespace Aquila.Core.Querying
             return DefaultVisit(arg);
         }
 
-        public virtual T VisitQObjectTable(QObjectTable arg)
+        public virtual T VisitQObject(QObject arg)
         {
             return DefaultVisit(arg);
         }
@@ -2965,7 +2967,7 @@ namespace Aquila.Core.Querying
             DefaultVisit(arg);
         }
 
-        public virtual void VisitQObjectTable(QObjectTable arg)
+        public virtual void VisitQObject(QObject arg)
         {
             DefaultVisit(arg);
         }

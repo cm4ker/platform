@@ -177,7 +177,7 @@ namespace Aquila.Core.Querying
             }
         }
 
-        public override void VisitQObjectTable(QObjectTable arg)
+        public override void VisitQObject(QObject arg)
         {
             Qm.ld_table(arg.GetDbName());
         }

@@ -100,7 +100,7 @@ namespace Aquila.Runtime.Querying
              We have to check values before and after update
              */
 
-            var ds = new QObjectTable(entity);
+            var ds = new QObject(entity);
             var targetSource = new QAliasedDataSource(ds, "TS");
 
             var select = new QSelect(new QFieldList(
@@ -154,7 +154,7 @@ namespace Aquila.Runtime.Querying
              In this way platform can handle sec rights dependent on tables 
              */
 
-            var ds = new QObjectTable(entity);
+            var ds = new QObject(entity);
             var insert =
                 new QInsert(
                     new QSourceFieldList(entity.Properties.Select(x => new QSourceFieldExpression(ds, x))
@@ -181,7 +181,7 @@ namespace Aquila.Runtime.Querying
 
         public static QDeleteQuery GetDeleteQuery(SMEntity entity, MetadataProvider em)
         {
-            var source = new QAliasedDataSource(new QObjectTable(entity), "TS");
+            var source = new QAliasedDataSource(new QObject(entity), "TS");
             QDelete delete = new QDelete(source);
             QFrom from = new QFrom(null, source);
             QParameter param = new QParameter("Id");
@@ -191,7 +191,7 @@ namespace Aquila.Runtime.Querying
 
         public static QSelectQuery GetSelectQuery(SMEntity entity, MetadataProvider em)
         {
-            var source = new QAliasedDataSource(new QObjectTable(entity), "TS");
+            var source = new QAliasedDataSource(new QObject(entity), "TS");
             QSelect select = new QSelect(new QFieldList(source.GetFields().ToImmutableArray()));
             QFrom from = new QFrom(null, source);
             QParameter param = new QParameter("Id");

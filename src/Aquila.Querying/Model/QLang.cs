@@ -222,6 +222,9 @@ namespace Aquila.Core.Querying.Model
             var ds = _logicStack.PopDataSource();
             var table = ds.FindTable(tableName);
 
+            if (table == null)
+                throw new Exception($"Table {tableName} not found");
+
             _logicStack.Push(table);
             if (CurrentScope != null)
             {
@@ -255,7 +258,7 @@ namespace Aquila.Core.Querying.Model
             //load entity type
             var type = _metadata.GetSemanticByName(qualifiedName) ??
                        throw new Exception($"Source not found '{qualifiedName}'");
-            var ds = new QObjectTable(type);
+            var ds = new QObject(type);
             _logicStack.Push(ds);
             if (CurrentScope != null)
                 CurrentScope.AddDS(ds);
@@ -374,7 +377,7 @@ namespace Aquila.Core.Querying.Model
                 _logicStack.Push(new QAliasedSelectExpression(field, alias));
             else
             {
-                throw new Exception("Element on stack not available for aliasing");
+                throw new Exception($"Element on stack not available for aliasing {item.GetType()}");
             }
 
             return this;

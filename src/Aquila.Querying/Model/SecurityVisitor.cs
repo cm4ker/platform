@@ -28,7 +28,7 @@ namespace Aquila.Core.Querying.Model
         public override QLangElement VisitQInsertSelectQuery(QInsertSelectQuery arg)
         {
             var target = arg.Insert.Target;
-            if (target is QObjectTable ot)
+            if (target is QObject ot)
             {
                 if (_sec.TryClaimPermission(ot.ObjectType, SecPermission.Create, out var claim))
                 {
@@ -91,7 +91,7 @@ namespace Aquila.Core.Querying.Model
 
         public override QLangElement VisitQUpdateQuery(QUpdateQuery arg)
         {
-            var ot = arg.From.Source.Find<QObjectTable>().FirstOrDefault();
+            var ot = arg.From.Source.Find<QObject>().FirstOrDefault();
             var target = arg.From.Source;
             var newValues = arg.From.Joins[0].Joined;
 
@@ -110,7 +110,7 @@ namespace Aquila.Core.Querying.Model
 
         public override QLangElement VisitQDeleteQuery(QDeleteQuery arg)
         {
-            var ot = arg.Delete.Target.Find<QObjectTable>().FirstOrDefault();
+            var ot = arg.Delete.Target.Find<QObject>().FirstOrDefault();
             var target = arg.Delete.Target;
 
             if (ot != null)
@@ -150,7 +150,7 @@ namespace Aquila.Core.Querying.Model
              */
 
             var target = arg.Insert.Target;
-            if (target is QObjectTable ot)
+            if (target is QObject ot)
             {
                 if (_sec.TryClaimPermission(ot.ObjectType, SecPermission.Create, out var claim))
                 {
@@ -208,7 +208,7 @@ namespace Aquila.Core.Querying.Model
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        void EmitCriteria(QAliasedDataSource ds, QObjectTable ot)
+        void EmitCriteria(QAliasedDataSource ds, QObject ot)
         {
             //this is object... transform it if has Criteria
             if (_sec.TryClaimPermission(ot.ObjectType, SecPermission.Read, out var claim))
@@ -234,7 +234,7 @@ namespace Aquila.Core.Querying.Model
         {
             QDataSource resultDs;
 
-            if (arg.Source is QObjectTable ot)
+            if (arg.Source is QObject ot)
             {
                 //TODO: potential here can be a collision. Need create deterministic randomizer witout collisio
                 var ds = new QAliasedDataSource(ot, RandomString(10));
@@ -244,7 +244,7 @@ namespace Aquila.Core.Querying.Model
 
                 resultDs = ds;
             }
-            else if (arg.Source is QAliasedDataSource { ParentSource: QObjectTable ot2 } ads)
+            else if (arg.Source is QAliasedDataSource { ParentSource: QObject ot2 } ads)
             {
                 EmitCriteria(ads, ot2);
 
@@ -261,7 +261,7 @@ namespace Aquila.Core.Querying.Model
             return new QFrom(joinList, resultDs);
         }
 
-        public override QLangElement VisitQObjectTable(QObjectTable arg)
+        public override QLangElement VisitQObject(QObject arg)
         {
             //deny to create new objects in tree (we need old structure)
 
@@ -318,16 +318,16 @@ namespace Aquila.Core.Querying.Model
              
              */
 
-            QObjectTable ot = null;
+            QObject ot = null;
             QAliasedDataSource ads = null;
 
-            if (arg.Joined is QObjectTable tot)
+            if (arg.Joined is QObject tot)
             {
                 ot = tot;
                 ads = new QAliasedDataSource(tot, RandomString(10));
                 _subs[arg.Joined] = ads;
             }
-            else if (arg.Joined is QAliasedDataSource { ParentSource: QObjectTable tot2 } tads)
+            else if (arg.Joined is QAliasedDataSource { ParentSource: QObject tot2 } tads)
             {
                 ot = tot2;
                 ads = tads;
