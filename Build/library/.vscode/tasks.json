@@ -20,9 +20,9 @@
           },
           {
             "label" : "migrate",
-            "command" : "aq migrate",
+            "command" : "aq",
             "type" : "process",
-            "args" : ["-e 127.0.0.1:5000" , "-i ${workspaceFolderBasename}"]      
+            "args" : ["migrate" ,"-e 127.0.0.1:5000" , "-i ${workspaceFolderBasename}"]      
           }
     ]
 }

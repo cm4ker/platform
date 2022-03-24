@@ -4,7 +4,7 @@ import Entity;
 pub fn get_books_count() int
 {
     var q = query();
-    q.text = "FROM Books SELECT Count()";
+    q.text = "FROM Entity.Book SELECT Count()";
     
     return q.scalar<int>();
 }

@@ -236,6 +236,7 @@
                   OutputName="$(MSBuildProjectName)"
                   TempOutputPath="$(TempOutputDir)"
                   Metadata="@(Metadata)"
+                  MainFileName="$(TargetFileName)"
                   ProjectDirectory="$(MSBuildProjectDirectory)"/>
 
         <Message Text="The package was created: $(OutputPackageFullPath)" Importance="High"/>

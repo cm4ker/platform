@@ -44,6 +44,9 @@ namespace Aquila.NET.Sdk.Tools
         [Required]
         public string ProjectDirectory { get; set; }
 
+        [Required]
+        public string MainFileName { get; set; }
+
         /// <summary>
         /// Used for debugging purposes.
         /// If enabled a debugger is attached to the current process upon the task execution.
@@ -75,11 +78,11 @@ namespace Aquila.NET.Sdk.Tools
                 }
             }
 
-            PackageManifest manifest = new PackageManifest
+            AquilaPackageManifest manifest = new AquilaPackageManifest
             {
                 Author = "",
                 Version = "",
-                MainAssembly = OutputName,
+                MainAssembly = MainFileName,
                 ProjectName = ""
             };
 
@@ -87,7 +90,7 @@ namespace Aquila.NET.Sdk.Tools
 
             var entry = package.CreateEntry("manifest.xml");
 
-            XmlSerializer s = new XmlSerializer(typeof(PackageManifest));
+            XmlSerializer s = new XmlSerializer(typeof(AquilaPackageManifest));
 
             using (var manifestStream = entry.Open())
             {

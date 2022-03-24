@@ -1,6 +1,6 @@
 ﻿namespace Aquila.Metadata;
 
-public class PackageManifest
+public class AquilaPackageManifest
 {
     public string MainAssembly { get; set; }
     public string ProjectName { get; set; }

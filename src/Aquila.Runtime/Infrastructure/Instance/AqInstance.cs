@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Xml.Serialization;
 using Aquila.Core.Assemlies;
 using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
@@ -62,6 +63,11 @@ namespace Aquila.Core.Instance
             return DatabaseRuntimeContext.Files.GetMainAssembly(DataContextManager.GetContext());
         }
 
+        private byte[] GetFile(string name)
+        {
+            return DatabaseRuntimeContext.Files.GetFile(DataContextManager.GetContext(), name);
+        }
+
         public void Initialize(StartupConfig config)
         {
             MigrationRunner.Migrate(config.ConnectionString, config.DatabaseType);
@@ -83,10 +89,14 @@ namespace Aquila.Core.Instance
                 var loadContext = AssemblyLoadContext.GetLoadContext(asm) ??
                                   throw new Exception("Can't get assembly load context");
 
-                //TODO: remove this ugly hack
-                if (loadContext != null)
-                    loadContext.LoadFromAssemblyPath(
-                        @"C:\projects\AquilaPlatform\src\Aquila.Runner\bin\Debug\net5.0\Aquila.Library.dll");
+                loadContext.Resolving += (context, name) =>
+                {
+                    using var ms = new MemoryStream(GetFile(name.Name + ".dll"));
+                    return context.LoadFromStream(ms);
+                };
+                // loadContext.LoadFromAssemblyPath(
+                //     @"C:\projects\AquilaPlatform\src\Aquila.Runner\bin\Debug\net5.0\Aquila.Library.dll");
+
 
                 LoadAssembly(asm);
                 _logger.Info("Project '{0}' was loaded.", Name);
@@ -126,10 +136,30 @@ namespace Aquila.Core.Instance
 
             ZipArchive arch = new ZipArchive(packageStream, ZipArchiveMode.Read);
 
+
+            //maybe create transaction here?
             var dc = DataContextManager.GetContext();
+            dc.BeginTransaction();
 
             DatabaseRuntimeContext.PendingMetadata.Clear(dc);
             DatabaseRuntimeContext.PendingFiles.Clear(dc);
+
+            var entry = arch.GetEntry("manifest.xml");
+
+            if (entry == null)
+            {
+                //ERROR
+                throw new Exception("Package not contains manifest file");
+            }
+
+            AquilaPackageManifest manifest;
+
+            using (var manifestStream = entry.Open())
+            {
+                var s = new XmlSerializer(typeof(AquilaPackageManifest));
+                manifest = (AquilaPackageManifest)s.Deserialize(manifestStream) ??
+                           throw new Exception("Manifest bad format");
+            }
 
             foreach (var item in arch.Entries)
             {
@@ -142,11 +172,18 @@ namespace Aquila.Core.Instance
                 }
                 else
                 {
+                    FileType type = FileType.Unknown;
+
+                    if (item.Name == manifest.MainAssembly)
+                    {
+                        type = FileType.MainAssembly;
+                    }
+
                     var descr = new FileDescriptor
                     {
                         Name = item.FullName,
-                        Type = FileType.Unknown,
-                        CreateDateTime = DateTime.Now
+                        Type = type,
+                        CreateDateTime = item.LastWriteTime.DateTime
                     };
 
                     using var stream = item.Open();
@@ -158,6 +195,7 @@ namespace Aquila.Core.Instance
             }
 
             DatabaseRuntimeContext.PendingMetadata.SaveMetadata(dc);
+            dc.CommitTransaction();
         }
 
         public void UpdateAssembly(Assembly asm)
