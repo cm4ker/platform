@@ -4,7 +4,8 @@ namespace Aquila.Metadata
 {
     public class TestMetadata
     {
-        public static string DefaultConnetionString = "Data Source=.;Initial Catalog=TestDb;Integrated Security=true;TrustServerCertificate=True";
+        public static string DefaultConnetionString =
+            "Data Source=.;Initial Catalog=TestDb;Integrated Security=true;TrustServerCertificate=True";
 
         public static MetadataProvider GetTestMetadata()
         {
@@ -28,6 +29,20 @@ namespace Aquila.Metadata
                     new EntityProperty
                         { Name = "Contract", Types = { new MetadataType { Name = "Entity.ContractLink" } } },
                     new EntityProperty { Name = "Store", Types = { new MetadataType { Name = "Entity.StoreLink" } } },
+                },
+                Tables =
+                {
+                    new EntityTable
+                    {
+                        Name = "Nomenclatures",
+                        Properties =
+                        {
+                            new EntityProperty
+                            {
+                                Name = "NomenclatureName", Types = { new MetadataType { Name = "string", Size = 100 } }
+                            }
+                        }
+                    }
                 }
             };
 
@@ -64,15 +79,39 @@ namespace Aquila.Metadata
                 Subjects = new()
                 {
                     new() { Name = "Store", Permission = SecPermission.Read },
-                    new() { Name = "Invoice", Permission = SecPermission.Read | SecPermission.Create | SecPermission.Update | SecPermission.Delete }
+                    new()
+                    {
+                        Name = "Invoice",
+                        Permission = SecPermission.Read | SecPermission.Create | SecPermission.Update |
+                                     SecPermission.Delete
+                    }
                 },
                 Criteria = new()
                 {
-                    new() { Permission = SecPermission.Read, Query = "FROM Subject s WHERE Name = 'Test'", Subject = "Store" },
-                    new() { Permission = SecPermission.Read, Query = "FROM Subject s WHERE Name = 'Hello'", Subject = "Store" },
-                    new() { Permission = SecPermission.Create, Query = "FROM Subject s WHERE Name = 'CreateMe'", Subject = "Invoice" },
-                    new() { Permission = SecPermission.Update, Query = "FROM Subject s WHERE Name = 'UpdateMe'", Subject = "Invoice" },
-                    new() { Permission = SecPermission.Delete, Query = "FROM Subject s WHERE Name = 'DeleteMe'", Subject = "Invoice" }
+                    new()
+                    {
+                        Permission = SecPermission.Read, Query = "FROM Subject s WHERE Name = 'Test'", Subject = "Store"
+                    },
+                    new()
+                    {
+                        Permission = SecPermission.Read, Query = "FROM Subject s WHERE Name = 'Hello'",
+                        Subject = "Store"
+                    },
+                    new()
+                    {
+                        Permission = SecPermission.Create, Query = "FROM Subject s WHERE Name = 'CreateMe'",
+                        Subject = "Invoice"
+                    },
+                    new()
+                    {
+                        Permission = SecPermission.Update, Query = "FROM Subject s WHERE Name = 'UpdateMe'",
+                        Subject = "Invoice"
+                    },
+                    new()
+                    {
+                        Permission = SecPermission.Delete, Query = "FROM Subject s WHERE Name = 'DeleteMe'",
+                        Subject = "Invoice"
+                    }
                 }
             }
         };
