@@ -122,9 +122,7 @@ namespace Aquila.Core
 
             using var cmd = PrepareCore(context, parameters, mdName,
                 (SMEntity semantic, out QLangElement element) =>
-                {
-                    return CRUDQueryGenerator.CompileSelect(semantic, context, out element);
-                });
+                    CRUDQueryGenerator.CompileSelect(semantic, context, out element));
 
             var dataReader = cmd.ExecuteReader();
             object result = null;
@@ -159,7 +157,7 @@ namespace Aquila.Core
         {
             var semantic = context.MetadataProvider.GetSemanticByName(mdName);
             var commandText = action(semantic, out QLangElement model);
-
+            
             var result = model.Find<QParameterBase>().DistinctBy(x => x.Name)
                 .Select(x => new { QParam = x, QName = x.Name, RName = x.GetDbName() });
 
@@ -206,7 +204,7 @@ namespace Aquila.Core
                     cmd.Parameters.Add(dbParam);
                 }
 
-                //TODO: try to find parameter in global parameters
+                //TODO: try to find parameter in global parameters from AqContext
             }
 
             return cmd;
@@ -214,4 +212,6 @@ namespace Aquila.Core
     }
 
     public delegate object AqReadDelegate(DbDataReader reader);
+
+    public delegate T AqFactoryDelegate<out T>();
 }

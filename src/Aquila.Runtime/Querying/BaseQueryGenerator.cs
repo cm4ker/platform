@@ -232,6 +232,7 @@ namespace Aquila.Runtime.Querying
         private static string CompileCore(QLangElement query, AqContext context, RealWalkerBase rw,
             out QLangElement transformedQuery)
         {
+            //transform query with security context
             transformedQuery = new SecurityVisitor(context.MetadataProvider, context.SecTable).Visit(query);
             new PhysicalNameWalker(context.DataRuntimeContext).Visit(transformedQuery);
             rw.Visit(transformedQuery);

@@ -222,6 +222,10 @@ namespace Aquila.Core.Querying
 
         public override void VisitQTable(QTable node)
         {
+            var tt = node.TableType;
+            //Inject data source - the idea
+            Qm.ld_table(tt.GetDescriptor(DrContext).DatabaseName);
+
             if (!_hasAlias)
                 Qm.@as(node.GetDbName());
 

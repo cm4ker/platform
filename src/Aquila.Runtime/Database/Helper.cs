@@ -93,6 +93,13 @@ namespace Aquila.Runtime
             return descriptor;
         }
 
+        public static EntityDescriptor GetDescriptor(this SMTable metadata, DatabaseRuntimeContext runtimeContext)
+        {
+            var mdId = metadata.FullName;
+            var descriptor = runtimeContext.Descriptors.GetEntityDescriptor(mdId);
+            return descriptor;
+        }
+
         public static string GetDbTypeDescription(this SMType ipType)
         {
             if (ipType != null)

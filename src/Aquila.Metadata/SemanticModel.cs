@@ -208,6 +208,7 @@ namespace Aquila.Metadata
         public ISMPropertyHolder Parent { get; private set; }
 
         public bool IsIdProperty => Name == "Id";
+        public bool IsParentProperty => Name == "Parent";
 
         internal void UpdateParent(ISMPropertyHolder entity)
         {

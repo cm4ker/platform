@@ -153,6 +153,7 @@ namespace Aquila.CodeAnalysis.Symbols
         public const string AquilaHttpMethodKindFullName = AquilaRuntimeNamespace + ".HttpMethodKind";
 
         public const string AquilaParamValueFullName = AquilaRuntimeNamespace + ".AqParamValue";
+
         public const string AquilaReadDelegateFullName = AquilaRuntimeNamespace + ".AqReadDelegate";
         //System.Data
 
@@ -189,6 +190,8 @@ namespace Aquila.CodeAnalysis.Symbols
             RuntimeTypeHandle,
             RuntimeMethodHandle,
             @Action,
+            IEnumerable,
+            Func,
 
             //Attributes
             RuntimeInitAttribute,
@@ -211,6 +214,9 @@ namespace Aquila.CodeAnalysis.Symbols
             AqComparison,
             AqParamValue,
             AqReadDelegate,
+            AqFactoryDelegate,
+            AqCollection,
+            AqImmutableCollection,
 
             //System.Data.Common Types
             DbCommand,
@@ -242,6 +248,7 @@ namespace Aquila.CodeAnalysis.Symbols
             Exception = CreateFromFullName(WellKnownTypes.GetMetadataName(WellKnownType.System_Exception));
             RuntimeTypeHandle = Create(SpecialType.System_RuntimeTypeHandle);
             RuntimeMethodHandle = Create(SpecialType.System_RuntimeMethodHandle);
+            IEnumerable = Create(SpecialType.System_Collections_IEnumerable);
 
             #endregion
 
@@ -253,8 +260,8 @@ namespace Aquila.CodeAnalysis.Symbols
             LinkAttribute = CreateFromFullName(AquilaLinkAttributeFullName);
             ExtensionMethodAttribute = CreateFromFullName(AquilaExtensionAqAttributeFullName);
             HttpHandlerAttribute = CreateFromFullName(AquilaHttpMethodHandlerAttributeFullName);
-            CrudHandlerAttribute = Create("CrudHandlerAttribute");
-            EndpointAttribute = Create("endpoint");
+            CrudHandlerAttribute = CreateFromRuntimeName("CrudHandlerAttribute");
+            EndpointAttribute = CreateFromRuntimeName("endpoint");
 
             #endregion
 
@@ -272,7 +279,10 @@ namespace Aquila.CodeAnalysis.Symbols
             AqHelper = CreateFromFullName(AquilaPlatformHelperFullName);
             AqParamValue = CreateFromFullName(AquilaParamValueFullName);
             AqReadDelegate = CreateFromFullName(AquilaReadDelegateFullName);
-            AqComparison = Create("AqComparison");
+            AqFactoryDelegate = CreateFromRuntimeName("AqFactoryDelegate`1");
+            AqComparison = CreateFromRuntimeName("AqComparison");
+            AqCollection = CreateFromRuntimeName("AqCollection`1");
+            AqImmutableCollection = CreateFromRuntimeName("AqImmutableCollection`1");
 
             #endregion
 
@@ -294,9 +304,9 @@ namespace Aquila.CodeAnalysis.Symbols
         readonly Dictionary<TypeSymbol, CoreType> _typetable = new Dictionary<TypeSymbol, CoreType>();
         //readonly Dictionary<SpecialType, CoreType> _specialTypes = new Dictionary<SpecialType, CoreType>();
 
-        CoreType Create(string name) => CreateFromFullName(AquilaRuntimeNamespace + "." + name);
+        CoreType CreateFromRuntimeName(string name) => CreateFromFullName(AquilaRuntimeNamespace + "." + name);
 
-        CoreType Create(SpecialType type) => CreateFromFullName(SpecialTypes.GetMetadataName(type));
+        CoreType Create(SpecialType type) => CreateFromFullName(type.GetMetadataName());
 
         CoreType CreateFromFullName(string fullName)
         {

@@ -236,7 +236,7 @@ namespace Aquila.Core.Querying.Model
 
             if (arg.Source is QObject ot)
             {
-                //TODO: potential here can be a collision. Need create deterministic randomizer witout collisio
+                //TODO: potential here can be a collision. Need check for it
                 var ds = new QAliasedDataSource(ot, RandomString(10));
                 EmitCriteria(ds, ot);
                 _subs[ot] = ds;
