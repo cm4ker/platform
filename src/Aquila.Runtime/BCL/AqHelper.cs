@@ -96,68 +96,74 @@ namespace Aquila.Core
 
         public static void InvokeInsert(AqContext context, string mdName, AqParamValue[] parameters)
         {
-            using var cmd = PrepareCore(context, parameters, mdName, (SMEntity semantic, out QLangElement element) =>
-                CRUDQueryGenerator.CompileInsert(semantic, context, out element));
+            using var cmd = PrepareCore(context, parameters, mdName,
+                (SMEntityOrTable semantic, out QLangElement element) =>
+                    CRUDQueryGenerator.CompileInsert(semantic, context, out element));
             cmd.ExecuteNonQuery();
         }
 
         public static void InvokeUpdate(AqContext context, string mdName, AqParamValue[] parameters)
         {
-            using var cmd = PrepareCore(context, parameters, mdName, (SMEntity semantic, out QLangElement element) =>
-                CRUDQueryGenerator.CompileUpdate(semantic, context, out element));
+            using var cmd = PrepareCore(context, parameters, mdName,
+                (SMEntityOrTable semantic, out QLangElement element) =>
+                    CRUDQueryGenerator.CompileUpdate(semantic, context, out element));
             cmd.ExecuteNonQuery();
         }
 
         public static void InvokeDelete(AqContext context, string mdName, AqParamValue[] parameters)
         {
-            using var cmd = PrepareCore(context, parameters, mdName, (SMEntity semantic, out QLangElement element) =>
-                CRUDQueryGenerator.CompileDelete(semantic, context, out element));
+            using var cmd = PrepareCore(context, parameters, mdName,
+                (SMEntityOrTable semantic, out QLangElement element) =>
+                    CRUDQueryGenerator.CompileDelete(semantic, context, out element));
             cmd.ExecuteNonQuery();
         }
 
-        public static object InvokeSelect(AqContext context, string mdName, AqParamValue[] parameters,
-            AqReadDelegate readAction)
+        public static ImmutableArray<T> InvokeSelect<T>(AqContext context, string mdName, AqParamValue[] parameters,
+            AqReadDelegate<T> readAction)
         {
-            var needCheckSec = false;
+            bool needCheckSec = false;
 
             using var cmd = PrepareCore(context, parameters, mdName,
-                (SMEntity semantic, out QLangElement element) =>
-                    CRUDQueryGenerator.CompileSelect(semantic, context, out element));
+                (SMEntityOrTable semantic, out QLangElement element) =>
+                    CRUDQueryGenerator.CompileSelect(semantic, context, out element, out needCheckSec));
 
             var dataReader = cmd.ExecuteReader();
-            object result = null;
-
-            while (dataReader.Read())
+            List<T> result = new();
+            try
             {
-                if (needCheckSec)
+                while (dataReader.Read())
                 {
-                    //Last field is security field
-                    var secRes = dataReader.GetInt32(dataReader.FieldCount - 1);
-
-                    if (secRes == 0)
+                    if (needCheckSec)
                     {
-                        //TODO: throw security exception
-                    }
-                }
+                        //Last field is security field
+                        var secRes = dataReader.GetInt32(dataReader.FieldCount - 1);
 
-                result = readAction(dataReader);
+                        if (secRes == 0)
+                        {
+                            throw new AqAccessDeniedException();
+                        }
+                    }
+
+                    result.Add(readAction(dataReader));
+                }
+            }
+            finally
+            {
+                dataReader.Close();
+                dataReader.Dispose();
             }
 
-            dataReader.Close();
-            dataReader.Dispose();
-
-            //TODO: throw not found exception if result is null
-            return result;
+            return result.ToImmutableArray();
         }
 
-        private delegate string CompileQueryDelegate(SMEntity semantic, out QLangElement model);
+        private delegate string CompileQueryDelegate(SMEntityOrTable semantic, out QLangElement model);
 
         private static DbCommand PrepareCore(AqContext context, AqParamValue[] parameters, string mdName,
             CompileQueryDelegate action)
         {
             var semantic = context.MetadataProvider.GetSemanticByName(mdName);
             var commandText = action(semantic, out QLangElement model);
-            
+
             var result = model.Find<QParameterBase>().DistinctBy(x => x.Name)
                 .Select(x => new { QParam = x, QName = x.Name, RName = x.GetDbName() });
 
@@ -211,7 +217,7 @@ namespace Aquila.Core
         }
     }
 
-    public delegate object AqReadDelegate(DbDataReader reader);
+    public delegate T AqReadDelegate<out T>(DbDataReader reader);
 
     public delegate T AqFactoryDelegate<out T>();
 }

@@ -10,6 +10,7 @@ using Aquila.Compiler.Utilities;
 using Aquila.Metadata;
 using Aquila.Syntax.Metadata;
 using Microsoft.CodeAnalysis;
+using MetadataSymbolProvider = Aquila.CodeAnalysis.Metadata.MetadataSymbolProvider;
 
 namespace Aquila.CodeAnalysis.Public
 {

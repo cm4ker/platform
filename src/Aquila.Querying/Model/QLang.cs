@@ -217,24 +217,6 @@ namespace Aquila.Core.Querying.Model
             return this;
         }
 
-        public QLang lookup_table(string tableName)
-        {
-            var ds = _logicStack.PopDataSource();
-            var table = ds.FindTable(tableName);
-
-            if (table == null)
-                throw new Exception($"Table {tableName} not found");
-
-            _logicStack.Push(table);
-            if (CurrentScope != null)
-            {
-                CurrentScope.AddDS(table);
-                CurrentScope.RemoveDS(ds);
-            }
-
-            return this;
-        }
-
         /// <summary>
         /// load element reference on top of stuck
         /// </summary>
@@ -258,7 +240,14 @@ namespace Aquila.Core.Querying.Model
             //load entity type
             var type = _metadata.GetSemanticByName(qualifiedName) ??
                        throw new Exception($"Source not found '{qualifiedName}'");
-            var ds = new QObject(type);
+
+            QDataSource ds = type switch
+            {
+                SMEntity ent => new QObject(ent),
+                SMTable tbl => new QTable(tbl),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
             _logicStack.Push(ds);
             if (CurrentScope != null)
                 CurrentScope.AddDS(ds);

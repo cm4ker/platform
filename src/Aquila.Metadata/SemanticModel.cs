@@ -30,7 +30,18 @@ namespace Aquila.Metadata
         }
     }
 
-    public sealed class SMEntity : IEquatable<SMEntity>, ISMPropertyHolder
+    public abstract class SMEntityOrTable : ISMPropertyHolder
+    {
+        public abstract string Name { get; } 
+        
+        public abstract string FullName { get; }
+
+        public abstract IEnumerable<SMProperty> Properties { get; }
+
+    }
+
+
+    public sealed class SMEntity : SMEntityOrTable, IEquatable<SMEntity>
     {
         private readonly EntityMetadata _md;
         private readonly SMCache _cache;
@@ -126,11 +137,11 @@ namespace Aquila.Metadata
             return _tables;
         }
 
-        public IEnumerable<SMProperty> Properties => GetPropertiesCore();
+        public override IEnumerable<SMProperty> Properties => GetPropertiesCore();
         public IEnumerable<SMTable> Tables => GetTablesCore();
 
 
-        public string Name => _md.Name;
+        public override string Name => _md.Name;
 
         public EntityMetadata Metadata => _md;
 
@@ -138,7 +149,7 @@ namespace Aquila.Metadata
         /// <summary>
         /// Full name use in descriptor
         /// </summary>
-        public string FullName => $"{Namespace}.{Name}";
+        public override string FullName => $"{Namespace}.{Name}";
 
         public string ReferenceName => $"{FullName}{LinkPostfix}";
 
@@ -255,7 +266,7 @@ namespace Aquila.Metadata
         }
     }
 
-    public sealed class SMTable : ISMPropertyHolder
+    public sealed class SMTable : SMEntityOrTable
     {
         private readonly EntityTable _md;
         private readonly SMCache _cache;
@@ -274,11 +285,20 @@ namespace Aquila.Metadata
             _cache = cache;
         }
 
-        public string Name => _md.Name;
-        public string FullName => $"{Parent.FullName}.{Name}";
+        public override string Name => _md.Name;
+        public override string FullName => $"{Parent.FullName}.{Name}";
 
         public SMEntity Parent { get; private set; }
 
+        public SMProperty ParentProperty
+        {
+            get
+            {
+                CoreLazyPropertiesOrdered();
+                return _parentProperty;
+            }
+        }
+        
         internal void UpdateParent(SMEntity entity)
         {
             Parent = entity;
@@ -317,7 +337,7 @@ namespace Aquila.Metadata
             return _props;
         }
 
-        public IEnumerable<SMProperty> Properties => GetPropertiesCore();
+        public override IEnumerable<SMProperty> Properties => GetPropertiesCore();
     }
 
     public enum SMTypeKind

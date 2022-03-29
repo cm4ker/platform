@@ -93,8 +93,21 @@ namespace Aquila.CodeAnalysis.Symbols
                 return false;
 
             for (int i = 0; i < ps.Length; i++)
-                if ((TypeSymbol)_ptypes[i] != ps[i].Type)
+            {
+                var leftSym = (TypeSymbol)_ptypes[i];
+                var rightSym = ps[i].Type;
+
+                if (leftSym is ConstructedNamedTypeSymbol l_cnts && rightSym is not ConstructedNamedTypeSymbol)
+                    leftSym = l_cnts.ConstructedFrom;
+
+                if (rightSym is ConstructedNamedTypeSymbol r_cnts && leftSym is not ConstructedNamedTypeSymbol)
+                    rightSym = r_cnts.ConstructedFrom;
+
+                if (leftSym != rightSym)
+                {
                     return false;
+                }
+            }
 
             return true;
         }

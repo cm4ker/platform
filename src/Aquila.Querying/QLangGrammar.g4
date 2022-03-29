@@ -161,14 +161,6 @@ table_qualified_name:
     any_name ('.' any_name)*
 ;
 
-table:
-    component_name '.' object_name ( AS? table_alias )?
-;
-
-table_property:
-    component_name '.' object_name '.' table_name (AS? table_alias)?
-;
- 
 table_or_subquery
  : ( 
  table_qualified_name 

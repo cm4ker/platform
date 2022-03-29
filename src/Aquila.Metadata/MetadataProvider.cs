@@ -71,8 +71,24 @@ namespace Aquila.Metadata
             _needUpdate = false;
         }
 
-        public SMEntity GetSemanticByName(string fullName) =>
-            GetSemanticMetadata().FirstOrDefault(x => x.FullName == fullName);
+        public SMEntityOrTable GetSemanticByName(string fullName)
+        {
+            var segments = fullName.Split('.');
+            if (segments.Length == 2)
+                return GetSemanticMetadata().FirstOrDefault(x => x.FullName == fullName);
+            else if (segments.Length == 3)
+            {
+                //firstly find the entity, after that find table
+                var entityName = string.Join('.', segments[..2]);
+                var md = GetSemanticMetadata().FirstOrDefault(x => x.FullName == entityName);
+                if (md != null)
+                {
+                    return md.Tables.FirstOrDefault(x => x.Name == segments[2]);
+                }
+            }
+
+            return null;
+        }
 
         public SMEntity GetSemantic(Func<SMEntity, bool> criteria) => GetSemanticMetadata().FirstOrDefault(criteria);
 

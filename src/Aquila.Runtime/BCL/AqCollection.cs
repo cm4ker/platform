@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace Aquila.Core;
 
@@ -39,9 +41,9 @@ public class AqCollection<T> : IEnumerable<T>
     private readonly AqFactoryDelegate<T> _factory;
     private List<T> _innerList;
 
-    public AqCollection(AqFactoryDelegate<T> factory, List<T> items)
+    public AqCollection(AqFactoryDelegate<T> factory, ImmutableArray<T> items)
     {
-        _innerList = items;
+        _innerList = items.ToList();
         _factory = factory;
     }
 

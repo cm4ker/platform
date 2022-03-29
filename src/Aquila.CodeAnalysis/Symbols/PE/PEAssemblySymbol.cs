@@ -138,6 +138,10 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             {
                 _specialAssembly = SpecialAssembly.CommonData;
             }
+            else if (IsSystemCollectionImmutableLib(assembly))
+            {
+                _specialAssembly = SpecialAssembly.SystemCollectionsImmutable;
+            }
             else if (assembly.Identity.Name == "System.Runtime")
             {
                 _specialAssembly = SpecialAssembly.CorLibrary;
@@ -156,6 +160,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
         internal static bool IsAquilaCoreLib(PEAssembly ass) => ass.Identity.Name == "Aquila.Runtime";
 
         internal static bool IsDataCoreLib(PEAssembly ass) => ass.Identity.Name == "System.Data.Common";
+        internal static bool IsSystemCollectionImmutableLib(PEAssembly ass) => ass.Identity.Name == "System.Collections.Immutable";
 
         internal static PEAssemblySymbol Create(PortableExecutableReference reference, PEAssembly ass = null,
             bool isLinked = true)

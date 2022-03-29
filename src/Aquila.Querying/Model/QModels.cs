@@ -287,6 +287,10 @@ namespace Aquila.Core.Querying.Model
 
     public partial class QTable
     {
+        public QTable(SMTable table) : this(new QObject(table.Parent), table)
+        {
+        }
+
         private List<QField> _fields;
 
         public string Name => this.tableType.Name;
@@ -347,6 +351,9 @@ namespace Aquila.Core.Querying.Model
     /// </summary>
     public partial class QSelectQuery
     {
+        public bool HasCriteria => this.Criteria.Any() || this.From.Source.HasInternalCriterion ||
+                                   (this.From.Joins?.Any(x => x.Joined.HasInternalCriterion) ?? false);
+
         public override string ToString()
         {
             return "Select Query";

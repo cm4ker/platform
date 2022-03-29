@@ -92,7 +92,7 @@ namespace Aquila.Runtime.Querying
             return builder.Visit((SSyntaxNode)qm.peek());
         }
 
-        public static QUpdateQuery GetSaveUpdateQuery(SMEntity entity, MetadataProvider em)
+        public static QUpdateQuery GetSaveUpdateQuery(SMEntityOrTable entity, MetadataProvider em)
         {
             /*
              NOTE:
@@ -100,7 +100,8 @@ namespace Aquila.Runtime.Querying
              We have to check values before and after update
              */
 
-            var ds = new QObject(entity);
+            var (ds, idFieldName) = GetDS(entity);
+
             var targetSource = new QAliasedDataSource(ds, "TS");
 
             var select = new QSelect(new QFieldList(
@@ -139,22 +140,17 @@ namespace Aquila.Runtime.Querying
 
             var qset = new QSet(new QAssignList(assigns));
 
-            var where = new QWhere(new QEquals(targetSource.GetField(entity.IdProperty.Name), idParam));
+            var where = new QWhere(new QEquals(targetSource.GetField(idFieldName), idParam));
 
             return new QUpdateQuery(new QUpdate(targetSource), qset,
                 new QFrom(new QJoinList(new[] { joinedValues }.ToImmutableArray()), targetSource), where,
                 QCriterionList.Empty);
         }
 
-        public static QInsertSelectQuery GetSaveInsertQuery(SMEntity entity, MetadataProvider em)
+        public static QInsertSelectQuery GetSaveInsertQuery(SMEntityOrTable entity, MetadataProvider em)
         {
-            /*
-             NOTE:
-             We must insert tables BEFORE object insertion.
-             In this way platform can handle sec rights dependent on tables 
-             */
+            var (ds, idFieldName) = GetDS(entity);
 
-            var ds = new QObject(entity);
             var insert =
                 new QInsert(
                     new QSourceFieldList(entity.Properties.Select(x => new QSourceFieldExpression(ds, x))
@@ -179,35 +175,66 @@ namespace Aquila.Runtime.Querying
             return new QInsertSelectQuery(q, insert);
         }
 
-        public static QDeleteQuery GetDeleteQuery(SMEntity entity, MetadataProvider em)
+        private static (QPlatformDataSource ds, string idFieldName) GetDS(SMEntityOrTable entity)
         {
-            var source = new QAliasedDataSource(new QObject(entity), "TS");
+            QPlatformDataSource ds;
+            string idFieldName;
+
+            switch (entity)
+            {
+                case SMEntity ent:
+                    ds = new QObject(ent);
+                    idFieldName = ent.IdProperty.Name;
+
+                    break;
+                case SMTable tbl:
+                    ds = new QTable(tbl);
+                    idFieldName = tbl.ParentProperty.Name;
+
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(entity), entity, null);
+            }
+
+            return (ds, idFieldName);
+        }
+
+        public static QDeleteQuery GetDeleteQuery(SMEntityOrTable entity, MetadataProvider em)
+        {
+            var (ds, idFieldName) = GetDS(entity);
+
+            var source = new QAliasedDataSource(ds, "TS");
             QDelete delete = new QDelete(source);
             QFrom from = new QFrom(null, source);
             QParameter param = new QParameter("Id");
-            QWhere where = new QWhere(new QEquals(source.GetField("Id"), param));
+            QWhere where = new QWhere(new QEquals(source.GetField(idFieldName), param));
             return new QDeleteQuery(delete, from, where, QCriterionList.Empty);
         }
 
-        public static QSelectQuery GetSelectQuery(SMEntity entity, MetadataProvider em)
+        public static QSelectQuery GetSelectQuery(SMEntityOrTable entity, MetadataProvider em)
         {
-            var source = new QAliasedDataSource(new QObject(entity), "TS");
+            var (ds, idFieldName) = GetDS(entity);
+
+            var source = new QAliasedDataSource(ds, "TS");
             QSelect select = new QSelect(new QFieldList(source.GetFields().ToImmutableArray()));
             QFrom from = new QFrom(null, source);
             QParameter param = new QParameter("Id");
-            QWhere where = new QWhere(new QEquals(source.GetField("Id"), param));
+            QWhere where = new QWhere(new QEquals(source.GetField(idFieldName), param));
             return new QSelectQuery(null, select, null, null, where, from, QCriterionList.Empty);
         }
 
-        public static string CompileSelect(SMEntity entity, AqContext context, out QLangElement query)
+        public static string CompileSelect(SMEntityOrTable entity, AqContext context, out QLangElement query,
+            out bool hasCriteria)
         {
-            query = GetSelectQuery(entity, context.MetadataProvider);
+            var selectQuery = GetSelectQuery(entity, context.MetadataProvider);
+            hasCriteria = selectQuery.HasCriteria;
+            query = selectQuery;
+
             return CompileCore(query, context, new SelectionRealWalker(context.DataRuntimeContext),
                 out query);
         }
 
-
-        public static string CompileInsert(SMEntity entity, AqContext context,
+        public static string CompileInsert(SMEntityOrTable entity, AqContext context,
             out QLangElement query)
         {
             query = GetSaveInsertQuery(entity, context.MetadataProvider);
@@ -215,14 +242,14 @@ namespace Aquila.Runtime.Querying
                 out query);
         }
 
-        public static string CompileUpdate(SMEntity entity, AqContext context, out QLangElement query)
+        public static string CompileUpdate(SMEntityOrTable entity, AqContext context, out QLangElement query)
         {
             query = GetSaveUpdateQuery(entity, context.MetadataProvider);
             return CompileCore(query, context, new UpdationRealWalker(context.DataRuntimeContext),
                 out query);
         }
 
-        public static string CompileDelete(SMEntity entity, AqContext context, out QLangElement query)
+        public static string CompileDelete(SMEntityOrTable entity, AqContext context, out QLangElement query)
         {
             query = GetDeleteQuery(entity, context.MetadataProvider);
             return CompileCore(query, context, new DeletionRealWalker(context.DataRuntimeContext),
@@ -271,26 +298,6 @@ namespace Aquila.Runtime.Querying
             return builder.Visit((SSyntaxNode)qm.peek());
         }
 
-        public static string GetSecUpdate(string baseQuery, int typeId, AqContext context)
-        {
-            var ust = new ContextSecTable();
-            ust.Init(new List<SMSecPolicy>());
-            var desc = context.DataRuntimeContext.Descriptors.GetEntityDescriptor(typeId);
-            var mdId = desc.MetadataId;
-            var md = context.MetadataProvider.GetSemanticByName(mdId);
-
-            if (ust.TryClaimPermission(md, SecPermission.Update, out var claim))
-            {
-                //QLang q = new QLang();
-                //q.@select();
-            }
-            else
-            {
-                //access denied
-            }
-
-            return baseQuery + "";
-        }
         /*
          We need create query in context of the object and user
          

@@ -23,6 +23,11 @@
         /// <summary>
         /// Corresponds to System.Common.Data
         /// </summary>
-        CommonData
+        CommonData,
+        
+        /// <summary>
+        /// Corresponds to System.Collections.Immutable
+        /// </summary>
+        SystemCollectionsImmutable
     }
 }

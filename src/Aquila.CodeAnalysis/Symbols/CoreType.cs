@@ -192,6 +192,7 @@ namespace Aquila.CodeAnalysis.Symbols
             @Action,
             IEnumerable,
             Func,
+            ImmutableArray_arg1,
 
             //Attributes
             RuntimeInitAttribute,
@@ -249,6 +250,7 @@ namespace Aquila.CodeAnalysis.Symbols
             RuntimeTypeHandle = Create(SpecialType.System_RuntimeTypeHandle);
             RuntimeMethodHandle = Create(SpecialType.System_RuntimeMethodHandle);
             IEnumerable = Create(SpecialType.System_Collections_IEnumerable);
+            ImmutableArray_arg1 = CreateFromFullName("System.Collections.Immutable.ImmutableArray`1");
 
             #endregion
 
@@ -278,7 +280,7 @@ namespace Aquila.CodeAnalysis.Symbols
             AqContext = CreateFromFullName(AquilaPlatformContextFullName);
             AqHelper = CreateFromFullName(AquilaPlatformHelperFullName);
             AqParamValue = CreateFromFullName(AquilaParamValueFullName);
-            AqReadDelegate = CreateFromFullName(AquilaReadDelegateFullName);
+            AqReadDelegate = CreateFromRuntimeName("AqReadDelegate`1");
             AqFactoryDelegate = CreateFromRuntimeName("AqFactoryDelegate`1");
             AqComparison = CreateFromRuntimeName("AqComparison");
             AqCollection = CreateFromRuntimeName("AqCollection`1");
