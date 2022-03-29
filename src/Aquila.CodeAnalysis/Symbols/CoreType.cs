@@ -44,6 +44,11 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
+        public NamedTypeSymbol Construct(params TypeSymbol[] types)
+        {
+            return ((NamedTypeSymbol)Symbol).Construct(types);
+        }
+
         public CoreType(string fullName, CoreTypes ct)
         {
             Debug.Assert(!string.IsNullOrEmpty(fullName));
@@ -216,8 +221,8 @@ namespace Aquila.CodeAnalysis.Symbols
             AqParamValue,
             AqReadDelegate,
             AqFactoryDelegate,
-            AqCollection,
-            AqImmutableCollection,
+            AqList,
+            //AqImmutableCollection,
 
             //System.Data.Common Types
             DbCommand,
@@ -283,8 +288,7 @@ namespace Aquila.CodeAnalysis.Symbols
             AqReadDelegate = CreateFromRuntimeName("AqReadDelegate`1");
             AqFactoryDelegate = CreateFromRuntimeName("AqFactoryDelegate`1");
             AqComparison = CreateFromRuntimeName("AqComparison");
-            AqCollection = CreateFromRuntimeName("AqCollection`1");
-            AqImmutableCollection = CreateFromRuntimeName("AqImmutableCollection`1");
+            AqList = CreateFromRuntimeName("AqList`1");
 
             #endregion
 

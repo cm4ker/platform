@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata;
 using Aquila.CodeAnalysis.CodeGen;
@@ -13,7 +14,7 @@ using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.Metadata;
 using Aquila.Syntax.Metadata;
 using Microsoft.CodeAnalysis;
-using Xunit;
+
 
 namespace Aquila.CodeAnalysis.Metadata
 {
@@ -88,6 +89,8 @@ namespace Aquila.CodeAnalysis.Metadata
                 {
                     GeneratedTypeKind.Dto => _ps.GetSynthesizedType(
                         QualifiedName.Parse($"{Namespace}.{st.Parent.Name}{st.Name}{TableRowDtoPostfix}", false)),
+                    GeneratedTypeKind.Object => _ps.GetSynthesizedType(
+                        QualifiedName.Parse($"{Namespace}.{md.Name}{st.Name}{TableRowObjectPostfix}", false)),
                     _ => throw new ArgumentOutOfRangeException(nameof(t), t, null)
                 };
 
@@ -134,28 +137,20 @@ namespace Aquila.CodeAnalysis.Metadata
                 //Tables
                 foreach (var table in md.Tables)
                 {
-                    var rowObjectType = _ps
-                        .SynthesizeType(_entityNamespaceSymbol, $"{md.Name}{table.Name}{TableRowObjectPostfix}")
+                    _ps.SynthesizeType(_entityNamespaceSymbol, $"{md.Name}{table.Name}{TableRowObjectPostfix}")
                         .SetAccess(Accessibility.Public);
 
-                    var rowLinkType = _ps
-                        .SynthesizeType(_entityNamespaceSymbol, $"{md.Name}{table.Name}{TableRowLinkPostfix}")
+                    _ps.SynthesizeType(_entityNamespaceSymbol, $"{md.Name}{table.Name}{TableRowLinkPostfix}")
                         .SetAccess(Accessibility.Public);
 
-                    _ps.SynthesizeType(_entityNamespaceSymbol,
-                            $"{md.Name}{table.Name}{TableRowDtoPostfix}")
+                    _ps.SynthesizeType(_entityNamespaceSymbol, $"{md.Name}{table.Name}{TableRowDtoPostfix}")
                         .SetAccess(Accessibility.Public);
-
-                    var objectCollectionType = ((NamedTypeSymbol)_ct.AqCollection.Symbol).Construct(rowObjectType);
-                    var linkCollectionType = ((NamedTypeSymbol)_ct.AqImmutableCollection.Symbol).Construct(rowLinkType);
 
                     _ps.SynthesizeType(_entityNamespaceSymbol, $"{md.Name}{table.Name}{ObjectCollectionPostfix}")
-                        .SetAccess(Accessibility.Public)
-                        .SetBaseType(objectCollectionType);
+                        .SetAccess(Accessibility.Public);
 
                     _ps.SynthesizeType(_entityNamespaceSymbol, $"{md.Name}{table.Name}{LinkCollectionPostfix}")
-                        .SetAccess(Accessibility.Public)
-                        .SetBaseType(linkCollectionType);
+                        .SetAccess(Accessibility.Public);
                 }
             }
         }
@@ -186,668 +181,6 @@ namespace Aquila.CodeAnalysis.Metadata
                 }
             }
         }
-
-        #region Table symbols
-
-        private void PopulateTableCollection(SMEntity md, SMTable table)
-        {
-            var collectionType = _ps.GetSynthesizedType(QualifiedName.Parse(
-                $"{Namespace}.{md.Name}{table.Name}{ObjectCollectionPostfix}",
-                false));
-            var rowObjectType = _ps.GetSynthesizedType(QualifiedName.Parse(
-                $"{Namespace}.{md.Name}{table.Name}{TableRowObjectPostfix}",
-                false));
-            var objectType = _ps.GetSynthesizedType(QualifiedName.Parse(
-                $"{Namespace}.{md.Name}{ObjectPostfix}",
-                false));
-
-            #region Factory delegate
-
-            var method = _ps.SynthesizeMethod(collectionType)
-                    .SetName("factory")
-                    .SetIsStatic(true)
-                ;
-
-            #endregion
-
-            #region Constructor
-
-            // var aqFactoryDelegate = ((NamedTypeSymbol)_ct.AqFactoryDelegate.Symbol).Construct(rowObjectType);
-            // //var typeCollectionParam = ((NamedTypeSymbol)_ct.IEnumerable.Symbol).Construct(rowObjectType);
-            //
-            // var ctor = _ps.SynthesizeConstructor(objectTable);
-            // var listParam = new SpecialParameterSymbol(ctor, typeCollectionParam, "<innerCollection>", 0);
-            //
-            //
-            // var thisPlace = new ArgPlace(objectTable, 0);
-            // var innerCollectionPS = new ParamPlace(listParam);
-            //
-            // var baseCtor = objectTable.BaseType.Ctor(aqFactoryDelegate, typeCollectionParam);
-            //
-            // ctor
-            //     .SetParameters(listParam)
-            //     .SetMethodBuilder((m, d) => (il) =>
-            //     {
-            //         
-            //         il.EmitRet(true);
-            //     });
-
-            #endregion
-        }
-
-        private void PopulateTableObjectType(SMEntity md, SMTable table)
-        {
-            var objectType =
-                _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{table.Name}{TableRowObjectPostfix}",
-                    false));
-            var dtoType =
-                _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{table.Name}{TableRowDtoPostfix}",
-                    false));
-            //var linkType = _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{LinkPostfix}", false));
-
-            #region Fields
-
-            //Internal field
-            var dtoField = _ps.SynthesizeField(objectType);
-            dtoField
-                .SetName("_dto")
-                .SetAccess(Accessibility.Private)
-                .SetType(dtoType);
-
-            var ctxField = _ps.SynthesizeField(objectType);
-            ctxField
-                .SetName(SpecialParameterSymbol.ContextName)
-                .SetAccess(Accessibility.Private)
-                .SetType(_ct.AqContext);
-
-            #endregion
-
-            #region Constructor
-
-            var ctor = _ps.SynthesizeConstructor(objectType);
-            var ctxParam = new SpecialParameterSymbol(ctor, _ct.AqContext, SpecialParameterSymbol.ContextName, 0);
-            var dtoParam = new SynthesizedParameterSymbol(ctor, dtoType, 1, RefKind.None, "dto");
-
-                        
-            var thisPlace = new ArgPlace(objectType, 0);
-            var dtoPS = new ParamPlace(dtoParam);
-            var ctxPS = new ParamPlace(ctxParam);
-
-            var dtoFieldPlace = new FieldPlace(dtoField);
-            var ctxFieldPlace = new FieldPlace(ctxField);
-
-
-            ctor
-                .SetParameters(ctxParam, dtoParam)
-                .SetMethodBuilder((m, d) => (il) =>
-                {
-                    thisPlace.EmitLoad(il);
-                    il.EmitCall(m, d, ILOpCode.Call, _ct.Object.Ctor());
-
-                    thisPlace.EmitLoad(il);
-                    ctxPS.EmitLoad(il);
-                    ctxFieldPlace.EmitStore(il);
-
-                    thisPlace.EmitLoad(il);
-                    dtoPS.EmitLoad(il);
-                    dtoFieldPlace.EmitStore(il);
-
-                    il.EmitRet(true);
-                });
-
-            #endregion
-
-            #region Props
-
-            foreach (var prop in table.Properties)
-            {
-                //reserved property
-                if (prop.IsParentProperty)
-                {
-                    continue;
-                }
-
-                if (!prop.IsValid)
-                {
-                    _diag.Add(MessageProvider.Instance
-                        .CreateDiagnostic(ErrorCode.ERR_InvalidMetadataConsistance, null));
-
-                    continue;
-                }
-
-                var isComplexType = prop.Types.Count() > 1;
-
-                var getter = _ps.SynthesizeMethod(objectType);
-                var setter = _ps.SynthesizeMethod(objectType);
-                var property = _ps.SynthesizeProperty(objectType);
-
-                var propType = (isComplexType)
-                    ? _ct.Object
-                    : MetadataTypeProvider.Resolve(_declaredCompilation, prop.Types.First());
-
-                getter.SetAccess(Accessibility.Public)
-                    .SetName($"get_{prop.Name}")
-                    .SetReturn(propType);
-
-                setter.SetAccess(Accessibility.Public)
-                    .SetName($"set_{prop.Name}");
-
-
-                property.SetType(propType)
-                    .SetGetMethod(getter)
-                    .SetSetMethod(setter)
-                    .SetName(prop.Name);
-
-                var param = new SynthesizedParameterSymbol(setter, propType, 0, RefKind.None);
-                setter.SetParameters(param);
-
-                var setValueParam = new ParamPlace(param);
-
-                if (isComplexType)
-                {
-                    getter.SetMethodBuilder((m, d) =>
-                    {
-                        return (il) =>
-                        {
-                            var types = prop.Types.GetOrderedFlattenTypes().OrderBy(x => x.type.Kind)
-                                .ToImmutableArray();
-
-                            foreach (var type in types)
-                            {
-                                if (type.isType)
-                                    continue;
-
-                                var underlyingPropType = MetadataTypeProvider.Resolve(_declaredCompilation, type.type);
-
-                                var dtoMemberName = $"{prop.Name}{type.postfix}";
-                                var dtoTypeMemberName = prop.Name + types.FirstOrDefault(x => x.isType).postfix;
-
-                                var dtoMember = dtoType.GetMembers(dtoMemberName).OfType<PropertySymbol>().First();
-                                var dtoTypeMember = dtoType.GetMembers(dtoTypeMemberName).OfType<PropertySymbol>()
-                                    .First();
-
-                                thisPlace.EmitLoad(il);
-                                dtoFieldPlace.EmitLoad(il);
-                                il.EmitCall(m, d, ILOpCode.Call, dtoTypeMember.GetMethod);
-
-                                if (type.type.IsPrimitive)
-                                {
-                                    il.EmitIntConstant((int)type.type.Kind);
-                                }
-                                else
-                                {
-                                    var managerType =
-                                        _ps.GetType(QualifiedName.Parse(
-                                            $"{Namespace}.{type.type.GetSemantic().Name}{ManagerPostfix}",
-                                            true));
-                                    var typeIDField = managerType.GetMembers("TypeId").OfType<FieldSymbol>()
-                                        .FirstOrDefault();
-                                    var fieldPlace = new FieldPlace(typeIDField, m);
-                                    fieldPlace.EmitLoad(il);
-                                }
-
-                                var lbl = new NamedLabel("<return>");
-                                il.EmitBranch(ILOpCode.Bne_un_s, lbl);
-
-                                if (type.type.IsReference)
-                                {
-                                    var linkType = _ps.GetType(QualifiedName.Parse(
-                                        $"{Namespace}.{type.type.GetSemantic().Name}{LinkPostfix}", true));
-
-                                    var linkCtor = linkType.Ctor(_ct.AqContext, _ct.Guid);
-
-                                    thisPlace.EmitLoad(il);
-                                    ctxFieldPlace.EmitLoad(il);
-
-                                    thisPlace.EmitLoad(il);
-                                    dtoFieldPlace.EmitLoad(il);
-
-                                    //TODO: Here we need create link (or get it from the cache)
-                                    il.EmitCall(m, d, ILOpCode.Call, dtoMember.GetMethod);
-
-                                    il.EmitCall(m, d, ILOpCode.Newobj, linkCtor);
-                                    il.EmitOpCode(ILOpCode.Box);
-                                    il.EmitSymbolToken(m, d, linkType, null);
-                                }
-                                else
-                                {
-                                    thisPlace.EmitLoad(il);
-                                    dtoFieldPlace.EmitLoad(il);
-
-                                    //TODO: Here we need create link (or get it from the cache)
-                                    il.EmitCall(m, d, ILOpCode.Call, dtoMember.GetMethod);
-
-                                    il.EmitOpCode(ILOpCode.Box);
-                                    il.EmitSymbolToken(m, d, dtoMember.GetMethod.ReturnType, null);
-                                }
-
-                                il.EmitRet(false);
-                                il.MarkLabel(lbl);
-                            }
-
-                            il.EmitCall(m, d, ILOpCode.Newobj, _ct.Exception.Ctor());
-                            il.EmitThrow(false);
-                        };
-                    });
-
-                    setter.SetMethodBuilder((m, d) => (il) =>
-                    {
-                        var doneLbl = new NamedLabel("<done>");
-
-                        var types = prop.Types.GetOrderedFlattenTypes().ToImmutableArray();
-
-                        foreach (var typeInfo in types.Where(x => !x.isType))
-                        {
-                            var underlyingPropType = MetadataTypeProvider.Resolve(_declaredCompilation, typeInfo.type);
-
-                            var dtoMemberName = $"{prop.Name}{typeInfo.postfix}";
-                            var dtoTypeMemberName = prop.Name + types.FirstOrDefault(x => x.isType).postfix;
-
-                            var dtoMember = dtoType.GetMembers(dtoMemberName).OfType<PropertySymbol>().First();
-                            var dtoTypeMember = dtoType.GetMembers(dtoTypeMemberName).OfType<PropertySymbol>()
-                                .First();
-
-                            var lbl = new NamedLabel("<return>");
-
-                            setValueParam.EmitLoad(il);
-
-                            il.EmitOpCode(ILOpCode.Isinst);
-                            il.EmitSymbolToken(m, d, underlyingPropType, null);
-
-                            il.EmitBranch(ILOpCode.Brfalse, lbl);
-
-                            thisPlace.EmitLoad(il);
-                            dtoFieldPlace.EmitLoad(il);
-                            setValueParam.EmitLoad(il);
-
-                            il.EmitOpCode(ILOpCode.Unbox_any);
-                            il.EmitSymbolToken(m, d, underlyingPropType, null);
-
-                            {
-                                if (typeInfo.type.IsReference)
-                                {
-                                    var referenceIdField =
-                                        underlyingPropType.GetMembers("id").OfType<FieldSymbol>().FirstOrDefault() ??
-                                        throw new Exception("the Id property not found");
-
-                                    var referenceIdFieldPlace = new FieldPlace(referenceIdField);
-
-                                    referenceIdFieldPlace.EmitLoad(il);
-                                }
-                            }
-
-                            //TODO: We must set the identifier to the dto if this is link
-                            //Add the condition for Link type and handle
-                            il.EmitCall(m, d, ILOpCode.Call, dtoMember.SetMethod);
-
-                            thisPlace.EmitLoad(il);
-                            dtoFieldPlace.EmitLoad(il);
-
-
-                            if (typeInfo.type.IsPrimitive)
-                            {
-                                il.EmitIntConstant((int)typeInfo.type.Kind);
-                            }
-                            else
-                            {
-                                var managerType =
-                                    _ps.GetType(QualifiedName.Parse(
-                                        $"{Namespace}.{typeInfo.type.GetSemantic().Name}{ManagerPostfix}",
-                                        true));
-                                var typeIDField = managerType.GetMembers("TypeId").OfType<FieldSymbol>()
-                                    .FirstOrDefault();
-                                var fieldPlace = new FieldPlace(typeIDField, m);
-                                fieldPlace.EmitLoad(il);
-                            }
-
-
-                            il.EmitCall(m, d, ILOpCode.Call, dtoTypeMember.SetMethod);
-                            il.EmitBranch(ILOpCode.Br, doneLbl);
-                            il.MarkLabel(lbl);
-                        }
-
-                        il.EmitCall(m, d, ILOpCode.Newobj, _ct.Exception.Ctor());
-                        il.EmitThrow(false);
-
-                        il.MarkLabel(doneLbl);
-
-                        il.EmitRet(true);
-                    });
-                }
-                else
-                {
-                    var dtoProperty = dtoType.GetMembers(prop.Name).OfType<PropertySymbol>().First();
-
-
-                    getter.SetMethodBuilder((m, d) =>
-                    {
-                        return (il) =>
-                        {
-                            thisPlace.EmitLoad(il);
-                            dtoFieldPlace.EmitLoad(il);
-                            il.EmitCall(m, d, ILOpCode.Call, dtoProperty.GetMethod);
-                            il.EmitRet(false);
-                        };
-                    });
-
-
-                    setter
-                        .SetMethodBuilder((m, d) =>
-                        {
-                            return (il) =>
-                            {
-                                thisPlace.EmitLoad(il);
-                                dtoFieldPlace.EmitLoad(il);
-                                setValueParam.EmitLoad(il);
-
-                                if (prop.Types.First().IsReference)
-                                {
-                                    var referenceIdField =
-                                        setValueParam.Type.GetMembers("id").OfType<FieldSymbol>()
-                                            .FirstOrDefault() ??
-                                        throw new Exception("the Id property not found");
-
-                                    var referenceIdFieldPlace = new FieldPlace(referenceIdField);
-
-                                    referenceIdFieldPlace.EmitLoad(il);
-                                }
-
-                                il.EmitCall(m, d, ILOpCode.Call, dtoProperty.SetMethod);
-                                il.EmitRet(true);
-                            };
-                        });
-                }
-
-                objectType.AddMember(getter);
-                objectType.AddMember(setter);
-                objectType.AddMember(property);
-            }
-
-            #endregion
-
-            objectType.AddMember(dtoField);
-            objectType.AddMember(ctxField);
-
-            objectType.AddMember(ctor);
-        }
-
-        private void PopulateTableDtoType(SMEntity md, SMTable table)
-        {
-            var dtoType =
-                _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{table.Name}{TableRowDtoPostfix}",
-                    false));
-
-            Assert.NotNull(dtoType);
-
-            var thisPlace = new ThisArgPlace(dtoType);
-            var ctor = _ps.SynthesizeConstructor(dtoType);
-            ctor
-                .SetMethodBuilder((m, d) => (il) =>
-                {
-                    thisPlace.EmitLoad(il);
-                    il.EmitCall(m, d, ILOpCode.Call, _ct.Object.Ctor());
-
-                    il.EmitRet(true);
-                });
-
-
-            foreach (var prop in table.Properties)
-            {
-                if (!prop.IsValid)
-                {
-                    _diag.Add(MessageProvider.Instance
-                        .CreateDiagnostic(ErrorCode.ERR_InvalidMetadataConsistance, null));
-
-                    continue;
-                }
-
-                foreach (var schema in GetDtoPropertySchema(prop))
-                {
-                    _ps.CreatePropertyWithBackingField(dtoType, schema.type, schema.propName);
-                }
-            }
-
-            dtoType.AddMember(ctor);
-        }
-
-        private void PopulateTableLinkType(SMEntity md, SMTable table)
-        {
-            var linkType =
-                _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{table.Name}{TableRowLinkPostfix}",
-                    false));
-            var dtoType =
-                _ps.GetType(QualifiedName.Parse($"{Namespace}.{md.Name}{table.Name}{TableRowDtoPostfix}", true));
-
-
-            var idField = _ps.SynthesizeField(linkType)
-                .SetName("id")
-                .SetAccess(Accessibility.Private)
-                .SetType(_ct.Guid);
-
-            var dtoField = _ps.SynthesizeField(linkType)
-                .SetName("_dto")
-                .SetAccess(Accessibility.Private)
-                .SetType(dtoType);
-
-            var ctxField = _ps.SynthesizeField(linkType);
-            ctxField
-                .SetName(SpecialParameterSymbol.ContextName)
-                .SetAccess(Accessibility.Private)
-                .SetType(_ct.AqContext);
-
-            var thisPlace = new ArgPlace(linkType, 0);
-
-
-            var ctor = _ps.SynthesizeConstructor(linkType)
-                .SetAccess(Accessibility.Public);
-
-            var ctxParam = new SynthesizedParameterSymbol(ctor, _ct.AqContext, 0, RefKind.None);
-            var guidParam = new SynthesizedParameterSymbol(ctor, _ct.Guid, 1, RefKind.None);
-
-            var paramPlace = new ParamPlace(guidParam);
-            var ctxPlace = new ParamPlace(ctxParam);
-
-
-            var idPlace = new FieldPlace(idField);
-            var ctxFieldPlace = new FieldPlace(ctxField);
-            var dtoPlace = new FieldPlace(dtoField);
-
-            ctor
-                .SetParameters(ctxParam, guidParam)
-                .SetMethodBuilder((m, d) => il =>
-                {
-                    thisPlace.EmitLoad(il);
-                    il.EmitCall(m, d, ILOpCode.Call, _ct.Object.Ctor());
-
-                    thisPlace.EmitLoad(il);
-                    paramPlace.EmitLoad(il);
-                    idPlace.EmitStore(il);
-
-                    thisPlace.EmitLoad(il);
-                    ctxPlace.EmitLoad(il);
-                    ctxFieldPlace.EmitStore(il);
-
-                    il.EmitRet(true);
-                });
-
-            #region Props
-
-            foreach (var prop in table.Properties)
-            {
-                if (!prop.IsValid)
-                {
-                    _diag.Add(MessageProvider.Instance
-                        .CreateDiagnostic(ErrorCode.ERR_InvalidMetadataConsistance, null));
-
-                    continue;
-                }
-
-                var isComplexType = prop.Types.Count() > 1;
-
-                var getter = _ps.SynthesizeMethod(linkType);
-                var property = _ps.SynthesizeProperty(linkType);
-
-                var propType = (isComplexType)
-                    ? _ct.Object
-                    : MetadataTypeProvider.Resolve(_declaredCompilation, prop.Types.First());
-
-                getter.SetAccess(Accessibility.Public)
-                    .SetName($"get_{prop.Name}")
-                    .SetReturn(propType);
-
-
-                property.SetType(propType)
-                    .SetGetMethod(getter)
-                    .SetName(prop.Name);
-
-
-                if (isComplexType)
-                {
-                    getter.SetMethodBuilder((m, d) =>
-                    {
-                        return (il) =>
-                        {
-                            var types = prop.Types.GetOrderedFlattenTypes().OrderBy(x => x.type.Kind)
-                                .ToImmutableArray();
-
-                            foreach (var type in types)
-                            {
-                                if (type.isType)
-                                    continue;
-
-                                var underlyingPropType = MetadataTypeProvider.Resolve(_declaredCompilation, type.type);
-
-                                var dtoMemberName = $"{prop.Name}{type.postfix}";
-                                var dtoTypeMemberName = prop.Name + types.FirstOrDefault(x => x.isType).postfix;
-
-                                var dtoMember = dtoType.GetMembers(dtoMemberName).OfType<PropertySymbol>().First();
-                                var dtoTypeMember = dtoType.GetMembers(dtoTypeMemberName).OfType<PropertySymbol>()
-                                    .First();
-
-                                thisPlace.EmitLoad(il);
-                                dtoPlace.EmitLoad(il);
-                                il.EmitCall(m, d, ILOpCode.Call, dtoTypeMember.GetMethod);
-
-                                if (type.type.IsPrimitive)
-                                {
-                                    il.EmitIntConstant((int)type.type.Kind);
-                                }
-                                else
-                                {
-                                    var managerType =
-                                        _ps.GetType(QualifiedName.Parse(
-                                            $"{Namespace}.{type.type.GetSemantic().Name}{ManagerPostfix}",
-                                            true));
-                                    var typeIDField = managerType.GetMembers("TypeId").OfType<FieldSymbol>()
-                                        .FirstOrDefault();
-                                    var fieldPlace = new FieldPlace(typeIDField, m);
-                                    fieldPlace.EmitLoad(il);
-                                }
-
-                                var lbl = new NamedLabel("<return>");
-                                il.EmitBranch(ILOpCode.Bne_un_s, lbl);
-
-                                if (type.type.IsReference)
-                                {
-                                    var linkType = _ps.GetType(QualifiedName.Parse(
-                                        $"{Namespace}.{type.type.GetSemantic().Name}{LinkPostfix}", true));
-
-                                    var linkCtor = linkType.Ctor(_ct.AqContext, _ct.Guid);
-
-                                    thisPlace.EmitLoad(il);
-                                    ctxFieldPlace.EmitLoad(il);
-
-                                    thisPlace.EmitLoad(il);
-                                    dtoPlace.EmitLoad(il);
-
-                                    //TODO: Here we need create link (or get it from the cache)
-                                    il.EmitCall(m, d, ILOpCode.Call, dtoMember.GetMethod);
-
-                                    il.EmitCall(m, d, ILOpCode.Newobj, linkCtor);
-                                    il.EmitOpCode(ILOpCode.Box);
-                                    il.EmitSymbolToken(m, d, linkType, null);
-                                }
-                                else
-                                {
-                                    thisPlace.EmitLoad(il);
-                                    dtoPlace.EmitLoad(il);
-
-                                    //TODO: Here we need create link (or get it from the cache)
-                                    il.EmitCall(m, d, ILOpCode.Call, dtoMember.GetMethod);
-
-                                    il.EmitOpCode(ILOpCode.Box);
-                                    il.EmitSymbolToken(m, d, dtoMember.GetMethod.ReturnType, null);
-                                }
-
-                                il.EmitRet(false);
-                                il.MarkLabel(lbl);
-                            }
-
-                            il.EmitCall(m, d, ILOpCode.Newobj, _ct.Exception.Ctor());
-                            il.EmitThrow(false);
-                        };
-                    });
-                }
-                else
-                {
-                    var dtoProperty = dtoType.GetMembers(prop.Name).OfType<PropertySymbol>().First();
-
-
-                    getter.SetMethodBuilder((m, d) =>
-                    {
-                        return (il) =>
-                        {
-                            thisPlace.EmitLoad(il);
-                            dtoPlace.EmitLoad(il);
-                            il.EmitCall(m, d, ILOpCode.Call, dtoProperty.GetMethod);
-                            il.EmitRet(false);
-                        };
-                    });
-                }
-
-                linkType.AddMember(getter);
-                linkType.AddMember(property);
-            }
-
-            // var linkGetMethod = _ps.SynthesizeMethod(linkType)
-            //     .SetName($"get_link")
-            //     .SetReturn(linkType)
-            //     .SetMethodBuilder((m, d) => il =>
-            //     {
-            //         var dtoIdProp = dtoType.GetMembers("Id").OfType<PropertySymbol>().First();
-            //         var dtoPropPlace = new PropertyPlace(dtoFieldPlace, dtoIdProp);
-            //
-            //
-            //         thisPlace.EmitLoad(il);
-            //         ctxFieldPlace.EmitLoad(il);
-            //
-            //         thisPlace.EmitLoad(il);
-            //         //dtoFieldPlace.EmitLoad(il);
-            //
-            //         dtoPropPlace.EmitLoad(il);
-            //
-            //         il.EmitCall(m, d, ILOpCode.Newobj, linkType.Ctor(_ct.AqContext, _ct.Guid));
-            //
-            //         il.EmitRet(false);
-            //     });
-            //
-            // var linkProperty = _ps.SynthesizeProperty(objectType);
-            // linkProperty
-            //     .SetName("link")
-            //     .SetType(linkType)
-            //     .SetGetMethod(linkGetMethod);
-
-            #endregion
-
-
-            linkType.AddMember(idField);
-            linkType.AddMember(ctxField);
-            linkType.AddMember(dtoField);
-
-            linkType.AddMember(ctor);
-        }
-
-        #endregion
 
         private IEnumerable<(string propName, TypeSymbol type)> GetDtoPropertySchema(SMProperty prop)
         {
@@ -885,7 +218,7 @@ namespace Aquila.CodeAnalysis.Metadata
         {
             var dtoType = _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{DtoPostfix}", false));
 
-            Assert.NotNull(dtoType);
+            Debug.Assert(dtoType != null);
 
             var thisPlace = new ThisArgPlace(dtoType);
             var ctor = _ps.SynthesizeConstructor(dtoType);
@@ -948,29 +281,33 @@ namespace Aquila.CodeAnalysis.Metadata
             var ctxParam = new SpecialParameterSymbol(ctor, _ct.AqContext, SpecialParameterSymbol.ContextName, 0);
             var dtoParam = new SynthesizedParameterSymbol(ctor, dtoType, 1, RefKind.None, "dto");
 
-            List<(SynthesizedParameterSymbol pr, ParamPlace prPlace, FieldSymbol fl, FieldPlace flPlace)> tablesSynth = new();
-            
+            List<(SynthesizedParameterSymbol pr, ParamPlace prPlace, FieldSymbol fl, FieldPlace flPlace)> tablesSynth =
+                new();
+
             var index = 2;
             foreach (var mdTable in md.Tables)
             {
                 var collectionType =
                     _ps.GetSynthesizedType(
                         QualifiedName.Parse($"{Namespace}.{md.Name}{mdTable.Name}{ObjectCollectionPostfix}", true));
-                
+                var objectTableRowType = _ps.GetSynthesizedType(
+                    QualifiedName.Parse($"{Namespace}.{md.Name}{mdTable.Name}{TableRowDtoPostfix}", true));
+
+                var a = ((NamedTypeSymbol)_ct.ImmutableArray_arg1.Symbol).Construct();
                 var tableParam =
                     new SynthesizedParameterSymbol(ctor, collectionType, index++, RefKind.None, $"{mdTable.Name}");
-                var tableParamPlace = new ParamPlace(tableParam); 
-                
+                var tableParamPlace = new ParamPlace(tableParam);
+
                 var tableField = _ps.SynthesizeField(objectType);
                 tableField
-                    .SetName(mdTable.Name+"_table")
+                    .SetName(mdTable.Name + "_table")
                     .SetAccess(Accessibility.Private)
                     .SetType(collectionType);
-                
+
                 var tableFieldPlace = new FieldPlace(tableField);
-                
+
                 tablesSynth.Add((tableParam, tableParamPlace, tableField, tableFieldPlace));
-                
+
                 objectType.AddMember(tableField);
             }
 
@@ -981,7 +318,8 @@ namespace Aquila.CodeAnalysis.Metadata
             var dtoFieldPlace = new FieldPlace(dtoField);
             var ctxFieldPlace = new FieldPlace(ctxField);
 
-            var constructorParameters = new ParameterSymbol[] { ctxParam, dtoParam }.Union(tablesSynth.Select(x=>x.pr)).ToArray();
+            var constructorParameters = new ParameterSymbol[] { ctxParam, dtoParam }
+                .Union(tablesSynth.Select(x => x.pr)).ToArray();
             ctor
                 .SetParameters(constructorParameters)
                 .SetMethodBuilder((m, d) => (il) =>
@@ -1004,7 +342,7 @@ namespace Aquila.CodeAnalysis.Metadata
                         t.prPlace.EmitLoad(il);
                         t.flPlace.EmitStore(il);
                     }
-                    
+
                     il.EmitRet(true);
                 });
 
