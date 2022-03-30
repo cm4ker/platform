@@ -77,7 +77,6 @@ internal partial class MetadataSymbolProvider
                 .SetParameters(ctxParameter, saveDtoPerameter)
                 .SetMethodBuilder((m, d) => il =>
                 {
-                    
                     //TODO: need rework and introduce the SerializedObject (with embedded tables)
                     // ctx.EmitLoad(il);
                     // sdpp.EmitLoad(il);
@@ -315,8 +314,29 @@ internal partial class MetadataSymbolProvider
                 .SetParameters(ctxParam)
                 .SetMethodBuilder((m, d) => il =>
                 {
-                    ctxPS.EmitLoad(il);
+                    var dtoLoc = new LocalPlace(il.DefineSynthLocal(createMethod, "dtoLocal", dtoType));
+
                     il.EmitCall(m, d, ILOpCode.Newobj, dtoType.InstanceConstructors.First());
+                    dtoLoc.EmitStore(il);
+
+                    ctxPS.EmitLoad(il);
+                    dtoLoc.EmitLoad(il);
+
+                    foreach (var table in md.Tables)
+                    {
+                        var objectCollectionType =
+                            GetFromMetadata(table, GeneratedTypeKind.Collection | GeneratedTypeKind.Object);
+                        var rowDtoType = GetFromMetadata(table, GeneratedTypeKind.Dto);
+
+                        var colCtor = objectCollectionType.Ctor(_ct.AqContext, _ct.List_arg1.Construct(rowDtoType),
+                            dtoType);
+                        ctxPS.EmitLoad(il);
+                        il.EmitNullConstant();
+                        dtoLoc.EmitLoad(il);
+
+                        il.EmitCall(m, d, ILOpCode.Newobj, colCtor);
+                    }
+
                     il.EmitCall(m, d, ILOpCode.Newobj, objectType.InstanceConstructors.First());
 
                     il.EmitRet(true);
@@ -514,7 +534,7 @@ internal partial class MetadataSymbolProvider
                     arrLoc.EmitLoad(il);
                     //load return_void function
 
-                    var func = ((NamedTypeSymbol)_ct.AqReadDelegate).Construct(dtoType);
+                    var func = _ct.AqReadDelegate.Construct(dtoType);
 
                     // Func<,>(object @object, IntPtr method)
                     var func_ctor = func.InstanceConstructors.Single(m =>

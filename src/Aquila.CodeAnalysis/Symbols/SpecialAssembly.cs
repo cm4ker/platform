@@ -28,6 +28,11 @@
         /// <summary>
         /// Corresponds to System.Collections.Immutable
         /// </summary>
-        SystemCollectionsImmutable
+        SystemCollectionsImmutable,
+        
+        /// <summary>
+        /// Corresponds to System.Linq
+        /// </summary>
+        SystemLinq
     }
 }

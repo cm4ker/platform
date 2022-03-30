@@ -289,6 +289,13 @@ namespace Aquila.CodeAnalysis.Symbols
                 Clt_int_double = ct.AqComparison.Method("Clt", ct.Int64, ct.Double);
                 Cgt_int_double = ct.AqComparison.Method("Cgt", ct.Int64, ct.Double);
                 Compare_bool_bool = ct.AqComparison.Method("Compare", ct.Boolean, ct.Boolean);
+
+                Select = ct.System_linq_enumerable.Method("Select", ct.IEnumerable_arg1, ct.Func_arg2);
+                ToList = ct.System_linq_enumerable.Method("ToList", ct.IEnumerable_arg1);
+                
+                
+                
+                
             }
 
             public readonly CoreMethod
@@ -306,6 +313,10 @@ namespace Aquila.CodeAnalysis.Symbols
                 op_Equality_Guid_Guid,
                 NewGuid,
 
+                //List
+                Select,
+                ToList,
+                
                 //Equality
                 //
                 Ceq_long_double,

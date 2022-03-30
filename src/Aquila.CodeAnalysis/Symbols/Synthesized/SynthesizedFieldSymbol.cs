@@ -21,7 +21,6 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         public SynthesizedFieldSymbol(NamedTypeSymbol containing)
         {
             _containing = containing;
-
             _type = containing.DeclaringCompilation.CoreTypes.Object;
             _attributes = ImmutableArray.CreateBuilder<AttributeData>();
         }

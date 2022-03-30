@@ -196,8 +196,12 @@ namespace Aquila.CodeAnalysis.Symbols
             RuntimeMethodHandle,
             @Action,
             IEnumerable,
-            Func,
+            IEnumerable_arg1,
+            Func_arg1,
+            Func_arg2,
             ImmutableArray_arg1,
+            List_arg1,
+            System_linq_enumerable,
 
             //Attributes
             RuntimeInitAttribute,
@@ -255,10 +259,19 @@ namespace Aquila.CodeAnalysis.Symbols
             RuntimeTypeHandle = Create(SpecialType.System_RuntimeTypeHandle);
             RuntimeMethodHandle = Create(SpecialType.System_RuntimeMethodHandle);
             IEnumerable = Create(SpecialType.System_Collections_IEnumerable);
+            IEnumerable_arg1 = Create(SpecialType.System_Collections_Generic_IEnumerable_T);
+            Func_arg1 = CreateFromFullName(WellKnownTypes.GetMetadataName(WellKnownType.System_Func_T));
+            Func_arg2 = CreateFromFullName(WellKnownTypes.GetMetadataName(WellKnownType.System_Func_T2));
             ImmutableArray_arg1 = CreateFromFullName("System.Collections.Immutable.ImmutableArray`1");
-
+            List_arg1 = CreateFromFullName("System.Collections.Generic.List`1");
+            System_linq_enumerable = CreateFromFullName("System.Linq.Enumerable");
             #endregion
 
+            #region Linq
+            
+            #endregion
+            
+            
             #region Attributes
 
             RuntimeInitAttribute = CreateFromFullName(AquilaRuntimeInitAttributeFullName);

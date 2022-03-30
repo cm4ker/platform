@@ -65,6 +65,7 @@ namespace Aquila.CodeAnalysis.Metadata
                 _ps.SynthesizeNamespace(_declaredCompilation.SourceModule.GlobalNamespace, Namespace);
         }
 
+        [Flags]
         private enum GeneratedTypeKind
         {
             Dto,
@@ -85,14 +86,26 @@ namespace Aquila.CodeAnalysis.Metadata
                     _ => throw new ArgumentOutOfRangeException(nameof(t), t, null)
                 };
             if (md is SMTable st)
+            {
                 return t switch
                 {
                     GeneratedTypeKind.Dto => _ps.GetSynthesizedType(
                         QualifiedName.Parse($"{Namespace}.{st.Parent.Name}{st.Name}{TableRowDtoPostfix}", false)),
                     GeneratedTypeKind.Object => _ps.GetSynthesizedType(
-                        QualifiedName.Parse($"{Namespace}.{md.Name}{st.Name}{TableRowObjectPostfix}", false)),
+                        QualifiedName.Parse($"{Namespace}.{st.Parent.Name}{st.Name}{TableRowObjectPostfix}",
+                            false)),
+                    GeneratedTypeKind.Link => _ps.GetSynthesizedType(
+                        QualifiedName.Parse($"{Namespace}.{st.Parent.Name}{st.Name}{TableRowLinkPostfix}", false)),
+
+                    GeneratedTypeKind.Object | GeneratedTypeKind.Collection => _ps.GetSynthesizedType(
+                        QualifiedName.Parse($"{Namespace}.{st.Parent.Name}{st.Name}{ObjectCollectionPostfix}",
+                            false)),
+                    GeneratedTypeKind.Link | GeneratedTypeKind.Collection => _ps.GetSynthesizedType(
+                        QualifiedName.Parse($"{Namespace}.{st.Parent.Name}{st.Name}{LinkCollectionPostfix}",
+                            false)),
                     _ => throw new ArgumentOutOfRangeException(nameof(t), t, null)
                 };
+            }
 
             throw new NotSupportedException();
         }
@@ -178,6 +191,7 @@ namespace Aquila.CodeAnalysis.Metadata
                     PopulateTableObjectType(md, table);
                     PopulateTableLinkType(md, table);
                     PopulateTableCollection(md, table);
+                    PopulateTableLinkCollection(md, table);
                 }
             }
         }
@@ -293,7 +307,7 @@ namespace Aquila.CodeAnalysis.Metadata
                 var objectTableRowType = _ps.GetSynthesizedType(
                     QualifiedName.Parse($"{Namespace}.{md.Name}{mdTable.Name}{TableRowDtoPostfix}", true));
 
-                var a = ((NamedTypeSymbol)_ct.ImmutableArray_arg1.Symbol).Construct();
+                //var a = ((NamedTypeSymbol)_ct.ImmutableArray_arg1.Symbol).Construct();
                 var tableParam =
                     new SynthesizedParameterSymbol(ctor, collectionType, index++, RefKind.None, $"{mdTable.Name}");
                 var tableParamPlace = new ParamPlace(tableParam);

@@ -664,30 +664,6 @@ namespace Aquila.CodeAnalysis.Emit
 
         public static Cci.TypeMemberVisibility MemberVisibility(Aquila.CodeAnalysis.Symbols.Symbol symbol)
         {
-            //
-            // We need to make trait members and fields in synthesized _statics holder public:
-            //
-            if (symbol.DeclaredAccessibility != Accessibility.Public)
-            {
-                return Cci.TypeMemberVisibility.Public;
-            }
-
-            //
-            // We need to relax visibility of members in interactive submissions since they might be emitted into multiple assemblies.
-            // 
-            // Top-level:
-            //   private                       -> public
-            //   protected                     -> public (compiles with a warning)
-            //   public                         
-            //   internal                      -> public
-            // 
-            // In a nested class:
-            //   
-            //   private                       
-            //   protected                     
-            //   public                         
-            //   internal                      -> public
-            //
             switch (symbol.DeclaredAccessibility)
             {
                 case Accessibility.Public:
@@ -741,7 +717,9 @@ namespace Aquila.CodeAnalysis.Emit
                     {
                         return Cci.TypeMemberVisibility.FamilyOrAssembly;
                     }
-
+                case Accessibility.NotApplicable:
+                    return Cci.TypeMemberVisibility.Public;
+                
                 default:
                     throw ExceptionUtilities.UnexpectedValue(symbol.DeclaredAccessibility);
             }

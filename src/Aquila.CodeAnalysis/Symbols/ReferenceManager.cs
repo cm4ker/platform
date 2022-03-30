@@ -22,7 +22,12 @@ namespace Aquila.CodeAnalysis
             ImmutableArray<MetadataReference> _lazyImplicitReferences = ImmutableArray<MetadataReference>.Empty;
             ImmutableDictionary<MetadataReference, IAssemblySymbolInternal> _referencesMap;
             ImmutableDictionary<IAssemblySymbol, MetadataReference> _metadataMap;
-            AssemblySymbol _lazyCorLibrary, _lazyAquilaCorLibrary, _systemCommonData, _systemCollectionsImmutable;
+
+            AssemblySymbol _lazyCorLibrary,
+                _lazyAquilaCorLibrary,
+                _systemCommonData,
+                _systemCollectionsImmutable,
+                _systemLinq;
 
             public Dictionary<AssemblyIdentity, PEAssemblySymbol> ObservedMetadata => _observedMetadata;
             readonly Dictionary<AssemblyIdentity, PEAssemblySymbol> _observedMetadata;
@@ -238,6 +243,9 @@ namespace Aquila.CodeAnalysis
                             if (_systemCommonData == null && symbol.SpecialAssembly == SpecialAssembly.CommonData)
                                 _systemCommonData = symbol;
 
+                            if (_systemLinq == null && symbol.SpecialAssembly == SpecialAssembly.SystemLinq)
+                                _systemLinq = symbol;
+
                             if (_systemCollectionsImmutable == null &&
                                 symbol.SpecialAssembly == SpecialAssembly.SystemCollectionsImmutable)
                                 _systemCollectionsImmutable = symbol;
@@ -302,6 +310,7 @@ namespace Aquila.CodeAnalysis
                 compilation.CoreTypes.Update(_lazyCorLibrary);
                 compilation.CoreTypes.Update(_systemCommonData);
                 compilation.CoreTypes.Update(_systemCollectionsImmutable);
+                compilation.CoreTypes.Update(_systemLinq);
 
                 //
                 return assembly;
