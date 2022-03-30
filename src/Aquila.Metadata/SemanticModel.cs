@@ -32,12 +32,11 @@ namespace Aquila.Metadata
 
     public abstract class SMEntityOrTable : ISMPropertyHolder
     {
-        public abstract string Name { get; } 
-        
+        public abstract string Name { get; }
+
         public abstract string FullName { get; }
 
         public abstract IEnumerable<SMProperty> Properties { get; }
-
     }
 
 
@@ -272,12 +271,17 @@ namespace Aquila.Metadata
         private readonly SMCache _cache;
         private List<SMProperty> _props;
         private SMProperty _parentProperty;
+        private SMProperty _idProperty;
 
         private EntityProperty _parentProp = new EntityProperty
         {
             Name = "Parent", Types = { new MetadataType { Name = SMType.Guid } }
         };
 
+        private EntityProperty _idProp = new EntityProperty
+        {
+            Name = "Id", Types = { new MetadataType { Name = SMType.Guid } }
+        };
 
         public SMTable(EntityTable md, SMCache cache)
         {
@@ -298,7 +302,16 @@ namespace Aquila.Metadata
                 return _parentProperty;
             }
         }
-        
+
+        public SMProperty IdProperty
+        {
+            get
+            {
+                CoreLazyPropertiesOrdered();
+                return _idProperty;
+            }
+        }
+
         internal void UpdateParent(SMEntity entity)
         {
             Parent = entity;
@@ -318,9 +331,13 @@ namespace Aquila.Metadata
         {
             _props = new List<SMProperty>();
 
-            var id = new SMProperty(_parentProp, _cache);
-            _parentProperty = id;
-            AddProperty(id);
+            var parentProp = new SMProperty(_parentProp, _cache);
+            _parentProperty = parentProp;
+            AddProperty(parentProp);
+
+            var idProp = new SMProperty(_idProp, _cache);
+            _idProperty = idProp;
+            AddProperty(idProp);
 
             foreach (var p in _md.Properties.OrderBy(x => x.Name))
             {
