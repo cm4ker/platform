@@ -166,7 +166,149 @@ partial class MetadataSymbolProvider
 
         #endregion
 
-        #region save
+        #region Save()
+
+        var saveMethod = _ps.SynthesizeMethod(collectionType)
+            .SetName("save")
+            .SetAccess(Accessibility.Public)
+            .SetIsStatic(false);
+        {
+            var paramName = _ct.DbParameter.Property("ParameterName");
+            var paramValue = _ct.DbParameter.Property("Value");
+
+            var dbParamsProp = _ct.DbCommand.Property("Parameters");
+
+            var paramsCollectionAdd = dbParamsProp.Symbol.Type.GetMembers("Add").OfType<MethodSymbol>()
+                .FirstOrDefault();
+
+            saveMethod
+                .SetMethodBuilder((m, d) => il =>
+                {
+                    p_dtoListPlace.EmitLoad(il);
+
+                    var dbLoc = new LocalPlace(
+                        il.DefineSynthLocal(saveMethod, "dbCommand", _ct.DbCommand));
+                    var paramLoc =
+                        new LocalPlace(
+                            il.DefineSynthLocal(saveMethod, "dbParameter", _ct.DbParameter));
+                    var idClrProp =
+                        dtoType.GetMembers(md.IdProperty.Name).OfType<PropertySymbol>().FirstOrDefault() ??
+                        throw new Exception("The id property is null");
+
+
+                    var sym = _ct.AqParamValue.AsSZArray().Symbol;
+                    var arrLoc = new LocalPlace(il.DefineSynthLocal(saveMethod, "", sym));
+
+
+                    //_dto.Id
+                    sdpp.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Callvirt, idClrProp.GetMethod);
+
+                    //Default Guid
+                    var tmpLoc = new LocalPlace(il.DefineSynthLocal(saveMethod, "", _ct.Guid));
+                    tmpLoc.EmitLoadAddress(il);
+                    il.EmitOpCode(ILOpCode.Initobj);
+                    il.EmitSymbolToken(m, (DiagnosticBag)d, (TypeSymbol)_ct.Guid, null);
+                    tmpLoc.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Call, _cm.Operators.op_Equality_Guid_Guid);
+
+                    // var tmpLocIfRes = new LocalPlace(il.DefineSynthLocal(saveMethod, "", _ct.Boolean));
+                    // tmpLocIfRes.EmitStore(il);
+
+                    var elseLabel = new NamedLabel("<e_o1>");
+                    var endLabel = new NamedLabel("<end>");
+
+                    il.EmitBranch(ILOpCode.Brfalse, elseLabel);
+
+                    //set to id new value
+                    sdpp.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Call, _cm.Operators.NewGuid);
+                    il.EmitCall(m, d, ILOpCode.Callvirt, idClrProp.SetMethod);
+
+
+                    #region Load prop values into array
+
+                    void EmitLocalValuesArray()
+                    {
+                        var properties = md.Properties.Where(x => x.IsValid).ToImmutableArray();
+
+                        il.EmitIntConstant(properties
+                            .Select(x => x.GetOrderedFlattenTypes().DistinctBy(a => a.postfix).Count())
+                            .Sum());
+                        il.EmitOpCode(ILOpCode.Newarr);
+                        il.EmitSymbolToken(m, d, (TypeSymbol)_ct.AqParamValue, null);
+                        arrLoc.EmitStore(il);
+
+                        var elemIndex = 0;
+                        foreach (var prop in properties)
+                        {
+                            var visitRef = false;
+                            var flattenTypes = prop.Types.GetOrderedFlattenTypes().ToImmutableArray();
+
+                            for (var index = 0; index < flattenTypes.Length; index++)
+                            {
+                                var typeInfo = flattenTypes[index];
+                                if (visitRef && typeInfo.type.IsReference)
+                                    continue;
+
+                                if (typeInfo.isComplex && typeInfo.type.IsReference)
+                                    visitRef = true;
+
+                                var clrProp = dtoType.GetMembers($"{prop.Name}{typeInfo.postfix}")
+                                    .OfType<PropertySymbol>()
+                                    .FirstOrDefault();
+
+                                if (clrProp == null)
+                                    throw new NullReferenceException(
+                                        $"Clr prop with name {prop.Name}{typeInfo.postfix} not found");
+
+                                //Load values array
+                                arrLoc.EmitLoad(il);
+                                il.EmitIntConstant(elemIndex++);
+
+                                //emit object
+                                //dbLoc.EmitLoad(il);
+                                il.EmitStringConstant(clrProp.Name);
+
+                                sdpp.EmitLoad(il);
+                                il.EmitCall(m, d, ILOpCode.Call, clrProp.GetMethod);
+                                il.EmitOpCode(ILOpCode.Box);
+                                il.EmitSymbolToken(m, d, clrProp.Type, null);
+
+                                il.EmitCall(m, d, ILOpCode.Newobj, _ct.AqParamValue.Ctor(_ct.String, _ct.Object));
+
+                                il.EmitOpCode(ILOpCode.Stelem_ref);
+                            }
+                        }
+                    }
+
+                    #endregion
+
+                    EmitLocalValuesArray();
+
+                    //set insert query
+                    ctx.EmitLoad(il);
+                    il.EmitStringConstant(md.FullName);
+                    arrLoc.EmitLoad(il);
+
+                    il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.InvokeInsert);
+
+                    il.EmitBranch(ILOpCode.Br, endLabel);
+                    il.MarkLabel(elseLabel);
+
+                    //fill array by local values
+                    EmitLocalValuesArray();
+                    ctx.EmitLoad(il);
+                    il.EmitStringConstant(md.FullName);
+                    arrLoc.EmitLoad(il);
+
+                    il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.InvokeUpdate);
+
+                    il.MarkLabel(endLabel);
+
+                    il.EmitRet(true);
+                });
+        }
 
         #endregion
 
