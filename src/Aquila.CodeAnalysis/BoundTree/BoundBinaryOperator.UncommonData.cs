@@ -4,9 +4,12 @@
 
 using System.Collections.Immutable;
 using System.Diagnostics;
-using Microsoft.CodeAnalysis.CSharp.Symbols;
+using Aquila.CodeAnalysis.Symbols;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
-namespace Microsoft.CodeAnalysis.CSharp
+
+namespace Aquila.CodeAnalysis
 {
     internal partial class BoundBinaryOperator
     {
@@ -30,7 +33,7 @@ namespace Microsoft.CodeAnalysis.CSharp
                     isUnconvertedInterpolatedStringAddition: false,
                     data);
 
-            public static UncommonData? CreateIfNeeded(ConstantValue? constantValue, MethodSymbol? method, TypeSymbol? constrainedToType, ImmutableArray<MethodSymbol> originalUserDefinedOperatorsOpt)
+            public static UncommonData? CreateIfNeeded(ConstantValue? constantValue, Aquila.CodeAnalysis.Symbols.MethodSymbnol? method, TypeSymbol? constrainedToType, ImmutableArray<MethodSymbol> originalUserDefinedOperatorsOpt)
             {
                 if (constantValue != null || method is not null || constrainedToType is not null || !originalUserDefinedOperatorsOpt.IsDefault)
                 {

@@ -7,8 +7,10 @@ using Microsoft.CodeAnalysis.CSharp.Symbols;
 using Microsoft.CodeAnalysis.PooledObjects;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Aquila.CodeAnalysis.Symbols;
+using Microsoft.CodeAnalysis;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     internal abstract partial class BoundTreeRewriter : BoundTreeVisitor
     {

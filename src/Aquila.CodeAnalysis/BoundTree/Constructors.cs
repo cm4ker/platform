@@ -2,11 +2,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using Microsoft.CodeAnalysis.CSharp.Symbols;
+using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Symbols;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Operations;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     internal sealed partial class BoundFieldAccess
     {
@@ -382,7 +386,7 @@ namespace Microsoft.CodeAnalysis.CSharp
             : this(
                 syntax,
                 operatorKind,
-                UncommonData.CreateIfNeeded(constantValueOpt, methodOpt, constrainedToTypeOpt, originalUserDefinedOperatorsOpt),
+                Aquila.CodeAnalysis.BoundBinaryOperator.UncommonData.CreateIfNeeded(constantValueOpt, methodOpt, constrainedToTypeOpt, originalUserDefinedOperatorsOpt),
                 resultKind,
                 left,
                 right,
@@ -401,7 +405,7 @@ namespace Microsoft.CodeAnalysis.CSharp
             BoundExpression right,
             TypeSymbol type,
             bool hasErrors = false) :
-            this(syntax, operatorKind, UncommonData.CreateIfNeeded(constantValueOpt, methodOpt, constrainedToTypeOpt, originalUserDefinedOperatorsOpt: default), resultKind, left, right, type, hasErrors)
+            this(syntax, operatorKind, Aquila.CodeAnalysis.BoundBinaryOperator.UncommonData.CreateIfNeeded(constantValueOpt, methodOpt, constrainedToTypeOpt, originalUserDefinedOperatorsOpt: default), resultKind, left, right, type, hasErrors)
         {
         }
 
@@ -414,11 +418,11 @@ namespace Microsoft.CodeAnalysis.CSharp
                                           BoundExpression right,
                                           TypeSymbol type)
         {
-            var uncommonData = UncommonData.CreateIfNeeded(constantValueOpt, methodOpt, constrainedToTypeOpt, OriginalUserDefinedOperatorsOpt);
+            var uncommonData = Aquila.CodeAnalysis.BoundBinaryOperator.UncommonData.CreateIfNeeded(constantValueOpt, methodOpt, constrainedToTypeOpt, OriginalUserDefinedOperatorsOpt);
             return Update(operatorKind, uncommonData, resultKind, left, right, type);
         }
 
-        public BoundBinaryOperator Update(UncommonData uncommonData)
+        public BoundBinaryOperator Update(Aquila.CodeAnalysis.BoundBinaryOperator.UncommonData uncommonData)
         {
             return Update(OperatorKind, uncommonData, ResultKind, Left, Right, Type);
         }

@@ -5,7 +5,7 @@
 using Microsoft.CodeAnalysis.CSharp.Symbols;
 using System.Diagnostics;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     internal partial class BoundDiscardExpression
     {

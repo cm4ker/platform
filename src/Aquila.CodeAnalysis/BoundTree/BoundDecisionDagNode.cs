@@ -4,11 +4,10 @@
 
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using Microsoft.CodeAnalysis.CSharp.Symbols;
 using Microsoft.CodeAnalysis.PooledObjects;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
 #if DEBUG
     [DebuggerDisplay("{GetDebuggerDisplay(),nq}")]

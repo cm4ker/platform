@@ -7,8 +7,10 @@ using System.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp.Symbols;
 using Roslyn.Utilities;
 using System;
+using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Symbols;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     internal partial class BoundExpression
     {

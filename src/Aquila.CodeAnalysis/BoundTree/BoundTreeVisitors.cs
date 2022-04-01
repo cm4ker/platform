@@ -5,14 +5,12 @@
 #nullable disable
 
 using System.Diagnostics;
-using Microsoft.CodeAnalysis.CSharp.Symbols;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using System;
-using Roslyn.Utilities;
 using System.Linq;
+using Aquila.CodeAnalysis.Errors;
+using Microsoft.CodeAnalysis;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     internal abstract partial class BoundTreeVisitor<A, R>
     {

@@ -10,12 +10,18 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
-using Microsoft.CodeAnalysis.CSharp.Symbols;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Aquila.CodeAnalysis.Errors;
+using Aquila.CodeAnalysis.Symbols;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
 using Roslyn.Utilities;
+using AssemblySymbol = Aquila.CodeAnalysis.Symbols.AssemblySymbol;
+using EnumerableExtensions = Roslyn.Utilities.EnumerableExtensions;
+using MethodSymbol = Aquila.CodeAnalysis.Symbols.MethodSymbol;
+using NamedTypeSymbol = Aquila.CodeAnalysis.Symbols.NamedTypeSymbol;
+using TypeSymbol = Aquila.CodeAnalysis.Symbols.TypeSymbol;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     internal interface IBoundLambdaOrFunction
     {
@@ -251,7 +257,7 @@ namespace Microsoft.CodeAnalysis.CSharp
                     }
                     else
                     {
-                        var bestType = BestTypeInferrer.InferBestType(returns.SelectAsArray(pair => pair.expr), conversions, ref useSiteInfo);
+                        var bestType = BestTypeInferrer.InferBestType(EnumerableExtensions.SelectAsArray(returns, pair => pair.expr), conversions, ref useSiteInfo);
                         bestResultType = TypeWithAnnotations.Create(bestType);
                     }
                     break;

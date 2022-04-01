@@ -37,9 +37,9 @@ namespace BoundTreeGenerator
                 case "VB":
                     targetLanguage = TargetLanguage.VB;
                     break;
-                case "CSharp":
-                case "C#":
-                    targetLanguage = TargetLanguage.CSharp;
+                case "Aquila":
+                case "Aq":
+                    targetLanguage = TargetLanguage.Aquila;
                     break;
                 default:
                     Console.Error.WriteLine("Language must be \"VB\" or \"CSharp\"");

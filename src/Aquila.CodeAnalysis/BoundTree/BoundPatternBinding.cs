@@ -6,7 +6,7 @@
 
 using System.Diagnostics;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     [DebuggerDisplay("{GetDebuggerDisplay(), nq}")]
     internal struct BoundPatternBinding

@@ -4,9 +4,11 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Aquila.CodeAnalysis.Symbols;
+using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     partial class BoundDagEvaluation
     {

@@ -7,7 +7,7 @@ using Roslyn.Utilities;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     internal abstract partial class BoundExpression
     {

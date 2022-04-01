@@ -4,7 +4,7 @@
 
 using System.Collections.Immutable;
 
-namespace Microsoft.CodeAnalysis.CSharp
+namespace Aquila.CodeAnalysis
 {
     internal interface IBoundSwitchStatement
     {
