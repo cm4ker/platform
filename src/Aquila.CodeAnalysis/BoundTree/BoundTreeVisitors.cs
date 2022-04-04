@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System;
 using System.Linq;
 using Aquila.CodeAnalysis.Errors;
+using Aquila.CodeAnalysis.Syntax;
 using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis
@@ -170,21 +171,21 @@ namespace Aquila.CodeAnalysis
 
             public void AddAnError(DiagnosticBag diagnostics)
             {
-                diagnostics.Add(ErrorCode.ERR_InsufficientStack, GetTooLongOrComplexExpressionErrorLocation(Node));
+                //diagnostics.Add(ErrorCode.ERR_InsufficientStack, GetTooLongOrComplexExpressionErrorLocation(Node));
             }
 
             public void AddAnError(BindingDiagnosticBag diagnostics)
             {
-                diagnostics.Add(ErrorCode.ERR_InsufficientStack, GetTooLongOrComplexExpressionErrorLocation(Node));
+                //diagnostics.Add(ErrorCode.ERR_InsufficientStack, GetTooLongOrComplexExpressionErrorLocation(Node));
             }
 
             public static Location GetTooLongOrComplexExpressionErrorLocation(BoundNode node)
             {
                 SyntaxNode syntax = node.Syntax;
 
-                if (!(syntax is ExpressionSyntax))
+                if (!(syntax is ExprSyntax))
                 {
-                    syntax = syntax.DescendantNodes(n => !(n is ExpressionSyntax)).OfType<ExpressionSyntax>().FirstOrDefault() ?? syntax;
+                    syntax = syntax.DescendantNodes(n => !(n is ExprSyntax)).OfType<ExprSyntax>().FirstOrDefault() ?? syntax;
                 }
 
                 return syntax.GetFirstToken().GetLocation();

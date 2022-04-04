@@ -134,5 +134,10 @@ namespace Aquila.CodeAnalysis.Symbols
 
             return null;
         }
+        
+        public static LocalizableErrorArgument GetKindText(this Symbol symbol)
+        {
+            return symbol.Kind.Localize();
+        }
     }
 }

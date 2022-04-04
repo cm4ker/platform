@@ -33,7 +33,7 @@ namespace Aquila.CodeAnalysis
                     isUnconvertedInterpolatedStringAddition: false,
                     data);
 
-            public static UncommonData? CreateIfNeeded(ConstantValue? constantValue, Aquila.CodeAnalysis.Symbols.MethodSymbnol? method, TypeSymbol? constrainedToType, ImmutableArray<MethodSymbol> originalUserDefinedOperatorsOpt)
+            public static UncommonData? CreateIfNeeded(ConstantValue? constantValue, MethodSymbol? method, TypeSymbol? constrainedToType, ImmutableArray<MethodSymbol> originalUserDefinedOperatorsOpt)
             {
                 if (constantValue != null || method is not null || constrainedToType is not null || !originalUserDefinedOperatorsOpt.IsDefault)
                 {

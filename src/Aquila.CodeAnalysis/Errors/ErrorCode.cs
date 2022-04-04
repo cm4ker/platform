@@ -162,6 +162,10 @@ namespace Aquila.CodeAnalysis.Errors
         ERR_PositionalArgAfterUnpacking, // Cannot use positional argument after argument unpacking
 
         ERR_InvalidMetadataConsistance,
+        
+        
+        ERR_NonInvocableMemberCalled,
+        ERR_BadSKknown,
 
         /// <summary>Call to a member function {0} on {1}</summary>
         ERR_MethodCalledOnNonObject,

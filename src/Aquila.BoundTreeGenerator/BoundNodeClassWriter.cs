@@ -177,6 +177,7 @@ namespace BoundTreeGenerator
             {
                 WriteUsing("Aquila.CodeAnalysis.Symbols");
                 WriteUsing("Aquila.CodeAnalysis.Syntax");
+                WriteUsing("Microsoft.CodeAnalysis");
             }
 
             WriteUsing("Microsoft.CodeAnalysis.Text");

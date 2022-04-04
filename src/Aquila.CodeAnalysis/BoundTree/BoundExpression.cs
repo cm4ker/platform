@@ -9,6 +9,7 @@ using Roslyn.Utilities;
 using System;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols;
+using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis
 {

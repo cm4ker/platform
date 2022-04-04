@@ -499,6 +499,12 @@ namespace Aquila.CodeAnalysis.Symbols
             return obj is ISymbol other && this.Equals(other, SymbolEqualityComparer.Default);
         }
 
+        // By default we don't consider the compareKind, and do reference equality. This can be overridden.
+        public virtual bool Equals(Symbol other, TypeCompareKind compareKind)
+        {
+            return (object)this == other;
+        }
+        
         // By default, we do reference equality. This can be overridden.
         public override int GetHashCode()
         {

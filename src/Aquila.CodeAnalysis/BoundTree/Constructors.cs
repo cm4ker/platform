@@ -6,6 +6,7 @@ using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
@@ -20,7 +21,8 @@ namespace Aquila.CodeAnalysis
             FieldSymbol fieldSymbol,
             ConstantValue? constantValueOpt,
             bool hasErrors = false)
-            : this(syntax, receiver, fieldSymbol, constantValueOpt, LookupResultKind.Viable, fieldSymbol.Type, hasErrors)
+            : this(syntax, receiver, fieldSymbol, constantValueOpt, LookupResultKind.Viable, fieldSymbol.Type,
+                hasErrors)
         {
         }
 
@@ -32,7 +34,8 @@ namespace Aquila.CodeAnalysis
             LookupResultKind resultKind,
             TypeSymbol type,
             bool hasErrors = false)
-            : this(syntax, receiver, fieldSymbol, constantValueOpt, resultKind, NeedsByValueFieldAccess(receiver, fieldSymbol), isDeclaration: false, type: type, hasErrors: hasErrors)
+            : this(syntax, receiver, fieldSymbol, constantValueOpt, resultKind,
+                NeedsByValueFieldAccess(receiver, fieldSymbol), isDeclaration: false, type: type, hasErrors: hasErrors)
         {
         }
 
@@ -45,7 +48,9 @@ namespace Aquila.CodeAnalysis
             bool isDeclaration,
             TypeSymbol type,
             bool hasErrors = false)
-            : this(syntax, receiver, fieldSymbol, constantValueOpt, resultKind, NeedsByValueFieldAccess(receiver, fieldSymbol), isDeclaration: isDeclaration, type: type, hasErrors: hasErrors)
+            : this(syntax, receiver, fieldSymbol, constantValueOpt, resultKind,
+                NeedsByValueFieldAccess(receiver, fieldSymbol), isDeclaration: isDeclaration, type: type,
+                hasErrors: hasErrors)
         {
         }
 
@@ -56,7 +61,8 @@ namespace Aquila.CodeAnalysis
             LookupResultKind resultKind,
             TypeSymbol typeSymbol)
         {
-            return this.Update(receiver, fieldSymbol, constantValueOpt, resultKind, this.IsByValue, this.IsDeclaration, typeSymbol);
+            return this.Update(receiver, fieldSymbol, constantValueOpt, resultKind, this.IsByValue, this.IsDeclaration,
+                typeSymbol);
         }
 
         private static bool NeedsByValueFieldAccess(BoundExpression? receiver, FieldSymbol fieldSymbol)
@@ -100,23 +106,26 @@ namespace Aquila.CodeAnalysis
             LookupResultKind resultKind,
             TypeSymbol type,
             bool hasErrors = false) :
-            this(syntax, receiverOpt, method, arguments, argumentNamesOpt, argumentRefKindsOpt, isDelegateCall, expanded, invokedAsExtensionMethod, argsToParamsOpt, defaultArguments, resultKind, originalMethodsOpt: default, type, hasErrors)
+            this(syntax, receiverOpt, method, arguments, argumentNamesOpt, argumentRefKindsOpt, isDelegateCall,
+                expanded, invokedAsExtensionMethod, argsToParamsOpt, defaultArguments, resultKind,
+                originalMethodsOpt: default, type, hasErrors)
         {
         }
 
         public BoundCall Update(BoundExpression? receiverOpt,
-                                MethodSymbol method,
-                                ImmutableArray<BoundExpression> arguments,
-                                ImmutableArray<string> argumentNamesOpt,
-                                ImmutableArray<RefKind> argumentRefKindsOpt,
-                                bool isDelegateCall,
-                                bool expanded,
-                                bool invokedAsExtensionMethod,
-                                ImmutableArray<int> argsToParamsOpt,
-                                BitVector defaultArguments,
-                                LookupResultKind resultKind,
-                                TypeSymbol type)
-            => Update(receiverOpt, method, arguments, argumentNamesOpt, argumentRefKindsOpt, isDelegateCall, expanded, invokedAsExtensionMethod, argsToParamsOpt, defaultArguments, resultKind, this.OriginalMethodsOpt, type);
+            MethodSymbol method,
+            ImmutableArray<BoundExpression> arguments,
+            ImmutableArray<string> argumentNamesOpt,
+            ImmutableArray<RefKind> argumentRefKindsOpt,
+            bool isDelegateCall,
+            bool expanded,
+            bool invokedAsExtensionMethod,
+            ImmutableArray<int> argsToParamsOpt,
+            BitVector defaultArguments,
+            LookupResultKind resultKind,
+            TypeSymbol type)
+            => Update(receiverOpt, method, arguments, argumentNamesOpt, argumentRefKindsOpt, isDelegateCall, expanded,
+                invokedAsExtensionMethod, argsToParamsOpt, defaultArguments, resultKind, this.OriginalMethodsOpt, type);
 
         public static BoundCall ErrorCall(
             SyntaxNode node,
@@ -138,9 +147,9 @@ namespace Aquila.CodeAnalysis
 
             return new BoundCall(
                 syntax: node,
-                receiverOpt: binder.BindToTypeForErrorRecovery(receiverOpt),
+                receiverOpt: receiverOpt,
                 method: method,
-                arguments: arguments.SelectAsArray((e, binder) => binder.BindToTypeForErrorRecovery(e), binder),
+                arguments: arguments.SelectAsArray((e, binder) => e, binder),
                 argumentNamesOpt: namedArguments,
                 argumentRefKindsOpt: refKinds,
                 isDelegateCall: isDelegateCall,
@@ -156,12 +165,17 @@ namespace Aquila.CodeAnalysis
 
         public BoundCall Update(ImmutableArray<BoundExpression> arguments)
         {
-            return this.Update(ReceiverOpt, Method, arguments, ArgumentNamesOpt, ArgumentRefKindsOpt, IsDelegateCall, Expanded, InvokedAsExtensionMethod, ArgsToParamsOpt, DefaultArguments, ResultKind, OriginalMethodsOpt, Type);
+            return this.Update(ReceiverOpt, Method, arguments, ArgumentNamesOpt, ArgumentRefKindsOpt, IsDelegateCall,
+                Expanded, InvokedAsExtensionMethod, ArgsToParamsOpt, DefaultArguments, ResultKind, OriginalMethodsOpt,
+                Type);
         }
 
-        public BoundCall Update(BoundExpression? receiverOpt, MethodSymbol method, ImmutableArray<BoundExpression> arguments)
+        public BoundCall Update(BoundExpression? receiverOpt, MethodSymbol method,
+            ImmutableArray<BoundExpression> arguments)
         {
-            return this.Update(receiverOpt, method, arguments, ArgumentNamesOpt, ArgumentRefKindsOpt, IsDelegateCall, Expanded, InvokedAsExtensionMethod, ArgsToParamsOpt, DefaultArguments, ResultKind, OriginalMethodsOpt, Type);
+            return this.Update(receiverOpt, method, arguments, ArgumentNamesOpt, ArgumentRefKindsOpt, IsDelegateCall,
+                Expanded, InvokedAsExtensionMethod, ArgsToParamsOpt, DefaultArguments, ResultKind, OriginalMethodsOpt,
+                Type);
         }
 
         public static BoundCall Synthesized(SyntaxNode syntax, BoundExpression? receiverOpt, MethodSymbol method)
@@ -169,17 +183,20 @@ namespace Aquila.CodeAnalysis
             return Synthesized(syntax, receiverOpt, method, ImmutableArray<BoundExpression>.Empty);
         }
 
-        public static BoundCall Synthesized(SyntaxNode syntax, BoundExpression? receiverOpt, MethodSymbol method, BoundExpression arg0)
+        public static BoundCall Synthesized(SyntaxNode syntax, BoundExpression? receiverOpt, MethodSymbol method,
+            BoundExpression arg0)
         {
             return Synthesized(syntax, receiverOpt, method, ImmutableArray.Create(arg0));
         }
 
-        public static BoundCall Synthesized(SyntaxNode syntax, BoundExpression? receiverOpt, MethodSymbol method, BoundExpression arg0, BoundExpression arg1)
+        public static BoundCall Synthesized(SyntaxNode syntax, BoundExpression? receiverOpt, MethodSymbol method,
+            BoundExpression arg0, BoundExpression arg1)
         {
             return Synthesized(syntax, receiverOpt, method, ImmutableArray.Create(arg0, arg1));
         }
 
-        public static BoundCall Synthesized(SyntaxNode syntax, BoundExpression? receiverOpt, MethodSymbol method, ImmutableArray<BoundExpression> arguments)
+        public static BoundCall Synthesized(SyntaxNode syntax, BoundExpression? receiverOpt, MethodSymbol method,
+            ImmutableArray<BoundExpression> arguments)
         {
             return new BoundCall(syntax,
                     receiverOpt,
@@ -197,18 +214,24 @@ namespace Aquila.CodeAnalysis
                     type: method.ReturnType,
                     hasErrors: method.OriginalDefinition is ErrorMethodSymbol
                 )
-            { WasCompilerGenerated = true };
+                { WasCompilerGenerated = true };
         }
     }
 
     internal sealed partial class BoundObjectCreationExpression
     {
-        public BoundObjectCreationExpression(SyntaxNode syntax, MethodSymbol constructor, params BoundExpression[] arguments)
-            : this(syntax, constructor, ImmutableArray.Create<BoundExpression>(arguments), default(ImmutableArray<string>), default(ImmutableArray<RefKind>), false, default(ImmutableArray<int>), default(BitVector), null, null, constructor.ContainingType)
+        public BoundObjectCreationExpression(SyntaxNode syntax, MethodSymbol constructor,
+            params BoundExpression[] arguments)
+            : this(syntax, constructor, ImmutableArray.Create<BoundExpression>(arguments),
+                default(ImmutableArray<string>), default(ImmutableArray<RefKind>), false, default(ImmutableArray<int>),
+                default(BitVector), null, null, constructor.ContainingType)
         {
         }
-        public BoundObjectCreationExpression(SyntaxNode syntax, MethodSymbol constructor, ImmutableArray<BoundExpression> arguments)
-            : this(syntax, constructor, arguments, default(ImmutableArray<string>), default(ImmutableArray<RefKind>), false, default(ImmutableArray<int>), default(BitVector), null, null, constructor.ContainingType)
+
+        public BoundObjectCreationExpression(SyntaxNode syntax, MethodSymbol constructor,
+            ImmutableArray<BoundExpression> arguments)
+            : this(syntax, constructor, arguments, default(ImmutableArray<string>), default(ImmutableArray<RefKind>),
+                false, default(ImmutableArray<int>), default(BitVector), null, null, constructor.ContainingType)
         {
         }
     }
@@ -238,6 +261,7 @@ namespace Aquila.CodeAnalysis
                 type: indexer.Type,
                 hasErrors: true);
         }
+
         public BoundIndexerAccess(
             SyntaxNode syntax,
             BoundExpression? receiverOpt,
@@ -250,19 +274,22 @@ namespace Aquila.CodeAnalysis
             BitVector defaultArguments,
             TypeSymbol type,
             bool hasErrors = false) :
-            this(syntax, receiverOpt, indexer, arguments, argumentNamesOpt, argumentRefKindsOpt, expanded, argsToParamsOpt, defaultArguments, originalIndexersOpt: default, type, hasErrors)
-        { }
+            this(syntax, receiverOpt, indexer, arguments, argumentNamesOpt, argumentRefKindsOpt, expanded,
+                argsToParamsOpt, defaultArguments, originalIndexersOpt: default, type, hasErrors)
+        {
+        }
 
         public BoundIndexerAccess Update(BoundExpression? receiverOpt,
-                                         PropertySymbol indexer,
-                                         ImmutableArray<BoundExpression> arguments,
-                                         ImmutableArray<string> argumentNamesOpt,
-                                         ImmutableArray<RefKind> argumentRefKindsOpt,
-                                         bool expanded,
-                                         ImmutableArray<int> argsToParamsOpt,
-                                         BitVector defaultArguments,
-                                         TypeSymbol type)
-            => Update(receiverOpt, indexer, arguments, argumentNamesOpt, argumentRefKindsOpt, expanded, argsToParamsOpt, defaultArguments, this.OriginalIndexersOpt, type);
+            PropertySymbol indexer,
+            ImmutableArray<BoundExpression> arguments,
+            ImmutableArray<string> argumentNamesOpt,
+            ImmutableArray<RefKind> argumentRefKindsOpt,
+            bool expanded,
+            ImmutableArray<int> argsToParamsOpt,
+            BitVector defaultArguments,
+            TypeSymbol type)
+            => Update(receiverOpt, indexer, arguments, argumentNamesOpt, argumentRefKindsOpt, expanded, argsToParamsOpt,
+                defaultArguments, this.OriginalIndexersOpt, type);
     }
 
     internal sealed partial class BoundConversion
@@ -272,20 +299,21 @@ namespace Aquila.CodeAnalysis
         /// Use MakeConversion helper method in the LocalRewriter instead,
         /// it generates a synthesized conversion in its lowered form.
         /// </remarks>
-        public static BoundConversion SynthesizedNonUserDefined(SyntaxNode syntax, BoundExpression operand, Conversion conversion, TypeSymbol type, ConstantValue? constantValueOpt = null)
+        public static BoundConversion SynthesizedNonUserDefined(SyntaxNode syntax, BoundExpression operand,
+            Conversion conversion, TypeSymbol type, ConstantValue? constantValueOpt = null)
         {
             return new BoundConversion(
-                syntax,
-                operand,
-                conversion,
-                isBaseConversion: false,
-                @checked: false,
-                explicitCastInCode: false,
-                conversionGroupOpt: null,
-                constantValueOpt: constantValueOpt,
-                originalUserDefinedConversionsOpt: default,
-                type: type)
-            { WasCompilerGenerated = true };
+                    syntax,
+                    operand,
+                    conversion,
+                    isBaseConversion: false,
+                    @checked: false,
+                    explicitCastInCode: false,
+                    conversionGroupOpt: null,
+                    constantValueOpt: constantValueOpt,
+                    originalUserDefinedConversionsOpt: default,
+                    type: type)
+                { WasCompilerGenerated = true };
         }
 
         /// <remarks>
@@ -341,7 +369,8 @@ namespace Aquila.CodeAnalysis
                 conversion.OriginalUserDefinedConversions,
                 type: type,
                 hasErrors: hasErrors || !conversion.IsValid)
-        { }
+        {
+        }
 
         public BoundConversion(
             SyntaxNode syntax,
@@ -354,19 +383,21 @@ namespace Aquila.CodeAnalysis
             ConversionGroup? conversionGroupOpt,
             TypeSymbol type,
             bool hasErrors = false) :
-            this(syntax, operand, conversion, isBaseConversion, @checked, explicitCastInCode, constantValueOpt, conversionGroupOpt, originalUserDefinedConversionsOpt: default, type, hasErrors)
+            this(syntax, operand, conversion, isBaseConversion, @checked, explicitCastInCode, constantValueOpt,
+                conversionGroupOpt, originalUserDefinedConversionsOpt: default, type, hasErrors)
         {
         }
 
         public BoundConversion Update(BoundExpression operand,
-                                      Conversion conversion,
-                                      bool isBaseConversion,
-                                      bool @checked,
-                                      bool explicitCastInCode,
-                                      ConstantValue? constantValueOpt,
-                                      ConversionGroup? conversionGroupOpt,
-                                      TypeSymbol type)
-            => Update(operand, conversion, isBaseConversion, @checked, explicitCastInCode, constantValueOpt, conversionGroupOpt, this.OriginalUserDefinedConversionsOpt, type);
+            Conversion conversion,
+            bool isBaseConversion,
+            bool @checked,
+            bool explicitCastInCode,
+            ConstantValue? constantValueOpt,
+            ConversionGroup? conversionGroupOpt,
+            TypeSymbol type)
+            => Update(operand, conversion, isBaseConversion, @checked, explicitCastInCode, constantValueOpt,
+                conversionGroupOpt, this.OriginalUserDefinedConversionsOpt, type);
     }
 
     internal sealed partial class BoundBinaryOperator
@@ -386,7 +417,8 @@ namespace Aquila.CodeAnalysis
             : this(
                 syntax,
                 operatorKind,
-                Aquila.CodeAnalysis.BoundBinaryOperator.UncommonData.CreateIfNeeded(constantValueOpt, methodOpt, constrainedToTypeOpt, originalUserDefinedOperatorsOpt),
+                Aquila.CodeAnalysis.BoundBinaryOperator.UncommonData.CreateIfNeeded(constantValueOpt, methodOpt,
+                    constrainedToTypeOpt, originalUserDefinedOperatorsOpt),
                 resultKind,
                 left,
                 right,
@@ -394,6 +426,7 @@ namespace Aquila.CodeAnalysis
                 hasErrors)
         {
         }
+
         public BoundBinaryOperator(
             SyntaxNode syntax,
             BinaryOperatorKind operatorKind,
@@ -405,20 +438,24 @@ namespace Aquila.CodeAnalysis
             BoundExpression right,
             TypeSymbol type,
             bool hasErrors = false) :
-            this(syntax, operatorKind, Aquila.CodeAnalysis.BoundBinaryOperator.UncommonData.CreateIfNeeded(constantValueOpt, methodOpt, constrainedToTypeOpt, originalUserDefinedOperatorsOpt: default), resultKind, left, right, type, hasErrors)
+            this(syntax, operatorKind,
+                Aquila.CodeAnalysis.BoundBinaryOperator.UncommonData.CreateIfNeeded(constantValueOpt, methodOpt,
+                    constrainedToTypeOpt, originalUserDefinedOperatorsOpt: default), resultKind, left, right, type,
+                hasErrors)
         {
         }
 
         public BoundBinaryOperator Update(BinaryOperatorKind operatorKind,
-                                          ConstantValue? constantValueOpt,
-                                          MethodSymbol? methodOpt,
-                                          TypeSymbol? constrainedToTypeOpt,
-                                          LookupResultKind resultKind,
-                                          BoundExpression left,
-                                          BoundExpression right,
-                                          TypeSymbol type)
+            ConstantValue? constantValueOpt,
+            MethodSymbol? methodOpt,
+            TypeSymbol? constrainedToTypeOpt,
+            LookupResultKind resultKind,
+            BoundExpression left,
+            BoundExpression right,
+            TypeSymbol type)
         {
-            var uncommonData = Aquila.CodeAnalysis.BoundBinaryOperator.UncommonData.CreateIfNeeded(constantValueOpt, methodOpt, constrainedToTypeOpt, OriginalUserDefinedOperatorsOpt);
+            var uncommonData = Aquila.CodeAnalysis.BoundBinaryOperator.UncommonData.CreateIfNeeded(constantValueOpt,
+                methodOpt, constrainedToTypeOpt, OriginalUserDefinedOperatorsOpt);
             return Update(operatorKind, uncommonData, resultKind, left, right, type);
         }
 
@@ -457,19 +494,20 @@ namespace Aquila.CodeAnalysis
                 type,
                 hasErrors)
         {
-            Debug.Assert(operatorKind.IsUserDefined() && operatorKind.IsLogical());
+            //Debug.Assert(operatorKind.IsUserDefined() && operatorKind.IsLogical());
         }
 
         public BoundUserDefinedConditionalLogicalOperator Update(BinaryOperatorKind operatorKind,
-                                                                 MethodSymbol logicalOperator,
-                                                                 MethodSymbol trueOperator,
-                                                                 MethodSymbol falseOperator,
-                                                                 TypeSymbol? constrainedToTypeOpt,
-                                                                 LookupResultKind resultKind,
-                                                                 BoundExpression left,
-                                                                 BoundExpression right,
-                                                                 TypeSymbol type)
-            => Update(operatorKind, logicalOperator, trueOperator, falseOperator, constrainedToTypeOpt, resultKind, this.OriginalUserDefinedOperatorsOpt, left, right, type);
+            MethodSymbol logicalOperator,
+            MethodSymbol trueOperator,
+            MethodSymbol falseOperator,
+            TypeSymbol? constrainedToTypeOpt,
+            LookupResultKind resultKind,
+            BoundExpression left,
+            BoundExpression right,
+            TypeSymbol type)
+            => Update(operatorKind, logicalOperator, trueOperator, falseOperator, constrainedToTypeOpt, resultKind,
+                this.OriginalUserDefinedOperatorsOpt, left, right, type);
     }
 
     internal sealed partial class BoundParameter
@@ -487,49 +525,58 @@ namespace Aquila.CodeAnalysis
 
     internal sealed partial class BoundTypeExpression
     {
-        public BoundTypeExpression(SyntaxNode syntax, AliasSymbol? aliasOpt, BoundTypeExpression? boundContainingTypeOpt, ImmutableArray<BoundExpression> boundDimensionsOpt, TypeWithAnnotations typeWithAnnotations, bool hasErrors = false)
-            : this(syntax, aliasOpt, boundContainingTypeOpt, boundDimensionsOpt, typeWithAnnotations, typeWithAnnotations.Type, hasErrors)
-        {
-            Debug.Assert((object)typeWithAnnotations.Type != null, "Field 'type' cannot be null");
-        }
-
-        public BoundTypeExpression(SyntaxNode syntax, AliasSymbol? aliasOpt, BoundTypeExpression? boundContainingTypeOpt, TypeWithAnnotations typeWithAnnotations, bool hasErrors = false)
-            : this(syntax, aliasOpt, boundContainingTypeOpt, ImmutableArray<BoundExpression>.Empty, typeWithAnnotations, hasErrors)
-        {
-        }
-
-        public BoundTypeExpression(SyntaxNode syntax, AliasSymbol? aliasOpt, TypeWithAnnotations typeWithAnnotations, bool hasErrors = false)
-            : this(syntax, aliasOpt, null, typeWithAnnotations, hasErrors)
-        {
-        }
-
-        public BoundTypeExpression(SyntaxNode syntax, AliasSymbol? aliasOpt, TypeSymbol type, bool hasErrors = false)
-            : this(syntax, aliasOpt, null, TypeWithAnnotations.Create(type), hasErrors)
-        {
-        }
-
-        public BoundTypeExpression(SyntaxNode syntax, AliasSymbol? aliasOpt, ImmutableArray<BoundExpression> dimensionsOpt, TypeWithAnnotations typeWithAnnotations, bool hasErrors = false)
-            : this(syntax, aliasOpt, null, dimensionsOpt, typeWithAnnotations, hasErrors)
-        {
-        }
+        // public BoundTypeExpression(SyntaxNode syntax, AliasSymbol? aliasOpt,
+        //     BoundTypeExpression? boundContainingTypeOpt, ImmutableArray<BoundExpression> boundDimensionsOpt,
+        //     TypeWithAnnotations typeWithAnnotations, bool hasErrors = false)
+        //     : this(syntax, aliasOpt, boundContainingTypeOpt, boundDimensionsOpt, typeWithAnnotations,
+        //         typeWithAnnotations.Type, hasErrors)
+        // {
+        //     Debug.Assert((object)typeWithAnnotations.Type != null, "Field 'type' cannot be null");
+        // }
+        //
+        // public BoundTypeExpression(SyntaxNode syntax, AliasSymbol? aliasOpt,
+        //     BoundTypeExpression? boundContainingTypeOpt, TypeWithAnnotations typeWithAnnotations,
+        //     bool hasErrors = false)
+        //     : this(syntax, aliasOpt, boundContainingTypeOpt, ImmutableArray<BoundExpression>.Empty, typeWithAnnotations,
+        //         hasErrors)
+        // {
+        // }
+        //
+        // public BoundTypeExpression(SyntaxNode syntax, AliasSymbol? aliasOpt, TypeWithAnnotations typeWithAnnotations,
+        //     bool hasErrors = false)
+        //     : this(syntax, aliasOpt, null, typeWithAnnotations, hasErrors)
+        // {
+        // }
+        //
+        // public BoundTypeExpression(SyntaxNode syntax, AliasSymbol? aliasOpt, TypeSymbol type, bool hasErrors = false)
+        //     : this(syntax, aliasOpt, null, TypeWithAnnotations.Create(type), hasErrors)
+        // {
+        // }
+        //
+        // public BoundTypeExpression(SyntaxNode syntax, AliasSymbol? aliasOpt,
+        //     ImmutableArray<BoundExpression> dimensionsOpt, TypeWithAnnotations typeWithAnnotations,
+        //     bool hasErrors = false)
+        //     : this(syntax, aliasOpt, null, dimensionsOpt, typeWithAnnotations, hasErrors)
+        // {
+        // }
     }
 
     internal sealed partial class BoundNamespaceExpression
     {
-        public BoundNamespaceExpression(SyntaxNode syntax, NamespaceSymbol namespaceSymbol, bool hasErrors = false)
-            : this(syntax, namespaceSymbol, null, hasErrors)
-        {
-        }
-
-        public BoundNamespaceExpression(SyntaxNode syntax, NamespaceSymbol namespaceSymbol)
-            : this(syntax, namespaceSymbol, null)
-        {
-        }
-
-        public BoundNamespaceExpression Update(NamespaceSymbol namespaceSymbol)
-        {
-            return Update(namespaceSymbol, this.AliasOpt);
-        }
+        // public BoundNamespaceExpression(SyntaxNode syntax, NamespaceSymbol namespaceSymbol, bool hasErrors = false)
+        //     : this(syntax, namespaceSymbol, null, hasErrors)
+        // {
+        // }
+        //
+        // public BoundNamespaceExpression(SyntaxNode syntax, NamespaceSymbol namespaceSymbol)
+        //     : this(syntax, namespaceSymbol, null)
+        // {
+        // }
+        //
+        // public BoundNamespaceExpression Update(NamespaceSymbol namespaceSymbol)
+        // {
+        //     return Update(namespaceSymbol, this.AliasOpt);
+        // }
     }
 
     internal sealed partial class BoundAssignmentOperator
@@ -543,7 +590,8 @@ namespace Aquila.CodeAnalysis
 
     internal sealed partial class BoundBadExpression
     {
-        public BoundBadExpression(SyntaxNode syntax, LookupResultKind resultKind, ImmutableArray<Symbol?> symbols, ImmutableArray<BoundExpression> childBoundNodes, TypeSymbol type)
+        public BoundBadExpression(SyntaxNode syntax, LookupResultKind resultKind, ImmutableArray<Symbol?> symbols,
+            ImmutableArray<BoundExpression> childBoundNodes, TypeSymbol type)
             : this(syntax, resultKind, symbols, childBoundNodes, type, true)
         {
             Debug.Assert((object)type != null);
@@ -557,7 +605,8 @@ namespace Aquila.CodeAnalysis
             return Synthesized(syntax, false, statements.AsImmutableOrNull());
         }
 
-        public static BoundStatementList Synthesized(SyntaxNode syntax, bool hasErrors, params BoundStatement[] statements)
+        public static BoundStatementList Synthesized(SyntaxNode syntax, bool hasErrors,
+            params BoundStatement[] statements)
         {
             return Synthesized(syntax, hasErrors, statements.AsImmutableOrNull());
         }
@@ -567,7 +616,8 @@ namespace Aquila.CodeAnalysis
             return Synthesized(syntax, false, statements);
         }
 
-        public static BoundStatementList Synthesized(SyntaxNode syntax, bool hasErrors, ImmutableArray<BoundStatement> statements)
+        public static BoundStatementList Synthesized(SyntaxNode syntax, bool hasErrors,
+            ImmutableArray<BoundStatement> statements)
         {
             return new BoundStatementList(syntax, statements, hasErrors) { WasCompilerGenerated = true };
         }
@@ -575,7 +625,8 @@ namespace Aquila.CodeAnalysis
 
     internal sealed partial class BoundReturnStatement
     {
-        public static BoundReturnStatement Synthesized(SyntaxNode syntax, RefKind refKind, BoundExpression expression, bool hasErrors = false)
+        public static BoundReturnStatement Synthesized(SyntaxNode syntax, RefKind refKind, BoundExpression expression,
+            bool hasErrors = false)
         {
             return new BoundReturnStatement(syntax, refKind, expression, hasErrors) { WasCompilerGenerated = true };
         }
@@ -591,32 +642,36 @@ namespace Aquila.CodeAnalysis
 
     internal sealed partial class BoundGotoStatement
     {
-        public BoundGotoStatement(SyntaxNode syntax, LabelSymbol label, bool hasErrors = false)
-            : this(syntax, label, caseExpressionOpt: null, labelExpressionOpt: null, hasErrors: hasErrors)
-        {
-        }
+        // public BoundGotoStatement(SyntaxNode syntax, LabelSymbol label, bool hasErrors = false)
+        //     : this(syntax, label, caseExpressionOpt: null, labelExpressionOpt: null, hasErrors: hasErrors)
+        // {
+        // }
     }
 
     internal partial class BoundBlock
     {
-        public BoundBlock(SyntaxNode syntax, ImmutableArray<LocalSymbol> locals, ImmutableArray<BoundStatement> statements, bool hasErrors = false) : this(syntax, locals, ImmutableArray<LocalFunctionSymbol>.Empty, statements, hasErrors)
+        public BoundBlock(SyntaxNode syntax, ImmutableArray<LocalSymbol> locals,
+            ImmutableArray<BoundStatement> statements, bool hasErrors = false) : this(syntax, locals,
+            ImmutableArray<LocalFunctionSymbol>.Empty, statements, hasErrors)
         {
         }
 
         public static BoundBlock SynthesizedNoLocals(SyntaxNode syntax, BoundStatement statement)
         {
             return new BoundBlock(syntax, ImmutableArray<LocalSymbol>.Empty, ImmutableArray.Create(statement))
-            { WasCompilerGenerated = true };
+                { WasCompilerGenerated = true };
         }
 
         public static BoundBlock SynthesizedNoLocals(SyntaxNode syntax, ImmutableArray<BoundStatement> statements)
         {
-            return new BoundBlock(syntax, ImmutableArray<LocalSymbol>.Empty, statements) { WasCompilerGenerated = true };
+            return new BoundBlock(syntax, ImmutableArray<LocalSymbol>.Empty, statements)
+                { WasCompilerGenerated = true };
         }
 
         public static BoundBlock SynthesizedNoLocals(SyntaxNode syntax, params BoundStatement[] statements)
         {
-            return new BoundBlock(syntax, ImmutableArray<LocalSymbol>.Empty, statements.AsImmutableOrNull()) { WasCompilerGenerated = true };
+            return new BoundBlock(syntax, ImmutableArray<LocalSymbol>.Empty, statements.AsImmutableOrNull())
+                { WasCompilerGenerated = true };
         }
     }
 
@@ -632,16 +687,19 @@ namespace Aquila.CodeAnalysis
 
     internal partial class BoundTryStatement
     {
-        public BoundTryStatement(SyntaxNode syntax, BoundBlock tryBlock, ImmutableArray<BoundCatchBlock> catchBlocks, BoundBlock? finallyBlockOpt, LabelSymbol? finallyLabelOpt = null)
-            : this(syntax, tryBlock, catchBlocks, finallyBlockOpt, finallyLabelOpt, preferFaultHandler: false, hasErrors: false)
+        public BoundTryStatement(SyntaxNode syntax, BoundBlock tryBlock, ImmutableArray<BoundCatchBlock> catchBlocks,
+            BoundBlock? finallyBlockOpt, LabelSymbol? finallyLabelOpt = null)
+            : this(syntax, tryBlock, catchBlocks, finallyBlockOpt, finallyLabelOpt, preferFaultHandler: false,
+                hasErrors: false)
         {
         }
     }
 
     internal partial class BoundAddressOfOperator
     {
-        public BoundAddressOfOperator(SyntaxNode syntax, BoundExpression operand, TypeSymbol type, bool hasErrors = false)
-             : this(syntax, operand, isManaged: false, type, hasErrors)
+        public BoundAddressOfOperator(SyntaxNode syntax, BoundExpression operand, TypeSymbol type,
+            bool hasErrors = false)
+            : this(syntax, operand, isManaged: false, type, hasErrors)
         {
         }
     }
@@ -653,7 +711,8 @@ namespace Aquila.CodeAnalysis
         {
         }
 
-        public static BoundDagTemp ForOriginalInput(BoundExpression expr) => new BoundDagTemp(expr.Syntax, expr.Type!, source: null);
+        public static BoundDagTemp ForOriginalInput(BoundExpression expr) =>
+            new BoundDagTemp(expr.Syntax, expr.Type!, source: null);
     }
 
     internal partial class BoundCompoundAssignmentOperator
@@ -669,20 +728,22 @@ namespace Aquila.CodeAnalysis
             LookupResultKind resultKind,
             TypeSymbol type,
             bool hasErrors = false)
-            : this(syntax, @operator, left, right, leftPlaceholder, leftConversion, finalPlaceholder, finalConversion, resultKind, originalUserDefinedOperatorsOpt: default, type, hasErrors)
+            : this(syntax, @operator, left, right, leftPlaceholder, leftConversion, finalPlaceholder, finalConversion,
+                resultKind, originalUserDefinedOperatorsOpt: default, type, hasErrors)
         {
         }
 
         public BoundCompoundAssignmentOperator Update(BinaryOperatorSignature @operator,
-                                                      BoundExpression left,
-                                                      BoundExpression right,
-                                                      BoundValuePlaceholder? leftPlaceholder,
-                                                      BoundExpression? leftConversion,
-                                                      BoundValuePlaceholder? finalPlaceholder,
-                                                      BoundExpression? finalConversion,
-                                                      LookupResultKind resultKind,
-                                                      TypeSymbol type)
-            => Update(@operator, left, right, leftPlaceholder, leftConversion, finalPlaceholder, finalConversion, resultKind, this.OriginalUserDefinedOperatorsOpt, type);
+            BoundExpression left,
+            BoundExpression right,
+            BoundValuePlaceholder? leftPlaceholder,
+            BoundExpression? leftConversion,
+            BoundValuePlaceholder? finalPlaceholder,
+            BoundExpression? finalConversion,
+            LookupResultKind resultKind,
+            TypeSymbol type)
+            => Update(@operator, left, right, leftPlaceholder, leftConversion, finalPlaceholder, finalConversion,
+                resultKind, this.OriginalUserDefinedOperatorsOpt, type);
     }
 
     internal partial class BoundUnaryOperator
@@ -697,18 +758,20 @@ namespace Aquila.CodeAnalysis
             LookupResultKind resultKind,
             TypeSymbol type,
             bool hasErrors = false) :
-            this(syntax, operatorKind, operand, constantValueOpt, methodOpt, constrainedToTypeOpt, resultKind, originalUserDefinedOperatorsOpt: default, type, hasErrors)
+            this(syntax, operatorKind, operand, constantValueOpt, methodOpt, constrainedToTypeOpt, resultKind,
+                originalUserDefinedOperatorsOpt: default, type, hasErrors)
         {
         }
 
         public BoundUnaryOperator Update(UnaryOperatorKind operatorKind,
-                                         BoundExpression operand,
-                                         ConstantValue? constantValueOpt,
-                                         MethodSymbol? methodOpt,
-                                         TypeSymbol? constrainedToTypeOpt,
-                                         LookupResultKind resultKind,
-                                         TypeSymbol type)
-            => Update(operatorKind, operand, constantValueOpt, methodOpt, constrainedToTypeOpt, resultKind, this.OriginalUserDefinedOperatorsOpt, type);
+            BoundExpression operand,
+            ConstantValue? constantValueOpt,
+            MethodSymbol? methodOpt,
+            TypeSymbol? constrainedToTypeOpt,
+            LookupResultKind resultKind,
+            TypeSymbol type)
+            => Update(operatorKind, operand, constantValueOpt, methodOpt, constrainedToTypeOpt, resultKind,
+                this.OriginalUserDefinedOperatorsOpt, type);
     }
 
     internal partial class BoundIncrementOperator
@@ -726,13 +789,19 @@ namespace Aquila.CodeAnalysis
             LookupResultKind resultKind,
             TypeSymbol type,
             bool hasErrors = false) :
-            this(syntax, operatorKind, operand, methodOpt, constrainedToTypeOpt, operandPlaceholder, operandConversion, resultPlaceholder, resultConversion, resultKind, originalUserDefinedOperatorsOpt: default, type, hasErrors)
+            this(syntax, operatorKind, operand, methodOpt, constrainedToTypeOpt, operandPlaceholder, operandConversion,
+                resultPlaceholder, resultConversion, resultKind, originalUserDefinedOperatorsOpt: default, type,
+                hasErrors)
         {
         }
 
-        public BoundIncrementOperator Update(UnaryOperatorKind operatorKind, BoundExpression operand, MethodSymbol? methodOpt, TypeSymbol? constrainedToTypeOpt, BoundValuePlaceholder? operandPlaceholder, BoundExpression? operandConversion, BoundValuePlaceholder? resultPlaceholder, BoundExpression? resultConversion, LookupResultKind resultKind, TypeSymbol type)
+        public BoundIncrementOperator Update(UnaryOperatorKind operatorKind, BoundExpression operand,
+            MethodSymbol? methodOpt, TypeSymbol? constrainedToTypeOpt, BoundValuePlaceholder? operandPlaceholder,
+            BoundExpression? operandConversion, BoundValuePlaceholder? resultPlaceholder,
+            BoundExpression? resultConversion, LookupResultKind resultKind, TypeSymbol type)
         {
-            return Update(operatorKind, operand, methodOpt, constrainedToTypeOpt, operandPlaceholder, operandConversion, resultPlaceholder, resultConversion, resultKind, this.OriginalUserDefinedOperatorsOpt, type);
+            return Update(operatorKind, operand, methodOpt, constrainedToTypeOpt, operandPlaceholder, operandConversion,
+                resultPlaceholder, resultConversion, resultKind, this.OriginalUserDefinedOperatorsOpt, type);
         }
     }
 }

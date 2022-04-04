@@ -103,6 +103,7 @@ namespace Aquila.CodeAnalysis
                 {
                     return true;
                 }
+
                 var expression = this as BoundExpression;
                 return expression?.Type?.IsErrorType() == true;
             }
@@ -120,10 +121,7 @@ namespace Aquila.CodeAnalysis
         /// </summary>
         public bool HasErrors
         {
-            get
-            {
-                return (_attributes & BoundNodeAttributes.HasErrors) != 0;
-            }
+            get { return (_attributes & BoundNodeAttributes.HasErrors) != 0; }
             private set
             {
                 if (value)
@@ -140,10 +138,7 @@ namespace Aquila.CodeAnalysis
 
         public SyntaxTree? SyntaxTree
         {
-            get
-            {
-                return Syntax?.SyntaxTree;
-            }
+            get { return Syntax?.SyntaxTree; }
         }
 
         protected void CopyAttributes(BoundNode original)
@@ -230,23 +225,24 @@ namespace Aquila.CodeAnalysis
                 Debug.Assert((_attributes & BoundNodeAttributes.WasTopLevelNullabilityChecked) == 0,
                     "bound node nullability should not be set after reading it");
 #endif
-                _attributes &= ~(BoundNodeAttributes.TopLevelAnnotationMask | BoundNodeAttributes.TopLevelFlowStateMaybeNull);
+                _attributes &= ~(BoundNodeAttributes.TopLevelAnnotationMask |
+                                 BoundNodeAttributes.TopLevelFlowStateMaybeNull);
 
                 _attributes |= value.Annotation switch
                 {
-                    CodeAnalysis.NullableAnnotation.Annotated => BoundNodeAttributes.TopLevelAnnotated,
-                    CodeAnalysis.NullableAnnotation.NotAnnotated => BoundNodeAttributes.TopLevelNotAnnotated,
-                    CodeAnalysis.NullableAnnotation.None => BoundNodeAttributes.TopLevelNone,
+                    Microsoft.CodeAnalysis.NullableAnnotation.Annotated => BoundNodeAttributes.TopLevelAnnotated,
+                    Microsoft.CodeAnalysis.NullableAnnotation.NotAnnotated => BoundNodeAttributes.TopLevelNotAnnotated,
+                    Microsoft.CodeAnalysis.NullableAnnotation.None => BoundNodeAttributes.TopLevelNone,
                     var a => throw ExceptionUtilities.UnexpectedValue(a),
                 };
 
                 switch (value.FlowState)
                 {
-                    case CodeAnalysis.NullableFlowState.MaybeNull:
+                    case Microsoft.CodeAnalysis.NullableFlowState.MaybeNull:
                         _attributes |= BoundNodeAttributes.TopLevelFlowStateMaybeNull;
                         break;
 
-                    case CodeAnalysis.NullableFlowState.NotNull:
+                    case Microsoft.CodeAnalysis.NullableFlowState.NotNull:
                         // Not needed: unset is NotNull
                         break;
 
@@ -271,13 +267,15 @@ namespace Aquila.CodeAnalysis
 
                 var annotation = (_attributes & BoundNodeAttributes.TopLevelAnnotationMask) switch
                 {
-                    BoundNodeAttributes.TopLevelAnnotated => CodeAnalysis.NullableAnnotation.Annotated,
-                    BoundNodeAttributes.TopLevelNotAnnotated => CodeAnalysis.NullableAnnotation.NotAnnotated,
-                    BoundNodeAttributes.TopLevelNone => CodeAnalysis.NullableAnnotation.None,
+                    BoundNodeAttributes.TopLevelAnnotated => Microsoft.CodeAnalysis.NullableAnnotation.Annotated,
+                    BoundNodeAttributes.TopLevelNotAnnotated => Microsoft.CodeAnalysis.NullableAnnotation.NotAnnotated,
+                    BoundNodeAttributes.TopLevelNone => Microsoft.CodeAnalysis.NullableAnnotation.None,
                     var mask => throw ExceptionUtilities.UnexpectedValue(mask)
                 };
 
-                var flowState = (_attributes & BoundNodeAttributes.TopLevelFlowStateMaybeNull) == 0 ? CodeAnalysis.NullableFlowState.NotNull : CodeAnalysis.NullableFlowState.MaybeNull;
+                var flowState = (_attributes & BoundNodeAttributes.TopLevelFlowStateMaybeNull) == 0
+                    ? Microsoft.CodeAnalysis.NullableFlowState.NotNull
+                    : Microsoft.CodeAnalysis.NullableFlowState.MaybeNull;
 
                 return new NullabilityInfo(annotation, flowState);
             }
@@ -285,13 +283,11 @@ namespace Aquila.CodeAnalysis
 
         public bool IsSuppressed
         {
-            get
-            {
-                return (_attributes & BoundNodeAttributes.IsSuppressed) != 0;
-            }
+            get { return (_attributes & BoundNodeAttributes.IsSuppressed) != 0; }
             protected set
             {
-                Debug.Assert((_attributes & BoundNodeAttributes.IsSuppressed) == 0, "flag should not be set twice or reset");
+                Debug.Assert((_attributes & BoundNodeAttributes.IsSuppressed) == 0,
+                    "flag should not be set twice or reset");
                 if (value)
                 {
                     _attributes |= BoundNodeAttributes.IsSuppressed;
@@ -307,13 +303,11 @@ namespace Aquila.CodeAnalysis
         /// </summary>
         public bool WasConverted
         {
-            get
-            {
-                return (_attributes & BoundNodeAttributes.WasConverted) != 0;
-            }
+            get { return (_attributes & BoundNodeAttributes.WasConverted) != 0; }
             protected set
             {
-                Debug.Assert((_attributes & BoundNodeAttributes.WasConverted) == 0, "WasConverted flag should not be set twice or reset");
+                Debug.Assert((_attributes & BoundNodeAttributes.WasConverted) == 0,
+                    "WasConverted flag should not be set twice or reset");
                 if (value)
                 {
                     _attributes |= BoundNodeAttributes.WasConverted;
@@ -324,10 +318,7 @@ namespace Aquila.CodeAnalysis
 
         public BoundKind Kind
         {
-            get
-            {
-                return _kind;
-            }
+            get { return _kind; }
         }
 
         public virtual BoundNode? Accept(BoundTreeVisitor visitor)
@@ -351,17 +342,19 @@ namespace Aquila.CodeAnalysis
 #if DEBUG
         private class MyTreeDumper : TreeDumper
         {
-            private MyTreeDumper() : base() { }
+            private MyTreeDumper() : base()
+            {
+            }
 
             public static new string DumpCompact(TreeDumperNode root)
             {
                 return new MyTreeDumper().DoDumpCompact(root);
             }
 
-            protected override string DumperString(object o)
-            {
-                return (o is SynthesizedLocal l) ? l.DumperString() : base.DumperString(o);
-            }
+            // protected override string DumperString(object o)
+            // {
+            //     return (o is SynthesizedLocal l) ? l.DumperString() : base.DumperString(o);
+            // }
         }
 
         internal virtual string Dump()
@@ -377,6 +370,7 @@ namespace Aquila.CodeAnalysis
             {
                 result += " " + Syntax.ToString();
             }
+
             return result;
         }
 
@@ -392,37 +386,37 @@ namespace Aquila.CodeAnalysis
         {
             switch (conversion)
             {
-                case null:
-                    return Conversion.NoConversion;
+                // case null:
+                //     return Conversion.NoConversion;
+                //
+                // case BoundConversion boundConversion:
+                //
+                //     if ((object)boundConversion.Operand == placeholder)
+                //     {
+                //         return boundConversion.Conversion;
+                //     }
+                //
+                //     if (!boundConversion.Conversion.IsUserDefined)
+                //     {
+                //         boundConversion = (BoundConversion)boundConversion.Operand;
+                //     }
+                //
+                //     if (boundConversion.Conversion.IsUserDefined)
+                //     {
+                //         BoundConversion next;
+                //
+                //         if ((object)boundConversion.Operand == placeholder ||
+                //             (object)(next = (BoundConversion)boundConversion.Operand).Operand == placeholder ||
+                //             (object)((BoundConversion)next.Operand).Operand == placeholder)
+                //         {
+                //             return boundConversion.Conversion;
+                //         }
+                //     }
+                //
+                //     goto default;
 
-                case BoundConversion boundConversion:
-
-                    if ((object)boundConversion.Operand == placeholder)
-                    {
-                        return boundConversion.Conversion;
-                    }
-
-                    if (!boundConversion.Conversion.IsUserDefined)
-                    {
-                        boundConversion = (BoundConversion)boundConversion.Operand;
-                    }
-
-                    if (boundConversion.Conversion.IsUserDefined)
-                    {
-                        BoundConversion next;
-
-                        if ((object)boundConversion.Operand == placeholder ||
-                            (object)(next = (BoundConversion)boundConversion.Operand).Operand == placeholder ||
-                            (object)((BoundConversion)next.Operand).Operand == placeholder)
-                        {
-                            return boundConversion.Conversion;
-                        }
-                    }
-
-                    goto default;
-
-                case BoundValuePlaceholder valuePlaceholder when (object)valuePlaceholder == placeholder:
-                    return Conversion.Identity;
+                // case BoundValuePlaceholder valuePlaceholder when (object)valuePlaceholder == placeholder:
+                //     return Conversion.Identity;
 
                 default:
                     throw ExceptionUtilities.UnexpectedValue(conversion);

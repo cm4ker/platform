@@ -90,10 +90,10 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         /// <param name="previous">The type to be rewritten.</param>
         /// <returns>The type with type parameters replaced with the type arguments.</returns>
-        internal TypeWithModifiers SubstituteType(TypeSymbol previous)
+        internal TypeWithAnnotations SubstituteType(TypeSymbol previous)
         {
             if (ReferenceEquals(previous, null))
-                return default(TypeWithModifiers);
+                return default(TypeWithAnnotations);
 
             TypeSymbol result;
 
@@ -121,7 +121,7 @@ namespace Aquila.CodeAnalysis.Symbols
                     break;
             }
 
-            return new TypeWithModifiers(result);
+            return TypeWithAnnotations.Create(result);
         }
 
         private static bool IsPossiblyByRefTypeParameter(TypeSymbol type)
@@ -202,9 +202,9 @@ namespace Aquila.CodeAnalysis.Symbols
             throw new NotImplementedException();
         }
 
-        protected virtual TypeWithModifiers SubstituteTypeParameter(TypeParameterSymbol typeParameter)
+        protected virtual TypeWithAnnotations SubstituteTypeParameter(TypeParameterSymbol typeParameter)
         {
-            return new TypeWithModifiers(typeParameter);
+            return TypeWithAnnotations.Create(typeParameter);
         }
 
         private ArrayTypeSymbol SubstituteArrayType(ArrayTypeSymbol t)
@@ -298,14 +298,14 @@ namespace Aquila.CodeAnalysis.Symbols
             return result != null ? result.AsImmutableOrNull() : original;
         }
 
-        internal ImmutableArray<TypeWithModifiers> SubstituteTypes(ImmutableArray<TypeSymbol> original)
+        internal ImmutableArray<TypeWithAnnotations> SubstituteTypes(ImmutableArray<TypeSymbol> original)
         {
             if (original.IsDefault)
             {
-                return default(ImmutableArray<TypeWithModifiers>);
+                return default(ImmutableArray<TypeWithAnnotations>);
             }
 
-            var result = ArrayBuilder<TypeWithModifiers>.GetInstance(original.Length);
+            var result = ArrayBuilder<TypeWithAnnotations>.GetInstance(original.Length);
 
             foreach (TypeSymbol t in original)
             {

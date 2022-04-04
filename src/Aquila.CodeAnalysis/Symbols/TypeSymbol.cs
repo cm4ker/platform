@@ -38,7 +38,7 @@ namespace Aquila.CodeAnalysis.Symbols
         bool ITypeSymbol.IsReadOnly => false;
         public bool IsRecord { get; }
 
-        NullableAnnotation ITypeSymbol.NullableAnnotation => NullableAnnotation.None;
+        Microsoft.CodeAnalysis.NullableAnnotation ITypeSymbol.NullableAnnotation => Microsoft.CodeAnalysis.NullableAnnotation.None;
 
         string ITypeSymbol.ToDisplayString(NullableFlowState topLevelNullability, SymbolDisplayFormat format)
         {
@@ -63,7 +63,7 @@ namespace Aquila.CodeAnalysis.Symbols
             throw new NotImplementedException();
         }
 
-        ITypeSymbol ITypeSymbol.WithNullableAnnotation(NullableAnnotation nullableAnnotation)
+        ITypeSymbol ITypeSymbol.WithNullableAnnotation(Microsoft.CodeAnalysis.NullableAnnotation nullableAnnotation)
         {
             throw new NotImplementedException();
         }
@@ -72,7 +72,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         ITypeSymbol ITypeSymbolInternal.GetITypeSymbol() => this;
 
-        internal ITypeSymbol GetITypeSymbol(NullableAnnotation nullableAnnotation)
+        internal ITypeSymbol GetITypeSymbol(Microsoft.CodeAnalysis.NullableAnnotation nullableAnnotation)
         {
             return this;
         }

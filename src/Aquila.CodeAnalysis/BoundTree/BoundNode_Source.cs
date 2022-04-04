@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.CodeAnalysis.CSharp.Symbols;
+using Aquila.CodeAnalysis.Symbols;
 
 namespace Aquila.CodeAnalysis
 {
@@ -18,10 +18,10 @@ namespace Aquila.CodeAnalysis
         {
             int indentSize = 4;
             var builder = new StringBuilder();
-            appendSourceCore(this, indent: 0, tempIdentifiers: new Dictionary<SynthesizedLocal, int>());
+            appendSourceCore(this, indent: 0, tempIdentifiers: new Dictionary<SynthesizedLocalSymbol, int>());
             return builder.ToString();
 
-            void appendSourceCore(BoundNode node, int indent, Dictionary<SynthesizedLocal, int> tempIdentifiers)
+            void appendSourceCore(BoundNode node, int indent, Dictionary<SynthesizedLocalSymbol, int> tempIdentifiers)
             {
                 switch (node)
                 {
@@ -78,7 +78,7 @@ namespace Aquila.CodeAnalysis
                             appendLine("{");
                             foreach (var local in block.Locals)
                             {
-                                if (local is SynthesizedLocal synthesized)
+                                if (local is SynthesizedLocalSymbol synthesized)
                                 {
                                     appendLine($"{local.TypeWithAnnotations.ToDisplayString()} {name(synthesized)};");
                                 }
@@ -228,9 +228,9 @@ namespace Aquila.CodeAnalysis
                             }
                             switch (literal.ConstantValue?.Discriminator)
                             {
-                                case ConstantValueTypeDiscriminator.String:
-                                    append($@"""{value}""");
-                                    break;
+                                // case ConstantValueTypeDiscriminator.String:
+                                //     append($@"""{value}""");
+                                //     break;
                                 default:
                                     append(value);
                                     break;
@@ -393,7 +393,7 @@ namespace Aquila.CodeAnalysis
                     }
                 }
 
-                string name(SynthesizedLocal local)
+                string name(SynthesizedLocalSymbol local)
                 {
                     if (!tempIdentifiers.TryGetValue(local, out int identifier))
                     {
@@ -406,7 +406,7 @@ namespace Aquila.CodeAnalysis
 
                 void appendLocal(LocalSymbol symbol)
                 {
-                    if (symbol is SynthesizedLocal synthesized)
+                    if (symbol is SynthesizedLocalSymbol synthesized)
                     {
                         append(name(synthesized));
                     }

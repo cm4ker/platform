@@ -181,7 +181,7 @@
   </Node>
 
   <Node Name="BoundTypeExpression" Base="BoundExpression">
-    <Field Name="AliasOpt" Type="AliasSymbol?"/>
+<!--    <Field Name="AliasOpt" Type="AliasSymbol?"/>-->
 
     <!-- 
     We're going to stash some extra information in the Color Color case
@@ -268,7 +268,7 @@
     <Field Name="Type" Type="TypeSymbol?" Override="true" Null="always"/>
 
     <Field Name="NamespaceSymbol" Type="NamespaceSymbol"/>
-    <Field Name="AliasOpt" Type="AliasSymbol?"/>
+<!--    <Field Name="AliasOpt" Type="AliasSymbol?"/>-->
   </Node>
 
   <!-- EricLi thought we might need a node like this to do "Color Color" correctly. Currently we're
@@ -913,7 +913,6 @@
   -->
   <Node Name="BoundBlock" Base="BoundStatementList">
     <Field Name="Locals" Type="ImmutableArray&lt;LocalSymbol&gt;"/>
-    <Field Name="LocalFunctions" Type="ImmutableArray&lt;LocalFunctionSymbol&gt;"/>
   </Node>
 
   <!--

@@ -111,6 +111,23 @@ namespace Aquila.CodeAnalysis.Symbols
                 ? this
                 : new SubstitutedMethodSymbol((SubstitutedNamedTypeSymbol)newOwner, this);
         }
+        
+        /// <summary>
+        /// As a performance optimization, cache parameter types and refkinds - overload resolution uses them a lot.
+        /// </summary>
+        private ParameterSignature _lazyParameterSignature;
+        
+        /// <summary>
+        /// Null if no parameter is ref/out. Otherwise the RefKind for each parameter.
+        /// </summary>
+        internal ImmutableArray<RefKind> ParameterRefKinds
+        {
+            get
+            {
+                ParameterSignature.PopulateParameterSignature(this.Parameters, ref _lazyParameterSignature);
+                return _lazyParameterSignature.parameterRefKinds;
+            }
+        }
 
         ImmutableArray<IParameterSymbol> IMethodSymbol.Parameters => StaticCast<IParameterSymbol>.From(Parameters);
 

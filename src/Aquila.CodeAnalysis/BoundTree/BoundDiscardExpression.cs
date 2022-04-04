@@ -4,6 +4,10 @@
 
 using Microsoft.CodeAnalysis.CSharp.Symbols;
 using System.Diagnostics;
+using Aquila.CodeAnalysis.Errors;
+using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Symbols;
+using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis
 {
