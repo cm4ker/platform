@@ -7,15 +7,15 @@ using Microsoft.CodeAnalysis.CSharp.Symbols;
 
 namespace Aquila.CodeAnalysis
 {
-    internal partial class BoundFunctionPointerInvocation
-    {
-        public FunctionPointerTypeSymbol FunctionPointer
-        {
-            get
-            {
-                Debug.Assert(InvokedExpression.Type is FunctionPointerTypeSymbol);
-                return (FunctionPointerTypeSymbol)InvokedExpression.Type;
-            }
-        }
-    }
+    // internal partial class BoundFunctionPointerInvocation
+    // {
+    //     public FunctionPointerTypeSymbol FunctionPointer
+    //     {
+    //         get
+    //         {
+    //             Debug.Assert(InvokedExpression.Type is FunctionPointerTypeSymbol);
+    //             return (FunctionPointerTypeSymbol)InvokedExpression.Type;
+    //         }
+    //     }
+    // }
 }

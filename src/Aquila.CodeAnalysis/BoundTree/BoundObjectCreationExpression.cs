@@ -5,7 +5,6 @@
 using System.Collections.Immutable;
 using Aquila.CodeAnalysis.Symbols;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Symbols;
 
 namespace Aquila.CodeAnalysis
 {

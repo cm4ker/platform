@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
 
 namespace Aquila.CodeAnalysis
@@ -26,7 +28,7 @@ namespace Aquila.CodeAnalysis
             return ImmutableArray<BoundExpression>.Empty;
         }
 
-        ImmutableArray<BoundNode> IBoundInvalidNode.InvalidNodeChildren => CSharpOperationFactory.CreateInvalidChildrenFromArgumentsExpression(receiverOpt: null, Arguments, InitializerExpressionOpt);
+        ImmutableArray<BoundNode> IBoundInvalidNode.InvalidNodeChildren => throw new NotImplementedException();//CSharpOperationFactory.CreateInvalidChildrenFromArgumentsExpression(receiverOpt: null, Arguments, InitializerExpressionOpt);
     }
 
     internal sealed partial class BoundObjectInitializerMember : IBoundInvalidNode
@@ -36,7 +38,7 @@ namespace Aquila.CodeAnalysis
 
     internal sealed partial class BoundCollectionElementInitializer : IBoundInvalidNode
     {
-        ImmutableArray<BoundNode> IBoundInvalidNode.InvalidNodeChildren => CSharpOperationFactory.CreateInvalidChildrenFromArgumentsExpression(ImplicitReceiverOpt, Arguments);
+        ImmutableArray<BoundNode> IBoundInvalidNode.InvalidNodeChildren => throw new NotImplementedException();//CSharpOperationFactory.CreateInvalidChildrenFromArgumentsExpression(ImplicitReceiverOpt, Arguments);
     }
 
     internal sealed partial class BoundDeconstructionAssignmentOperator : BoundExpression
@@ -53,12 +55,12 @@ namespace Aquila.CodeAnalysis
 
     internal partial class BoundCall : IBoundInvalidNode
     {
-        ImmutableArray<BoundNode> IBoundInvalidNode.InvalidNodeChildren => CSharpOperationFactory.CreateInvalidChildrenFromArgumentsExpression(ReceiverOpt, Arguments);
+        ImmutableArray<BoundNode> IBoundInvalidNode.InvalidNodeChildren => throw new NotImplementedException();//CSharpOperationFactory.CreateInvalidChildrenFromArgumentsExpression(ReceiverOpt, Arguments);
     }
 
     internal partial class BoundIndexerAccess : IBoundInvalidNode
     {
-        ImmutableArray<BoundNode> IBoundInvalidNode.InvalidNodeChildren => CSharpOperationFactory.CreateInvalidChildrenFromArgumentsExpression(ReceiverOpt, Arguments);
+        ImmutableArray<BoundNode> IBoundInvalidNode.InvalidNodeChildren => throw new NotImplementedException();//CSharpOperationFactory.CreateInvalidChildrenFromArgumentsExpression(ReceiverOpt, Arguments);
     }
 
     internal partial class BoundDynamicIndexerAccess
@@ -182,7 +184,7 @@ namespace Aquila.CodeAnalysis
 
     internal partial class BoundFunctionPointerInvocation : IBoundInvalidNode
     {
-        ImmutableArray<BoundNode> IBoundInvalidNode.InvalidNodeChildren => CSharpOperationFactory.CreateInvalidChildrenFromArgumentsExpression(receiverOpt: this.InvokedExpression, Arguments);
+        ImmutableArray<BoundNode> IBoundInvalidNode.InvalidNodeChildren => throw new NotImplementedException();//CSharpOperationFactory.CreateInvalidChildrenFromArgumentsExpression(receiverOpt: this.InvokedExpression, Arguments);
         protected override ImmutableArray<BoundNode?> Children => StaticCast<BoundNode?>.From(((IBoundInvalidNode)this).InvalidNodeChildren);
     }
 }

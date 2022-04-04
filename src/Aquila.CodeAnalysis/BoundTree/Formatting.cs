@@ -40,21 +40,21 @@ namespace Aquila.CodeAnalysis
         }
     }
 
-    internal sealed partial class BoundLambda
-    {
-        public override object Display
-        {
-            get { return this.MessageID.Localize(); }
-        }
-    }
+    // internal sealed partial class BoundLambda
+    // {
+    //     public override object Display
+    //     {
+    //         get { return this.MessageID.Localize(); }
+    //     }
+    // }
 
-    internal sealed partial class UnboundLambda
-    {
-        public override object Display
-        {
-            get { return this.MessageID.Localize(); }
-        }
-    }
+    // internal sealed partial class UnboundLambda
+    // {
+    //     public override object Display
+    //     {
+    //         get { return this.MessageID.Localize(); }
+    //     }
+    // }
 
     internal sealed partial class BoundMethodGroup
     {

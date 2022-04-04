@@ -8,8 +8,8 @@ using System.Text;
 
 namespace Aquila.CodeAnalysis
 {
-    internal partial class BoundLocalFunctionStatement
-    {
-        public BoundBlock? Body { get => BlockBody ?? ExpressionBody; }
-    }
+    // internal partial class BoundLocalFunctionStatement
+    // {
+    //     public BoundBlock? Body { get => BlockBody ?? ExpressionBody; }
+    // }
 }

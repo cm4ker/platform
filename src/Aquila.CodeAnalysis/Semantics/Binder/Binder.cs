@@ -17,8 +17,10 @@ using Aquila.Syntax.Ast;
 using Aquila.Syntax.Declarations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
+using Roslyn.Utilities;
 using Xunit;
 using EnumerableExtensions = Roslyn.Utilities.EnumerableExtensions;
+using ExceptionUtilities = Aquila.CodeAnalysis.Utilities.ExceptionUtilities;
 using SpecialTypeExtensions = Aquila.CodeAnalysis.Symbols.SpecialTypeExtensions;
 
 namespace Aquila.CodeAnalysis.Semantics
@@ -1243,6 +1245,70 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
+        #endregion
+
+        internal NamedTypeSymbol CreateErrorType(string name = "")
+        {
+            return new ExtendedErrorTypeSymbol(this.Compilation, name, arity: 0, errorInfo: null, unreported: false);
+        }
+
+
+        #region Erorring
+
+          internal static void Error(BindingDiagnosticBag diagnostics, DiagnosticInfo info, SyntaxNode syntax)
+        {
+            diagnostics.Add(new CSDiagnostic(info, syntax.Location));
+        }
+
+        internal static void Error(BindingDiagnosticBag diagnostics, DiagnosticInfo info, Location location)
+        {
+            diagnostics.Add(new CSDiagnostic(info, location));
+        }
+
+        internal static void Error(BindingDiagnosticBag diagnostics, ErrorCode code, AquilaSyntaxNode syntax)
+        {
+            diagnostics.Add(new CSDiagnostic(new CSDiagnosticInfo(code), syntax.Location));
+        }
+
+        internal static void Error(BindingDiagnosticBag diagnostics, ErrorCode code, AquilaSyntaxNode syntax, params object[] args)
+        {
+            diagnostics.Add(new CSDiagnostic(new CSDiagnosticInfo(code, args), syntax.Location));
+        }
+
+        internal static void Error(BindingDiagnosticBag diagnostics, ErrorCode code, SyntaxToken token)
+        {
+            diagnostics.Add(new CSDiagnostic(new CSDiagnosticInfo(code), token.GetLocation()));
+        }
+
+        internal static void Error(BindingDiagnosticBag diagnostics, ErrorCode code, SyntaxToken token, params object[] args)
+        {
+            diagnostics.Add(new CSDiagnostic(new CSDiagnosticInfo(code, args), token.GetLocation()));
+        }
+
+        internal static void Error(BindingDiagnosticBag diagnostics, ErrorCode code, SyntaxNodeOrToken syntax)
+        {
+            var location = syntax.GetLocation();
+            RoslynDebug.Assert(location is object);
+            Error(diagnostics, code, location);
+        }
+
+        internal static void Error(BindingDiagnosticBag diagnostics, ErrorCode code, SyntaxNodeOrToken syntax, params object[] args)
+        {
+            var location = syntax.GetLocation();
+            RoslynDebug.Assert(location is object);
+            Error(diagnostics, code, location, args);
+        }
+
+        internal static void Error(BindingDiagnosticBag diagnostics, ErrorCode code, Location location)
+        {
+            diagnostics.Add(new CSDiagnostic(new CSDiagnosticInfo(code), location));
+        }
+
+        internal static void Error(BindingDiagnosticBag diagnostics, ErrorCode code, Location location, params object[] args)
+        {
+            diagnostics.Add(new CSDiagnostic(new CSDiagnosticInfo(code, args), location));
+        }
+        
         #endregion
     }
 }

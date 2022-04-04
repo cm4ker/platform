@@ -121,8 +121,8 @@ namespace Aquila.CodeAnalysis
                     return VisitFieldAccess(node as BoundFieldAccess, arg);
                 case BoundKind.PropertyAccess:
                     return VisitPropertyAccess(node as BoundPropertyAccess, arg);
-                case BoundKind.Lambda:
-                    return VisitLambda(node as BoundLambda, arg);
+                // case BoundKind.Lambda:
+                //     return VisitLambda(node as BoundLambda, arg);
                 case BoundKind.NameOfOperator:
                     return VisitNameOfOperator(node as BoundNameOfOperator, arg);
             }

@@ -2,10 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Microsoft.CodeAnalysis.CSharp.Symbols;
+using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Symbols;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
 
 namespace Aquila.CodeAnalysis
@@ -39,7 +42,8 @@ namespace Aquila.CodeAnalysis
 
         public static bool IsLiteralNull(this BoundExpression node)
         {
-            return node is { Kind: BoundKind.Literal, ConstantValue: { Discriminator: ConstantValueTypeDiscriminator.Null } };
+            return node is
+                { Kind: BoundKind.Literal, ConstantValue: { Discriminator: ConstantValueTypeDiscriminator.Null } };
         }
 
         public static bool IsLiteralDefault(this BoundExpression node)
@@ -91,14 +95,14 @@ namespace Aquila.CodeAnalysis
             return type is { } && type.IsDynamic();
         }
 
-        public static NamedTypeSymbol? GetInferredDelegateType(this BoundExpression expr, ref CompoundUseSiteInfo<AssemblySymbol> useSiteInfo)
-        {
-            Debug.Assert(expr.Kind is BoundKind.MethodGroup or BoundKind.UnboundLambda);
-
-            var delegateType = expr.GetFunctionType()?.GetInternalDelegateType();
-            delegateType?.AddUseSiteInfo(ref useSiteInfo);
-            return delegateType;
-        }
+        // public static NamedTypeSymbol? GetInferredDelegateType(this BoundExpression expr, ref CompoundUseSiteInfo<AssemblySymbol> useSiteInfo)
+        // {
+        //     Debug.Assert(expr.Kind is BoundKind.MethodGroup or BoundKind.UnboundLambda);
+        //
+        //     var delegateType = expr.GetFunctionType()?.GetInternalDelegateType();
+        //     delegateType?.AddUseSiteInfo(ref useSiteInfo);
+        //     return delegateType;
+        // }
 
         public static TypeSymbol? GetTypeOrFunctionType(this BoundExpression expr)
         {
@@ -106,6 +110,7 @@ namespace Aquila.CodeAnalysis
             {
                 return type;
             }
+
             return expr.GetFunctionType();
         }
 
@@ -114,7 +119,7 @@ namespace Aquila.CodeAnalysis
             var lazyType = expr switch
             {
                 BoundMethodGroup methodGroup => methodGroup.FunctionType,
-                UnboundLambda unboundLambda => unboundLambda.FunctionType,
+                //UnboundLambda unboundLambda => unboundLambda.FunctionType,
                 _ => null
             };
             return lazyType?.GetValue();
@@ -147,7 +152,8 @@ namespace Aquila.CodeAnalysis
             }
         }
 
-        public static void GetExpressionSymbols(this BoundExpression node, ArrayBuilder<Symbol> symbols, BoundNode parent, Binder binder)
+        public static void GetExpressionSymbols(this BoundExpression node, ArrayBuilder<Symbol> symbols,
+            BoundNode parent, Binder binder)
         {
             switch (node.Kind)
             {
@@ -161,8 +167,10 @@ namespace Aquila.CodeAnalysis
                     }
                     else
                     {
-                        symbols.AddRange(CSharpSemanticModel.GetReducedAndFilteredMethodGroupSymbols(binder, (BoundMethodGroup)node));
+                        throw new NotImplementedException();
+                        //symbols.AddRange(CSharpSemanticModel.GetReducedAndFilteredMethodGroupSymbols(binder, (BoundMethodGroup)node));
                     }
+
                     break;
 
                 case BoundKind.BadExpression:
@@ -171,6 +179,7 @@ namespace Aquila.CodeAnalysis
                         if (s is { })
                             symbols.Add(s);
                     }
+
                     break;
 
                 case BoundKind.DelegateCreationExpression:
@@ -180,6 +189,7 @@ namespace Aquila.CodeAnalysis
                     {
                         symbols.Add(ctor);
                     }
+
                     break;
 
                 case BoundKind.Call:
@@ -193,6 +203,7 @@ namespace Aquila.CodeAnalysis
                     {
                         goto default;
                     }
+
                     symbols.AddRange(originalMethods);
                     break;
 
@@ -205,6 +216,7 @@ namespace Aquila.CodeAnalysis
                     {
                         goto default;
                     }
+
                     symbols.AddRange(originalIndexers);
                     break;
 
@@ -214,6 +226,7 @@ namespace Aquila.CodeAnalysis
                     {
                         symbols.Add(symbol);
                     }
+
                     break;
             }
         }
@@ -232,19 +245,19 @@ namespace Aquila.CodeAnalysis
             }
         }
 
-        internal static bool IsExpressionOfComImportType([NotNullWhen(true)] this BoundExpression? expressionOpt)
-        {
-            // NOTE: Dev11 also returns false if expressionOpt is a TypeExpression.  Unfortunately,
-            // that makes it impossible to handle TypeOrValueExpression in a consistent way, since
-            // we don't know whether it's a type until after overload resolution and we can't do
-            // overload resolution without knowing whether 'ref' can be omitted (which is what this
-            // method is used to determine).  Since there is no intuitive reason to disallow
-            // omitting 'ref' for static methods, we'll drop the restriction on TypeExpression.
-            if (expressionOpt == null)
-                return false;
-
-            TypeSymbol? receiverType = expressionOpt.Type;
-            return receiverType is NamedTypeSymbol { Kind: SymbolKind.NamedType, IsComImport: true };
-        }
+        // internal static bool IsExpressionOfComImportType([NotNullWhen(true)] this BoundExpression? expressionOpt)
+        // {
+        //     // NOTE: Dev11 also returns false if expressionOpt is a TypeExpression.  Unfortunately,
+        //     // that makes it impossible to handle TypeOrValueExpression in a consistent way, since
+        //     // we don't know whether it's a type until after overload resolution and we can't do
+        //     // overload resolution without knowing whether 'ref' can be omitted (which is what this
+        //     // method is used to determine).  Since there is no intuitive reason to disallow
+        //     // omitting 'ref' for static methods, we'll drop the restriction on TypeExpression.
+        //     if (expressionOpt == null)
+        //         return false;
+        //
+        //     TypeSymbol? receiverType = expressionOpt.Type;
+        //     return receiverType is NamedTypeSymbol { Kind: SymbolKind.NamedType, IsComImport: true };
+        // }
     }
 }

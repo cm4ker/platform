@@ -4,10 +4,8 @@
 
 using System.Collections.Immutable;
 using System.Diagnostics;
-using Microsoft.CodeAnalysis.CSharp.Symbols;
 using Roslyn.Utilities;
 using System;
-using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols;
 using Microsoft.CodeAnalysis;
 
@@ -83,27 +81,18 @@ namespace Aquila.CodeAnalysis
 
         public virtual ConstantValue? ConstantValue
         {
-            get
-            {
-                return null;
-            }
+            get { return null; }
         }
 
         public virtual Symbol? ExpressionSymbol
         {
-            get
-            {
-                return null;
-            }
+            get { return null; }
         }
 
         // Indicates any problems with lookup/symbol binding that should be reported via GetSemanticInfo.
         public virtual LookupResultKind ResultKind
         {
-            get
-            {
-                return LookupResultKind.Viable;
-            }
+            get { return LookupResultKind.Viable; }
         }
 
         /// <summary>
@@ -112,10 +101,7 @@ namespace Aquila.CodeAnalysis
         /// </summary>
         public virtual bool SuppressVirtualCalls
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public new NullabilityInfo TopLevelNullability
@@ -124,7 +110,7 @@ namespace Aquila.CodeAnalysis
             set => base.TopLevelNullability = value;
         }
 
-        public CodeAnalysis.ITypeSymbol? GetPublicTypeSymbol()
+        public ITypeSymbol? GetPublicTypeSymbol()
             => Type?.GetITypeSymbol(TopLevelNullability.FlowState.ToAnnotation());
     }
 
@@ -141,10 +127,7 @@ namespace Aquila.CodeAnalysis
 
         public override Symbol? ExpressionSymbol
         {
-            get
-            {
-                return Expression.ExpressionSymbol;
-            }
+            get { return Expression.ExpressionSymbol; }
         }
     }
 
@@ -152,10 +135,7 @@ namespace Aquila.CodeAnalysis
     {
         public override Symbol ExpressionSymbol
         {
-            get
-            {
-                return this.Method;
-            }
+            get { return this.Method; }
         }
     }
 
@@ -163,7 +143,7 @@ namespace Aquila.CodeAnalysis
     {
         public override Symbol ExpressionSymbol
         {
-            get { return this.AliasOpt ?? (Symbol)this.Type; }
+            get { return (Symbol)this.Type; }
         }
 
         public override LookupResultKind ResultKind
@@ -183,7 +163,7 @@ namespace Aquila.CodeAnalysis
     {
         public override Symbol ExpressionSymbol
         {
-            get { return this.AliasOpt ?? (Symbol)this.NamespaceSymbol; }
+            get { return (Symbol)this.NamespaceSymbol; }
         }
     }
 
@@ -199,7 +179,8 @@ namespace Aquila.CodeAnalysis
             get { return this.LocalSymbol; }
         }
 
-        public BoundLocal(SyntaxNode syntax, LocalSymbol localSymbol, ConstantValue? constantValueOpt, TypeSymbol type, bool hasErrors = false)
+        public BoundLocal(SyntaxNode syntax, LocalSymbol localSymbol, ConstantValue? constantValueOpt, TypeSymbol type,
+            bool hasErrors = false)
             : this(syntax, localSymbol, BoundLocalDeclarationKind.None, constantValueOpt, false, type, hasErrors)
         {
         }
@@ -242,7 +223,9 @@ namespace Aquila.CodeAnalysis
         {
             get
             {
-                return !this.OriginalIndexersOpt.IsDefault ? LookupResultKind.OverloadResolutionFailure : base.ResultKind;
+                return !this.OriginalIndexersOpt.IsDefault
+                    ? LookupResultKind.OverloadResolutionFailure
+                    : base.ResultKind;
             }
         }
     }
@@ -293,7 +276,8 @@ namespace Aquila.CodeAnalysis
 
         internal InterpolatedStringHandlerData? InterpolatedStringHandlerData => Data?.InterpolatedStringHandlerData;
 
-        internal ImmutableArray<MethodSymbol> OriginalUserDefinedOperatorsOpt => Data?.OriginalUserDefinedOperatorsOpt ?? default(ImmutableArray<MethodSymbol>);
+        internal ImmutableArray<MethodSymbol> OriginalUserDefinedOperatorsOpt =>
+            Data?.OriginalUserDefinedOperatorsOpt ?? default(ImmutableArray<MethodSymbol>);
     }
 
     internal partial class BoundInterpolatedStringBase
@@ -383,7 +367,9 @@ namespace Aquila.CodeAnalysis
 
         public BoundConversion UpdateOperand(BoundExpression operand)
         {
-            return this.Update(operand: operand, this.Conversion, this.IsBaseConversion, this.Checked, this.ExplicitCastInCode, this.ConstantValue, this.ConversionGroupOpt, this.OriginalUserDefinedConversionsOpt, this.Type);
+            return this.Update(operand: operand, this.Conversion, this.IsBaseConversion, this.Checked,
+                this.ExplicitCastInCode, this.ConstantValue, this.ConversionGroupOpt,
+                this.OriginalUserDefinedConversionsOpt, this.Type);
         }
 
         /// <summary>
@@ -468,13 +454,13 @@ namespace Aquila.CodeAnalysis
         }
     }
 
-    internal partial class BoundLambda
-    {
-        public override Symbol ExpressionSymbol
-        {
-            get { return this.Symbol; }
-        }
-    }
+    // internal partial class BoundLambda
+    // {
+    //     public override Symbol ExpressionSymbol
+    //     {
+    //         get { return this.Symbol; }
+    //     }
+    // }
 
     internal partial class BoundAttribute
     {
@@ -496,10 +482,7 @@ namespace Aquila.CodeAnalysis
     {
         public override ConstantValue? ConstantValue
         {
-            get
-            {
-                return this.ConstantValueOpt;
-            }
+            get { return this.ConstantValueOpt; }
         }
 
         public bool IsDynamic
@@ -508,7 +491,8 @@ namespace Aquila.CodeAnalysis
             {
                 // IsTrue dynamic operator is invoked at runtime if the condition is of the type dynamic.
                 // The type of the operator itself is Boolean, so we need to check its kind.
-                return this.Condition.Kind == BoundKind.UnaryOperator && ((BoundUnaryOperator)this.Condition).OperatorKind.IsDynamic();
+                return this.Condition.Kind == BoundKind.UnaryOperator &&
+                       ((BoundUnaryOperator)this.Condition).OperatorKind.IsDynamic();
             }
         }
     }
@@ -517,10 +501,7 @@ namespace Aquila.CodeAnalysis
     {
         public override ConstantValue? ConstantValue
         {
-            get
-            {
-                return this.ConstantValueOpt;
-            }
+            get { return this.ConstantValueOpt; }
         }
     }
 
@@ -528,21 +509,7 @@ namespace Aquila.CodeAnalysis
     {
         public override ConstantValue? ConstantValue
         {
-            get
-            {
-                return this.ConstantValueOpt;
-            }
-        }
-    }
-
-    internal partial class BoundRangeVariable
-    {
-        public override Symbol ExpressionSymbol
-        {
-            get
-            {
-                return this.RangeVariableSymbol;
-            }
+            get { return this.ConstantValueOpt; }
         }
     }
 
@@ -550,10 +517,7 @@ namespace Aquila.CodeAnalysis
     {
         public override Symbol ExpressionSymbol
         {
-            get
-            {
-                return this.Label;
-            }
+            get { return this.Label; }
         }
     }
 
@@ -561,10 +525,7 @@ namespace Aquila.CodeAnalysis
     {
         public override Symbol? ExpressionSymbol
         {
-            get
-            {
-                return this.MemberSymbol;
-            }
+            get { return this.MemberSymbol; }
         }
     }
 
@@ -572,10 +533,7 @@ namespace Aquila.CodeAnalysis
     {
         public override Symbol ExpressionSymbol
         {
-            get
-            {
-                return this.AddMethod;
-            }
+            get { return this.AddMethod; }
         }
     }
 
@@ -591,10 +549,7 @@ namespace Aquila.CodeAnalysis
     {
         public override ConstantValue ConstantValue
         {
-            get
-            {
-                return this.ConstantValueOpt;
-            }
+            get { return this.ConstantValueOpt; }
         }
     }
 
@@ -610,13 +565,19 @@ namespace Aquila.CodeAnalysis
         public BoundExpression TypeExpression { get; }
         public BindingDiagnosticBag TypeDiagnostics { get; }
 
-        public BoundTypeOrValueData(Symbol valueSymbol, BoundExpression valueExpression, BindingDiagnosticBag valueDiagnostics, BoundExpression typeExpression, BindingDiagnosticBag typeDiagnostics)
+        public BoundTypeOrValueData(Symbol valueSymbol, BoundExpression valueExpression,
+            BindingDiagnosticBag valueDiagnostics, BoundExpression typeExpression, BindingDiagnosticBag typeDiagnostics)
         {
-            Debug.Assert(valueSymbol != null, "Field 'valueSymbol' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert(valueExpression != null, "Field 'valueExpression' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert(valueDiagnostics != null, "Field 'valueDiagnostics' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert(typeExpression != null, "Field 'typeExpression' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert(typeDiagnostics != null, "Field 'typeDiagnostics' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
+            Debug.Assert(valueSymbol != null,
+                "Field 'valueSymbol' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
+            Debug.Assert(valueExpression != null,
+                "Field 'valueExpression' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
+            Debug.Assert(valueDiagnostics != null,
+                "Field 'valueDiagnostics' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
+            Debug.Assert(typeExpression != null,
+                "Field 'typeExpression' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
+            Debug.Assert(typeDiagnostics != null,
+                "Field 'typeDiagnostics' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
 
             this.ValueSymbol = valueSymbol;
             this.ValueExpression = valueExpression;
@@ -630,10 +591,10 @@ namespace Aquila.CodeAnalysis
         public static bool operator ==(BoundTypeOrValueData a, BoundTypeOrValueData b)
         {
             return (object)a.ValueSymbol == (object)b.ValueSymbol &&
-                (object)a.ValueExpression == (object)b.ValueExpression &&
-                (object)a.ValueDiagnostics == (object)b.ValueDiagnostics &&
-                (object)a.TypeExpression == (object)b.TypeExpression &&
-                (object)a.TypeDiagnostics == (object)b.TypeDiagnostics;
+                   (object)a.ValueExpression == (object)b.ValueExpression &&
+                   (object)a.ValueDiagnostics == (object)b.ValueDiagnostics &&
+                   (object)a.TypeExpression == (object)b.TypeExpression &&
+                   (object)a.TypeDiagnostics == (object)b.TypeDiagnostics;
         }
 
         public static bool operator !=(BoundTypeOrValueData a, BoundTypeOrValueData b)
@@ -650,8 +611,8 @@ namespace Aquila.CodeAnalysis
         {
             return Hash.Combine(ValueSymbol.GetHashCode(),
                 Hash.Combine(ValueExpression.GetHashCode(),
-                Hash.Combine(ValueDiagnostics.GetHashCode(),
-                Hash.Combine(TypeExpression.GetHashCode(), TypeDiagnostics.GetHashCode()))));
+                    Hash.Combine(ValueDiagnostics.GetHashCode(),
+                        Hash.Combine(TypeExpression.GetHashCode(), TypeDiagnostics.GetHashCode()))));
         }
 
         bool System.IEquatable<BoundTypeOrValueData>.Equals(BoundTypeOrValueData b)

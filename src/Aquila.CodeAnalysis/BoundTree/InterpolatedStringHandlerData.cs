@@ -4,7 +4,8 @@
 
 using System.Collections.Immutable;
 using System.Diagnostics;
-using Microsoft.CodeAnalysis.CSharp.Symbols;
+using Aquila.CodeAnalysis.Symbols;
+using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis
 {

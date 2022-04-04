@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using Aquila.CodeAnalysis.Symbols;
 using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis

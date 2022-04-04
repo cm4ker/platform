@@ -174,8 +174,14 @@ namespace Aquila.CodeAnalysis.Symbols
         /// If this field represents a tuple element, returns a corresponding default element
         ///  field. Otherwise returns null.
         /// </summary>
-        public virtual IFieldSymbol CorrespondingTupleField => null;
+        public virtual FieldSymbol CorrespondingTupleField => null;
 
+        /// <summary>
+        /// If this field represents a tuple element, returns a corresponding default element
+        ///  field. Otherwise returns null.
+        /// </summary>
+        IFieldSymbol IFieldSymbol.CorrespondingTupleField => CorrespondingTupleField;
+        
         public bool IsExplicitlyNamedTupleElement { get; }
 
         /// <summary>
@@ -315,7 +321,7 @@ namespace Aquila.CodeAnalysis.Symbols
         
         bool IFieldSymbol.IsFixedSizeBuffer => false;
 
-        NullableAnnotation IFieldSymbol.NullableAnnotation => NullableAnnotation.None;
+        Microsoft.CodeAnalysis.NullableAnnotation IFieldSymbol.NullableAnnotation => Microsoft.CodeAnalysis.NullableAnnotation.None;
 
         #endregion
 

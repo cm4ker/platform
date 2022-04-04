@@ -165,10 +165,10 @@ namespace Aquila.CodeAnalysis.Symbols
             return ((NamedTypeSymbol)type).TypeArgumentsNoUseSiteDiagnostics[0];
         }
 
-        //public static TypeSymbol StrippedType(this TypeSymbol type)
-        //{
-        //    return type.IsNullableType() ? type.GetNullableUnderlyingType() : type;
-        //}
+        public static TypeSymbol StrippedType(this TypeSymbol type)
+        {
+            return type.IsNullableType() ? type.GetNullableUnderlyingType() : type;
+        }
 
         //public static TypeSymbol EnumUnderlyingType(this TypeSymbol type)
         //{

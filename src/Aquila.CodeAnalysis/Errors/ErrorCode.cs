@@ -162,6 +162,9 @@ namespace Aquila.CodeAnalysis.Errors
         ERR_PositionalArgAfterUnpacking, // Cannot use positional argument after argument unpacking
 
         ERR_InvalidMetadataConsistance,
+        ERR_DiscardTypeInferenceFailed,
+        ERR_TypeInferenceFailedForImplicitlyTypedDeconstructionVariable,
+        ERR_TypeInferenceFailedForImplicitlyTypedOutVariable,
         
         
         ERR_NonInvocableMemberCalled,

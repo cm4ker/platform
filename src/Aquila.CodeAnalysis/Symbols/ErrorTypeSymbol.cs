@@ -18,6 +18,12 @@ namespace Aquila.CodeAnalysis.Symbols
     {
         internal static readonly ErrorTypeSymbol UnknownResultType = new UnsupportedMetadataTypeSymbol();
 
+        /// <summary>
+        /// Summary of the reason why the type is bad.
+        /// </summary>
+        internal virtual LookupResultKind ResultKind { get { return LookupResultKind.Empty; } }
+
+        
         public abstract CandidateReason CandidateReason { get; }
 
         public override string Name => string.Empty;

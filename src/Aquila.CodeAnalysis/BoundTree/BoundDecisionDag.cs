@@ -5,11 +5,10 @@
 #nullable disable
 
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Linq;
-using Microsoft.CodeAnalysis.CSharp.Symbols;
+using Aquila.CodeAnalysis.Symbols;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
 using Roslyn.Utilities;
 
@@ -186,11 +185,13 @@ namespace Aquila.CodeAnalysis
                         case BoundDagTypeTest d:
                             return inputConstant.IsNull ? (bool?)false : null;
                         case BoundDagRelationalTest d:
-                            var f = ValueSetFactory.ForType(input.Type);
-                            if (f is null) return null;
-                            // TODO: When ValueSetFactory has a method for comparing two values, use it.
-                            var set = f.Related(d.Relation.Operator(), d.Value);
-                            return set.Any(BinaryOperatorKind.Equal, inputConstant);
+                            throw new NotImplementedException();
+                            
+                            // var f = ValueSetFactory.ForType(input.Type);
+                            // if (f is null) return null;
+                            // // TODO: When ValueSetFactory has a method for comparing two values, use it.
+                            // var set = f.Related(d.Relation.Operator(), d.Value);
+                            // return set.Any(BinaryOperatorKind.Equal, inputConstant);
                         default:
                             throw ExceptionUtilities.UnexpectedValue(choice);
                     }

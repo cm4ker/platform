@@ -5,7 +5,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using Microsoft.CodeAnalysis.CSharp.Symbols;
+using Aquila.CodeAnalysis.Symbols;
+using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis
 {
@@ -70,7 +71,7 @@ namespace Aquila.CodeAnalysis
                 ConversionForBool = conversionForBool;
                 BoolOperator = boolOperator;
 
-                Debug.Assert(Kind.IsUserDefined() == (MethodSymbolOpt is { }));
+                //Debug.Assert(Kind.IsUserDefined() == (MethodSymbolOpt is { }));
             }
 
             internal override TupleBinaryOperatorInfoKind InfoKind

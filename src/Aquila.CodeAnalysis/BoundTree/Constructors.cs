@@ -650,12 +650,6 @@ namespace Aquila.CodeAnalysis
 
     internal partial class BoundBlock
     {
-        public BoundBlock(SyntaxNode syntax, ImmutableArray<LocalSymbol> locals,
-            ImmutableArray<BoundStatement> statements, bool hasErrors = false) : this(syntax, locals,
-            ImmutableArray<LocalFunctionSymbol>.Empty, statements, hasErrors)
-        {
-        }
-
         public static BoundBlock SynthesizedNoLocals(SyntaxNode syntax, BoundStatement statement)
         {
             return new BoundBlock(syntax, ImmutableArray<LocalSymbol>.Empty, ImmutableArray.Create(statement))
@@ -777,7 +771,7 @@ namespace Aquila.CodeAnalysis
     internal partial class BoundIncrementOperator
     {
         public BoundIncrementOperator(
-            CSharpSyntaxNode syntax,
+            AquilaSyntaxNode syntax,
             UnaryOperatorKind operatorKind,
             BoundExpression operand,
             MethodSymbol? methodOpt,

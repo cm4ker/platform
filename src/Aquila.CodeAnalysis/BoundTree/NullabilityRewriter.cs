@@ -4,7 +4,8 @@
 
 using System.Collections.Immutable;
 using System.Diagnostics;
-using Microsoft.CodeAnalysis.CSharp.Symbols;
+using Aquila.CodeAnalysis.Symbols;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
 using Roslyn.Utilities;
 
@@ -22,7 +23,8 @@ namespace Aquila.CodeAnalysis
             return VisitBinaryOperatorBase(node);
         }
 
-        public override BoundNode? VisitUserDefinedConditionalLogicalOperator(BoundUserDefinedConditionalLogicalOperator node)
+        public override BoundNode? VisitUserDefinedConditionalLogicalOperator(
+            BoundUserDefinedConditionalLogicalOperator node)
         {
             return VisitBinaryOperatorBase(node);
         }
@@ -38,8 +40,7 @@ namespace Aquila.CodeAnalysis
             {
                 stack.Push(currentBinary);
                 currentBinary = currentBinary.Left as BoundBinaryOperatorBase;
-            }
-            while (currentBinary is not null);
+            } while (currentBinary is not null);
 
             Debug.Assert(stack.Count > 0);
             var leftChild = (BoundExpression)Visit(stack.Peek().Left);
@@ -48,7 +49,8 @@ namespace Aquila.CodeAnalysis
             {
                 currentBinary = stack.Pop();
 
-                bool foundInfo = _updatedNullabilities.TryGetValue(currentBinary, out (NullabilityInfo Info, TypeSymbol? Type) infoAndType);
+                bool foundInfo = _updatedNullabilities.TryGetValue(currentBinary,
+                    out (NullabilityInfo Info, TypeSymbol? Type) infoAndType);
                 var right = (BoundExpression)Visit(currentBinary.Right);
                 var type = foundInfo ? infoAndType.Type : currentBinary.Type;
 
@@ -62,7 +64,10 @@ namespace Aquila.CodeAnalysis
                         right,
                         type!),
                     // https://github.com/dotnet/roslyn/issues/35031: We'll need to update logical.LogicalOperator
-                    BoundUserDefinedConditionalLogicalOperator logical => logical.Update(logical.OperatorKind, logical.LogicalOperator, logical.TrueOperator, logical.FalseOperator, logical.ConstrainedToTypeOpt, logical.ResultKind, logical.OriginalUserDefinedOperatorsOpt, leftChild, right, type!),
+                    BoundUserDefinedConditionalLogicalOperator logical => logical.Update(logical.OperatorKind,
+                        logical.LogicalOperator, logical.TrueOperator, logical.FalseOperator,
+                        logical.ConstrainedToTypeOpt, logical.ResultKind, logical.OriginalUserDefinedOperatorsOpt,
+                        leftChild, right, type!),
                     _ => throw ExceptionUtilities.UnexpectedValue(currentBinary.Kind),
                 };
 
@@ -72,8 +77,7 @@ namespace Aquila.CodeAnalysis
                 }
 
                 leftChild = currentBinary;
-            }
-            while (stack.Count > 0);
+            } while (stack.Count > 0);
 
             Debug.Assert(currentBinary != null);
             return currentBinary!;
@@ -88,12 +92,13 @@ namespace Aquila.CodeAnalysis
             {
                 updatedSymbol = sym;
             }
+
             RoslynDebug.Assert(updatedSymbol is object);
 
             switch (updatedSymbol)
             {
-                case LambdaSymbol lambda:
-                    return (T)remapLambda((BoundLambda)expr, lambda);
+                // case LambdaSymbol lambda:
+                //     return (T)remapLambda((BoundLambda)expr, lambda);
 
                 case SourceLocalSymbol local:
                     return (T)remapLocal(local);
@@ -103,42 +108,43 @@ namespace Aquila.CodeAnalysis
                     {
                         return (T)updatedParam;
                     }
+
                     break;
             }
 
             return (T)updatedSymbol;
 
-            Symbol remapLambda(BoundLambda boundLambda, LambdaSymbol lambda)
-            {
-                var updatedDelegateType = _snapshotManager?.GetUpdatedDelegateTypeForLambda(lambda);
-
-                if (!_remappedSymbols.TryGetValue(lambda.ContainingSymbol, out Symbol? updatedContaining) && updatedDelegateType is null)
-                {
-                    return lambda;
-                }
-
-                LambdaSymbol updatedLambda;
-                if (updatedDelegateType is null)
-                {
-                    Debug.Assert(updatedContaining is object);
-                    updatedLambda = boundLambda.CreateLambdaSymbol(updatedContaining, lambda.ReturnTypeWithAnnotations, lambda.ParameterTypesWithAnnotations, lambda.ParameterRefKinds, lambda.RefKind);
-                }
-                else
-                {
-                    Debug.Assert(updatedDelegateType is object);
-                    updatedLambda = boundLambda.CreateLambdaSymbol(updatedDelegateType, updatedContaining ?? lambda.ContainingSymbol);
-                }
-
-                _remappedSymbols.Add(lambda, updatedLambda);
-
-                Debug.Assert(lambda.ParameterCount == updatedLambda.ParameterCount);
-                for (int i = 0; i < lambda.ParameterCount; i++)
-                {
-                    _remappedSymbols.Add(lambda.Parameters[i], updatedLambda.Parameters[i]);
-                }
-
-                return updatedLambda;
-            }
+            // Symbol remapLambda(BoundLambda boundLambda, LambdaSymbol lambda)
+            // {
+            //     var updatedDelegateType = _snapshotManager?.GetUpdatedDelegateTypeForLambda(lambda);
+            //
+            //     if (!_remappedSymbols.TryGetValue(lambda.ContainingSymbol, out Symbol? updatedContaining) && updatedDelegateType is null)
+            //     {
+            //         return lambda;
+            //     }
+            //
+            //     LambdaSymbol updatedLambda;
+            //     if (updatedDelegateType is null)
+            //     {
+            //         Debug.Assert(updatedContaining is object);
+            //         updatedLambda = boundLambda.CreateLambdaSymbol(updatedContaining, lambda.ReturnTypeWithAnnotations, lambda.ParameterTypesWithAnnotations, lambda.ParameterRefKinds, lambda.RefKind);
+            //     }
+            //     else
+            //     {
+            //         Debug.Assert(updatedDelegateType is object);
+            //         updatedLambda = boundLambda.CreateLambdaSymbol(updatedDelegateType, updatedContaining ?? lambda.ContainingSymbol);
+            //     }
+            //
+            //     _remappedSymbols.Add(lambda, updatedLambda);
+            //
+            //     Debug.Assert(lambda.ParameterCount == updatedLambda.ParameterCount);
+            //     for (int i = 0; i < lambda.ParameterCount; i++)
+            //     {
+            //         _remappedSymbols.Add(lambda.Parameters[i], updatedLambda.Parameters[i]);
+            //     }
+            //
+            //     return updatedLambda;
+            // }
 
             Symbol remapLocal(SourceLocalSymbol local)
             {
@@ -149,15 +155,16 @@ namespace Aquila.CodeAnalysis
 
                 var updatedType = _snapshotManager?.GetUpdatedTypeForLocalSymbol(local);
 
-                if (!_remappedSymbols.TryGetValue(local.ContainingSymbol, out Symbol? updatedContaining) && !updatedType.HasValue)
+                if (!_remappedSymbols.TryGetValue(local.ContainingSymbol, out Symbol? updatedContaining) &&
+                    !updatedType.HasValue)
                 {
                     // Map the local to itself so we don't have to search again in the future
                     _remappedSymbols.Add(local, local);
                     return local;
                 }
 
-                updatedLocal = new UpdatedContainingSymbolAndNullableAnnotationLocal(local, updatedContaining ?? local.ContainingSymbol, updatedType ?? local.TypeWithAnnotations);
-                _remappedSymbols.Add(local, updatedLocal);
+                // updatedLocal = new UpdatedContainingSymbolAndNullableAnnotationLocal(local, updatedContaining ?? local.ContainingSymbol, updatedType ?? local.TypeWithAnnotations);
+                // _remappedSymbols.Add(local, updatedLocal);
                 return updatedLocal;
             }
         }
