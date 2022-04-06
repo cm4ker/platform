@@ -5,7 +5,7 @@ using Aquila.QueryBuilder.Model;
 
 namespace Aquila.QueryBuilder.Visitor
 {
-    public class MsSqlBuilder : QueryVisitorBase<string>
+    public class PostgresBuilder : QueryVisitorBase<string>
     {
         public override string VisitQueries(Queries node)
         {
@@ -494,12 +494,12 @@ namespace Aquila.QueryBuilder.Visitor
 
         public override string VisitRenameTableNode(RenameTableNode node)
         {
-            return string.Format("EXEC sp_rename '{0}', '{1}'", node.From.Accept(this), node.To.Accept(this));
+            return string.Format("ALTER TABLE '{0}' RENAME TO '{1}'", node.From.Accept(this), node.To.Accept(this));
         }
 
         public override string VisitRenameColumnNode(RenameColumnNode node)
         {
-            return string.Format("EXEC sp_rename '{0}.{1}', '{2}', 'COLUMN'", node.Table.Accept(this),
+            return string.Format("ALTER TABLE '{0}' RENAME COLUMN {1} TO {2}", node.Table.Accept(this),
                 node.From.Accept(this), node.To.Accept(this));
         }
 

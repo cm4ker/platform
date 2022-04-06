@@ -1434,9 +1434,9 @@ namespace Aquila.QueryBuilder.Model
 
 namespace Aquila.QueryBuilder.Model
 {
-    public partial class Querys : SSyntaxNode
+    public partial class Queries : SSyntaxNode
     {
-        public Querys(): base()
+        public Queries(): base()
         {
             QueryList = new List<SSyntaxNode>();
         }
@@ -1446,7 +1446,7 @@ namespace Aquila.QueryBuilder.Model
         public override bool Equals(object obj)
         {
             if (!this.GetType().Equals(obj.GetType()))
-                return false; var  node  =  ( Querys ) obj ;  return  ( SequenceEqual ( this . QueryList ,  node . QueryList ) ) ; 
+                return false; var  node  =  ( Queries ) obj ;  return  ( SequenceEqual ( this . QueryList ,  node . QueryList ) ) ; 
         }
 
         public override int GetHashCode()
@@ -1456,7 +1456,7 @@ namespace Aquila.QueryBuilder.Model
 
         public override T Accept<T>(QueryVisitorBase<T> visitor)
         {
-            return visitor.VisitQuerys(this);
+            return visitor.VisitQueries(this);
         }
     }
 }
@@ -2752,7 +2752,7 @@ namespace Aquila.QueryBuilder.Visitor
             return DefaultVisit(node);
         }
 
-        public virtual T VisitQuerys(Querys node)
+        public virtual T VisitQueries(Queries node)
         {
             return DefaultVisit(node);
         }

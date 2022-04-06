@@ -303,7 +303,7 @@
 
     <!--DDL-->
 
-    <Syntax Name="Querys" Ddl="true">
+    <Syntax Name="Queries" Ddl="true">
         <Arguments>
             <List Name="QueryList" Type="SSyntaxNode"/>
         </Arguments>

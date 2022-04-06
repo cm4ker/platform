@@ -78,7 +78,7 @@ namespace Aquila.Runtime.Tests.DB
 
         public void Dispose()
         {
-            //_inmemDb?.Dispose();
+            _inmemDb?.Dispose();
         }
     }
 }
