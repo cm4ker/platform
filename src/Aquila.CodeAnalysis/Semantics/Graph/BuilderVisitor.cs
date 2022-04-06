@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Aquila.CodeAnalysis.Syntax;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
 namespace Aquila.CodeAnalysis.Semantics.Graph
@@ -524,7 +525,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public override void VisitVariableDecl(VariableDecl arg)
         {
-            BuildVariableDecl(SyntaxFactory.LocalDeclStmt(arg));
+            Add(_binder.BindVarDecl(arg));
         }
 
         public override void VisitLocalDeclStmt(LocalDeclStmt node)

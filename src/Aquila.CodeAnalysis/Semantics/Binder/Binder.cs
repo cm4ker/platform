@@ -217,9 +217,9 @@ namespace Aquila.CodeAnalysis.Semantics
             return new BoundEmptyStmt(stmt.Span);
         }
 
-        private BoundStatement BindVarDeclStmt(LocalDeclStmt varDecl)
+        internal BoundStatement BindVarDecl(VariableDecl varDecl)
         {
-            var decl1 = varDecl.Declaration;
+            var decl1 = varDecl;
 
             foreach (var decl in decl1.Variables)
             {
@@ -245,6 +245,11 @@ namespace Aquila.CodeAnalysis.Semantics
             }
 
             throw new Exception();
+        }
+
+        private BoundStatement BindVarDeclStmt(LocalDeclStmt varDecl)
+        {
+            return BindVarDecl(varDecl.Declaration);
         }
 
         public TypeSymbol BindType(TypeEx tref)
