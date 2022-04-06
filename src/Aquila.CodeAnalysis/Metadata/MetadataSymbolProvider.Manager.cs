@@ -93,7 +93,7 @@ internal partial class MetadataSymbolProvider
         #region Save()
 
         var saveMethod = _ps.SynthesizeMethod(managerType)
-            .SetName("save")
+            .SetName("save_dto")
             .SetAccess(Accessibility.Public)
             .SetIsStatic(true);
         {
@@ -328,10 +328,16 @@ internal partial class MetadataSymbolProvider
                             GetFromMetadata(table, GeneratedTypeKind.Collection | GeneratedTypeKind.Object);
                         var rowDtoType = GetFromMetadata(table, GeneratedTypeKind.Dto);
 
-                        var colCtor = objectCollectionType.Ctor(_ct.AqContext, _ct.List_arg1.Construct(rowDtoType),
+                        var colCtor = objectCollectionType.Ctor(_ct.AqContext,
+                            _ct.IEnumerable_arg1.Construct(rowDtoType),
                             dtoType);
                         ctxPS.EmitLoad(il);
-                        il.EmitNullConstant();
+                        
+                        il.EmitIntConstant(0);
+                        il.EmitOpCode(ILOpCode.Newarr);
+                        il.EmitSymbolToken(m, d, rowDtoType, null);
+                     
+                        
                         dtoLoc.EmitLoad(il);
 
                         il.EmitCall(m, d, ILOpCode.Newobj, colCtor);
@@ -376,7 +382,6 @@ internal partial class MetadataSymbolProvider
         }
 
         #endregion
-
 
         #region Readers
 
@@ -469,7 +474,6 @@ internal partial class MetadataSymbolProvider
         }
 
         #endregion
-
 
         #region Load dto
 
@@ -565,9 +569,161 @@ internal partial class MetadataSymbolProvider
 
         #endregion
 
+        #region load_dto_collection
 
+        MethodSymbol generateSymFor(SMTable table)
+        {
+            var loadDtoCollectionMethod = _ps.SynthesizeMethod(managerType);
+            {
+                var ctxParam =
+                    new SpecialParameterSymbol(createMethod, _ct.AqContext, SpecialParameterSymbol.ContextName, 0);
+                var idParam = new SynthesizedParameterSymbol(createMethod, _ct.Guid, 1, RefKind.None, "id");
+                var ctxPS = new ParamPlace(ctxParam);
+                var idPl = new ParamPlace(idParam);
+                var rowDtoType = GetFromMetadata(table, GeneratedTypeKind.Dto | GeneratedTypeKind.Collection);
+                
+                
+                var resultType = _ct.IEnumerable_arg1.Construct(rowDtoType);
+                
+                loadDtoCollectionMethod
+                    .SetName($"load_{table.FullName}")
+                    .SetAccess(Accessibility.Public)
+                    .SetIsStatic(true)
+                    .SetReturn(resultType)
+                    .SetParameters(ctxParam, idParam)
+                    .SetMethodBuilder((m, d) => il =>
+                    {
+                        var idClrProp =
+                            dtoType.GetMembers(md.IdProperty.Name).OfType<PropertySymbol>().FirstOrDefault() ??
+                            throw new Exception("The id property is null");
+
+                        var sym = _ct.AqParamValue.AsSZArray().Symbol;
+                        var resultArrSym = ((NamedTypeSymbol)_ct.ImmutableArray_arg1.Symbol).Construct(dtoType);
+                        var arrLoc = new LocalPlace(il.DefineSynthLocal(loadDtoCollectionMethod, "", sym));
+                        var resultArrLoc = new LocalPlace(il.DefineSynthLocal(loadDtoCollectionMethod, "", resultArrSym));
+
+                        il.EmitIntConstant(1);
+                        il.EmitOpCode(ILOpCode.Newarr);
+                        il.EmitSymbolToken(m, d, (TypeSymbol)_ct.AqParamValue, null);
+                        arrLoc.EmitStore(il);
+
+                        //Load values array
+                        arrLoc.EmitLoad(il);
+                        il.EmitIntConstant(0);
+                        il.EmitStringConstant(table.ParentProperty.Name);
+
+                        idPl.EmitLoad(il);
+                        il.EmitOpCode(ILOpCode.Box);
+                        il.EmitSymbolToken(m, d, idPl.Type, null);
+                        il.EmitCall(m, d, ILOpCode.Newobj, _ct.AqParamValue.Ctor(_ct.String, _ct.Object));
+                        il.EmitOpCode(ILOpCode.Stelem_ref);
+
+                        ctxPS.EmitLoad(il);
+                        il.EmitStringConstant(table.FullName);
+                        arrLoc.EmitLoad(il);
+                        //load return_void function
+
+                        var func = _ct.AqReadDelegate.Construct(rowDtoType);
+
+                        // Func<,>(object @object, IntPtr method)
+                        var func_ctor = func.InstanceConstructors.Single(m =>
+                            m.ParameterCount == 2 &&
+                            m.Parameters[0].Type.SpecialType == SpecialType.System_Object &&
+                            m.Parameters[1].Type.SpecialType == SpecialType.System_IntPtr
+                        );
+
+                        il.EmitNullConstant();
+                        il.EmitOpCode(ILOpCode.Ldftn);
+                        il.EmitSymbolToken(m, d, readers[$"reader_{table.FullName}"], null);
+                        il.EmitCall(m, d, ILOpCode.Newobj, func_ctor);
+
+                        var invokeSelect = _cm.Runtime.InvokeSelect.Symbol.Construct(rowDtoType);
+                        var get_item_sym = invokeSelect.ReturnType.GetMembers("get_Item").OfType<MethodSymbol>()
+                            .First<MethodSymbol>();
+
+                        il.EmitCall(m, d, ILOpCode.Call, invokeSelect);
+                        il.EmitRet(false);
+                    });
+            }
+
+            return loadDtoCollectionMethod;
+        }
+
+        foreach (var table in md.Tables)
+        {
+            managerType.AddMember(generateSymFor(table));
+        }
+
+        #endregion
+
+        #region load_object
+
+        var loadObjectMethod = _ps.SynthesizeMethod(managerType);
+        {
+            var ctxParam =
+                new SpecialParameterSymbol(loadObjectMethod, _ct.AqContext, SpecialParameterSymbol.ContextName, 0);
+            var idParam = new SynthesizedParameterSymbol(loadObjectMethod, _ct.Guid, 1, RefKind.None, "id");
+            var ctxPS = new ParamPlace(ctxParam);
+            var idPl = new ParamPlace(idParam);
+
+            loadObjectMethod
+                .SetName("load_object")
+                .SetAccess(Accessibility.Public)
+                .SetIsStatic(true)
+                .SetReturn(objectType)
+                .SetParameters(ctxParam, idParam)
+                .SetMethodBuilder((m, d) => il =>
+                {
+                    var dtoPlace = new LocalPlace(il.DefineSynthLocal(loadObjectMethod, "dto", dtoType));
+
+                    ctxPS.EmitLoad(il);
+                    idPl.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Call, loadDtoMethod);
+                    dtoPlace.EmitStore(il);
+
+
+                    List<IPlace> colPlaces = new List<IPlace>();
+                    
+                    
+                    foreach (var table in md.Tables)
+                    {
+                        var index = 0;
+                        var loadColMethod = managerType.GetMembers($"load_{table.FullName}").OfType<MethodSymbol>().Single();
+                        var collType = GetFromMetadata(table, GeneratedTypeKind.Collection | GeneratedTypeKind.Object);
+                        
+                        var colPlace = new LocalPlace(il.DefineSynthLocal(loadObjectMethod, $"col_{index++}", collType));
+                        
+                        ctxPS.EmitLoad(il);
+                        ctxPS.EmitLoad(il);
+                        idPl.EmitLoad(il);
+                        il.EmitCall(m, d, ILOpCode.Call, loadColMethod);
+                       //colPlace.EmitStore(il);
+                        dtoPlace.EmitLoad(il);
+                        il.EmitCall(m, d, ILOpCode.Newobj, collType.Constructors.First());
+                        colPlace.EmitStore(il);
+                        colPlaces.Add(colPlace);
+                    }
+
+                    ctxPS.EmitLoad(il);
+                    dtoPlace.EmitLoad(il);
+
+                    foreach (var place in colPlaces)
+                    {
+                        place.EmitLoad(il);
+                    }
+
+                    il.EmitCall(m, d, ILOpCode.Newobj, objectType.Constructors.First());
+                    
+                    
+                    il.EmitRet(false);
+                });
+        }
+
+        #endregion
+        
         managerType.AddMember(saveMethod);
         managerType.AddMember(deleteMethod);
+        managerType.AddMember(loadObjectMethod);
         //managerType.AddMember(readerVoid);
 
         foreach (var r in readers)

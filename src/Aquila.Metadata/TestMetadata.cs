@@ -42,6 +42,17 @@ namespace Aquila.Metadata
                                 Name = "NomenclatureName", Types = { new MetadataType { Name = "string", Size = 100 } }
                             }
                         }
+                    },
+                    new EntityTable
+                    {
+                        Name = "Contracts",
+                        Properties =
+                        {
+                            new EntityProperty
+                            {
+                                Name = "ContractName", Types = { new MetadataType { Name = "string", Size = 100 } }
+                            }
+                        }
                     }
                 }
             };

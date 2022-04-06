@@ -48,11 +48,11 @@ namespace Aquila.Core.Querying
             base.VisitQObject(node);
         }
 
-        // public override void VisitQTable(QTable node)
-        // {
-        //     node.SetDbNameIfEmpty($"{node.Table.GetSettings().DatabaseName}");
-        //     return base.VisitQTable(node);
-        // }
+        public override void VisitQTable(QTable node)
+        {
+            node.SetDbNameIfEmpty($"{node.TableType.GetDescriptor(_context).DatabaseName}");
+            base.VisitQTable(node);
+        }
 
         public override void VisitQAliasedDataSource(QAliasedDataSource node)
         {

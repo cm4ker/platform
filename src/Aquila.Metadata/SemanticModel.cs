@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 using System.Xml;
 
 namespace Aquila.Metadata
@@ -327,31 +329,31 @@ namespace Aquila.Metadata
             _props.Add(prop);
         }
 
-        private void CoreLazyPropertiesOrdered()
+        private ImmutableArray<SMProperty> CoreLazyPropertiesOrdered()
         {
-            _props = new List<SMProperty>();
-
-            var parentProp = new SMProperty(_parentProp, _cache);
-            _parentProperty = parentProp;
-            AddProperty(parentProp);
-
-            var idProp = new SMProperty(_idProp, _cache);
-            _idProperty = idProp;
-            AddProperty(idProp);
-
-            foreach (var p in _md.Properties.OrderBy(x => x.Name))
+            if (_props == null)
             {
-                var prop = new SMProperty(p, _cache);
-                AddProperty(prop);
+                Interlocked.CompareExchange(ref _props, new List<SMProperty>(), null);
+
+                _idProperty = new SMProperty(_idProp, _cache);
+                AddProperty(_idProperty);
+
+                _parentProperty = new SMProperty(_parentProp, _cache);
+                AddProperty(_parentProperty);
+
+                foreach (var p in _md.Properties.OrderBy(x => x.Name))
+                {
+                    var prop = new SMProperty(p, _cache);
+                    AddProperty(prop);
+                }
             }
+
+            return _props.ToImmutableArray();
         }
 
         IEnumerable<SMProperty> GetPropertiesCore()
         {
-            if (_props == null)
-                CoreLazyPropertiesOrdered();
-
-            return _props;
+            return CoreLazyPropertiesOrdered();
         }
 
         public override IEnumerable<SMProperty> Properties => GetPropertiesCore();

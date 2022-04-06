@@ -96,7 +96,10 @@ namespace Aquila.CodeAnalysis.Metadata
                             false)),
                     GeneratedTypeKind.Link => _ps.GetSynthesizedType(
                         QualifiedName.Parse($"{Namespace}.{st.Parent.Name}{st.Name}{TableRowLinkPostfix}", false)),
-
+                    
+                    GeneratedTypeKind.Dto | GeneratedTypeKind.Collection => _ps.GetSynthesizedType(
+                        QualifiedName.Parse($"{Namespace}.{st.Parent.Name}{st.Name}{TableRowDtoPostfix}", false)),
+                    
                     GeneratedTypeKind.Object | GeneratedTypeKind.Collection => _ps.GetSynthesizedType(
                         QualifiedName.Parse($"{Namespace}.{st.Parent.Name}{st.Name}{ObjectCollectionPostfix}",
                             false)),
@@ -272,6 +275,8 @@ namespace Aquila.CodeAnalysis.Metadata
                 _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{ObjectPostfix}", false));
             var linkType = _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{LinkPostfix}", false));
 
+            
+            
             #region Fields
 
             //Internal field
@@ -289,14 +294,27 @@ namespace Aquila.CodeAnalysis.Metadata
 
             #endregion
 
+            var thisPlace = new ArgPlace(objectType, 0);
+        
+            var dtoFieldPlace = new FieldPlace(dtoField);
+            var ctxFieldPlace = new FieldPlace(ctxField);
+          
+           
+            
+            
             #region Constructor
 
+         
             var ctor = _ps.SynthesizeConstructor(objectType);
             var ctxParam = new SpecialParameterSymbol(ctor, _ct.AqContext, SpecialParameterSymbol.ContextName, 0);
             var dtoParam = new SynthesizedParameterSymbol(ctor, dtoType, 1, RefKind.None, "dto");
 
-            List<(SynthesizedParameterSymbol pr, ParamPlace prPlace, FieldSymbol fl, FieldPlace flPlace)> tablesSynth =
-                new();
+          
+               
+             #region Tables
+             
+              List<(SynthesizedParameterSymbol pr, ParamPlace prPlace, FieldSymbol fl, FieldPlace flPlace)> 
+                  tablesSynth = new();
 
             var index = 2;
             foreach (var mdTable in md.Tables)
@@ -308,8 +326,7 @@ namespace Aquila.CodeAnalysis.Metadata
                     QualifiedName.Parse($"{Namespace}.{md.Name}{mdTable.Name}{TableRowDtoPostfix}", true));
 
                 //var a = ((NamedTypeSymbol)_ct.ImmutableArray_arg1.Symbol).Construct();
-                var tableParam =
-                    new SynthesizedParameterSymbol(ctor, collectionType, index++, RefKind.None, $"{mdTable.Name}");
+                var tableParam = new SynthesizedParameterSymbol(ctor, collectionType, index++, RefKind.None, $"{mdTable.Name}");
                 var tableParamPlace = new ParamPlace(tableParam);
 
                 var tableField = _ps.SynthesizeField(objectType);
@@ -323,17 +340,39 @@ namespace Aquila.CodeAnalysis.Metadata
                 tablesSynth.Add((tableParam, tableParamPlace, tableField, tableFieldPlace));
 
                 objectType.AddMember(tableField);
+                
+                
+                var tableGetMethod = _ps.SynthesizeMethod(objectType)
+                    .SetName($"get_{mdTable.Name}")
+                    .SetReturn(collectionType)
+                    .SetMethodBuilder((m, d) => il =>
+                    {
+                        thisPlace.EmitLoad(il);
+                        tableFieldPlace.EmitLoad(il);
+                        il.EmitRet(false);
+                    });
+
+                var tableProperty = _ps.SynthesizeProperty(objectType);
+                tableProperty
+                    .SetName(mdTable.Name)
+                    .SetType(collectionType)
+                    .SetGetMethod(tableGetMethod);
+                
+                objectType.AddMember(tableGetMethod);
+                objectType.AddMember(tableProperty);
+                
             }
-
-            var thisPlace = new ArgPlace(objectType, 0);
-            var dtoPS = new ParamPlace(dtoParam);
-            var ctxPS = new ParamPlace(ctxParam);
-
-            var dtoFieldPlace = new FieldPlace(dtoField);
-            var ctxFieldPlace = new FieldPlace(ctxField);
-
+            #endregion
+            
+            
+            
+            
             var constructorParameters = new ParameterSymbol[] { ctxParam, dtoParam }
                 .Union(tablesSynth.Select(x => x.pr)).ToArray();
+            
+            var dtoPS = new ParamPlace(dtoParam);
+            var ctxPS = new ParamPlace(ctxParam);
+            
             ctor
                 .SetParameters(constructorParameters)
                 .SetMethodBuilder((m, d) => (il) =>
@@ -665,8 +704,8 @@ namespace Aquila.CodeAnalysis.Metadata
                     {
                         var managerType =
                             _ps.GetType(QualifiedName.Parse($"{Namespace}.{md.Name}{ManagerPostfix}", true));
-                        var mrgSave = managerType.GetMembers("save").OfType<MethodSymbol>().FirstOrDefault() ??
-                                      throw new Exception("Method save not found in manager type");
+                        var mrgSave = managerType.GetMembers("save_dto").OfType<MethodSymbol>().FirstOrDefault() ??
+                                      throw new Exception("Method save_dto not found in manager type");
 
                         var beforeSave = objectType.GetMembers("before_save").OfType<MethodSymbol>()
                             .Where(x => x.ParameterCount == 0).ToArray();
@@ -686,6 +725,22 @@ namespace Aquila.CodeAnalysis.Metadata
 
 
                         il.EmitCall(m, d, ILOpCode.Call, mrgSave);
+
+
+                        foreach (var table in md.Tables)
+                        {
+                            var tableColType = GetFromMetadata(table, GeneratedTypeKind.Object | GeneratedTypeKind.Collection);
+                            var colSaveMethod =  tableColType.GetMembers("save").OfType<MethodSymbol>().Single();
+                                
+                            var tableClrProp = objectType.GetMembers(table.Name).OfType<PropertySymbol>().Single();
+                            thisPlace.EmitLoad(il);
+                            il.EmitCall(m, d, ILOpCode.Call, tableClrProp.GetMethod);
+                            il.EmitCall(m, d, ILOpCode.Call, colSaveMethod);
+
+
+
+                        }
+                        
                         il.EmitRet(true);
                     };
                 });

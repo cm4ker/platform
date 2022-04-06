@@ -99,6 +99,7 @@ namespace Aquila.Core
             using var cmd = PrepareCore(context, parameters, mdName,
                 (SMEntityOrTable semantic, out QLangElement element) =>
                     CRUDQueryGenerator.CompileInsert(semantic, context, out element));
+            
             cmd.ExecuteNonQuery();
         }
 

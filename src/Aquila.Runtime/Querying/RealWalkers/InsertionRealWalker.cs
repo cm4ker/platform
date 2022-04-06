@@ -153,5 +153,10 @@ namespace Aquila.Core.Querying
         {
             Qm.ld_table(arg.GetDbName());
         }
+
+        public override void VisitQTable(QTable arg)
+        {
+            Qm.ld_table(arg.GetDbName());
+        }
     }
 }
