@@ -378,7 +378,7 @@ namespace Aquila.CodeAnalysis.Semantics
     /// <summary>
     /// Represents a function call.
     /// </summary>
-    public abstract partial class BoundCallEx : IInvocationOperation
+    public partial class BoundCallEx : IInvocationOperation
     {
         #region IInvocationOperation impl
 
@@ -425,10 +425,6 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
-        public BoundCallEx(ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArgs)
-            : this(null, null, arguments, typeArgs, null, null)
-        {
-        }
 
         internal void UpdateSymbol(MethodSymbol methodSymbol)
         {
@@ -443,37 +439,6 @@ namespace Aquila.CodeAnalysis.Semantics
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result)
         {
             result = visitor.VisitInvocation(this, argument);
-        }
-    }
-
-    public partial class BoundInstanceCallEx
-    {
-        public BoundInstanceCallEx Update(BoundMethodName name, ImmutableArray<BoundArgument> arguments,
-            ImmutableArray<ITypeSymbol> typeArgs, BoundExpression instance)
-        {
-            if (Arguments == arguments && Instance == instance && TypeArguments == typeArgs && Name == name)
-                return this;
-
-            return new BoundInstanceCallEx(MethodSymbol, name, arguments, typeArgs, instance, null);
-        }
-    }
-
-    public partial class BoundStaticCallEx
-    {
-        public BoundStaticCallEx Update(BoundMethodName name, ImmutableArray<BoundArgument> arguments,
-            ImmutableArray<ITypeSymbol> typeArgs)
-        {
-            if (Arguments == arguments && TypeArguments == typeArgs && Name == name)
-                return this;
-
-            return new BoundStaticCallEx(MethodSymbol, name, arguments, typeArgs, MethodSymbol.ReturnType);
-        }
-
-        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name,
-            ImmutableArray<BoundArgument> arguments,
-            ImmutableArray<ITypeSymbol> typeArguments, ITypeSymbol resultType)
-        {
-            Assert.NotNull(resultType);
         }
     }
 
@@ -2113,7 +2078,7 @@ namespace Aquila.CodeAnalysis.Semantics
     public partial class BoundBadEx
     {
     }
-    
+
     public partial class BoundNegEx
     {
     }

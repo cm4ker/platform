@@ -643,22 +643,15 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         #region Visit Function Call
 
-        public override T VisitInstanceCallEx(BoundInstanceCallEx arg)
+        public override T VisitCallEx(BoundCallEx arg)
         {
-            Visit(arg.Instance, BoundAccess.Invoke);
+            if (arg.Instance != null)
+                Visit(arg.Instance, BoundAccess.Invoke);
 
             arg.Arguments.ForEach(x => VisitArgument(x));
 
-            return base.VisitInstanceCallEx(arg);
+            return base.VisitCallEx(arg);
         }
-
-        public override T VisitStaticCallEx(BoundStaticCallEx arg)
-        {
-            arg.Arguments.ForEach(x => VisitArgument(x));
-
-            return base.VisitStaticCallEx(arg);
-        }
-
 
         /// <summary>
         /// Bind arguments to target method and resolve resulting <see cref="BoundExpression.TypeRefMask"/>.

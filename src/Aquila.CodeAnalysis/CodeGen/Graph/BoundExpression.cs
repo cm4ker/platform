@@ -52,7 +52,7 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         internal override TypeSymbol Emit(CodeGenerator cg)
         {
-            return cg.EmitCall(ILOpCode.Newobj, this.MethodSymbol, Instance, Arguments);
+            return cg.EmitCall(ILOpCode.Newobj, this.MethodSymbol, null, Arguments);
         }
     }
 
@@ -717,15 +717,7 @@ namespace Aquila.CodeAnalysis.Semantics
         bool IsDecrement => !this.IsIncrement;
     }
 
-    partial class BoundStaticCallEx
-    {
-        internal override TypeSymbol Emit(CodeGenerator cg)
-        {
-            return cg.EmitCall(ILOpCode.Call, this.MethodSymbol, Instance, Arguments);
-        }
-    }
-
-    partial class BoundInstanceCallEx
+    partial class BoundCallEx
     {
         internal override TypeSymbol Emit(CodeGenerator cg)
         {

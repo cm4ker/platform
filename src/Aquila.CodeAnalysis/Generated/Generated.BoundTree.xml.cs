@@ -33,8 +33,7 @@ public enum BoundKind
     MatchEx,
     MatchArm,
     BadEx,
-    InstanceCallEx,
-    StaticCallEx,
+    CallEx,
     NewEx,
     ThrowEx,
     AllocEx,
@@ -1288,7 +1287,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
 namespace Aquila.CodeAnalysis.Semantics
 {
-    abstract partial class BoundCallEx : BoundExpression
+    partial class BoundCallEx : BoundExpression
     {
         private MethodSymbol _methodSymbol;
         private BoundMethodName _name;
@@ -1347,6 +1346,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         public override OperationKind Kind => OperationKind.Invocation;
+        public override BoundKind BoundKind => BoundKind.CallEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
         public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
@@ -1365,99 +1365,42 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             return visitor.VisitCallEx(this);
         }
-    }
-}
 
-namespace Aquila.CodeAnalysis.Semantics
-{
-    partial class BoundInstanceCallEx : BoundCallEx
-    {
-        internal BoundInstanceCallEx(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, BoundExpression instance, ITypeSymbol resultType): base(methodSymbol, name, arguments, typeArguments, instance, resultType)
+        internal BoundCallEx Update(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, BoundExpression instance, ITypeSymbol resultType)
         {
-            OnCreateImpl(methodSymbol, name, arguments, typeArguments, instance, resultType);
-        }
-
-        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, BoundExpression instance, ITypeSymbol resultType);
-        public override BoundKind BoundKind => BoundKind.InstanceCallEx;
-        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
-        partial void AcceptImpl(OperationVisitor visitor);
-        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
-        {
-            TRes res = default;
-            AcceptImpl(visitor, argument, ref res);
-            return res;
-        }
-
-        public override void Accept(OperationVisitor visitor)
-        {
-            AcceptImpl(visitor);
-        }
-
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
-        {
-            return visitor.VisitInstanceCallEx(this);
-        }
-
-        internal BoundInstanceCallEx Update(ITypeSymbol resultType)
-        {
-            if (ResultType == resultType)
+            if (_methodSymbol == methodSymbol && _name == name && _arguments == arguments && _typeArguments == typeArguments && _instance == instance && ResultType == resultType)
                 return this;
-            return new BoundInstanceCallEx(this.MethodSymbol, this.Name, this.Arguments, this.TypeArguments, this.Instance, resultType).WithSyntax(this.AquilaSyntax);
+            return new BoundCallEx(methodSymbol, name, arguments, typeArguments, instance, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
 
 namespace Aquila.CodeAnalysis.Semantics
 {
-    partial class BoundStaticCallEx : BoundCallEx
+    partial class BoundNewEx : BoundExpression
     {
-        internal BoundStaticCallEx(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, ITypeSymbol resultType): base(methodSymbol, name, arguments, typeArguments, null, resultType)
-        {
-            OnCreateImpl(methodSymbol, name, arguments, typeArguments, resultType);
-        }
-
-        partial void OnCreateImpl(MethodSymbol methodSymbol, BoundMethodName name, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, ITypeSymbol resultType);
-        public override BoundKind BoundKind => BoundKind.StaticCallEx;
-        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
-        partial void AcceptImpl(OperationVisitor visitor);
-        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
-        {
-            TRes res = default;
-            AcceptImpl(visitor, argument, ref res);
-            return res;
-        }
-
-        public override void Accept(OperationVisitor visitor)
-        {
-            AcceptImpl(visitor);
-        }
-
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
-        {
-            return visitor.VisitStaticCallEx(this);
-        }
-
-        internal BoundStaticCallEx Update(ITypeSymbol resultType)
-        {
-            if (ResultType == resultType)
-                return this;
-            return new BoundStaticCallEx(this.MethodSymbol, this.Name, this.Arguments, this.TypeArguments, resultType).WithSyntax(this.AquilaSyntax);
-        }
-    }
-}
-
-namespace Aquila.CodeAnalysis.Semantics
-{
-    partial class BoundNewEx : BoundCallEx
-    {
+        private MethodSymbol _methodSymbol;
         private ITypeSymbol _typeRef;
-        internal BoundNewEx(MethodSymbol methodSymbol, ITypeSymbol typeRef, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, ITypeSymbol resultType): base(methodSymbol, null, arguments, typeArguments, null, resultType)
+        private ImmutableArray<BoundArgument> _arguments;
+        private ImmutableArray<ITypeSymbol> _typeArguments;
+        internal BoundNewEx(MethodSymbol methodSymbol, ITypeSymbol typeRef, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, ITypeSymbol resultType): base(resultType)
         {
+            _methodSymbol = methodSymbol;
             _typeRef = typeRef;
+            _arguments = arguments;
+            _typeArguments = typeArguments;
             OnCreateImpl(methodSymbol, typeRef, arguments, typeArguments, resultType);
         }
 
         partial void OnCreateImpl(MethodSymbol methodSymbol, ITypeSymbol typeRef, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, ITypeSymbol resultType);
+        internal MethodSymbol MethodSymbol
+        {
+            get
+            {
+                return _methodSymbol;
+            }
+        }
+
         public ITypeSymbol TypeRef
         {
             get
@@ -1466,6 +1409,23 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
+        public ImmutableArray<BoundArgument> Arguments
+        {
+            get
+            {
+                return _arguments;
+            }
+        }
+
+        public ImmutableArray<ITypeSymbol> TypeArguments
+        {
+            get
+            {
+                return _typeArguments;
+            }
+        }
+
+        public override OperationKind Kind => OperationKind.ObjectCreation;
         public override BoundKind BoundKind => BoundKind.NewEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
         partial void AcceptImpl(OperationVisitor visitor);
@@ -2799,8 +2759,6 @@ namespace Aquila.CodeAnalysis.Semantics
         public virtual TResult VisitMatchArm(BoundMatchArm x) => VisitDefault(x);
         public virtual TResult VisitBadEx(BoundBadEx x) => VisitDefault(x);
         public virtual TResult VisitCallEx(BoundCallEx x) => VisitDefault(x);
-        public virtual TResult VisitInstanceCallEx(BoundInstanceCallEx x) => VisitDefault(x);
-        public virtual TResult VisitStaticCallEx(BoundStaticCallEx x) => VisitDefault(x);
         public virtual TResult VisitNewEx(BoundNewEx x) => VisitDefault(x);
         public virtual TResult VisitThrowEx(BoundThrowEx x) => VisitDefault(x);
         public virtual TResult VisitAllocEx(BoundAllocEx x) => VisitDefault(x);

@@ -66,7 +66,7 @@ namespace Aquila.CodeAnalysis.Lowering
                 var args = new[] { transLeft, transRight }.ToImmutableArray();
                 var typeArgs = ImmutableArray<ITypeSymbol>.Empty;
 
-                return new BoundStaticCallEx(_cm.Operators.Concat_String_String, null, args, typeArgs,
+                return new BoundCallEx(_cm.Operators.Concat_String_String, null, args, typeArgs, null,
                         _ct.String.Symbol)
                     .WithAccess(x);
             }

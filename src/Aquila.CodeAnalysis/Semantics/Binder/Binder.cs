@@ -1016,19 +1016,12 @@ namespace Aquila.CodeAnalysis.Semantics
                     {
                         ms = ConstructSingle(ms, typeArgs);
 
-                        if (ms.IsStatic)
-                        {
-                            return new BoundStaticCallEx(ms,
-                                new BoundMethodName(qualifiedName), arglist, typeArgs, ms.ReturnType);
-                        }
-                        else
-                        {
-                            var type = Container as ITypeSymbol;
+                        var th = (ms.IsStatic)
+                            ? null
+                            : new BoundVariableRef(QualifiedName.This.Name.Value, Container as ITypeSymbol);
 
-                            var th = new BoundVariableRef(QualifiedName.This.Name.Value, type);
-                            return new BoundInstanceCallEx(ms, new BoundMethodName(qualifiedName),
-                                arglist, typeArgs, th, ms.ReturnType);
-                        }
+                        return new BoundCallEx(ms, new BoundMethodName(qualifiedName),
+                            arglist, typeArgs, th, ms.ReturnType);
                     }
                 }
                 else
@@ -1083,8 +1076,8 @@ namespace Aquila.CodeAnalysis.Semantics
                         {
                             if (ms.IsStatic)
                             {
-                                return new BoundStaticCallEx(ms, new BoundMethodName(qualifiedName),
-                                    arglist, typeArgs, ms.ReturnType);
+                                return new BoundCallEx(ms, new BoundMethodName(qualifiedName),
+                                    arglist, typeArgs, null, ms.ReturnType);
                             }
                             else
                             {
@@ -1102,8 +1095,8 @@ namespace Aquila.CodeAnalysis.Semantics
 
             if (invocation)
             {
-                result = new BoundStaticCallEx(new MissingMethodSymbol(nameId), new BoundMethodName(qualifiedName),
-                    arglist, typeArgs, null);
+                result = new BoundCallEx(new MissingMethodSymbol(nameId), new BoundMethodName(qualifiedName),
+                    arglist, typeArgs, null, null);
             }
             else
             {
@@ -1204,14 +1197,9 @@ namespace Aquila.CodeAnalysis.Semantics
 
                         ms = ConstructSingle(ms, typeArgs);
 
-                        if (ms.IsStatic)
-                            return new BoundStaticCallEx(ms,
-                                new BoundMethodName(qualifiedName), arglist, typeArgs, ms.ReturnType);
-
-                        else
-
-                            return new BoundInstanceCallEx(ms,
-                                new BoundMethodName(qualifiedName), arglist, typeArgs, boundLeft, ms.ReturnType);
+                        return new BoundCallEx(ms,
+                            new BoundMethodName(qualifiedName), arglist, typeArgs, (ms.IsStatic) ? null : boundLeft,
+                            ms.ReturnType);
                     }
                 }
                 else
