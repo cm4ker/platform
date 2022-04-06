@@ -655,8 +655,12 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             // while (COND) { BODY }
             BuildForLoop(null, x.Condition, null, x.Statement);
-        }
 
+        }
+        
+        
+        
+        
         #endregion
     }
 }

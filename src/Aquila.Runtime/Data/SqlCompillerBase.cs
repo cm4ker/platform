@@ -8,7 +8,7 @@ namespace Aquila.QueryBuilder
 {
     public class SqlCompiler
     {
-        private QueryVisitorBase<string> _visitor;
+        private readonly QueryVisitorBase<string> _visitor;
 
         private SqlCompiler(QueryVisitorBase<string> visitor)
         {
@@ -17,9 +17,10 @@ namespace Aquila.QueryBuilder
 
         public static SqlCompiler FormEnum(SqlDatabaseType dbType)
         {
-            var builder = dbType switch
+            QueryVisitorBase<string> builder = dbType switch
             {
                 SqlDatabaseType.SqlServer => new MsSqlBuilder(),
+                SqlDatabaseType.Postgres => new PostgresBuilder(),
                 _ => throw new NotImplementedException("Not implemented")
             };
 
