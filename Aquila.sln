@@ -109,8 +109,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aquila.LanguageServer.Integ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aquila.UIBuilder", "src\Aquila.UIBuilder\Aquila.UIBuilder.csproj", "{CF4AFAD3-6D8D-466B-8834-E515EA09AA50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompilersBoundTreeGenerator", "src\Aquila.BoundTreeGenerator\CompilersBoundTreeGenerator.csproj", "{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
@@ -1655,46 +1653,6 @@ Global
 		{CF4AFAD3-6D8D-466B-8834-E515EA09AA50}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{CF4AFAD3-6D8D-466B-8834-E515EA09AA50}.Release|x86.ActiveCfg = Release|Any CPU
 		{CF4AFAD3-6D8D-466B-8834-E515EA09AA50}.Release|x86.Build.0 = Release|Any CPU
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Ad-Hoc|Any CPU.ActiveCfg = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Ad-Hoc|Any CPU.Build.0 = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Ad-Hoc|iPhone.ActiveCfg = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Ad-Hoc|iPhone.Build.0 = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Ad-Hoc|iPhoneSimulator.Build.0 = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Ad-Hoc|x86.ActiveCfg = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Ad-Hoc|x86.Build.0 = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.AppStore|Any CPU.ActiveCfg = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.AppStore|Any CPU.Build.0 = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.AppStore|iPhone.ActiveCfg = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.AppStore|iPhone.Build.0 = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.AppStore|iPhoneSimulator.ActiveCfg = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.AppStore|iPhoneSimulator.Build.0 = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.AppStore|x86.ActiveCfg = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.AppStore|x86.Build.0 = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Debug|Any CPU.Build.0 = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Debug|iPhone.ActiveCfg = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Debug|iPhone.Build.0 = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Debug|iPhoneSimulator.ActiveCfg = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Debug|iPhoneSimulator.Build.0 = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Debug|x86.ActiveCfg = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Debug|x86.Build.0 = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.DebugServer|Any CPU.ActiveCfg = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.DebugServer|Any CPU.Build.0 = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.DebugServer|iPhone.ActiveCfg = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.DebugServer|iPhone.Build.0 = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.DebugServer|iPhoneSimulator.ActiveCfg = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.DebugServer|iPhoneSimulator.Build.0 = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.DebugServer|x86.ActiveCfg = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.DebugServer|x86.Build.0 = Debug|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Release|Any CPU.ActiveCfg = Release|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Release|Any CPU.Build.0 = Release|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Release|iPhone.ActiveCfg = Release|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Release|iPhone.Build.0 = Release|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Release|iPhoneSimulator.ActiveCfg = Release|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Release|iPhoneSimulator.Build.0 = Release|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Release|x86.ActiveCfg = Release|x64
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1741,7 +1699,6 @@ Global
 		{C5FAB50B-D240-46FE-BA54-F38CF0DB5655} = {010AE36E-72C3-4611-B386-A9BE0C0592DA}
 		{2AB83454-1A88-4FD3-B189-AA88D98FA4FC} = {010AE36E-72C3-4611-B386-A9BE0C0592DA}
 		{CF4AFAD3-6D8D-466B-8834-E515EA09AA50} = {60F9DF35-0F24-4B1B-AE89-43D43BAF8160}
-		{9C6E7DC2-DF72-4F2B-B2EF-CDA415FFD66F} = {C8A35A6D-FEE3-489C-87D4-7E56BEC2AF86}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {87366D66-1391-4D90-8999-95A620AD786A}
