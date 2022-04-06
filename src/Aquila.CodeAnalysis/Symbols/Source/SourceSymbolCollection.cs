@@ -87,11 +87,6 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             {
                 _types.Add(new SourceModuleTypeSymbol(SourceTypeContainer, module));
 
-                // foreach (var type in module.Types)
-                // {
-                //     _types.Add(new SourceTypeSymbol(SourceTypeContainer, type));
-                // }
-
                 foreach (var function in module.OwnedFunctions)
                 {
                     if (function.FuncOwner != null && AstUtils.GetModifiers(function.Modifiers).IsPartial())
@@ -109,13 +104,6 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                             sts.AddMember(m);
                         }
                     }
-                    // else
-                    // {
-                    //     var method = new SourceGlobalMethodSymbol(DefinedConstantsContainer, function);
-                    //
-                    //     _globalMethods.Add(method);
-                    //     DefinedConstantsContainer.AddMember(method);
-                    // }
                 }
             }
         }
@@ -169,7 +157,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public IEnumerable<SourceModuleTypeSymbol> GetModuleTypes() => _types.OfType<SourceModuleTypeSymbol>();
 
-        public SourceModuleTypeSymbol GetModuleType(string name) => GetModuleTypes().FirstOrDefault(x => x.Name == name);
+        public SourceModuleTypeSymbol GetModuleType(string name) =>
+            GetModuleTypes().FirstOrDefault(x => x.Name == name);
 
         public MergedSourceCode GetMergedSourceCode() => _sourceCode;
 

@@ -68,7 +68,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         partial void OnCreateImpl(SourceMethodSymbol method)
         {
-            this.AquilaSyntax = (MethodDecl)method.Syntax;
+            this.AquilaSyntax = (MethodDecl)method.SyntaxNode;
         }
 
         partial void AcceptImpl(OperationVisitor visitor) => visitor.VisitInvalid(this);

@@ -197,7 +197,7 @@ namespace Aquila.CodeAnalysis.CodeGen
             if (EmitPdbSequencePoints && span.Length > 0)
             {
                 _il.EmitOpCode(ILOpCode.Nop);
-                _il.DefineSequencePoint(_method.Syntax.SyntaxTree, span);
+                _il.DefineSequencePoint(_method.SyntaxNode.SyntaxTree, span);
             }
         }
 
@@ -493,7 +493,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         public void EmitRet(TypeSymbol stack, bool yielding = false)
         {
             // sequence point
-            var body = Method?.Syntax.Span;
+            var body = Method?.SyntaxNode.Span;
             if (body != null && EmitPdbSequencePoints)
             {
                 EmitSequencePoint(body.Value);

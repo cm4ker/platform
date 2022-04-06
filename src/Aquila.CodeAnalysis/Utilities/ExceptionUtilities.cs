@@ -54,7 +54,7 @@ namespace Aquila.CodeAnalysis.Utilities
             }
             else if (method != null)
             {
-                location = $"{method.Syntax.SyntaxTree.FilePath} in '{method.MethodName}'";
+                location = $"{method.SyntaxNode.SyntaxTree.FilePath} in '{method.MethodName}'";
             }
             else if (debugmethod != null)
             {

@@ -378,7 +378,7 @@ namespace Aquila.CodeAnalysis.CodeGen
 
             _method = method as SourceMethodSymbol;
 
-            var syntax = _method?.Syntax;
+            var syntax = _method?.SyntaxNode;
 
             if (EmitPdbSequencePoints && syntax != null)
             {

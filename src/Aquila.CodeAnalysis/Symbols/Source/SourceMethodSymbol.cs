@@ -67,7 +67,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         internal TypeEx SyntaxReturnType => _syntax.ReturnType;
 
-        internal AquilaSyntaxNode Syntax => _syntax;
+        internal AquilaSyntaxNode SyntaxNode => _syntax;
 
         internal IList<StmtSyntax> Statements => _syntax.Body?.Statements.ToList();
 
@@ -194,7 +194,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override ImmutableArray<Location> Locations =>
             ImmutableArray.Create(
-                Location.Create(null, Syntax is AquilaSyntaxNode element ? element.Span : default
+                Location.Create(null, SyntaxNode is AquilaSyntaxNode element ? element.Span : default
                 ));
 
         public override bool IsUnreachable => (Flags & MethodFlags.IsUnreachable) != 0;

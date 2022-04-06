@@ -31,7 +31,7 @@ namespace Aquila.CodeAnalysis
             ErrorCode code,
             params object[] args)
         {
-            var tree = method.Syntax.SyntaxTree;
+            var tree = method.SyntaxNode.SyntaxTree;
             var location = new SourceLocation(tree, span);
             diagnostics.Add(location, code, args);
         }

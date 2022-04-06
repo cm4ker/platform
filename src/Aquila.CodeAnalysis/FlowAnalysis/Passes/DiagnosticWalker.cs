@@ -256,7 +256,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 
         public override T VisitReturnStmt(BoundReturnStmt x)
         {
-            if (_method.Syntax is MethodDecl m)
+            if (_method.SyntaxNode is MethodDecl m)
             {
             }
 

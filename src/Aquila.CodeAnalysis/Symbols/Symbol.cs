@@ -9,6 +9,7 @@ using System.Threading;
 using Aquila.CodeAnalysis.DocumentationComments;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Symbols;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
@@ -22,9 +23,8 @@ namespace Aquila.CodeAnalysis.Symbols
     [DebuggerDisplay("{GetDebuggerDisplay(), nq}")]
     internal abstract partial class Symbol : ISymbol, ISymbolInternal
     {
-        
         private ISymbol _lazyISymbol;
-        
+
         /// <summary>
         /// Gets the name of this symbol. Symbols without a name return the empty string; null is
         /// never returned.
@@ -94,8 +94,8 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 for (var container = this.ContainingSymbol;
-                    (object)container != null;
-                    container = container.ContainingSymbol)
+                     (object)container != null;
+                     container = container.ContainingSymbol)
                 {
                     var ns = container as NamespaceSymbol;
                     if ((object)ns != null)
@@ -504,7 +504,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             return (object)this == other;
         }
-        
+
         // By default, we do reference equality. This can be overridden.
         public override int GetHashCode()
         {
@@ -1174,7 +1174,18 @@ namespace Aquila.CodeAnalysis.Symbols
         INamespaceSymbolInternal ISymbolInternal.ContainingNamespace => this.ContainingNamespace;
 
         #endregion
-        
+
+        #region Visitor
+
+        public abstract void Accept(AquilaSymbolVisitor visitor);
+
+        public abstract TResult Accept<TResult>(AquilaSymbolVisitor<TResult> visitor);
+
+        internal abstract TResult Accept<TArgument, TResult>(AquilaSymbolVisitor<TArgument, TResult> visitor,
+            TArgument a);
+
+        #endregion
+
         // protected abstract ISymbol CreateISymbol();
         //
         // internal ISymbol ISymbol

@@ -14,7 +14,6 @@ using Aquila.CodeAnalysis.Emit;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.FlowAnalysis.Passes;
-using Aquila.CodeAnalysis.Lowering;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Symbols.Source;

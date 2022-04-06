@@ -222,7 +222,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         {
             get
             {
-                return ImmutableArray.Create(Location.Create(Method.Syntax.SyntaxTree,
+                return ImmutableArray.Create(Location.Create(Method.SyntaxNode.SyntaxTree,
                     _syntax.Identifier.Span));
             }
         }

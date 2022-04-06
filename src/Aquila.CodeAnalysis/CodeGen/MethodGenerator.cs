@@ -26,7 +26,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         {
             // TODO: method might be synthesized and we create an incomplete DebugSourceDocument
 
-            var srcf = (method as SourceMethodSymbol)?.Syntax;
+            var srcf = (method as SourceMethodSymbol)?.SyntaxNode;
             if (srcf != null && srcf.SyntaxTree.TryGetText(out var srctext))
             {
                 return new Cci.DebugSourceDocument(
