@@ -13,7 +13,7 @@ namespace Aquila.Core.Instance
     public class AqInstanceManager : IAqInstanceManager
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly List<AqInstance> environments = new List<AqInstance>();
+        private readonly List<AqInstance> _instances = new List<AqInstance>();
         private readonly ILogger _logger;
 
         public AqInstanceManager(ISettingsStorage configStorage, IServiceProvider serviceProvider,
@@ -35,7 +35,7 @@ namespace Aquila.Core.Instance
             var instance = CreatePlatformEnvironment<AqInstance>(config);
 
             if (instance != null)
-                environments.Add(instance);
+                _instances.Add(instance);
         }
 
         protected AqInstance CreatePlatformEnvironment<T>(StartupConfig config)
@@ -43,7 +43,7 @@ namespace Aquila.Core.Instance
         {
             try
             {
-                _logger.Info("Creating environment, connection string: {0}", config.ConnectionString);
+                _logger.Info("Creating instance, connection string: {0}", config.ConnectionString);
                 var scope = _serviceProvider.CreateScope();
 
                 var env = scope.ServiceProvider.GetRequiredService<T>();
@@ -52,7 +52,7 @@ namespace Aquila.Core.Instance
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Create environment error, connection string: {0}", config.ConnectionString);
+                _logger.Error(ex, "Create instance error, connection string: {0}", config.ConnectionString);
             }
 
             return null;
@@ -60,12 +60,12 @@ namespace Aquila.Core.Instance
 
         public AqInstance GetInstance(string name)
         {
-            return environments.FirstOrDefault(m => m.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            return _instances.FirstOrDefault(m => m.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
 
         public IEnumerable<AqInstance> GetInstances()
         {
-            return environments.AsReadOnly();
+            return _instances.AsReadOnly();
         }
     }
 }

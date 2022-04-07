@@ -27,6 +27,7 @@ namespace Aquila.AspNetCore.Web
         private Dictionary<(string instance, string objectName, string method), MethodInfo> _crudHandlers = new();
         private Dictionary<(string instance, string methodName), MethodInfo> _endpointsHandlers = new();
 
+        private object _updateLock = new object();
 
         public AquilaHandlerMiddleware(AqInstanceManager instanceManager,
             ILogger<AqInstance> logger)
@@ -58,6 +59,14 @@ namespace Aquila.AspNetCore.Web
         {
             foreach (var instance in _instanceManager.GetInstances())
             {
+                InitInstance(instance);
+            }
+        }
+
+        private void InitInstance(AqInstance instance)
+        {
+            lock (_updateLock)
+            {
                 if (instance.BLAssembly is null)
                 {
                     _logger.Info("[Platform] Instance {0} haven't assembly", instance.Name);
@@ -66,13 +75,20 @@ namespace Aquila.AspNetCore.Web
 
                 if (instance.PendingChanges)
                 {
-                    _logger.Info("[Platform] Instance {0} has pending changes. Invoke /api/[instance]/migrate",
+                    _logger.Warn("[Platform] Instance {0} has pending changes. Invoke /api/[instance]/migrate",
                         instance.Name);
                 }
 
                 var crudMethods = instance.BLAssembly.GetCrudMethods().ToList();
 
                 _logger.Info("[Web service] Load {0} delegates", crudMethods.Count);
+
+                var crudKeys = _crudHandlers.Where(x => x.Key.instance == instance.Name.ToLower());
+                foreach (var key in crudKeys)
+                {
+                    _crudHandlers.Remove(key.Key);
+                }
+
                 foreach (var item in crudMethods)
                 {
                     var method = item.m;
@@ -97,6 +113,11 @@ namespace Aquila.AspNetCore.Web
 
                 var endpointMethods = instance.BLAssembly.GetEndpoints();
 
+                var endpointKeys = _endpointsHandlers.Where(x => x.Key.instance == instance.Name.ToLower());
+                foreach (var key in endpointKeys)
+                {
+                    _endpointsHandlers.Remove(key.Key);
+                }
                 foreach (var item in endpointMethods)
                 {
                     _endpointsHandlers.Add((instance.Name.ToLower(), item.m.Name.ToLower()), item.m);

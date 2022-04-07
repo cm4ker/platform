@@ -69,6 +69,9 @@ namespace Aquila.CodeAnalysis.Semantics
         IsNotRef = 1 << 9,
 
         //TODO: Add Invocation access for correct load address
+        /// <summary>
+        /// Used then the expression will be invoked
+        /// </summary>
         Invoke,
     }
 

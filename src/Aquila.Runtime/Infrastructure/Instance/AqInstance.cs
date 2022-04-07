@@ -24,12 +24,22 @@ using Aquila.Runtime.Querying;
 
 namespace Aquila.Core.Instance
 {
+    public static class AssemblyLoadContextExtensions
+    {
+        public static Assembly LoadFromByteArray(this AssemblyLoadContext context, byte[] bytes)
+        {
+            using var ms = new MemoryStream(bytes);
+            return context.LoadFromStream(ms);
+        }
+    }
+
     /// <summary>
     /// Platfrom instace
     /// </summary>
     public class AqInstance : IAqInstance
     {
         private object _locking;
+        private AssemblyLoadContext _asmContext;
 
         public AqInstance(IInvokeService invokeService, ILogger<AqInstance> logger, IServiceProvider serviceProvider,
             DataContextManager contextManager, UserManager userManager, ICacheService cacheService,
@@ -40,6 +50,7 @@ namespace Aquila.Core.Instance
             _logger = logger;
             _userManager = userManager;
             _cacheService = cacheService;
+            _asmContext = new AssemblyLoadContext(null, true);
 
             InvokeService = invokeService;
 
@@ -68,6 +79,7 @@ namespace Aquila.Core.Instance
             return DatabaseRuntimeContext.Files.GetFile(DataContextManager.GetContext(), name);
         }
 
+
         public void Initialize(StartupConfig config)
         {
             MigrationRunner.Migrate(config.ConnectionString, config.DatabaseType);
@@ -81,22 +93,24 @@ namespace Aquila.Core.Instance
             // AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
             // _logger.Info("Auth provider was registered");
 
+            Reload();
+        }
+
+
+        private void Reload()
+        {
+            if (_asmContext.IsCollectible)
+                _asmContext.Unload();
+
             var currentAssembly = GetCurrentAssembly();
 
             if (currentAssembly != null)
             {
-                var asm = Assembly.Load(currentAssembly);
-                var loadContext = AssemblyLoadContext.GetLoadContext(asm) ??
-                                  throw new Exception("Can't get assembly load context");
+                _asmContext = new AssemblyLoadContext(null, true);
 
-                loadContext.Resolving += (context, name) =>
-                {
-                    using var ms = new MemoryStream(GetFile(name.Name + ".dll"));
-                    return context.LoadFromStream(ms);
-                };
-                // loadContext.LoadFromAssemblyPath(
-                //     @"C:\projects\AquilaPlatform\src\Aquila.Runner\bin\Debug\net5.0\Aquila.Library.dll");
-
+                var asm = _asmContext.LoadFromByteArray(currentAssembly);
+                _asmContext.Resolving += (context, name) =>
+                    context.LoadFromByteArray(GetFile(name.Name + ".dll"));
 
                 LoadAssembly(asm);
                 _logger.Info("Project '{0}' was loaded.", Name);
@@ -104,7 +118,6 @@ namespace Aquila.Core.Instance
             else
                 _logger.Info("Assembly is empty");
         }
-
 
         public bool PendingChanges => MigrationManager.CheckMigration();
 
@@ -114,6 +127,7 @@ namespace Aquila.Core.Instance
             {
                 MigrationManager.Migrate();
                 UpdateDBRContext();
+                Reload();
             }
         }
 
