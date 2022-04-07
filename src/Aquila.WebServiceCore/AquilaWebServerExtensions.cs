@@ -190,6 +190,8 @@ namespace Aquila.WebServiceCore
                 })
                 .AddOpenIdConnect(options =>
                 {
+                    //TODO: make it optional by the settings
+                    
                     // Note: these settings must match the application details
                     // inserted in the database at the server level.
                     options.ClientId = "mvc";
