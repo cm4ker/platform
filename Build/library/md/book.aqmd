@@ -1,0 +1,19 @@
+Name: Book
+Properties:
+
+- Name: caption
+  Types:
+  - Name : string
+    Size : 100
+
+- Name: genre
+  Types:
+  - Name: Entity.GenreLink
+
+- Name: author
+  Types:
+  - Name: Entity.AuthorLink
+
+- Name: year
+  Types:
+  - Name: int

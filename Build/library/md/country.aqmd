@@ -1,0 +1,7 @@
+Name: Country
+
+Properties:
+ - Name: name
+   Types:
+   - Name: string
+     Size: 100

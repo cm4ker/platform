@@ -1,0 +1,17 @@
+Name: User
+Properties:
+  - Name: first_name
+    Types: 
+    - Name : string
+      Size : 100
+  - Name: second_name
+    Types: 
+    - Name : string
+      Size : 100
+  - Name: birthday
+    Types: 
+    - Name : datetime
+  - Name: is_active
+    Types:
+    - Name : bool
+    

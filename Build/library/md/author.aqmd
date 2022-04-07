@@ -1,0 +1,23 @@
+Name: Author
+Properties:
+
+#FirstName field
+- Name: first_name
+  Types:
+  - Name : string
+    Size : 100
+
+#SecondName field
+- Name: second_name
+  Types:
+  - Name : string
+    Size : 100
+
+#BirthDay field
+- Name: birthday
+  Types: 
+    - Name: datetime
+
+- Name: country
+  Types:
+  - Name: Entity.CountryLink
