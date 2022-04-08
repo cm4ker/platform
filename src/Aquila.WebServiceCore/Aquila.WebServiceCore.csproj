@@ -11,6 +11,7 @@
 <!--        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />-->
 <!--        <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />-->
         <PackageReference Include="SoapCore" Version="1.1.0.10" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
     </ItemGroup>
 
     <ItemGroup>

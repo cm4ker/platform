@@ -1,6 +1,6 @@
 Name: History
 Properties:
-  - Name: User
+  - Name: user
     Types:
       - Name: Entity.UserLink
   

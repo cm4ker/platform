@@ -6,11 +6,11 @@ fn take_book(user UserLink, book BookLink)
     if(is_book_available(book))
     {
         var history = HistoryManager.create();
-        history.Book = book;
-        history.User = user;
+        history.book = book;
+        history.user = user;
 
-        history.Date = get_date();
-        history.Operation = -1;
+        history.date = get_date();
+        history.operation = -1;
 
         history.save();
     }
@@ -43,10 +43,10 @@ fn return_book(user UserLink, book BookLink)
     }
 
     var history = HistoryManager.create();
-    history.Book = book;
-    history.User = user;
-    history.Date = get_date();
-    history.Operation = 1;
+    history.book = book;
+    history.user = user;
+    history.date = get_date();
+    history.operation = 1;
     
     history.save();
 }

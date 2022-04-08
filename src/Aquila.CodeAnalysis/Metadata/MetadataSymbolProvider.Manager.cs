@@ -65,8 +65,8 @@ internal partial class MetadataSymbolProvider
 
 
         {
-            var saveDtoPerameter = new SynthesizedParameterSymbol(saveApiMethod, dtoType, 1, RefKind.None);
-            var ctxParameter = //new SynthesizedParameterSymbol(saveMethod, _ct.AqContext, 0, RefKind.None);
+            var saveDtoPerameter = new SynthesizedParameterSymbol(saveApiMethod, dtoType, 1, RefKind.None, "dto");
+            var ctxParameter =
                 new SpecialParameterSymbol(saveApiMethod, _ct.AqContext, SpecialParameterSymbol.ContextName, 0);
             var sdpp = new ParamPlace(saveDtoPerameter);
             var ctx = new ParamPlace(ctxParameter);
@@ -332,12 +332,12 @@ internal partial class MetadataSymbolProvider
                             _ct.IEnumerable_arg1.Construct(rowDtoType),
                             dtoType);
                         ctxPS.EmitLoad(il);
-                        
+
                         il.EmitIntConstant(0);
                         il.EmitOpCode(ILOpCode.Newarr);
                         il.EmitSymbolToken(m, d, rowDtoType, null);
-                     
-                        
+
+
                         dtoLoc.EmitLoad(il);
 
                         il.EmitCall(m, d, ILOpCode.Newobj, colCtor);
@@ -581,10 +581,10 @@ internal partial class MetadataSymbolProvider
                 var ctxPS = new ParamPlace(ctxParam);
                 var idPl = new ParamPlace(idParam);
                 var rowDtoType = GetFromMetadata(table, GeneratedTypeKind.Dto | GeneratedTypeKind.Collection);
-                
-                
+
+
                 var resultType = _ct.IEnumerable_arg1.Construct(rowDtoType);
-                
+
                 loadDtoCollectionMethod
                     .SetName($"load_{table.FullName}")
                     .SetAccess(Accessibility.Public)
@@ -600,7 +600,8 @@ internal partial class MetadataSymbolProvider
                         var sym = _ct.AqParamValue.AsSZArray().Symbol;
                         var resultArrSym = ((NamedTypeSymbol)_ct.ImmutableArray_arg1.Symbol).Construct(dtoType);
                         var arrLoc = new LocalPlace(il.DefineSynthLocal(loadDtoCollectionMethod, "", sym));
-                        var resultArrLoc = new LocalPlace(il.DefineSynthLocal(loadDtoCollectionMethod, "", resultArrSym));
+                        var resultArrLoc =
+                            new LocalPlace(il.DefineSynthLocal(loadDtoCollectionMethod, "", resultArrSym));
 
                         il.EmitIntConstant(1);
                         il.EmitOpCode(ILOpCode.Newarr);
@@ -683,21 +684,23 @@ internal partial class MetadataSymbolProvider
 
 
                     List<IPlace> colPlaces = new List<IPlace>();
-                    
-                    
+
+
                     foreach (var table in md.Tables)
                     {
                         var index = 0;
-                        var loadColMethod = managerType.GetMembers($"load_{table.FullName}").OfType<MethodSymbol>().Single();
+                        var loadColMethod = managerType.GetMembers($"load_{table.FullName}").OfType<MethodSymbol>()
+                            .Single();
                         var collType = GetFromMetadata(table, GeneratedTypeKind.Collection | GeneratedTypeKind.Object);
-                        
-                        var colPlace = new LocalPlace(il.DefineSynthLocal(loadObjectMethod, $"col_{index++}", collType));
-                        
+
+                        var colPlace =
+                            new LocalPlace(il.DefineSynthLocal(loadObjectMethod, $"col_{index++}", collType));
+
                         ctxPS.EmitLoad(il);
                         ctxPS.EmitLoad(il);
                         idPl.EmitLoad(il);
                         il.EmitCall(m, d, ILOpCode.Call, loadColMethod);
-                       //colPlace.EmitStore(il);
+                        //colPlace.EmitStore(il);
                         dtoPlace.EmitLoad(il);
                         il.EmitCall(m, d, ILOpCode.Newobj, collType.Constructors.First());
                         colPlace.EmitStore(il);
@@ -713,14 +716,14 @@ internal partial class MetadataSymbolProvider
                     }
 
                     il.EmitCall(m, d, ILOpCode.Newobj, objectType.Constructors.First());
-                    
-                    
+
+
                     il.EmitRet(false);
                 });
         }
 
         #endregion
-        
+
         managerType.AddMember(saveMethod);
         managerType.AddMember(deleteMethod);
         managerType.AddMember(loadObjectMethod);

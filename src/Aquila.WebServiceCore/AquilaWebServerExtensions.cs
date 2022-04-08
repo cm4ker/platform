@@ -17,23 +17,29 @@ using Aquila.Logging;
 using Aquila.Migrations;
 using Aquila.Networking;
 using Aquila.Shell;
+using Aquila.WebServiceCore.Swagger;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Aquila.WebServiceCore
 {
     public static class AquilaWebServerExtensions
     {
-        public static IApplicationBuilder UseAquila(this IApplicationBuilder builder)
+        public static IApplicationBuilder UseAquila(this IApplicationBuilder builder, WebHostBuilderContext app)
         {
             builder.UseRouting();
             builder.UseEndpoints(options =>
@@ -44,6 +50,18 @@ namespace Aquila.WebServiceCore
 
             builder.UseAuthentication();
 
+            if (app.HostingEnvironment.IsDevelopment())
+            {
+                builder.UseSwagger(o => {});
+                builder.UseSwaggerUI(options =>
+                {
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+                    options.RoutePrefix = string.Empty;
+                    options.DocumentTitle = "TEST";
+                    options.SwaggerEndpoint("test", "/test");
+                });
+            }
+            
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "metadata",
                 "api/{instance}/metadata");
 
@@ -165,6 +183,10 @@ namespace Aquila.WebServiceCore
 
             services.AddSingleton<ICacheService, DictionaryCacheService>();
 
+            // services.TryAddEnumerable(
+            //     ServiceDescriptor.Transient<IApiDescriptionProvider, AquilaApplicationModelProvider>());
+
+            services.AddSingleton<AquilaApiHolder>();
             services.AddSingleton<AquilaHandlerMiddleware>();
 
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -227,7 +249,12 @@ namespace Aquila.WebServiceCore
 
             services.AddHttpClient();
 
-            ContextExtensions.CurrentContextProvider = () => HttpContextExtension.GetOrCreateContext();
+            
+            services.TryAddTransient<ISwaggerProvider, AquilaSwaggerGenerator>();
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
+            
+            ContextExtensions.CurrentContextProvider = HttpContextExtension.GetOrCreateContext;
 
             return services;
         }

@@ -1,5 +1,6 @@
 import Entity;
 
+
 [endpoint]
 pub fn get_books_count() int
 {
@@ -13,8 +14,20 @@ pub fn get_books_count() int
 pub fn create_new_book() bool
 {
     var book = BookManager.create();
-    book.Caption = "Some caption";
+    book.caption = "Some caption";
     book.save();
     
     return true;
+}
+
+[endpoint]
+pub fn add(argument int) int
+{
+    return argument + 1;
+}
+
+[endpoint]
+pub fn sub(argument int, argument2 int) int
+{
+    return argument - argument2;    
 }
