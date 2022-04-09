@@ -611,7 +611,8 @@ internal partial class MetadataSymbolProvider
                         //Load values array
                         arrLoc.EmitLoad(il);
                         il.EmitIntConstant(0);
-                        il.EmitStringConstant(table.ParentProperty.Name);
+                        //NB: when we generate select query we use Id property for it
+                        il.EmitStringConstant(md.IdProperty.Name);
 
                         idPl.EmitLoad(il);
                         il.EmitOpCode(ILOpCode.Box);
