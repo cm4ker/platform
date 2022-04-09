@@ -1,31 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Threading.Tasks;
 using Aquila.AspNetCore.Web;
 using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
-using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Network;
 using Aquila.Core.Instance;
-using Aquila.Core.Network;
 using Aquila.Core.Serialisers;
 using Aquila.Core.Settings;
 using Aquila.Core.Utilities;
 using Aquila.Data;
 using Aquila.Logging;
 using Aquila.Migrations;
-using Aquila.Networking;
-using Aquila.Shell;
 using Aquila.WebServiceCore.Swagger;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,7 +50,6 @@ namespace Aquila.WebServiceCore
                     options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
                     options.RoutePrefix = string.Empty;
                     options.DocumentTitle = "TEST";
-                    options.SwaggerEndpoint("test", "/test");
                 });
             }
             
@@ -165,22 +156,9 @@ namespace Aquila.WebServiceCore
             services.AddSingleton<AqInstanceManager, AqInstanceManager>();
             services.AddSingleton<ISettingsStorage, FileSettingsStorage>();
 
-            services.AddTransient<IConnectionManager, ConnectionManager>();
+            
             services.AddTransient(typeof(ILogger<>), typeof(SimpleConsoleLogger<>));
-            services.AddTransient<IDatabaseNetworkListener, TCPListener>();
-
-            services.AddScoped<IInvokeService, InvokeService>();
-            services.AddTransient<INetworkListener, TCPListener>();
-            services.AddTransient<ITerminalNetworkListener, SSHListener>();
-            services.AddTransient<IChannel, Channel>();
-            services.AddSingleton<IAccessPoint, UserAccessPoint>();
-            services.AddSingleton<ITaskManager, TaskManager>();
-            services.AddTransient<IMessagePackager, SimpleMessagePackager>();
-            services.AddTransient<ISerializer, ApexSerializer>();
-            services.AddTransient<UserConnectionFactory>();
-            services.AddTransient<ServerConnectionFactory>();
-            services.AddTransient<IChannelFactory, ChannelFactory>();
-
+            
             services.AddSingleton<ICacheService, DictionaryCacheService>();
 
             // services.TryAddEnumerable(

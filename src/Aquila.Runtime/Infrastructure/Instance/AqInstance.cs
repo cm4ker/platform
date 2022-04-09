@@ -9,11 +9,8 @@ using System.Xml.Serialization;
 using Aquila.Core.Assemlies;
 using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
-using Aquila.Core.Sessions;
 using Aquila.Data;
 using Aquila.Initializer;
-using Aquila.Core.Contracts;
-using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Network;
 using Aquila.Logging;
 using Aquila.Metadata;
@@ -41,7 +38,7 @@ namespace Aquila.Core.Instance
         private object _locking;
         private AssemblyLoadContext _asmContext;
 
-        public AqInstance(IInvokeService invokeService, ILogger<AqInstance> logger, IServiceProvider serviceProvider,
+        public AqInstance(ILogger<AqInstance> logger, IServiceProvider serviceProvider,
             DataContextManager contextManager, UserManager userManager, ICacheService cacheService,
             MigrationManager manager)
         {
@@ -52,14 +49,10 @@ namespace Aquila.Core.Instance
             _cacheService = cacheService;
             _asmContext = new AssemblyLoadContext(null, true);
 
-            InvokeService = invokeService;
-
             MigrationManager = manager;
 
             Globals = new Dictionary<string, object>();
             DataContextManager = contextManager;
-
-            Sessions = new List<ISession>();
         }
 
         public DatabaseRuntimeContext DatabaseRuntimeContext { get; private set; }
@@ -294,9 +287,6 @@ namespace Aquila.Core.Instance
         private UserManager _userManager;
         private readonly ICacheService _cacheService;
 
-        public IList<ISession> Sessions { get; }
-        public IInvokeService InvokeService { get; }
-
         public MigrationManager MigrationManager { get; }
 
         public string Name => "Library";
@@ -310,22 +300,5 @@ namespace Aquila.Core.Instance
         /// Global objects
         /// </summary>
         public Dictionary<string, object> Globals { get; set; }
-
-        /// <summary>
-        /// Create session for user
-        /// </summary>
-        /// <param name="user">Пользователь</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Если платформа не инициализирована</exception>
-        public ISession CreateSession(AqUser user)
-        {
-            lock (_locking)
-            {
-                var session = new UserSession(this, user, DataContextManager, _cacheService);
-                Sessions.Add(session);
-
-                return session;
-            }
-        }
     }
 }

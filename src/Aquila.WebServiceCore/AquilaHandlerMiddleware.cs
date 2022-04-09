@@ -237,7 +237,7 @@ namespace Aquila.AspNetCore.Web
 
             if (instance is null) return;
 
-            await context.Response.WriteAsJsonAsync(instance.Sessions);
+            //await context.Response.WriteAsJsonAsync(instance.Sessions);
         }
 
         private async Task GetInstances(HttpContext context)

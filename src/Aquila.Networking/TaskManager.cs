@@ -36,7 +36,7 @@ namespace Aquila.Core.Network
             _invokes.Remove(invokeContext);
         }
 
-        public Task<object> RunTask(ISession session, Func<InvokeContext, object> action)
+        public Task<object> RunTask(Func<InvokeContext, object> action)
         {
             var canceller = new CancellationTokenSource();
             Task<object> task = null;
@@ -45,7 +45,7 @@ namespace Aquila.Core.Network
             task = new Task<object>(
                 (o) =>
                 {
-                    context = new InvokeContext(task, canceller, session);
+                    context = new InvokeContext(task, canceller);
 
                     StartTask(context);
                     using (canceller.Token.Register(Thread.CurrentThread.Interrupt))

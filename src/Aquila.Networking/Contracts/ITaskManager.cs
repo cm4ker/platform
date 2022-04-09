@@ -6,7 +6,7 @@ namespace Aquila.Core.Contracts.Network
 
     public interface ITaskManager
     {
-        Task<object> RunTask(ISession session, Func<InvokeContext, object> action);
+        Task<object> RunTask(Func<InvokeContext, object> action);
 
     }
 

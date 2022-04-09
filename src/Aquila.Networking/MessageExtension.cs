@@ -12,12 +12,12 @@ namespace Aquila.Core.Network
     public static class MessageExtension
     {
         public static async Task<INetworkMessage> Invoke(this RequestInvokeUnaryNetworkMessage request,
-            IInvokeService service, ISession session)
+            IInvokeService service)
         {
             try
             {
                 return new ResponceInvokeUnaryNetworkMessage(request.Id,
-                    await service.Invoke(request.Route, session, request.Args));
+                    await service.Invoke(request.Route, request.Args));
             }
             catch (Exception ex)
             {
@@ -26,7 +26,7 @@ namespace Aquila.Core.Network
         }
 
         public static async Task<INetworkMessage> InvokeStream(this StartInvokeStreamNetworkMessage request,
-            IInvokeService service, ISession session, IChannel channel)
+            IInvokeService service, IChannel channel)
         {
             try
             {

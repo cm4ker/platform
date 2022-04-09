@@ -42,7 +42,7 @@ namespace Aquila.Core.Network
         {
             base.Close();
             _remover?.Dispose();
-            _connectionContext.Session?.Close();
+            
         }
 
         public override void OnNext(INetworkMessage value)

@@ -43,19 +43,19 @@ namespace Aquila.Core.Network.States
             switch (value)
             {
                 case RequestInvokeInstanceProxy instance:
-                    var type = Type.GetType(instance.InterfaceName);
-                    var instanceService = _instance.InvokeService.GetRequiredService(type);
-
-                    new ProxyObjectObserver(context.Connection, instance.Id, instanceService, _instance);
+                    // var type = Type.GetType(instance.InterfaceName);
+                    // var instanceService = _instance.InvokeService.GetRequiredService(type);
+                    //
+                    // new ProxyObjectObserver(context.Connection, instance.Id, instanceService, _instance);
                     break;
                 case RequestInvokeUnaryNetworkMessage invoke:
                     if (context is ServerConnectionContext serverContext)
                     {
-                        var res = _instance.InvokeService.Invoke(invoke.Route, serverContext.Session, invoke.Args);
-
-                        var responce = new ResponceInvokeUnaryNetworkMessage(invoke.Id, await res);
-
-                        serverContext.Connection.Channel.Send(responce);
+                        // var res = _instance.InvokeService.Invoke(invoke.Route, invoke.Args);
+                        //
+                        // var responce = new ResponceInvokeUnaryNetworkMessage(invoke.Id, await res);
+                        //
+                        // serverContext.Connection.Channel.Send(responce);
                     }
 
                     break;
@@ -63,15 +63,15 @@ namespace Aquila.Core.Network.States
                 case RequestInvokeUnaryByteArgsNetworkMessage invoke:
                     if (context is ServerConnectionContext srvContext)
                     {
-                        PlatformSerializer serializer = new PlatformSerializer();
-                        var args = serializer.Deserialize(invoke.Args, false);
-                        var res = _instance.InvokeService.Invoke(invoke.Route, srvContext.Session, args);
-
-
-                        var result = serializer.Serialize(await res);
-                        var responce = new ResponceInvokeUnaryByteArgsNetworkMessage(invoke.Id, result);
-
-                        srvContext.Connection.Channel.Send(responce);
+                        // PlatformSerializer serializer = new PlatformSerializer();
+                        // var args = serializer.Deserialize(invoke.Args, false);
+                        // var res = _instance.InvokeService.Invoke(invoke.Route, args);
+                        //
+                        //
+                        // var result = serializer.Serialize(await res);
+                        // var responce = new ResponceInvokeUnaryByteArgsNetworkMessage(invoke.Id, result);
+                        //
+                        // srvContext.Connection.Channel.Send(responce);
                     }
 
                     break;
@@ -80,9 +80,9 @@ namespace Aquila.Core.Network.States
                 case StartInvokeStreamNetworkMessage invokeStream:
                     if (context is ServerConnectionContext serverContext2)
                     {
-                        var stream = new DataStream(invokeStream.Id, context.Connection);
-                        await _instance.InvokeService.InvokeStream(invokeStream.Route, serverContext2.Session,
-                            stream, invokeStream.Request);
+                        // var stream = new DataStream(invokeStream.Id, context.Connection);
+                        // await _instance.InvokeService.InvokeStream(invokeStream.Route, 
+                        //     stream, invokeStream.Request);
                     }
 
                     break;

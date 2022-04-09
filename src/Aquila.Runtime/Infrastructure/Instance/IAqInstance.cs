@@ -15,8 +15,6 @@ public interface IAqInstance
 {
     DatabaseRuntimeContext DatabaseRuntimeContext { get; }
     bool PendingChanges { get; }
-    IList<ISession> Sessions { get; }
-    IInvokeService InvokeService { get; }
     MigrationManager MigrationManager { get; }
     string Name { get; }
     DataContextManager DataContextManager { get; }
@@ -31,12 +29,4 @@ public interface IAqInstance
     void Migrate();
     void Deploy(Stream packageStream);
     void UpdateAssembly(Assembly asm);
-
-    /// <summary>
-    /// Create session for user
-    /// </summary>
-    /// <param name="user">Пользователь</param>
-    /// <returns></returns>
-    /// <exception cref="Exception">Если платформа не инициализирована</exception>
-    ISession CreateSession(AqUser user);
 }
