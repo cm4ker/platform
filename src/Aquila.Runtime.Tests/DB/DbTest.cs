@@ -1,21 +1,16 @@
 ﻿using System.Data;
-using System.IO;
 using System.Linq;
 using Aquila.Core;
 using Aquila.Core.Assemlies;
-using Aquila.Core.Authentication;
-using Aquila.Core.Sessions;
 using Aquila.Data;
 using Aquila.Initializer;
 using Aquila.Library.Scripting;
 using Aquila.Logging;
 using Aquila.Metadata;
 using Aquila.Migrations;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
 using SqlInMemory;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace Aquila.Runtime.Tests.DB
 {

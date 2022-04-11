@@ -493,7 +493,6 @@ partial class MetadataSymbolProvider
         collectionType.AddMember(innerListField);
     }
 
-
     private void PopulateTableObjectType(SMEntity md, SMTable table)
     {
         var rowObjectType =

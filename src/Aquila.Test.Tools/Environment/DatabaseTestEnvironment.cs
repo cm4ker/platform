@@ -1,19 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using Aquila.Core.Authentication;
-using Aquila.Core.CacheService;
-using Aquila.Core.Sessions;
-using Aquila.Initializer;
-using Aquila.Core.Contracts;
-using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Network;
-using Aquila.Test.Tools;
-
-namespace Aquila.Core.Instance
+﻿namespace Aquila.Core.Instance
 {
 //     /// <summary>
 //     /// Рабочая среда. Здесь же реализованы все плюшки  манипуляций с данными и так далее

@@ -244,6 +244,21 @@ internal partial class MetadataSymbolProvider
                 thisPlace.EmitLoad(il);
                 il.EmitCall(m, d, ILOpCode.Call, _ct.Object.Ctor());
 
+                foreach (var mdTable in md.Tables)
+                {
+                    var prop = dtoType.GetMembers(mdTable.Name).OfType<PropertySymbol>().Single();
+                    var propPlace = new PropertyPlace(null, prop);
+                    
+                    var rowDtoType = GetFromMetadata(mdTable, GeneratedTypeKind.Dto | GeneratedTypeKind.Collection);
+                    var listType = _ct.List_arg1.Construct(rowDtoType);
+                    
+                    thisPlace.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Newobj, listType.Ctor());
+                    propPlace.EmitStore(il);
+
+
+                }
+                
                 il.EmitRet(true);
             });
 
@@ -262,6 +277,13 @@ internal partial class MetadataSymbolProvider
             {
                 _ps.CreatePropertyWithBackingField(dtoType, schema.type, schema.propName);
             }
+        }
+
+        foreach (var mdTable in md.Tables)
+        {
+            var rowDtoType = GetFromMetadata(mdTable, GeneratedTypeKind.Dto | GeneratedTypeKind.Collection);
+            var listType = _ct.List_arg1.Construct(rowDtoType);
+            _ps.CreatePropertyWithBackingField(dtoType, listType, mdTable.Name);
         }
 
         dtoType.AddMember(ctor);
@@ -307,7 +329,7 @@ internal partial class MetadataSymbolProvider
 
         #region Tables
 
-        List<(SynthesizedParameterSymbol pr, ParamPlace prPlace, FieldSymbol fl, FieldPlace flPlace)>
+        List<(FieldSymbol fl, FieldPlace flPlace, NamedTypeSymbol collectionType, PropertySymbol dtoProp)>
             tablesSynth = new();
 
         var index = 2;
@@ -320,9 +342,9 @@ internal partial class MetadataSymbolProvider
                 QualifiedName.Parse($"{Namespace}.{md.Name}{mdTable.Name}{TableRowDtoPostfix}", true));
 
             //var a = ((NamedTypeSymbol)_ct.ImmutableArray_arg1.Symbol).Construct();
-            var tableParam =
-                new SynthesizedParameterSymbol(ctor, collectionType, index++, RefKind.None, $"{mdTable.Name}");
-            var tableParamPlace = new ParamPlace(tableParam);
+            // var tableParam =
+            //     new SynthesizedParameterSymbol(ctor, collectionType, index++, RefKind.None, $"{mdTable.Name}");
+            // var tableParamPlace = new ParamPlace(tableParam);
 
             var tableField = _ps.SynthesizeField(objectType);
             tableField
@@ -330,9 +352,11 @@ internal partial class MetadataSymbolProvider
                 .SetAccess(Accessibility.Private)
                 .SetType(collectionType);
 
+            var dtoProp = dtoType.GetMembers(mdTable.Name).OfType<PropertySymbol>().Single();
+
             var tableFieldPlace = new FieldPlace(tableField);
 
-            tablesSynth.Add((tableParam, tableParamPlace, tableField, tableFieldPlace));
+            tablesSynth.Add((tableField, tableFieldPlace, collectionType, dtoProp));
 
             objectType.AddMember(tableField);
 
@@ -359,9 +383,8 @@ internal partial class MetadataSymbolProvider
 
         #endregion
 
+        var constructorParameters = new ParameterSymbol[] { ctxParam, dtoParam };
 
-        var constructorParameters = new ParameterSymbol[] { ctxParam, dtoParam }
-            .Union(tablesSynth.Select(x => x.pr)).ToArray();
 
         var dtoPS = new ParamPlace(dtoParam);
         var ctxPS = new ParamPlace(ctxParam);
@@ -384,8 +407,20 @@ internal partial class MetadataSymbolProvider
                 //save each table
                 foreach (var t in tablesSynth)
                 {
+                    var index = 0;
+                    var collType = t.collectionType;
+
+                    var propPlace = new PropertyPlace(null, t.dtoProp);
+
                     thisPlace.EmitLoad(il);
-                    t.prPlace.EmitLoad(il);
+                    ctxPS.EmitLoad(il);
+
+                    //load table property
+                    dtoPS.EmitLoad(il);
+                    propPlace.EmitLoad(il);
+
+                    dtoPS.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Newobj, collType.Constructors.First());
                     t.flPlace.EmitStore(il);
                 }
 

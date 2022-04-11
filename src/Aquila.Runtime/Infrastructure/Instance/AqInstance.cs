@@ -21,6 +21,21 @@ using Aquila.Runtime.Querying;
 
 namespace Aquila.Core.Instance
 {
+    public class AquilaAssemblyLoadContext : AssemblyLoadContext
+    {
+        public AquilaAssemblyLoadContext() : base(true)
+        {
+        }
+
+        public bool IsUnloading { get; private set; }
+
+        public new void Unload()
+        {
+            IsUnloading = true;
+            base.Unload();
+        }
+    }
+
     public static class AssemblyLoadContextExtensions
     {
         public static Assembly LoadFromByteArray(this AssemblyLoadContext context, byte[] bytes)
@@ -36,7 +51,7 @@ namespace Aquila.Core.Instance
     public class AqInstance : IAqInstance
     {
         private object _locking;
-        private AssemblyLoadContext _asmContext;
+        private AquilaAssemblyLoadContext _asmContext;
 
         public AqInstance(ILogger<AqInstance> logger, IServiceProvider serviceProvider,
             DataContextManager contextManager, UserManager userManager, ICacheService cacheService,
@@ -47,7 +62,6 @@ namespace Aquila.Core.Instance
             _logger = logger;
             _userManager = userManager;
             _cacheService = cacheService;
-            _asmContext = new AssemblyLoadContext(null, true);
 
             MigrationManager = manager;
 
@@ -92,14 +106,19 @@ namespace Aquila.Core.Instance
 
         private void Reload()
         {
-            if (_asmContext.IsCollectible)
-                _asmContext.Unload();
-
             var currentAssembly = GetCurrentAssembly();
 
             if (currentAssembly != null)
             {
-                _asmContext = new AssemblyLoadContext(null, true);
+                if (_asmContext == null)
+                    _asmContext = new AquilaAssemblyLoadContext();
+
+                if (_asmContext.IsCollectible && !_asmContext.IsUnloading && _asmContext.Assemblies.Any())
+                    _asmContext.Unload();
+
+                if (_asmContext.IsUnloading)
+                    _asmContext = new AquilaAssemblyLoadContext();
+
 
                 var asm = _asmContext.LoadFromByteArray(currentAssembly);
                 _asmContext.Resolving += (context, name) =>

@@ -322,26 +322,26 @@ internal partial class MetadataSymbolProvider
                     ctxPS.EmitLoad(il);
                     dtoLoc.EmitLoad(il);
 
-                    foreach (var table in md.Tables)
-                    {
-                        var objectCollectionType =
-                            GetFromMetadata(table, GeneratedTypeKind.Collection | GeneratedTypeKind.Object);
-                        var rowDtoType = GetFromMetadata(table, GeneratedTypeKind.Dto);
-
-                        var colCtor = objectCollectionType.Ctor(_ct.AqContext,
-                            _ct.IEnumerable_arg1.Construct(rowDtoType),
-                            dtoType);
-                        ctxPS.EmitLoad(il);
-
-                        il.EmitIntConstant(0);
-                        il.EmitOpCode(ILOpCode.Newarr);
-                        il.EmitSymbolToken(m, d, rowDtoType, null);
-
-
-                        dtoLoc.EmitLoad(il);
-
-                        il.EmitCall(m, d, ILOpCode.Newobj, colCtor);
-                    }
+                    // foreach (var table in md.Tables)
+                    // {
+                    //     var objectCollectionType =
+                    //         GetFromMetadata(table, GeneratedTypeKind.Collection | GeneratedTypeKind.Object);
+                    //     var rowDtoType = GetFromMetadata(table, GeneratedTypeKind.Dto);
+                    //
+                    //     var colCtor = objectCollectionType.Ctor(_ct.AqContext,
+                    //         _ct.IEnumerable_arg1.Construct(rowDtoType),
+                    //         dtoType);
+                    //     ctxPS.EmitLoad(il);
+                    //
+                    //     il.EmitIntConstant(0);
+                    //     il.EmitOpCode(ILOpCode.Newarr);
+                    //     il.EmitSymbolToken(m, d, rowDtoType, null);
+                    //
+                    //
+                    //     dtoLoc.EmitLoad(il);
+                    //
+                    //     il.EmitCall(m, d, ILOpCode.Newobj, colCtor);
+                    // }
 
                     il.EmitCall(m, d, ILOpCode.Newobj, objectType.InstanceConstructors.First());
 
@@ -513,7 +513,7 @@ internal partial class MetadataSymbolProvider
                         throw new Exception("The id property is null");
 
                     var sym = _ct.AqParamValue.AsSZArray().Symbol;
-                    var resultArrSym = ((NamedTypeSymbol)_ct.ImmutableArray_arg1.Symbol).Construct(dtoType);
+                    var resultArrSym = ((NamedTypeSymbol)_ct.List_arg1.Symbol).Construct(dtoType);
                     var arrLoc = new LocalPlace(il.DefineSynthLocal(loadDtoMethod, "", sym));
                     var resultArrLoc = new LocalPlace(il.DefineSynthLocal(loadDtoMethod, "", resultArrSym));
 
@@ -540,7 +540,6 @@ internal partial class MetadataSymbolProvider
 
                     var func = _ct.AqReadDelegate.Construct(dtoType);
 
-                    // Func<,>(object @object, IntPtr method)
                     var func_ctor = func.InstanceConstructors.Single(m =>
                         m.ParameterCount == 2 &&
                         m.Parameters[0].Type.SpecialType == SpecialType.System_Object &&
@@ -559,10 +558,31 @@ internal partial class MetadataSymbolProvider
                     il.EmitCall(m, d, ILOpCode.Call, invokeSelect);
                     resultArrLoc.EmitStore(il);
 
-                    resultArrLoc.EmitLoadAddress(il);
+
+                    var dto_loc = new LocalPlace(il.DefineSynthLocal(loadDtoMethod, "dto", dtoType));
+
+                    resultArrLoc.EmitLoad(il);
                     il.EmitIntConstant(0);
                     il.EmitCall(m, d, ILOpCode.Call, get_item_sym);
+                    dto_loc.EmitStore(il);
 
+                    foreach (var table in md.Tables)
+                    {
+                        var colProperty = dtoType.GetMembers(table.Name).OfType<PropertySymbol>().First();
+                        var colPropertyPlace = new PropertyPlace(null, colProperty);
+
+                        var index = 0;
+                        var loadColMethod = managerType.GetMembers($"load_{table.FullName}").OfType<MethodSymbol>()
+                            .Single();
+
+                        dto_loc.EmitLoad(il);
+                        ctxPS.EmitLoad(il);
+                        idPl.EmitLoad(il);
+                        il.EmitCall(m, d, ILOpCode.Call, loadColMethod);
+                        colPropertyPlace.EmitStore(il);
+                    }
+
+                    dto_loc.EmitLoad(il);
                     il.EmitRet(false);
                 });
         }
@@ -583,7 +603,7 @@ internal partial class MetadataSymbolProvider
                 var rowDtoType = GetFromMetadata(table, GeneratedTypeKind.Dto | GeneratedTypeKind.Collection);
 
 
-                var resultType = _ct.IEnumerable_arg1.Construct(rowDtoType);
+                var resultType = _ct.List_arg1.Construct(rowDtoType);
 
                 loadDtoCollectionMethod
                     .SetName($"load_{table.FullName}")
@@ -598,7 +618,7 @@ internal partial class MetadataSymbolProvider
                             throw new Exception("The id property is null");
 
                         var sym = _ct.AqParamValue.AsSZArray().Symbol;
-                        var resultArrSym = ((NamedTypeSymbol)_ct.ImmutableArray_arg1.Symbol).Construct(dtoType);
+                        var resultArrSym = ((NamedTypeSymbol)_ct.List_arg1.Symbol).Construct(dtoType);
                         var arrLoc = new LocalPlace(il.DefineSynthLocal(loadDtoCollectionMethod, "", sym));
                         var resultArrLoc =
                             new LocalPlace(il.DefineSynthLocal(loadDtoCollectionMethod, "", resultArrSym));
