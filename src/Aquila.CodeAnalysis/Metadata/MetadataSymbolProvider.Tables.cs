@@ -140,11 +140,9 @@ partial class MetadataSymbolProvider
 
         #region create()
 
-        
-        
         var createMethod = _ps.SynthesizeMethod(collectionType);
-            
-            createMethod
+
+        createMethod
             .SetName("create")
             .SetIsStatic(false)
             .SetReturn(rowObjectType)
@@ -160,7 +158,7 @@ partial class MetadataSymbolProvider
                 var idProperty = dtoType.GetMembers(md.IdProperty.Name).OfType<PropertySymbol>().Single();
 
                 var resultStore = new LocalPlace(il.DefineSynthLocal(createMethod, "result", rowObjectType));
-                
+
                 //load Id
                 thisPlace.EmitLoad(il);
                 f_dtoPlace.EmitLoad(il);
@@ -172,15 +170,39 @@ partial class MetadataSymbolProvider
                 il.EmitCall(m, d, ILOpCode.Newobj, rowObjectType.Ctor(_ct.AqContext, rowDtoType));
                 resultStore.EmitStore(il);
 
-                var addMethod = innerListField.Type.GetMembers("Add").OfType<MethodSymbol>().Where(x=>x.ParameterCount == 1 && x.Parameters[0].Type == rowObjectType).Single();
+                var addMethod = innerListField.Type.GetMembers("Add").OfType<MethodSymbol>()
+                    .Where(x => x.ParameterCount == 1 && x.Parameters[0].Type == rowObjectType).Single();
 
                 thisPlace.EmitLoad(il);
                 f_innerListPlace.EmitLoad(il);
                 resultStore.EmitLoad(il);
                 il.EmitCall(m, d, ILOpCode.Call, addMethod);
-                
+
                 resultStore.EmitLoad(il);
                 il.EmitRet(false);
+            }));
+
+        #endregion
+
+
+        #region remove()
+
+        var removeMethod = _ps.SynthesizeMethod(collectionType);
+        var rowParameter = new SynthesizedParameterSymbol(removeMethod, rowObjectType, 0, RefKind.None, "row");
+        var row_place = new ParamPlace(rowParameter);
+        removeMethod
+            .SetName("remove")
+            .SetIsStatic(false)
+            .SetParameters(rowParameter)
+            .SetMethodBuilder(((m, d) => (il) =>
+            {
+                var removeMethod = innerListField.Type.GetMembers("Remove").OfType<MethodSymbol>()
+                    .First(x => x.GetParameterCount() == 1);
+                thisPlace.EmitLoad(il);
+                f_innerListPlace.EmitLoad(il);
+                rowParameter.EmitLoad(il);
+                il.EmitCall(m, d, ILOpCode.Call, removeMethod);
+                il.EmitRet(true);
             }));
 
         #endregion
@@ -271,23 +293,22 @@ partial class MetadataSymbolProvider
                             {
                                 IPlace dtoPlace;
                                 PropertySymbol clrProp;
-                           
+
                                 var typeInfo = flattenTypes[index];
                                 if (visitRef && typeInfo.type.IsReference)
                                     continue;
 
                                 if (typeInfo.isComplex && typeInfo.type.IsReference)
                                     visitRef = true;
-                              
+
                                 string propName = $"{prop.Name}{typeInfo.postfix}";
-                                
+
                                 if (prop == table.ParentProperty)
                                 {
                                     dtoPlace = f_dtoPlace;
                                     clrProp = dtoType.GetMembers($"{md.IdProperty.Name}")
                                         .OfType<PropertySymbol>()
                                         .FirstOrDefault();
-                                    
                                 }
                                 else
                                 {
@@ -297,7 +318,6 @@ partial class MetadataSymbolProvider
                                         .FirstOrDefault();
                                 }
 
-                               
 
                                 if (clrProp == null)
                                     throw new NullReferenceException(
@@ -313,7 +333,7 @@ partial class MetadataSymbolProvider
 
                                 if (prop == table.ParentProperty)
                                     thisPlace.EmitLoad(il);
-                                
+
                                 dtoPlace.EmitLoad(il);
                                 il.EmitCall(m, d, ILOpCode.Call, clrProp.GetMethod);
                                 il.EmitOpCode(ILOpCode.Box);
@@ -373,6 +393,7 @@ partial class MetadataSymbolProvider
         collectionType.AddMember(ctxField);
         collectionType.AddMember(dtoField);
         collectionType.AddMember(innerListField);
+        collectionType.AddMember(removeMethod);
     }
 
     private void PopulateTableLinkCollection(SMEntity md, SMTable table)
