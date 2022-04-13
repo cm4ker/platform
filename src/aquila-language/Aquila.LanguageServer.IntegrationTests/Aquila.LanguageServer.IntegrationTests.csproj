@@ -13,10 +13,10 @@
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.8" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.8" />
     <PackageReference Include="OmniSharp.Extensions.LanguageClient" Version="0.19.2" />
-    <PackageReference Include="coverlet.collector" Version="3.1.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+<!--    <PackageReference Include="coverlet.collector" Version="3.1.0">-->
+<!--      <PrivateAssets>all</PrivateAssets>-->
+<!--      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>-->
+<!--    </PackageReference>-->
   </ItemGroup>
 
   <ItemGroup>
@@ -27,5 +27,9 @@
     <!-- Path prefix: Completions/SnippetTemplates -->
     <EmbeddedResource Include="./Completions/SnippetTemplates/**/*.json" LogicalName="$([System.String]::new('Completions/SnippetTemplates/%(RecursiveDir)%(Filename)%(Extension)').Replace('\', '/'))" />
     <EmbeddedResource Include="./Completions/SnippetTemplates/**/*.bicep" LogicalName="$([System.String]::new('Completions/SnippetTemplates/%(RecursiveDir)%(Filename)%(Extension)').Replace('\', '/'))" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="packages.lock.json" />
   </ItemGroup>
 </Project>
