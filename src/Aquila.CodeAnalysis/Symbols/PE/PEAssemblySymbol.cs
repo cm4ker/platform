@@ -146,6 +146,10 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             {
                 _specialAssembly = SpecialAssembly.SystemLinq;
             }
+            else if (IsSystemCollections(assembly))
+            {
+                _specialAssembly = SpecialAssembly.SystemCollections;
+            }
             else if (assembly.Identity.Name == "System.Runtime")
             {
                 _specialAssembly = SpecialAssembly.CorLibrary;
@@ -169,6 +173,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             ass.Identity.Name == "System.Collections.Immutable";
 
         internal static bool IsSystemLinq(PEAssembly ass) => ass.Identity.Name == "System.Linq";
+        
+        internal static bool IsSystemCollections(PEAssembly ass) => ass.Identity.Name == "System.Collections";
 
         internal static PEAssemblySymbol Create(PortableExecutableReference reference, PEAssembly ass = null,
             bool isLinked = true)

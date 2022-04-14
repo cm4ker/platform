@@ -1,7 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <Import Project="..\Props\target.props" />
 
+    <PropertyGroup>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    </PropertyGroup>
+    
     <ItemGroup>
         <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
             <PrivateAssets>all</PrivateAssets>
