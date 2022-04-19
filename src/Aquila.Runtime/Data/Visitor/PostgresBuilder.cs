@@ -53,7 +53,7 @@ namespace Aquila.QueryBuilder.Visitor
             return node.Value switch
             {
                 string str => string.Format("'{0}'", str),
-                bool b => Convert.ToByte(b).ToString(),
+                bool b => b?"true":"false",
                 Guid g => string.Format("'{0}'", g.ToString()),
                 _ => node.Value.ToString()
             };
@@ -210,7 +210,7 @@ namespace Aquila.QueryBuilder.Visitor
 
         public override string VisitSDelete(SDelete node)
         {
-            return string.Format("DELETE {0}\n{1}{2}",
+            return string.Format("DELETE {1}{2}",
                 node.Delete.Accept(this),
                 node.From == null ? "" : node.From.Accept(this),
                 node.Where == null ? "" : node.Where.Accept(this)
@@ -249,9 +249,10 @@ namespace Aquila.QueryBuilder.Visitor
         public override string VisitSUpdate(SUpdate node)
         {
             return string.Format("UPDATE {0}\nSET {1}\n{2}{3}",
-                node.Update.Accept(this),
+                node.From?.DataSource.Accept(this) ?? node.Update.Accept(this),
                 string.Join(", ", node.Set.Items.Select(s => s.Accept(this))),
-                node.From == null ? "" : node.From.Accept(this),
+                "",
+                //node.From == null ? "" : node.From.Accept(this),
                 node.Where == null ? "" : node.Where.Accept(this)
             );
         }
@@ -395,7 +396,7 @@ namespace Aquila.QueryBuilder.Visitor
 
         public override string VisitColumnTypeGuid(ColumnTypeGuid node)
         {
-            return "UNIQUEIDENTIFIER";
+            return "UUID";
         }
 
         public override string VisitColumnTypeText(ColumnTypeText node)
@@ -410,7 +411,7 @@ namespace Aquila.QueryBuilder.Visitor
 
         public override string VisitColumnTypeVarBinary(ColumnTypeVarBinary node)
         {
-            return string.Format("VARBINARY{0}", node.Size > 0 ? $"({node.Size})" : "(MAX)");
+            return string.Format("bit{0}", node.Size > 0 ? $"({node.Size})" : $"({int.MaxValue})");
         }
 
         public override string VisitConstraint(Constraint node)
@@ -487,8 +488,8 @@ namespace Aquila.QueryBuilder.Visitor
 
         public override string VisitDropTable(DropTable node)
         {
-            return string.Format("{0}DROP TABLE {1}",
-                node.IfExists ? string.Format("IF OBJECT_ID('{0}', 'U') IS NOT NULL\n", node.Table.Accept(this)) : "",
+            return string.Format("DROP TABLE {0} {1}",
+                node.IfExists ? "IF EXISTS" : "",
                 node.Table.Accept(this));
         }
 

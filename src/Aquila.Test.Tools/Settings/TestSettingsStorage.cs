@@ -17,21 +17,12 @@ namespace Aquila.Core.Test
                     {
                         Address = "127.0.0.1:12345",
                         Type = PointType.Instance
-                    },
-                    // new ListenerConfig()
-                    // {
-                    //     Address = "127.0.0.1:22",
-                    //     Type = ListenerType.Admin
-                    // }
+                    }
                 }
             },
             Environments = new List<StartupConfig>()
             {
-                new StartupConfig()
-                {
-                    ConnectionString = TestMetadata.DefaultConnetionString,
-                    DatabaseType = SqlDatabaseType.SqlServer
-                }
+               
             }
         };
 

@@ -1,0 +1,23 @@
+﻿version: "3.3"
+services:
+  web:
+    container_name: aquila
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on: [ mssql ]
+    ports:
+      - "8080:80"
+  mssql:
+    image: "mcr.microsoft.com/mssql/server"
+    container_name: mssql
+    hostname: mssql
+    environment:
+      SA_PASSWORD: "Pass123!"
+      ACCEPT_EULA: "Y"
+    restart: unless-stopped
+    ports:
+      # So we can access the database
+      # From a tool like JetBrains Rider
+      # Optional for this demo
+      - "11433:1433" 

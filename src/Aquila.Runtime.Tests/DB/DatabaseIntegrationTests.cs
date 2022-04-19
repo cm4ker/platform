@@ -1,9 +1,11 @@
-﻿using Aquila.Core;
+﻿using System.Data.SqlClient;
+using Aquila.Core;
 using Aquila.Core.Querying;
 using Aquila.Core.Querying.Model;
 using Aquila.QueryBuilder.Model;
 using Aquila.QueryBuilder.Visitor;
 using Aquila.Runtime.Querying;
+using Npgsql;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -176,6 +178,22 @@ T0.Fld_261 = @p0
             _logger.WriteLine(actual);
 
             Assert.Equal(expected.ReplaceLineEndings(), actual.ReplaceLineEndings());
+        }
+        
+        
+        [Fact]
+        public void ExecuteCommand()
+        {
+            using (var connection = new NpgsqlConnection(fixture.ConnectionString))
+            {
+                using (var command = new NpgsqlCommand())
+                {
+                    connection.Open();
+                    command.Connection = connection;
+                    command.CommandText = "SELECT 1";
+                    command.ExecuteReader();
+                }
+            }
         }
     }
 }

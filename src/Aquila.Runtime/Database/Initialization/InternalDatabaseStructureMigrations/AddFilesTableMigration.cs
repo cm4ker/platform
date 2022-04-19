@@ -12,14 +12,14 @@ namespace Aquila.Initializer.InternalDatabaseStructureMigrations
                 .WithColumn(DBConstNames.Files.NAME_COLUMN).AsString(200)
                 .WithColumn(DBConstNames.Files.CREATE_DATETIME_COLUMN).AsDateTime()
                 .WithDefault(SystemMethods.CurrentDateTime)
-                .WithColumn(DBConstNames.Files.DATA_COLUMN).AsCustom("VARBINARY(MAX)");
+                .WithColumn(DBConstNames.Files.DATA_COLUMN).AsBinary();
 
             Create.Table(DBConstNames.Files.PENDING_FILES_TABLE)
                 .WithColumn(DBConstNames.Files.TYPE_COLUMN).AsInt32()
                 .WithColumn(DBConstNames.Files.NAME_COLUMN).AsString(200)
                 .WithColumn(DBConstNames.Files.CREATE_DATETIME_COLUMN).AsDateTime()
                 .WithDefault(SystemMethods.CurrentDateTime)
-                .WithColumn(DBConstNames.Files.DATA_COLUMN).AsCustom("VARBINARY(MAX)");
+                .WithColumn(DBConstNames.Files.DATA_COLUMN).AsBinary();
         }
 
         public override void Down()
