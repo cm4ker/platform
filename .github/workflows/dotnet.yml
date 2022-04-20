@@ -14,16 +14,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-#      - name: Setup .NET
-#        uses: actions/setup-dotnet@v1
-#        with:
-#          dotnet-version: 6.0.200
-
-      - name: Setup MSSQL
-        uses: potatoqualitee/mssqlsuite@v1
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
         with:
-          install: sqlengine, sqlclient, sqlpackage, localdb
-            
+          dotnet-version: 6.0.200
+    
+      - name: Create .nug dir
+        run: mkdir -p .nugs
+    
       - name: Restore dependencies
         run: dotnet restore
  

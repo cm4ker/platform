@@ -53,7 +53,7 @@ namespace Aquila.QueryBuilder.Visitor
             return node.Value switch
             {
                 string str => string.Format("'{0}'", str),
-                bool b => b?"true":"false",
+                bool b => b ? "true" : "false",
                 Guid g => string.Format("'{0}'", g.ToString()),
                 _ => node.Value.ToString()
             };
@@ -220,7 +220,7 @@ namespace Aquila.QueryBuilder.Visitor
         public override string VisitSAssign(SAssign node)
         {
             return string.Format("{0} = {1}",
-                node.Variable.Accept(this),
+                node.Variable.Name, //postgres in update not use aliases
                 node.Expression.Accept(this)
             );
         }
@@ -248,12 +248,47 @@ namespace Aquila.QueryBuilder.Visitor
 
         public override string VisitSUpdate(SUpdate node)
         {
+            string from = "", joinWhere = "", where = "";
+            var firstItem = true;
+
+            if (node.From?.Join != null && node.From.Join.Any())
+            {
+                from = "FROM ";
+
+                foreach (var @join in node.From.Join)
+                {
+                    if (firstItem)
+                        from += $"{@join.DataSource.Accept(this)} ";
+                    else
+                        from += $"{@join.Accept(this)} ";
+
+                    if (!firstItem)
+                        joinWhere += "AND ";
+                    else
+                        firstItem = false;
+
+                    if (join.Condition != null)
+                        joinWhere += $"{@join.Condition.Accept(this)}";
+                }
+            }
+
+            if (node.Where == null)
+            {
+                if (!string.IsNullOrEmpty(joinWhere))
+                    where = $"WHERE {joinWhere}";
+            }
+            else
+            {
+                where = node.Where.Accept(this);
+                if (!string.IsNullOrEmpty(joinWhere))
+                    where += "AND" + joinWhere;
+            }
+
             return string.Format("UPDATE {0}\nSET {1}\n{2}{3}",
                 node.From?.DataSource.Accept(this) ?? node.Update.Accept(this),
                 string.Join(", ", node.Set.Items.Select(s => s.Accept(this))),
-                "",
-                //node.From == null ? "" : node.From.Accept(this),
-                node.Where == null ? "" : node.Where.Accept(this)
+                from,
+                where
             );
         }
 

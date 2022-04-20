@@ -39,6 +39,7 @@ namespace Aquila.Runtime.Tests.DB
         public AqInstance Instance { get; private set; }
 
         public AqContext Context { get; private set; }
+        
         public string? ConnectionString => _container.ConnectionString;
 
         public DatabaseFixture()
@@ -66,7 +67,7 @@ namespace Aquila.Runtime.Tests.DB
             var dcContext = Instance.DataContextManager.GetContext();
 
             Ust = new ContextSecTable();
-            Ust.Init(TestMetadata.GetTestMetadata().GetSecPolicies().ToList());
+            Ust.Init(TestMetadata.GetTestMetadata().GetSecPolicies());
 
             drContext.PendingMetadata.SetMetadata(TestMetadata.GetTestMetadata());
             drContext.SaveAll(dcContext);

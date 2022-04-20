@@ -32,7 +32,7 @@ namespace Aquila.Runtime.Tests.DB
             _logger = logger;
         }
 
-        [Fact]
+        [Fact(Skip = "mssql")]
         public void InsertEntityQueryGenerationTest()
         {
             var md = fixture.Context.MetadataProvider;
@@ -79,7 +79,7 @@ WHERE
             Assert.Equal(expect.ReplaceLineEndings(), actual.ReplaceLineEndings());
         }
 
-        [Fact]
+        [Fact(Skip = "mssql")]
         public void DeleteEntityQueryGenerationTest()
         {
             var md = fixture.Context.MetadataProvider;
@@ -110,7 +110,7 @@ WHERE
             Assert.Equal(expect.ReplaceLineEndings(), actual.ReplaceLineEndings());
         }
 
-        [Fact]
+        [Fact(Skip = "mssql")]
         public void UpdateEntityQueryGenerationTest()
         {
             var md = fixture.Context.MetadataProvider;
@@ -152,7 +152,7 @@ WHERE
             Assert.Equal(expected.ReplaceLineEndings(), actual.ReplaceLineEndings());
         }
 
-        [Fact]
+        [Fact(Skip = "mssql")]
         public void SelectEntityQueryGenerationTest()
         {
             var md = fixture.Context.MetadataProvider;
@@ -178,22 +178,6 @@ T0.Fld_261 = @p0
             _logger.WriteLine(actual);
 
             Assert.Equal(expected.ReplaceLineEndings(), actual.ReplaceLineEndings());
-        }
-        
-        
-        [Fact]
-        public void ExecuteCommand()
-        {
-            using (var connection = new NpgsqlConnection(fixture.ConnectionString))
-            {
-                using (var command = new NpgsqlCommand())
-                {
-                    connection.Open();
-                    command.Connection = connection;
-                    command.CommandText = "SELECT 1";
-                    command.ExecuteReader();
-                }
-            }
         }
     }
 }
