@@ -225,6 +225,44 @@ partial class MetadataSymbolProvider
             saveMethod
                 .SetMethodBuilder((m, d) => il =>
                 {
+                    //remove all first
+                    
+                    #region delete
+                    
+                    var sym = _ct.AqParamValue.AsSZArray().Symbol;
+                    var arrLoc2 = new LocalPlace(il.DefineSynthLocal(saveMethod, "", sym));
+
+                    il.EmitIntConstant(1);
+                    il.EmitOpCode(ILOpCode.Newarr);
+                    il.EmitSymbolToken(m, d, _ct.AqParamValue, null);
+                    arrLoc2.EmitStore(il);
+
+                    var parentClrProp = dtoType.GetMembers($"{md.IdProperty.Name}")
+                        .OfType<PropertySymbol>()
+                        .FirstOrDefault();
+
+                    //Load values array
+                    arrLoc2.EmitLoad(il);
+                    il.EmitIntConstant(0);
+                    il.EmitStringConstant(md.IdProperty.Name);
+
+                    thisPlace.EmitLoad(il);
+                    f_dtoPlace.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Call, parentClrProp.GetMethod);
+                    il.EmitOpCode(ILOpCode.Box);
+                    il.EmitSymbolToken(m, d, parentClrProp.Type, null);
+                    il.EmitCall(m, d, ILOpCode.Newobj, _ct.AqParamValue.Ctor(_ct.String, _ct.Object));
+                    il.EmitOpCode(ILOpCode.Stelem_ref);
+
+                    thisPlace.EmitLoad(il);
+                    f_ctxPlace.EmitLoad(il);
+                    il.EmitStringConstant(table.FullName);
+                    arrLoc2.EmitLoad(il);
+                    
+                    il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.InvokeDelete);
+                    #endregion
+                    
+                    
                     thisPlace.EmitLoad(il);
                     f_innerListPlace.EmitLoad(il);
                     var enumeratorMember = f_innerListPlace.Type.GetMembers("GetEnumerator").OfType<MethodSymbol>()
@@ -266,7 +304,6 @@ partial class MetadataSymbolProvider
                     currentDtoLocal.EmitStore(il);
 
 
-                    var sym = _ct.AqParamValue.AsSZArray().Symbol;
                     var arrLoc = new LocalPlace(il.DefineSynthLocal(saveMethod, "", sym));
 
 
