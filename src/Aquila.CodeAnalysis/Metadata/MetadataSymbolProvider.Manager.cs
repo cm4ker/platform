@@ -696,45 +696,13 @@ internal partial class MetadataSymbolProvider
                 .SetParameters(ctxParam, idParam)
                 .SetMethodBuilder((m, d) => il =>
                 {
-                    var dtoPlace = new LocalPlace(il.DefineSynthLocal(loadObjectMethod, "dto", dtoType));
+                    //var dtoPlace = new LocalPlace(il.DefineSynthLocal(loadObjectMethod, "dto", dtoType));
 
+                    
+                    ctxPS.EmitLoad(il);
                     ctxPS.EmitLoad(il);
                     idPl.EmitLoad(il);
                     il.EmitCall(m, d, ILOpCode.Call, loadDtoMethod);
-                    dtoPlace.EmitStore(il);
-
-
-                    List<IPlace> colPlaces = new List<IPlace>();
-
-
-                    foreach (var table in md.Tables)
-                    {
-                        var index = 0;
-                        var loadColMethod = managerType.GetMembers($"load_{table.FullName}").OfType<MethodSymbol>()
-                            .Single();
-                        var collType = GetFromMetadata(table, GeneratedTypeKind.Collection | GeneratedTypeKind.Object);
-
-                        var colPlace =
-                            new LocalPlace(il.DefineSynthLocal(loadObjectMethod, $"col_{index++}", collType));
-
-                        ctxPS.EmitLoad(il);
-                        ctxPS.EmitLoad(il);
-                        idPl.EmitLoad(il);
-                        il.EmitCall(m, d, ILOpCode.Call, loadColMethod);
-                        //colPlace.EmitStore(il);
-                        dtoPlace.EmitLoad(il);
-                        il.EmitCall(m, d, ILOpCode.Newobj, collType.Constructors.First());
-                        colPlace.EmitStore(il);
-                        colPlaces.Add(colPlace);
-                    }
-
-                    ctxPS.EmitLoad(il);
-                    dtoPlace.EmitLoad(il);
-
-                    foreach (var place in colPlaces)
-                    {
-                        place.EmitLoad(il);
-                    }
 
                     il.EmitCall(m, d, ILOpCode.Newobj, objectType.Constructors.First());
 

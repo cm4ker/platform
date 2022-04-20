@@ -188,22 +188,45 @@ partial class MetadataSymbolProvider
         #region remove()
 
         var removeMethod = _ps.SynthesizeMethod(collectionType);
-        var rowParameter = new SynthesizedParameterSymbol(removeMethod, rowObjectType, 0, RefKind.None, "row");
-        var row_place = new ParamPlace(rowParameter);
-        removeMethod
-            .SetName("remove")
-            .SetIsStatic(false)
-            .SetParameters(rowParameter)
-            .SetMethodBuilder(((m, d) => (il) =>
-            {
-                var removeMethod = innerListField.Type.GetMembers("Remove").OfType<MethodSymbol>()
-                    .First(x => x.GetParameterCount() == 1);
-                thisPlace.EmitLoad(il);
-                f_innerListPlace.EmitLoad(il);
-                rowParameter.EmitLoad(il);
-                il.EmitCall(m, d, ILOpCode.Call, removeMethod);
-                il.EmitRet(true);
-            }));
+        {
+            var rowParameter = new SynthesizedParameterSymbol(removeMethod, rowObjectType, 0, RefKind.None, "row");
+            var row_place = new ParamPlace(rowParameter);
+            removeMethod
+                .SetName("remove")
+                .SetIsStatic(false)
+                .SetParameters(rowParameter)
+                .SetMethodBuilder(((m, d) => (il) =>
+                {
+                    var removeMethod = innerListField.Type.GetMembers("Remove").OfType<MethodSymbol>()
+                        .First(x => x.GetParameterCount() == 1);
+                    thisPlace.EmitLoad(il);
+                    f_innerListPlace.EmitLoad(il);
+                    rowParameter.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Call, removeMethod);
+                    il.EmitRet(true);
+                }));
+        }
+
+        #endregion
+
+        var clearMethod = _ps.SynthesizeMethod(collectionType);
+
+        #region clear()
+
+        {
+            clearMethod
+                .SetName("clear")
+                .SetIsStatic(false)
+                .SetMethodBuilder(((m, d) => (il) =>
+                {
+                    var clearMethod = innerListField.Type.GetMembers("Clear").OfType<MethodSymbol>()
+                        .First(x => x.GetParameterCount() == 0);
+                    thisPlace.EmitLoad(il);
+                    f_innerListPlace.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Call, clearMethod);
+                    il.EmitRet(true);
+                }));
+        }
 
         #endregion
 
@@ -226,9 +249,9 @@ partial class MetadataSymbolProvider
                 .SetMethodBuilder((m, d) => il =>
                 {
                     //remove all first
-                    
+
                     #region delete
-                    
+
                     var sym = _ct.AqParamValue.AsSZArray().Symbol;
                     var arrLoc2 = new LocalPlace(il.DefineSynthLocal(saveMethod, "", sym));
 
@@ -258,11 +281,12 @@ partial class MetadataSymbolProvider
                     f_ctxPlace.EmitLoad(il);
                     il.EmitStringConstant(table.FullName);
                     arrLoc2.EmitLoad(il);
-                    
+
                     il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.InvokeDelete);
+
                     #endregion
-                    
-                    
+
+
                     thisPlace.EmitLoad(il);
                     f_innerListPlace.EmitLoad(il);
                     var enumeratorMember = f_innerListPlace.Type.GetMembers("GetEnumerator").OfType<MethodSymbol>()
@@ -431,6 +455,7 @@ partial class MetadataSymbolProvider
         collectionType.AddMember(dtoField);
         collectionType.AddMember(innerListField);
         collectionType.AddMember(removeMethod);
+        collectionType.AddMember(clearMethod);
     }
 
     private void PopulateTableLinkCollection(SMEntity md, SMTable table)

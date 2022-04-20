@@ -82,6 +82,8 @@ internal partial class MetadataSymbolProvider
             {
                 GeneratedTypeKind.Dto => _ps.GetSynthesizedType(
                     QualifiedName.Parse($"{Namespace}.{md.Name}{DtoPostfix}", false)),
+                GeneratedTypeKind.Object => _ps.GetSynthesizedType(
+                    QualifiedName.Parse($"{Namespace}.{md.Name}{ObjectPostfix}", false)),
                 _ => throw new ArgumentOutOfRangeException(nameof(t), t, null)
             };
         if (md is SMTable st)
@@ -902,7 +904,33 @@ internal partial class MetadataSymbolProvider
 
         #endregion
 
+        #region get_object
 
+        var objectType = GetFromMetadata(md, GeneratedTypeKind.Object);
+        var get_object = _ps.SynthesizeMethod(linkType)
+            .SetName("get_object")
+            .SetReturn(objectType)
+            .SetAccess(Accessibility.Public)
+            .SetMethodBuilder((m, d) => il =>
+            {
+                var loadMethod = managerType.GetMembers("load_object").OfType<MethodSymbol>().FirstOrDefault();
+
+                thisPlace.EmitLoad(il);
+
+                thisPlace.EmitLoad(il);
+                ctxFieldPlace.EmitLoad(il);
+
+                thisPlace.EmitLoad(il);
+                idPlace.EmitLoad(il);
+
+                il.EmitCall(m, d, ILOpCode.Call, loadMethod)
+                    .Expect(objectType);
+                
+                il.EmitRet(false);
+            });
+
+        #endregion
+        
         #region Props
 
         foreach (var prop in md.Properties)
@@ -1098,6 +1126,7 @@ internal partial class MetadataSymbolProvider
         linkType.AddMember(dtoField);
 
         linkType.AddMember(reload);
+        linkType.AddMember(get_object);
         linkType.AddMember(ctor);
 
         return linkType;
