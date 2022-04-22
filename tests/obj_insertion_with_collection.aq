@@ -1,0 +1,12 @@
+import Entity;
+
+fn main()
+{
+    var i = InvoiceManager.create();
+    i.Name = "CreateMe";
+    var r1 = i.Nomenclatures.create();
+    r1.NomenclatureName = "Test";
+    i.save();
+
+    print(0);
+}

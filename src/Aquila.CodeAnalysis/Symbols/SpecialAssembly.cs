@@ -33,6 +33,11 @@
         /// <summary>
         /// Corresponds to System.Linq
         /// </summary>
-        SystemLinq
+        SystemLinq,
+        
+        /// <summary>
+        /// Corresponds to System.Collections
+        /// </summary>
+        SystemCollections
     }
 }

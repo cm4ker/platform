@@ -14,10 +14,10 @@ namespace Aquila.Runtime.Querying
 {
     public class CRUDQueryGenerator
     {
-        public static string GetSaveUpdate(SMEntity entity, DatabaseRuntimeContext drc)
+        public static string GetSaveUpdate(SMEntityOrTable entity, DatabaseRuntimeContext drc)
         {
             var e_desc = drc.Descriptors.GetEntityDescriptor(entity.FullName);
-            var id_desc = drc.Descriptors.GetEntityDescriptor(entity.IdProperty.FullName);
+            var id_desc = drc.Descriptors.GetEntityDescriptor(((SMEntity)entity).IdProperty.FullName);
 
             var qm = new QueryMachine();
             var paramNum = 0;
@@ -55,7 +55,7 @@ namespace Aquila.Runtime.Querying
             return builder.Visit((SSyntaxNode)qm.peek());
         }
 
-        public static string GetSaveInsert(SMEntity entity, DatabaseRuntimeContext drc)
+        public static string GetSaveInsert(SMEntityOrTable entity, DatabaseRuntimeContext drc)
         {
             var e_desc = drc.Descriptors.GetEntityDescriptor(entity.FullName);
 
@@ -266,10 +266,10 @@ namespace Aquila.Runtime.Querying
             return context.DataContext.SqlCompiller.Compile((SSyntaxNode)rw.QueryMachine.peek());
         }
 
-        public static string GetLoad(SMEntity entity, DatabaseRuntimeContext drc)
+        public static string GetLoad(SMEntityOrTable entity, DatabaseRuntimeContext drc)
         {
             var e_desc = drc.Descriptors.GetEntityDescriptor(entity.FullName);
-            var id_desc = drc.Descriptors.GetEntityDescriptor(entity.IdProperty.FullName);
+            var id_desc = drc.Descriptors.GetEntityDescriptor(((SMEntity)entity).IdProperty.FullName);
 
             var qm = new QueryMachine();
             var paramNum = 0;

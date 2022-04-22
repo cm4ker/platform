@@ -15,7 +15,6 @@ public class AqDummyInstance : IAqInstance
 {
     public DatabaseRuntimeContext DatabaseRuntimeContext { get; }
     public bool PendingChanges { get; }
-    public IList<ISession> Sessions { get; }
     public IInvokeService InvokeService { get; }
     public MigrationManager MigrationManager { get; }
     public string Name { get; }
@@ -39,8 +38,4 @@ public class AqDummyInstance : IAqInstance
     {
     }
 
-    public ISession CreateSession(AqUser user)
-    {
-        throw new NotSupportedException();
-    }
 }

@@ -175,63 +175,33 @@
                     IsInternal="true"/>
         </Arguments>
     </Syntax>
-    
+
     <!-- region MemberAccess -->
 
     <!-- region Call -->
-    <Syntax IsAbstract="true" Name="CallEx" Base="Expression" OperationKind="Invocation">
+    <Syntax Name="CallEx" Base="Expression" OperationKind="Invocation">
+        <Arguments>
+            <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true" IsUpdatable="true"/>
+            <Single Name="Name" Type="BoundMethodName" IsInternal="true" IsUpdatable="true"/>
+            <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;" IsUpdatable="true"/>
+            <Single Name="TypeArguments" Type="ImmutableArray&lt;ITypeSymbol&gt;" IsUpdatable="true"/>
+            <Single Name="Instance" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
+        </Arguments>
+    </Syntax>
+    <!-- endregion -->
+
+    <Syntax Name="NewEx" Base="Expression"  OperationKind="ObjectCreation">
         <Arguments>
             <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true"/>
-            <Single Name="Name" Type="BoundMethodName" IsInternal="true"/>
+            <Single Name="TypeRef" Type="ITypeSymbol"/>
             <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;"/>
             <Single Name="TypeArguments" Type="ImmutableArray&lt;ITypeSymbol&gt;"/>
-            <Single Name="Instance" Type="BoundExpression"/>
             <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
                     IsInternal="true"/>
         </Arguments>
     </Syntax>
-
-    <Syntax Name="InstanceCallEx" Base="CallEx">
-        <Arguments>
-            <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true" OnlyArgument="true" PassBase="true"/>
-            <Single Name="Name" Type="BoundMethodName" OnlyArgument="true" PassBase="true"/>
-            <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;" OnlyArgument="true" PassBase="true"/>
-            <Single Name="TypeArguments" Type="ImmutableArray&lt;ITypeSymbol&gt;" OnlyArgument="true"
-                    PassBase="true"/>
-            <Single Name="Instance" Type="BoundExpression" OnlyArgument="true" PassBase="true"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
-                    IsInternal="true"/>
-        </Arguments>
-    </Syntax>
-
-    <Syntax Name="StaticCallEx" Base="CallEx">
-        <Arguments>
-            <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true" OnlyArgument="true" PassBase="true"/>
-            <Single Name="Name" Type="BoundMethodName" OnlyArgument="true" PassBase="true"/>
-            <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;" OnlyArgument="true" PassBase="true"/>
-            <Single Name="TypeArguments" Type="ImmutableArray&lt;ITypeSymbol&gt;" OnlyArgument="true"
-                    PassBase="true"/>
-            <Single PassBase="true" PassBaseConst="null"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
-                    IsInternal="true"/>
-        </Arguments>
-    </Syntax>
-
-    <Syntax Name="NewEx" Base="CallEx">
-        <Arguments>
-            <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true" OnlyArgument="true" PassBase="true"/>
-            <Single Name="Name" Type="BoundMethodName" OnlyArgument="true" PassBase="true" PassBaseConst="null"/>
-            <Single Name="TypeRef" Type="ITypeSymbol"/>
-            <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;" OnlyArgument="true" PassBase="true"/>
-            <Single Name="TypeArguments" Type="ImmutableArray&lt;ITypeSymbol&gt;" OnlyArgument="true"
-                    PassBase="true"/>
-            <Single PassBase="true" PassBaseConst="null"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
-                    IsInternal="true"/>
-        </Arguments>
-    </Syntax>
-
-    <!-- endregion -->
 
     <!-- endregion MemberAccess -->
 

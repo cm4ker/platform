@@ -4,15 +4,18 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata;
 using Aquila.CodeAnalysis.CodeGen;
+using Aquila.CodeAnalysis.Emit;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.CodeAnalysis.Public;
 using Aquila.CodeAnalysis.Semantics;
+using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.Metadata;
 using Aquila.Querying;
 using Aquila.Syntax.Metadata;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeGen;
 
 namespace Aquila.CodeAnalysis.Metadata;
 
@@ -33,7 +36,7 @@ partial class MetadataSymbolProvider
             $"{Namespace}.{md.Name}{ObjectPostfix}",
             false));
 
-        var listDtoType = _ct.List_arg1.Construct(rowDtoType);
+        var listDtoType = _ct.IEnumerable_arg1.Construct(rowDtoType);
         var thisPlace = new ArgPlace(collectionType, 0);
 
         #region Fields
@@ -137,7 +140,9 @@ partial class MetadataSymbolProvider
 
         #region create()
 
-        var create = _ps.SynthesizeMethod(collectionType)
+        var createMethod = _ps.SynthesizeMethod(collectionType);
+
+        createMethod
             .SetName("create")
             .SetIsStatic(false)
             .SetReturn(rowObjectType)
@@ -152,6 +157,8 @@ partial class MetadataSymbolProvider
                 var parentPropety = rowDtoType.GetMembers(table.ParentProperty.Name).OfType<PropertySymbol>().Single();
                 var idProperty = dtoType.GetMembers(md.IdProperty.Name).OfType<PropertySymbol>().Single();
 
+                var resultStore = new LocalPlace(il.DefineSynthLocal(createMethod, "result", rowObjectType));
+
                 //load Id
                 thisPlace.EmitLoad(il);
                 f_dtoPlace.EmitLoad(il);
@@ -161,8 +168,65 @@ partial class MetadataSymbolProvider
                 il.EmitCall(m, d, ILOpCode.Call, parentPropety.SetMethod);
 
                 il.EmitCall(m, d, ILOpCode.Newobj, rowObjectType.Ctor(_ct.AqContext, rowDtoType));
+                resultStore.EmitStore(il);
+
+                var addMethod = innerListField.Type.GetMembers("Add").OfType<MethodSymbol>()
+                    .Where(x => x.ParameterCount == 1 && x.Parameters[0].Type == rowObjectType).Single();
+
+                thisPlace.EmitLoad(il);
+                f_innerListPlace.EmitLoad(il);
+                resultStore.EmitLoad(il);
+                il.EmitCall(m, d, ILOpCode.Call, addMethod);
+
+                resultStore.EmitLoad(il);
                 il.EmitRet(false);
             }));
+
+        #endregion
+
+
+        #region remove()
+
+        var removeMethod = _ps.SynthesizeMethod(collectionType);
+        {
+            var rowParameter = new SynthesizedParameterSymbol(removeMethod, rowObjectType, 0, RefKind.None, "row");
+            var row_place = new ParamPlace(rowParameter);
+            removeMethod
+                .SetName("remove")
+                .SetIsStatic(false)
+                .SetParameters(rowParameter)
+                .SetMethodBuilder(((m, d) => (il) =>
+                {
+                    var removeMethod = innerListField.Type.GetMembers("Remove").OfType<MethodSymbol>()
+                        .First(x => x.GetParameterCount() == 1);
+                    thisPlace.EmitLoad(il);
+                    f_innerListPlace.EmitLoad(il);
+                    rowParameter.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Call, removeMethod);
+                    il.EmitRet(true);
+                }));
+        }
+
+        #endregion
+
+        var clearMethod = _ps.SynthesizeMethod(collectionType);
+
+        #region clear()
+
+        {
+            clearMethod
+                .SetName("clear")
+                .SetIsStatic(false)
+                .SetMethodBuilder(((m, d) => (il) =>
+                {
+                    var clearMethod = innerListField.Type.GetMembers("Clear").OfType<MethodSymbol>()
+                        .First(x => x.GetParameterCount() == 0);
+                    thisPlace.EmitLoad(il);
+                    f_innerListPlace.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Call, clearMethod);
+                    il.EmitRet(true);
+                }));
+        }
 
         #endregion
 
@@ -184,53 +248,94 @@ partial class MetadataSymbolProvider
             saveMethod
                 .SetMethodBuilder((m, d) => il =>
                 {
-                    p_dtoListPlace.EmitLoad(il);
+                    //remove all first
 
-                    var dbLoc = new LocalPlace(
-                        il.DefineSynthLocal(saveMethod, "dbCommand", _ct.DbCommand));
-                    var paramLoc =
-                        new LocalPlace(
-                            il.DefineSynthLocal(saveMethod, "dbParameter", _ct.DbParameter));
-                    var idClrProp =
-                        dtoType.GetMembers(md.IdProperty.Name).OfType<PropertySymbol>().FirstOrDefault() ??
-                        throw new Exception("The id property is null");
-
+                    #region delete
 
                     var sym = _ct.AqParamValue.AsSZArray().Symbol;
+                    var arrLoc2 = new LocalPlace(il.DefineSynthLocal(saveMethod, "", sym));
+
+                    il.EmitIntConstant(1);
+                    il.EmitOpCode(ILOpCode.Newarr);
+                    il.EmitSymbolToken(m, d, _ct.AqParamValue, null);
+                    arrLoc2.EmitStore(il);
+
+                    var parentClrProp = dtoType.GetMembers($"{md.IdProperty.Name}")
+                        .OfType<PropertySymbol>()
+                        .FirstOrDefault();
+
+                    //Load values array
+                    arrLoc2.EmitLoad(il);
+                    il.EmitIntConstant(0);
+                    il.EmitStringConstant(md.IdProperty.Name);
+
+                    thisPlace.EmitLoad(il);
+                    f_dtoPlace.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Call, parentClrProp.GetMethod);
+                    il.EmitOpCode(ILOpCode.Box);
+                    il.EmitSymbolToken(m, d, parentClrProp.Type, null);
+                    il.EmitCall(m, d, ILOpCode.Newobj, _ct.AqParamValue.Ctor(_ct.String, _ct.Object));
+                    il.EmitOpCode(ILOpCode.Stelem_ref);
+
+                    thisPlace.EmitLoad(il);
+                    f_ctxPlace.EmitLoad(il);
+                    il.EmitStringConstant(table.FullName);
+                    arrLoc2.EmitLoad(il);
+
+                    il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.InvokeDelete);
+
+                    #endregion
+
+
+                    thisPlace.EmitLoad(il);
+                    f_innerListPlace.EmitLoad(il);
+                    var enumeratorMember = f_innerListPlace.Type.GetMembers("GetEnumerator").OfType<MethodSymbol>()
+                        .FirstOrDefault() ?? throw new Exception("Can't find enumerator method");
+
+                    var enumeratorType = enumeratorMember.ReturnType;
+                    var getCurrentMethod =
+                        enumeratorType.GetMembers("get_Current").OfType<MethodSymbol>().FirstOrDefault();
+                    var moveNextMethod = enumeratorType.GetMembers("MoveNext").OfType<MethodSymbol>().FirstOrDefault();
+                    var disposeMethod = enumeratorType.GetMembers("Dispose").OfType<MethodSymbol>()
+                        .Single(x => x.GetParameterCount() == 0);
+
+                    var enumeratorLocal = new LocalPlace(il.DefineSynthLocal(saveMethod, "enumerator", enumeratorType));
+                    var currentLocal = new LocalPlace(il.DefineSynthLocal(saveMethod, "currentItem", rowObjectType));
+                    var currentDtoLocal = new LocalPlace(il.DefineSynthLocal(saveMethod, "currentDtoItem", rowDtoType));
+
+                    var f_rowDtoPlace = new FieldPlace(rowObjectType.GetMembers("_dto").OfType<FieldSymbol>().First());
+
+                    il.EmitCall(m, d, ILOpCode.Call, enumeratorMember);
+                    enumeratorLocal.EmitStore(il);
+
+                    il.OpenLocalScope(ScopeType.TryCatchFinally);
+                    il.OpenLocalScope(ScopeType.Try);
+
+
+                    var conditionLabel = new NamedLabel("<cond>");
+                    var startCycleLabel = new NamedLabel("<startCycle>");
+
+                    il.EmitBranch(ILOpCode.Br, conditionLabel);
+                    il.MarkLabel(startCycleLabel);
+
+                    //cycle start
+                    enumeratorLocal.EmitLoadAddress(il);
+                    il.EmitCall(m, d, ILOpCode.Call, getCurrentMethod);
+                    currentLocal.EmitStore(il);
+
+                    currentLocal.EmitLoad(il);
+                    f_rowDtoPlace.EmitLoad(il);
+                    currentDtoLocal.EmitStore(il);
+
+
                     var arrLoc = new LocalPlace(il.DefineSynthLocal(saveMethod, "", sym));
-
-
-                    //_dto.Id
-                    sdpp.EmitLoad(il);
-                    il.EmitCall(m, d, ILOpCode.Callvirt, idClrProp.GetMethod);
-
-                    //Default Guid
-                    var tmpLoc = new LocalPlace(il.DefineSynthLocal(saveMethod, "", _ct.Guid));
-                    tmpLoc.EmitLoadAddress(il);
-                    il.EmitOpCode(ILOpCode.Initobj);
-                    il.EmitSymbolToken(m, (DiagnosticBag)d, (TypeSymbol)_ct.Guid, null);
-                    tmpLoc.EmitLoad(il);
-                    il.EmitCall(m, d, ILOpCode.Call, _cm.Operators.op_Equality_Guid_Guid);
-
-                    // var tmpLocIfRes = new LocalPlace(il.DefineSynthLocal(saveMethod, "", _ct.Boolean));
-                    // tmpLocIfRes.EmitStore(il);
-
-                    var elseLabel = new NamedLabel("<e_o1>");
-                    var endLabel = new NamedLabel("<end>");
-
-                    il.EmitBranch(ILOpCode.Brfalse, elseLabel);
-
-                    //set to id new value
-                    sdpp.EmitLoad(il);
-                    il.EmitCall(m, d, ILOpCode.Call, _cm.Operators.NewGuid);
-                    il.EmitCall(m, d, ILOpCode.Callvirt, idClrProp.SetMethod);
 
 
                     #region Load prop values into array
 
                     void EmitLocalValuesArray()
                     {
-                        var properties = md.Properties.Where(x => x.IsValid).ToImmutableArray();
+                        var properties = table.Properties.Where(x => x.IsValid).ToImmutableArray();
 
                         il.EmitIntConstant(properties
                             .Select(x => x.GetOrderedFlattenTypes().DistinctBy(a => a.postfix).Count())
@@ -247,6 +352,9 @@ partial class MetadataSymbolProvider
 
                             for (var index = 0; index < flattenTypes.Length; index++)
                             {
+                                IPlace dtoPlace;
+                                PropertySymbol clrProp;
+
                                 var typeInfo = flattenTypes[index];
                                 if (visitRef && typeInfo.type.IsReference)
                                     continue;
@@ -254,13 +362,27 @@ partial class MetadataSymbolProvider
                                 if (typeInfo.isComplex && typeInfo.type.IsReference)
                                     visitRef = true;
 
-                                var clrProp = dtoType.GetMembers($"{prop.Name}{typeInfo.postfix}")
-                                    .OfType<PropertySymbol>()
-                                    .FirstOrDefault();
+                                string propName = $"{prop.Name}{typeInfo.postfix}";
+
+                                if (prop == table.ParentProperty)
+                                {
+                                    dtoPlace = f_dtoPlace;
+                                    clrProp = dtoType.GetMembers($"{md.IdProperty.Name}")
+                                        .OfType<PropertySymbol>()
+                                        .FirstOrDefault();
+                                }
+                                else
+                                {
+                                    dtoPlace = currentDtoLocal;
+                                    clrProp = rowDtoType.GetMembers(propName)
+                                        .OfType<PropertySymbol>()
+                                        .FirstOrDefault();
+                                }
+
 
                                 if (clrProp == null)
                                     throw new NullReferenceException(
-                                        $"Clr prop with name {prop.Name}{typeInfo.postfix} not found");
+                                        $"Clr prop with name {propName} not found");
 
                                 //Load values array
                                 arrLoc.EmitLoad(il);
@@ -268,9 +390,12 @@ partial class MetadataSymbolProvider
 
                                 //emit object
                                 //dbLoc.EmitLoad(il);
-                                il.EmitStringConstant(clrProp.Name);
+                                il.EmitStringConstant(propName);
 
-                                sdpp.EmitLoad(il);
+                                if (prop == table.ParentProperty)
+                                    thisPlace.EmitLoad(il);
+
+                                dtoPlace.EmitLoad(il);
                                 il.EmitCall(m, d, ILOpCode.Call, clrProp.GetMethod);
                                 il.EmitOpCode(ILOpCode.Box);
                                 il.EmitSymbolToken(m, d, clrProp.Type, null);
@@ -287,24 +412,34 @@ partial class MetadataSymbolProvider
                     EmitLocalValuesArray();
 
                     //set insert query
-                    ctx.EmitLoad(il);
-                    il.EmitStringConstant(md.FullName);
+                    thisPlace.EmitLoad(il);
+                    f_ctxPlace.EmitLoad(il);
+                    il.EmitStringConstant(table.FullName);
                     arrLoc.EmitLoad(il);
 
                     il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.InvokeInsert);
 
-                    il.EmitBranch(ILOpCode.Br, endLabel);
-                    il.MarkLabel(elseLabel);
+                    //cycle end
 
-                    //fill array by local values
-                    EmitLocalValuesArray();
-                    ctx.EmitLoad(il);
-                    il.EmitStringConstant(md.FullName);
-                    arrLoc.EmitLoad(il);
+                    il.MarkLabel(conditionLabel);
+                    enumeratorLocal.EmitLoadAddress(il);
+                    il.EmitCall(m, d, ILOpCode.Call, moveNextMethod);
+                    il.EmitBranch(ILOpCode.Brtrue, startCycleLabel);
 
-                    il.EmitCall(m, d, ILOpCode.Call, _cm.Runtime.InvokeUpdate);
 
-                    il.MarkLabel(endLabel);
+                    //close try block
+                    il.CloseLocalScope();
+
+                    il.OpenLocalScope(ScopeType.Finally);
+                    enumeratorLocal.EmitLoadAddress(il);
+                    il.EmitCall(m, d, ILOpCode.Call, disposeMethod);
+
+                    //close finaly
+                    il.CloseLocalScope();
+
+                    //close all try catch
+                    il.CloseLocalScope();
+
 
                     il.EmitRet(true);
                 });
@@ -314,10 +449,13 @@ partial class MetadataSymbolProvider
 
         collectionType.AddMember(rowFunc);
         collectionType.AddMember(ctor);
-        collectionType.AddMember(create);
+        collectionType.AddMember(createMethod);
+        collectionType.AddMember(saveMethod);
         collectionType.AddMember(ctxField);
         collectionType.AddMember(dtoField);
         collectionType.AddMember(innerListField);
+        collectionType.AddMember(removeMethod);
+        collectionType.AddMember(clearMethod);
     }
 
     private void PopulateTableLinkCollection(SMEntity md, SMTable table)
@@ -438,7 +576,6 @@ partial class MetadataSymbolProvider
         collectionType.AddMember(innerListField);
     }
 
-
     private void PopulateTableObjectType(SMEntity md, SMTable table)
     {
         var rowObjectType =
@@ -455,7 +592,7 @@ partial class MetadataSymbolProvider
         var dtoField = _ps.SynthesizeField(rowObjectType);
         dtoField
             .SetName("_dto")
-            .SetAccess(Accessibility.Private)
+            .SetAccess(Accessibility.Public)
             .SetType(rowDtoType);
 
         var ctxField = _ps.SynthesizeField(rowObjectType);

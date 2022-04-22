@@ -99,6 +99,7 @@ namespace Aquila.Core
             using var cmd = PrepareCore(context, parameters, mdName,
                 (SMEntityOrTable semantic, out QLangElement element) =>
                     CRUDQueryGenerator.CompileInsert(semantic, context, out element));
+
             cmd.ExecuteNonQuery();
         }
 
@@ -118,7 +119,7 @@ namespace Aquila.Core
             cmd.ExecuteNonQuery();
         }
 
-        public static ImmutableArray<T> InvokeSelect<T>(AqContext context, string mdName, AqParamValue[] parameters,
+        public static List<T> InvokeSelect<T>(AqContext context, string mdName, AqParamValue[] parameters,
             AqReadDelegate<T> readAction)
         {
             bool needCheckSec = false;
@@ -153,7 +154,7 @@ namespace Aquila.Core
                 dataReader.Dispose();
             }
 
-            return result.ToImmutableArray();
+            return result;
         }
 
         private delegate string CompileQueryDelegate(SMEntityOrTable semantic, out QLangElement model);

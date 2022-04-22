@@ -14,6 +14,7 @@ using Aquila.Runtime.Querying;
 using Aquila.Runtime.Tests.DB;
 using JetBrains.Annotations;
 using Npgsql.Replication.PgOutput.Messages;
+using Xunit;
 
 namespace Aquila.UIBuilder
 {
@@ -168,7 +169,7 @@ namespace Aquila.UIBuilder
 
         public void Dispose()
         {
-            _fixture?.Dispose();
+            ((IAsyncLifetime)_fixture)?.DisposeAsync().GetAwaiter().GetResult();
         }
     }
 }

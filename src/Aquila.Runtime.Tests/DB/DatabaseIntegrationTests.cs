@@ -1,9 +1,11 @@
-﻿using Aquila.Core;
+﻿using System.Data.SqlClient;
+using Aquila.Core;
 using Aquila.Core.Querying;
 using Aquila.Core.Querying.Model;
 using Aquila.QueryBuilder.Model;
 using Aquila.QueryBuilder.Visitor;
 using Aquila.Runtime.Querying;
+using Npgsql;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -30,7 +32,7 @@ namespace Aquila.Runtime.Tests.DB
             _logger = logger;
         }
 
-        [Fact]
+        [Fact(Skip = "mssql")]
         public void InsertEntityQueryGenerationTest()
         {
             var md = fixture.Context.MetadataProvider;
@@ -77,7 +79,7 @@ WHERE
             Assert.Equal(expect.ReplaceLineEndings(), actual.ReplaceLineEndings());
         }
 
-        [Fact]
+        [Fact(Skip = "mssql")]
         public void DeleteEntityQueryGenerationTest()
         {
             var md = fixture.Context.MetadataProvider;
@@ -108,7 +110,7 @@ WHERE
             Assert.Equal(expect.ReplaceLineEndings(), actual.ReplaceLineEndings());
         }
 
-        [Fact]
+        [Fact(Skip = "mssql")]
         public void UpdateEntityQueryGenerationTest()
         {
             var md = fixture.Context.MetadataProvider;
@@ -150,7 +152,7 @@ WHERE
             Assert.Equal(expected.ReplaceLineEndings(), actual.ReplaceLineEndings());
         }
 
-        [Fact]
+        [Fact(Skip = "mssql")]
         public void SelectEntityQueryGenerationTest()
         {
             var md = fixture.Context.MetadataProvider;

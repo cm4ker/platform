@@ -61,6 +61,12 @@
         ]
       },
       {
+        "id": "yaml",
+        "extensions": [
+          ".aqmd"
+        ]
+      },
+      {
         "id": "aqlang",
         "aliases": [
           "aqlang", "aq", "AqLang"

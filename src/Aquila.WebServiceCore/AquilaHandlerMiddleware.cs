@@ -10,6 +10,7 @@ using Aquila.Core;
 using Aquila.Core.Instance;
 using Aquila.Logging;
 using Aquila.Runtime.Infrastructure.Helpers;
+using Aquila.WebServiceCore.Swagger;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -22,16 +23,17 @@ namespace Aquila.AspNetCore.Web
     internal sealed class AquilaHandlerMiddleware : IMiddleware
     {
         private readonly AqInstanceManager _instanceManager;
+        private readonly AquilaApiHolder _holder;
         private readonly ILogger<AqInstance> _logger;
 
-        private Dictionary<(string instance, string objectName, string method), MethodInfo> _crudHandlers = new();
-        private Dictionary<(string instance, string methodName), MethodInfo> _endpointsHandlers = new();
-
+        private object _updateLock = new object();
 
         public AquilaHandlerMiddleware(AqInstanceManager instanceManager,
+            AquilaApiHolder holder,
             ILogger<AqInstance> logger)
         {
             _instanceManager = instanceManager;
+            _holder = holder;
             _logger = logger;
 
             Init();
@@ -58,6 +60,14 @@ namespace Aquila.AspNetCore.Web
         {
             foreach (var instance in _instanceManager.GetInstances())
             {
+                InitInstance(instance);
+            }
+        }
+
+        private void InitInstance(AqInstance instance)
+        {
+            lock (_updateLock)
+            {
                 if (instance.BLAssembly is null)
                 {
                     _logger.Info("[Platform] Instance {0} haven't assembly", instance.Name);
@@ -66,13 +76,18 @@ namespace Aquila.AspNetCore.Web
 
                 if (instance.PendingChanges)
                 {
-                    _logger.Info("[Platform] Instance {0} has pending changes. Invoke /api/[instance]/migrate",
+                    _logger.Warn("[Platform] Instance {0} has pending changes. Invoke /api/[instance]/migrate",
                         instance.Name);
                 }
 
+                var instanceName = instance.Name.ToLower();
+                _holder.UnregisterInstance(instanceName);
+
                 var crudMethods = instance.BLAssembly.GetCrudMethods().ToList();
+                var endpointMethods = instance.BLAssembly.GetEndpoints();
 
                 _logger.Info("[Web service] Load {0} delegates", crudMethods.Count);
+
                 foreach (var item in crudMethods)
                 {
                     var method = item.m;
@@ -92,14 +107,22 @@ namespace Aquila.AspNetCore.Web
                         _ => throw new ArgumentOutOfRangeException()
                     };
 
-                    _crudHandlers.Add((instance.Name.ToLower(), item.attr.ObjectName, methodName), method);
-                }
+                    var operationType = item.attr.Kind switch
+                    {
+                        HttpMethodKind.Get => "GET",
+                        HttpMethodKind.Post => "PUT",
+                        HttpMethodKind.Delete => "DELETE",
+                        HttpMethodKind.Create => "GET",
+                        HttpMethodKind.List => "GET",
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
 
-                var endpointMethods = instance.BLAssembly.GetEndpoints();
+                    _holder.AddCrud(instanceName, item.attr.ObjectName, methodName, operationType, method);
+                }
 
                 foreach (var item in endpointMethods)
                 {
-                    _endpointsHandlers.Add((instance.Name.ToLower(), item.m.Name.ToLower()), item.m);
+                    _holder.AddEndpoint(instanceName, item.m.Name.ToLower(), item.m);
                 }
             }
         }
@@ -174,6 +197,8 @@ namespace Aquila.AspNetCore.Web
             if (instance is null) return Task.CompletedTask;
 
             instance.Migrate();
+            InitInstance(instance);
+            
             return Task.CompletedTask;
         }
 
@@ -182,12 +207,13 @@ namespace Aquila.AspNetCore.Web
             var instanceName = (string)context.GetRouteValue("instance");
             var objectName = (string)context.GetRouteValue("object");
             var method = (string)context.GetRouteValue("method");
+            var operationType = context.Request.Method;
 
             var instance = _instanceManager.GetInstance(instanceName);
 
             var aqctx = new AqHttpContext(context, instance);
 
-            if (_crudHandlers.TryGetValue((instanceName, objectName, method), out var mi))
+            if (_holder.TryGetCrud(instanceName, objectName, method, operationType, out var mi))
             {
                 switch (method)
                 {
@@ -211,7 +237,7 @@ namespace Aquila.AspNetCore.Web
 
             if (instance is null) return;
 
-            await context.Response.WriteAsJsonAsync(instance.Sessions);
+            //await context.Response.WriteAsJsonAsync(instance.Sessions);
         }
 
         private async Task GetInstances(HttpContext context)
@@ -270,8 +296,7 @@ namespace Aquila.AspNetCore.Web
 
             var parametersStream = context.Request.Body;
 
-
-            if (_endpointsHandlers.TryGetValue((instanceName, method), out var m))
+            if (_holder.TryGetEndpoint(instanceName, method, out var m))
             {
                 StreamReader sr = new StreamReader(parametersStream);
 

@@ -31,12 +31,12 @@ namespace Aquila.Networking
             _unsbscribers = new Dictionary<IConnection, IDisposable>();
         }
 
-        public async Task<object> Invoke(Route route, ISession session, params object[] arg)
+        public async Task<object> Invoke(Route route, params object[] arg)
         {
             if (!methods.ContainsKey(route))
                 throw new InvokeException($"Method not found, route = {route.ToString()}");
 
-            var task = _taskManager.RunTask(session, ic =>
+            var task = _taskManager.RunTask(ic =>
             {
                 object result = null;
 
@@ -67,13 +67,13 @@ namespace Aquila.Networking
             }
         }
 
-        public Task InvokeStream(Route route, ISession session, Stream stream, params object[] arg)
+        public Task InvokeStream(Route route, Stream stream, params object[] arg)
         {
             if (!streamMethods.ContainsKey(route))
                 throw new InvokeException($"Method not found, route = {route.ToString()}");
 
 
-            var task = _taskManager.RunTask(session, ic =>
+            var task = _taskManager.RunTask(ic =>
             {
                 var c = ExecutionContext.Capture();
                 ExecutionContext.Run(c, state =>
@@ -88,9 +88,9 @@ namespace Aquila.Networking
             return task;
         }
 
-        public Task<object> InvokeProxy(ISession session, object instanceObject, string methodName, object[] args)
+        public Task<object> InvokeProxy(object instanceObject, string methodName, object[] args)
         {
-            return _taskManager.RunTask(session, ic =>
+            return _taskManager.RunTask(ic =>
             {
                 MethodInfo methodInfo = instanceObject.GetType().GetMethod(methodName);
 

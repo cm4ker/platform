@@ -7,7 +7,7 @@ namespace Aquila.QueryBuilder.Visitor
 {
     public class MsSqlBuilder : QueryVisitorBase<string>
     {
-        public override string VisitQuerys(Querys node)
+        public override string VisitQueries(Queries node)
         {
             return string.Join(";\n", node.QueryList.Select(q => q.Accept(this)));
         }

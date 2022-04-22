@@ -67,7 +67,7 @@ namespace BufferedDataReaderDotNet.IntegrationTests
             return stringBuilder.ToString();
         }
 
-        [Fact]
+        [Fact(Skip = "Need adopt for postgres")]
         public async Task GetBufferedDataAsync_GetsBufferedData()
         {
             var cancellationToken = CancellationToken.None;

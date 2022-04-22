@@ -14,11 +14,11 @@ namespace Aquila.QueryBuilder.Builders
         }
 
         public SSyntaxNode Expression => _expression;
-        private Querys _expression = new Querys();
+        private Queries _expression = new Queries();
 
         public void Clear()
         {
-            _expression = new Querys();
+            _expression = new Queries();
         }
 
         public DDLQuery Add(Action<QueryMachine> action)
@@ -70,9 +70,9 @@ namespace Aquila.QueryBuilder.Builders
 
     public class CreateBuilder
     {
-        private Querys _querys;
+        private Queries _querys;
 
-        public CreateBuilder(Querys querys)
+        public CreateBuilder(Queries querys)
         {
             _querys = querys;
         }
@@ -104,9 +104,9 @@ namespace Aquila.QueryBuilder.Builders
 
     public class AlterBuilder
     {
-        private Querys _querys;
+        private Queries _querys;
 
-        public AlterBuilder(Querys querys)
+        public AlterBuilder(Queries querys)
         {
             _querys = querys;
         }
@@ -130,9 +130,9 @@ namespace Aquila.QueryBuilder.Builders
 
     public class DeleteBuilder
     {
-        private Querys _querys;
+        private Queries _querys;
 
-        public DeleteBuilder(Querys querys)
+        public DeleteBuilder(Queries querys)
         {
             _querys = querys;
         }
@@ -158,9 +158,9 @@ namespace Aquila.QueryBuilder.Builders
 
     public class CopyBuilder
     {
-        private Querys _querys;
+        private Queries _querys;
 
-        public CopyBuilder(Querys querys)
+        public CopyBuilder(Queries querys)
         {
             _querys = querys;
         }
@@ -183,9 +183,9 @@ namespace Aquila.QueryBuilder.Builders
 
     public class RenameBuilder
     {
-        private Querys _querys;
+        private Queries _querys;
 
-        public RenameBuilder(Querys querys)
+        public RenameBuilder(Queries querys)
         {
             _querys = querys;
         }

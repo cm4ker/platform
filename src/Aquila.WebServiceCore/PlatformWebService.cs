@@ -56,7 +56,6 @@ namespace Aquila.WebServiceCore
                 {
                     b.HostingEnvironment.EnvironmentName = Environments.Development;
 
-
                     if (b.HostingEnvironment.IsDevelopment())
                     {
                         app.UseDeveloperExceptionPage();
@@ -68,7 +67,7 @@ namespace Aquila.WebServiceCore
                     }
 
 
-                    app.UseAquila();
+                    app.UseAquila(b);
                     //if we not found endpoints response this                    
                     app.Run(context =>
                         context.Response.WriteAsync("Path not found! Go away!", cancellationToken: ct));

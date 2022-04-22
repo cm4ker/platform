@@ -1,6 +1,6 @@
 Name: Genre
 Properties:
-  - Name: Name
+  - Name: name
     Types: 
       - Name: string
         Size: 100

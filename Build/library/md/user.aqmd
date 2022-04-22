@@ -1,17 +1,17 @@
 Name: User
 Properties:
-  - Name: FirstName
+  - Name: first_name
     Types: 
     - Name : string
       Size : 100
-  - Name: SecondName
+  - Name: second_name
     Types: 
     - Name : string
       Size : 100
-  - Name: Birthday
+  - Name: birthday
     Types: 
     - Name : datetime
-  - Name: IsActive
+  - Name: is_active
     Types:
     - Name : bool
     

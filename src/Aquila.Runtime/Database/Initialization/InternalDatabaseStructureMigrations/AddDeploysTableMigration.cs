@@ -13,7 +13,7 @@ namespace Aquila.Initializer.InternalDatabaseStructureMigrations
             Create.Table("deploys")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
                 .WithColumn("create_datetime").AsDateTime().WithDefault(SystemMethods.CurrentDateTime)
-                .WithColumn("data").AsCustom("VARBINARY(MAX)");
+                .WithColumn("data").AsBinary();
         }
 
         public override void Down()

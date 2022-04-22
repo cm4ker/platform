@@ -1,19 +1,19 @@
 Name: Book
 Properties:
 
-- Name: Caption
+- Name: caption
   Types:
   - Name : string
     Size : 100
 
-- Name: Genre
+- Name: genre
   Types:
   - Name: Entity.GenreLink
 
-- Name: Author
+- Name: author
   Types:
   - Name: Entity.AuthorLink
 
-- Name: Year
+- Name: year
   Types:
   - Name: int

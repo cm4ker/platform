@@ -3,6 +3,7 @@
     <PropertyGroup>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
         <LangVersion>preview</LangVersion>
+        <RootNamespace>Aquila.Core</RootNamespace>
     </PropertyGroup>
 
     <Import Project="..\Props\target.props" />

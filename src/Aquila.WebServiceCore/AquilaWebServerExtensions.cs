@@ -1,39 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Threading.Tasks;
 using Aquila.AspNetCore.Web;
 using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
-using Aquila.Core.Contracts.Authentication;
-using Aquila.Core.Contracts.Network;
 using Aquila.Core.Instance;
-using Aquila.Core.Network;
-using Aquila.Core.Serialisers;
 using Aquila.Core.Settings;
 using Aquila.Core.Utilities;
 using Aquila.Data;
 using Aquila.Logging;
 using Aquila.Migrations;
-using Aquila.Networking;
-using Aquila.Shell;
+using Aquila.WebServiceCore.Swagger;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Aquila.WebServiceCore
 {
     public static class AquilaWebServerExtensions
     {
-        public static IApplicationBuilder UseAquila(this IApplicationBuilder builder)
+        public static IApplicationBuilder UseAquila(this IApplicationBuilder builder, WebHostBuilderContext app)
         {
             builder.UseRouting();
             builder.UseEndpoints(options =>
@@ -44,6 +40,16 @@ namespace Aquila.WebServiceCore
 
             builder.UseAuthentication();
 
+            if (app.HostingEnvironment.IsDevelopment())
+            {
+                builder.UseSwagger(o => {});
+                builder.UseSwaggerUI(options =>
+                {
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+                    options.RoutePrefix = string.Empty;
+                });
+            }
+            
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "metadata",
                 "api/{instance}/metadata");
 
@@ -147,24 +153,15 @@ namespace Aquila.WebServiceCore
             services.AddSingleton<AqInstanceManager, AqInstanceManager>();
             services.AddSingleton<ISettingsStorage, FileSettingsStorage>();
 
-            services.AddTransient<IConnectionManager, ConnectionManager>();
+            
             services.AddTransient(typeof(ILogger<>), typeof(SimpleConsoleLogger<>));
-            services.AddTransient<IDatabaseNetworkListener, TCPListener>();
-
-            services.AddScoped<IInvokeService, InvokeService>();
-            services.AddTransient<INetworkListener, TCPListener>();
-            services.AddTransient<ITerminalNetworkListener, SSHListener>();
-            services.AddTransient<IChannel, Channel>();
-            services.AddSingleton<IAccessPoint, UserAccessPoint>();
-            services.AddSingleton<ITaskManager, TaskManager>();
-            services.AddTransient<IMessagePackager, SimpleMessagePackager>();
-            services.AddTransient<ISerializer, ApexSerializer>();
-            services.AddTransient<UserConnectionFactory>();
-            services.AddTransient<ServerConnectionFactory>();
-            services.AddTransient<IChannelFactory, ChannelFactory>();
-
+            
             services.AddSingleton<ICacheService, DictionaryCacheService>();
 
+            // services.TryAddEnumerable(
+            //     ServiceDescriptor.Transient<IApiDescriptionProvider, AquilaApplicationModelProvider>());
+
+            services.AddSingleton<AquilaApiHolder>();
             services.AddSingleton<AquilaHandlerMiddleware>();
 
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -190,6 +187,8 @@ namespace Aquila.WebServiceCore
                 })
                 .AddOpenIdConnect(options =>
                 {
+                    //TODO: make it optional by the settings
+                    
                     // Note: these settings must match the application details
                     // inserted in the database at the server level.
                     options.ClientId = "mvc";
@@ -225,7 +224,12 @@ namespace Aquila.WebServiceCore
 
             services.AddHttpClient();
 
-            ContextExtensions.CurrentContextProvider = () => HttpContextExtension.GetOrCreateContext();
+            
+            services.TryAddTransient<ISwaggerProvider, AquilaSwaggerGenerator>();
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
+            
+            ContextExtensions.CurrentContextProvider = HttpContextExtension.GetOrCreateContext;
 
             return services;
         }

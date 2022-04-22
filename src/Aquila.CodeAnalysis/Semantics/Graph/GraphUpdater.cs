@@ -412,10 +412,10 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 value.ResultType);
         }
 
-        public override object VisitStaticCallEx(BoundStaticCallEx x)
+        public override object VisitCallEx(BoundCallEx x)
         {
             var updatedArgs = x.Arguments.Select(a => (BoundArgument)Accept(a)).ToImmutableArray();
-            return x.Update(x.Name, updatedArgs, x.TypeArguments);
+            return x.Update(x.MethodSymbol, x.Name, updatedArgs, x.TypeArguments, x.Instance, x.ResultType);
         }
 
         public override object VisitVariableName(BoundVariableName x)
