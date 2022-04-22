@@ -1,0 +1,18 @@
+Name: Income
+Properties:
+
+- Name: number
+  Types:
+  - Name : string
+    Size : 100
+
+- Name: date
+  Types:
+  - Name : datetime
+
+Tables:
+  - Name: books
+    Properties:
+      - Name: book
+        Types:
+          - Name: Entity.BookLink

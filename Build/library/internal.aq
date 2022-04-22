@@ -1,5 +1,6 @@
 import Entity;
 
+[endpoint]
 fn take_book(user UserLink, book BookLink)
 {
     //1. We can't give a book that we not have
@@ -16,6 +17,7 @@ fn take_book(user UserLink, book BookLink)
     }
 }
 
+[endpoint]
 fn is_book_available(book BookLink) bool
 {
     var q = query();
@@ -34,6 +36,7 @@ fn is_book_available(book BookLink) bool
     return false;
 }
 
+[endpoint]
 fn return_book(user UserLink, book BookLink)
 {
     if(is_book_available(book))
