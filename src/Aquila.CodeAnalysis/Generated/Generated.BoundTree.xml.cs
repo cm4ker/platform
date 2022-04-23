@@ -2619,15 +2619,15 @@ namespace Aquila.CodeAnalysis.Semantics
 {
     partial class BoundThisParameter : BoundVariable
     {
-        private SourceMethodSymbol _method;
-        internal BoundThisParameter(SourceMethodSymbol method): base(VariableKind.ThisParameter)
+        private MethodSymbol _method;
+        internal BoundThisParameter(MethodSymbol method): base(VariableKind.ThisParameter)
         {
             _method = method;
             OnCreateImpl(method);
         }
 
-        partial void OnCreateImpl(SourceMethodSymbol method);
-        internal SourceMethodSymbol Method
+        partial void OnCreateImpl(MethodSymbol method);
+        internal MethodSymbol Method
         {
             get
             {

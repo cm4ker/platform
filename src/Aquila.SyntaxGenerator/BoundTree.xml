@@ -409,7 +409,7 @@
     </Syntax>
     <Syntax Name="ThisParameter" Base="Variable" OperationKind="None">
         <Arguments>
-            <Single Name="Method" Type="SourceMethodSymbol" IsInternal="true"/>
+            <Single Name="Method" Type="MethodSymbol" IsInternal="true"/>
             <Single PassBaseConst="VariableKind.ThisParameter" PassBase="true"/>
         </Arguments>
     </Syntax>
