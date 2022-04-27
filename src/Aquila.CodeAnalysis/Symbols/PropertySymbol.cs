@@ -391,7 +391,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         #region Equality
 
-        public override bool Equals(ISymbol other, SymbolEqualityComparer equalityComparer)
+        public override bool Equals(ISymbol other, Microsoft.CodeAnalysis.SymbolEqualityComparer equalityComparer)
         {
             if (ReferenceEquals(null, other))
             {

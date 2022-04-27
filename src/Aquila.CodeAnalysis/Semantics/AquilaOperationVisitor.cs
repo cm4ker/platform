@@ -147,11 +147,11 @@ namespace Aquila.CodeAnalysis.Semantics
 
 namespace Aquila.CodeAnalysis.Semantics
 {
-    public partial class AquilaOperationVisitor<TResult>
-    {
-        /// <summary>Visits given operation.</summary>
-        protected TResult Accept(IAquilaOperation x) => (x != null) ? x.Accept(this) : default;
-
-        public virtual TResult VisitDefault(BoundOperation x) => default;
-    }
+    // public partial class AquilaOperationVisitor<TResult>
+    // {
+    //     /// <summary>Visits given operation.</summary>
+    //     protected TResult Accept(IAquilaOperation x) => (x != null) ? x.Accept(this) : default;
+    //
+    //     public virtual TResult VisitDefault(BoundOperation x) => default;
+    // }
 }

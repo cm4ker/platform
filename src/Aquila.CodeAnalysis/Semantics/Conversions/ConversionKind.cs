@@ -9,6 +9,7 @@ namespace Aquila.CodeAnalysis
         UnsetConversionKind = 0,
         NoConversion,
         Identity,
+        Implicit,
         ImplicitNumeric,
         ImplicitEnumeration,
         ImplicitThrow,
@@ -37,6 +38,7 @@ namespace Aquila.CodeAnalysis
         // - to MulticastDelegate or base type or interface, or
         // - to Expression or LambdaExpression.
         FunctionType,
+        Explicit,
         ExplicitNumeric,
         ExplicitEnumeration,
         ExplicitNullable,

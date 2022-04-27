@@ -45,59 +45,59 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             {
                 if (_lazyDefaultValueField == null && Initializer != null && ExplicitDefaultConstantValue == null)
                 {
-                    TypeSymbol fldtype; // type of the field
-
-                    if (Initializer is BoundArrayEx arr)
-                    {
-                        // // special case: empty array
-                        // if (arr.Items.Length == 0 && _syntax.PassMethod != PassMethod.ByReference)
-                        // {
-                        //     return null;
-                        // }
-
-                        //   
-                        fldtype = null;
-                    }
-                    // else if (Initializer is BoundPseudoClassConst)
-                    // {
-                    //     fldtype = DeclaringCompilation.GetSpecialType(SpecialType.System_String);
-                    // }
-                    else
-                    {
-                        fldtype = null;
-                    }
-
-                    // The construction of the default value may require a Context, cannot be created as a static singletong
-                    if (Initializer.RequiresContext ||
-                        (fldtype.IsReferenceType &&
-                         fldtype.SpecialType != SpecialType.System_String)
-                       ) // we can cache the default value even for Refs if it is an immutable value
-                    {
-                        fldtype = DeclaringCompilation.GetWellKnownType(WellKnownType.System_Func_T2).Construct(
-                            null,
-                            null);
-                    }
-
-                    // determine the field container:
-                    NamedTypeSymbol fieldcontainer = ContainingType; // by default in the containing class/trait/file
-                    string fieldname = $"<{ContainingSymbol.Name}.{Name}>_DefaultValue";
-
-                    //if (fieldcontainer.IsInterface)
-                    //{
-                    //    fieldcontainer = _method.ContainingFile;
-                    //    fieldname = ContainingType.Name + "." + fieldname;
-                    //}
-
-                    // public static readonly T ..;
-                    var field = new SynthesizedFieldSymbol(fieldcontainer)
-                        .SetType(fldtype)
-                        .SetName(fieldname)
-                        .SetAccess(Accessibility.Public)
-                        .SetIsStatic(true)
-                        .SetReadOnly(true);
-
+                    // TypeSymbol fldtype; // type of the field
                     //
-                    Interlocked.CompareExchange(ref _lazyDefaultValueField, field, null);
+                    // if (Initializer is BoundArrayEx arr)
+                    // {
+                    //     // // special case: empty array
+                    //     // if (arr.Items.Length == 0 && _syntax.PassMethod != PassMethod.ByReference)
+                    //     // {
+                    //     //     return null;
+                    //     // }
+                    //
+                    //     //   
+                    //     fldtype = null;
+                    // }
+                    // // else if (Initializer is BoundPseudoClassConst)
+                    // // {
+                    // //     fldtype = DeclaringCompilation.GetSpecialType(SpecialType.System_String);
+                    // // }
+                    // else
+                    // {
+                    //     fldtype = null;
+                    // }
+                    //
+                    // // The construction of the default value may require a Context, cannot be created as a static singletong
+                    // if (Initializer.RequiresContext ||
+                    //     (fldtype.IsReferenceType &&
+                    //      fldtype.SpecialType != SpecialType.System_String)
+                    //    ) // we can cache the default value even for Refs if it is an immutable value
+                    // {
+                    //     fldtype = DeclaringCompilation.GetWellKnownType(WellKnownType.System_Func_T2).Construct(
+                    //         null,
+                    //         null);
+                    // }
+                    //
+                    // // determine the field container:
+                    // NamedTypeSymbol fieldcontainer = ContainingType; // by default in the containing class/trait/file
+                    // string fieldname = $"<{ContainingSymbol.Name}.{Name}>_DefaultValue";
+                    //
+                    // //if (fieldcontainer.IsInterface)
+                    // //{
+                    // //    fieldcontainer = _method.ContainingFile;
+                    // //    fieldname = ContainingType.Name + "." + fieldname;
+                    // //}
+                    //
+                    // // public static readonly T ..;
+                    // var field = new SynthesizedFieldSymbol(fieldcontainer)
+                    //     .SetType(fldtype)
+                    //     .SetName(fieldname)
+                    //     .SetAccess(Accessibility.Public)
+                    //     .SetIsStatic(true)
+                    //     .SetReadOnly(true);
+                    //
+                    // //
+                    // Interlocked.CompareExchange(ref _lazyDefaultValueField, field, null);
                 }
 
                 return _lazyDefaultValueField;
@@ -180,7 +180,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         //     }
         // }
 
-        internal bool DefaultsToNull => _initializer != null && _initializer.ConstantValue.IsNull();
+        internal bool DefaultsToNull => _initializer != null && _initializer.ConstantValue.IsNull;
 
         /// <summary>
         /// Gets value indicating whether the parameter has been replaced with <see cref="SourceMethodSymbol.VarargsParam"/>.
@@ -269,7 +269,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 {
                     // NOTE: the constant does not have to have the exact same type as the parameter, it is up to the caller of the method to process DefaultValue and convert it if necessary
 
-                    value = Initializer.ConstantValue.ToConstantValueOrNull();
+                    value = Initializer.ConstantValue;
                     if (value != null)
                     {
                         return value;

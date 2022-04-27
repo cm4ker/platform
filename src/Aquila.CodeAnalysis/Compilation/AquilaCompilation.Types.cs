@@ -584,21 +584,24 @@ namespace Aquila.CodeAnalysis
         /// </summary>
         public CommonConversion ClassifyExplicitConversion(ITypeSymbol source, ITypeSymbol destination)
         {
-            var conv = Conversions.ClassifyConversion((TypeSymbol)source, (TypeSymbol)destination,
-                ConversionKind.Explicit);
-            if (conv.Exists == false)
-            {
-                // try regular implicit conversion instead
-                conv = ClassifyCommonConversion(source, destination);
-            }
-
-            return conv;
+            throw new NotImplementedException();
+            // var conv = Conversions.ClassifyConversion((TypeSymbol)source, (TypeSymbol)destination,
+            //     ConversionKind.Explicit);
+            // if (conv.Exists == false)
+            // {
+            //     // try regular implicit conversion instead
+            //     conv = ClassifyCommonConversion(source, destination);
+            // }
+            //
+            // return conv;
         }
 
         public override CommonConversion ClassifyCommonConversion(ITypeSymbol source, ITypeSymbol destination)
         {
-            return Conversions.ClassifyConversion((TypeSymbol)source, (TypeSymbol)destination,
-                ConversionKind.Implicit | ConversionKind.Explicit);
+            throw new NotImplementedException();
+            
+            // return Conversions.ClassifyConversion((TypeSymbol)source, (TypeSymbol)destination,
+            //     ConversionKind.Implicit | ConversionKind.Explicit);
         }
 
         internal override IConvertibleConversion ClassifyConvertibleConversion(IOperation source,

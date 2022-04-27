@@ -169,7 +169,7 @@ namespace Aquila.CodeAnalysis.Symbols
             _substitutedFrom.EnsureAllConstraintsAreResolved();
         }
 
-        internal override ImmutableArray<TypeSymbol> GetConstraintTypes(ConsList<TypeParameterSymbol> inProgress)
+        internal override ImmutableArray<TypeWithAnnotations> GetConstraintTypes(ConsList<TypeParameterSymbol> inProgress)
         {
             return _map.SubstituteTypesWithoutModifiers(_substitutedFrom.GetConstraintTypes(inProgress)).WhereAsArray(s_isNotObjectFunc).Distinct();
         }
@@ -189,6 +189,6 @@ namespace Aquila.CodeAnalysis.Symbols
             return _map.SubstituteType(_substitutedFrom.GetDeducedBaseType(inProgress)).AsTypeSymbolOnly();
         }
 
-        private static readonly Func<TypeSymbol, bool> s_isNotObjectFunc = type => type.SpecialType != SpecialType.System_Object;
+        private static readonly Func<TypeWithAnnotations, bool> s_isNotObjectFunc = type => type.SpecialType != SpecialType.System_Object;
     }
 }

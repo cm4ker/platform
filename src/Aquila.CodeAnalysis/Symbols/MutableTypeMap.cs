@@ -8,11 +8,11 @@ namespace Aquila.CodeAnalysis.Symbols
     internal sealed class MutableTypeMap : AbstractTypeParameterMap
     {
         internal MutableTypeMap()
-            : base(new SmallDictionary<TypeParameterSymbol, TypeWithModifiers>())
+            : base(new SmallDictionary<TypeParameterSymbol, TypeWithAnnotations>())
         {
         }
 
-        internal void Add(TypeParameterSymbol key, TypeWithModifiers value)
+        internal void Add(TypeParameterSymbol key, TypeWithAnnotations value)
         {
             this.Mapping.Add(key, value);
         }

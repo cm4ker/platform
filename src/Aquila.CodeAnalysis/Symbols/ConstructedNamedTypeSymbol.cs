@@ -51,7 +51,7 @@ namespace Aquila.CodeAnalysis.Symbols
         private readonly bool _hasTypeArgumentsCustomModifiers;
         private readonly NamedTypeSymbol _constructedFrom;
 
-        internal ConstructedNamedTypeSymbol(NamedTypeSymbol constructedFrom, ImmutableArray<TypeWithModifiers> typeArguments, bool unbound = false)
+        internal ConstructedNamedTypeSymbol(NamedTypeSymbol constructedFrom, ImmutableArray<TypeWithAnnotations> typeArguments, bool unbound = false)
             : base(newContainer: constructedFrom.ContainingSymbol,
                    map: new TypeMap(constructedFrom.ContainingType, constructedFrom.OriginalDefinition.TypeParameters, typeArguments),
                    originalDefinition: constructedFrom.OriginalDefinition,
@@ -131,7 +131,7 @@ namespace Aquila.CodeAnalysis.Symbols
         //    }
         //}
 
-        internal static bool TypeParametersMatchTypeArguments(ImmutableArray<TypeParameterSymbol> typeParameters, ImmutableArray<TypeWithModifiers> typeArguments)
+        internal static bool TypeParametersMatchTypeArguments(ImmutableArray<TypeParameterSymbol> typeParameters, ImmutableArray<TypeWithAnnotations> typeArguments)
         {
             int n = typeParameters.Length;
             Debug.Assert(typeArguments.Length == n);

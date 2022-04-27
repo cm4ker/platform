@@ -121,28 +121,28 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return !sourceMethod.IsReturnAnalysed;
         }
 
-        public void PingReturnUpdate(ExitBlock updatedExit, BoundBlock callingBlock)
-        {
-            // var caller = callingBlock.FlowState?.Method;
-            //
-            // // If the update of the analysis is in progress and the caller is not yet analysed (its FlowState is null due to invalidation) or
-            // // is not within the currently analysed methods, don't enqueue it
-            // if (callingBlock.FlowState == null ||
-            //     (caller != null && _currentMethodsLastReturnTypes != null &&
-            //      !_currentMethodsLastReturnTypes.ContainsKey(caller)))
-            // {
-            //     return;
-            // }
-            //
-            // if (caller == null || _callGraph.GetCalleeEdges(caller).All(edge => edge.Callee.IsReturnAnalysed))
-            // {
-            //     Enqueue(callingBlock);
-            // }
-            // else
-            // {
-            //     _dirtyCallBlocks.TryAdd(callingBlock, null);
-            // }
-        }
+        // public void PingReturnUpdate(ExitBlock updatedExit, BoundBlock callingBlock)
+        // {
+        //     // var caller = callingBlock.FlowState?.Method;
+        //     //
+        //     // // If the update of the analysis is in progress and the caller is not yet analysed (its FlowState is null due to invalidation) or
+        //     // // is not within the currently analysed methods, don't enqueue it
+        //     // if (callingBlock.FlowState == null ||
+        //     //     (caller != null && _currentMethodsLastReturnTypes != null &&
+        //     //      !_currentMethodsLastReturnTypes.ContainsKey(caller)))
+        //     // {
+        //     //     return;
+        //     // }
+        //     //
+        //     // if (caller == null || _callGraph.GetCalleeEdges(caller).All(edge => edge.Callee.IsReturnAnalysed))
+        //     // {
+        //     //     Enqueue(callingBlock);
+        //     // }
+        //     // else
+        //     // {
+        //     //     _dirtyCallBlocks.TryAdd(callingBlock, null);
+        //     // }
+        // }
 
         void Process(BoundBlock block)
         {

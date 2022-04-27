@@ -264,10 +264,10 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             }
         }
 
-        internal override ImmutableArray<TypeSymbol> GetConstraintTypes(ConsList<TypeParameterSymbol> inProgress)
+        internal override ImmutableArray<TypeWithAnnotations> GetConstraintTypes(ConsList<TypeParameterSymbol> inProgress)
         {
             var bounds = this.GetBounds(inProgress);
-            return (bounds != null) ? bounds.ConstraintTypes : ImmutableArray<TypeSymbol>.Empty;
+            return (bounds != null) ? bounds.ConstraintTypes : ImmutableArray<TypeWithAnnotations>.Empty;
         }
 
         internal override ImmutableArray<NamedTypeSymbol> GetInterfaces(ConsList<TypeParameterSymbol> inProgress)
@@ -313,7 +313,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 bool inherited = (_containingSymbol.Kind == SymbolKind.Method) && ((MethodSymbol)_containingSymbol).IsOverride;
                 //var bounds = this.ResolveBounds(this.ContainingAssembly.CorLibrary, inProgress.Prepend(this), constraintTypes, inherited, currentCompilation: null,
                 //                                diagnosticsBuilder: diagnostics, useSiteDiagnosticsBuilder: ref useSiteDiagnosticsBuilder);
-                var bounds = new TypeParameterBounds(ImmutableArray<TypeSymbol>.Empty, ImmutableArray<NamedTypeSymbol>.Empty, null, null);
+                var bounds = new TypeParameterBounds(ImmutableArray<TypeWithAnnotations>.Empty, ImmutableArray<NamedTypeSymbol>.Empty, null, null);
                 //DiagnosticInfo errorInfo = null;
 
                 //if (diagnostics.Count > 0)

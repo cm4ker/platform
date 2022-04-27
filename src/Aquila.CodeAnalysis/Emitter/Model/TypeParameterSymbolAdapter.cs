@@ -229,7 +229,7 @@ namespace Aquila.CodeAnalysis.Symbols
                         break;
                 }
 
-                var typeRef = moduleBeingBuilt.Translate(type,
+                var typeRef = moduleBeingBuilt.Translate(type.Type,
                     syntaxNodeOpt: context.SyntaxNode,
                     diagnostics: context.Diagnostics);
                 yield return new Cci.TypeReferenceWithAttributes(typeRef);

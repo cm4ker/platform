@@ -47,7 +47,7 @@ namespace Aquila.CodeAnalysis.Symbols
                     return type;
                 }
 
-                TypeWithModifiers substituted = ((TypeMap)mapOrType).SubstituteType(this.underlyingParameter.Type);
+                TypeWithAnnotations substituted = ((TypeMap)mapOrType).SubstituteType(this.underlyingParameter.Type);
 
                 type = substituted.Type;
 

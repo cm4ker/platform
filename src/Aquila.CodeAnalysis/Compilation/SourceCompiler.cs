@@ -33,7 +33,7 @@ namespace Aquila.CodeAnalysis
         readonly DiagnosticBag _diagnostics;
         readonly CancellationToken _cancellationToken;
 
-        readonly Worklist<BoundBlock> _worklist;
+        readonly Worklist _worklist;
 
         /// <summary>
         /// Number of control flow graph transformation cycles to do at most.
@@ -56,7 +56,7 @@ namespace Aquila.CodeAnalysis
             _cancellationToken = cancellationToken;
 
             // parallel worklist algorithm
-            _worklist = new Worklist<BoundBlock>(AnalyzeBlock);
+            _worklist = new Worklist(AnalyzeBlock);
 
             // semantic model
         }
@@ -158,14 +158,14 @@ namespace Aquila.CodeAnalysis
             Contract.ThrowIfNull(expression);
             Contract.ThrowIfNull(ctx);
 
-            var dummy = new BoundBlock()
-            {
-                FlowState = new FlowState(new FlowContext(ctx, null)),
-            };
-
-            dummy.Add(new BoundExpressionStmt(expression));
-
-            _worklist.Enqueue(dummy);
+            // var dummy = new BoundBlock()
+            // {
+            //     FlowState = new FlowState(new FlowContext(ctx, null)),
+            // };
+            //
+            // dummy.Add(new BoundExpressionStmt(expression));
+            //
+            // _worklist.Enqueue(dummy);
         }
 
         internal void ReanalyzeMethods()
@@ -185,12 +185,13 @@ namespace Aquila.CodeAnalysis
             // TODO: async
             // TODO: in parallel
 
-            block.Accept(AnalysisFactory(block.FlowState));
+           // block.Accept(AnalysisFactory(block.FlowState));
         }
 
         GraphVisitor<VoidStruct> AnalysisFactory(FlowState state)
         {
-            return new ExpressionAnalysis<VoidStruct>(_worklist, _compilation.GlobalSemantics);
+            throw new NotImplementedException();
+            //return new ExpressionAnalysis<VoidStruct>(_worklist, _compilation.GlobalSemantics);
         }
 
         /// <summary>
@@ -198,17 +199,17 @@ namespace Aquila.CodeAnalysis
         /// </summary>
         void BindTypes()
         {
-            var binder = new ResultTypeBinder(_compilation);
-
-            // method bodies
-            this.WalkMethods(method =>
-            {
-                // body
-                binder.Bind(method);
-
-                // parameter initializers
-                method.SourceParameters.ForEach(binder.Bind);
-            }, allowParallel: ConcurrentBuild);
+            // var binder = new ResultTypeBinder(_compilation);
+            //
+            // // method bodies
+            // this.WalkMethods(method =>
+            // {
+            //     // body
+            //     binder.Bind(method);
+            //
+            //     // parameter initializers
+            //     method.SourceParameters.ForEach(binder.Bind);
+            // }, allowParallel: ConcurrentBuild);
 
             // field initializers
             // WalkTypes(type =>
@@ -220,39 +221,39 @@ namespace Aquila.CodeAnalysis
 
         #region Nested class: LateStaticCallsLookup
 
-        /// <summary>
-        /// Lookups self:: and parent:: static method calls.
-        /// </summary>
-        class LateStaticCallsLookup : GraphExplorer<bool>
-        {
-            List<MethodSymbol> _lazyStaticCalls;
-
-            public static IList<MethodSymbol> GetSelfStaticCalls(BoundBlock block)
-            {
-                var visitor = new LateStaticCallsLookup();
-                visitor.Accept(block);
-                return (IList<MethodSymbol>)visitor._lazyStaticCalls ?? Array.Empty<MethodSymbol>();
-            }
-
-            // public override bool VisitStaticFunctionCall(BoundCall x)
-            // {
-            //     if (x.TypeRef.IsSelf() || x.TypeRef.IsParent())
-            //     {
-            //         if (_lazyStaticCalls == null) _lazyStaticCalls = new List<MethodSymbol>();
-            //
-            //         if (x.TargetMethod.IsValidMethod() && x.TargetMethod.IsStatic)
-            //         {
-            //             _lazyStaticCalls.Add(x.TargetMethod);
-            //         }
-            //         else if (x.TargetMethod is AmbiguousMethodSymbol ambiguous)
-            //         {
-            //             _lazyStaticCalls.AddRange(ambiguous.Ambiguities.Where(sm => sm.IsStatic));
-            //         }
-            //     }
-            //
-            //     return base.VisitStaticFunctionCall(x);
-            // }
-        }
+        // /// <summary>
+        // /// Lookups self:: and parent:: static method calls.
+        // /// </summary>
+        // class LateStaticCallsLookup : GraphExplorer<bool>
+        // {
+        //     List<MethodSymbol> _lazyStaticCalls;
+        //
+        //     public static IList<MethodSymbol> GetSelfStaticCalls(BoundBlock block)
+        //     {
+        //         var visitor = new LateStaticCallsLookup();
+        //         visitor.Accept(block);
+        //         return (IList<MethodSymbol>)visitor._lazyStaticCalls ?? Array.Empty<MethodSymbol>();
+        //     }
+        //
+        //     // public override bool VisitStaticFunctionCall(BoundCall x)
+        //     // {
+        //     //     if (x.TypeRef.IsSelf() || x.TypeRef.IsParent())
+        //     //     {
+        //     //         if (_lazyStaticCalls == null) _lazyStaticCalls = new List<MethodSymbol>();
+        //     //
+        //     //         if (x.TargetMethod.IsValidMethod() && x.TargetMethod.IsStatic)
+        //     //         {
+        //     //             _lazyStaticCalls.Add(x.TargetMethod);
+        //     //         }
+        //     //         else if (x.TargetMethod is AmbiguousMethodSymbol ambiguous)
+        //     //         {
+        //     //             _lazyStaticCalls.AddRange(ambiguous.Ambiguities.Where(sm => sm.IsStatic));
+        //     //         }
+        //     //     }
+        //     //
+        //     //     return base.VisitStaticFunctionCall(x);
+        //     // }
+        // }
 
         #endregion
 
@@ -276,17 +277,17 @@ namespace Aquila.CodeAnalysis
                         return;
                     }
 
-                    // has self:: or parent:: call to a method?
-                    var selfcalls = LateStaticCallsLookup.GetSelfStaticCalls(cfg.Start);
-                    if (selfcalls.Count == 0)
-                    {
-                        return;
-                    }
+                    // // has self:: or parent:: call to a method?
+                    // var selfcalls = LateStaticCallsLookup.GetSelfStaticCalls(cfg.Start);
+                    // if (selfcalls.Count == 0)
+                    // {
+                    //     return;
+                    // }
 
-                    foreach (var callee in selfcalls)
-                    {
-                        calls.Add(new KeyValuePair<SourceMethodSymbol, MethodSymbol>(caller, callee));
-                    }
+                    // foreach (var callee in selfcalls)
+                    // {
+                    //     calls.Add(new KeyValuePair<SourceMethodSymbol, MethodSymbol>(caller, callee));
+                    // }
                 }
             }, allowParallel: ConcurrentBuild);
 
@@ -371,7 +372,7 @@ namespace Aquila.CodeAnalysis
 
             if (method.ControlFlowGraph != null) // non-abstract method
             {
-                Debug.Assert(method.ControlFlowGraph.Start.FlowState != null);
+                Debug.Assert(method.ControlFlowGraph.Start != null);
 
                 var body = MethodGenerator.GenerateMethodBody(_moduleBuilder, method, 0, null, _diagnostics,
                     _emittingPdb);
@@ -399,9 +400,9 @@ namespace Aquila.CodeAnalysis
             bool anyTransforms = false;
             this.WalkMethods(m =>
                 {
-                    // Cannot be simplified due to multithreading ('=' is atomic unlike '|=')
-                    if (LocalRewriter.TryTransform(m))
-                        anyTransforms = true;
+                    // // Cannot be simplified due to multithreading ('=' is atomic unlike '|=')
+                    // if (LocalRewriter.TryTransform(m))
+                    //     anyTransforms = true;
                 },
                 allowParallel: allowParallel);
 

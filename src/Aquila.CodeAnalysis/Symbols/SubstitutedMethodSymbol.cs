@@ -626,7 +626,7 @@ namespace Aquila.CodeAnalysis.Symbols
             return code;
         }
 
-        public override bool Equals(ISymbol obj, SymbolEqualityComparer equalityComparer)
+        public override bool Equals(ISymbol obj, Microsoft.CodeAnalysis.SymbolEqualityComparer equalityComparer)
         {
             if ((object)this == obj) return true;
 

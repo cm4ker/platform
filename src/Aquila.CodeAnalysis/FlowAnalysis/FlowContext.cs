@@ -239,7 +239,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                 _method.IsReturnAnalysed = false;
 
                 // Recreate the entry state to enable another analysis
-                _method.ControlFlowGraph.Start.FlowState = StateBinder.CreateInitialState(_method, this);
+                //_method.ControlFlowGraph.Start.FlowState = StateBinder.CreateInitialState(_method, this);
             }
         }
 

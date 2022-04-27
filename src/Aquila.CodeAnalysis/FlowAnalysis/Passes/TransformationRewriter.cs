@@ -73,20 +73,20 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 
         private void TryTransformParameters()
         {
-            var needPassValueParams = ParameterAnalysis.GetNeedPassValueParams(_method);
-
-            foreach (var parameter in _method.SourceParameters)
-            {
-                var varindex =
-                    _method.ControlFlowGraph.FlowContext.GetVarIndex(
-                        new VariableName(parameter.Syntax.Identifier.Text));
-                if (!needPassValueParams.Get(varindex) && parameter.CopyOnPass)
-                {
-                    // It is unnecessary to copy a parameter whose value is only passed to another methods and cannot change
-                    parameter.CopyOnPass = false;
-                    TransformationCount++;
-                }
-            }
+            // var needPassValueParams = ParameterAnalysis.GetNeedPassValueParams(_method);
+            //
+            // foreach (var parameter in _method.SourceParameters)
+            // {
+            //     var varindex =
+            //         _method.ControlFlowGraph.FlowContext.GetVarIndex(
+            //             new VariableName(parameter.Syntax.Identifier.Text));
+            //     if (!needPassValueParams.Get(varindex) && parameter.CopyOnPass)
+            //     {
+            //         // It is unnecessary to copy a parameter whose value is only passed to another methods and cannot change
+            //         parameter.CopyOnPass = false;
+            //         TransformationCount++;
+            //     }
+            // }
         }
 
         protected override void OnVisitCFG(ControlFlowGraph x)

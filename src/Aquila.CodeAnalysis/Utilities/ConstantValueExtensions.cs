@@ -8,6 +8,7 @@ namespace Aquila.CodeAnalysis
 {
     internal static class ConstantValueExtensions
     {
+
         /// <summary>
         /// Tries to convert <paramref name="value"/> to a <see cref="ConstantValue"/> if possible.
         /// Argument that doesn't have value or values which cannot be represented as <see cref="ConstantValue"/> causes a <c>null</c> reference to be returned.

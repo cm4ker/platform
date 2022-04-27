@@ -46,7 +46,7 @@ namespace Aquila.CodeAnalysis.Symbols
             {
                 Debug.Assert((object?)_lazyFunctionType == FunctionTypeSymbol.Uninitialized);
                 Debug.Assert(_expression is null);
-                Debug.Assert(expression.Kind is BoundKind.MethodGroup or BoundKind.UnboundLambda);
+                Debug.Assert(expression.Kind is BoundKind.MethodGroup);
 
                 _expression = expression;
             }

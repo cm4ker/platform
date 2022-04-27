@@ -62,68 +62,68 @@ namespace Aquila.CodeAnalysis.CodeGen
             /// </summary>
             public LocalScope Parent => _parent;
 
-            public bool IsIn(BoundBlock block)
-            {
-                return block.Ordinal >= _from && block.Ordinal < _to;
-            }
+            // public bool IsIn(BoundBlock block)
+            // {
+            //     return block.Ordinal >= _from && block.Ordinal < _to;
+            // }
 
             public void Enqueue(BoundBlock block)
             {
-                if (IsIn(block))
-                {
-                    if (_blocks == null)
-                    {
-                        _blocks = new SortedSet<BoundBlock>(BoundBlock.EmitOrderComparer.Instance);
-                    }
-
-                    _blocks.Add(block);
-                }
-                else
-                {
-                    if (Parent == null)
-                        throw new ArgumentOutOfRangeException();
-
-                    Parent.Enqueue(block);
-                }
+                // if (IsIn(block))
+                // {
+                //     if (_blocks == null)
+                //     {
+                //         _blocks = new SortedSet<BoundBlock>(BoundBlock.EmitOrderComparer.Instance);
+                //     }
+                //
+                //     _blocks.Add(block);
+                // }
+                // else
+                // {
+                //     if (Parent == null)
+                //         throw new ArgumentOutOfRangeException();
+                //
+                //     Parent.Enqueue(block);
+                // }
             }
 
             public void ContinueWith(BoundBlock block)
             {
-                if (_codegen.IsGenerated(block))
-                {
-                    // backward edge;
-                    // or the block was already emitted, branch there:
-                    IL.EmitBranch(ILOpCode.Br, block);
-                    return;
-                }
+                // if (_codegen.IsGenerated(block))
+                // {
+                //     // backward edge;
+                //     // or the block was already emitted, branch there:
+                //     IL.EmitBranch(ILOpCode.Br, block);
+                //     return;
+                // }
 
-                if (block.IsDead)
-                {
-                    // ignore dead/unreachable blocks
-                    return;
-                }
-
-                if (block.Ordinal < _from)
-                {
-                    throw new InvalidOperationException("block miss");
-                }
-
-                if (IsIn(block))
-                {
-                    // TODO: avoid branching to a guarded scope // e.g. goto x; try { x: }
-
-                    if (_blocks == null || _blocks.Count == 0 || _blocks.Comparer.Compare(block, _blocks.First()) < 0)
-                    {
-                        if (_blocks != null)
-                        {
-                            _blocks.Remove(block);
-                        }
-
-                        // continue with the block
-                        _codegen.GenerateBlock(block);
-                        return;
-                    }
-                }
+                // if (block.IsDead)
+                // {
+                //     // ignore dead/unreachable blocks
+                //     return;
+                // }
+                //
+                // if (block.Ordinal < _from)
+                // {
+                //     throw new InvalidOperationException("block miss");
+                // }
+                //
+                // if (IsIn(block))
+                // {
+                //     // TODO: avoid branching to a guarded scope // e.g. goto x; try { x: }
+                //
+                //     if (_blocks == null || _blocks.Count == 0 || _blocks.Comparer.Compare(block, _blocks.First()) < 0)
+                //     {
+                //         if (_blocks != null)
+                //         {
+                //             _blocks.Remove(block);
+                //         }
+                //
+                //         // continue with the block
+                //         _codegen.GenerateBlock(block);
+                //         return;
+                //     }
+                // }
 
                 // forward edge:
                 // note: if block will follow immediately, .br will be ignored
@@ -348,7 +348,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         //
         // SourceFileSymbol _containingFile;
 
-        internal ExitBlock ExitBlock => ((ExitBlock)this.Method.ControlFlowGraph.Exit);
+        // internal ExitBlock ExitBlock => ((ExitBlock)this.Method.ControlFlowGraph.Exit);
 
         #endregion
 
@@ -422,82 +422,82 @@ namespace Aquila.CodeAnalysis.CodeGen
 
         #endregion
 
-        #region CFG Emitting
-
-        /// <summary>
-        /// Emits methods body.
-        /// </summary>
-        internal void Generate()
-        {
-            Debug.Assert(_method != null && _method.ControlFlowGraph != null);
-            _method.Generate(this);
-        }
-
-        internal void GenerateScope(BoundBlock block, int to)
-        {
-            GenerateScope(block, ScopeType.Variable, to);
-        }
-
-        internal void GenerateScope(BoundBlock block, ScopeType type, int to)
-        {
-            Contract.ThrowIfNull(block);
-
-            // open scope
-            _scope = new LocalScope(this, _scope, type, block.Ordinal, to);
-            _scope.ContinueWith(block);
-
-            while ((block = _scope.Dequeue()) != null)
-            {
-                GenerateBlock(block);
-            }
-
-            // close scope
-            _scope = _scope.Parent;
-
-
-            _il.AssertStackEmpty();
-        }
-
-        /// <summary>
-        /// Gets a reference to the current scope.
-        /// </summary>
-        internal LocalScope Scope => _scope;
-
-        void GenerateBlock(BoundBlock block)
-        {
-            // mark the block as emitted
-            Debug.Assert(block.Tag != _emmittedTag);
-            block.Tag = _emmittedTag;
-
-            // mark location as a label
-            // to allow branching to the block
-            _il.MarkLabel(block);
-
-            //
-            _scope.BlockGenerated(block);
-
-            //
-            Generate(block);
-        }
-
-        /// <summary>
-        /// Invokes <see cref="IGenerator.Generate"/>.
-        /// </summary>
-        internal void Generate(IGenerator element)
-        {
-            element?.Generate(this);
-        }
-
-        /// <summary>
-        /// Gets value indicating whether the given block was already emitted.
-        /// </summary>
-        internal bool IsGenerated(BoundBlock block)
-        {
-            Contract.ThrowIfNull(block);
-            return block.Tag == _emmittedTag;
-        }
-
-        #endregion
+        // #region CFG Emitting
+        //
+        // /// <summary>
+        // /// Emits methods body.
+        // /// </summary>
+        // internal void Generate()
+        // {
+        //     Debug.Assert(_method != null && _method.ControlFlowGraph != null);
+        //     _method.Generate(this);
+        // }
+        //
+        // internal void GenerateScope(BoundBlock block, int to)
+        // {
+        //     GenerateScope(block, ScopeType.Variable, to);
+        // }
+        //
+        // internal void GenerateScope(BoundBlock block, ScopeType type, int to)
+        // {
+        //     Contract.ThrowIfNull(block);
+        //
+        //     // open scope
+        //     _scope = new LocalScope(this, _scope, type, block.Ordinal, to);
+        //     _scope.ContinueWith(block);
+        //
+        //     while ((block = _scope.Dequeue()) != null)
+        //     {
+        //         GenerateBlock(block);
+        //     }
+        //
+        //     // close scope
+        //     _scope = _scope.Parent;
+        //
+        //
+        //     _il.AssertStackEmpty();
+        // }
+        //
+        // /// <summary>
+        // /// Gets a reference to the current scope.
+        // /// </summary>
+        // internal LocalScope Scope => _scope;
+        //
+        // void GenerateBlock(BoundBlock block)
+        // {
+        //     // mark the block as emitted
+        //     Debug.Assert(block.Tag != _emmittedTag);
+        //     block.Tag = _emmittedTag;
+        //
+        //     // mark location as a label
+        //     // to allow branching to the block
+        //     _il.MarkLabel(block);
+        //
+        //     //
+        //     _scope.BlockGenerated(block);
+        //
+        //     //
+        //     Generate(block);
+        // }
+        //
+        // /// <summary>
+        // /// Invokes <see cref="IGenerator.Generate"/>.
+        // /// </summary>
+        // internal void Generate(IGenerator element)
+        // {
+        //     element?.Generate(this);
+        // }
+        //
+        // /// <summary>
+        // /// Gets value indicating whether the given block was already emitted.
+        // /// </summary>
+        // internal bool IsGenerated(BoundBlock block)
+        // {
+        //     Contract.ThrowIfNull(block);
+        //     return block.Tag == _emmittedTag;
+        // }
+        //
+        // #endregion
 
         #region IDisposable
 

@@ -70,7 +70,7 @@ namespace Aquila.CodeAnalysis
 
         public readonly AquilaCompilation Compilation;
 
-        public SynthesizedClosureEnvironment? StaticLambdaFrame;
+        //public SynthesizedClosureEnvironment? StaticLambdaFrame;
 
         /// <summary>
         /// A graph of method->method references for this(...) constructor initializers.
@@ -100,15 +100,15 @@ namespace Aquila.CodeAnalysis
             }
         }
 
-        /// <summary>
-        /// The type passed to the runtime binder as context.
-        /// </summary>
-        public NamedTypeSymbol? DynamicOperationContextType
-        {
-            get { return this.ModuleBuilderOpt?.GetDynamicOperationContextType(this.Type); }
-        }
+        // /// <summary>
+        // /// The type passed to the runtime binder as context.
+        // /// </summary>
+        // public NamedTypeSymbol? DynamicOperationContextType
+        // {
+        //     get { return this.ModuleBuilderOpt?.GetDynamicOperationContextType(this.Type); }
+        // }
 
-        [MemberNotNullWhen(true, nameof(ModuleBuilderOpt))]
+        //[MemberNotNullWhen(true, nameof(ModuleBuilderOpt))]
         public bool Emitting
         {
             get { return ModuleBuilderOpt != null; }
@@ -227,7 +227,8 @@ namespace Aquila.CodeAnalysis
                     {
                         // We found a (new) cycle containing the edge (method1, method2). Report an
                         // error and do not add the edge.
-                        diagnostics.Add(ErrorCode.ERR_IndirectRecursiveConstructorCall, syntax.Location, method1);
+                        
+                        //diagnostics.Add(ErrorCode.ERR_IndirectRecursiveConstructorCall, syntax.Location, method1);
                         return;
                     }
                 }

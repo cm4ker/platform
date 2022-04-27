@@ -89,9 +89,9 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
         {
         }
 
-        internal override ImmutableArray<TypeSymbol> GetConstraintTypes(ConsList<TypeParameterSymbol> inProgress)
+        internal override ImmutableArray<TypeWithAnnotations> GetConstraintTypes(ConsList<TypeParameterSymbol> inProgress)
         {
-            return ImmutableArray<TypeSymbol>.Empty;
+            return ImmutableArray<TypeWithAnnotations>.Empty;
         }
 
         public override Symbol ContainingSymbol

@@ -58,13 +58,17 @@ namespace Aquila.CodeAnalysis.Symbols
             bool changed = !ReferenceEquals(oldConstructedFrom, newConstructedFrom);
 
             //ImmutableArray<ImmutableArray<CustomModifier>> modifiers = previous.HasTypeArgumentsCustomModifiers ? previous.TypeArgumentsCustomModifiers : default(ImmutableArray<ImmutableArray<CustomModifier>>);
-            ImmutableArray<ImmutableArray<CustomModifier>> modifiers = /*previous.HasTypeArgumentsCustomModifiers ? previous.TypeArgumentsCustomModifiers : */default(ImmutableArray<ImmutableArray<CustomModifier>>);
+            ImmutableArray<ImmutableArray<CustomModifier>>
+                modifiers = /*previous.HasTypeArgumentsCustomModifiers ? previous.TypeArgumentsCustomModifiers : */
+                    default(ImmutableArray<ImmutableArray<CustomModifier>>);
 
-            var newTypeArguments = ArrayBuilder<TypeWithModifiers>.GetInstance(oldTypeArguments.Length);
+            var newTypeArguments = ArrayBuilder<TypeWithAnnotations>.GetInstance(oldTypeArguments.Length);
 
             for (int i = 0; i < oldTypeArguments.Length; i++)
             {
-                var oldArgument = modifiers.IsDefault ? new TypeWithModifiers(oldTypeArguments[i]) : new TypeWithModifiers(oldTypeArguments[i], modifiers[i]);
+                var oldArgument = modifiers.IsDefault
+                    ? TypeWithAnnotations.Create(oldTypeArguments[i])
+                    : TypeWithAnnotations.Create(oldTypeArguments[i], NullableAnnotation.Ignored, modifiers[i]);
                 var newArgument = oldArgument.SubstituteType(this);
 
                 if (!changed && oldArgument != newArgument)
@@ -143,17 +147,20 @@ namespace Aquila.CodeAnalysis.Symbols
             return false;
         }
 
-        internal ImmutableArray<CustomModifier> SubstituteCustomModifiers(TypeSymbol type, ImmutableArray<CustomModifier> customModifiers)
+        internal ImmutableArray<CustomModifier> SubstituteCustomModifiers(TypeSymbol type,
+            ImmutableArray<CustomModifier> customModifiers)
         {
             if (IsPossiblyByRefTypeParameter(type))
             {
-                return new TypeWithModifiers(type, customModifiers).SubstituteType(this).CustomModifiers;
+                return TypeWithAnnotations.Create(type, NullableAnnotation.Ignored, customModifiers)
+                    .SubstituteType(this).CustomModifiers;
             }
 
             return SubstituteCustomModifiers(customModifiers);
         }
 
-        internal ImmutableArray<CustomModifier> SubstituteCustomModifiers(ImmutableArray<CustomModifier> customModifiers)
+        internal ImmutableArray<CustomModifier> SubstituteCustomModifiers(
+            ImmutableArray<CustomModifier> customModifiers)
         {
             if (customModifiers.IsDefaultOrEmpty)
             {
@@ -195,7 +202,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
             return customModifiers;
         }
-        
+
         protected virtual TypeSymbol SubstituteDynamicType()
         {
             //return DynamicTypeSymbol.Instance;
@@ -209,8 +216,8 @@ namespace Aquila.CodeAnalysis.Symbols
 
         private ArrayTypeSymbol SubstituteArrayType(ArrayTypeSymbol t)
         {
-            var oldElement = new TypeWithModifiers(t.ElementType, t.CustomModifiers);
-            TypeWithModifiers element = oldElement.SubstituteType(this);
+            var oldElement = TypeWithAnnotations.Create(t.ElementType, NullableAnnotation.Ignored, t.CustomModifiers);
+            TypeWithAnnotations element = oldElement.SubstituteType(this);
             if (element == oldElement)
             {
                 return t;
@@ -224,12 +231,16 @@ namespace Aquila.CodeAnalysis.Symbols
                 if (interfaces.Length == 1)
                 {
                     Debug.Assert(interfaces[0] is NamedTypeSymbol); // IList<T>
-                    interfaces = ImmutableArray.Create<NamedTypeSymbol>((NamedTypeSymbol)SubstituteType(interfaces[0]).AsTypeSymbolOnly());
+                    interfaces =
+                        ImmutableArray.Create<NamedTypeSymbol>(
+                            (NamedTypeSymbol)SubstituteType(interfaces[0]).AsTypeSymbolOnly());
                 }
                 else if (interfaces.Length == 2)
                 {
                     Debug.Assert(interfaces[0] is NamedTypeSymbol); // IList<T>
-                    interfaces = ImmutableArray.Create<NamedTypeSymbol>((NamedTypeSymbol)SubstituteType(interfaces[0]).AsTypeSymbolOnly(), (NamedTypeSymbol)SubstituteType(interfaces[1]).AsTypeSymbolOnly());
+                    interfaces = ImmutableArray.Create<NamedTypeSymbol>(
+                        (NamedTypeSymbol)SubstituteType(interfaces[0]).AsTypeSymbolOnly(),
+                        (NamedTypeSymbol)SubstituteType(interfaces[1]).AsTypeSymbolOnly());
                 }
                 else if (interfaces.Length != 0)
                 {
@@ -264,24 +275,25 @@ namespace Aquila.CodeAnalysis.Symbols
         //    return new PointerTypeSymbol(pointedAtType.Type, pointedAtType.CustomModifiers);
         //}
 
-        internal ImmutableArray<TypeSymbol> SubstituteTypesWithoutModifiers(ImmutableArray<TypeSymbol> original)
+        internal ImmutableArray<TypeWithAnnotations> SubstituteTypesWithoutModifiers(
+            ImmutableArray<TypeWithAnnotations> original)
         {
             if (original.IsDefault)
             {
                 return original;
             }
 
-            TypeSymbol[] result = null;
+            TypeWithAnnotations[] result = null;
 
             for (int i = 0; i < original.Length; i++)
             {
                 var t = original[i];
-                var substituted = SubstituteType(t).Type;
+                var substituted = SubstituteType(t.Type);
                 if (!Object.ReferenceEquals(substituted, t))
                 {
                     if (result == null)
                     {
-                        result = new TypeSymbol[original.Length];
+                        result = new TypeWithAnnotations[original.Length];
                         for (int j = 0; j < i; j++)
                         {
                             result[j] = original[j];
@@ -319,7 +331,8 @@ namespace Aquila.CodeAnalysis.Symbols
         /// <summary>
         /// Substitute types, and return the results without duplicates, preserving the original order.
         /// </summary>
-        internal void SubstituteTypesDistinctWithoutModifiers(ImmutableArray<TypeSymbol> original, ArrayBuilder<TypeSymbol> result)
+        internal void SubstituteTypesDistinctWithoutModifiers(ImmutableArray<TypeSymbol> original,
+            ArrayBuilder<TypeSymbol> result)
         {
             if (original.Length == 0)
             {
@@ -343,9 +356,11 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        internal ImmutableArray<TypeParameterSymbol> SubstituteTypeParameters(ImmutableArray<TypeParameterSymbol> original)
+        internal ImmutableArray<TypeParameterSymbol> SubstituteTypeParameters(
+            ImmutableArray<TypeParameterSymbol> original)
         {
-            return original.SelectAsArray((tp, m) => (TypeParameterSymbol)m.SubstituteTypeParameter(tp).AsTypeSymbolOnly(), this);
+            return original.SelectAsArray(
+                (tp, m) => (TypeParameterSymbol)m.SubstituteTypeParameter(tp).AsTypeSymbolOnly(), this);
         }
 
         /// <summary>

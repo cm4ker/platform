@@ -70,7 +70,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 position -= peType.MetadataArity - peType.Arity;
                 Debug.Assert(position >= 0 && position < peType.Arity);
 
-                return peType.TypeArguments/*NoUseSiteDiagnostics*/[position]; //NB: args, not params
+                return peType.TypeArguments /*NoUseSiteDiagnostics*/[position]; //NB: args, not params
             }
 
             NamedTypeSymbol namedType = _containingType as NamedTypeSymbol;
@@ -93,7 +93,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             return new UnsupportedMetadataTypeSymbol(); // associated type does not have type parameters
         }
 
-        private static void GetGenericTypeArgumentSymbol(int position, NamedTypeSymbol namedType, out int cumulativeArity, out TypeSymbol typeArgument)
+        private static void GetGenericTypeArgumentSymbol(int position, NamedTypeSymbol namedType,
+            out int cumulativeArity, out TypeSymbol typeArgument)
         {
             cumulativeArity = namedType.Arity;
             typeArgument = null;
@@ -104,7 +105,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             if ((object)containingType != null)
             {
                 int containingTypeCumulativeArity;
-                GetGenericTypeArgumentSymbol(position, containingType, out containingTypeCumulativeArity, out typeArgument);
+                GetGenericTypeArgumentSymbol(position, containingType, out containingTypeCumulativeArity,
+                    out typeArgument);
                 cumulativeArity += containingTypeCumulativeArity;
                 arityOffset = containingTypeCumulativeArity;
             }
@@ -113,7 +115,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             {
                 Debug.Assert((object)typeArgument == null);
 
-                typeArgument = namedType.TypeArguments/*NoUseSiteDiagnostics*/[position - arityOffset];
+                typeArgument = namedType.TypeArguments /*NoUseSiteDiagnostics*/[position - arityOffset];
             }
         }
 
@@ -145,8 +147,11 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                     case (byte)SignatureCallingConvention.Default:
                     case (byte)SignatureCallingConvention.VarArgs:
                         int typeParamCount;
-                        ParamInfo<TypeSymbol>[] targetParamInfo = this.DecodeSignatureParametersOrThrow(ref signaturePointer, signatureHeader, out typeParamCount);
-                        return FindMethodBySignature(targetTypeSymbol, memberName, signatureHeader, typeParamCount, targetParamInfo);
+                        ParamInfo<TypeSymbol>[] targetParamInfo =
+                            this.DecodeSignatureParametersOrThrow(ref signaturePointer, signatureHeader,
+                                out typeParamCount);
+                        return FindMethodBySignature(targetTypeSymbol, memberName, signatureHeader, typeParamCount,
+                            targetParamInfo);
 
                     case (byte)SignatureKind.Field:
                         if (methodsOnly)
@@ -170,7 +175,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             }
         }
 
-        private static FieldSymbol FindFieldBySignature(TypeSymbol targetTypeSymbol, string targetMemberName, ImmutableArray<ModifierInfo<TypeSymbol>> customModifiers, TypeSymbol type)
+        private static FieldSymbol FindFieldBySignature(TypeSymbol targetTypeSymbol, string targetMemberName,
+            ImmutableArray<ModifierInfo<TypeSymbol>> customModifiers, TypeSymbol type)
         {
             foreach (Symbol member in targetTypeSymbol.GetMembers(targetMemberName))
             {
@@ -188,7 +194,9 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             return null;
         }
 
-        private static MethodSymbol FindMethodBySignature(TypeSymbol targetTypeSymbol, string targetMemberName, SignatureHeader targetMemberSignatureHeader, int targetMemberTypeParamCount, ParamInfo<TypeSymbol>[] targetParamInfo)
+        private static MethodSymbol FindMethodBySignature(TypeSymbol targetTypeSymbol, string targetMemberName,
+            SignatureHeader targetMemberSignatureHeader, int targetMemberTypeParamCount,
+            ParamInfo<TypeSymbol>[] targetParamInfo)
         {
             foreach (Symbol member in targetTypeSymbol.GetMembers(targetMemberName))
             {
@@ -207,7 +215,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             return null;
         }
 
-        private static bool MethodSymbolMatchesParamInfo(MethodSymbol candidateMethod, ParamInfo<TypeSymbol>[] targetParamInfo)
+        private static bool MethodSymbolMatchesParamInfo(MethodSymbol candidateMethod,
+            ParamInfo<TypeSymbol>[] targetParamInfo)
         {
             int numParams = targetParamInfo.Length - 1; //don't count return type
 
@@ -229,7 +238,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
 
             for (int i = 0; i < numParams; i++)
             {
-                if (!ParametersMatch(candidateMethod.Parameters[i], candidateMethodTypeMap, ref targetParamInfo[i + 1 /*for return type*/]))
+                if (!ParametersMatch(candidateMethod.Parameters[i], candidateMethodTypeMap,
+                        ref targetParamInfo[i + 1 /*for return type*/]))
                 {
                     return false;
                 }
@@ -238,7 +248,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             return true;
         }
 
-        private static bool ParametersMatch(ParameterSymbol candidateParam, TypeMap candidateMethodTypeMap, ref ParamInfo<TypeSymbol> targetParam)
+        private static bool ParametersMatch(ParameterSymbol candidateParam, TypeMap candidateMethodTypeMap,
+            ref ParamInfo<TypeSymbol> targetParam)
         {
             Debug.Assert(candidateMethodTypeMap != null);
 
@@ -251,14 +262,18 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             }
 
             // CONSIDER: Do we want to add special handling for error types?  Right now, we expect they'll just fail to match.
-            var substituted = new TypeWithModifiers(candidateParam.Type, candidateParam.CustomModifiers).SubstituteType(candidateMethodTypeMap);
+            var substituted = TypeWithAnnotations
+                .Create(candidateParam.Type, NullableAnnotation.Ignored, candidateParam.CustomModifiers)
+                .SubstituteType(candidateMethodTypeMap);
             if (substituted.Type != targetParam.Type)
             {
                 return false;
             }
 
             if (!CustomModifiersMatch(substituted.CustomModifiers, targetParam.CustomModifiers) ||
-                !CustomModifiersMatch(candidateMethodTypeMap.SubstituteCustomModifiers(candidateParam.RefCustomModifiers), targetParam.RefCustomModifiers))
+                !CustomModifiersMatch(
+                    candidateMethodTypeMap.SubstituteCustomModifiers(candidateParam.RefCustomModifiers),
+                    targetParam.RefCustomModifiers))
             {
                 return false;
             }
@@ -266,13 +281,17 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             return true;
         }
 
-        private static bool ReturnTypesMatch(MethodSymbol candidateMethod, TypeMap candidateMethodTypeMap, ref ParamInfo<TypeSymbol> targetReturnParam)
+        private static bool ReturnTypesMatch(MethodSymbol candidateMethod, TypeMap candidateMethodTypeMap,
+            ref ParamInfo<TypeSymbol> targetReturnParam)
         {
             TypeSymbol candidateReturnType = candidateMethod.ReturnType;
             TypeSymbol targetReturnType = targetReturnParam.Type;
 
             // CONSIDER: Do we want to add special handling for error types?  Right now, we expect they'll just fail to match.
-            var substituted = new TypeWithModifiers(candidateReturnType, candidateMethod.ReturnTypeCustomModifiers).SubstituteType(candidateMethodTypeMap);
+            var substituted =
+                TypeWithAnnotations.Create(candidateReturnType, NullableAnnotation.Ignored,
+                    candidateMethod.ReturnTypeCustomModifiers).SubstituteType(
+                    candidateMethodTypeMap);
             if (substituted.Type != targetReturnType)
             {
                 return false;
@@ -286,7 +305,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             return true;
         }
 
-        private static bool CustomModifiersMatch(ImmutableArray<CustomModifier> candidateCustomModifiers, ImmutableArray<ModifierInfo<TypeSymbol>> targetCustomModifiers)
+        private static bool CustomModifiersMatch(ImmutableArray<CustomModifier> candidateCustomModifiers,
+            ImmutableArray<ModifierInfo<TypeSymbol>> targetCustomModifiers)
         {
             if (targetCustomModifiers.IsDefault || targetCustomModifiers.IsEmpty)
             {

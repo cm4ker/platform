@@ -118,17 +118,17 @@ namespace Aquila.CodeAnalysis
             return DefaultVisit(symbol, argument);
         }
 
-        /// <summary>
-        /// Called when visiting a <see cref="FunctionPointerTypeSymbol"/>; Override this with specific
-        /// implementation; Calling <see cref="DefaultVisit"/>  if it's not overridden
-        /// </summary>
-        /// <param name="symbol">The visited symbol</param>
-        /// <param name="argument">Additional argument</param>
-        /// <returns></returns>
-        public virtual TResult VisitFunctionPointerType(FunctionPointerTypeSymbol symbol, TArgument argument)
-        {
-            return DefaultVisit(symbol, argument);
-        }
+        // /// <summary>
+        // /// Called when visiting a <see cref="FunctionPointerTypeSymbol"/>; Override this with specific
+        // /// implementation; Calling <see cref="DefaultVisit"/>  if it's not overridden
+        // /// </summary>
+        // /// <param name="symbol">The visited symbol</param>
+        // /// <param name="argument">Additional argument</param>
+        // /// <returns></returns>
+        // public virtual TResult VisitFunctionPointerType(FunctionPointerTypeSymbol symbol, TArgument argument)
+        // {
+        //     return DefaultVisit(symbol, argument);
+        // }
 
         /// <summary>
         /// Called when visiting an <see cref="ErrorTypeSymbol" /> 
@@ -155,17 +155,17 @@ namespace Aquila.CodeAnalysis
             return DefaultVisit(symbol, argument);
         }
 
-        /// <summary>
-        /// Called when visiting a <see cref="DynamicTypeSymbol" />; Override this with specific
-        /// implementation; Calling <see cref="DefaultVisit" /> if it's not overridden 
-        /// </summary>
-        /// <param name="symbol">The visited symbol</param>
-        /// <param name="argument">Additional argument</param>
-        /// <returns></returns>
-        public virtual TResult VisitDynamicType(DynamicTypeSymbol symbol, TArgument argument)
-        {
-            return DefaultVisit(symbol, argument);
-        }
+        // /// <summary>
+        // /// Called when visiting a <see cref="DynamicTypeSymbol" />; Override this with specific
+        // /// implementation; Calling <see cref="DefaultVisit" /> if it's not overridden 
+        // /// </summary>
+        // /// <param name="symbol">The visited symbol</param>
+        // /// <param name="argument">Additional argument</param>
+        // /// <returns></returns>
+        // public virtual TResult VisitDynamicType(DynamicTypeSymbol symbol, TArgument argument)
+        // {
+        //     return DefaultVisit(symbol, argument);
+        // }
 
         /// <summary>
         /// Called when visiting a <see cref="DiscardSymbol" />; Override this with specific
@@ -263,28 +263,28 @@ namespace Aquila.CodeAnalysis
             return DefaultVisit(symbol, argument);
         }
 
-        /// <summary>
-        /// Called when visiting an <see cref="AliasSymbol" />; Override this with specific
-        /// implementation; Calling default <see cref="DefaultVisit" /> if it's not overridden 
-        /// </summary>
-        /// <param name="symbol">The visited symbol</param>
-        /// <param name="argument">Additional argument</param>
-        /// <returns></returns>
-        public virtual TResult VisitAlias(AliasSymbol symbol, TArgument argument)
-        {
-            return DefaultVisit(symbol, argument);
-        }
+        // /// <summary>
+        // /// Called when visiting an <see cref="AliasSymbol" />; Override this with specific
+        // /// implementation; Calling default <see cref="DefaultVisit" /> if it's not overridden 
+        // /// </summary>
+        // /// <param name="symbol">The visited symbol</param>
+        // /// <param name="argument">Additional argument</param>
+        // /// <returns></returns>
+        // public virtual TResult VisitAlias(AliasSymbol symbol, TArgument argument)
+        // {
+        //     return DefaultVisit(symbol, argument);
+        // }
 
-        /// <summary>
-        /// Called when visiting a <see cref="RangeVariableSymbol" />; Override this with specific
-        /// implementation; Calling default <see cref="DefaultVisit" /> if it's not overridden 
-        /// </summary>
-        /// <param name="symbol">The visited symbol</param>
-        /// <param name="argument">Additional argument</param>
-        /// <returns></returns>
-        public virtual TResult VisitRangeVariable(RangeVariableSymbol symbol, TArgument argument)
-        {
-            return DefaultVisit(symbol, argument);
-        }
+        // /// <summary>
+        // /// Called when visiting a <see cref="RangeVariableSymbol" />; Override this with specific
+        // /// implementation; Calling default <see cref="DefaultVisit" /> if it's not overridden 
+        // /// </summary>
+        // /// <param name="symbol">The visited symbol</param>
+        // /// <param name="argument">Additional argument</param>
+        // /// <returns></returns>
+        // public virtual TResult VisitRangeVariable(RangeVariableSymbol symbol, TArgument argument)
+        // {
+        //     return DefaultVisit(symbol, argument);
+        // }
     }
 }

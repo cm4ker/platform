@@ -81,7 +81,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             //CheckLabels(x.Labels);
 
             // report unreachable blocks
-            CheckUnreachableCode(x);
+            //CheckUnreachableCode(x);
         }
 
         /// <summary>

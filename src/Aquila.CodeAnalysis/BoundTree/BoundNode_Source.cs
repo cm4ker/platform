@@ -94,11 +94,11 @@ namespace Aquila.CodeAnalysis
                             appendLine("}");
                             break;
                         }
-                    case BoundStateMachineScope stateMachineScope:
-                        {
-                            appendSource(stateMachineScope.Statement);
-                            break;
-                        }
+                    // case BoundStateMachineScope stateMachineScope:
+                    //     {
+                    //         appendSource(stateMachineScope.Statement);
+                    //         break;
+                    //     }
                     case BoundSequencePoint seqPoint:
                         {
                             var statement = seqPoint.StatementOpt;

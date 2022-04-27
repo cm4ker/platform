@@ -64,11 +64,63 @@ namespace Aquila.CodeAnalysis.Symbols
             return type.IsReferenceType || type.IsNullableType(); // || type.IsPointerType();
         }
 
+        public static bool CanContainNull(this TypeSymbol type)
+        {
+            // unbound type parameters might contain null, even though they cannot be *assigned* null.
+            return !type.IsValueType || type.IsNullableTypeOrTypeParameter();
+        }
+
         public static bool CanBeConst(this TypeSymbol typeSymbol)
         {
             Debug.Assert((object)typeSymbol != null);
 
             return typeSymbol.IsReferenceType || typeSymbol.IsEnumType() || typeSymbol.SpecialType.CanBeConst();
+        }
+
+        public static bool IsVoidType(this TypeSymbol type)
+        {
+            return type.SpecialType == SpecialType.System_Void;
+        }
+
+        /// <summary>
+        /// Assuming that nullable annotations are enabled:
+        /// T => true
+        /// T where T : struct => false
+        /// T where T : class => false
+        /// T where T : class? => true
+        /// T where T : IComparable => true
+        /// T where T : IComparable? => true
+        /// T where T : notnull => true
+        /// </summary>
+        /// <remarks>
+        /// In C#9, annotations are allowed regardless of constraints.
+        /// </remarks>
+        public static bool IsTypeParameterDisallowingAnnotationInCSharp8(this TypeSymbol type)
+        {
+            if (type.TypeKind != TypeKind.TypeParameter)
+            {
+                return false;
+            }
+
+            var typeParameter = (TypeParameterSymbol)type;
+            // https://github.com/dotnet/roslyn/issues/30056: Test `where T : unmanaged`. See
+            // UninitializedNonNullableFieldTests.TypeParameterConstraints for instance.
+            return !typeParameter.IsValueType &&
+                   !(typeParameter.IsReferenceType && typeParameter.IsNotNullable == true);
+        }
+
+        /// <summary>
+        /// Assuming that nullable annotations are enabled:
+        /// T => true
+        /// T where T : struct => false
+        /// T where T : class => false
+        /// T where T : class? => true
+        /// T where T : IComparable => false
+        /// T where T : IComparable? => true
+        /// </summary>
+        public static bool IsPossiblyNullableReferenceTypeTypeParameter(this TypeSymbol type)
+        {
+            return type is TypeParameterSymbol { IsValueType: false, IsNotNullable: false };
         }
 
         public static bool IsOfType(this TypeSymbol t, TypeSymbol oftype)
@@ -118,23 +170,34 @@ namespace Aquila.CodeAnalysis.Symbols
         //    return !IsNullableTypeOrTypeParameter(typeArgument);
         //}
 
-        //public static bool IsNullableTypeOrTypeParameter(this TypeSymbol type)
-        //{
-        //    if (type.TypeKind == TypeKind.TypeParameter)
-        //    {
-        //        var constraintTypes = ((TypeParameterSymbol)type).ConstraintTypesNoUseSiteDiagnostics;
-        //        foreach (var constraintType in constraintTypes)
-        //        {
-        //            if (IsNullableTypeOrTypeParameter(constraintType))
-        //            {
-        //                return true;
-        //            }
-        //        }
-        //        return false;
-        //    }
+        public static bool IsNullableTypeOrTypeParameter(this TypeSymbol type)
+        {
+            if (type.TypeKind == TypeKind.TypeParameter)
+            {
+                var constraintTypes = ((TypeParameterSymbol)type).ConstraintTypesNoUseSiteDiagnostics;
+                foreach (var constraintType in constraintTypes)
+                {
+                    if (IsNullableTypeOrTypeParameter(constraintType.Type))
+                    {
+                        return true;
+                    }
+                }
 
-        //    return type.IsNullableType();
-        //}
+                return false;
+            }
+
+            return type.IsNullableType();
+        }
+
+        public static bool IsNonNullableValueType(this TypeSymbol typeArgument)
+        {
+            if (!typeArgument.IsValueType)
+            {
+                return false;
+            }
+
+            return !IsNullableTypeOrTypeParameter(typeArgument);
+        }
 
         public static bool IsNullableType(this TypeSymbol type)
         {
@@ -446,6 +509,7 @@ namespace Aquila.CodeAnalysis.Symbols
         //    }
         //}
 
+
         /// <summary>
         /// Visit the given type and, in the case of compound types, visit all "sub type"
         /// (such as A in A[], or { A&lt;T&gt;, T, U } in A&lt;T&gt;.B&lt;U&gt;) invoking 'predicate'
@@ -453,16 +517,55 @@ namespace Aquila.CodeAnalysis.Symbols
         /// traversal stops and that type is returned from this method. Otherwise if traversal
         /// completes without the predicate returning true for any type, this method returns null.
         /// </summary>
-        public static TypeSymbol VisitType<T>(this TypeSymbol type, Func<TypeSymbol, T, bool, bool> predicate, T arg)
+        public static TypeSymbol? VisitType<T>(
+            this TypeSymbol type,
+            Func<TypeSymbol, T, bool, bool> predicate,
+            T arg,
+            bool canDigThroughNullable = false)
         {
+            return VisitType(
+                typeWithAnnotationsOpt: default,
+                type: type,
+                typeWithAnnotationsPredicate: null,
+                typePredicate: predicate,
+                arg,
+                canDigThroughNullable);
+        }
+
+        /// <summary>
+        /// Visit the given type and, in the case of compound types, visit all "sub type".
+        /// One of the predicates will be invoked at each type. If the type is a
+        /// TypeWithAnnotations, <paramref name="typeWithAnnotationsPredicate"/>
+        /// will be invoked; otherwise <paramref name="typePredicate"/> will be invoked.
+        /// If the corresponding predicate returns true for any type,
+        /// traversal stops and that type is returned from this method. Otherwise if traversal
+        /// completes without the predicate returning true for any type, this method returns null.
+        /// </summary>
+        /// <param name="useDefaultType">If true, use <see cref="TypeWithAnnotations.DefaultType"/>
+        /// instead of <see cref="TypeWithAnnotations.Type"/> to avoid early resolution of nullable types</param>
+        public static TypeSymbol? VisitType<T>(
+            this TypeWithAnnotations typeWithAnnotationsOpt,
+            TypeSymbol? type,
+            Func<TypeWithAnnotations, T, bool, bool>? typeWithAnnotationsPredicate,
+            Func<TypeSymbol, T, bool, bool>? typePredicate,
+            T arg,
+            bool canDigThroughNullable = false,
+            bool useDefaultType = false)
+        {
+            RoslynDebug.Assert(typeWithAnnotationsOpt.HasType == (type is null));
+            RoslynDebug.Assert(canDigThroughNullable == false || useDefaultType == false,
+                "digging through nullable will cause early resolution of nullable types");
+
             // In order to handle extremely "deep" types like "int[][][][][][][][][]...[]"
             // or int*****************...* we implement manual tail recursion rather than 
             // doing the natural recursion.
 
-            TypeSymbol current = type;
-
             while (true)
             {
+                TypeSymbol current = type ??
+                                     (useDefaultType
+                                         ? typeWithAnnotationsOpt.DefaultType
+                                         : typeWithAnnotationsOpt.Type);
                 bool isNestedNamedType = false;
 
                 // Visit containing types from outer-most to inner-most.
@@ -474,12 +577,13 @@ namespace Aquila.CodeAnalysis.Symbols
                     case TypeKind.Enum:
                     case TypeKind.Delegate:
                     {
-                        var containingType = (TypeSymbol)current.ContainingType;
+                        var containingType = current.ContainingType;
                         if ((object)containingType != null)
                         {
                             isNestedNamedType = true;
-                            var result = containingType.VisitType(predicate, arg);
-                            if ((object)result != null)
+                            var result = VisitType(default, containingType, typeWithAnnotationsPredicate, typePredicate,
+                                arg, canDigThroughNullable, useDefaultType);
+                            if (result is object)
                             {
                                 return result;
                             }
@@ -488,52 +592,101 @@ namespace Aquila.CodeAnalysis.Symbols
                         break;
 
                     case TypeKind.Submission:
-                        Debug.Assert((object)current.ContainingType == null);
+                        RoslynDebug.Assert((object)current.ContainingType == null);
                         break;
                 }
 
-                if (predicate(current, arg, isNestedNamedType))
+                if (typeWithAnnotationsOpt.HasType && typeWithAnnotationsPredicate != null)
                 {
-                    return current;
+                    if (typeWithAnnotationsPredicate(typeWithAnnotationsOpt, arg, isNestedNamedType))
+                    {
+                        return current;
+                    }
                 }
+                else if (typePredicate != null)
+                {
+                    if (typePredicate(current, arg, isNestedNamedType))
+                    {
+                        return current;
+                    }
+                }
+
+                TypeWithAnnotations next;
 
                 switch (current.TypeKind)
                 {
-                    case TypeKind.Error:
                     case TypeKind.Dynamic:
                     case TypeKind.TypeParameter:
                     case TypeKind.Submission:
+                    case TypeKind.Enum:
                         return null;
 
-                    case TypeKind.Class:
-                    case TypeKind.Struct:
-                    case TypeKind.Interface:
-                    case TypeKind.Enum:
-                    case TypeKind.Delegate:
-                        //foreach (var typeArg in ((NamedTypeSymbol)current).TypeArgumentsNoUseSiteDiagnostics)
-                        //{
-                        //    var result = typeArg.VisitType(predicate, arg);
-                        //    if ((object)result != null)
-                        //    {
-                        //        return result;
-                        //    }
-                        //}
-                        //return null;
-                        throw new NotImplementedException();
+                    // case TypeKind.Error:
+                    // case TypeKind.Class:
+                    // case TypeKind.Struct:
+                    // case TypeKind.Interface:
+                    // case TypeKind.Delegate:
+                    //     var typeArguments = ((NamedTypeSymbol)current).TypeArgumentsWithAnnotationsNoUseSiteDiagnostics;
+                    //     if (typeArguments.IsEmpty)
+                    //     {
+                    //         return null;
+                    //     }
+                    //
+                    //     int i;
+                    //     for (i = 0; i < typeArguments.Length - 1; i++)
+                    //     {
+                    //         // Let's try to avoid early resolution of nullable types
+                    //         (TypeWithAnnotations nextTypeWithAnnotations, TypeSymbol? nextType) = getNextIterationElements(typeArguments[i], canDigThroughNullable);
+                    //         var result = VisitType(
+                    //             typeWithAnnotationsOpt: nextTypeWithAnnotations,
+                    //             type: nextType,
+                    //             typeWithAnnotationsPredicate,
+                    //             typePredicate,
+                    //             arg,
+                    //             canDigThroughNullable,
+                    //             useDefaultType);
+                    //         if (result is object)
+                    //         {
+                    //             return result;
+                    //         }
+                    //     }
+                    //
+                    //     next = typeArguments[i];
+                    //     break;
 
                     case TypeKind.Array:
-                        current = ((ArrayTypeSymbol)current).ElementType;
-                        continue;
+                    // next = ((ArrayTypeSymbol)current).ElementTypeWithAnnotations;
+                    // break;
 
                     case TypeKind.Pointer:
-                        throw new NotImplementedException();
-                    //current = ((PointerTypeSymbol)current).PointedAtType;
-                    //continue;
+                    // next = ((PointerTypeSymbol)current).PointedAtTypeWithAnnotations;
+                    // break;
+
+                    // case TypeKind.FunctionPointer:
+                    //     {
+                    //         var result = visitFunctionPointerType((FunctionPointerTypeSymbol)current, typeWithAnnotationsPredicate, typePredicate, arg, useDefaultType, canDigThroughNullable, out next);
+                    //         if (result is object)
+                    //         {
+                    //             return result;
+                    //         }
+                    //
+                    //         break;
+                    //     }
 
                     default:
                         throw ExceptionUtilities.UnexpectedValue(current.TypeKind);
                 }
+
+                // Let's try to avoid early resolution of nullable types
+                typeWithAnnotationsOpt = canDigThroughNullable ? default : next;
+                type = canDigThroughNullable ? next.NullableUnderlyingTypeOrSelf : null;
             }
+
+            static (TypeWithAnnotations, TypeSymbol?) getNextIterationElements(TypeWithAnnotations type,
+                bool canDigThroughNullable)
+                => canDigThroughNullable
+                    ? (default(TypeWithAnnotations), type.NullableUnderlyingTypeOrSelf)
+                    : (type, null);
         }
 
         //private static bool IsAsRestrictive(NamedTypeSymbol s1, Symbol sym2, ref HashSet<DiagnosticInfo> useSiteDiagnostics)

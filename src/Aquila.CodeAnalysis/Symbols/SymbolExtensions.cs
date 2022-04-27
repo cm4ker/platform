@@ -22,7 +22,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// Returns a constructed named type symbol if 'type' is generic, otherwise just returns 'type'
         /// </summary>
         public static NamedTypeSymbol ConstructIfGeneric(this NamedTypeSymbol type,
-            ImmutableArray<TypeWithModifiers> typeArguments)
+            ImmutableArray<TypeWithAnnotations> typeArguments)
         {
             Debug.Assert(type.TypeParameters.IsEmpty == (typeArguments.Length == 0));
             return type.TypeParameters.IsEmpty ? type : type.Construct(typeArguments, unbound: false);

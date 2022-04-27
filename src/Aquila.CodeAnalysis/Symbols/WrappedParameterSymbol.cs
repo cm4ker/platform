@@ -25,7 +25,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         protected override Symbol OriginalSymbolDefinition => this;
 
-        public sealed override bool Equals(ISymbol obj, SymbolEqualityComparer equalityComparer)
+        public sealed override bool Equals(ISymbol obj, Microsoft.CodeAnalysis.SymbolEqualityComparer equalityComparer)
         {
             if ((object)this == obj)
             {

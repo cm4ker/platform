@@ -506,10 +506,10 @@ namespace Aquila.CodeAnalysis.Symbols
                 return newTypeWithModifiers;
             }
 
-            if (newTypeWithModifiers.Type is PlaceholderTypeArgumentSymbol)
-            {
-                return newTypeWithModifiers;
-            }
+            // if (newTypeWithModifiers.Type is PlaceholderTypeArgumentSymbol)
+            // {
+            //     return newTypeWithModifiers;
+            // }
 
             NullableAnnotation newAnnotation;
             Debug.Assert(newTypeWithModifiers.Type is not IndexedTypeParameterSymbol ||
@@ -671,12 +671,12 @@ namespace Aquila.CodeAnalysis.Symbols
 
                 if (type.TypeKind != TypeKind.Array)
                 {
-                    type.AddNullableTransforms(transforms);
+                    //type.AddNullableTransforms(transforms);
                     return;
                 }
 
                 // Avoid recursion to allow for deeply-nested arrays.
-                typeWithAnnotations = ((ArrayTypeSymbol)type).ElementTypeWithAnnotations;
+                //typeWithAnnotations = ((ArrayTypeSymbol)type).ElementTypeWithAnnotations;
             }
         }
 
@@ -758,26 +758,26 @@ namespace Aquila.CodeAnalysis.Symbols
             return CreateNonLazyType(typeSymbol, NullableAnnotation.NotAnnotated, CustomModifiers);
         }
 
-        public TypeWithAnnotations SetUnknownNullabilityForReferenceTypes()
-        {
-            var typeSymbol = Type;
-            var newTypeSymbol = typeSymbol.SetUnknownNullabilityForReferenceTypes();
-
-            if (NullableAnnotation != NullableAnnotation.Oblivious)
-            {
-                if (!typeSymbol.IsValueType)
-                {
-                    return CreateNonLazyType(newTypeSymbol, NullableAnnotation.Oblivious, CustomModifiers);
-                }
-            }
-
-            if ((object)newTypeSymbol != typeSymbol)
-            {
-                return WithTypeAndModifiers(newTypeSymbol, CustomModifiers);
-            }
-
-            return this;
-        }
+        // public TypeWithAnnotations SetUnknownNullabilityForReferenceTypes()
+        // {
+        //     var typeSymbol = Type;
+        //     var newTypeSymbol = typeSymbol.SetUnknownNullabilityForReferenceTypes();
+        //
+        //     if (NullableAnnotation != NullableAnnotation.Oblivious)
+        //     {
+        //         if (!typeSymbol.IsValueType)
+        //         {
+        //             return CreateNonLazyType(newTypeSymbol, NullableAnnotation.Oblivious, CustomModifiers);
+        //         }
+        //     }
+        //
+        //     if ((object)newTypeSymbol != typeSymbol)
+        //     {
+        //         return WithTypeAndModifiers(newTypeSymbol, CustomModifiers);
+        //     }
+        //
+        //     return this;
+        // }
 
 #pragma warning disable CS0809
         [Obsolete("Unsupported", error: true)]
@@ -948,7 +948,7 @@ namespace Aquila.CodeAnalysis.Symbols
             internal override SpecialType GetSpecialType(TypeSymbol typeSymbol) => typeSymbol.SpecialType;
 
             internal override bool IsRestrictedType(TypeSymbol typeSymbol, bool ignoreSpanLikeTypes) =>
-                typeSymbol.IsRestrictedType(ignoreSpanLikeTypes);
+                typeSymbol.IsRestrictedType();
 
             internal override bool IsStatic(TypeSymbol typeSymbol) => typeSymbol.IsStatic;
             internal override bool IsVoid(TypeSymbol typeSymbol) => typeSymbol.IsVoidType();
@@ -1139,8 +1139,9 @@ namespace Aquila.CodeAnalysis.Symbols
                 }
                 else
                 {
-                    diagnostics.Add(new LazyObsoleteDiagnosticInfo(type, binder.ContainingMemberOrLambda, binder.Flags),
-                        syntax.GetLocation());
+                    throw new NotImplementedException();
+                    // diagnostics.Add(new LazyObsoleteDiagnosticInfo(type, binder.ContainingMemberOrLambda, binder.Flags),
+                    //     syntax.GetLocation());
                 }
             }
 

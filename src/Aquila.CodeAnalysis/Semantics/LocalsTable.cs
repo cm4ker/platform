@@ -17,13 +17,13 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         #region Fields & Properties
 
-        readonly Dictionary<VariableName, LocalVariableReference> /*!*/
-            _dict = new Dictionary<VariableName, LocalVariableReference>();
+        readonly Dictionary<VariableName, BoundLocal> /*!*/
+            _dict = new Dictionary<VariableName, BoundLocal>();
 
         /// <summary>
         /// Enumeration of direct local variables.
         /// </summary>
-        public IEnumerable<LocalVariableReference> Variables => _dict.Values;
+        public IEnumerable<BoundLocal> Variables => _dict.Values;
 
         /// <summary>
         /// Count of local variables.
@@ -58,71 +58,71 @@ namespace Aquila.CodeAnalysis.Semantics
 
         void PopulateParameters()
         {
-            // parameters
-            foreach (var p in _method.SourceParameters)
-            {
-                _dict[new VariableName(p.Name)] = new ParameterReference(p, Method);
-            }
-
-            if (!_method.IsStatic)
-            {
-                _dict[VariableName.ThisVariableName] = new ThisVariableReference(_method);
-            }
+            // // parameters
+            // foreach (var p in _method.SourceParameters)
+            // {
+            //     _dict[new VariableName(p.Name)] = new ParameterReference(p, Method);
+            // }
+            //
+            // if (!_method.IsStatic)
+            // {
+            //     _dict[VariableName.ThisVariableName] = new ThisVariableReference(_method);
+            // }
         }
 
-        LocalVariableReference CreateAutoGlobal(VariableName name, TextSpan span)
-        {
-            throw new NotImplementedException();
-        }
-
-        LocalVariableReference CreateLocal(VariableName name, VariableKind kind, VariableInit decl)
-        {
-            Debug.Assert(!name.IsAutoGlobal);
-            var locSym = new SourceLocalSymbol(Method, decl);
-
-            Method.Flags |= MethodFlags.UsesLocals;
-
-            return new LocalVariableReference(kind, Method, locSym, new BoundVariableName(name, locSym.Type));
-        }
-
-        LocalVariableReference CreateLocal(VariableName name, VariableKind kind, TypeSymbol type)
-        {
-            Debug.Assert(!name.IsAutoGlobal);
-            var locSym = new SynthesizedLocalSymbol(Method, name.Value, type);
-
-            Method.Flags |= MethodFlags.UsesLocals;
-
-            return new LocalVariableReference(kind, Method, locSym, new BoundVariableName(name, locSym.Type));
-        }
+        // LocalVariableReference CreateAutoGlobal(VariableName name, TextSpan span)
+        // {
+        //     throw new NotImplementedException();
+        // }
+        //
+        // LocalVariableReference CreateLocal(VariableName name, VariableKind kind, VariableInit decl)
+        // {
+        //     Debug.Assert(!name.IsAutoGlobal);
+        //     var locSym = new SourceLocalSymbol(Method, decl);
+        //
+        //     Method.Flags |= MethodFlags.UsesLocals;
+        //
+        //     return new LocalVariableReference(kind, Method, locSym, new BoundVariableName(name, locSym.Type));
+        // }
+        //
+        // LocalVariableReference CreateLocal(VariableName name, VariableKind kind, TypeSymbol type)
+        // {
+        //     Debug.Assert(!name.IsAutoGlobal);
+        //     var locSym = new SynthesizedLocalSymbol(Method, name.Value, type);
+        //
+        //     Method.Flags |= MethodFlags.UsesLocals;
+        //
+        //     return new LocalVariableReference(kind, Method, locSym, new BoundVariableName(name, locSym.Type));
+        // }
 
 
         #region Public methods
 
-        public bool TryGetVariable(VariableName varname, out LocalVariableReference variable) =>
-            _dict.TryGetValue(varname, out variable);
+        // public bool TryGetVariable(VariableName varname, out LocalVariableReference variable) =>
+        //     _dict.TryGetValue(varname, out variable);
 
-        IVariableReference BindVariable(VariableName varname, TextSpan span,
-            Func<VariableName, TextSpan, LocalVariableReference> factory)
-        {
-            if (!_dict.TryGetValue(varname, out var value))
-            {
-                _dict[varname] = value = factory(varname, span);
-            }
-
-            //
-            Debug.Assert(value != null);
-            return value;
-        }
-
-        /// <summary>
-        /// Gets local variable or create local if not yet.
-        /// </summary>
-        public IVariableReference BindLocalVariable(VariableName varname, VariableInit decl) => BindVariable(varname,
-            decl.Span, (name, span) => CreateLocal(name, VariableKind.LocalVariable, decl));
-
-        public IVariableReference BindTemporalVariable(VariableName varname, TypeSymbol type) =>
-            BindVariable(varname, default, (name, _) 
-                => CreateLocal(name, VariableKind.LocalTemporalVariable, type));
+        // IVariableReference BindVariable(VariableName varname, TextSpan span,
+        //     Func<VariableName, TextSpan, LocalVariableReference> factory)
+        // {
+        //     if (!_dict.TryGetValue(varname, out var value))
+        //     {
+        //         _dict[varname] = value = factory(varname, span);
+        //     }
+        //
+        //     //
+        //     Debug.Assert(value != null);
+        //     return value;
+        // }
+        //
+        // /// <summary>
+        // /// Gets local variable or create local if not yet.
+        // /// </summary>
+        // public IVariableReference BindLocalVariable(VariableName varname, VariableInit decl) => BindVariable(varname,
+        //     decl.Span, (name, span) => CreateLocal(name, VariableKind.LocalVariable, decl));
+        //
+        // public IVariableReference BindTemporalVariable(VariableName varname, TypeSymbol type) =>
+        //     BindVariable(varname, default, (name, _) 
+        //         => CreateLocal(name, VariableKind.LocalTemporalVariable, type));
         //
         // public IVariableReference BindAutoGlobalVariable(VariableName varname) =>
         //     BindVariable(varname, default, (name, span) => CreateAutoGlobal(name, span));

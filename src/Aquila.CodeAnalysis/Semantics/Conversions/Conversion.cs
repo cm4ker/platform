@@ -845,7 +845,7 @@ namespace Aquila.CodeAnalysis
         {
             get
             {
-                return this.Method.GetPublicSymbol();
+                return this.Method;
             }
         }
 

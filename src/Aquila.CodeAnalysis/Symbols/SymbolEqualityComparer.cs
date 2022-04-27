@@ -12,27 +12,37 @@ namespace Aquila.CodeAnalysis.Symbols
 {
     internal sealed class SymbolEqualityComparer : EqualityComparer<Symbol>
     {
-        internal static readonly EqualityComparer<Symbol> ConsiderEverything = new SymbolEqualityComparer(TypeCompareKind.ConsiderEverything);
+        internal static readonly EqualityComparer<Symbol> ConsiderEverything =
+            new SymbolEqualityComparer(TypeCompareKind.ConsiderEverything);
 
-        internal static readonly EqualityComparer<Symbol> IgnoringTupleNamesAndNullability = new SymbolEqualityComparer(TypeCompareKind.IgnoreTupleNames | TypeCompareKind.IgnoreNullableModifiersForReferenceTypes);
+        internal static readonly EqualityComparer<Symbol> IgnoringTupleNamesAndNullability =
+            new SymbolEqualityComparer(TypeCompareKind.IgnoreTupleNames |
+                                       TypeCompareKind.IgnoreNullableModifiersForReferenceTypes);
 
         internal static EqualityComparer<Symbol> IncludeNullability => ConsiderEverything;
 
         /// <summary>
         /// A comparer that treats dynamic and object as "the same" types, and also ignores tuple element names differences.
         /// </summary>
-        internal static readonly EqualityComparer<Symbol> IgnoringDynamicTupleNamesAndNullability = new SymbolEqualityComparer(TypeCompareKind.IgnoreDynamicAndTupleNames | TypeCompareKind.IgnoreNullableModifiersForReferenceTypes);
+        internal static readonly EqualityComparer<Symbol> IgnoringDynamicTupleNamesAndNullability =
+            new SymbolEqualityComparer(TypeCompareKind.IgnoreDynamicAndTupleNames |
+                                       TypeCompareKind.IgnoreNullableModifiersForReferenceTypes);
 
-        internal static readonly EqualityComparer<Symbol> IgnoringNullable = new SymbolEqualityComparer(TypeCompareKind.IgnoreNullableModifiersForReferenceTypes);
+        internal static readonly EqualityComparer<Symbol> IgnoringNullable =
+            new SymbolEqualityComparer(TypeCompareKind.IgnoreNullableModifiersForReferenceTypes);
 
-        internal static readonly EqualityComparer<Symbol> ObliviousNullableModifierMatchesAny = new SymbolEqualityComparer(TypeCompareKind.ObliviousNullableModifierMatchesAny);
+        internal static readonly EqualityComparer<Symbol> ObliviousNullableModifierMatchesAny =
+            new SymbolEqualityComparer(TypeCompareKind.ObliviousNullableModifierMatchesAny);
 
-        internal static readonly EqualityComparer<Symbol> AllIgnoreOptions = new SymbolEqualityComparer(TypeCompareKind.AllIgnoreOptions);
+        internal static readonly EqualityComparer<Symbol> AllIgnoreOptions =
+            new SymbolEqualityComparer(TypeCompareKind.AllIgnoreOptions);
 
         internal static readonly EqualityComparer<Symbol> AllIgnoreOptionsPlusNullableWithUnknownMatchesAny =
-                                                                  new SymbolEqualityComparer(TypeCompareKind.AllIgnoreOptions & ~(TypeCompareKind.IgnoreNullableModifiersForReferenceTypes));
+            new SymbolEqualityComparer(TypeCompareKind.AllIgnoreOptions &
+                                       ~(TypeCompareKind.IgnoreNullableModifiersForReferenceTypes));
 
-        internal static readonly EqualityComparer<Symbol> CLRSignature = new SymbolEqualityComparer(TypeCompareKind.CLRSignatureCompareOptions);
+        internal static readonly EqualityComparer<Symbol> CLRSignature =
+            new SymbolEqualityComparer(TypeCompareKind.CLRSignatureCompareOptions);
 
         private readonly TypeCompareKind _comparison;
 

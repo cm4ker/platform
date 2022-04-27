@@ -163,7 +163,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
                     // build control flow graph
                     var cfg = new ControlFlowGraph(this.Statements, binder);
-                    cfg.Start.FlowState = state;
+                    //cfg.Start.FlowState = state;
 
                     //
                     Interlocked.CompareExchange(ref _cfg, cfg, null);

@@ -23,7 +23,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         /// Emits expression and converts it to required type.
         /// </summary>
         public void EmitConvert(BoundExpression expr, TypeSymbol to,
-            ConversionKind conversion = ConversionKind.Implicit, bool notNull = false)
+            ConversionKind conversion = ConversionKind.ImplicitConstant, bool notNull = false)
         {
             Debug.Assert(expr != null);
             Debug.Assert(to != null);
@@ -31,18 +31,18 @@ namespace Aquila.CodeAnalysis.CodeGen
             // pop effectively
             if (to.IsVoid())
             {
-                expr.Access = BoundAccess.None;
-
-                if (!expr.IsConstant())
-                {
-                    // POP LOAD <expr>
-                    EmitPop(Emit(expr));
-                }
+                // expr.Access = BoundAccess.None;
+                //
+                // if (!expr.IsConstant())
+                // {
+                //     // POP LOAD <expr>
+                //     EmitPop(Emit(expr));
+                // }
 
                 return;
             }
 
-            EmitConvert(expr.Emit(this), to, conversion);
+            // EmitConvert(expr.Emit(this), to, conversion);
         }
 
 
@@ -52,7 +52,8 @@ namespace Aquila.CodeAnalysis.CodeGen
         /// <param name="from">Type of value on top of evaluation stack.</param>
         /// <param name="to">Target CLR type.</param>
         /// <param name="conversion">Conversion semantic.</param>
-        public void EmitConvert(TypeSymbol from, TypeSymbol to, ConversionKind conversion = ConversionKind.Implicit)
+        public void EmitConvert(TypeSymbol from, TypeSymbol to,
+            ConversionKind conversion = ConversionKind.ImplicitConstant)
         {
             Contract.ThrowIfNull(from);
             Contract.ThrowIfNull(to);
@@ -99,7 +100,8 @@ namespace Aquila.CodeAnalysis.CodeGen
             throw new NotImplementedException();
         }
 
-        public void EmitConvert(ITypeSymbol from, ITypeSymbol to, ConversionKind conversionKind = ConversionKind.Implicit) =>
+        public void EmitConvert(ITypeSymbol from, ITypeSymbol to,
+            ConversionKind conversionKind = ConversionKind.ImplicitConstant) =>
             EmitConvert((TypeSymbol)from, (TypeSymbol)to, conversionKind);
 
 
@@ -110,44 +112,46 @@ namespace Aquila.CodeAnalysis.CodeGen
         /// </summary>
         internal TypeSymbol EmitExprConvertNumberToDouble(BoundExpression expr)
         {
-            // emit number literal directly as double
-            var constant = expr.ConstantValue;
-            if (constant.HasValue)
-            {
-                if (constant.Value is long)
-                {
-                    _il.EmitDoubleConstant((long)constant.Value);
-                    return this.CoreTypes.Double;
-                }
+            throw new NotImplementedException();
 
-                if (constant.Value is int)
-                {
-                    _il.EmitDoubleConstant((int)constant.Value);
-                    return this.CoreTypes.Double;
-                }
-
-                if (constant.Value is bool)
-                {
-                    _il.EmitDoubleConstant((bool)constant.Value ? 1.0 : 0.0);
-                    return this.CoreTypes.Double;
-                }
-            }
-            
-            var place = PlaceOrNull(expr);
-            var type = (TypeSymbol)expr.Type;
-
-            Debug.Assert(type != null);
-
-            if (type.SpecialType == SpecialType.System_Int32 ||
-                type.SpecialType == SpecialType.System_Int64 ||
-                type.SpecialType == SpecialType.System_Boolean)
-            {
-                _il.EmitOpCode(ILOpCode.Conv_r8); // int|bool -> long
-                type = this.CoreTypes.Double;
-            }
-
+            // // emit number literal directly as double
+            // var constant = expr.ConstantValue;
+            // if (constant.HasValue)
+            // {
+            //     if (constant.Value is long)
+            //     {
+            //         _il.EmitDoubleConstant((long)constant.Value);
+            //         return this.CoreTypes.Double;
+            //     }
             //
-            return type;
+            //     if (constant.Value is int)
+            //     {
+            //         _il.EmitDoubleConstant((int)constant.Value);
+            //         return this.CoreTypes.Double;
+            //     }
+            //
+            //     if (constant.Value is bool)
+            //     {
+            //         _il.EmitDoubleConstant((bool)constant.Value ? 1.0 : 0.0);
+            //         return this.CoreTypes.Double;
+            //     }
+            // }
+            //
+            // var place = PlaceOrNull(expr);
+            // var type = (TypeSymbol)expr.Type;
+            //
+            // Debug.Assert(type != null);
+            //
+            // if (type.SpecialType == SpecialType.System_Int32 ||
+            //     type.SpecialType == SpecialType.System_Int64 ||
+            //     type.SpecialType == SpecialType.System_Boolean)
+            // {
+            //     _il.EmitOpCode(ILOpCode.Conv_r8); // int|bool -> long
+            //     type = this.CoreTypes.Double;
+            // }
+            //
+            // //
+            // return type;
         }
     }
 }

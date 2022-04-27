@@ -64,7 +64,7 @@ namespace Aquila.CodeAnalysis.Symbols
             return Hash.Combine(_containingSymbol.GetHashCode(), _name.GetHashCode());
         }
 
-        public override bool Equals(ISymbol other, SymbolEqualityComparer equalityComparer)
+        public override bool Equals(ISymbol other, Microsoft.CodeAnalysis.SymbolEqualityComparer equalityComparer)
         {
             return other is MissingNamespaceSymbol missing && _name.Equals(missing._name) &&
                    SymbolEqualityComparer.Default.Equals(_containingSymbol, missing._containingSymbol);

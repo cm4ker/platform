@@ -64,7 +64,7 @@ namespace Aquila.CodeAnalysis.Symbols
             return identity.GetHashCode();
         }
 
-        public override bool Equals(ISymbol other, SymbolEqualityComparer equalityComparer)
+        public override bool Equals(ISymbol other, Microsoft.CodeAnalysis.SymbolEqualityComparer equalityComparer)
         {
             return other is MissingAssemblySymbol missing && Equals(missing, equalityComparer);
         }

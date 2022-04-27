@@ -25,7 +25,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Determines if given <see cref="IBoundTypeRef"/> represents a number (integral or real).
         /// </summary>
-        public static bool IsNumber(this IBoundTypeRef tref) => tref is BoundPrimitiveTypeRef pt && pt.IsNumber;
+        public static bool IsNumber(this IBoundTypeRef tref) =>
+            false; // tref is BoundPrimitiveTypeRef pt && pt.IsNumber;
 
         ///// <summary>
         ///// Gets value determining whether <paramref name="totype"/> type can be assigned from <paramref name="fromtype"/>.

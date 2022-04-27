@@ -14,7 +14,7 @@ namespace Aquila.CodeAnalysis.Symbols
         public static readonly TypeParameterBounds Unset = new TypeParameterBounds();
 
         public TypeParameterBounds(
-            ImmutableArray<TypeSymbol> constraintTypes,
+            ImmutableArray<TypeWithAnnotations> constraintTypes,
             ImmutableArray<NamedTypeSymbol> interfaces,
             NamedTypeSymbol effectiveBaseClass,
             TypeSymbol deducedBaseType)
@@ -38,7 +38,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// The type parameters, classes, and interfaces explicitly declared as
         /// constraint types on the containing type parameter, with cycles removed.
         /// </summary>
-        public readonly ImmutableArray<TypeSymbol> ConstraintTypes;
+        public readonly ImmutableArray<TypeWithAnnotations> ConstraintTypes;
 
         /// <summary>
         /// The set of interfaces explicitly declared on the containing type

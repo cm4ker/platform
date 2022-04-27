@@ -11,14 +11,6 @@ namespace Aquila.CodeAnalysis.Semantics
         /// Corresponding syntax node.
         /// </summary>
         AquilaSyntaxNode AquilaSyntax { get; set; }
-
-        /// <summary>
-        /// Visitor with return value implementation.
-        /// </summary>
-        /// <typeparam name="TResult">Result type of the <paramref name="visitor"/>, <see cref="VoidStruct"/> if none.</typeparam>
-        /// <param name="visitor">A reference to <see cref="AquilaOperationVisitor{TResult}"/> instance.</param>
-        /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor);
     }
 
     /// <summary>

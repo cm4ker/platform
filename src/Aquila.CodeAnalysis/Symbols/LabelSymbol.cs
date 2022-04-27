@@ -118,5 +118,22 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get { return SymbolKind.Label; }
         }
+        
+        
+        internal override TResult Accept<TArgument, TResult>(AquilaSymbolVisitor<TArgument, TResult> visitor, TArgument argument)
+        {
+            return visitor.VisitLabel(this, argument);
+        }
+
+        public override void Accept(AquilaSymbolVisitor visitor)
+        {
+            visitor.VisitLabel(this);
+        }
+
+        public override TResult Accept<TResult>(AquilaSymbolVisitor<TResult> visitor)
+        {
+            return visitor.VisitLabel(this);
+        }
+
     }
 }

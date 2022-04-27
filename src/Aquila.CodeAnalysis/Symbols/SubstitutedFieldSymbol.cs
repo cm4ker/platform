@@ -193,7 +193,7 @@ namespace Aquila.CodeAnalysis.Symbols
         //    return (NamedTypeSymbol)_containingType.TypeSubstitution.SubstituteType(_originalDefinition.FixedImplementationType(emitModule)).Type;
         //}
 
-        public override bool Equals(ISymbol other, SymbolEqualityComparer equalityComparer)
+        public override bool Equals(ISymbol other, Microsoft.CodeAnalysis.SymbolEqualityComparer equalityComparer)
         {
             if ((object)this == other)
             {

@@ -109,7 +109,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public virtual void Generate(CodeGenerator cg)
         {
-            cg.GenerateScope(this.ControlFlowGraph.Start, int.MaxValue);
+            //cg.GenerateScope(this.ControlFlowGraph.Start, int.MaxValue);
         }
 
         private void GenerateGeneratorMethod(CodeGenerator cg)

@@ -56,79 +56,79 @@ namespace Aquila.CodeAnalysis.CodeGen
             return _il.EmitCall(_moduleBuilder, _diagnostics, code, method);
         }
 
-        internal TypeSymbol EmitLoadArgument(BoundArgument arg)
-        {
-            //load parameter
-            return arg.Value.Emit(this);
-        }
+        // internal TypeSymbol EmitLoadArgument(BoundArgument arg)
+        // {
+        //     //load parameter
+        //     return arg.Value.Emit(this);
+        // }
 
-        internal TypeSymbol EmitCall(ILOpCode code, MethodSymbol method, BoundExpression thisExpr,
-            ImmutableArray<BoundArgument> arguments, BoundTypeRef staticType = null)
-        {
-            Contract.ThrowIfNull(method);
+        // internal TypeSymbol EmitCall(ILOpCode code, MethodSymbol method, BoundExpression thisExpr,
+        //     ImmutableArray<BoundArgument> arguments, BoundTypeRef staticType = null)
+        // {
+        //     Contract.ThrowIfNull(method);
+        //
+        //     // {this}
+        //     var thisType = (code != ILOpCode.Newobj) ? LoadTargetInstance(thisExpr, method) : null;
+        //
+        //     // .callvirt -> .call
+        //     if (code == ILOpCode.Callvirt && (!method.HasThis || !method.IsMetadataVirtual()))
+        //     {
+        //         // ignores null check in method call
+        //         code = ILOpCode.Call;
+        //     }
+        //
+        //     var argsCount = arguments.Length;
+        //
+        //     var startIndex = 0;
+        //
+        //     if (method.HasParamPlatformContext)
+        //     {
+        //         EmitLoadContext();
+        //         argsCount++;
+        //         startIndex++;
+        //
+        //         //insert implicit <ctx> argument
+        //         arguments = arguments.Insert(0, new BoundArgument(null, ArgumentKind.None));
+        //     }
+        //
+        //     // arguments
+        //
+        //     if (argsCount != method.Parameters.Length)
+        //         throw new Exception("Broke compilation! Bounded args length != method args");
+        //
+        //     for (var index = startIndex; index < arguments.Length; index++)
+        //     {
+        //         var arg = arguments[index];
+        //         var methodParam = method.Parameters[index];
+        //
+        //         EmitLoadArgument(arg);
+        //         EmitConvert(arg.Type, methodParam.Type);
+        //     }
+        //
+        //     // call the method
+        //     var result = EmitCall(code, method);
+        //
+        //     //
+        //     return result;
+        // }
 
-            // {this}
-            var thisType = (code != ILOpCode.Newobj) ? LoadTargetInstance(thisExpr, method) : null;
-
-            // .callvirt -> .call
-            if (code == ILOpCode.Callvirt && (!method.HasThis || !method.IsMetadataVirtual()))
-            {
-                // ignores null check in method call
-                code = ILOpCode.Call;
-            }
-
-            var argsCount = arguments.Length;
-
-            var startIndex = 0;
-
-            if (method.HasParamPlatformContext)
-            {
-                EmitLoadContext();
-                argsCount++;
-                startIndex++;
-
-                //insert implicit <ctx> argument
-                arguments = arguments.Insert(0, new BoundArgument(null, ArgumentKind.None));
-            }
-
-            // arguments
-
-            if (argsCount != method.Parameters.Length)
-                throw new Exception("Broke compilation! Bounded args length != method args");
-
-            for (var index = startIndex; index < arguments.Length; index++)
-            {
-                var arg = arguments[index];
-                var methodParam = method.Parameters[index];
-
-                EmitLoadArgument(arg);
-                EmitConvert(arg.Type, methodParam.Type);
-            }
-
-            // call the method
-            var result = EmitCall(code, method);
-
-            //
-            return result;
-        }
-
-        /// <summary>
-        /// Emits <paramref name="thisExpr"/> to be used as target instance of method call, field or property.
-        /// </summary>
-        internal TypeSymbol LoadTargetInstance(BoundExpression thisExpr, MethodSymbol method)
-        {
-            NamedTypeSymbol targetType = method.HasThis ? method.ContainingType : CoreTypes.Void;
-
-            if (thisExpr != null)
-            {
-                thisExpr.Emit(this);
-            }
-            else
-            {
-            }
-
-            return method.ContainingType;
-        }
+        // /// <summary>
+        // /// Emits <paramref name="thisExpr"/> to be used as target instance of method call, field or property.
+        // /// </summary>
+        // internal TypeSymbol LoadTargetInstance(BoundExpression thisExpr, MethodSymbol method)
+        // {
+        //     NamedTypeSymbol targetType = method.HasThis ? method.ContainingType : CoreTypes.Void;
+        //
+        //     if (thisExpr != null)
+        //     {
+        //         thisExpr.Emit(this);
+        //     }
+        //     else
+        //     {
+        //     }
+        //
+        //     return method.ContainingType;
+        // }
 
 
         internal void EmitSymbolToken(TypeSymbol symbol, SyntaxNode syntaxNode)
@@ -219,13 +219,15 @@ namespace Aquila.CodeAnalysis.CodeGen
         {
             Contract.ThrowIfNull(expr);
 
-            var t = expr.Emit(this);
-            if (t == null)
-            {
-                throw ExceptionUtilities.UnexpectedValue(null);
-            }
+            throw new NotImplementedException();
 
-            return t;
+            //var t = expr.Emit(this);
+            // if (t == null)
+            // {
+            //     throw ExceptionUtilities.UnexpectedValue(null);
+            // }
+            //
+            // return t;
         }
 
         /// <summary>
@@ -502,7 +504,7 @@ namespace Aquila.CodeAnalysis.CodeGen
             //
             if (_il.InExceptionHandler || (ExtraFinallyBlock != null && !yielding))
             {
-                this.ExitBlock.EmitTmpRet(this, stack, yielding);
+                //this.ExitBlock.EmitTmpRet(this, stack, yielding);
             }
             else
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -46,7 +47,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public NamedTypeSymbol Construct(params TypeSymbol[] types)
         {
-            return ((NamedTypeSymbol)Symbol).Construct(types);
+            return ((NamedTypeSymbol)Symbol).Construct(types.ToImmutableArray());
         }
 
         public CoreType(string fullName, CoreTypes ct)

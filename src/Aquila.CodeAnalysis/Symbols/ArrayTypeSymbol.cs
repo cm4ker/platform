@@ -105,7 +105,7 @@ namespace Aquila.CodeAnalysis.Symbols
             if (!iListOfT.IsErrorType())
             {
                 constructedInterfaces.Add(new ConstructedNamedTypeSymbol(iListOfT,
-                    ImmutableArray.Create(new TypeWithModifiers(elementType))));
+                    ImmutableArray.Create(TypeWithAnnotations.Create(elementType))));
             }
 
             var iReadOnlyListOfT =
@@ -114,7 +114,7 @@ namespace Aquila.CodeAnalysis.Symbols
             if (!iReadOnlyListOfT.IsErrorType())
             {
                 constructedInterfaces.Add(new ConstructedNamedTypeSymbol(iReadOnlyListOfT,
-                    ImmutableArray.Create(new TypeWithModifiers(elementType))));
+                    ImmutableArray.Create(TypeWithAnnotations.Create(elementType))));
             }
 
             return constructedInterfaces.ToImmutableAndFree();

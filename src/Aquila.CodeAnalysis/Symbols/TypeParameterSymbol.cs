@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
 
@@ -50,12 +52,12 @@ namespace Aquila.CodeAnalysis.Symbols
         /// Duplicates and cycles are removed, although the collection may include
         /// redundant constraints where one constraint is a base type of another.
         /// </summary>
-        public ImmutableArray<TypeSymbol> ConstraintTypes
+        public ImmutableArray<TypeWithAnnotations> ConstraintTypes
         {
             get { return this.ConstraintTypesNoUseSiteDiagnostics; }
         }
 
-        internal ImmutableArray<TypeSymbol> ConstraintTypesNoUseSiteDiagnostics
+        internal ImmutableArray<TypeWithAnnotations> ConstraintTypesNoUseSiteDiagnostics
         {
             get
             {
@@ -64,7 +66,7 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        internal ImmutableArray<TypeSymbol> ConstraintTypesWithDefinitionUseSiteDiagnostics(
+        internal ImmutableArray<TypeWithAnnotations> ConstraintTypesWithDefinitionUseSiteDiagnostics(
             ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
             var result = ConstraintTypesNoUseSiteDiagnostics;
@@ -159,8 +161,8 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get { return TypeKind.TypeParameter; }
         }
-        
-        
+
+
         /// <summary>
         /// Implements visitor pattern. 
         /// </summary>
@@ -305,7 +307,8 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        internal abstract ImmutableArray<TypeSymbol> GetConstraintTypes(ConsList<TypeParameterSymbol> inProgress);
+        internal abstract ImmutableArray<TypeWithAnnotations> GetConstraintTypes(
+            ConsList<TypeParameterSymbol> inProgress);
 
         internal abstract ImmutableArray<NamedTypeSymbol> GetInterfaces(ConsList<TypeParameterSymbol> inProgress);
 
@@ -351,11 +354,11 @@ namespace Aquila.CodeAnalysis.Symbols
         // > Please note that we do not check the gpReferenceTypeConstraint special constraint here
         // > because this property does not propagate up the constraining hierarchy.
         // > (e.g. "class A<S, T> where S : T, where T : class" does not guarantee that S is ObjRef)
-        internal static bool IsReferenceTypeFromConstraintTypes(ImmutableArray<TypeSymbol> constraintTypes)
+        internal static bool IsReferenceTypeFromConstraintTypes(ImmutableArray<TypeWithAnnotations> constraintTypes)
         {
             foreach (var constraintType in constraintTypes)
             {
-                if (ConstraintImpliesReferenceType(constraintType))
+                if (ConstraintImpliesReferenceType(constraintType.Type))
                 {
                     return true;
                 }
@@ -364,11 +367,11 @@ namespace Aquila.CodeAnalysis.Symbols
             return false;
         }
 
-        internal static bool IsValueTypeFromConstraintTypes(ImmutableArray<TypeSymbol> constraintTypes)
+        internal static bool IsValueTypeFromConstraintTypes(ImmutableArray<TypeWithAnnotations> constraintTypes)
         {
             foreach (var constraintType in constraintTypes)
             {
-                if (constraintType.IsValueType)
+                if (constraintType.Type.IsValueType)
                 {
                     return true;
                 }
@@ -385,6 +388,111 @@ namespace Aquila.CodeAnalysis.Symbols
                        IsReferenceTypeFromConstraintTypes(this.ConstraintTypesNoUseSiteDiagnostics);
             }
         }
+
+        internal static bool? IsNotNullableFromConstraintTypes(ImmutableArray<TypeWithAnnotations> constraintTypes)
+        {
+            Debug.Assert(!constraintTypes.IsDefaultOrEmpty);
+
+            bool? result = false;
+            foreach (TypeWithAnnotations constraintType in constraintTypes)
+            {
+                bool? fromType = IsNotNullableFromConstraintType(constraintType, out _);
+                if (fromType == true)
+                {
+                    return true;
+                }
+                else if (fromType == null)
+                {
+                    result = null;
+                }
+            }
+
+            return result;
+        }
+
+        internal static bool? IsNotNullableFromConstraintType(TypeWithAnnotations constraintType,
+            out bool isNonNullableValueType)
+        {
+            if (constraintType.Type.IsNonNullableValueType())
+            {
+                isNonNullableValueType = true;
+                return true;
+            }
+
+            isNonNullableValueType = false;
+
+            if (constraintType.NullableAnnotation.IsAnnotated())
+            {
+                return false;
+            }
+
+            if (constraintType.TypeKind == TypeKind.TypeParameter)
+            {
+                bool? isNotNullable = ((TypeParameterSymbol)constraintType.Type).IsNotNullable;
+
+                if (isNotNullable == false)
+                {
+                    return false;
+                }
+                else if (isNotNullable == null)
+                {
+                    return null;
+                }
+            }
+
+            if (constraintType.NullableAnnotation.IsOblivious())
+            {
+                return null;
+            }
+
+            return true;
+        }
+
+        protected bool? CalculateIsNotNullableFromNonTypeConstraints()
+        {
+            if (false || this.HasValueTypeConstraint)
+            {
+                return true;
+            }
+
+            if (this.HasReferenceTypeConstraint)
+            {
+                return !this.ReferenceTypeConstraintIsNullable;
+            }
+
+            return false;
+        }
+
+        protected bool? CalculateIsNotNullable()
+        {
+            bool? fromNonTypeConstraints = CalculateIsNotNullableFromNonTypeConstraints();
+
+            if (fromNonTypeConstraints == true)
+            {
+                return fromNonTypeConstraints;
+            }
+
+            ImmutableArray<TypeWithAnnotations> constraintTypes = this.ConstraintTypesNoUseSiteDiagnostics;
+
+            if (constraintTypes.IsEmpty)
+            {
+                return fromNonTypeConstraints;
+            }
+
+            bool? fromTypes = IsNotNullableFromConstraintTypes(constraintTypes);
+
+            if (fromTypes == true || fromNonTypeConstraints == false)
+            {
+                return fromTypes;
+            }
+
+            Debug.Assert(fromNonTypeConstraints == null);
+            Debug.Assert(fromTypes != true);
+            return null;
+        }
+
+        internal virtual bool? IsNotNullable => true;
+
 
         public sealed override bool IsValueType
         {
@@ -462,7 +570,11 @@ namespace Aquila.CodeAnalysis.Symbols
 
         ImmutableArray<ITypeSymbol> ITypeParameterSymbol.ConstraintTypes
         {
-            get { return StaticCast<ITypeSymbol>.From(this.ConstraintTypesNoUseSiteDiagnostics); }
+            get
+            {
+                return StaticCast<ITypeSymbol>.From(
+                    this.ConstraintTypesNoUseSiteDiagnostics.SelectAsArray(x => x.Type));
+            }
         }
 
         ITypeParameterSymbol ITypeParameterSymbol.OriginalDefinition
@@ -478,10 +590,18 @@ namespace Aquila.CodeAnalysis.Symbols
         Microsoft.CodeAnalysis.NullableAnnotation ITypeParameterSymbol.ReferenceTypeConstraintNullableAnnotation =>
             Microsoft.CodeAnalysis.NullableAnnotation.None;
 
-        bool ITypeParameterSymbol.HasNotNullConstraint => false;
+        public virtual bool HasNotNullConstraint => false;
+
+
+        /// <summary>
+        /// Returns whether the reference type constraint (the 'class' constraint) should also be treated as nullable ('class?') or non-nullable (class!).
+        /// In some cases this aspect is unknown (null value is returned). For example, when 'class' constraint is specified in a NonNullTypes(false) context.  
+        /// This API returns false when <see cref="HasReferenceTypeConstraint"/> is false.
+        /// </summary>
+        internal virtual bool? ReferenceTypeConstraintIsNullable => false;
 
         ImmutableArray<Microsoft.CodeAnalysis.NullableAnnotation> ITypeParameterSymbol.ConstraintNullableAnnotations =>
-            ConstraintTypes.SelectAsArray(c => ((ITypeSymbol)c).NullableAnnotation);
+            ConstraintTypes.SelectAsArray(c => ((ITypeSymbol)c.Type).NullableAnnotation);
 
         #endregion
 

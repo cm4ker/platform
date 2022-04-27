@@ -81,7 +81,7 @@ namespace Aquila.CodeAnalysis.CodeGen
                 //}
                 //else
                 {
-                    codeGen.Generate();
+                    //codeGen.Generate();
                 }
             }, variableSlotAllocatorOpt, diagnostics, emittingPdb);
         }

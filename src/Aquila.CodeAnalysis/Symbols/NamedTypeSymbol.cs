@@ -335,65 +335,64 @@ namespace Aquila.CodeAnalysis.Symbols
             return true;
         }
 
-        internal NamedTypeSymbol ConstructWithoutModifiers(ImmutableArray<TypeSymbol> arguments, bool unbound)
+        private NamedTypeSymbol ConstructWithoutModifiers(ImmutableArray<TypeSymbol> typeArguments, bool unbound)
         {
-            ImmutableArray<TypeWithModifiers> modifiedArguments;
+            ImmutableArray<TypeWithAnnotations> modifiedArguments;
 
-            if (arguments.IsDefault)
+            if (typeArguments.IsDefault)
             {
-                modifiedArguments = default(ImmutableArray<TypeWithModifiers>);
-            }
-            else if (arguments.IsEmpty)
-            {
-                modifiedArguments = ImmutableArray<TypeWithModifiers>.Empty;
+                modifiedArguments = default(ImmutableArray<TypeWithAnnotations>);
             }
             else
             {
-                var builder = ArrayBuilder<TypeWithModifiers>.GetInstance(arguments.Length);
-                foreach (TypeSymbol t in arguments)
-                {
-                    builder.Add((object)t == null ? default(TypeWithModifiers) : new TypeWithModifiers(t));
-                }
-
-                modifiedArguments = builder.ToImmutableAndFree();
+                modifiedArguments = typeArguments.SelectAsArray(t => TypeWithAnnotations.Create(t));
             }
 
             return Construct(modifiedArguments, unbound);
         }
 
-        internal NamedTypeSymbol Construct(ImmutableArray<TypeWithModifiers> arguments, bool unbound)
+
+        internal static readonly Func<TypeWithAnnotations, bool> TypeWithAnnotationsIsErrorType =
+            type => type.HasType && type.Type.IsErrorType();
+
+        internal NamedTypeSymbol Construct(ImmutableArray<TypeWithAnnotations> typeArguments, bool unbound)
         {
-            if (!ReferenceEquals(this, ConstructedFrom) || this.Arity == 0)
+            if (!ReferenceEquals(this, ConstructedFrom))
             {
                 throw new InvalidOperationException();
             }
 
-            if (arguments.IsDefault)
+            if (this.Arity == 0)
             {
-                throw new ArgumentNullException(nameof(arguments));
+                throw new InvalidOperationException();
             }
 
-            //if (arguments.Any(TypeSymbolIsNullFunction))
-            //{
-            //    throw new ArgumentException(CSharpResources.TypeArgumentCannotBeNull, "typeArguments");
-            //}
-
-            if (arguments.Length != this.Arity)
+            if (typeArguments.IsDefault)
             {
-                throw new ArgumentException(); // (CSharpResources.WrongNumberOfTypeArguments, "typeArguments");
+                throw new ArgumentNullException(nameof(typeArguments));
             }
 
-            //Debug.Assert(!unbound || arguments.All(TypeSymbolIsErrorType));
+            // if (typeArguments.Any(TypeWithAnnotationsIsNullFunction))
+            // {
+            //     throw new ArgumentException(CSharpResources.TypeArgumentCannotBeNull, nameof(typeArguments));
+            // }
 
-            if (ConstructedNamedTypeSymbol.TypeParametersMatchTypeArguments(this.TypeParameters, arguments))
+            if (typeArguments.Length != this.Arity)
+            {
+                throw new ArgumentException("", nameof(typeArguments));
+            }
+
+            Debug.Assert(!unbound || typeArguments.All(TypeWithAnnotationsIsErrorType));
+
+            if (ConstructedNamedTypeSymbol.TypeParametersMatchTypeArguments(this.TypeParameters, typeArguments))
             {
                 return this;
             }
 
-            return this.ConstructCore(arguments, unbound);
+            return this.ConstructCore(typeArguments, unbound);
         }
 
-        protected virtual NamedTypeSymbol ConstructCore(ImmutableArray<TypeWithModifiers> typeArguments, bool unbound)
+        protected virtual NamedTypeSymbol ConstructCore(ImmutableArray<TypeWithAnnotations> typeArguments, bool unbound)
         {
             return new ConstructedNamedTypeSymbol(this, typeArguments, unbound);
         }
@@ -488,7 +487,7 @@ namespace Aquila.CodeAnalysis.Symbols
             //}
             Debug.Assert(arguments.All(t => t is TypeSymbol));
 
-            return this.Construct(arguments.Cast<TypeSymbol>().ToArray());
+            return this.Construct(arguments.Cast<TypeSymbol>().AsImmutable());
         }
 
         IMethodSymbol INamedTypeSymbol.DelegateInvokeMethod => DelegateInvokeMethod;
@@ -541,9 +540,14 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         /// <param name="typeArguments">The immediate type arguments to be replaced for type
         /// parameters in the type.</param>
-        public NamedTypeSymbol Construct(params TypeSymbol[] typeArguments)
+        public NamedTypeSymbol Construct(ImmutableArray<TypeSymbol> typeArguments)
         {
             return ConstructWithoutModifiers(typeArguments.AsImmutableOrNull(), false);
+        }
+        
+        public NamedTypeSymbol Construct(params TypeSymbol[] typeArguments)
+        {
+            return Construct(typeArguments.ToImmutableArray());
         }
 
         /// <summary>
@@ -551,18 +555,18 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         /// <param name="typeArguments">The immediate type arguments to be replaced for type
         /// parameters in the type.</param>
-        public NamedTypeSymbol Construct(ImmutableArray<TypeSymbol> typeArguments)
+        public NamedTypeSymbol Construct(ImmutableArray<TypeWithAnnotations> typeArguments)
         {
-            return ConstructWithoutModifiers(typeArguments, false);
+            return Construct(typeArguments, false);
         }
 
         /// <summary>
         /// Returns a constructed type given its type arguments.
         /// </summary>
         /// <param name="typeArguments"></param>
-        public NamedTypeSymbol Construct(IEnumerable<TypeSymbol> typeArguments)
+        public NamedTypeSymbol Construct(IEnumerable<TypeWithAnnotations> typeArguments)
         {
-            return ConstructWithoutModifiers(typeArguments.AsImmutableOrNull(), false);
+            return Construct(typeArguments.AsImmutableOrNull(), false);
         }
 
         /// <summary>
@@ -579,7 +583,8 @@ namespace Aquila.CodeAnalysis.Symbols
             if (typeArgumentNullableAnnotations.All(annotation =>
                     annotation != Microsoft.CodeAnalysis.NullableAnnotation.Annotated))
             {
-                return this.Construct(typeArguments.CastArray<TypeSymbol>());
+                //TODO: handle construction normally
+                return this.Construct(typeArguments.Select(x => TypeWithAnnotations.Create((TypeSymbol)x)));
             }
             else
             {

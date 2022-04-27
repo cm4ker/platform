@@ -78,10 +78,10 @@ namespace Aquila.CodeAnalysis
         protected override ImmutableArray<BoundNode?> Children => StaticCast<BoundNode?>.From(this.ConstructorArguments.AddRange(StaticCast<BoundExpression>.From(this.NamedArguments)));
     }
 
-    internal partial class BoundQueryClause
-    {
-        protected override ImmutableArray<BoundNode?> Children => ImmutableArray.Create<BoundNode?>(this.Value);
-    }
+    // internal partial class BoundQueryClause
+    // {
+    //     protected override ImmutableArray<BoundNode?> Children => ImmutableArray.Create<BoundNode?>(this.Value);
+    // }
 
     internal partial class BoundArgListOperator
     {

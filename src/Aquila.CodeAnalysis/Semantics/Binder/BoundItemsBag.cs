@@ -10,12 +10,12 @@ namespace Aquila.CodeAnalysis.Semantics
     /// <typeparam name="T">Either <c>BoundExpression</c> or <c>BoundStatement</c>.</typeparam>
     public struct BoundItemsBag<T> : IEquatable<BoundItemsBag<T>> where T : class, IAquilaOperation
     {
-        public BoundBlock PreBoundBlockFirst { get; private set; }
-        public BoundBlock PreBoundBlockLast { get; private set; }
+        public object PreBoundBlockFirst { get; private set; }
+        public object PreBoundBlockLast { get; private set; }
 
         public T BoundElement { get; private set; }
 
-        public BoundItemsBag(T bound, BoundBlock preBoundFirst = null, BoundBlock preBoundLast = null)
+        public BoundItemsBag(T bound, object preBoundFirst = null, object preBoundLast = null)
         {
             Debug.Assert(bound != null || (preBoundFirst == null && preBoundLast == null));
             Debug.Assert(preBoundFirst != null || preBoundLast == null);

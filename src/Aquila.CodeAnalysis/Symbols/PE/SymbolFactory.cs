@@ -100,7 +100,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 }
             }
 
-            NamedTypeSymbol genericType = (NamedTypeSymbol) genericTypeDef;
+            NamedTypeSymbol genericType = (NamedTypeSymbol)genericTypeDef;
 
             //// See if it is or its enclosing type is a non-interface closed over NoPia local types. 
             //ImmutableArray<AssemblySymbol> linkedAssemblies = moduleSymbol.ContainingAssembly.GetLinkedReferencedAssemblies();
@@ -151,7 +151,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
 
             TypeMap substitution = new TypeMap(typeParameters,
                 arguments.SelectAsArray(arg =>
-                    new TypeWithModifiers(arg.Key, CSharpCustomModifier.Convert(arg.Value))));
+                    TypeWithAnnotations.Create(arg.Key, NullableAnnotation.Ignored,
+                        CSharpCustomModifier.Convert(arg.Value))));
 
             NamedTypeSymbol constructedType = substitution.SubstituteNamedType(genericType);
 
@@ -166,7 +167,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
         internal override TypeSymbol MakeUnboundIfGeneric(PEModuleSymbol moduleSymbol, TypeSymbol type)
         {
             var namedType = type as NamedTypeSymbol;
-            return ((object) namedType != null && namedType.IsGenericType) ? namedType.AsUnboundGenericType() : type;
+            return ((object)namedType != null && namedType.IsGenericType) ? namedType.AsUnboundGenericType() : type;
         }
     }
 }

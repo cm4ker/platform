@@ -38,27 +38,31 @@ namespace Aquila.CodeAnalysis.Symbols
         bool ITypeSymbol.IsReadOnly => false;
         public bool IsRecord { get; }
 
-        Microsoft.CodeAnalysis.NullableAnnotation ITypeSymbol.NullableAnnotation => Microsoft.CodeAnalysis.NullableAnnotation.None;
+        Microsoft.CodeAnalysis.NullableAnnotation ITypeSymbol.NullableAnnotation =>
+            Microsoft.CodeAnalysis.NullableAnnotation.None;
 
-        string ITypeSymbol.ToDisplayString(NullableFlowState topLevelNullability, SymbolDisplayFormat format)
-        {
-            throw new NotImplementedException();
-        }
-
-        ImmutableArray<SymbolDisplayPart> ITypeSymbol.ToDisplayParts(NullableFlowState topLevelNullability,
+        string ITypeSymbol.ToDisplayString(Microsoft.CodeAnalysis.NullableFlowState topLevelNullability,
             SymbolDisplayFormat format)
         {
             throw new NotImplementedException();
         }
 
-        string ITypeSymbol.ToMinimalDisplayString(SemanticModel semanticModel, NullableFlowState topLevelNullability,
+        ImmutableArray<SymbolDisplayPart> ITypeSymbol.ToDisplayParts(
+            Microsoft.CodeAnalysis.NullableFlowState topLevelNullability,
+            SymbolDisplayFormat format)
+        {
+            throw new NotImplementedException();
+        }
+
+        string ITypeSymbol.ToMinimalDisplayString(SemanticModel semanticModel,
+            Microsoft.CodeAnalysis.NullableFlowState topLevelNullability,
             int position, SymbolDisplayFormat format)
         {
             throw new NotImplementedException();
         }
 
         ImmutableArray<SymbolDisplayPart> ITypeSymbol.ToMinimalDisplayParts(SemanticModel semanticModel,
-            NullableFlowState topLevelNullability, int position, SymbolDisplayFormat format)
+            Microsoft.CodeAnalysis.NullableFlowState topLevelNullability, int position, SymbolDisplayFormat format)
         {
             throw new NotImplementedException();
         }
@@ -169,6 +173,16 @@ namespace Aquila.CodeAnalysis.Symbols
         public virtual ImmutableArray<NamedTypeSymbol> Interfaces => ImmutableArray<NamedTypeSymbol>.Empty;
 
         public virtual bool IsAnonymousType => false;
+
+
+        internal virtual bool ApplyNullableTransforms(byte defaultTransformFlag, ImmutableArray<byte> transforms,
+            ref int position, out TypeSymbol result)
+        {
+            result = this;
+            
+            return false;
+        }
+
 
         /// <summary>
         /// Returns true if this type is known to be a reference type. It is never the case that
@@ -306,7 +320,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             return ReferenceEquals(this, t2);
         }
-        
+
         /// <summary>
         /// Determines if this type symbol represent the same type as another, according to the language
         /// semantics.
@@ -322,13 +336,13 @@ namespace Aquila.CodeAnalysis.Symbols
             return ReferenceEquals(this, t2);
         }
 
-        public override sealed bool Equals(ISymbol obj, SymbolEqualityComparer equalityComparer)
+        public override sealed bool Equals(ISymbol obj, Microsoft.CodeAnalysis.SymbolEqualityComparer equalityComparer)
         {
             var t2 = obj as TypeSymbol;
             if ((object)t2 == null) return false;
             return this.Equals(t2, false, false);
         }
-        
+
         public static bool Equals(TypeSymbol left, TypeSymbol right, TypeCompareKind comparison)
         {
             if (left is null)

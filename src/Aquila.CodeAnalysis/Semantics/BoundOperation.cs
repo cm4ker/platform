@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.Operations;
 namespace Aquila.CodeAnalysis.Semantics
 {
     //TODO: separate Operation And Bound nodes into different subjects
-    public abstract class BoundOperation : IOperation
+    internal abstract class BoundOperation : IOperation
     {
         #region Unsupported
 
@@ -46,8 +46,5 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public abstract TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
             TArgument argument);
-
-        public virtual TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
-            => throw new NotImplementedException();
     }
 }

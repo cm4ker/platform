@@ -13,10 +13,10 @@ namespace Aquila.CodeAnalysis.Symbols
     /// </summary>
     internal sealed class TypeMap : AbstractTypeParameterMap
     {
-        public static readonly System.Func<TypeSymbol, TypeWithModifiers> TypeSymbolAsTypeWithModifiers = t => new TypeWithModifiers(t);
+        public static readonly System.Func<TypeSymbol, TypeWithAnnotations> TypeSymbolAsTypeWithModifiers = t => TypeWithAnnotations.Create(t);
 
         // Only when the caller passes allowAlpha=true do we tolerate substituted (alpha-renamed) type parameters as keys
-        internal TypeMap(ImmutableArray<TypeParameterSymbol> from, ImmutableArray<TypeWithModifiers> to, bool allowAlpha = false)
+        internal TypeMap(ImmutableArray<TypeParameterSymbol> from, ImmutableArray<TypeWithAnnotations> to, bool allowAlpha = false)
             : base(ConstructMapping(from, to))
         {
             // mapping contents are read-only hereafter
@@ -30,27 +30,27 @@ namespace Aquila.CodeAnalysis.Symbols
             // mapping contents are read-only hereafter
         }
 
-        internal TypeMap(SmallDictionary<TypeParameterSymbol, TypeWithModifiers> mapping)
-            : base(new SmallDictionary<TypeParameterSymbol, TypeWithModifiers>(mapping, ReferenceEqualityComparer.Instance))
+        internal TypeMap(SmallDictionary<TypeParameterSymbol, TypeWithAnnotations> mapping)
+            : base(new SmallDictionary<TypeParameterSymbol, TypeWithAnnotations>(mapping, ReferenceEqualityComparer.Instance))
         {
             // mapping contents are read-only hereafter
             Debug.Assert(!mapping.Keys.Any(tp => tp is SubstitutedTypeParameterSymbol));
         }
 
-        private static SmallDictionary<TypeParameterSymbol, TypeWithModifiers> ForType(NamedTypeSymbol containingType)
+        private static SmallDictionary<TypeParameterSymbol, TypeWithAnnotations> ForType(NamedTypeSymbol containingType)
         {
             var substituted = containingType as SubstitutedNamedTypeSymbol;
             return (object)substituted != null ?
-                new SmallDictionary<TypeParameterSymbol, TypeWithModifiers>(substituted.TypeSubstitution.Mapping, ReferenceEqualityComparer.Instance) :
-                new SmallDictionary<TypeParameterSymbol, TypeWithModifiers>(ReferenceEqualityComparer.Instance);
+                new SmallDictionary<TypeParameterSymbol, TypeWithAnnotations>(substituted.TypeSubstitution.Mapping, ReferenceEqualityComparer.Instance) :
+                new SmallDictionary<TypeParameterSymbol, TypeWithAnnotations>(ReferenceEqualityComparer.Instance);
         }
-        internal TypeMap(NamedTypeSymbol containingType, ImmutableArray<TypeParameterSymbol> typeParameters, ImmutableArray<TypeWithModifiers> typeArguments)
+        internal TypeMap(NamedTypeSymbol containingType, ImmutableArray<TypeParameterSymbol> typeParameters, ImmutableArray<TypeWithAnnotations> typeArguments)
             : base(ForType(containingType))
         {
             for (int i = 0; i < typeParameters.Length; i++)
             {
                 TypeParameterSymbol tp = typeParameters[i];
-                TypeWithModifiers ta = typeArguments[i];
+                TypeWithAnnotations ta = typeArguments[i];
                 if (!ta.Is(tp))
                 {
                     Mapping.Add(tp, ta);
@@ -58,8 +58,8 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        private static readonly SmallDictionary<TypeParameterSymbol, TypeWithModifiers> s_emptyDictionary =
-            new SmallDictionary<TypeParameterSymbol, TypeWithModifiers>(ReferenceEqualityComparer.Instance);
+        private static readonly SmallDictionary<TypeParameterSymbol, TypeWithAnnotations> s_emptyDictionary =
+            new SmallDictionary<TypeParameterSymbol, TypeWithAnnotations>(ReferenceEqualityComparer.Instance);
 
         private TypeMap()
             : base(s_emptyDictionary)
@@ -103,7 +103,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 var newTp = synthesized ?
                     new SynthesizedSubstitutedTypeParameterSymbol(newOwner, result, tp) :
                     new SubstitutedTypeParameterSymbol(newOwner, result, tp);
-                result.Mapping.Add(tp, new TypeWithModifiers(newTp));
+                result.Mapping.Add(tp, TypeWithAnnotations.Create(newTp));
                 newTypeParametersBuilder.Add(newTp);
             }
 
@@ -123,16 +123,16 @@ namespace Aquila.CodeAnalysis.Symbols
             return WithAlphaRename(oldOwner.OriginalDefinition.TypeParameters, newOwner, out newTypeParameters);
         }
 
-        private static SmallDictionary<TypeParameterSymbol, TypeWithModifiers> ConstructMapping(ImmutableArray<TypeParameterSymbol> from, ImmutableArray<TypeWithModifiers> to)
+        private static SmallDictionary<TypeParameterSymbol, TypeWithAnnotations> ConstructMapping(ImmutableArray<TypeParameterSymbol> from, ImmutableArray<TypeWithAnnotations> to)
         {
-            var mapping = new SmallDictionary<TypeParameterSymbol, TypeWithModifiers>(ReferenceEqualityComparer.Instance);
+            var mapping = new SmallDictionary<TypeParameterSymbol, TypeWithAnnotations>(ReferenceEqualityComparer.Instance);
 
             Debug.Assert(from.Length == to.Length);
 
             for (int i = 0; i < from.Length; i++)
             {
                 TypeParameterSymbol tp = from[i];
-                TypeWithModifiers ta = to[i];
+                TypeWithAnnotations ta = to[i];
                 if (!ta.Is(tp))
                 {
                     mapping.Add(tp, ta);

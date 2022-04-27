@@ -479,24 +479,29 @@ namespace Aquila.CodeAnalysis.Symbols
         }
 
         // By default, we do reference equality. This can be overridden.
-        public virtual bool Equals(ISymbol other, SymbolEqualityComparer equalityComparer)
+        public virtual bool Equals(ISymbol other, Microsoft.CodeAnalysis.SymbolEqualityComparer equalityComparer)
         {
             return (object)other == this;
         }
 
-        public bool Equals(ISymbol other)
+        public bool Equals(ISymbol? other)
         {
-            return this.Equals(other, SymbolEqualityComparer.Default);
+            return (Symbol)other == this;
         }
 
         public sealed override bool Equals(object obj)
         {
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
+            return this.Equals(obj as Symbol, Microsoft.CodeAnalysis.SymbolEqualityComparer.Default.CompareKind);
+        }
 
-            return obj is ISymbol other && this.Equals(other, SymbolEqualityComparer.Default);
+        public bool Equals(Symbol other)
+        {
+            return this.Equals(other, Microsoft.CodeAnalysis.SymbolEqualityComparer.Default.CompareKind);
+        }
+
+        bool ISymbolInternal.Equals(ISymbolInternal other, TypeCompareKind compareKind)
+        {
+            return this.Equals(other as Symbol, compareKind);
         }
 
         // By default we don't consider the compareKind, and do reference equality. This can be overridden.
@@ -1157,7 +1162,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         #region ISymbolInternal
 
-        bool ISymbolInternal.Equals(ISymbolInternal other, TypeCompareKind compareKind) => this.Equals((object)other);
+        //bool ISymbolInternal.Equals(ISymbolInternal other, TypeCompareKind compareKind) => this.Equals((object)other);
 
         ISymbol ISymbolInternal.GetISymbol() => this;
 

@@ -6,7 +6,7 @@ namespace Aquila.CodeAnalysis.Symbols.Aquila
     /// <summary>
     /// A symbol representing method in CLR.
     /// </summary>
-    public interface IAquilaMethodSymbol : IMethodSymbol
+    internal interface IAquilaMethodSymbol : IMethodSymbol
     {
         /// <summary>
         /// For source routines, gets their control flow graph.

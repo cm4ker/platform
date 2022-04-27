@@ -245,7 +245,7 @@ namespace Aquila.CodeAnalysis
 
             var binder = _binderFactory.GetBinder(expression);
             var type = binder.BindExpression(expression, BoundAccess.None);
-            return new SymbolInfo(type.ResultType);
+            return new SymbolInfo(type.Type);
         }
     }
 }

@@ -48,7 +48,7 @@ namespace Aquila.CodeAnalysis.Symbols
         LocalTemporalVariable,
     }
 
-    internal class SourceLocalSymbol : Symbol, ILocalSymbol, ILocalSymbolInternal
+    internal class SourceLocalSymbol : LocalSymbol, ILocalSymbol, ILocalSymbolInternal
     {
         readonly protected SourceMethodSymbol _method;
         readonly protected VariableDecl _decl;
@@ -75,43 +75,40 @@ namespace Aquila.CodeAnalysis.Symbols
         public override TResult Accept<TResult>(SymbolVisitor<TResult> visitor)
             => visitor.VisitLocal(this);
 
-        public SyntaxNode GetDeclaratorSyntax() => null;
+        internal override SyntaxNode GetDeclaratorSyntax() => null;
+        public override TypeWithAnnotations TypeWithAnnotations { get; }
 
         public override Symbol ContainingSymbol => _method;
 
-        public override Accessibility DeclaredAccessibility => Accessibility.Private;
 
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
         {
             get { throw new NotImplementedException(); }
         }
 
-        public override bool IsAbstract => false;
-
-        public override bool IsExtern => false;
-
-        public override bool IsOverride => false;
-
-        public override bool IsSealed => true;
-
-        public override bool IsStatic => false;
-
-        public override bool IsVirtual => false;
-
-        public override SymbolKind Kind => SymbolKind.Local;
-
         public override ImmutableArray<Location> Locations
         {
             get { throw new NotImplementedException(); }
         }
-
-        internal override ObsoleteAttributeData ObsoleteAttributeData => null;
 
         #endregion
 
         #region ILocalSymbol
 
         public object ConstantValue => null;
+        internal override bool IsCompilerGenerated { get; }
+
+        internal override ConstantValue GetConstantValue(SyntaxNode node, LocalSymbol inProgress,
+            BindingDiagnosticBag diagnostics = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal override ImmutableBindingDiagnostic<AssemblySymbol> GetConstantValueDiagnostics(
+            BoundExpression boundInitValue)
+        {
+            throw new NotImplementedException();
+        }
 
         public bool HasConstantValue => false;
 
@@ -119,7 +116,9 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public bool IsFunctionValue => false;
 
-        public virtual ITypeSymbol Type
+        internal override SyntaxToken IdentifierToken { get; }
+
+        public override TypeSymbol Type
         {
             get
             {
@@ -146,17 +145,31 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        public bool IsImportedFromMetadata => false;
+        internal override bool IsPinned { get; }
 
-        public SynthesizedLocalKind SynthesizedKind => SynthesizedLocalKind.UserDefined;
+        internal override LocalSymbol WithSynthesizedLocalKindAndSyntax(SynthesizedLocalKind kind, SyntaxNode syntax)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal override bool IsImportedFromMetadata => false;
+
+        internal override LocalDeclarationKind DeclarationKind { get; }
+        internal override SynthesizedLocalKind SynthesizedKind => SynthesizedLocalKind.UserDefined;
+        internal override SyntaxNode ScopeDesignatorOpt { get; }
 
         public virtual bool IsRef => false;
 
-        public virtual RefKind RefKind => RefKind.None;
+        public override RefKind RefKind => RefKind.None;
+        internal override uint RefEscapeScope { get; }
+        internal override uint ValEscapeScope { get; }
 
         public virtual bool IsFixed => false;
 
-        NullableAnnotation ILocalSymbol.NullableAnnotation => NullableAnnotation.None;
+        ITypeSymbol ILocalSymbol.Type => Type;
+
+        Microsoft.CodeAnalysis.NullableAnnotation ILocalSymbol.NullableAnnotation =>
+            Microsoft.CodeAnalysis.NullableAnnotation.None;
 
         #endregion
     }
