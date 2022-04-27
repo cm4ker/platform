@@ -32,14 +32,11 @@ namespace Aquila.CodeAnalysis.Symbols
         public override SymbolKind Kind => SymbolKind.Discard;
         public override ImmutableArray<Location> Locations => ImmutableArray<Location>.Empty;
         internal override ObsoleteAttributeData? ObsoleteAttributeData => null;
-        internal override TResult Accept<TArgument, TResult>(CSharpSymbolVisitor<TArgument, TResult> visitor, TArgument a) => visitor.VisitDiscard(this, a);
+        internal override TResult Accept<TArgument, TResult>(AquilaSymbolVisitor<TArgument, TResult> visitor, TArgument a) => visitor.VisitDiscard(this, a);
+        public override void Accept(AquilaSymbolVisitor visitor) => visitor.VisitDiscard(this);
+        public override TResult Accept<TResult>(AquilaSymbolVisitor<TResult> visitor) => visitor.VisitDiscard(this);
        
         public override bool Equals(Symbol? obj, TypeCompareKind compareKind) => obj is DiscardSymbol other && this.TypeWithAnnotations.Equals(other.TypeWithAnnotations, compareKind);
         public override int GetHashCode() => this.TypeWithAnnotations.GetHashCode();
-
-        protected override ISymbol CreateISymbol()
-        {
-            return new PublicModel.DiscardSymbol(this);
-        }
     }
 }

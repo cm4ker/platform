@@ -316,7 +316,7 @@ namespace Aquila.CodeAnalysis.Symbols
             for (int i = 0; i < count; i++)
             {
                 if (!typeArguments[i].Equals(otherTypeArguments[i], ignoreCustomModifiersAndArraySizesAndLowerBounds,
-                    ignoreDynamic)) return false;
+                        ignoreDynamic)) return false;
             }
 
             if (!ignoreCustomModifiersAndArraySizesAndLowerBounds && hasTypeArgumentsCustomModifiers)
@@ -497,12 +497,32 @@ namespace Aquila.CodeAnalysis.Symbols
 
         INamedTypeSymbol INamedTypeSymbol.TupleUnderlyingType => TupleUnderlyingType;
 
-        ImmutableArray<NullableAnnotation> INamedTypeSymbol.TypeArgumentNullableAnnotations =>
+        ImmutableArray<Microsoft.CodeAnalysis.NullableAnnotation> INamedTypeSymbol.TypeArgumentNullableAnnotations =>
             TypeArguments.SelectAsArray(a => ((ITypeSymbol)a).NullableAnnotation);
 
         INamedTypeSymbol INamedTypeSymbol.NativeIntegerUnderlyingType => null;
 
         #endregion
+
+
+        // <summary>
+        /// Used to implement visitor pattern.
+        /// </summary>
+        internal override TResult Accept<TArgument, TResult>(AquilaSymbolVisitor<TArgument, TResult> visitor,
+            TArgument argument)
+        {
+            return visitor.VisitNamedType(this, argument);
+        }
+
+        public override void Accept(AquilaSymbolVisitor visitor)
+        {
+            visitor.VisitNamedType(this);
+        }
+
+        public override TResult Accept<TResult>(AquilaSymbolVisitor<TResult> visitor)
+        {
+            return visitor.VisitNamedType(this);
+        }
 
         #region ISymbol Members
 
@@ -554,9 +574,10 @@ namespace Aquila.CodeAnalysis.Symbols
         }
 
         INamedTypeSymbol INamedTypeSymbol.Construct(ImmutableArray<ITypeSymbol> typeArguments,
-            ImmutableArray<NullableAnnotation> typeArgumentNullableAnnotations)
+            ImmutableArray<Microsoft.CodeAnalysis.NullableAnnotation> typeArgumentNullableAnnotations)
         {
-            if (typeArgumentNullableAnnotations.All(annotation => annotation != NullableAnnotation.Annotated))
+            if (typeArgumentNullableAnnotations.All(annotation =>
+                    annotation != Microsoft.CodeAnalysis.NullableAnnotation.Annotated))
             {
                 return this.Construct(typeArguments.CastArray<TypeSymbol>());
             }

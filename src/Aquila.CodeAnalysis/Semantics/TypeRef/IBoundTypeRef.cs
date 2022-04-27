@@ -53,42 +53,42 @@ namespace Aquila.CodeAnalysis.Semantics
     }
 
     /// <summary>
-    /// Common <see cref="IBoundTypeRef"/> implementation.
-    /// </summary>
-    public abstract partial class BoundTypeRef : IBoundTypeRef
-    {
-        public virtual bool IsNullable { get; set; }
-        public virtual bool IsObject => false;
-        public virtual bool IsArray => false;
-        public virtual bool IsPrimitiveType => false;
-        public virtual bool IsLambda => false;
-
-        public virtual ImmutableArray<IBoundTypeRef> TypeArguments => ImmutableArray<IBoundTypeRef>.Empty;
-
-        internal abstract ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false);
-        public abstract ITypeSymbol ResolveTypeSymbol(AquilaCompilation compilation);
-
-        public virtual bool Equals(IBoundTypeRef other) => ReferenceEquals(this, other);
-        public override bool Equals(object obj) => obj is IBoundTypeRef t && Equals(t);
-        public override int GetHashCode() => base.GetHashCode();
-
-        public override OperationKind Kind => OperationKind.None;
-        public AquilaSyntaxNode AquilaSyntax { get; set; }
-
-        /// <summary>
-        /// Lazily set type symbol if resolved.
-        /// </summary>
-        internal TypeSymbol ResolvedType { get; set; }
-
-    
-        partial void AcceptImpl(OperationVisitor visitor)
-        {
-            visitor.DefaultVisit(this);
-        }
-
-        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result)
-        {
-            result = visitor.DefaultVisit(this, argument);
-        }
-    }
+    // /// Common <see cref="IBoundTypeRef"/> implementation.
+    // /// </summary>
+    // public abstract partial class BoundTypeRef : IBoundTypeRef
+    // {
+    //     public virtual bool IsNullable { get; set; }
+    //     public virtual bool IsObject => false;
+    //     public virtual bool IsArray => false;
+    //     public virtual bool IsPrimitiveType => false;
+    //     public virtual bool IsLambda => false;
+    //
+    //     public virtual ImmutableArray<IBoundTypeRef> TypeArguments => ImmutableArray<IBoundTypeRef>.Empty;
+    //
+    //     internal abstract ITypeSymbol EmitLoadTypeInfo(CodeGenerator cg, bool throwOnError = false);
+    //     public abstract ITypeSymbol ResolveTypeSymbol(AquilaCompilation compilation);
+    //
+    //     public virtual bool Equals(IBoundTypeRef other) => ReferenceEquals(this, other);
+    //     public override bool Equals(object obj) => obj is IBoundTypeRef t && Equals(t);
+    //     public override int GetHashCode() => base.GetHashCode();
+    //
+    //     public override OperationKind Kind => OperationKind.None;
+    //     public AquilaSyntaxNode AquilaSyntax { get; set; }
+    //
+    //     /// <summary>
+    //     /// Lazily set type symbol if resolved.
+    //     /// </summary>
+    //     internal TypeSymbol ResolvedType { get; set; }
+    //
+    //
+    //     partial void AcceptImpl(OperationVisitor visitor)
+    //     {
+    //         visitor.DefaultVisit(this);
+    //     }
+    //
+    //     partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result)
+    //     {
+    //         result = visitor.DefaultVisit(this, argument);
+    //     }
+    // }
 }

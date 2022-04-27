@@ -94,6 +94,23 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override SymbolKind Kind => SymbolKind.Assembly;
 
+
+        internal override TResult Accept<TArgument, TResult>(AquilaSymbolVisitor<TArgument, TResult> visitor,
+            TArgument argument)
+        {
+            return visitor.VisitAssembly(this, argument);
+        }
+
+        public override void Accept(AquilaSymbolVisitor visitor)
+        {
+            visitor.VisitAssembly(this);
+        }
+
+        public override TResult Accept<TResult>(AquilaSymbolVisitor<TResult> visitor)
+        {
+            return visitor.VisitAssembly(this);
+        }
+
         public override ImmutableArray<Location> Locations
         {
             get { throw new NotImplementedException(); }
@@ -260,7 +277,7 @@ namespace Aquila.CodeAnalysis.Symbols
         internal virtual Symbol GetDeclaredSpecialTypeMember(SpecialMember member)
         {
             if (_lazySpecialTypeMembers == null || ReferenceEquals(_lazySpecialTypeMembers[(int)member],
-                ErrorTypeSymbol.UnknownResultType))
+                    ErrorTypeSymbol.UnknownResultType))
             {
                 if (_lazySpecialTypeMembers == null)
                 {

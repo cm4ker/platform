@@ -126,6 +126,22 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get { return SymbolKind.Local; }
         }
+        
+        
+        internal sealed override TResult Accept<TArgument, TResult>(AquilaSymbolVisitor<TArgument, TResult> visitor, TArgument argument)
+        {
+            return visitor.VisitLocal(this, argument);
+        }
+
+        public sealed override void Accept(AquilaSymbolVisitor visitor)
+        {
+            visitor.VisitLocal(this);
+        }
+
+        public sealed override TResult Accept<TResult>(AquilaSymbolVisitor<TResult> visitor)
+        {
+            return visitor.VisitLocal(this);
+        }
 
         /// <summary>
         /// Returns true if this local variable was declared in a catch clause. 

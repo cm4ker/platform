@@ -201,14 +201,14 @@ namespace Aquila.CodeAnalysis.Semantics
 
         #region Bind statements
 
-        public virtual BoundStatement BindStatement(StmtSyntax stmt) => BindStatementCore(stmt).WithSyntax(stmt);
+        public virtual BoundStatement BindStatement(StmtSyntax stmt) => BindStatementCore(stmt);
 
         BoundStatement BindStatementCore(StmtSyntax stmt)
         {
             Debug.Assert(stmt != null);
 
             if (stmt is ExpressionStmt exprStm)
-                return new BoundExpressionStmt(BindExpression(exprStm.Expression, BoundAccess.None));
+                return new BoundExpressionStatement(stmt, BindExpression(exprStm.Expression, BoundAccess.None));
             if (stmt is ReturnStmt jmpStm)
                 return BindReturnStmt(jmpStm);
             if (stmt is LocalDeclStmt varDecl)
@@ -216,7 +216,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
             Diagnostics.Add(GetLocation(stmt), ErrorCode.ERR_NotYetImplemented,
                 $"Statement of type '{stmt.GetType().Name}'");
-            return new BoundEmptyStmt(stmt.Span);
+            return new BoundNoOpStatement(stmt, NoOpStatementFlavor.Default);
         }
 
         internal BoundStatement BindVarDecl(VariableDecl varDecl)
@@ -228,16 +228,19 @@ namespace Aquila.CodeAnalysis.Semantics
                 if (string.IsNullOrWhiteSpace(decl.Identifier.Text) || decl.Initializer == null)
                 {
                     Diagnostics.Add(GetLocation(varDecl), ErrorCode.ERR_MissingIdentifierSymbol);
-                    return new BoundExpressionStmt(
-                        new BoundBadEx(this.Compilation.GetSpecialType(SpecialType.System_Void)));
+
+                    return new BoundExpressionStatement(decl,
+                        new BoundBadExpression(varDecl, LookupResultKind.Empty, new ImmutableArray<Symbol?>(),
+                            new ImmutableArray<BoundExpression>(), null, true), true);
                 }
 
                 var localVar = Method.LocalsTable.BindLocalVariable(new VariableName(decl.Identifier.Text), decl);
 
                 var boundExpression = BindExpression(decl.Initializer.Value);
 
-                return new BoundExpressionStmt(new BoundAssignEx(
-                    new BoundVariableRef(decl.Identifier.Text, localVar.Type).WithAccess(BoundAccess.Write),
+                
+                return new BoundExpressionStatement(new BoundAssignmentOperator(
+                    new BoundLocal(decl.Identifier, localVar.Type).WithAccess(BoundAccess.Write),
                     boundExpression, localVar.Type));
                 break;
 
@@ -336,7 +339,7 @@ namespace Aquila.CodeAnalysis.Semantics
         #region Bind expressions
 
         public virtual BoundExpression BindExpression(ExprSyntax expr, BoundAccess access) =>
-            BindExpressionCore(expr, access).WithSyntax(expr);
+            BindExpressionCore(expr, access);
 
         protected BoundExpression BindExpression(ExprSyntax expr) => BindExpression(expr, BoundAccess.Read);
 
@@ -1248,7 +1251,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         #region Erorring
 
-          internal static void Error(BindingDiagnosticBag diagnostics, DiagnosticInfo info, SyntaxNode syntax)
+        internal static void Error(BindingDiagnosticBag diagnostics, DiagnosticInfo info, SyntaxNode syntax)
         {
             diagnostics.Add(new CSDiagnostic(info, syntax.Location));
         }
@@ -1263,7 +1266,8 @@ namespace Aquila.CodeAnalysis.Semantics
             diagnostics.Add(new CSDiagnostic(new CSDiagnosticInfo(code), syntax.Location));
         }
 
-        internal static void Error(BindingDiagnosticBag diagnostics, ErrorCode code, AquilaSyntaxNode syntax, params object[] args)
+        internal static void Error(BindingDiagnosticBag diagnostics, ErrorCode code, AquilaSyntaxNode syntax,
+            params object[] args)
         {
             diagnostics.Add(new CSDiagnostic(new CSDiagnosticInfo(code, args), syntax.Location));
         }
@@ -1273,7 +1277,8 @@ namespace Aquila.CodeAnalysis.Semantics
             diagnostics.Add(new CSDiagnostic(new CSDiagnosticInfo(code), token.GetLocation()));
         }
 
-        internal static void Error(BindingDiagnosticBag diagnostics, ErrorCode code, SyntaxToken token, params object[] args)
+        internal static void Error(BindingDiagnosticBag diagnostics, ErrorCode code, SyntaxToken token,
+            params object[] args)
         {
             diagnostics.Add(new CSDiagnostic(new CSDiagnosticInfo(code, args), token.GetLocation()));
         }
@@ -1285,7 +1290,8 @@ namespace Aquila.CodeAnalysis.Semantics
             Error(diagnostics, code, location);
         }
 
-        internal static void Error(BindingDiagnosticBag diagnostics, ErrorCode code, SyntaxNodeOrToken syntax, params object[] args)
+        internal static void Error(BindingDiagnosticBag diagnostics, ErrorCode code, SyntaxNodeOrToken syntax,
+            params object[] args)
         {
             var location = syntax.GetLocation();
             RoslynDebug.Assert(location is object);
@@ -1297,11 +1303,12 @@ namespace Aquila.CodeAnalysis.Semantics
             diagnostics.Add(new CSDiagnostic(new CSDiagnosticInfo(code), location));
         }
 
-        internal static void Error(BindingDiagnosticBag diagnostics, ErrorCode code, Location location, params object[] args)
+        internal static void Error(BindingDiagnosticBag diagnostics, ErrorCode code, Location location,
+            params object[] args)
         {
             diagnostics.Add(new CSDiagnostic(new CSDiagnosticInfo(code, args), location));
         }
-        
+
         #endregion
     }
 }

@@ -28,6 +28,8 @@ using Aquila.Metadata;
 using Microsoft.Cci;
 using Roslyn.Utilities;
 using ExceptionUtilities = Aquila.CodeAnalysis.Utilities.ExceptionUtilities;
+using NullableAnnotation = Microsoft.CodeAnalysis.NullableAnnotation;
+
 
 namespace Aquila.CodeAnalysis
 {
@@ -408,14 +410,14 @@ namespace Aquila.CodeAnalysis
 
         protected override INamedTypeSymbol CommonCreateTupleTypeSymbol(ImmutableArray<ITypeSymbol> elementTypes,
             ImmutableArray<string> elementNames, ImmutableArray<Location> elementLocations,
-            ImmutableArray<NullableAnnotation> elementNullableAnnotations)
+            ImmutableArray<Microsoft.CodeAnalysis.NullableAnnotation> elementNullableAnnotations)
         {
             throw new NotImplementedException();
         }
 
         protected override INamedTypeSymbol CommonCreateTupleTypeSymbol(INamedTypeSymbol underlyingType,
             ImmutableArray<string> elementNames, ImmutableArray<Location> elementLocations,
-            ImmutableArray<NullableAnnotation> elementNullableAnnotations)
+            ImmutableArray<Microsoft.CodeAnalysis.NullableAnnotation> elementNullableAnnotations)
         {
             throw new NotImplementedException();
         }
@@ -663,7 +665,7 @@ namespace Aquila.CodeAnalysis
         }
 
         protected override IArrayTypeSymbol CommonCreateArrayTypeSymbol(ITypeSymbol elementType, int rank,
-            NullableAnnotation elementNullableAnnotation)
+            Microsoft.CodeAnalysis.NullableAnnotation elementNullableAnnotation)
         {
             return ArrayTypeSymbol.CreateCSharpArray(SourceAssembly, (TypeSymbol)elementType, rank: rank);
         }
@@ -689,7 +691,7 @@ namespace Aquila.CodeAnalysis
 
         protected override INamedTypeSymbol CommonCreateAnonymousTypeSymbol(ImmutableArray<ITypeSymbol> memberTypes,
             ImmutableArray<string> memberNames, ImmutableArray<Location> memberLocations,
-            ImmutableArray<bool> memberIsReadOnly, ImmutableArray<NullableAnnotation> memberNullableAnnotations)
+            ImmutableArray<bool> memberIsReadOnly, ImmutableArray<Microsoft.CodeAnalysis.NullableAnnotation> memberNullableAnnotations)
         {
             throw new NotImplementedException();
         }

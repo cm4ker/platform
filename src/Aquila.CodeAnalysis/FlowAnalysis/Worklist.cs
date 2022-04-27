@@ -17,14 +17,14 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
     /// Queue of work items to do.
     /// </summary>
     [DebuggerDisplay("WorkList<{T}>, Size={_queue.Count}")]
-    public class Worklist<T> where T : BoundBlock
+    internal class Worklist
     {
         readonly object _syncRoot = new object();
 
         /// <summary>
         /// Delegate used to process <typeparamref name="T"/>.
         /// </summary>
-        public delegate void AnalyzeBlockDelegate(T block);
+        public delegate void AnalyzeBlockDelegate(BoundBlock block);
 
         /// <summary>
         /// Action performed on bound operations.
@@ -42,14 +42,14 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// List of blocks to be processed.
         /// </summary>
-        readonly DistinctQueue<T> _queue = new DistinctQueue<T>(new BoundBlockComparer());
+        readonly DistinctQueue<BoundBlock> _queue = new DistinctQueue<BoundBlock>(new BoundBlockComparer());
 
         readonly CallGraph _callGraph = new CallGraph();
 
         /// <summary>
         /// Set of blocks that need to be processed, but the methods they call haven't been processed yet.
         /// </summary>
-        readonly ConcurrentDictionary<T, object> _dirtyCallBlocks = new ConcurrentDictionary<T, object>();
+        readonly ConcurrentDictionary<BoundBlock, object> _dirtyCallBlocks = new ConcurrentDictionary<BoundBlock, object>();
 
         /// <summary>
         /// In the case of updating an existing analysis, a map of the currently analysed methods to their previous return types.
@@ -73,7 +73,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Adds block to the queue.
         /// </summary>
-        public void Enqueue(T block)
+        public void Enqueue(BoundBlock block)
         {
             if (block != null)
             {
@@ -82,7 +82,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             }
         }
 
-        public bool EnqueueMethod(IAquilaMethodSymbol method, T caller, BoundCallEx callExpression)
+        public bool EnqueueMethod(IAquilaMethodSymbol method, BoundBlock caller, BoundCall callExpression)
         {
             Contract.ThrowIfNull(method);
 
@@ -110,10 +110,10 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                 return false;
             }
 
-            _callGraph.AddEdge(caller.FlowState.Method, sourceMethod, new CallSite(caller, callExpression));
+            //_callGraph.AddEdge(caller.Method, sourceMethod, new CallSite(caller, callExpression));
 
             // ensure caller is subscribed to method's ExitBlock
-            ((ExitBlock)method.ControlFlowGraph.Exit).Subscribe(caller);
+            //((ExitBlock)method.ControlFlowGraph.Exit).Subscribe(caller);
 
             // TODO: check if method has to be reanalyzed => enqueue method's StartBlock
 
@@ -121,30 +121,30 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return !sourceMethod.IsReturnAnalysed;
         }
 
-        public void PingReturnUpdate(ExitBlock updatedExit, T callingBlock)
+        public void PingReturnUpdate(ExitBlock updatedExit, BoundBlock callingBlock)
         {
-            var caller = callingBlock.FlowState?.Method;
-
-            // If the update of the analysis is in progress and the caller is not yet analysed (its FlowState is null due to invalidation) or
-            // is not within the currently analysed methods, don't enqueue it
-            if (callingBlock.FlowState == null ||
-                (caller != null && _currentMethodsLastReturnTypes != null &&
-                 !_currentMethodsLastReturnTypes.ContainsKey(caller)))
-            {
-                return;
-            }
-
-            if (caller == null || _callGraph.GetCalleeEdges(caller).All(edge => edge.Callee.IsReturnAnalysed))
-            {
-                Enqueue(callingBlock);
-            }
-            else
-            {
-                _dirtyCallBlocks.TryAdd(callingBlock, null);
-            }
+            // var caller = callingBlock.FlowState?.Method;
+            //
+            // // If the update of the analysis is in progress and the caller is not yet analysed (its FlowState is null due to invalidation) or
+            // // is not within the currently analysed methods, don't enqueue it
+            // if (callingBlock.FlowState == null ||
+            //     (caller != null && _currentMethodsLastReturnTypes != null &&
+            //      !_currentMethodsLastReturnTypes.ContainsKey(caller)))
+            // {
+            //     return;
+            // }
+            //
+            // if (caller == null || _callGraph.GetCalleeEdges(caller).All(edge => edge.Callee.IsReturnAnalysed))
+            // {
+            //     Enqueue(callingBlock);
+            // }
+            // else
+            // {
+            //     _dirtyCallBlocks.TryAdd(callingBlock, null);
+            // }
         }
 
-        void Process(T block)
+        void Process(BoundBlock block)
         {
             var list = _analyzers;
             for (int i = 0; i < list.Count; i++)
@@ -161,7 +161,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         public void DoAll(bool concurrent = false)
         {
             // Store the current batch and its count
-            var todoBlocks = new T[256];
+            var todoBlocks = new BoundBlock[256];
             int n;
 
             // Deque a batch of blocks and analyse them in parallel
@@ -220,7 +220,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                 foreach (var kvp in _currentMethodsLastReturnTypes)
                 {
                     kvp.Key.ControlFlowGraph.FlowContext.InvalidateAnalysis();
-                    Enqueue((T)kvp.Key.ControlFlowGraph.Start);
+                    Enqueue(kvp.Key.ControlFlowGraph.Start);
                 }
 
                 // Re-run the analysis with the invalidated method flow information
@@ -254,33 +254,33 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Fills the given array with dequeued blocks from <see cref="_queue"/>./
         /// </summary>
-        int Dequeue(T[] todoBlocks)
+        int Dequeue(BoundBlock[] todoBlocks)
         {
             // Helper data structures to enable adding only one block per method to a batch
             var todoContexts = new HashSet<TypeRefContext>();
-            List<T> delayedBlocks = null;
+            List<BoundBlock> delayedBlocks = null;
 
             // Insert the blocks with the highest priority to the batch while having at most one block
             // from each method, delaying the rest
             int n = 0;
-            while (n < todoBlocks.Length && _queue.TryDequeue(out T block))
+            while (n < todoBlocks.Length && _queue.TryDequeue(out BoundBlock block))
                 //TODO: TryDequeue() with a predicate so we won't have to maintain {delayedBlocks}
             {
-                var typeCtx = block.FlowState?.FlowContext?.TypeRefContext;
-
-                if (todoContexts.Add(typeCtx))
-                {
-                    todoBlocks[n++] = block;
-                }
-                else
-                {
-                    if (delayedBlocks == null)
-                    {
-                        delayedBlocks = new List<T>();
-                    }
-
-                    delayedBlocks.Add(block);
-                }
+                // var typeCtx = block.FlowState?.FlowContext?.TypeRefContext;
+                //
+                // if (todoContexts.Add(typeCtx))
+                // {
+                //     todoBlocks[n++] = block;
+                // }
+                // else
+                // {
+                //     if (delayedBlocks == null)
+                //     {
+                //         delayedBlocks = new List<BoundBlock>();
+                //     }
+                //
+                //     delayedBlocks.Add(block);
+                // }
             }
 
             // Return the delayed blocks back to the queue to be deenqueued the next time
@@ -302,8 +302,10 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                 // Each block must be inserted only once to a worklist
                 Debug.Assert(!ReferenceEquals(x, y));
 
+                return 0;
+                
                 // Sort the blocks via their topological order to minimize the analysis repetition
-                return x.Ordinal - y.Ordinal;
+                //return x.Ordinal - y.Ordinal;
             }
         }
     }

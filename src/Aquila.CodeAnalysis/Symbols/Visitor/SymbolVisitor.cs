@@ -23,10 +23,10 @@ namespace Aquila.CodeAnalysis
         {
         }
 
-        public virtual void VisitAlias(AliasSymbol symbol)
-        {
-            DefaultVisit(symbol);
-        }
+        // public virtual void VisitAlias(AliasSymbol symbol)
+        // {
+        //     DefaultVisit(symbol);
+        // }
 
         public virtual void VisitArrayType(ArrayTypeSymbol symbol)
         {
@@ -38,10 +38,10 @@ namespace Aquila.CodeAnalysis
             DefaultVisit(symbol);
         }
 
-        public virtual void VisitDynamicType(DynamicTypeSymbol symbol)
-        {
-            DefaultVisit(symbol);
-        }
+        // public virtual void VisitDynamicType(DynamicTypeSymbol symbol)
+        // {
+        //     DefaultVisit(symbol);
+        // }
 
         public virtual void VisitDiscard(DiscardSymbol symbol)
         {
@@ -98,20 +98,20 @@ namespace Aquila.CodeAnalysis
             DefaultVisit(symbol);
         }
 
-        public virtual void VisitFunctionPointerType(FunctionPointerTypeSymbol symbol)
-        {
-            DefaultVisit(symbol);
-        }
+        // public virtual void VisitFunctionPointerType(FunctionPointerTypeSymbol symbol)
+        // {
+        //     DefaultVisit(symbol);
+        // }
 
         public virtual void VisitProperty(PropertySymbol symbol)
         {
             DefaultVisit(symbol);
         }
 
-        public virtual void VisitRangeVariable(RangeVariableSymbol symbol)
-        {
-            DefaultVisit(symbol);
-        }
+        // public virtual void VisitRangeVariable(RangeVariableSymbol symbol)
+        // {
+        //     DefaultVisit(symbol);
+        // }
 
         public virtual void VisitTypeParameter(TypeParameterSymbol symbol)
         {

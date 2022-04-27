@@ -9,7 +9,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
     /// <summary>
     /// Represents statements control flow graph.
     /// </summary>
-    public sealed partial class ControlFlowGraph
+    internal sealed partial class ControlFlowGraph
     {
         #region LabelBlockFlags, LabelBlockInfo
 
@@ -111,16 +111,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         readonly ImmutableArray<LabelBlockState> _labels;
 
         /// <summary>
-        /// Array of yield statements within method. Can be <c>null</c>.
-        /// </summary>
-        public ImmutableArray<BoundYieldStmt> Yields
-        {
-            get => _yields;
-        }
-
-        readonly ImmutableArray<BoundYieldStmt> _yields;
-
-        /// <summary>
         /// List of blocks that are unreachable syntactically (statements after JumpStmt etc.).
         /// </summary>
         public ImmutableArray<BoundBlock> UnreachableBlocks
@@ -168,9 +158,9 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         }
 
         internal ControlFlowGraph Update(BoundBlock start, BoundBlock exit, ImmutableArray<LabelBlockState> labels,
-            ImmutableArray<BoundYieldStmt> yields, ImmutableArray<BoundBlock> unreachable)
+            ImmutableArray<BoundBlock> unreachable)
         {
-            if (start == _start && exit == _exit && labels == _labels && yields == _yields &&
+            if (start == _start && exit == _exit && labels == _labels &&
                 unreachable == _unreachable)
             {
                 return this;

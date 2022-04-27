@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using Aquila.CodeAnalysis.Utilities;
@@ -8,7 +8,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
     /// <summary>
     /// Visitor used to traverse CFG and all its operations with infinite recursion prevention.
     /// </summary>
-    public abstract class GraphExplorer<TReturn> : GraphWalker<TReturn>
+    internal abstract class GraphExplorer<TReturn> : GraphWalker<TReturn>
     {
         public int ExploredColor { get; private set; }
 
@@ -45,11 +45,11 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         protected sealed override TReturn DefaultVisitBlock(BoundBlock x)
         {
-            if (x.Tag != ExploredColor)
-            {
-                x.Tag = ExploredColor;
-                DefaultVisitUnexploredBlock(x);
-            }
+            // if (x.Tag != ExploredColor)
+            // {
+            //     x.Tag = ExploredColor;
+            //     DefaultVisitUnexploredBlock(x);
+            // }
 
             return default;
         }

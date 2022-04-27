@@ -5,7 +5,7 @@ using Aquila.CodeAnalysis.Semantics.Graph;
 
 namespace Aquila.CodeAnalysis.FlowAnalysis
 {
-    public abstract class AnalysisWalker<TState, TResult> : GraphWalker<TResult>
+    internal abstract class AnalysisWalker<TState, TResult> : GraphWalker<TResult>
     {
         #region Nested enum: AnalysisFlags
 
@@ -39,7 +39,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// </summary>
         protected AnalysisFlags _flags;
 
-        // #endregion
+        #endregion
 
         #region State and worklist handling
 
@@ -90,12 +90,12 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                 // merge and check whether state changed
                 state = MergeStates(state, targetState); // merge states into new one
 
-                if (AreStatesEqual(state, targetState) && !target.ForceRepeatedAnalysis)
-                {
-                    // state converged, we don't have to analyse the target block again
-                    // unless it is specially needed (e.g. ExitBlock)
-                    return;
-                }
+                // if (AreStatesEqual(state, targetState) && !target.ForceRepeatedAnalysis)
+                // {
+                //     // state converged, we don't have to analyse the target block again
+                //     // unless it is specially needed (e.g. ExitBlock)
+                //     return;
+                // }
             }
             else
             {
@@ -131,10 +131,10 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// </summary>
         /// <param name="x">The expression.</param>
         /// <param name="access">New access.</param>
-        protected void Visit(BoundExpression x, BoundAccess access)
+        protected void Visit(BoundNode x, BoundAccess access)
         {
-            x.Access = access;
-            Accept(x);
+            // x.Access = access;
+            // Accept(x);
         }
 
         #endregion
@@ -154,63 +154,65 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// </remarks>
         internal bool VisitCondition(BoundExpression condition, ConditionBranch branch)
         {
-            Contract.ThrowIfNull(condition);
+            // Contract.ThrowIfNull(condition);
+            //
+            // if (branch != ConditionBranch.AnyResult)
+            // {
+            //     if (condition is BoundBinaryEx)
+            //     {
+            //         Visit((BoundBinaryEx)condition, branch);
+            //         return true;
+            //     }
+            //
+            //     if (condition is BoundUnaryEx unaryEx)
+            //     {
+            //         Visit(unaryEx, branch);
+            //         return true;
+            //     }
+            //
+            //     // if (condition is BoundGlobalFunctionCall)
+            //     // {
+            //     //     //VisitGlobalFunctionCall((BoundGlobalFunctionCall) condition, branch);
+            //     //     return true;
+            //     // }
+            //
+            //     if (condition is BoundInstanceOfEx)
+            //     {
+            //         //Visit((BoundInstanceOfEx) condition, branch);
+            //         return true;
+            //     }
+            //
+            //     if (condition is BoundIsSetEx)
+            //     {
+            //         //Visit((BoundIsSetEx) condition, branch);
+            //         return true;
+            //     }
+            //
+            //     //if (condition is EmptyEx)
+            //     //{
+            //     //    VisitEmptyEx((EmptyEx)condition, branch);
+            //     //    return false;
+            //     //}
+            // }
+            //
+            // // no effect
+            // condition.Accept(this);
+            // return false;
 
-            if (branch != ConditionBranch.AnyResult)
-            {
-                if (condition is BoundBinaryEx)
-                {
-                    Visit((BoundBinaryEx) condition, branch);
-                    return true;
-                }
-
-                if (condition is BoundUnaryEx unaryEx)
-                {
-                    Visit(unaryEx, branch);
-                    return true;
-                }
-
-                // if (condition is BoundGlobalFunctionCall)
-                // {
-                //     //VisitGlobalFunctionCall((BoundGlobalFunctionCall) condition, branch);
-                //     return true;
-                // }
-
-                if (condition is BoundInstanceOfEx)
-                {
-                    //Visit((BoundInstanceOfEx) condition, branch);
-                    return true;
-                }
-
-                if (condition is BoundIsSetEx)
-                {
-                    //Visit((BoundIsSetEx) condition, branch);
-                    return true;
-                }
-
-                //if (condition is EmptyEx)
-                //{
-                //    VisitEmptyEx((EmptyEx)condition, branch);
-                //    return false;
-                //}
-            }
-
-            // no effect
-            condition.Accept(this);
             return false;
         }
 
-        public sealed override TResult VisitBinaryEx(BoundBinaryEx x)
-        {
-            Visit(x, ConditionBranch.Default);
-
-            return default;
-        }
-
-        protected virtual void Visit(BoundBinaryEx x, ConditionBranch branch)
-        {
-            base.VisitBinaryEx(x);
-        }
+        // public sealed override TResult VisitBinaryEx(BoundBinaryEx x)
+        // {
+        //     Visit(x, ConditionBranch.Default);
+        //
+        //     return default;
+        // }
+        //
+        // protected virtual void Visit(BoundBinaryEx x, ConditionBranch branch)
+        // {
+        //     base.VisitBinaryEx(x);
+        // }
 
         // public sealed override TResult VisitGlobalFunctionCall(BoundGlobalFunctionCall x)
         // {
@@ -224,17 +226,17 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         //     base.VisitGlobalFunctionCall(x);
         // }
 
-        public sealed override TResult VisitUnaryEx(BoundUnaryEx x)
-        {
-            Visit(x, ConditionBranch.Default);
-
-            return default;
-        }
-
-        protected virtual void Visit(BoundUnaryEx x, ConditionBranch branch)
-        {
-            base.VisitUnaryEx(x);
-        }
+        // public sealed override TResult VisitUnaryEx(BoundUnaryEx x)
+        // {
+        //     Visit(x, ConditionBranch.Default);
+        //
+        //     return default;
+        // }
+        //
+        // protected virtual void Visit(BoundUnaryEx x, ConditionBranch branch)
+        // {
+        //     base.VisitUnaryEx(x);
+        // }
 
         // public sealed override TResult VisitInstanceOf(BoundInstanceOfEx x)
         // {
@@ -270,10 +272,10 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         public override TResult VisitCFG(ControlFlowGraph x)
         {
-            Contract.ThrowIfNull(x);
-            Debug.Assert(IsStateInitialized(GetState(x.Start)), "Start block has to have an initial state set.");
-
-            EnqueueBlock(x.Start);
+            // Contract.ThrowIfNull(x);
+            // Debug.Assert(IsStateInitialized(GetState(x.Start)), "Start block has to have an initial state set.");
+            //
+            // EnqueueBlock(x.Start);
 
             return default;
         }
@@ -290,156 +292,156 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         //    }
         //}
 
-        public override TResult VisitCFGBlock(BoundBlock x)
-        {
-            VisitCFGBlockInit(x);
-            DefaultVisitBlock(x); // modifies State, traverses to the edge
+        // public override TResult VisitCFGBlock(BoundBlock x)
+        // {
+        //     VisitCFGBlockInit(x);
+        //     DefaultVisitBlock(x); // modifies State, traverses to the edge
+        //
+        //     return default;
+        // }
 
-            return default;
-        }
+        // public override TResult VisitCFGCaseBlock(MatchArmBlock x)
+        // {
+        //     // VisitCFGBlockInit(x);
+        //     //
+        //     // // if (!x.MatchValue.IsOnlyBoundElement)
+        //     // // {
+        //     // //     VisitCFGBlock(x.MatchValue.PreBoundBlockFirst);
+        //     // // }
+        //     // //
+        //     // // if (!x.MatchValue.IsEmpty)
+        //     // // {
+        //     // //     Accept(x.MatchValue.BoundElement);
+        //     // // }
+        //     //
+        //     // DefaultVisitBlock(x);
+        //
+        //     return default;
+        // }
 
-        public override TResult VisitCFGCaseBlock(MatchArmBlock x)
-        {
-            VisitCFGBlockInit(x);
-            
-            // if (!x.MatchValue.IsOnlyBoundElement)
-            // {
-            //     VisitCFGBlock(x.MatchValue.PreBoundBlockFirst);
-            // }
-            //
-            // if (!x.MatchValue.IsEmpty)
-            // {
-            //     Accept(x.MatchValue.BoundElement);
-            // }
+        // public override TResult VisitCFGCatchBlock(CatchBlock x)
+        // {
+        //     // VisitCFGBlockInit(x);
+        //     //
+        //     // Accept(x.TypeRef);
+        //     // Accept(x.Variable);
+        //
+        //     //
+        //     DefaultVisitBlock(x);
+        //
+        //     return default;
+        // }
 
-            DefaultVisitBlock(x);
-
-            return default;
-        }
-
-        public override TResult VisitCFGCatchBlock(CatchBlock x)
-        {
-            VisitCFGBlockInit(x);
-
-            Accept(x.TypeRef);
-            Accept(x.Variable);
-
-            //
-            DefaultVisitBlock(x);
-
-            return default;
-        }
-
-        public override TResult VisitCFGSimpleEdge(SimpleEdge x)
-        {
-            TraverseToBlock(x, State, x.NextBlock);
-
-            return default;
-        }
-
-        public override TResult VisitCFGConditionalEdge(ConditionalEdge x)
-        {
-            // build state for TrueBlock and FalseBlock properly, take minimal evaluation into account
-            var state = State;
-
-            // true branch
-            State = CloneState(state);
-            VisitCondition(x.Condition, ConditionBranch.ToTrue);
-            TraverseToBlock(x, State, x.TrueTarget);
-
-            // false branch
-            State = CloneState(state);
-            VisitCondition(x.Condition, ConditionBranch.ToFalse);
-            TraverseToBlock(x, State, x.FalseTarget);
-
-            return default;
-        }
-
-        public override TResult VisitCFGForeachEnumereeEdge(ForeachEnumereeEdge x)
-        {
-            Accept(x.Enumeree);
-            VisitCFGSimpleEdge(x);
-
-            return default;
-        }
-
-        public override TResult VisitCFGForeachMoveNextEdge(ForeachMoveNextEdge x)
-        {
-            var state = State;
-
-
-            // Body branch
-            State = CloneState(state);
-            // set key variable and value variable at current state
-
-            var valueVar = x.ValueVariable;
-            var islistunpacking = valueVar is BoundListEx;
-
-            // analyse Value
-            Visit(valueVar,
-                valueVar.Access.WithWrite());
-
-            // analyse Key
-            var keyVar = x.KeyVariable;
-            if (keyVar != null)
-            {
-                Visit(keyVar, keyVar.Access.WithWrite());
-            }
-
-            TraverseToBlock(x, State, x.BodyBlock);
-
-            // End branch
-            State = CloneState(state);
-            TraverseToBlock(x, State, x.NextBlock);
-
-            return default;
-        }
-
-        public override TResult VisitCFGSwitchEdge(MatchEdge x)
-        {
-            Accept(x.SwitchValue);
-
-            var state = State;
-
-            foreach (var c in x.MatchBlocks)
-            {
-                // if (!c.MatchValue.IsOnlyBoundElement)
-                // {
-                //     TraverseToBlock(x, state, c.MatchValue.PreBoundBlockFirst);
-                // }
-
-                //
-                TraverseToBlock(x, state, c);
-            }
-
-            return default;
-        }
-
-        public override TResult VisitCFGTryCatchEdge(TryCatchEdge x)
-        {
-            var state = State;
-
-            // TODO: any expression inside try{} block can traverse to catch{} or finally{}.
-
-            //
-            TraverseToBlock(x, state, x.BodyBlock);
-
-            //
-            SetStateUnknown(
-                ref state); // TODO: traverse from all states in try{} instead of setting variables unknown here
-
-            foreach (var c in x.CatchBlocks)
-            {
-                TraverseToBlock(x, state, c);
-            }
-
-            if (x.FinallyBlock != null)
-            {
-                TraverseToBlock(x, state, x.FinallyBlock);
-            }
-
-            return default;
-        }
+        // public override TResult VisitCFGSimpleEdge(SimpleEdge x)
+        // {
+        //     // TraverseToBlock(x, State, x.NextBlock);
+        //
+        //     return default;
+        // }
+        //
+        // public override TResult VisitCFGConditionalEdge(ConditionalEdge x)
+        // {
+        //     // build state for TrueBlock and FalseBlock properly, take minimal evaluation into account
+        //     var state = State;
+        //
+        //     // // true branch
+        //     // State = CloneState(state);
+        //     // VisitCondition(x.Condition, ConditionBranch.ToTrue);
+        //     // TraverseToBlock(x, State, x.TrueTarget);
+        //     //
+        //     // // false branch
+        //     // State = CloneState(state);
+        //     // VisitCondition(x.Condition, ConditionBranch.ToFalse);
+        //     // TraverseToBlock(x, State, x.FalseTarget);
+        //
+        //     return default;
+        // }
+        //
+        // // public override TResult VisitCFGForeachEnumereeEdge(ForeachEnumereeEdge x)
+        // // {
+        // //     Accept(x.Enumeree);
+        // //     VisitCFGSimpleEdge(x);
+        // //
+        // //     return default;
+        // // }
+        //
+        // public override TResult VisitCFGForeachMoveNextEdge(ForeachMoveNextEdge x)
+        // {
+        //     var state = State;
+        //
+        //
+        //     // Body branch
+        //     State = CloneState(state);
+        //     // set key variable and value variable at current state
+        //
+        //     var valueVar = x.ValueVariable;
+        //     // var islistunpacking = valueVar is BoundListEx;
+        //
+        //     // analyse Value
+        //     // Visit(valueVar,
+        //     //     valueVar.Access.WithWrite());
+        //     //
+        //     // // analyse Key
+        //     // var keyVar = x.KeyVariable;
+        //     // if (keyVar != null)
+        //     // {
+        //     //     Visit(keyVar, keyVar.Access.WithWrite());
+        //     // }
+        //
+        //     // TraverseToBlock(x, State, x.BodyBlock);
+        //     //
+        //     // // End branch
+        //     // State = CloneState(state);
+        //     // TraverseToBlock(x, State, x.NextBlock);
+        //
+        //     return default;
+        // }
+        //
+        // public override TResult VisitCFGSwitchEdge(MatchEdge x)
+        // {
+        //     // Accept(x.SwitchValue);
+        //     //
+        //     // var state = State;
+        //     //
+        //     // foreach (var c in x.MatchBlocks)
+        //     // {
+        //     //     // if (!c.MatchValue.IsOnlyBoundElement)
+        //     //     // {
+        //     //     //     TraverseToBlock(x, state, c.MatchValue.PreBoundBlockFirst);
+        //     //     // }
+        //     //
+        //     //     //
+        //     //     TraverseToBlock(x, state, c);
+        //     // }
+        //
+        //     return default;
+        // }
+        //
+        // public override TResult VisitCFGTryCatchEdge(TryCatchEdge x)
+        // {
+        //     // var state = State;
+        //     //
+        //     // // TODO: any expression inside try{} block can traverse to catch{} or finally{}.
+        //     //
+        //     // //
+        //     // TraverseToBlock(x, state, x.BodyBlock);
+        //     //
+        //     // //
+        //     // SetStateUnknown(
+        //     //     ref state); // TODO: traverse from all states in try{} instead of setting variables unknown here
+        //     //
+        //     // foreach (var c in x.CatchBlocks)
+        //     // {
+        //     //     TraverseToBlock(x, state, c);
+        //     // }
+        //     //
+        //     // if (x.FinallyBlock != null)
+        //     // {
+        //     //     TraverseToBlock(x, state, x.FinallyBlock);
+        //     // }
+        //
+        //     return default;
+        // }
 
         #endregion
     }

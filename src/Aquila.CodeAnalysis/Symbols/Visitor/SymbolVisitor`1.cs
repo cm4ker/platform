@@ -22,10 +22,10 @@ namespace Aquila.CodeAnalysis
             return default(TResult);
         }
 
-        public virtual TResult VisitAlias(AliasSymbol symbol)
-        {
-            return DefaultVisit(symbol);
-        }
+        // public virtual TResult VisitAlias(AliasSymbol symbol)
+        // {
+        //     return DefaultVisit(symbol);
+        // }
 
         public virtual TResult VisitArrayType(ArrayTypeSymbol symbol)
         {
@@ -37,10 +37,10 @@ namespace Aquila.CodeAnalysis
             return DefaultVisit(symbol);
         }
 
-        public virtual TResult VisitDynamicType(DynamicTypeSymbol symbol)
-        {
-            return DefaultVisit(symbol);
-        }
+        // public virtual TResult VisitDynamicType(DynamicTypeSymbol symbol)
+        // {
+        //     return DefaultVisit(symbol);
+        // }
 
         public virtual TResult VisitDiscard(DiscardSymbol symbol)
         {
@@ -97,20 +97,20 @@ namespace Aquila.CodeAnalysis
             return DefaultVisit(symbol);
         }
 
-        public virtual TResult VisitFunctionPointerType(FunctionPointerTypeSymbol symbol)
-        {
-            return DefaultVisit(symbol);
-        }
+        // public virtual TResult VisitFunctionPointerType(FunctionPointerTypeSymbol symbol)
+        // {
+        //     return DefaultVisit(symbol);
+        // }
 
         public virtual TResult VisitProperty(PropertySymbol symbol)
         {
             return DefaultVisit(symbol);
         }
 
-        public virtual TResult VisitRangeVariable(RangeVariableSymbol symbol)
-        {
-            return DefaultVisit(symbol);
-        }
+        // public virtual TResult VisitRangeVariable(RangeVariableSymbol symbol)
+        // {
+        //     return DefaultVisit(symbol);
+        // }
 
         public virtual TResult VisitTypeParameter(TypeParameterSymbol symbol)
         {

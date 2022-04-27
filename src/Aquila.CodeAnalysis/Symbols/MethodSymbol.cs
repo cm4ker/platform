@@ -111,12 +111,12 @@ namespace Aquila.CodeAnalysis.Symbols
                 ? this
                 : new SubstitutedMethodSymbol((SubstitutedNamedTypeSymbol)newOwner, this);
         }
-        
+
         /// <summary>
         /// As a performance optimization, cache parameter types and refkinds - overload resolution uses them a lot.
         /// </summary>
         private ParameterSignature _lazyParameterSignature;
-        
+
         /// <summary>
         /// Null if no parameter is ref/out. Otherwise the RefKind for each parameter.
         /// </summary>
@@ -281,9 +281,10 @@ namespace Aquila.CodeAnalysis.Symbols
         }
 
         IMethodSymbol IMethodSymbol.Construct(ImmutableArray<ITypeSymbol> typeArguments,
-            ImmutableArray<NullableAnnotation> typeArgumentNullableAnnotations)
+            ImmutableArray<Microsoft.CodeAnalysis.NullableAnnotation> typeArgumentNullableAnnotations)
         {
-            if (typeArgumentNullableAnnotations.All(annotation => annotation != NullableAnnotation.Annotated))
+            if (typeArgumentNullableAnnotations.All(annotation =>
+                    annotation != Microsoft.CodeAnalysis.NullableAnnotation.Annotated))
             {
                 return this.Construct(typeArguments.CastArray<TypeSymbol>());
             }
@@ -327,19 +328,41 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public BoundExpression Initializer => null; // not applicable for methods
 
-        NullableAnnotation IMethodSymbol.ReturnNullableAnnotation => NullableAnnotation.None;
+        Microsoft.CodeAnalysis.NullableAnnotation IMethodSymbol.ReturnNullableAnnotation =>
+            Microsoft.CodeAnalysis.NullableAnnotation.None;
 
-        ImmutableArray<NullableAnnotation> IMethodSymbol.TypeArgumentNullableAnnotations =>
-            TypeArguments.SelectAsArray(a => NullableAnnotation.None);
+        ImmutableArray<Microsoft.CodeAnalysis.NullableAnnotation> IMethodSymbol.TypeArgumentNullableAnnotations =>
+            TypeArguments.SelectAsArray(a => Microsoft.CodeAnalysis.NullableAnnotation.None);
 
         bool IMethodSymbol.IsReadOnly => false;
 
         bool IMethodSymbol.IsInitOnly => false;
 
-        NullableAnnotation IMethodSymbol.ReceiverNullableAnnotation => NullableAnnotation.None;
+        Microsoft.CodeAnalysis.NullableAnnotation IMethodSymbol.ReceiverNullableAnnotation =>
+            Microsoft.CodeAnalysis.NullableAnnotation.None;
 
         bool IMethodSymbol.IsConditional => throw new NotImplementedException();
 
+
+        #region Visitor
+
+        internal override TResult Accept<TArgument, TResult>(AquilaSymbolVisitor<TArgument, TResult> visitor,
+            TArgument argument)
+        {
+            return visitor.VisitMethod(this, argument);
+        }
+
+        public override void Accept(AquilaSymbolVisitor visitor)
+        {
+            visitor.VisitMethod(this);
+        }
+
+        public override TResult Accept<TResult>(AquilaSymbolVisitor<TResult> visitor)
+        {
+            return visitor.VisitMethod(this);
+        }
+
+        #endregion
 
         #region IMethodSymbolInternal
 

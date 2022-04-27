@@ -262,6 +262,22 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get { return SymbolKind.ArrayType; }
         }
+        
+        
+        internal override TResult Accept<TArgument, TResult>(AquilaSymbolVisitor<TArgument, TResult> visitor, TArgument argument)
+        {
+            return visitor.VisitArrayType(this, argument);
+        }
+
+        public override void Accept(AquilaSymbolVisitor visitor)
+        {
+            visitor.VisitArrayType(this);
+        }
+
+        public override TResult Accept<TResult>(AquilaSymbolVisitor<TResult> visitor)
+        {
+            return visitor.VisitArrayType(this);
+        }
 
         public override TypeKind TypeKind
         {
@@ -424,7 +440,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         ImmutableArray<int> IArrayTypeSymbol.Sizes => Sizes;
 
-        NullableAnnotation IArrayTypeSymbol.ElementNullableAnnotation => NullableAnnotation.None;
+        Microsoft.CodeAnalysis.NullableAnnotation IArrayTypeSymbol.ElementNullableAnnotation => Microsoft.CodeAnalysis.NullableAnnotation.None;
 
         #endregion
 

@@ -149,6 +149,20 @@ namespace Aquila.CodeAnalysis.Symbols
         public override TypeKind TypeKind => TypeKind.Pointer;
 
         public override Symbol ContainingSymbol => null;
+        public override void Accept(AquilaSymbolVisitor visitor)
+        {
+            visitor.VisitPointerType(this);
+        }
+
+        public override TResult Accept<TResult>(AquilaSymbolVisitor<TResult> visitor)
+        {
+            return visitor.VisitPointerType(this);
+        }
+
+        internal override TResult Accept<TArgument, TResult>(AquilaSymbolVisitor<TArgument, TResult> visitor, TArgument a)
+        {
+            return  visitor.VisitPointerType(this, a);
+        }
 
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences => ImmutableArray<SyntaxReference>.Empty;
 

@@ -72,6 +72,8 @@ namespace Aquila.CodeAnalysis.Symbols
             return null;
         }
 
+        public override TypeWithAnnotations TypeWithAnnotations { get; }
+
         internal override bool IsImportedFromMetadata { get; }
 
         internal override LocalDeclarationKind DeclarationKind { get; }

@@ -259,6 +259,25 @@ namespace Aquila.CodeAnalysis.Symbols
             get { return SymbolKind.Property; }
         }
 
+        /// <summary>
+        /// Implements visitor pattern.
+        /// </summary>
+        internal override TResult Accept<TArgument, TResult>(AquilaSymbolVisitor<TArgument, TResult> visitor,
+            TArgument argument)
+        {
+            return visitor.VisitProperty(this, argument);
+        }
+
+        public override void Accept(AquilaSymbolVisitor visitor)
+        {
+            visitor.VisitProperty(this);
+        }
+
+        public override TResult Accept<TResult>(AquilaSymbolVisitor<TResult> visitor)
+        {
+            return visitor.VisitProperty(this);
+        }
+
         public bool HasRefOrOutParameter()
         {
             foreach (ParameterSymbol param in this.Parameters)
@@ -351,7 +370,8 @@ namespace Aquila.CodeAnalysis.Symbols
 
         ImmutableArray<CustomModifier> IPropertySymbol.RefCustomModifiers => ImmutableArray<CustomModifier>.Empty;
 
-        NullableAnnotation IPropertySymbol.NullableAnnotation => NullableAnnotation.None;
+        Microsoft.CodeAnalysis.NullableAnnotation IPropertySymbol.NullableAnnotation =>
+            Microsoft.CodeAnalysis.NullableAnnotation.None;
 
         #endregion
 
@@ -400,7 +420,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         #endregion Equality
     }
-    
+
     internal class MissingPropertySymbol : PropertySymbol
     {
         public string Name { get; }
@@ -409,7 +429,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             Name = name;
         }
-        
+
         internal override ObsoleteAttributeData ObsoleteAttributeData { get; }
         public override Symbol ContainingSymbol { get; }
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences { get; }

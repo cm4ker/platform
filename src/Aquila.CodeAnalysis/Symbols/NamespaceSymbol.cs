@@ -95,6 +95,26 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         public sealed override SymbolKind Kind => SymbolKind.Namespace;
 
+        
+        /// <summary>
+        /// Implements visitor pattern. 
+        /// </summary>
+        internal override TResult Accept<TArgument, TResult>(AquilaSymbolVisitor<TArgument, TResult> visitor,
+            TArgument argument)
+        {
+            return visitor.VisitNamespace(this, argument);
+        }
+
+        public override void Accept(AquilaSymbolVisitor visitor)
+        {
+            visitor.VisitNamespace(this);
+        }
+
+        public override TResult Accept<TResult>(AquilaSymbolVisitor<TResult> visitor)
+        {
+            return visitor.VisitNamespace(this);
+        }
+        
         public override sealed bool IsImplicitlyDeclared
         {
             get { return this.IsGlobalNamespace; }

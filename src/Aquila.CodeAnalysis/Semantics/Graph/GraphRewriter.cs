@@ -26,7 +26,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
     /// This is done to prevent the graph nodes from pointing to nodes of the older version of the
     /// graph. Possible optimization would be to allow sharing graph parts in acyclic CFGs.
     /// </remarks>
-    public class GraphRewriter : GraphUpdater
+    internal class GraphRewriter : GraphUpdater
     {
         private Dictionary<BoundBlock, BoundBlock> _updatedBlocks;
         private List<BoundBlock> _possiblyUnreachableBlocks;
@@ -52,44 +52,48 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 _rewriter = rewriter;
             }
 
-            private BoundBlock Repair(BoundBlock block)
+            // private BoundBlock Repair(BoundBlock block)
+            // {
+            //     if (_rewriter.IsRepaired(block))
+            //     {
+            //         return block;
+            //     }
+            //
+            //     if (!_rewriter.IsChanged(block))
+            //     {
+            //         if (!_rewriter._updatedBlocks.TryGetValue(block, out var repaired))
+            //         {
+            //             repaired = block.Clone();
+            //             _rewriter.MapToNewVersion(block, repaired);
+            //         }
+            //
+            //         block = repaired;
+            //     }
+            //
+            //     if (!_rewriter.IsRepaired(block))
+            //     {
+            //         block.Tag = _rewriter.RepairedColor;
+            //
+            //         if (block is not ExitBlock)
+            //             block.SetNextEdge(AcceptEdge(block, block.NextEdge));
+            //     }
+            //
+            //     return block;
+            // }
+
+            // public sealed override object VisitCFGBlock(BoundBlock x) => Repair(x);
+            //
+            // public sealed override object VisitCFGStartBlock(StartBlock x) => Repair(x);
+            //
+            // public sealed override object VisitCFGExitBlock(ExitBlock x) => Repair(x);
+
+            // public sealed override object VisitCFGCatchBlock(CatchBlock x) => Repair(x);
+            //
+            // public sealed override object VisitCFGCaseBlock(MatchArmBlock x) => Repair(x);
+            protected override BoundExpression? VisitExpressionWithoutStackGuard(BoundExpression node)
             {
-                if (_rewriter.IsRepaired(block))
-                {
-                    return block;
-                }
-
-                if (!_rewriter.IsChanged(block))
-                {
-                    if (!_rewriter._updatedBlocks.TryGetValue(block, out var repaired))
-                    {
-                        repaired = block.Clone();
-                        _rewriter.MapToNewVersion(block, repaired);
-                    }
-
-                    block = repaired;
-                }
-
-                if (!_rewriter.IsRepaired(block))
-                {
-                    block.Tag = _rewriter.RepairedColor;
-
-                    if (block is not ExitBlock)
-                        block.SetNextEdge(AcceptEdge(block, block.NextEdge));
-                }
-
-                return block;
+                throw new NotImplementedException();
             }
-
-            public sealed override object VisitCFGBlock(BoundBlock x) => Repair(x);
-
-            public sealed override object VisitCFGStartBlock(StartBlock x) => Repair(x);
-
-            public sealed override object VisitCFGExitBlock(ExitBlock x) => Repair(x);
-
-            public sealed override object VisitCFGCatchBlock(CatchBlock x) => Repair(x);
-
-            public sealed override object VisitCFGCaseBlock(MatchArmBlock x) => Repair(x);
         }
 
         /// <summary>
@@ -97,53 +101,53 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// of the original graph. Marks all declarations as unreachable. The blocks encountered along the way are
         /// coloured as a side effect.
         /// </summary>
-        private class UnreachableProcessor : GraphExplorer<VoidStruct>
-        {
-            private readonly GraphRewriter _rewriter;
-
-            public List<BoundYieldStmt> Yields { get; private set; }
-
-            public UnreachableProcessor(GraphRewriter rewriter, int exploredColor) : base(exploredColor)
-            {
-                _rewriter = rewriter;
-            }
-
-            public override VoidStruct VisitYieldStmt(BoundYieldStmt boundYieldStmt)
-            {
-                if (Yields == null)
-                {
-                    Yields = new List<BoundYieldStmt>();
-                }
-
-                Yields.Add(boundYieldStmt);
-
-                return base.VisitYieldStmt(boundYieldStmt);
-            }
-
-            public override VoidStruct VisitMethodDeclStmt(BoundMethodDeclStmt x)
-            {
-                _rewriter.OnUnreachableMethodFound(x.Method);
-
-                return base.VisitMethodDeclStmt(x);
-            }
-
-            // public override VoidStruct VisitTypeDeclaration(BoundTypeDeclStatement x)
-            // {
-            //     _rewriter.OnUnreachableTypeFound(x.DeclaredType);
-            //
-            //     return base.VisitTypeDeclaration(x);
-            // }
-        }
+        // private class UnreachableProcessor : GraphExplorer<VoidStruct>
+        // {
+        //     private readonly GraphRewriter _rewriter;
+        //
+        //     public List<BoundYieldStmt> Yields { get; private set; }
+        //
+        //     public UnreachableProcessor(GraphRewriter rewriter, int exploredColor) : base(exploredColor)
+        //     {
+        //         _rewriter = rewriter;
+        //     }
+        //
+        //     public override VoidStruct VisitYieldStmt(BoundYieldStmt boundYieldStmt)
+        //     {
+        //         if (Yields == null)
+        //         {
+        //             Yields = new List<BoundYieldStmt>();
+        //         }
+        //
+        //         Yields.Add(boundYieldStmt);
+        //
+        //         return base.VisitYieldStmt(boundYieldStmt);
+        //     }
+        //
+        //     public override VoidStruct VisitMethodDeclStmt(BoundMethodDeclStmt x)
+        //     {
+        //         _rewriter.OnUnreachableMethodFound(x.Method);
+        //
+        //         return base.VisitMethodDeclStmt(x);
+        //     }
+        //
+        //     // public override VoidStruct VisitTypeDeclaration(BoundTypeDeclStatement x)
+        //     // {
+        //     //     _rewriter.OnUnreachableTypeFound(x.DeclaredType);
+        //     //
+        //     //     return base.VisitTypeDeclaration(x);
+        //     // }
+        // }
 
         #endregion
 
         #region Helper methods
 
-        private bool IsExplored(BoundBlock x) => x.Tag >= ExploredColor;
-
-        private bool IsChanged(BoundBlock x) => x.Tag >= ChangedColor;
-
-        private bool IsRepaired(BoundBlock x) => x.Tag == RepairedColor;
+        // private bool IsExplored(BoundBlock x) => x.Tag >= ExploredColor;
+        //
+        // private bool IsChanged(BoundBlock x) => x.Tag >= ChangedColor;
+        //
+        // private bool IsRepaired(BoundBlock x) => x.Tag == RepairedColor;
 
         private BoundBlock TryGetNewVersion(BoundBlock block)
         {
@@ -154,7 +158,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         private void MapToNewVersion(BoundBlock oldBlock, BoundBlock newBlock)
         {
-            newBlock.Tag = ChangedColor;
+            // newBlock.Tag = ChangedColor;
 
             if (_updatedBlocks == null)
             {
@@ -194,66 +198,66 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #region ControlFlowGraph
 
-        public sealed override object VisitCFG(ControlFlowGraph x)
-        {
-            OnVisitCFG(x);
-
-            ExploredColor = x.NewColor();
-            ChangedColor = x.NewColor();
-            RepairedColor = x.NewColor();
-            _updatedBlocks = null;
-
-            // Traverse the whole graph and possibly obtain new versions of start and exit
-            var updatedStart = (StartBlock)Accept(x.Start);
-            var updatedExit = TryGetNewVersion(x.Exit);
-
-            // Assume that yields and unreachable blocks stay the same
-            var yields = x.Yields;
-            var unreachableBlocks = x.UnreachableBlocks;
-
-            // Fix the structure of the graph if any changes were performed
-            if (_updatedBlocks != null)
-            {
-                Debug.Assert(updatedStart != x.Start);
-
-                // Rescan and repair nodes and edges if any blocks were modified
-                var repairer = new GraphRepairer(this);
-                updatedStart = (StartBlock)updatedStart.Accept(repairer);
-                updatedExit = TryGetNewVersion(x.Exit);
-
-                // Handle newly unreachable blocks
-                var newlyUnreachableBlocks =
-                    _possiblyUnreachableBlocks?.Where(b => !IsExplored(b)).ToList() // Confirm that they are unexplored
-                    ?? Enumerable.Empty<BoundBlock>();
-                if (newlyUnreachableBlocks.Any())
-                {
-                    // Scan all the newly unreachable blocks (for yields, declarations,...)
-                    var unreachableProcessor = new UnreachableProcessor(this, ExploredColor);
-                    newlyUnreachableBlocks.ForEach(b => b.Accept(unreachableProcessor));
-
-                    // Remove the discovered yields from the next CFG version
-                    if (unreachableProcessor.Yields != null)
-                    {
-                        yields = yields.RemoveRange(unreachableProcessor.Yields);
-                    }
-                }
-
-                // Repair all the unreachable blocks so that they reference the updated versions of the blocks
-                // (enables to properly produce reachability diagnostics)
-                unreachableBlocks =
-                    unreachableBlocks.Concat(newlyUnreachableBlocks)
-                        .Select(b => (BoundBlock)b.Accept(repairer))
-                        .ToImmutableArray();
-            }
-
-            // Create a new CFG from the new versions of blocks and edges (expressions and statements are reused where unchanged)
-            return x.Update(
-                updatedStart,
-                updatedExit,
-                x.Labels, // Keep all the labels, they are here only for the diagnostic purposes
-                yields,
-                unreachableBlocks);
-        }
+        // public sealed override object VisitCFG(ControlFlowGraph x)
+        // {
+        //     OnVisitCFG(x);
+        //
+        //     ExploredColor = x.NewColor();
+        //     ChangedColor = x.NewColor();
+        //     RepairedColor = x.NewColor();
+        //     _updatedBlocks = null;
+        //
+        //     // Traverse the whole graph and possibly obtain new versions of start and exit
+        //     var updatedStart = (StartBlock)Accept(x.Start);
+        //     var updatedExit = TryGetNewVersion(x.Exit);
+        //
+        //     // Assume that yields and unreachable blocks stay the same
+        //     var yields = x.Yields;
+        //     var unreachableBlocks = x.UnreachableBlocks;
+        //
+        //     // Fix the structure of the graph if any changes were performed
+        //     if (_updatedBlocks != null)
+        //     {
+        //         Debug.Assert(updatedStart != x.Start);
+        //
+        //         // Rescan and repair nodes and edges if any blocks were modified
+        //         var repairer = new GraphRepairer(this);
+        //         updatedStart = (StartBlock)updatedStart.Accept(repairer);
+        //         updatedExit = TryGetNewVersion(x.Exit);
+        //
+        //         // Handle newly unreachable blocks
+        //         var newlyUnreachableBlocks =
+        //             _possiblyUnreachableBlocks?.Where(b => !IsExplored(b)).ToList() // Confirm that they are unexplored
+        //             ?? Enumerable.Empty<BoundBlock>();
+        //         if (newlyUnreachableBlocks.Any())
+        //         {
+        //             // Scan all the newly unreachable blocks (for yields, declarations,...)
+        //             var unreachableProcessor = new UnreachableProcessor(this, ExploredColor);
+        //             newlyUnreachableBlocks.ForEach(b => b.Accept(unreachableProcessor));
+        //
+        //             // Remove the discovered yields from the next CFG version
+        //             if (unreachableProcessor.Yields != null)
+        //             {
+        //                 yields = yields.RemoveRange(unreachableProcessor.Yields);
+        //             }
+        //         }
+        //
+        //         // Repair all the unreachable blocks so that they reference the updated versions of the blocks
+        //         // (enables to properly produce reachability diagnostics)
+        //         unreachableBlocks =
+        //             unreachableBlocks.Concat(newlyUnreachableBlocks)
+        //                 .Select(b => (BoundBlock)b.Accept(repairer))
+        //                 .ToImmutableArray();
+        //     }
+        //
+        //     // Create a new CFG from the new versions of blocks and edges (expressions and statements are reused where unchanged)
+        //     return x.Update(
+        //         updatedStart,
+        //         updatedExit,
+        //         x.Labels, // Keep all the labels, they are here only for the diagnostic purposes
+        //         yields,
+        //         unreachableBlocks);
+        // }
 
         protected virtual void OnVisitCFG(ControlFlowGraph x)
         {
@@ -265,80 +269,80 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         protected sealed override object DefaultVisitBlock(BoundBlock x) => throw new InvalidOperationException();
 
-        public sealed override object VisitCFGBlock(BoundBlock x)
-        {
-            if (IsExplored(x))
-            {
-                return x;
-            }
-            else
-            {
-                x.Tag = ExploredColor;
-                return MapIfUpdated(x, OnVisitCFGBlock(x));
-            }
-        }
+        // public sealed override object VisitCFGBlock(BoundBlock x)
+        // {
+        //     if (IsExplored(x))
+        //     {
+        //         return x;
+        //     }
+        //     else
+        //     {
+        //         x.Tag = ExploredColor;
+        //         return MapIfUpdated(x, OnVisitCFGBlock(x));
+        //     }
+        // }
 
-        public sealed override object VisitCFGStartBlock(StartBlock x)
-        {
-            if (IsExplored(x))
-            {
-                return x;
-            }
-            else
-            {
-                x.Tag = ExploredColor;
-                return MapIfUpdated(x, OnVisitCFGStartBlock(x));
-            }
-        }
+        // public sealed override object VisitCFGStartBlock(StartBlock x)
+        // {
+        //     if (IsExplored(x))
+        //     {
+        //         return x;
+        //     }
+        //     else
+        //     {
+        //         x.Tag = ExploredColor;
+        //         return MapIfUpdated(x, OnVisitCFGStartBlock(x));
+        //     }
+        // }
 
-        public sealed override object VisitCFGExitBlock(ExitBlock x)
-        {
-            if (IsExplored(x))
-            {
-                return x;
-            }
-            else
-            {
-                x.Tag = ExploredColor;
-                return MapIfUpdated(x, OnVisitCFGExitBlock(x));
-            }
-        }
+        // public sealed override object VisitCFGExitBlock(ExitBlock x)
+        // {
+        //     if (IsExplored(x))
+        //     {
+        //         return x;
+        //     }
+        //     else
+        //     {
+        //         x.Tag = ExploredColor;
+        //         return MapIfUpdated(x, OnVisitCFGExitBlock(x));
+        //     }
+        // }
 
-        public sealed override object VisitCFGCatchBlock(CatchBlock x)
-        {
-            if (IsExplored(x))
-            {
-                return x;
-            }
-            else
-            {
-                x.Tag = ExploredColor;
-                return MapIfUpdated(x, OnVisitCFGCatchBlock(x));
-            }
-        }
+        // public sealed override object VisitCFGCatchBlock(CatchBlock x)
+        // {
+        //     if (IsExplored(x))
+        //     {
+        //         return x;
+        //     }
+        //     else
+        //     {
+        //         x.Tag = ExploredColor;
+        //         return MapIfUpdated(x, OnVisitCFGCatchBlock(x));
+        //     }
+        // }
 
-        public sealed override object VisitCFGCaseBlock(MatchArmBlock x)
-        {
-            if (IsExplored(x))
-            {
-                return x;
-            }
-            else
-            {
-                x.Tag = ExploredColor;
-                return MapIfUpdated(x, OnVisitCFGCaseBlock(x));
-            }
-        }
+        // public sealed override object VisitCFGCaseBlock(MatchArmBlock x)
+        // {
+        //     if (IsExplored(x))
+        //     {
+        //         return x;
+        //     }
+        //     else
+        //     {
+        //         x.Tag = ExploredColor;
+        //         return MapIfUpdated(x, OnVisitCFGCaseBlock(x));
+        //     }
+        // }
 
         public virtual BoundBlock OnVisitCFGBlock(BoundBlock x) => (BoundBlock)base.VisitCFGBlock(x);
 
-        public virtual StartBlock OnVisitCFGStartBlock(StartBlock x) => (StartBlock)base.VisitCFGStartBlock(x);
+        // public virtual StartBlock OnVisitCFGStartBlock(StartBlock x) => (StartBlock)base.VisitCFGStartBlock(x);
 
-        public virtual ExitBlock OnVisitCFGExitBlock(ExitBlock x) => (ExitBlock)base.VisitCFGExitBlock(x);
+        // public virtual ExitBlock OnVisitCFGExitBlock(ExitBlock x) => (ExitBlock)base.VisitCFGExitBlock(x);
 
-        public virtual CatchBlock OnVisitCFGCatchBlock(CatchBlock x) => (CatchBlock)base.VisitCFGCatchBlock(x);
+        // public virtual CatchBlock OnVisitCFGCatchBlock(CatchBlock x) => (CatchBlock)base.VisitCFGCatchBlock(x);
 
-        public virtual MatchArmBlock OnVisitCFGCaseBlock(MatchArmBlock x) => (MatchArmBlock)base.VisitCFGCaseBlock(x);
+        // public virtual MatchArmBlock OnVisitCFGCaseBlock(MatchArmBlock x) => (MatchArmBlock)base.VisitCFGCaseBlock(x);
 
         #endregion
 
@@ -349,5 +353,9 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         // protected private virtual void OnUnreachableTypeFound(SourceTypeSymbol type)
         // {
         // }
+        protected override BoundExpression? VisitExpressionWithoutStackGuard(BoundExpression node)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

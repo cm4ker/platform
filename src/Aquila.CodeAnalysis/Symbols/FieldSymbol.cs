@@ -171,6 +171,26 @@ namespace Aquila.CodeAnalysis.Symbols
         }
 
         /// <summary>
+        /// Implements visitor pattern. 
+        /// </summary>
+        internal override TResult Accept<TArgument, TResult>(AquilaSymbolVisitor<TArgument, TResult> visitor,
+            TArgument argument)
+        {
+            return visitor.VisitField(this, argument);
+        }
+
+        public override void Accept(AquilaSymbolVisitor visitor)
+        {
+            visitor.VisitField(this);
+        }
+
+        public override TResult Accept<TResult>(AquilaSymbolVisitor<TResult> visitor)
+        {
+            return visitor.VisitField(this);
+        }
+        
+        
+        /// <summary>
         /// If this field represents a tuple element, returns a corresponding default element
         ///  field. Otherwise returns null.
         /// </summary>

@@ -37,7 +37,22 @@ namespace Aquila.CodeAnalysis.Symbols
         public override bool IsVirtual => false;
 
         public override SymbolKind Kind => SymbolKind.NetModule;
+        
+        public override void Accept(AquilaSymbolVisitor visitor)
+        {
+            visitor.VisitModule(this);
+        }
 
+        public override TResult Accept<TResult>(AquilaSymbolVisitor<TResult> visitor)
+        {
+            return visitor.VisitModule(this);
+        }
+
+        internal override TResult Accept<TArgument, TResult>(AquilaSymbolVisitor<TArgument, TResult> visitor, TArgument a)
+        {
+            return visitor.VisitModule(this, a);
+        }
+        
         INamespaceSymbol IModuleSymbol.GlobalNamespace => GlobalNamespace;
 
         public abstract NamespaceSymbol GlobalNamespace { get; }

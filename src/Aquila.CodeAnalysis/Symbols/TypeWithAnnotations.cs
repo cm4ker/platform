@@ -15,6 +15,7 @@ using Microsoft.CodeAnalysis.PooledObjects;
 using Roslyn.Utilities;
 using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.Semantics;
 
 namespace Aquila.CodeAnalysis.Symbols
 {
@@ -560,7 +561,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         private void ReportDiagnosticsIfObsoleteCore(Binder binder, SyntaxNode syntax, BindingDiagnosticBag diagnostics)
         {
-            binder.ReportDiagnosticsIfObsolete(diagnostics, Type, syntax, hasBaseReceiver: false);
+            //binder.ReportDiagnosticsIfObsolete(diagnostics, Type, syntax, hasBaseReceiver: false);
         }
 
         /// <summary>
@@ -788,7 +789,7 @@ namespace Aquila.CodeAnalysis.Symbols
         }
 
 #pragma warning disable CS0809
-        [Obsolete("Unsupported", error: true)]
+        //[Obsolete("Unsupported", error: true)]
         public override int GetHashCode()
 #pragma warning restore CS0809
         {

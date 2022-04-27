@@ -25,10 +25,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         public virtual TypeParameterSymbol ReducedFrom
         {
-            get
-            {
-                return null;
-            }
+            get { return null; }
         }
 
         /// <summary>
@@ -55,10 +52,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         public ImmutableArray<TypeSymbol> ConstraintTypes
         {
-            get
-            {
-                return this.ConstraintTypesNoUseSiteDiagnostics;
-            }
+            get { return this.ConstraintTypesNoUseSiteDiagnostics; }
         }
 
         internal ImmutableArray<TypeSymbol> ConstraintTypesNoUseSiteDiagnostics
@@ -70,7 +64,8 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        internal ImmutableArray<TypeSymbol> ConstraintTypesWithDefinitionUseSiteDiagnostics(ref HashSet<DiagnosticInfo> useSiteDiagnostics)
+        internal ImmutableArray<TypeSymbol> ConstraintTypesWithDefinitionUseSiteDiagnostics(
+            ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
             var result = ConstraintTypesNoUseSiteDiagnostics;
 
@@ -116,10 +111,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         public MethodSymbol DeclaringMethod
         {
-            get
-            {
-                return this.ContainingSymbol as MethodSymbol;
-            }
+            get { return this.ContainingSymbol as MethodSymbol; }
         }
 
         /// <summary>
@@ -127,10 +119,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         public NamedTypeSymbol DeclaringType
         {
-            get
-            {
-                return this.ContainingSymbol as NamedTypeSymbol;
-            }
+            get { return this.ContainingSymbol as NamedTypeSymbol; }
         }
 
         // Type parameters do not have members
@@ -142,7 +131,7 @@ namespace Aquila.CodeAnalysis.Symbols
         // Type parameters do not have members
         public sealed override ImmutableArray<Symbol> GetMembers(string name) => ImmutableArray<Symbol>.Empty;
 
-        
+
         // Type parameters do not have members
         public sealed override ImmutableArray<NamedTypeSymbol> GetTypeMembers()
         {
@@ -163,18 +152,32 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public sealed override SymbolKind Kind
         {
-            get
-            {
-                return SymbolKind.TypeParameter;
-            }
+            get { return SymbolKind.TypeParameter; }
         }
 
         public sealed override TypeKind TypeKind
         {
-            get
-            {
-                return TypeKind.TypeParameter;
-            }
+            get { return TypeKind.TypeParameter; }
+        }
+        
+        
+        /// <summary>
+        /// Implements visitor pattern. 
+        /// </summary>
+        internal override TResult Accept<TArgument, TResult>(AquilaSymbolVisitor<TArgument, TResult> visitor,
+            TArgument argument)
+        {
+            return visitor.VisitTypeParameter(this, argument);
+        }
+
+        public override void Accept(AquilaSymbolVisitor visitor)
+        {
+            visitor.VisitTypeParameter(this);
+        }
+
+        public override TResult Accept<TResult>(AquilaSymbolVisitor<TResult> visitor)
+        {
+            return visitor.VisitTypeParameter(this);
         }
 
         // Only the compiler can create TypeParameterSymbols.
@@ -267,7 +270,8 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         internal ImmutableArray<NamedTypeSymbol> AllEffectiveInterfacesNoUseSiteDiagnostics => AllInterfaces;
 
-        internal ImmutableArray<NamedTypeSymbol> AllEffectiveInterfacesWithDefinitionUseSiteDiagnostics(ref HashSet<DiagnosticInfo> useSiteDiagnostics)
+        internal ImmutableArray<NamedTypeSymbol> AllEffectiveInterfacesWithDefinitionUseSiteDiagnostics(
+            ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
             var result = AllEffectiveInterfacesNoUseSiteDiagnostics;
 
@@ -313,7 +317,8 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             if (constraint.TypeKind == TypeKind.TypeParameter)
             {
-                return IsReferenceTypeFromConstraintTypes(((TypeParameterSymbol)constraint).ConstraintTypesNoUseSiteDiagnostics);
+                return IsReferenceTypeFromConstraintTypes(((TypeParameterSymbol)constraint)
+                    .ConstraintTypesNoUseSiteDiagnostics);
             }
             else if (!constraint.IsReferenceType)
             {
@@ -355,6 +360,7 @@ namespace Aquila.CodeAnalysis.Symbols
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -367,6 +373,7 @@ namespace Aquila.CodeAnalysis.Symbols
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -374,7 +381,8 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get
             {
-                return this.HasReferenceTypeConstraint || IsReferenceTypeFromConstraintTypes(this.ConstraintTypesNoUseSiteDiagnostics);
+                return this.HasReferenceTypeConstraint ||
+                       IsReferenceTypeFromConstraintTypes(this.ConstraintTypesNoUseSiteDiagnostics);
             }
         }
 
@@ -382,7 +390,8 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get
             {
-                return this.HasValueTypeConstraint || IsValueTypeFromConstraintTypes(this.ConstraintTypesNoUseSiteDiagnostics);
+                return this.HasValueTypeConstraint ||
+                       IsValueTypeFromConstraintTypes(this.ConstraintTypesNoUseSiteDiagnostics);
             }
         }
 
@@ -399,9 +408,11 @@ namespace Aquila.CodeAnalysis.Symbols
         //    return false;
         //}
 
-        internal override bool Equals(TypeSymbol t2, bool ignoreCustomModifiersAndArraySizesAndLowerBounds, bool ignoreDynamic)
+        internal override bool Equals(TypeSymbol t2, bool ignoreCustomModifiersAndArraySizesAndLowerBounds,
+            bool ignoreDynamic)
         {
-            return this.Equals(t2 as TypeParameterSymbol, ignoreCustomModifiersAndArraySizesAndLowerBounds, ignoreDynamic);
+            return this.Equals(t2 as TypeParameterSymbol, ignoreCustomModifiersAndArraySizesAndLowerBounds,
+                ignoreDynamic);
         }
 
         internal bool Equals(TypeParameterSymbol other)
@@ -409,7 +420,8 @@ namespace Aquila.CodeAnalysis.Symbols
             return Equals(other, false, false);
         }
 
-        private bool Equals(TypeParameterSymbol other, bool ignoreCustomModifiersAndArraySizesAndLowerBounds, bool ignoreDynamic)
+        private bool Equals(TypeParameterSymbol other, bool ignoreCustomModifiersAndArraySizesAndLowerBounds,
+            bool ignoreDynamic)
         {
             if (ReferenceEquals(this, other))
             {
@@ -422,7 +434,8 @@ namespace Aquila.CodeAnalysis.Symbols
             }
 
             // Type parameters may be equal but not reference equal due to independent alpha renamings.
-            return other.ContainingSymbol.ContainingType.Equals(this.ContainingSymbol.ContainingType, ignoreCustomModifiersAndArraySizesAndLowerBounds, ignoreDynamic);
+            return other.ContainingSymbol.ContainingType.Equals(this.ContainingSymbol.ContainingType,
+                ignoreCustomModifiersAndArraySizesAndLowerBounds, ignoreDynamic);
         }
 
         public override int GetHashCode()
@@ -434,10 +447,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         TypeParameterKind ITypeParameterSymbol.TypeParameterKind
         {
-            get
-            {
-                return (TypeParameterKind)this.TypeParameterKind;
-            }
+            get { return (TypeParameterKind)this.TypeParameterKind; }
         }
 
         IMethodSymbol ITypeParameterSymbol.DeclaringMethod
@@ -452,10 +462,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         ImmutableArray<ITypeSymbol> ITypeParameterSymbol.ConstraintTypes
         {
-            get
-            {
-                return StaticCast<ITypeSymbol>.From(this.ConstraintTypesNoUseSiteDiagnostics);
-            }
+            get { return StaticCast<ITypeSymbol>.From(this.ConstraintTypesNoUseSiteDiagnostics); }
         }
 
         ITypeParameterSymbol ITypeParameterSymbol.OriginalDefinition
@@ -467,13 +474,14 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get { return this.ReducedFrom; }
         }
-        
-        NullableAnnotation ITypeParameterSymbol.ReferenceTypeConstraintNullableAnnotation => NullableAnnotation.None;
+
+        Microsoft.CodeAnalysis.NullableAnnotation ITypeParameterSymbol.ReferenceTypeConstraintNullableAnnotation =>
+            Microsoft.CodeAnalysis.NullableAnnotation.None;
 
         bool ITypeParameterSymbol.HasNotNullConstraint => false;
 
-        ImmutableArray<NullableAnnotation> ITypeParameterSymbol.ConstraintNullableAnnotations => ConstraintTypes.SelectAsArray(c => ((ITypeSymbol)c).NullableAnnotation);
-
+        ImmutableArray<Microsoft.CodeAnalysis.NullableAnnotation> ITypeParameterSymbol.ConstraintNullableAnnotations =>
+            ConstraintTypes.SelectAsArray(c => ((ITypeSymbol)c).NullableAnnotation);
 
         #endregion
 

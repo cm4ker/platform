@@ -47,6 +47,20 @@ namespace Aquila.CodeAnalysis.Symbols
         public override SymbolKind Kind => SymbolKindInternal.FunctionType;
 
         public override Symbol? ContainingSymbol => null;
+        public override void Accept(AquilaSymbolVisitor visitor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override TResult Accept<TResult>(AquilaSymbolVisitor<TResult> visitor)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal override TResult Accept<TArgument, TResult>(AquilaSymbolVisitor<TArgument, TResult> visitor, TArgument a)
+        {
+            throw new NotImplementedException();
+        }
 
         public override ImmutableArray<Location> Locations => throw ExceptionUtilities.Unreachable;
 

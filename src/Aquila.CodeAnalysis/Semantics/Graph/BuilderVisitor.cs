@@ -155,15 +155,15 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             }
         }
 
-        private void OpenTryScope(TryCatchEdge edge)
-        {
-            if (_tryTargets == null)
-            {
-                //_binder.WithTryScopes(_tryTargets = new Stack<TryCatchEdge>());
-            }
-
-            _tryTargets.Push(edge);
-        }
+        // private void OpenTryScope(TryCatchEdge edge)
+        // {
+        //     if (_tryTargets == null)
+        //     {
+        //         //_binder.WithTryScopes(_tryTargets = new Stack<TryCatchEdge>());
+        //     }
+        //
+        //     _tryTargets.Push(edge);
+        // }
 
         private void CloseTryScope()
         {

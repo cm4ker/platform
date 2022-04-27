@@ -6,12 +6,12 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         public static T WithAccess<T>(this T expr, BoundAccess access) where T : BoundExpression
         {
-            expr.Access = access;
+           // expr.Access = access;
             return expr;
         }
 
         public static T WithAccess<T>(this T expr, BoundExpression other) where T : BoundExpression =>
-            WithAccess(expr, other.Access);
+            WithAccess(expr, BoundAccess.None);
 
         public static T WithSyntax<T>(this T expr, AquilaSyntaxNode syntax) where T : IAquilaOperation
         {
@@ -25,8 +25,8 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <typeparam name="T"></typeparam>
         public static T WithContext<T>(this T expr, BoundExpression other) where T : BoundExpression
         {
-            expr.Access = other.Access;
-            expr.AquilaSyntax = other.AquilaSyntax;
+            // expr.Access = other.Access;
+            // expr.AquilaSyntax = other.AquilaSyntax;
 
             return expr;
         }
@@ -47,14 +47,14 @@ namespace Aquila.CodeAnalysis.Semantics
 
             return false;
         }
-
-        /// <summary>
-        /// Returns whether the expression can possibly have any side effects.
-        /// </summary>
-        public static bool CanHaveSideEffects(this BoundExpression expr) =>  
-            // TODO: Make more precise and less defensive
-            !(expr.ConstantValue.HasValue
-              || expr is BoundVariableRef varExpr && varExpr.Name.IsDirect
-              || expr is BoundLiteral);
+        //
+        // /// <summary>
+        // /// Returns whether the expression can possibly have any side effects.
+        // /// </summary>
+        // public static bool CanHaveSideEffects(this BoundExpression expr) =>  
+        //     // TODO: Make more precise and less defensive
+        //     !(expr.ConstantValue.HasValue
+        //       || expr is BoundVariableRef varExpr && varExpr.Name.IsDirect
+        //       || expr is BoundLiteral);
     }
 }

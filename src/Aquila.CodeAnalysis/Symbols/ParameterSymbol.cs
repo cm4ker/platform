@@ -14,6 +14,27 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override SymbolKind Kind => SymbolKind.Parameter;
 
+
+        /// <summary>
+        /// Implements visitor pattern. 
+        /// </summary>
+        internal override TResult Accept<TArgument, TResult>(AquilaSymbolVisitor<TArgument, TResult> visitor,
+            TArgument argument)
+        {
+            return visitor.VisitParameter(this, argument);
+        }
+
+        public override void Accept(AquilaSymbolVisitor visitor)
+        {
+            visitor.VisitParameter(this);
+        }
+
+        public override TResult Accept<TResult>(AquilaSymbolVisitor<TResult> visitor)
+        {
+            return visitor.VisitParameter(this);
+        }
+
+
         /// <summary>
         /// Optional. Gets the initializer.
         /// </summary>
@@ -23,7 +44,7 @@ namespace Aquila.CodeAnalysis.Symbols
             {
                 var cvalue = ExplicitDefaultConstantValue;
                 return cvalue != null
-                    ? new BoundLiteral(cvalue.Value, this.DeclaringCompilation.GetSpecialType(cvalue.SpecialType))
+                    ? new BoundLiteral(null, cvalue, this.DeclaringCompilation.GetSpecialType(cvalue.SpecialType))
                     : null;
             }
         }
@@ -106,7 +127,8 @@ namespace Aquila.CodeAnalysis.Symbols
 
         bool IParameterSymbol.IsDiscard => false;
 
-        NullableAnnotation IParameterSymbol.NullableAnnotation => NullableAnnotation.None;
+        Microsoft.CodeAnalysis.NullableAnnotation IParameterSymbol.NullableAnnotation =>
+            Microsoft.CodeAnalysis.NullableAnnotation.None;
 
         /// <summary>
         /// Helper method that checks whether this parameter can be passed to anothers method parameter.
