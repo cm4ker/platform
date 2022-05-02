@@ -3,7 +3,7 @@ using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Symbols;
 
-namespace Aquila.CodeAnalysis.Compilation;
+namespace Aquila.CodeAnalysis;
 
 /*
  
