@@ -250,17 +250,15 @@ internal partial class MetadataSymbolProvider
                 {
                     var prop = dtoType.GetMembers(mdTable.Name).OfType<PropertySymbol>().Single();
                     var propPlace = new PropertyPlace(null, prop);
-                    
+
                     var rowDtoType = GetFromMetadata(mdTable, GeneratedTypeKind.Dto | GeneratedTypeKind.Collection);
                     var listType = _ct.List_arg1.Construct(rowDtoType);
-                    
+
                     thisPlace.EmitLoad(il);
                     il.EmitCall(m, d, ILOpCode.Newobj, listType.Ctor());
                     propPlace.EmitStore(il);
-
-
                 }
-                
+
                 il.EmitRet(true);
             });
 
@@ -825,7 +823,6 @@ internal partial class MetadataSymbolProvider
         var managerType = _ps.GetType(QualifiedName.Parse($"{Namespace}.{md.Name}{ManagerPostfix}", true));
         var dtoType = _ps.GetType(QualifiedName.Parse($"{Namespace}.{md.Name}{DtoPostfix}", true));
 
-
         var idField = _ps.SynthesizeField(linkType)
             .SetName("id")
             .SetAccess(Accessibility.Public)
@@ -925,12 +922,12 @@ internal partial class MetadataSymbolProvider
 
                 il.EmitCall(m, d, ILOpCode.Call, loadMethod)
                     .Expect(objectType);
-                
+
                 il.EmitRet(false);
             });
 
         #endregion
-        
+
         #region Props
 
         foreach (var prop in md.Properties)
@@ -975,8 +972,6 @@ internal partial class MetadataSymbolProvider
                         {
                             if (type.isType)
                                 continue;
-
-                            var underlyingPropType = MetadataTypeProvider.Resolve(_declaredCompilation, type.type);
 
                             var dtoMemberName = $"{prop.Name}{type.postfix}";
                             var dtoTypeMemberName = prop.Name + types.FirstOrDefault(x => x.isType).postfix;
@@ -1090,33 +1085,77 @@ internal partial class MetadataSymbolProvider
             linkType.AddMember(property);
         }
 
-        // var linkGetMethod = _ps.SynthesizeMethod(linkType)
-        //     .SetName($"get_link")
-        //     .SetReturn(linkType)
-        //     .SetMethodBuilder((m, d) => il =>
-        //     {
-        //         var dtoIdProp = dtoType.GetMembers("Id").OfType<PropertySymbol>().First();
-        //         var dtoPropPlace = new PropertyPlace(dtoFieldPlace, dtoIdProp);
-        //
-        //
-        //         thisPlace.EmitLoad(il);
-        //         ctxFieldPlace.EmitLoad(il);
-        //
-        //         thisPlace.EmitLoad(il);
-        //         //dtoFieldPlace.EmitLoad(il);
-        //
-        //         dtoPropPlace.EmitLoad(il);
-        //
-        //         il.EmitCall(m, d, ILOpCode.Newobj, linkType.Ctor(_ct.AqContext, _ct.Guid));
-        //
-        //         il.EmitRet(false);
-        //     });
-        //
-        // var linkProperty = _ps.SynthesizeProperty(objectType);
-        // linkProperty
-        //     .SetName("link")
-        //     .SetType(linkType)
-        //     .SetGetMethod(linkGetMethod);
+        #endregion
+
+        #region Tables
+
+        List<(FieldSymbol fl, FieldPlace flPlace, NamedTypeSymbol collectionType, PropertySymbol dtoProp)>
+            tablesSynth = new();
+
+        var index = 2;
+        foreach (var mdTable in md.Tables)
+        {
+            var collectionType =
+                _ps.GetSynthesizedType(
+                    QualifiedName.Parse($"{Namespace}.{md.Name}{mdTable.Name}{LinkCollectionPostfix}", true));
+
+            var tableField = _ps.SynthesizeField(linkType);
+            tableField
+                .SetName(mdTable.Name + "_table")
+                .SetAccess(Accessibility.Private)
+                .SetType(collectionType);
+
+            var dtoProp = dtoType.GetMembers(mdTable.Name).OfType<PropertySymbol>().Single();
+
+            var tableFieldPlace = new FieldPlace(tableField);
+
+            tablesSynth.Add((tableField, tableFieldPlace, collectionType, dtoProp));
+
+            linkType.AddMember(tableField);
+
+            var tableGetMethod = _ps.SynthesizeMethod(linkType)
+                .SetName($"get_{mdTable.Name}")
+                .SetReturn(collectionType)
+                .SetMethodBuilder((m, d) => il =>
+                {
+                    var reloadLabel = new NamedLabel("<reload>");
+
+                    thisPlace.EmitLoad(il);
+                    dtoPlace.EmitLoad(il);
+                    il.EmitBranch(ILOpCode.Brtrue_s, reloadLabel);
+                    thisPlace.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Call, reload);
+                    il.MarkLabel(reloadLabel);
+
+
+                    thisPlace.EmitLoad(il);
+                    thisPlace.EmitLoad(il);
+                    var colCtor = collectionType.Constructors.First();
+                    ctxFieldPlace.EmitLoad(il);
+
+                    thisPlace.EmitLoad(il);
+                    dtoPlace.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Call, dtoProp.GetMethod);
+                    
+                    thisPlace.EmitLoad(il);
+                    dtoPlace.EmitLoad(il);
+                    il.EmitCall(m, d, ILOpCode.Newobj, colCtor);
+                    tableFieldPlace.EmitStore(il);
+                    
+                    thisPlace.EmitLoad(il);
+                    tableFieldPlace.EmitLoad(il);
+                    il.EmitRet(false);
+                });
+
+            var tableProperty = _ps.SynthesizeProperty(linkType);
+            tableProperty
+                .SetName(mdTable.Name)
+                .SetType(collectionType)
+                .SetGetMethod(tableGetMethod);
+
+            linkType.AddMember(tableGetMethod);
+            linkType.AddMember(tableProperty);
+        }
 
         #endregion
 
