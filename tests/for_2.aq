@@ -1,0 +1,7 @@
+fn main()
+{
+    for (var i in [1..5])
+    {
+        print(i);
+    }
+}
