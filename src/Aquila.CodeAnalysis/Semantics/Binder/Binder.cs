@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -11,15 +10,10 @@ using Aquila.CodeAnalysis.Semantics.TypeRef;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Syntax;
 using Aquila.CodeAnalysis.Utilities;
-using Aquila.Core.Querying;
-using Aquila.Core.Querying.Model;
 using Aquila.Syntax.Ast;
-using Aquila.Syntax.Declarations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
 using Microsoft.CodeAnalysis.Text;
-using Xunit;
-using EnumerableExtensions = Roslyn.Utilities.EnumerableExtensions;
 using SpecialTypeExtensions = Aquila.CodeAnalysis.Symbols.SpecialTypeExtensions;
 
 namespace Aquila.CodeAnalysis.Semantics
