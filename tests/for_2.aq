@@ -1,7 +1,22 @@
+import Entity;
+
 fn main()
 {
-    for (var i in [1..5])
+    var i = InvoiceManager.create();
+    
+    var item1 = i.Nomenclatures.create();
+    var item2 = i.Nomenclatures.create();
+    var item3 = i.Nomenclatures.create();
+    var item4 = i.Nomenclatures.create();
+    var item5 = i.Nomenclatures.create();
+    item1.NomenclatureName = "1";
+    item2.NomenclatureName = "2";
+    item3.NomenclatureName = "3";
+    item4.NomenclatureName = "4";
+    item5.NomenclatureName = "5";
+
+    for (item in i.Nomenclatures)
     {
-        print(i);
+        println(item.NomenclatureName);
     }
 }

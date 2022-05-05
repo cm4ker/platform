@@ -1742,6 +1742,29 @@
         </Field>
         <Field Name="Statement" Type="StmtSyntax"/>
     </Node>
+    <Node Name="ForEachStmt" Base="StmtSyntax">
+        <Kind Name="ForEachStatement"/>
+        <Field Name="ForKeyword" Type="SyntaxToken">
+            <Kind Name="ForKeyword"/>
+        </Field>
+        <Field Name="OpenParenToken" Type="SyntaxToken">
+            <Kind Name="OpenParenToken"/>
+        </Field>
+        <Field Name="Identifier" Type="SyntaxToken">
+            <PropertyComment>
+                <summary>Gets the identifier.</summary>
+            </PropertyComment>
+            <Kind Name="IdentifierToken"/>
+        </Field>
+        <Field Name="InKeyword" Type="SyntaxToken">
+            <Kind Name="InKeyword"/>
+        </Field>
+        <Field Name="Expression" Type="ExprSyntax" />
+        <Field Name="CloseParenToken" Type="SyntaxToken" >
+            <Kind Name="CloseParenToken"/>
+        </Field>
+        <Field Name="Statement" Type="StmtSyntax" />
+    </Node>    
     <Node Name="LocalDeclStmt" Base="StmtSyntax">
         <Kind Name="LocalDeclarationStatement"/>
         <Field Name="AttributeLists" Type="SyntaxList&lt;AttributeListSyntax&gt;"/>

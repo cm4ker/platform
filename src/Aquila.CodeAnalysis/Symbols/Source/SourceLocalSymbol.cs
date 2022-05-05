@@ -160,4 +160,96 @@ namespace Aquila.CodeAnalysis.Symbols
 
         #endregion
     }
+
+    internal class InPlaceSourceLocalSymbol : Symbol, ILocalSymbol, ILocalSymbolInternal
+    {
+        readonly protected SourceMethodSymbol _method;
+        
+
+        readonly string _name;
+        private readonly TextSpan _span;
+        private readonly TypeSymbol _type;
+
+        public InPlaceSourceLocalSymbol(SourceMethodSymbol method, VariableName varName, TextSpan span, TypeSymbol type)
+        {
+            Debug.Assert(method != null);
+            Debug.Assert(!string.IsNullOrWhiteSpace(varName.Value));
+
+            _method = method;
+       
+            _name = varName.Value;
+            _span = span;
+            _type = type;
+        }
+
+        #region Symbol
+
+        public override string Name => _name;
+
+        public override void Accept(SymbolVisitor visitor)
+            => visitor.VisitLocal(this);
+
+        public override TResult Accept<TResult>(SymbolVisitor<TResult> visitor)
+            => visitor.VisitLocal(this);
+
+        public SyntaxNode GetDeclaratorSyntax() => null;
+
+        public override Symbol ContainingSymbol => _method;
+
+        public override Accessibility DeclaredAccessibility => Accessibility.Private;
+
+        public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override bool IsAbstract => false;
+
+        public override bool IsExtern => false;
+
+        public override bool IsOverride => false;
+
+        public override bool IsSealed => true;
+
+        public override bool IsStatic => false;
+
+        public override bool IsVirtual => false;
+
+        public override SymbolKind Kind => SymbolKind.Local;
+
+        public override ImmutableArray<Location> Locations
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        internal override ObsoleteAttributeData ObsoleteAttributeData => null;
+
+        #endregion
+
+        #region ILocalSymbol
+
+        public object ConstantValue => null;
+
+        public bool HasConstantValue => false;
+
+        public bool IsConst => false;
+
+        public bool IsFunctionValue => false;
+
+        public virtual ITypeSymbol Type => _type;
+        
+        public bool IsImportedFromMetadata => false;
+
+        public SynthesizedLocalKind SynthesizedKind => SynthesizedLocalKind.UserDefined;
+
+        public virtual bool IsRef => false;
+
+        public virtual RefKind RefKind => RefKind.None;
+
+        public virtual bool IsFixed => false;
+
+        NullableAnnotation ILocalSymbol.NullableAnnotation => NullableAnnotation.None;
+
+        #endregion
+    }
 }

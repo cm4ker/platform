@@ -45,6 +45,14 @@
     <Syntax Name="StaticVarStmt" Base="Statement"/>
 
     <Syntax Name="YieldStmt" Base="Statement" OperationKind="YieldReturn"/>
+    
+    <Syntax Name="ForEachStmt" Base="Statement" OperationKind="Loop">
+        <Arguments>
+            <Single Name="Item" Type="BoundReferenceEx" IsUpdatable="true"/>
+            <Single Name="Collection" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="BoundInfo" Type="ForeachBindInfo" IsUpdatable="false"/>
+        </Arguments>
+    </Syntax>
     <!-- endregion -->
 
     <!-- region Expression -->
@@ -182,7 +190,6 @@
     <Syntax Name="CallEx" Base="Expression" OperationKind="Invocation">
         <Arguments>
             <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true" IsUpdatable="true"/>
-            <Single Name="Name" Type="BoundMethodName" IsInternal="true" IsUpdatable="true"/>
             <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;" IsUpdatable="true"/>
             <Single Name="TypeArguments" Type="ImmutableArray&lt;ITypeSymbol&gt;" IsUpdatable="true"/>
             <Single Name="Instance" Type="BoundExpression" IsUpdatable="true"/>

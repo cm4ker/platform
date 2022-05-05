@@ -415,7 +415,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         public override object VisitCallEx(BoundCallEx x)
         {
             var updatedArgs = x.Arguments.Select(a => (BoundArgument)Accept(a)).ToImmutableArray();
-            return x.Update(x.MethodSymbol, x.Name, updatedArgs, x.TypeArguments, x.Instance, x.ResultType);
+            return x.Update(x.MethodSymbol, updatedArgs, x.TypeArguments, x.Instance, x.ResultType);
         }
 
         public override object VisitVariableName(BoundVariableName x)

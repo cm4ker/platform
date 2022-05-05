@@ -4823,6 +4823,77 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <remarks>
     /// <para>This node is associated with the following syntax kinds:</para>
     /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.ForEachStatement"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class ForEachStmt : StmtSyntax
+    {
+        private ExprSyntax? expression;
+        private StmtSyntax? statement;
+
+        internal ForEachStmt(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public SyntaxToken ForKeyword => new SyntaxToken(this, ((Syntax.InternalSyntax.ForEachStmt)this.Green).forKeyword, Position, 0);
+
+        public SyntaxToken OpenParenToken => new SyntaxToken(this, ((Syntax.InternalSyntax.ForEachStmt)this.Green).openParenToken, GetChildPosition(1), GetChildIndex(1));
+
+        /// <summary>Gets the identifier.</summary>
+        public SyntaxToken Identifier => new SyntaxToken(this, ((Syntax.InternalSyntax.ForEachStmt)this.Green).identifier, GetChildPosition(2), GetChildIndex(2));
+
+        public SyntaxToken InKeyword => new SyntaxToken(this, ((Syntax.InternalSyntax.ForEachStmt)this.Green).inKeyword, GetChildPosition(3), GetChildIndex(3));
+
+        public ExprSyntax Expression => GetRed(ref this.expression, 4)!;
+
+        public SyntaxToken CloseParenToken => new SyntaxToken(this, ((Syntax.InternalSyntax.ForEachStmt)this.Green).closeParenToken, GetChildPosition(5), GetChildIndex(5));
+
+        public StmtSyntax Statement => GetRed(ref this.statement, 6)!;
+
+        internal override SyntaxNode? GetNodeSlot(int index)
+            => index switch
+            {
+                4 => GetRed(ref this.expression, 4)!,
+                6 => GetRed(ref this.statement, 6)!,
+                _ => null,
+            };
+
+        internal override SyntaxNode? GetCachedSlot(int index)
+            => index switch
+            {
+                4 => this.expression,
+                6 => this.statement,
+                _ => null,
+            };
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitForEachStmt(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitForEachStmt(this);
+
+        public ForEachStmt Update(SyntaxToken forKeyword, SyntaxToken openParenToken, SyntaxToken identifier, SyntaxToken inKeyword, ExprSyntax expression, SyntaxToken closeParenToken, StmtSyntax statement)
+        {
+            if (forKeyword != this.ForKeyword || openParenToken != this.OpenParenToken || identifier != this.Identifier || inKeyword != this.InKeyword || expression != this.Expression || closeParenToken != this.CloseParenToken || statement != this.Statement)
+            {
+                var newNode = SyntaxFactory.ForEachStmt(forKeyword, openParenToken, identifier, inKeyword, expression, closeParenToken, statement);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public ForEachStmt WithForKeyword(SyntaxToken forKeyword) => Update(forKeyword, this.OpenParenToken, this.Identifier, this.InKeyword, this.Expression, this.CloseParenToken, this.Statement);
+        public ForEachStmt WithOpenParenToken(SyntaxToken openParenToken) => Update(this.ForKeyword, openParenToken, this.Identifier, this.InKeyword, this.Expression, this.CloseParenToken, this.Statement);
+        public ForEachStmt WithIdentifier(SyntaxToken identifier) => Update(this.ForKeyword, this.OpenParenToken, identifier, this.InKeyword, this.Expression, this.CloseParenToken, this.Statement);
+        public ForEachStmt WithInKeyword(SyntaxToken inKeyword) => Update(this.ForKeyword, this.OpenParenToken, this.Identifier, inKeyword, this.Expression, this.CloseParenToken, this.Statement);
+        public ForEachStmt WithExpression(ExprSyntax expression) => Update(this.ForKeyword, this.OpenParenToken, this.Identifier, this.InKeyword, expression, this.CloseParenToken, this.Statement);
+        public ForEachStmt WithCloseParenToken(SyntaxToken closeParenToken) => Update(this.ForKeyword, this.OpenParenToken, this.Identifier, this.InKeyword, this.Expression, closeParenToken, this.Statement);
+        public ForEachStmt WithStatement(StmtSyntax statement) => Update(this.ForKeyword, this.OpenParenToken, this.Identifier, this.InKeyword, this.Expression, this.CloseParenToken, statement);
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
     /// <item><description><see cref="SyntaxKind.LocalDeclarationStatement"/></description></item>
     /// </list>
     /// </remarks>

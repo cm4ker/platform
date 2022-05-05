@@ -378,5 +378,25 @@ fn main()
 ");
             tp.Visit(tree.GetRoot());
         }
+        
+        
+        [Fact]
+        public void ParseForTest2()
+        {
+            var tp = new TreePrinter(_output);
+            var tree = AquilaSyntaxTree.ParseText(@"
+fn main()
+{
+    for (i in test)
+    {
+        print(i);
+    }
+}
+
+");
+
+            var diags = tree.GetRoot().GetDiagnostics();
+            tp.Visit(tree.GetRoot());
+        }
     }
 }

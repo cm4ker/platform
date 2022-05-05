@@ -17,12 +17,21 @@ using Aquila.Syntax.Ast;
 using Aquila.Syntax.Declarations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
+using Microsoft.CodeAnalysis.Text;
 using Xunit;
 using EnumerableExtensions = Roslyn.Utilities.EnumerableExtensions;
 using SpecialTypeExtensions = Aquila.CodeAnalysis.Symbols.SpecialTypeExtensions;
 
 namespace Aquila.CodeAnalysis.Semantics
 {
+    public struct ForeachBindInfo
+    {
+        public IPropertySymbol CurrentMember;
+        public IMethodSymbol MoveNextMember;
+        public ITypeSymbol EnumeratorSymbol;
+        public IMethodSymbol GetEnumerator;
+    }
+    
     internal class InClrImportBinder : Binder
     {
         private readonly INamespaceOrTypeSymbol _container;
@@ -161,7 +170,7 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    abstract class Binder
+    internal abstract class Binder
     {
         internal Binder(AquilaCompilation compilation)
         {
@@ -211,6 +220,8 @@ namespace Aquila.CodeAnalysis.Semantics
                 return BindReturnStmt(jmpStm);
             if (stmt is LocalDeclStmt varDecl)
                 return BindVarDeclStmt(varDecl);
+            if (stmt is ForEachStmt frch)
+                return BindForeachStmt(frch);
 
             Diagnostics.Add(GetLocation(stmt), ErrorCode.ERR_NotYetImplemented,
                 $"Statement of type '{stmt.GetType().Name}'");
@@ -250,6 +261,73 @@ namespace Aquila.CodeAnalysis.Semantics
         private BoundStatement BindVarDeclStmt(LocalDeclStmt varDecl)
         {
             return BindVarDecl(varDecl.Declaration);
+        }
+
+
+        private BoundVariableRef BindVariable(VariableName varName, TextSpan span, TypeSymbol type)
+        {
+            var localVar = Method.LocalsTable.BindLocalVariable(varName, span, type);
+            return BindVariable(localVar);
+        }
+
+        private BoundVariableRef BindVariable(IVariableReference localVar)
+        {
+            return new BoundVariableRef(new BoundVariableName(localVar.Symbol.Name, localVar.Type), localVar.Type);
+        }
+
+        
+
+        private BoundStatement BindForeachStmt(ForEachStmt stmt)
+        {
+            var collection = BindExpression(stmt.Expression, BoundAccess.Read);
+            var colType = collection.ResultType;
+
+            var getEnumMethod = colType.GetMembers("GetEnumerator").OfType<MethodSymbol>()
+                .FirstOrDefault(x => x.Parameters.Length == 0);
+
+            if (getEnumMethod != null)
+            {
+                var currentMember = getEnumMethod.ReturnType.GetMembers("Current").OfType<PropertySymbol>()
+                    .FirstOrDefault();
+
+                var moveNextMember = getEnumMethod.ReturnType.GetMembers("MoveNext").OfType<MethodSymbol>()
+                    .FirstOrDefault();
+
+                if (currentMember != null && moveNextMember != null)
+                {
+                    var variableType = currentMember.Type;
+
+                    var localVar = Method.LocalsTable.BindLocalVariable(new VariableName(stmt.Identifier.Text),
+                        stmt.Identifier.Span, variableType);
+
+                    var bindInfo = new ForeachBindInfo()
+                    {
+                        CurrentMember = currentMember,
+                        EnumeratorSymbol = getEnumMethod.ReturnType,
+                        GetEnumerator = getEnumMethod,
+                        MoveNextMember = moveNextMember
+                    };
+
+                    return new BoundForEachStmt(BindVariable(localVar), collection, bindInfo);
+                }
+                else
+                {
+                    //Bound error
+                    return new BoundExpressionStmt(new BoundBadEx(Compilation.CoreTypes.Void.Symbol));
+                }
+            }
+            else
+            {
+                //Bound error
+                return new BoundExpressionStmt(new BoundBadEx(Compilation.CoreTypes.Void.Symbol));
+            }
+        }
+
+        public BoundAssignEx CreateAndAssign(string name, TypeSymbol type, BoundExpression expr)
+        {
+            var local = Method.LocalsTable.BindTemporalVariable(new VariableName(name), type);
+            var boundVar = BindVariable(local).WithAccess(BoundAccess.ReadAndWrite);
+            return new BoundAssignEx(boundVar, expr).WithAccess(BoundAccess.ReadAndWrite);
         }
 
         public TypeSymbol BindType(TypeEx tref)
@@ -1025,8 +1103,7 @@ namespace Aquila.CodeAnalysis.Semantics
                             ? null
                             : new BoundVariableRef(QualifiedName.This.Name.Value, Container as ITypeSymbol);
 
-                        return new BoundCallEx(ms, new BoundMethodName(qualifiedName),
-                            arglist, typeArgs, th, ms.ReturnType);
+                        return new BoundCallEx(ms, arglist, typeArgs, th, ms.ReturnType);
                     }
                 }
                 else
@@ -1081,8 +1158,7 @@ namespace Aquila.CodeAnalysis.Semantics
                         {
                             if (ms.IsStatic)
                             {
-                                return new BoundCallEx(ms, new BoundMethodName(qualifiedName),
-                                    arglist, typeArgs, null, ms.ReturnType);
+                                return new BoundCallEx(ms, arglist, typeArgs, null, ms.ReturnType);
                             }
                             else
                             {
@@ -1100,8 +1176,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
             if (invocation)
             {
-                result = new BoundCallEx(new MissingMethodSymbol(nameId), new BoundMethodName(qualifiedName),
-                    arglist, typeArgs, null, null);
+                result = new BoundCallEx(new MissingMethodSymbol(nameId), arglist, typeArgs, null, null);
             }
             else
             {
@@ -1202,8 +1277,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
                         ms = ConstructSingle(ms, typeArgs);
 
-                        return new BoundCallEx(ms,
-                            new BoundMethodName(qualifiedName), arglist, typeArgs, (ms.IsStatic) ? null : boundLeft,
+                        return new BoundCallEx(ms, arglist, typeArgs, (ms.IsStatic) ? null : boundLeft,
                             ms.ReturnType);
                     }
                 }

@@ -447,6 +447,24 @@ partial class MetadataSymbolProvider
 
         #endregion
 
+        #region Enumerator
+
+        var getEnumMethod = innerListField.Type.GetMembers("GetEnumerator").OfType<MethodSymbol>().FirstOrDefault();
+        var getEnumerotorMethod = _ps.SynthesizeMethod(collectionType)
+            .SetReturn(getEnumMethod.ReturnType)
+            .SetName("GetEnumerator")
+            .SetAccess(Accessibility.Public)
+            .SetMethodBuilder((m, d) => il =>
+            {
+                thisPlace.EmitLoad(il);
+                f_innerListPlace.EmitLoad(il);
+                il.EmitCall(m, d, ILOpCode.Call, getEnumMethod);
+                il.EmitRet(false);
+            });
+
+        #endregion
+
+        collectionType.AddMember(getEnumerotorMethod);
         collectionType.AddMember(rowFunc);
         collectionType.AddMember(ctor);
         collectionType.AddMember(createMethod);

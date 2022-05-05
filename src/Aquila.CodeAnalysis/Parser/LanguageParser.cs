@@ -2831,7 +2831,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
             return _syntaxFactory.VariableInit(name, argumentList, initializer);
         }
-        
+
         // Is there a local function after an eaten identifier?
         private bool IsLocalFunctionAfterIdentifier()
         {
@@ -5393,15 +5393,12 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 Debug.Assert(this.CurrentToken.Kind == SyntaxKind.ForKeyword);
                 this.EatToken();
                 if (this.EatToken().Kind == SyntaxKind.OpenParenToken &&
-                    this.ScanType() != ScanTypeFlags.NotType &&
                     this.EatToken().Kind == SyntaxKind.IdentifierToken &&
                     this.EatToken().Kind == SyntaxKind.InKeyword)
                 {
-                    throw new NotImplementedException();
-
-                    // // Looks like a foreach statement.  Parse it that way instead
-                    // this.Reset(ref resetPoint);
-                    // return this.ParseForEachStatement(attributes, awaitTokenOpt: null);
+                    // Looks like a foreach statement.  Parse it that way instead
+                    this.Reset(ref resetPoint);
+                    return this.ParseForEachStatement(attributes, awaitTokenOpt: null);
                 }
                 else
                 {
@@ -5550,6 +5547,27 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                      p.CurrentToken.Kind == SyntaxKind.SemicolonToken || p.IsTerminator(),
                 expected);
         }
+
+        private ForEachStmt ParseForEachStatement(
+            SyntaxList<AttributeListSyntax> attributes, SyntaxToken awaitTokenOpt)
+        {
+            Debug.Assert(this.CurrentToken.Kind == SyntaxKind.ForKeyword);
+
+            SyntaxToken @foreach = EatToken(SyntaxKind.ForKeyword);
+
+            var openParen = this.EatToken(SyntaxKind.OpenParenToken);
+
+            var identifier = ParseIdentifierToken();
+            var @in = this.EatToken(SyntaxKind.InKeyword, ErrorCode.ERR_InExpected);
+
+            var expression = this.ParseExpressionCore();
+            var closeParen = this.EatToken(SyntaxKind.CloseParenToken);
+            var statement = this.ParseEmbeddedStatement();
+
+            return _syntaxFactory.ForEachStmt(@foreach, openParen, identifier,
+                @in, expression, closeParen, statement);
+        }
+
 
         /// <summary>
         /// Is the following set of tokens, interpreted as a type, the type <c>var</c>?
@@ -6649,12 +6667,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                             this.CurrentToken.Text);
                     }
                 // case SyntaxKind.OpenBracketToken:
-                //     if (!this.IsPossibleLambdaExpression(precedence))
-                //     {
-                //         goto default;
-                //     }
-                //
-                //     return this.ParseLambdaExpression();
+                //     return this.ParseRange();
                 // case SyntaxKind.ThisKeyword:
                 //     return _syntaxFactory.ThisExpression(this.EatToken());
                 // case SyntaxKind.BaseKeyword:

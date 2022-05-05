@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
@@ -159,7 +160,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         {
             if (_tryTargets == null)
             {
-                //_binder.WithTryScopes(_tryTargets = new Stack<TryCatchEdge>());
+                _tryTargets = new Stack<TryCatchEdge>();
             }
 
             _tryTargets.Push(edge);
@@ -299,7 +300,21 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             {
                 // bind condition expression & connect pre-condition blocks to source
                 var boundConditionBag = _binder.BindExpression(condition, BoundAccess.Read);
-                source.NextCondition(ifTarget, elseTarget, boundConditionBag, isloop);
+                return Connect(source, ifTarget, elseTarget, boundConditionBag, isloop);
+            }
+            else
+            {
+                // jump to ifTarget if there is no condition (always true) // e.g. for (;;) { [ifTarget] }
+                return Connect(source, ifTarget);
+            }
+        }
+
+        private BoundBlock Connect(BoundBlock source, BoundBlock ifTarget, BoundBlock elseTarget,
+            BoundExpression condition, bool isloop = false)
+        {
+            if (condition != null)
+            {
+                source.NextCondition(ifTarget, elseTarget, condition, isloop);
                 return ifTarget;
             }
             else
@@ -490,6 +505,54 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             _current = WithNewOrdinal(end);
         }
 
+        private void BuildForeachLoop(ForEachStmt x)
+        {
+            var bound = _binder.BindStatement(x);
+            if (bound is BoundForEachStmt forEach)
+            {
+                var bi = forEach.BoundInfo;
+
+                var assign = _binder.CreateAndAssign("enumerator", (TypeSymbol)forEach.BoundInfo.EnumeratorSymbol,
+                    new BoundCallEx(
+                        (MethodSymbol)bi.GetEnumerator, ImmutableArray<BoundArgument>.Empty,
+                        ImmutableArray<ITypeSymbol>.Empty, forEach.Collection, bi.EnumeratorSymbol
+                    ).WithAccess(BoundAccess.Read));
+                Add(new BoundExpressionStmt(assign));
+                
+                var moveNextCondition = new BoundCallEx((MethodSymbol)bi.MoveNextMember,
+                    ImmutableArray<BoundArgument>.Empty,
+                    ImmutableArray<ITypeSymbol>.Empty, assign.Target, bi.MoveNextMember.ReturnType);
+                
+                var itemAssign = new BoundExpressionStmt(new BoundAssignEx(forEach.Item.WithAccess(BoundAccess.ReadAndWrite),
+                        new BoundPropertyRef(bi.CurrentMember, assign.Target).WithAccess(BoundAccess.ReadAndWrite))
+                    .WithAccess(BoundAccess.ReadAndWrite));
+
+                var end = NewBlock();
+                var body = NewBlock();
+                var cond = NewBlock();
+                OpenBreakScope(end, cond);
+
+                _current = WithNewOrdinal(Connect(_current, cond));
+                _current = WithNewOrdinal(Connect(_current, body, end, moveNextCondition, true));
+
+                OpenScope(_current);
+                Add(itemAssign);
+                Visit(x.Statement);
+
+                CloseScope();
+
+                Connect(_current, cond);
+
+                CloseBreakScope();
+
+                _current = WithNewOrdinal(end);
+            }
+            else
+            {
+                //ignore this is error
+            }
+        }
+
         private void BuildDoLoop(ExprSyntax condExpr, StmtSyntax bodyStmt)
         {
             var end = NewBlock();
@@ -520,7 +583,12 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public override void VisitForStmt(ForStmt x)
         {
-            BuildForLoop(x.Declaration, x.Condition, x.Incrementors.OfType<ExprSyntax>().ToList(), x.Statement);
+            BuildForLoop(x.Declaration, x.Condition, x.Incrementors.ToList(), x.Statement);
+        }
+
+        public override void VisitForEachStmt(ForEachStmt node)
+        {
+            BuildForeachLoop(node);
         }
 
         public override void VisitVariableDecl(VariableDecl arg)
@@ -656,12 +724,8 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             // while (COND) { BODY }
             BuildForLoop(null, x.Condition, null, x.Statement);
-
         }
-        
-        
-        
-        
+
         #endregion
     }
 }

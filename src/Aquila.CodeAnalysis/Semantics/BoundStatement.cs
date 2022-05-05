@@ -270,4 +270,8 @@ namespace Aquila.CodeAnalysis.Semantics
     public sealed partial class BoundDeclareStmt : BoundStatement
     {
     }
+
+    public partial class BoundForEachStmt
+    {
+    }
 }

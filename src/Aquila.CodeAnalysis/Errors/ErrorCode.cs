@@ -112,6 +112,7 @@ namespace Aquila.CodeAnalysis.Errors
         ERR_BadVarDecl,
         ERR_MultiTypeInDeclaration,
         ERR_ElseCannotStartStatement,
+        ERR_InExpected,
 
         //Compilation
         ERR_BadCompilationOptionValue,

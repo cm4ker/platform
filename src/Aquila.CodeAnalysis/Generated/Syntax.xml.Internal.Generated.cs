@@ -10305,6 +10305,172 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
     }
 
+    internal sealed partial class ForEachStmt : StmtSyntax
+    {
+        internal readonly SyntaxToken forKeyword;
+        internal readonly SyntaxToken openParenToken;
+        internal readonly SyntaxToken identifier;
+        internal readonly SyntaxToken inKeyword;
+        internal readonly ExprSyntax expression;
+        internal readonly SyntaxToken closeParenToken;
+        internal readonly StmtSyntax statement;
+
+        internal ForEachStmt(SyntaxKind kind, SyntaxToken forKeyword, SyntaxToken openParenToken, SyntaxToken identifier, SyntaxToken inKeyword, ExprSyntax expression, SyntaxToken closeParenToken, StmtSyntax statement, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 7;
+            this.AdjustFlagsAndWidth(forKeyword);
+            this.forKeyword = forKeyword;
+            this.AdjustFlagsAndWidth(openParenToken);
+            this.openParenToken = openParenToken;
+            this.AdjustFlagsAndWidth(identifier);
+            this.identifier = identifier;
+            this.AdjustFlagsAndWidth(inKeyword);
+            this.inKeyword = inKeyword;
+            this.AdjustFlagsAndWidth(expression);
+            this.expression = expression;
+            this.AdjustFlagsAndWidth(closeParenToken);
+            this.closeParenToken = closeParenToken;
+            this.AdjustFlagsAndWidth(statement);
+            this.statement = statement;
+        }
+
+        internal ForEachStmt(SyntaxKind kind, SyntaxToken forKeyword, SyntaxToken openParenToken, SyntaxToken identifier, SyntaxToken inKeyword, ExprSyntax expression, SyntaxToken closeParenToken, StmtSyntax statement, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 7;
+            this.AdjustFlagsAndWidth(forKeyword);
+            this.forKeyword = forKeyword;
+            this.AdjustFlagsAndWidth(openParenToken);
+            this.openParenToken = openParenToken;
+            this.AdjustFlagsAndWidth(identifier);
+            this.identifier = identifier;
+            this.AdjustFlagsAndWidth(inKeyword);
+            this.inKeyword = inKeyword;
+            this.AdjustFlagsAndWidth(expression);
+            this.expression = expression;
+            this.AdjustFlagsAndWidth(closeParenToken);
+            this.closeParenToken = closeParenToken;
+            this.AdjustFlagsAndWidth(statement);
+            this.statement = statement;
+        }
+
+        internal ForEachStmt(SyntaxKind kind, SyntaxToken forKeyword, SyntaxToken openParenToken, SyntaxToken identifier, SyntaxToken inKeyword, ExprSyntax expression, SyntaxToken closeParenToken, StmtSyntax statement)
+          : base(kind)
+        {
+            this.SlotCount = 7;
+            this.AdjustFlagsAndWidth(forKeyword);
+            this.forKeyword = forKeyword;
+            this.AdjustFlagsAndWidth(openParenToken);
+            this.openParenToken = openParenToken;
+            this.AdjustFlagsAndWidth(identifier);
+            this.identifier = identifier;
+            this.AdjustFlagsAndWidth(inKeyword);
+            this.inKeyword = inKeyword;
+            this.AdjustFlagsAndWidth(expression);
+            this.expression = expression;
+            this.AdjustFlagsAndWidth(closeParenToken);
+            this.closeParenToken = closeParenToken;
+            this.AdjustFlagsAndWidth(statement);
+            this.statement = statement;
+        }
+
+        public SyntaxToken ForKeyword => this.forKeyword;
+        public SyntaxToken OpenParenToken => this.openParenToken;
+        /// <summary>Gets the identifier.</summary>
+        public SyntaxToken Identifier => this.identifier;
+        public SyntaxToken InKeyword => this.inKeyword;
+        public ExprSyntax Expression => this.expression;
+        public SyntaxToken CloseParenToken => this.closeParenToken;
+        public StmtSyntax Statement => this.statement;
+
+        internal override GreenNode? GetSlot(int index)
+            => index switch
+            {
+                0 => this.forKeyword,
+                1 => this.openParenToken,
+                2 => this.identifier,
+                3 => this.inKeyword,
+                4 => this.expression,
+                5 => this.closeParenToken,
+                6 => this.statement,
+                _ => null,
+            };
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.ForEachStmt(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitForEachStmt(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitForEachStmt(this);
+
+        public ForEachStmt Update(SyntaxToken forKeyword, SyntaxToken openParenToken, SyntaxToken identifier, SyntaxToken inKeyword, ExprSyntax expression, SyntaxToken closeParenToken, StmtSyntax statement)
+        {
+            if (forKeyword != this.ForKeyword || openParenToken != this.OpenParenToken || identifier != this.Identifier || inKeyword != this.InKeyword || expression != this.Expression || closeParenToken != this.CloseParenToken || statement != this.Statement)
+            {
+                var newNode = SyntaxFactory.ForEachStmt(forKeyword, openParenToken, identifier, inKeyword, expression, closeParenToken, statement);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new ForEachStmt(this.Kind, this.forKeyword, this.openParenToken, this.identifier, this.inKeyword, this.expression, this.closeParenToken, this.statement, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new ForEachStmt(this.Kind, this.forKeyword, this.openParenToken, this.identifier, this.inKeyword, this.expression, this.closeParenToken, this.statement, GetDiagnostics(), annotations);
+
+        internal ForEachStmt(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 7;
+            var forKeyword = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(forKeyword);
+            this.forKeyword = forKeyword;
+            var openParenToken = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(openParenToken);
+            this.openParenToken = openParenToken;
+            var identifier = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(identifier);
+            this.identifier = identifier;
+            var inKeyword = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(inKeyword);
+            this.inKeyword = inKeyword;
+            var expression = (ExprSyntax)reader.ReadValue();
+            AdjustFlagsAndWidth(expression);
+            this.expression = expression;
+            var closeParenToken = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(closeParenToken);
+            this.closeParenToken = closeParenToken;
+            var statement = (StmtSyntax)reader.ReadValue();
+            AdjustFlagsAndWidth(statement);
+            this.statement = statement;
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.forKeyword);
+            writer.WriteValue(this.openParenToken);
+            writer.WriteValue(this.identifier);
+            writer.WriteValue(this.inKeyword);
+            writer.WriteValue(this.expression);
+            writer.WriteValue(this.closeParenToken);
+            writer.WriteValue(this.statement);
+        }
+
+        static ForEachStmt()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(ForEachStmt), r => new ForEachStmt(r));
+        }
+    }
+
     internal sealed partial class LocalDeclStmt : StmtSyntax
     {
         internal readonly GreenNode? attributeLists;
@@ -13790,6 +13956,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         public virtual TResult VisitWhileStmt(WhileStmt node) => this.DefaultVisit(node);
         public virtual TResult VisitDoStmt(DoStmt node) => this.DefaultVisit(node);
         public virtual TResult VisitForStmt(ForStmt node) => this.DefaultVisit(node);
+        public virtual TResult VisitForEachStmt(ForEachStmt node) => this.DefaultVisit(node);
         public virtual TResult VisitLocalDeclStmt(LocalDeclStmt node) => this.DefaultVisit(node);
         public virtual TResult VisitIfStmt(IfStmt node) => this.DefaultVisit(node);
         public virtual TResult VisitElseClause(ElseClauseSyntax node) => this.DefaultVisit(node);
@@ -13897,6 +14064,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         public virtual void VisitWhileStmt(WhileStmt node) => this.DefaultVisit(node);
         public virtual void VisitDoStmt(DoStmt node) => this.DefaultVisit(node);
         public virtual void VisitForStmt(ForStmt node) => this.DefaultVisit(node);
+        public virtual void VisitForEachStmt(ForEachStmt node) => this.DefaultVisit(node);
         public virtual void VisitLocalDeclStmt(LocalDeclStmt node) => this.DefaultVisit(node);
         public virtual void VisitIfStmt(IfStmt node) => this.DefaultVisit(node);
         public virtual void VisitElseClause(ElseClauseSyntax node) => this.DefaultVisit(node);
@@ -14157,6 +14325,9 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         public override AquilaSyntaxNode VisitForStmt(ForStmt node)
             => node.Update((SyntaxToken)Visit(node.ForKeyword), (SyntaxToken)Visit(node.OpenParenToken), (VariableDecl)Visit(node.Declaration), VisitList(node.Initializers), (SyntaxToken)Visit(node.FirstSemicolonToken), (ExprSyntax)Visit(node.Condition), (SyntaxToken)Visit(node.SecondSemicolonToken), VisitList(node.Incrementors), (SyntaxToken)Visit(node.CloseParenToken), (StmtSyntax)Visit(node.Statement));
+
+        public override AquilaSyntaxNode VisitForEachStmt(ForEachStmt node)
+            => node.Update((SyntaxToken)Visit(node.ForKeyword), (SyntaxToken)Visit(node.OpenParenToken), (SyntaxToken)Visit(node.Identifier), (SyntaxToken)Visit(node.InKeyword), (ExprSyntax)Visit(node.Expression), (SyntaxToken)Visit(node.CloseParenToken), (StmtSyntax)Visit(node.Statement));
 
         public override AquilaSyntaxNode VisitLocalDeclStmt(LocalDeclStmt node)
             => node.Update(VisitList(node.AttributeLists), VisitList(node.Modifiers), (VariableDecl)Visit(node.Declaration), (SyntaxToken)Visit(node.SemicolonToken));
@@ -16017,6 +16188,26 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 #endif
 
             return new ForStmt(SyntaxKind.ForStatement, forKeyword, openParenToken, declaration, initializers.Node, firstSemicolonToken, condition, secondSemicolonToken, incrementors.Node, closeParenToken, statement, this.context);
+        }
+
+        public ForEachStmt ForEachStmt(SyntaxToken forKeyword, SyntaxToken openParenToken, SyntaxToken identifier, SyntaxToken inKeyword, ExprSyntax expression, SyntaxToken closeParenToken, StmtSyntax statement)
+        {
+#if DEBUG
+            if (forKeyword == null) throw new ArgumentNullException(nameof(forKeyword));
+            if (forKeyword.Kind != SyntaxKind.ForKeyword) throw new ArgumentException(nameof(forKeyword));
+            if (openParenToken == null) throw new ArgumentNullException(nameof(openParenToken));
+            if (openParenToken.Kind != SyntaxKind.OpenParenToken) throw new ArgumentException(nameof(openParenToken));
+            if (identifier == null) throw new ArgumentNullException(nameof(identifier));
+            if (identifier.Kind != SyntaxKind.IdentifierToken) throw new ArgumentException(nameof(identifier));
+            if (inKeyword == null) throw new ArgumentNullException(nameof(inKeyword));
+            if (inKeyword.Kind != SyntaxKind.InKeyword) throw new ArgumentException(nameof(inKeyword));
+            if (expression == null) throw new ArgumentNullException(nameof(expression));
+            if (closeParenToken == null) throw new ArgumentNullException(nameof(closeParenToken));
+            if (closeParenToken.Kind != SyntaxKind.CloseParenToken) throw new ArgumentException(nameof(closeParenToken));
+            if (statement == null) throw new ArgumentNullException(nameof(statement));
+#endif
+
+            return new ForEachStmt(SyntaxKind.ForEachStatement, forKeyword, openParenToken, identifier, inKeyword, expression, closeParenToken, statement, this.context);
         }
 
         public LocalDeclStmt LocalDeclStmt(Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AttributeListSyntax> attributeLists, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, VariableDecl declaration, SyntaxToken semicolonToken)
@@ -18343,6 +18534,26 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return new ForStmt(SyntaxKind.ForStatement, forKeyword, openParenToken, declaration, initializers.Node, firstSemicolonToken, condition, secondSemicolonToken, incrementors.Node, closeParenToken, statement);
         }
 
+        public static ForEachStmt ForEachStmt(SyntaxToken forKeyword, SyntaxToken openParenToken, SyntaxToken identifier, SyntaxToken inKeyword, ExprSyntax expression, SyntaxToken closeParenToken, StmtSyntax statement)
+        {
+#if DEBUG
+            if (forKeyword == null) throw new ArgumentNullException(nameof(forKeyword));
+            if (forKeyword.Kind != SyntaxKind.ForKeyword) throw new ArgumentException(nameof(forKeyword));
+            if (openParenToken == null) throw new ArgumentNullException(nameof(openParenToken));
+            if (openParenToken.Kind != SyntaxKind.OpenParenToken) throw new ArgumentException(nameof(openParenToken));
+            if (identifier == null) throw new ArgumentNullException(nameof(identifier));
+            if (identifier.Kind != SyntaxKind.IdentifierToken) throw new ArgumentException(nameof(identifier));
+            if (inKeyword == null) throw new ArgumentNullException(nameof(inKeyword));
+            if (inKeyword.Kind != SyntaxKind.InKeyword) throw new ArgumentException(nameof(inKeyword));
+            if (expression == null) throw new ArgumentNullException(nameof(expression));
+            if (closeParenToken == null) throw new ArgumentNullException(nameof(closeParenToken));
+            if (closeParenToken.Kind != SyntaxKind.CloseParenToken) throw new ArgumentException(nameof(closeParenToken));
+            if (statement == null) throw new ArgumentNullException(nameof(statement));
+#endif
+
+            return new ForEachStmt(SyntaxKind.ForEachStatement, forKeyword, openParenToken, identifier, inKeyword, expression, closeParenToken, statement);
+        }
+
         public static LocalDeclStmt LocalDeclStmt(Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AttributeListSyntax> attributeLists, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, VariableDecl declaration, SyntaxToken semicolonToken)
         {
 #if DEBUG
@@ -18969,6 +19180,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 typeof(WhileStmt),
                 typeof(DoStmt),
                 typeof(ForStmt),
+                typeof(ForEachStmt),
                 typeof(LocalDeclStmt),
                 typeof(IfStmt),
                 typeof(ElseClauseSyntax),

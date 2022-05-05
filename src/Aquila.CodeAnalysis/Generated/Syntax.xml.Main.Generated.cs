@@ -247,6 +247,9 @@ namespace Aquila.CodeAnalysis
         /// <summary>Called when the visitor visits a ForStmt node.</summary>
         public virtual TResult? VisitForStmt(ForStmt node) => this.DefaultVisit(node);
 
+        /// <summary>Called when the visitor visits a ForEachStmt node.</summary>
+        public virtual TResult? VisitForEachStmt(ForEachStmt node) => this.DefaultVisit(node);
+
         /// <summary>Called when the visitor visits a LocalDeclStmt node.</summary>
         public virtual TResult? VisitLocalDeclStmt(LocalDeclStmt node) => this.DefaultVisit(node);
 
@@ -559,6 +562,9 @@ namespace Aquila.CodeAnalysis
         /// <summary>Called when the visitor visits a ForStmt node.</summary>
         public virtual void VisitForStmt(ForStmt node) => this.DefaultVisit(node);
 
+        /// <summary>Called when the visitor visits a ForEachStmt node.</summary>
+        public virtual void VisitForEachStmt(ForEachStmt node) => this.DefaultVisit(node);
+
         /// <summary>Called when the visitor visits a LocalDeclStmt node.</summary>
         public virtual void VisitLocalDeclStmt(LocalDeclStmt node) => this.DefaultVisit(node);
 
@@ -870,6 +876,9 @@ namespace Aquila.CodeAnalysis
 
         public override SyntaxNode? VisitForStmt(ForStmt node)
             => node.Update(VisitToken(node.ForKeyword), VisitToken(node.OpenParenToken), (VariableDecl?)Visit(node.Declaration), VisitList(node.Initializers), VisitToken(node.FirstSemicolonToken), (ExprSyntax?)Visit(node.Condition), VisitToken(node.SecondSemicolonToken), VisitList(node.Incrementors), VisitToken(node.CloseParenToken), (StmtSyntax?)Visit(node.Statement) ?? throw new ArgumentNullException("statement"));
+
+        public override SyntaxNode? VisitForEachStmt(ForEachStmt node)
+            => node.Update(VisitToken(node.ForKeyword), VisitToken(node.OpenParenToken), VisitToken(node.Identifier), VisitToken(node.InKeyword), (ExprSyntax?)Visit(node.Expression) ?? throw new ArgumentNullException("expression"), VisitToken(node.CloseParenToken), (StmtSyntax?)Visit(node.Statement) ?? throw new ArgumentNullException("statement"));
 
         public override SyntaxNode? VisitLocalDeclStmt(LocalDeclStmt node)
             => node.Update(VisitList(node.AttributeLists), VisitList(node.Modifiers), (VariableDecl?)Visit(node.Declaration) ?? throw new ArgumentNullException("declaration"), VisitToken(node.SemicolonToken));
@@ -2335,6 +2344,27 @@ namespace Aquila.CodeAnalysis
         /// <summary>Creates a new ForStmt instance.</summary>
         public static ForStmt ForStmt(StmtSyntax statement)
             => SyntaxFactory.ForStmt(SyntaxFactory.Token(SyntaxKind.ForKeyword), SyntaxFactory.Token(SyntaxKind.OpenParenToken), default, default, SyntaxFactory.Token(SyntaxKind.SemicolonToken), default, SyntaxFactory.Token(SyntaxKind.SemicolonToken), default, SyntaxFactory.Token(SyntaxKind.CloseParenToken), statement);
+
+        /// <summary>Creates a new ForEachStmt instance.</summary>
+        public static ForEachStmt ForEachStmt(SyntaxToken forKeyword, SyntaxToken openParenToken, SyntaxToken identifier, SyntaxToken inKeyword, ExprSyntax expression, SyntaxToken closeParenToken, StmtSyntax statement)
+        {
+            if (forKeyword.Kind() != SyntaxKind.ForKeyword) throw new ArgumentException(nameof(forKeyword));
+            if (openParenToken.Kind() != SyntaxKind.OpenParenToken) throw new ArgumentException(nameof(openParenToken));
+            if (identifier.Kind() != SyntaxKind.IdentifierToken) throw new ArgumentException(nameof(identifier));
+            if (inKeyword.Kind() != SyntaxKind.InKeyword) throw new ArgumentException(nameof(inKeyword));
+            if (expression == null) throw new ArgumentNullException(nameof(expression));
+            if (closeParenToken.Kind() != SyntaxKind.CloseParenToken) throw new ArgumentException(nameof(closeParenToken));
+            if (statement == null) throw new ArgumentNullException(nameof(statement));
+            return (ForEachStmt)Syntax.InternalSyntax.SyntaxFactory.ForEachStmt((Syntax.InternalSyntax.SyntaxToken)forKeyword.Node!, (Syntax.InternalSyntax.SyntaxToken)openParenToken.Node!, (Syntax.InternalSyntax.SyntaxToken)identifier.Node!, (Syntax.InternalSyntax.SyntaxToken)inKeyword.Node!, (Syntax.InternalSyntax.ExprSyntax)expression.Green, (Syntax.InternalSyntax.SyntaxToken)closeParenToken.Node!, (Syntax.InternalSyntax.StmtSyntax)statement.Green).CreateRed();
+        }
+
+        /// <summary>Creates a new ForEachStmt instance.</summary>
+        public static ForEachStmt ForEachStmt(SyntaxToken identifier, ExprSyntax expression, StmtSyntax statement)
+            => SyntaxFactory.ForEachStmt(SyntaxFactory.Token(SyntaxKind.ForKeyword), SyntaxFactory.Token(SyntaxKind.OpenParenToken), identifier, SyntaxFactory.Token(SyntaxKind.InKeyword), expression, SyntaxFactory.Token(SyntaxKind.CloseParenToken), statement);
+
+        /// <summary>Creates a new ForEachStmt instance.</summary>
+        public static ForEachStmt ForEachStmt(string identifier, ExprSyntax expression, StmtSyntax statement)
+            => SyntaxFactory.ForEachStmt(SyntaxFactory.Token(SyntaxKind.ForKeyword), SyntaxFactory.Token(SyntaxKind.OpenParenToken), SyntaxFactory.Identifier(identifier), SyntaxFactory.Token(SyntaxKind.InKeyword), expression, SyntaxFactory.Token(SyntaxKind.CloseParenToken), statement);
 
         /// <summary>Creates a new LocalDeclStmt instance.</summary>
         public static LocalDeclStmt LocalDeclStmt(SyntaxList<AttributeListSyntax> attributeLists, SyntaxTokenList modifiers, VariableDecl declaration, SyntaxToken semicolonToken)

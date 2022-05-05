@@ -121,11 +121,16 @@ namespace Aquila.CodeAnalysis.Semantics
             decl.Span, (name, span) => CreateLocal(name, VariableKind.LocalVariable, decl));
 
         public IVariableReference BindTemporalVariable(VariableName varname, TypeSymbol type) =>
-            BindVariable(varname, default, (name, _) 
+            BindVariable(varname, default, (name, _)
                 => CreateLocal(name, VariableKind.LocalTemporalVariable, type));
         //
         // public IVariableReference BindAutoGlobalVariable(VariableName varname) =>
         //     BindVariable(varname, default, (name, span) => CreateAutoGlobal(name, span));
+
+
+        public IVariableReference BindLocalVariable(VariableName varName, TextSpan span, TypeSymbol type) =>
+            BindVariable(varName, span, (_, _) => new LocalVariableReference(VariableKind.LocalVariable, _method,
+                new InPlaceSourceLocalSymbol(_method, varName, span, type), new BoundVariableName(varName, type)));
 
         #endregion
     }
