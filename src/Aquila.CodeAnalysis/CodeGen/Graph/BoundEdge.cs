@@ -117,6 +117,24 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         void EmitTryStatement(CodeGenerator cg, bool emitCatchesOnly = false)
         {
+            // Stack must be empty at beginning of try block.
+            cg.Builder.AssertStackEmpty();
+            
+            cg.Builder.OpenLocalScope(ScopeType.TryCatchFinally);
+            
+            //try
+            cg.Builder.OpenLocalScope(ScopeType.Try);
+            _body.Emit(cg);
+            cg.Builder.CloseLocalScope();
+            
+            //finally
+            cg.Builder.OpenLocalScope(ScopeType.Finally);
+            this._finallyBlock.Emit(cg);
+            cg.Builder.CloseLocalScope();
+            
+            //close try-catch
+            cg.Builder.CloseLocalScope();
+            
         }
 
         void EmitScriptDiedBlock(CodeGenerator cg)
@@ -189,6 +207,35 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
     {
         internal override void Generate(CodeGenerator cg)
         {
+        }
+    }
+
+    partial class ForeachEdge
+    {
+        internal override void Generate(CodeGenerator cg)
+        {
+            // Stack must be empty at beginning of try block.
+            cg.Builder.AssertStackEmpty();
+
+             var bi = ForEachStmt.BoundInfo;
+            // bi.EnumeratorAssignmentEx.Emit(cg);
+
+            
+            cg.Builder.OpenLocalScope(ScopeType.TryCatchFinally);
+            //try
+            cg.Builder.OpenLocalScope(ScopeType.Try);
+            cg.Scope.ContinueWith(Move);
+            cg.Builder.CloseLocalScope();
+            
+            //finally
+            cg.Builder.OpenLocalScope(ScopeType.Finally);
+            bi.DisposeCall.Emit(cg);
+            cg.Builder.CloseLocalScope();
+            
+            //close try-catch
+            cg.Builder.CloseLocalScope();
+
+            End.Emit(cg);
         }
     }
 

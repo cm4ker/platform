@@ -395,6 +395,15 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return default;
         }
 
+        public override TResult VisitCFGForeachEdge(ForeachEdge x)
+        {
+            TraverseToBlock(x, State, x.Body);
+            TraverseToBlock(x, State, x.Move);
+            TraverseToBlock(x, State, x.End);
+            Accept(x.Condition);
+            return default;
+        }
+
         public override TResult VisitCFGSwitchEdge(MatchEdge x)
         {
             Accept(x.SwitchValue);

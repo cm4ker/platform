@@ -52,6 +52,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         private int _ordinal;
 
+        
         /// <summary>
         /// Gets value indicating the block is unreachable.
         /// </summary>

@@ -24,6 +24,13 @@ namespace Aquila.CodeAnalysis.Semantics
         public IMethodSymbol MoveNextMember;
         public ITypeSymbol EnumeratorSymbol;
         public IMethodSymbol GetEnumerator;
+        public IMethodSymbol DisposeMember;
+
+        public BoundReferenceEx EnumeratorVar;
+        public BoundReferenceEx CurrentVar;
+        public BoundCallEx MoveNextEx;
+        public BoundAssignEx EnumeratorAssignmentEx;
+        public BoundCallEx DisposeCall;
     }
 
     internal class InClrImportBinder : Binder
@@ -280,18 +287,19 @@ namespace Aquila.CodeAnalysis.Semantics
         private BoundStatement BindForeachStmt(ForEachStmt stmt)
         {
             var collection = BindExpression(stmt.Expression, BoundAccess.Read);
-            var colType = collection.ResultType;
+            var colType = (TypeSymbol)collection.ResultType;
 
-            var getEnumMethod = colType.GetMembers("GetEnumerator").OfType<MethodSymbol>()
-                .FirstOrDefault(x => x.Parameters.Length == 0);
+            var getEnumMethod = colType.LookupMember<MethodSymbol>(WellKnownMemberNames.GetEnumeratorMethodName);
 
             if (getEnumMethod != null)
             {
-                var currentMember = getEnumMethod.ReturnType.GetMembers("Current").OfType<PropertySymbol>()
-                    .FirstOrDefault();
-
-                var moveNextMember = getEnumMethod.ReturnType.GetMembers("MoveNext").OfType<MethodSymbol>()
-                    .FirstOrDefault();
+                var enumeratorSymbol = getEnumMethod.ReturnType;
+                var currentMember =
+                    enumeratorSymbol.LookupMember<PropertySymbol>(WellKnownMemberNames.CurrentPropertyName);
+                var moveNextMember = enumeratorSymbol.LookupMember<MethodSymbol>(
+                    WellKnownMemberNames.MoveNextMethodName, m => !m.IsStatic && m.ParameterCount == 0);
+                var disposeMember = enumeratorSymbol.LookupMember<MethodSymbol>(WellKnownMemberNames.DisposeMethodName,
+                    m => !m.IsStatic && m.ParameterCount == 0);
 
                 if (currentMember != null && moveNextMember != null)
                 {
@@ -300,12 +308,37 @@ namespace Aquila.CodeAnalysis.Semantics
                     var localVar = Method.LocalsTable.BindLocalVariable(new VariableName(stmt.Identifier.Text),
                         stmt.Identifier.Span, variableType);
 
+                    var assign = CreateTmpAndAssign(enumeratorSymbol,
+                        new BoundCallEx(getEnumMethod, ImmutableArray<BoundArgument>.Empty,
+                            ImmutableArray<ITypeSymbol>.Empty, collection, enumeratorSymbol
+                        ).WithAccess(BoundAccess.Read));
+
+                    //enumerator.MoveNext() expr
+                    var moveNextCondition = new BoundCallEx(moveNextMember,
+                        ImmutableArray<BoundArgument>.Empty,
+                        ImmutableArray<ITypeSymbol>.Empty, assign.Target, moveNextMember.ReturnType);
+
+                    var callDispose = new BoundCallEx(disposeMember, ImmutableArray<BoundArgument>.Empty,
+                        ImmutableArray<ITypeSymbol>.Empty, assign.Target, Compilation.CoreTypes.Void.Symbol);
+                    
+                    // //var current = enumerator.Current;
+                    // var itemAssign = new BoundExpressionStmt(new BoundAssignEx(forEach.Item.WithAccess(BoundAccess.ReadAndWrite),
+                    //         new BoundPropertyRef(bi.CurrentMember, assign.Target).WithAccess(BoundAccess.ReadAndWrite))
+                    //     .WithAccess(BoundAccess.ReadAndWrite));
+
+
                     var bindInfo = new ForeachBindInfo()
                     {
                         CurrentMember = currentMember,
-                        EnumeratorSymbol = getEnumMethod.ReturnType,
+                        EnumeratorSymbol = enumeratorSymbol,
                         GetEnumerator = getEnumMethod,
-                        MoveNextMember = moveNextMember
+                        MoveNextMember = moveNextMember,
+                        DisposeMember = disposeMember,
+                        DisposeCall = callDispose,
+                        EnumeratorVar = assign.Target,
+                        EnumeratorAssignmentEx = assign,
+                        MoveNextEx = moveNextCondition,
+                        
                     };
 
                     return new BoundForEachStmt(BindVariable(localVar), collection, bindInfo);

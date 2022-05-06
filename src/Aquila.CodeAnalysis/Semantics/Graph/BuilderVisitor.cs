@@ -130,6 +130,11 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             return _breakTargets[_breakTargets.Count - level];
         }
 
+        /// <summary>
+        /// Blocks between we can invoke break operator
+        /// </summary>
+        /// <param name="breakBlock"></param>
+        /// <param name="continueBlock"></param>
         private void OpenBreakScope(BoundBlock breakBlock, BoundBlock continueBlock)
         {
             if (_breakTargets == null) _breakTargets = new List<BreakTargetScope>(1);
@@ -512,28 +517,32 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             {
                 var bi = forEach.BoundInfo;
 
-                var assign = _binder.CreateTmpAndAssign((TypeSymbol)forEach.BoundInfo.EnumeratorSymbol,
-                    new BoundCallEx(
-                        (MethodSymbol)bi.GetEnumerator, ImmutableArray<BoundArgument>.Empty,
-                        ImmutableArray<ITypeSymbol>.Empty, forEach.Collection, bi.EnumeratorSymbol
-                    ).WithAccess(BoundAccess.Read));
+                var assign = bi.EnumeratorAssignmentEx;
                 Add(new BoundExpressionStmt(assign));
-                
-                var moveNextCondition = new BoundCallEx((MethodSymbol)bi.MoveNextMember,
-                    ImmutableArray<BoundArgument>.Empty,
-                    ImmutableArray<ITypeSymbol>.Empty, assign.Target, bi.MoveNextMember.ReturnType);
-                
-                var itemAssign = new BoundExpressionStmt(new BoundAssignEx(forEach.Item.WithAccess(BoundAccess.ReadAndWrite),
+
+                var moveNextCondition = bi.MoveNextEx;
+
+                var itemAssign = new BoundExpressionStmt(new BoundAssignEx(
+                        forEach.Item.WithAccess(BoundAccess.ReadAndWrite),
                         new BoundPropertyRef(bi.CurrentMember, assign.Target).WithAccess(BoundAccess.ReadAndWrite))
                     .WithAccess(BoundAccess.ReadAndWrite));
+                var foreachEndBlock = NewBlock();
 
-                var end = NewBlock();
                 var body = NewBlock();
-                var cond = NewBlock();
-                OpenBreakScope(end, cond);
+                var move = NewBlock();
 
-                _current = WithNewOrdinal(Connect(_current, cond));
-                _current = WithNewOrdinal(Connect(_current, body, end, moveNextCondition, true));
+
+                var endCycle = NewBlock();
+                endCycle.WithEdge(new BuckStopEdge());
+
+
+                var edge = new ForeachEdge(forEach, WithNewOrdinal(move), body, foreachEndBlock);
+                _current.WithEdge(edge);
+
+                OpenBreakScope(endCycle, move);
+
+                _current = WithNewOrdinal(Connect(move, body, endCycle, moveNextCondition, true));
+                _deadBlocks.Add(endCycle);
 
                 OpenScope(_current);
                 Add(itemAssign);
@@ -541,11 +550,13 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
                 CloseScope();
 
-                Connect(_current, cond);
+                Connect(_current, move);
 
                 CloseBreakScope();
 
-                _current = WithNewOrdinal(end);
+                WithNewOrdinal(endCycle);
+
+                _current = WithNewOrdinal(foreachEndBlock);
             }
             else
             {

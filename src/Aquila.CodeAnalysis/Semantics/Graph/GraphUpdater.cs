@@ -234,6 +234,18 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 (BoundBlock)Accept(x.NextBlock));
         }
 
+        public override object VisitBuckStopEdge(BuckStopEdge x)
+        {
+            return x;
+        }
+
+        public override object VisitCFGForeachEdge(ForeachEdge x)
+        {
+            IsConditional = true;
+            return x.Update(x.ForEachStmt, x.Move, (BoundBlock)Accept(x.Body),
+                (BoundBlock)Accept(x.End));
+        }
+
         public override object VisitCFGForeachEnumereeEdge(Graph.ForeachEnumereeEdge x)
         {
             IsConditional = true;
@@ -243,34 +255,35 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 (BoundExpression)Accept(x.Enumeree),
                 x.AreValuesAliased);
 
-            if (updated != x)
-            {
-                // Fix reference from the following ForEachMoveNextEdge
-                var moveNext = (Graph.ForeachMoveNextEdge)updated.NextBlock.NextEdge;
-                Debug.Assert(moveNext.EnumereeEdge == x);
-                updated.NextBlock.SetNextEdge(moveNext.Update(
-                    moveNext.BodyBlock,
-                    moveNext.NextBlock,
-                    updated,
-                    moveNext.KeyVariable,
-                    moveNext.ValueVariable,
-                    moveNext.MoveNextSpan));
-            }
+            // if (updated != x)
+            // {
+            //     // Fix reference from the following ForEachMoveNextEdge
+            //     var moveNext = (Graph.ForeachMoveNextEdge)updated.NextBlock.NextEdge;
+            //     Debug.Assert(moveNext.EnumereeEdge == x);
+            //     updated.NextBlock.SetNextEdge(moveNext.Update(
+            //         moveNext.BodyBlock,
+            //         moveNext.NextBlock,
+            //         updated,
+            //         moveNext.KeyVariable,
+            //         moveNext.ValueVariable,
+            //         moveNext.MoveNextSpan));
+            // }
 
             return updated;
         }
 
         public override object VisitCFGForeachMoveNextEdge(Graph.ForeachMoveNextEdge x)
         {
-            IsConditional = true;
-
-            return x.Update(
-                (BoundBlock)Accept(x.BodyBlock),
-                (BoundBlock)Accept(x.NextBlock),
-                x.EnumereeEdge, // It updates this reference in its visit instead
-                (BoundReferenceEx)Accept(x.KeyVariable),
-                (BoundReferenceEx)Accept(x.ValueVariable),
-                x.MoveNextSpan);
+            throw new NotImplementedException();
+            // IsConditional = true;
+            //
+            // return x.Update(
+            //     (BoundBlock)Accept(x.BodyBlock),
+            //     (BoundBlock)Accept(x.NextBlock),
+            //     x.EnumereeEdge, // It updates this reference in its visit instead
+            //     (BoundReferenceEx)Accept(x.KeyVariable),
+            //     (BoundReferenceEx)Accept(x.ValueVariable),
+            //     x.MoveNextSpan);
         }
 
         public override object VisitCFGSwitchEdge(Graph.MatchEdge x)

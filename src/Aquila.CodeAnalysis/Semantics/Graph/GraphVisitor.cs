@@ -53,9 +53,13 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public virtual TResult VisitCFGForeachEnumereeEdge(Graph.ForeachEnumereeEdge x) => DefaultVisitEdge(x);
 
+        public virtual TResult VisitCFGForeachEdge(Graph.ForeachEdge x) => DefaultVisitEdge(x);
+
         public virtual TResult VisitCFGForeachMoveNextEdge(Graph.ForeachMoveNextEdge x) => DefaultVisitEdge(x);
 
         public virtual TResult VisitCFGSwitchEdge(Graph.MatchEdge x) => DefaultVisitEdge(x);
+
+        public virtual TResult VisitBuckStopEdge(Graph.BuckStopEdge x) => DefaultVisitEdge(x);
 
         #endregion
     }

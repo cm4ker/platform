@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Aquila.Syntax;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Semantics.Graph;
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
@@ -229,7 +231,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             }
             else
             {
-                return new ConditionalEdge(@true, @false, cond);
+                return new ConditionalEdge(@true, @false, cond) { IsLoop = this.IsLoop };
             }
         }
 
@@ -383,6 +385,47 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             visitor.VisitCFGForeachEnumereeEdge(this);
     }
 
+    public sealed partial class ForeachEdge : Edge
+    {
+        public ForeachEdge(BoundForEachStmt forEachStmt, BoundBlock move, BoundBlock body, BoundBlock end)
+        {
+            ForEachStmt = forEachStmt;
+            Move = move;
+            Body = body;
+            End = end;
+        }
+
+        public BoundForEachStmt ForEachStmt { get; }
+
+        public BoundBlock Move { get; }
+
+        public BoundBlock Body { get; }
+
+        public BoundBlock End { get; }
+
+
+        public override IEnumerable<BoundBlock> Targets => new BoundBlock[] { Move, Body, End };
+
+        public override BoundBlock NextBlock => End;
+
+        public override TResult Accept<TResult>(GraphVisitor<TResult> visitor)
+        {
+            return visitor.VisitCFGForeachEdge(this);
+        }
+
+        public ForeachEdge Update(BoundForEachStmt forEachStmt, BoundBlock move, BoundBlock body, BoundBlock end)
+        {
+            if (forEachStmt == ForEachStmt && move == Move && body == Body && end == End)
+            {
+                return this;
+            }
+            else
+            {
+                return new ForeachEdge(forEachStmt, move, body, end);
+            }
+        }
+    }
+
     /// <summary>
     /// Represents foreach edge from enumeree invocation through <c>MoveNext</c> to body block or end.
     /// </summary>
@@ -421,7 +464,8 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// </summary>
         public BoundReferenceEx ValueVariable { get; }
 
-        internal ForeachMoveNextEdge(BoundBlock body, BoundBlock end, ForeachEnumereeEdge enumereeEdge,
+        internal ForeachMoveNextEdge(BoundBlock source, BoundBlock body, BoundBlock end,
+            ForeachEnumereeEdge enumereeEdge,
             BoundReferenceEx keyVar, BoundReferenceEx valueVar, TextSpan moveSpan)
         {
             Contract.ThrowIfNull(body);
@@ -434,9 +478,12 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             this.KeyVariable = keyVar;
             this.ValueVariable = valueVar;
             this.MoveNextSpan = moveSpan;
+
+            Connect(source);
         }
 
-        public ForeachMoveNextEdge Update(BoundBlock body, BoundBlock end, ForeachEnumereeEdge enumereeEdge,
+        public ForeachMoveNextEdge Update(BoundBlock source, BoundBlock body, BoundBlock end,
+            ForeachEnumereeEdge enumereeEdge,
             BoundReferenceEx keyVar, BoundReferenceEx valueVar, TextSpan moveSpan)
         {
             if (body == BodyBlock && end == _end && enumereeEdge == EnumereeEdge && keyVar == KeyVariable &&
@@ -446,7 +493,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             }
             else
             {
-                return new ForeachMoveNextEdge(body, end, enumereeEdge, keyVar, valueVar, moveSpan);
+                return new ForeachMoveNextEdge(source, body, end, enumereeEdge, keyVar, valueVar, moveSpan);
             }
         }
 
@@ -516,5 +563,24 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// Visits the object by given visitor.
         /// </summary>
         public override TResult Accept<TResult>(GraphVisitor<TResult> visitor) => visitor.VisitCFGSwitchEdge(this);
+    }
+
+
+    /// <summary>
+    /// Stop edge for analysis
+    /// </summary>
+    public sealed partial class BuckStopEdge : Edge
+    {
+        public override IEnumerable<BoundBlock> Targets => new BoundBlock[] { };
+        public override BoundBlock NextBlock => null;
+
+        public override TResult Accept<TResult>(GraphVisitor<TResult> visitor)
+        {
+            return visitor.VisitBuckStopEdge(this);
+        }
+
+        internal override void Generate(CodeGenerator cg)
+        {
+        }
     }
 }
