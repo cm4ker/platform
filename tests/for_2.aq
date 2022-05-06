@@ -19,4 +19,13 @@ fn main()
     {
         println(item.NomenclatureName);
     }
+    
+    var a = list();
+    a.Add("Hello ");
+    a.Add("world");
+    
+    for(word in a)
+    {
+        print(word);
+    }
 }

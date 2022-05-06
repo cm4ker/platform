@@ -512,7 +512,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             {
                 var bi = forEach.BoundInfo;
 
-                var assign = _binder.CreateAndAssign("enumerator", (TypeSymbol)forEach.BoundInfo.EnumeratorSymbol,
+                var assign = _binder.CreateTmpAndAssign((TypeSymbol)forEach.BoundInfo.EnumeratorSymbol,
                     new BoundCallEx(
                         (MethodSymbol)bi.GetEnumerator, ImmutableArray<BoundArgument>.Empty,
                         ImmutableArray<ITypeSymbol>.Empty, forEach.Collection, bi.EnumeratorSymbol

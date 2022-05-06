@@ -25,7 +25,7 @@ namespace Aquila.CodeAnalysis.Semantics
         public ITypeSymbol EnumeratorSymbol;
         public IMethodSymbol GetEnumerator;
     }
-    
+
     internal class InClrImportBinder : Binder
     {
         private readonly INamespaceOrTypeSymbol _container;
@@ -166,6 +166,13 @@ namespace Aquila.CodeAnalysis.Semantics
 
     internal abstract class Binder
     {
+        private int _tmpVariableIndex = 0;
+
+        private string NextTempVariableName() => "<tmp>'" + _tmpVariableIndex++;
+
+        private string NextMatchVariableName() => "<match>'" + _tmpVariableIndex++;
+
+
         internal Binder(AquilaCompilation compilation)
         {
             Compilation = compilation;
@@ -269,7 +276,6 @@ namespace Aquila.CodeAnalysis.Semantics
             return new BoundVariableRef(new BoundVariableName(localVar.Symbol.Name, localVar.Type), localVar.Type);
         }
 
-        
 
         private BoundStatement BindForeachStmt(ForEachStmt stmt)
         {
@@ -317,9 +323,9 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
-        public BoundAssignEx CreateAndAssign(string name, TypeSymbol type, BoundExpression expr)
+        public BoundAssignEx CreateTmpAndAssign(TypeSymbol type, BoundExpression expr)
         {
-            var local = Method.LocalsTable.BindTemporalVariable(new VariableName(name), type);
+            var local = Method.LocalsTable.BindTemporalVariable(new VariableName(NextTempVariableName()), type);
             var boundVar = BindVariable(local).WithAccess(BoundAccess.ReadAndWrite);
             return new BoundAssignEx(boundVar, expr).WithAccess(BoundAccess.ReadAndWrite);
         }
