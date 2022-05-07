@@ -286,6 +286,11 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             return WithNewOrdinal(new BoundBlock());
         }
 
+        // private CatchBlock/*!*/NewBlock(CatchClauseSyntax item)
+        // {
+        //     //return WithNewOrdinal(new CatchBlock(_binder.BindTypeRef(item.TargetType), _binder.BindCatchVariable(item)));
+        // }
+
         /// <summary>
         /// Creates block we know nothing is pointing to.
         /// Such block will be analysed later whether it is empty or whether it contains some statements (which will be reported as unreachable).
@@ -417,28 +422,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             Add(_binder.BindEmptyStmt(new TextSpan(x.Span.End - 1, 1))); // } // TODO: endif; etc.
         }
-
-        // public override void VisitDeclareStmt(DeclareStmt x)
-        // {
-        //     Add(x);
-        //
-        //     base.VisitDeclareStmt(x); // visit inner statement, if present
-        // }
-
-        // public override void VisitGlobalCode(GlobalCode x)
-        // {
-        //     throw new InvalidOperationException();
-        // }
-        //
-        // public override void VisitGlobalStmt(GlobalStmt x)
-        // {
-        //     Add(x);
-        // }
-        //
-        // public override void VisitStaticStmt(StaticStmt x)
-        // {
-        //     Add(x);
-        // }
 
         public override void VisitExpressionStmt(ExpressionStmt x)
         {
@@ -687,22 +670,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 hasDefault |= arm.IsDefault;
             }
 
-            // if (!hasDefault)
-            // {
-            //     // create implicit default:
-            //     cases.Add(NewBlock(new DefaultItem(x.Span, EmptyArray<Statement>.Instance)));
-            // }
-
-            // // if switch value isn't a constant & there're case values with preBoundStatements 
-            // // -> the switch value might get evaluated multiple times (see SwitchEdge.Generate) -> preemptively evaluate and cache it
-            // if (!matchValue.IsConstant() && !cases.All(c => c.CaseValue.IsOnlyBoundElement))
-            // {
-            //     var result = GeneratorSemanticsBinder.CreateAndAssignSynthesizedVariable(switchValue, BoundAccess.Read,
-            //         $"<switchValueCacher>{x.Span}");
-            //     switchValue = result.BoundExpr;
-            //     _current.Add(new BoundExpressionStatement(result.Assignment));
-            // }
-
             // SwitchEdge // Connects _current to cases
             var edge = new MatchEdge(matchValue, arms.ToImmutableArray(), end);
             _current = WithNewOrdinal(arms[0]);
@@ -732,6 +699,75 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             // while (COND) { BODY }
             BuildForLoop(null, x.Condition, null, x.Statement);
+        }
+
+        public override void VisitTryStmt(TryStmt x)
+        {
+            // try {
+            //   x.Body
+            // }
+            // catch (E1) { body }
+            // catch (E2) { body }
+            // finally { body }
+            // end
+
+            var end = NewBlock();
+            var body = NewBlock();
+
+            // init catch blocks and finally block
+            var catchBlocks = ImmutableArray<CatchBlock>.Empty;
+            if (x.Catches != null)
+            {
+                var catchBuilder = ImmutableArray.CreateBuilder<CatchBlock>(x.Catches.Count);
+                for (int i = 0; i < x.Catches.Count; i++)
+                {
+                    catchBuilder.Add(new CatchBlock(null, null));
+                }
+
+                catchBlocks = catchBuilder.MoveToImmutable();
+            }
+
+            BoundBlock finallyBlock = null;
+            if (x.Finally != null)
+                finallyBlock = NewBlock();
+
+            var edge = new TryCatchEdge(body, catchBlocks, finallyBlock, end);
+            _current.SetNextEdge(edge);
+
+            //var oldstates0 = _binder.StatesCount;
+
+            // build try body
+            OpenTryScope(edge);
+            OpenScope(body, LocalScope.Try);
+            _current = WithNewOrdinal(body);
+            Visit(x.Block);
+            CloseScope();
+            CloseTryScope();
+            _current = Leave(_current, finallyBlock ?? end);
+
+            //var oldstates1 = _binder.StatesCount;
+
+            // built catches
+            for (int i = 0; i < catchBlocks.Length; i++)
+            {
+                _current = WithOpenScope(WithNewOrdinal(catchBlocks[i]), LocalScope.Catch);
+                Visit(x.Catches[i].Block);
+                CloseScope();
+                _current = Leave(_current, finallyBlock ?? end);
+            }
+
+            // build finally
+            var oldReturnCount = _returnCounter;
+            if (finallyBlock != null)
+            {
+                _current = WithOpenScope(WithNewOrdinal(finallyBlock), LocalScope.Finally);
+                Visit(x.Finally.Block);
+                CloseScope();
+                _current = Leave(_current, end);
+            }
+
+            // _current == end
+            _current.Ordinal = NewOrdinal();
         }
 
         #endregion

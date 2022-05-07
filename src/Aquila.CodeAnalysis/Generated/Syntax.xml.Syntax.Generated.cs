@@ -5107,6 +5107,286 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <remarks>
     /// <para>This node is associated with the following syntax kinds:</para>
     /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.TryStatement"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class TryStmt : StmtSyntax
+    {
+        private BlockStmt? block;
+        private SyntaxNode? catches;
+        private FinallyClauseSyntax? @finally;
+
+        internal TryStmt(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public SyntaxToken TryKeyword => new SyntaxToken(this, ((Syntax.InternalSyntax.TryStmt)this.Green).tryKeyword, Position, 0);
+
+        public BlockStmt Block => GetRed(ref this.block, 1)!;
+
+        public SyntaxList<CatchClauseSyntax> Catches => new SyntaxList<CatchClauseSyntax>(GetRed(ref this.catches, 2));
+
+        public FinallyClauseSyntax? Finally => GetRed(ref this.@finally, 3);
+
+        internal override SyntaxNode? GetNodeSlot(int index)
+            => index switch
+            {
+                1 => GetRed(ref this.block, 1)!,
+                2 => GetRed(ref this.catches, 2)!,
+                3 => GetRed(ref this.@finally, 3),
+                _ => null,
+            };
+
+        internal override SyntaxNode? GetCachedSlot(int index)
+            => index switch
+            {
+                1 => this.block,
+                2 => this.catches,
+                3 => this.@finally,
+                _ => null,
+            };
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitTryStmt(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitTryStmt(this);
+
+        public TryStmt Update(SyntaxToken tryKeyword, BlockStmt block, SyntaxList<CatchClauseSyntax> catches, FinallyClauseSyntax? @finally)
+        {
+            if (tryKeyword != this.TryKeyword || block != this.Block || catches != this.Catches || @finally != this.Finally)
+            {
+                var newNode = SyntaxFactory.TryStmt(tryKeyword, block, catches, @finally);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public TryStmt WithTryKeyword(SyntaxToken tryKeyword) => Update(tryKeyword, this.Block, this.Catches, this.Finally);
+        public TryStmt WithBlock(BlockStmt block) => Update(this.TryKeyword, block, this.Catches, this.Finally);
+        public TryStmt WithCatches(SyntaxList<CatchClauseSyntax> catches) => Update(this.TryKeyword, this.Block, catches, this.Finally);
+        public TryStmt WithFinally(FinallyClauseSyntax? @finally) => Update(this.TryKeyword, this.Block, this.Catches, @finally);
+
+        public TryStmt AddBlockStatements(params StmtSyntax[] items) => WithBlock(this.Block.WithStatements(this.Block.Statements.AddRange(items)));
+        public TryStmt AddCatches(params CatchClauseSyntax[] items) => WithCatches(this.Catches.AddRange(items));
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.CatchClause"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class CatchClauseSyntax : AquilaSyntaxNode
+    {
+        private CatchDeclarationSyntax? declaration;
+        private CatchFilterClauseSyntax? filter;
+        private BlockStmt? block;
+
+        internal CatchClauseSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public SyntaxToken CatchKeyword => new SyntaxToken(this, ((Syntax.InternalSyntax.CatchClauseSyntax)this.Green).catchKeyword, Position, 0);
+
+        public CatchDeclarationSyntax? Declaration => GetRed(ref this.declaration, 1);
+
+        public CatchFilterClauseSyntax? Filter => GetRed(ref this.filter, 2);
+
+        public BlockStmt Block => GetRed(ref this.block, 3)!;
+
+        internal override SyntaxNode? GetNodeSlot(int index)
+            => index switch
+            {
+                1 => GetRed(ref this.declaration, 1),
+                2 => GetRed(ref this.filter, 2),
+                3 => GetRed(ref this.block, 3)!,
+                _ => null,
+            };
+
+        internal override SyntaxNode? GetCachedSlot(int index)
+            => index switch
+            {
+                1 => this.declaration,
+                2 => this.filter,
+                3 => this.block,
+                _ => null,
+            };
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitCatchClause(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitCatchClause(this);
+
+        public CatchClauseSyntax Update(SyntaxToken catchKeyword, CatchDeclarationSyntax? declaration, CatchFilterClauseSyntax? filter, BlockStmt block)
+        {
+            if (catchKeyword != this.CatchKeyword || declaration != this.Declaration || filter != this.Filter || block != this.Block)
+            {
+                var newNode = SyntaxFactory.CatchClause(catchKeyword, declaration, filter, block);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public CatchClauseSyntax WithCatchKeyword(SyntaxToken catchKeyword) => Update(catchKeyword, this.Declaration, this.Filter, this.Block);
+        public CatchClauseSyntax WithDeclaration(CatchDeclarationSyntax? declaration) => Update(this.CatchKeyword, declaration, this.Filter, this.Block);
+        public CatchClauseSyntax WithFilter(CatchFilterClauseSyntax? filter) => Update(this.CatchKeyword, this.Declaration, filter, this.Block);
+        public CatchClauseSyntax WithBlock(BlockStmt block) => Update(this.CatchKeyword, this.Declaration, this.Filter, block);
+
+        public CatchClauseSyntax AddBlockStatements(params StmtSyntax[] items) => WithBlock(this.Block.WithStatements(this.Block.Statements.AddRange(items)));
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.CatchDeclaration"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class CatchDeclarationSyntax : AquilaSyntaxNode
+    {
+        private TypeEx? type;
+
+        internal CatchDeclarationSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public SyntaxToken OpenParenToken => new SyntaxToken(this, ((Syntax.InternalSyntax.CatchDeclarationSyntax)this.Green).openParenToken, Position, 0);
+
+        public TypeEx Type => GetRed(ref this.type, 1)!;
+
+        public SyntaxToken Identifier
+        {
+            get
+            {
+                var slot = ((Syntax.InternalSyntax.CatchDeclarationSyntax)this.Green).identifier;
+                return slot != null ? new SyntaxToken(this, slot, GetChildPosition(2), GetChildIndex(2)) : default;
+            }
+        }
+
+        public SyntaxToken CloseParenToken => new SyntaxToken(this, ((Syntax.InternalSyntax.CatchDeclarationSyntax)this.Green).closeParenToken, GetChildPosition(3), GetChildIndex(3));
+
+        internal override SyntaxNode? GetNodeSlot(int index) => index == 1 ? GetRed(ref this.type, 1)! : null;
+
+        internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.type : null;
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitCatchDeclaration(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitCatchDeclaration(this);
+
+        public CatchDeclarationSyntax Update(SyntaxToken openParenToken, TypeEx type, SyntaxToken identifier, SyntaxToken closeParenToken)
+        {
+            if (openParenToken != this.OpenParenToken || type != this.Type || identifier != this.Identifier || closeParenToken != this.CloseParenToken)
+            {
+                var newNode = SyntaxFactory.CatchDeclaration(openParenToken, type, identifier, closeParenToken);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public CatchDeclarationSyntax WithOpenParenToken(SyntaxToken openParenToken) => Update(openParenToken, this.Type, this.Identifier, this.CloseParenToken);
+        public CatchDeclarationSyntax WithType(TypeEx type) => Update(this.OpenParenToken, type, this.Identifier, this.CloseParenToken);
+        public CatchDeclarationSyntax WithIdentifier(SyntaxToken identifier) => Update(this.OpenParenToken, this.Type, identifier, this.CloseParenToken);
+        public CatchDeclarationSyntax WithCloseParenToken(SyntaxToken closeParenToken) => Update(this.OpenParenToken, this.Type, this.Identifier, closeParenToken);
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.CatchFilterClause"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class CatchFilterClauseSyntax : AquilaSyntaxNode
+    {
+        private ExprSyntax? filterExpression;
+
+        internal CatchFilterClauseSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public SyntaxToken WhenKeyword => new SyntaxToken(this, ((Syntax.InternalSyntax.CatchFilterClauseSyntax)this.Green).whenKeyword, Position, 0);
+
+        public SyntaxToken OpenParenToken => new SyntaxToken(this, ((Syntax.InternalSyntax.CatchFilterClauseSyntax)this.Green).openParenToken, GetChildPosition(1), GetChildIndex(1));
+
+        public ExprSyntax FilterExpression => GetRed(ref this.filterExpression, 2)!;
+
+        public SyntaxToken CloseParenToken => new SyntaxToken(this, ((Syntax.InternalSyntax.CatchFilterClauseSyntax)this.Green).closeParenToken, GetChildPosition(3), GetChildIndex(3));
+
+        internal override SyntaxNode? GetNodeSlot(int index) => index == 2 ? GetRed(ref this.filterExpression, 2)! : null;
+
+        internal override SyntaxNode? GetCachedSlot(int index) => index == 2 ? this.filterExpression : null;
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitCatchFilterClause(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitCatchFilterClause(this);
+
+        public CatchFilterClauseSyntax Update(SyntaxToken whenKeyword, SyntaxToken openParenToken, ExprSyntax filterExpression, SyntaxToken closeParenToken)
+        {
+            if (whenKeyword != this.WhenKeyword || openParenToken != this.OpenParenToken || filterExpression != this.FilterExpression || closeParenToken != this.CloseParenToken)
+            {
+                var newNode = SyntaxFactory.CatchFilterClause(whenKeyword, openParenToken, filterExpression, closeParenToken);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public CatchFilterClauseSyntax WithWhenKeyword(SyntaxToken whenKeyword) => Update(whenKeyword, this.OpenParenToken, this.FilterExpression, this.CloseParenToken);
+        public CatchFilterClauseSyntax WithOpenParenToken(SyntaxToken openParenToken) => Update(this.WhenKeyword, openParenToken, this.FilterExpression, this.CloseParenToken);
+        public CatchFilterClauseSyntax WithFilterExpression(ExprSyntax filterExpression) => Update(this.WhenKeyword, this.OpenParenToken, filterExpression, this.CloseParenToken);
+        public CatchFilterClauseSyntax WithCloseParenToken(SyntaxToken closeParenToken) => Update(this.WhenKeyword, this.OpenParenToken, this.FilterExpression, closeParenToken);
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.FinallyClause"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class FinallyClauseSyntax : AquilaSyntaxNode
+    {
+        private BlockStmt? block;
+
+        internal FinallyClauseSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public SyntaxToken FinallyKeyword => new SyntaxToken(this, ((Syntax.InternalSyntax.FinallyClauseSyntax)this.Green).finallyKeyword, Position, 0);
+
+        public BlockStmt Block => GetRed(ref this.block, 1)!;
+
+        internal override SyntaxNode? GetNodeSlot(int index) => index == 1 ? GetRed(ref this.block, 1)! : null;
+
+        internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.block : null;
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitFinallyClause(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitFinallyClause(this);
+
+        public FinallyClauseSyntax Update(SyntaxToken finallyKeyword, BlockStmt block)
+        {
+            if (finallyKeyword != this.FinallyKeyword || block != this.Block)
+            {
+                var newNode = SyntaxFactory.FinallyClause(finallyKeyword, block);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public FinallyClauseSyntax WithFinallyKeyword(SyntaxToken finallyKeyword) => Update(finallyKeyword, this.Block);
+        public FinallyClauseSyntax WithBlock(BlockStmt block) => Update(this.FinallyKeyword, block);
+
+        public FinallyClauseSyntax AddBlockStatements(params StmtSyntax[] items) => WithBlock(this.Block.WithStatements(this.Block.Statements.AddRange(items)));
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
     /// <item><description><see cref="SyntaxKind.SingleLineDocumentationCommentTrivia"/></description></item>
     /// <item><description><see cref="SyntaxKind.MultiLineDocumentationCommentTrivia"/></description></item>
     /// </list>

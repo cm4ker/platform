@@ -259,6 +259,21 @@ namespace Aquila.CodeAnalysis
         /// <summary>Called when the visitor visits a ElseClauseSyntax node.</summary>
         public virtual TResult? VisitElseClause(ElseClauseSyntax node) => this.DefaultVisit(node);
 
+        /// <summary>Called when the visitor visits a TryStmt node.</summary>
+        public virtual TResult? VisitTryStmt(TryStmt node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a CatchClauseSyntax node.</summary>
+        public virtual TResult? VisitCatchClause(CatchClauseSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a CatchDeclarationSyntax node.</summary>
+        public virtual TResult? VisitCatchDeclaration(CatchDeclarationSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a CatchFilterClauseSyntax node.</summary>
+        public virtual TResult? VisitCatchFilterClause(CatchFilterClauseSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a FinallyClauseSyntax node.</summary>
+        public virtual TResult? VisitFinallyClause(FinallyClauseSyntax node) => this.DefaultVisit(node);
+
         /// <summary>Called when the visitor visits a DocumentationCommentTriviaSyntax node.</summary>
         public virtual TResult? VisitDocumentationCommentTrivia(DocumentationCommentTriviaSyntax node) => this.DefaultVisit(node);
 
@@ -574,6 +589,21 @@ namespace Aquila.CodeAnalysis
         /// <summary>Called when the visitor visits a ElseClauseSyntax node.</summary>
         public virtual void VisitElseClause(ElseClauseSyntax node) => this.DefaultVisit(node);
 
+        /// <summary>Called when the visitor visits a TryStmt node.</summary>
+        public virtual void VisitTryStmt(TryStmt node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a CatchClauseSyntax node.</summary>
+        public virtual void VisitCatchClause(CatchClauseSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a CatchDeclarationSyntax node.</summary>
+        public virtual void VisitCatchDeclaration(CatchDeclarationSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a CatchFilterClauseSyntax node.</summary>
+        public virtual void VisitCatchFilterClause(CatchFilterClauseSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a FinallyClauseSyntax node.</summary>
+        public virtual void VisitFinallyClause(FinallyClauseSyntax node) => this.DefaultVisit(node);
+
         /// <summary>Called when the visitor visits a DocumentationCommentTriviaSyntax node.</summary>
         public virtual void VisitDocumentationCommentTrivia(DocumentationCommentTriviaSyntax node) => this.DefaultVisit(node);
 
@@ -888,6 +918,21 @@ namespace Aquila.CodeAnalysis
 
         public override SyntaxNode? VisitElseClause(ElseClauseSyntax node)
             => node.Update(VisitToken(node.ElseKeyword), (StmtSyntax?)Visit(node.Statement) ?? throw new ArgumentNullException("statement"));
+
+        public override SyntaxNode? VisitTryStmt(TryStmt node)
+            => node.Update(VisitToken(node.TryKeyword), (BlockStmt?)Visit(node.Block) ?? throw new ArgumentNullException("block"), VisitList(node.Catches), (FinallyClauseSyntax?)Visit(node.Finally));
+
+        public override SyntaxNode? VisitCatchClause(CatchClauseSyntax node)
+            => node.Update(VisitToken(node.CatchKeyword), (CatchDeclarationSyntax?)Visit(node.Declaration), (CatchFilterClauseSyntax?)Visit(node.Filter), (BlockStmt?)Visit(node.Block) ?? throw new ArgumentNullException("block"));
+
+        public override SyntaxNode? VisitCatchDeclaration(CatchDeclarationSyntax node)
+            => node.Update(VisitToken(node.OpenParenToken), (TypeEx?)Visit(node.Type) ?? throw new ArgumentNullException("type"), VisitToken(node.Identifier), VisitToken(node.CloseParenToken));
+
+        public override SyntaxNode? VisitCatchFilterClause(CatchFilterClauseSyntax node)
+            => node.Update(VisitToken(node.WhenKeyword), VisitToken(node.OpenParenToken), (ExprSyntax?)Visit(node.FilterExpression) ?? throw new ArgumentNullException("filterExpression"), VisitToken(node.CloseParenToken));
+
+        public override SyntaxNode? VisitFinallyClause(FinallyClauseSyntax node)
+            => node.Update(VisitToken(node.FinallyKeyword), (BlockStmt?)Visit(node.Block) ?? throw new ArgumentNullException("block"));
 
         public override SyntaxNode? VisitDocumentationCommentTrivia(DocumentationCommentTriviaSyntax node)
             => node.Update(VisitList(node.Content), VisitToken(node.EndOfComment));
@@ -2412,6 +2457,87 @@ namespace Aquila.CodeAnalysis
         /// <summary>Creates a new ElseClauseSyntax instance.</summary>
         public static ElseClauseSyntax ElseClause(StmtSyntax statement)
             => SyntaxFactory.ElseClause(SyntaxFactory.Token(SyntaxKind.ElseKeyword), statement);
+
+        /// <summary>Creates a new TryStmt instance.</summary>
+        public static TryStmt TryStmt(SyntaxToken tryKeyword, BlockStmt block, SyntaxList<CatchClauseSyntax> catches, FinallyClauseSyntax? @finally)
+        {
+            if (tryKeyword.Kind() != SyntaxKind.TryKeyword) throw new ArgumentException(nameof(tryKeyword));
+            if (block == null) throw new ArgumentNullException(nameof(block));
+            return (TryStmt)Syntax.InternalSyntax.SyntaxFactory.TryStmt((Syntax.InternalSyntax.SyntaxToken)tryKeyword.Node!, (Syntax.InternalSyntax.BlockStmt)block.Green, catches.Node.ToGreenList<Syntax.InternalSyntax.CatchClauseSyntax>(), @finally == null ? null : (Syntax.InternalSyntax.FinallyClauseSyntax)@finally.Green).CreateRed();
+        }
+
+        /// <summary>Creates a new TryStmt instance.</summary>
+        public static TryStmt TryStmt(BlockStmt block, SyntaxList<CatchClauseSyntax> catches, FinallyClauseSyntax? @finally)
+            => SyntaxFactory.TryStmt(SyntaxFactory.Token(SyntaxKind.TryKeyword), block, catches, @finally);
+
+        /// <summary>Creates a new TryStmt instance.</summary>
+        public static TryStmt TryStmt(SyntaxList<CatchClauseSyntax> catches = default)
+            => SyntaxFactory.TryStmt(SyntaxFactory.Token(SyntaxKind.TryKeyword), SyntaxFactory.BlockStmt(), catches, default);
+
+        /// <summary>Creates a new CatchClauseSyntax instance.</summary>
+        public static CatchClauseSyntax CatchClause(SyntaxToken catchKeyword, CatchDeclarationSyntax? declaration, CatchFilterClauseSyntax? filter, BlockStmt block)
+        {
+            if (catchKeyword.Kind() != SyntaxKind.CatchKeyword) throw new ArgumentException(nameof(catchKeyword));
+            if (block == null) throw new ArgumentNullException(nameof(block));
+            return (CatchClauseSyntax)Syntax.InternalSyntax.SyntaxFactory.CatchClause((Syntax.InternalSyntax.SyntaxToken)catchKeyword.Node!, declaration == null ? null : (Syntax.InternalSyntax.CatchDeclarationSyntax)declaration.Green, filter == null ? null : (Syntax.InternalSyntax.CatchFilterClauseSyntax)filter.Green, (Syntax.InternalSyntax.BlockStmt)block.Green).CreateRed();
+        }
+
+        /// <summary>Creates a new CatchClauseSyntax instance.</summary>
+        public static CatchClauseSyntax CatchClause(CatchDeclarationSyntax? declaration, CatchFilterClauseSyntax? filter, BlockStmt block)
+            => SyntaxFactory.CatchClause(SyntaxFactory.Token(SyntaxKind.CatchKeyword), declaration, filter, block);
+
+        /// <summary>Creates a new CatchClauseSyntax instance.</summary>
+        public static CatchClauseSyntax CatchClause()
+            => SyntaxFactory.CatchClause(SyntaxFactory.Token(SyntaxKind.CatchKeyword), default, default, SyntaxFactory.BlockStmt());
+
+        /// <summary>Creates a new CatchDeclarationSyntax instance.</summary>
+        public static CatchDeclarationSyntax CatchDeclaration(SyntaxToken openParenToken, TypeEx type, SyntaxToken identifier, SyntaxToken closeParenToken)
+        {
+            if (openParenToken.Kind() != SyntaxKind.OpenParenToken) throw new ArgumentException(nameof(openParenToken));
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            switch (identifier.Kind())
+            {
+                case SyntaxKind.IdentifierToken:
+                case SyntaxKind.None: break;
+                default: throw new ArgumentException(nameof(identifier));
+            }
+            if (closeParenToken.Kind() != SyntaxKind.CloseParenToken) throw new ArgumentException(nameof(closeParenToken));
+            return (CatchDeclarationSyntax)Syntax.InternalSyntax.SyntaxFactory.CatchDeclaration((Syntax.InternalSyntax.SyntaxToken)openParenToken.Node!, (Syntax.InternalSyntax.TypeEx)type.Green, (Syntax.InternalSyntax.SyntaxToken?)identifier.Node, (Syntax.InternalSyntax.SyntaxToken)closeParenToken.Node!).CreateRed();
+        }
+
+        /// <summary>Creates a new CatchDeclarationSyntax instance.</summary>
+        public static CatchDeclarationSyntax CatchDeclaration(TypeEx type, SyntaxToken identifier)
+            => SyntaxFactory.CatchDeclaration(SyntaxFactory.Token(SyntaxKind.OpenParenToken), type, identifier, SyntaxFactory.Token(SyntaxKind.CloseParenToken));
+
+        /// <summary>Creates a new CatchDeclarationSyntax instance.</summary>
+        public static CatchDeclarationSyntax CatchDeclaration(TypeEx type)
+            => SyntaxFactory.CatchDeclaration(SyntaxFactory.Token(SyntaxKind.OpenParenToken), type, default, SyntaxFactory.Token(SyntaxKind.CloseParenToken));
+
+        /// <summary>Creates a new CatchFilterClauseSyntax instance.</summary>
+        public static CatchFilterClauseSyntax CatchFilterClause(SyntaxToken whenKeyword, SyntaxToken openParenToken, ExprSyntax filterExpression, SyntaxToken closeParenToken)
+        {
+            if (whenKeyword.Kind() != SyntaxKind.WhenKeyword) throw new ArgumentException(nameof(whenKeyword));
+            if (openParenToken.Kind() != SyntaxKind.OpenParenToken) throw new ArgumentException(nameof(openParenToken));
+            if (filterExpression == null) throw new ArgumentNullException(nameof(filterExpression));
+            if (closeParenToken.Kind() != SyntaxKind.CloseParenToken) throw new ArgumentException(nameof(closeParenToken));
+            return (CatchFilterClauseSyntax)Syntax.InternalSyntax.SyntaxFactory.CatchFilterClause((Syntax.InternalSyntax.SyntaxToken)whenKeyword.Node!, (Syntax.InternalSyntax.SyntaxToken)openParenToken.Node!, (Syntax.InternalSyntax.ExprSyntax)filterExpression.Green, (Syntax.InternalSyntax.SyntaxToken)closeParenToken.Node!).CreateRed();
+        }
+
+        /// <summary>Creates a new CatchFilterClauseSyntax instance.</summary>
+        public static CatchFilterClauseSyntax CatchFilterClause(ExprSyntax filterExpression)
+            => SyntaxFactory.CatchFilterClause(SyntaxFactory.Token(SyntaxKind.WhenKeyword), SyntaxFactory.Token(SyntaxKind.OpenParenToken), filterExpression, SyntaxFactory.Token(SyntaxKind.CloseParenToken));
+
+        /// <summary>Creates a new FinallyClauseSyntax instance.</summary>
+        public static FinallyClauseSyntax FinallyClause(SyntaxToken finallyKeyword, BlockStmt block)
+        {
+            if (finallyKeyword.Kind() != SyntaxKind.FinallyKeyword) throw new ArgumentException(nameof(finallyKeyword));
+            if (block == null) throw new ArgumentNullException(nameof(block));
+            return (FinallyClauseSyntax)Syntax.InternalSyntax.SyntaxFactory.FinallyClause((Syntax.InternalSyntax.SyntaxToken)finallyKeyword.Node!, (Syntax.InternalSyntax.BlockStmt)block.Green).CreateRed();
+        }
+
+        /// <summary>Creates a new FinallyClauseSyntax instance.</summary>
+        public static FinallyClauseSyntax FinallyClause(BlockStmt? block = default)
+            => SyntaxFactory.FinallyClause(SyntaxFactory.Token(SyntaxKind.FinallyKeyword), block ?? SyntaxFactory.BlockStmt());
 
         /// <summary>Creates a new DocumentationCommentTriviaSyntax instance.</summary>
         public static DocumentationCommentTriviaSyntax DocumentationCommentTrivia(SyntaxKind kind, SyntaxList<XmlNodeSyntax> content, SyntaxToken endOfComment)

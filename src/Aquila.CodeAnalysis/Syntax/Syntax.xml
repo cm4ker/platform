@@ -31,7 +31,6 @@
             </PropertyComment>
         </Field>
     </Node>
-
     <Node Name="CompilationUnitSyntax" Base="AquilaSyntaxNode">
         <Kind Name="CompilationUnit"/>
         <Field Name="Module" Type="ModuleDecl" Optional="true"/>
@@ -46,7 +45,6 @@
             <Kind Name="EndOfFileToken"/>
         </Field>
     </Node>
-
     <Node Name="ImportDecl" Base="AquilaSyntaxNode">
         <Kind Name="ImportDecl"/>
         <Field Name="ImportKeyword" Type="SyntaxToken">
@@ -267,7 +265,6 @@
         <Field Name="Name" Type="NameEx"/>
         <Field Name="Extends" Type="SyntaxList&lt;ExtendDecl&gt;"/>
     </Node>
-
 
     <!--region Attributes-->
     <Node Name="AttributeListSyntax" Base="AquilaSyntaxNode">
@@ -1859,6 +1856,61 @@
     </Node>
     <!-- endregion IfStmt -->
 
+    <!-- region TryStmt -->
+    <Node Name="TryStmt" Base="StmtSyntax">
+        <Kind Name="TryStatement"/>
+        <Field Name="TryKeyword" Type="SyntaxToken">
+            <Kind Name="TryKeyword"/>
+        </Field>
+        <Field Name="Block" Type="BlockStmt"/>
+        <Field Name="Catches" Type="SyntaxList&lt;CatchClauseSyntax&gt;"/>
+        <Field Name="Finally" Type="FinallyClauseSyntax" Optional="true"/>
+    </Node>
+    <Node Name="CatchClauseSyntax" Base="AquilaSyntaxNode">
+        <Kind Name="CatchClause"/>
+        <Field Name="CatchKeyword" Type="SyntaxToken">
+            <Kind Name="CatchKeyword"/>
+        </Field>
+        <Field Name="Declaration" Type="CatchDeclarationSyntax" Optional="true"/>
+        <Field Name="Filter" Type="CatchFilterClauseSyntax" Optional="true"/>
+        <Field Name="Block" Type="BlockStmt"/>
+    </Node>
+    <Node Name="CatchDeclarationSyntax" Base="AquilaSyntaxNode">
+        <Kind Name="CatchDeclaration"/>
+        <Field Name="OpenParenToken" Type="SyntaxToken">
+            <Kind Name="OpenParenToken"/>
+        </Field>
+        <Field Name="Type" Type="TypeEx"/>
+        <Field Name="Identifier" Type="SyntaxToken" Optional="true">
+            <Kind Name="IdentifierToken"/>
+        </Field>
+        <Field Name="CloseParenToken" Type="SyntaxToken">
+            <Kind Name="CloseParenToken"/>
+        </Field>
+    </Node>
+    <Node Name="CatchFilterClauseSyntax" Base="AquilaSyntaxNode">
+        <Kind Name="CatchFilterClause"/>
+        <Field Name="WhenKeyword" Type="SyntaxToken">
+            <Kind Name="WhenKeyword"/>
+        </Field>
+        <Field Name="OpenParenToken" Type="SyntaxToken">
+            <Kind Name="OpenParenToken"/>
+        </Field>
+        <Field Name="FilterExpression" Type="ExprSyntax"/>
+        <Field Name="CloseParenToken" Type="SyntaxToken">
+            <Kind Name="CloseParenToken"/>
+        </Field>
+    </Node>
+    <Node Name="FinallyClauseSyntax" Base="AquilaSyntaxNode">
+        <Kind Name="FinallyClause"/>
+        <Field Name="FinallyKeyword" Type="SyntaxToken">
+            <Kind Name="FinallyKeyword"/>
+        </Field>
+        <Field Name="Block" Type="BlockStmt"/>
+    </Node>
+    <!-- endregion TryStmt --> 
+    
+    
     <!--endregion Statements-->
 
     <!--region Xml -->

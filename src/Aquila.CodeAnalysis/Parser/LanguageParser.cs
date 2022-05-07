@@ -4648,10 +4648,10 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     //     return this.ParseBreakStatement(attributes);
                     // case SyntaxKind.ContinueKeyword:
                     //     return this.ParseContinueStatement(attributes);
-                    // case SyntaxKind.TryKeyword:
-                    // case SyntaxKind.CatchKeyword:
-                    // case SyntaxKind.FinallyKeyword:
-                    //     return this.ParseTryStatement(attributes);
+                    case SyntaxKind.TryKeyword:
+                    case SyntaxKind.CatchKeyword:
+                    case SyntaxKind.FinallyKeyword:
+                        return this.ParseTryStatement(attributes);
                     // case SyntaxKind.CheckedKeyword:
                     // case SyntaxKind.UncheckedKeyword:
                     //     return this.ParseCheckedStatement(attributes);
@@ -5342,6 +5342,91 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             }
         }
 
+        private BreakStmt ParseBreakStatement(SyntaxList<AttributeListSyntax> attributes)
+        {
+            var breakKeyword = this.EatToken(SyntaxKind.BreakKeyword);
+            var semicolon = this.EatToken(SyntaxKind.SemicolonToken);
+            return _syntaxFactory.BreakStmt(breakKeyword, semicolon);
+        }
+
+        private ContinueStmt ParseContinueStatement(SyntaxList<AttributeListSyntax> attributes)
+        {
+            var continueKeyword = this.EatToken(SyntaxKind.ContinueKeyword);
+            var semicolon = this.EatToken(SyntaxKind.SemicolonToken);
+            return _syntaxFactory.ContinueStmt(continueKeyword, semicolon);
+        }
+
+        private TryStmt ParseTryStatement(SyntaxList<AttributeListSyntax> attributes)
+        {
+            var isInTry = _isInTry;
+            _isInTry = true;
+
+            var @try = this.EatToken(SyntaxKind.TryKeyword);
+
+            BlockStmt block;
+            if (@try.IsMissing)
+            {
+                block = _syntaxFactory.BlockStmt(this.EatToken(SyntaxKind.OpenBraceToken),
+                    default(SyntaxList<StmtSyntax>), this.EatToken(SyntaxKind.CloseBraceToken));
+            }
+            else
+            {
+                var saveTerm = _termState;
+                _termState |= TerminatorState.IsEndOfTryBlock;
+                block = this.ParseBlock(new SyntaxList<AttributeListSyntax>());
+                _termState = saveTerm;
+            }
+
+            var catches = default(SyntaxListBuilder<CatchClauseSyntax>);
+            FinallyClauseSyntax @finally = null;
+            try
+            {
+                bool hasEnd = false;
+
+                if (this.CurrentToken.Kind == SyntaxKind.CatchKeyword)
+                {
+                    hasEnd = true;
+                    catches = _pool.Allocate<CatchClauseSyntax>();
+                    while (this.CurrentToken.Kind == SyntaxKind.CatchKeyword)
+                    {
+                        catches.Add(this.ParseCatchClause());
+                    }
+                }
+
+                if (this.CurrentToken.Kind == SyntaxKind.FinallyKeyword)
+                {
+                    hasEnd = true;
+                    var fin = this.EatToken();
+                    var finBlock = this.ParseBlock(new SyntaxList<AttributeListSyntax>());
+                    @finally = _syntaxFactory.FinallyClause(fin, finBlock);
+                }
+
+                if (!hasEnd)
+                {
+                    block = this.AddErrorToLastToken(block, ErrorCode.ERR_ExpectedEndTry);
+
+                    // synthesize missing tokens for "finally { }":
+                    @finally = _syntaxFactory.FinallyClause(
+                        SyntaxToken.CreateMissing(SyntaxKind.FinallyKeyword, null, null),
+                        _syntaxFactory.BlockStmt(
+                            SyntaxToken.CreateMissing(SyntaxKind.OpenBraceToken, null, null),
+                            default(SyntaxList<StmtSyntax>),
+                            SyntaxToken.CreateMissing(SyntaxKind.CloseBraceToken, null, null)));
+                }
+
+                _isInTry = isInTry;
+
+                return _syntaxFactory.TryStmt(@try, block, catches, @finally);
+            }
+            finally
+            {
+                if (!catches.IsNull)
+                {
+                    _pool.Free(catches);
+                }
+            }
+        }
+
         private bool IsEndOfTryBlock()
         {
             return this.CurrentToken.Kind == SyntaxKind.CloseBraceToken
@@ -5349,6 +5434,66 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                    || this.CurrentToken.Kind == SyntaxKind.FinallyKeyword;
         }
 
+
+        private CatchClauseSyntax ParseCatchClause()
+        {
+            Debug.Assert(this.CurrentToken.Kind == SyntaxKind.CatchKeyword);
+
+            var @catch = this.EatToken();
+
+            CatchDeclarationSyntax decl = null;
+            var saveTerm = _termState;
+
+            if (this.CurrentToken.Kind == SyntaxKind.OpenParenToken)
+            {
+                var openParen = this.EatToken();
+
+                _termState |= TerminatorState.IsEndOfCatchClause;
+                var type = this.ParseType();
+                SyntaxToken name = null;
+                if (this.IsTrueIdentifier())
+                {
+                    name = this.ParseIdentifierToken();
+                }
+
+                _termState = saveTerm;
+
+                var closeParen = this.EatToken(SyntaxKind.CloseParenToken);
+                decl = _syntaxFactory.CatchDeclaration(openParen, type, name, closeParen);
+            }
+
+            CatchFilterClauseSyntax filter = null;
+
+            var keywordKind = this.CurrentToken.ContextualKind;
+            if (keywordKind == SyntaxKind.WhenKeyword || keywordKind == SyntaxKind.IfKeyword)
+            {
+                var whenKeyword = this.EatContextualToken(SyntaxKind.WhenKeyword);
+                if (keywordKind == SyntaxKind.IfKeyword)
+                {
+                    // The initial design of C# exception filters called for the use of the
+                    // "if" keyword in this position.  We've since changed to "when", but 
+                    // the error recovery experience for early adopters (and for old source
+                    // stored in the symbol server) will be better if we consume "if" as
+                    // though it were "when".
+                    whenKeyword = AddTrailingSkippedSyntax(whenKeyword, EatToken());
+                }
+
+                whenKeyword = CheckFeatureAvailability(whenKeyword, MessageID.IDS_FeatureExceptionFilter);
+                _termState |= TerminatorState.IsEndOfFilterClause;
+                var openParen = this.EatToken(SyntaxKind.OpenParenToken);
+                var filterExpression = this.ParseExpressionCore();
+
+                _termState = saveTerm;
+                var closeParen = this.EatToken(SyntaxKind.CloseParenToken);
+                filter = _syntaxFactory.CatchFilterClause(whenKeyword, openParen, filterExpression, closeParen);
+            }
+
+            _termState |= TerminatorState.IsEndOfCatchBlock;
+            var block = this.ParseBlock(new SyntaxList<AttributeListSyntax>());
+            _termState = saveTerm;
+
+            return _syntaxFactory.CatchClause(@catch, decl, filter, block);
+        }
 
         private bool IsEndOfCatchClause()
         {

@@ -230,10 +230,26 @@ namespace Aquila.CodeAnalysis.Semantics
                 return BindVarDeclStmt(varDecl);
             if (stmt is ForEachStmt frch)
                 return BindForeachStmt(frch);
+            if (stmt is TryStmt tryStmt)
+                return BindTryStmt(tryStmt);
 
             Diagnostics.Add(GetLocation(stmt), ErrorCode.ERR_NotYetImplemented,
                 $"Statement of type '{stmt.GetType().Name}'");
             return new BoundEmptyStmt(stmt.Span);
+        }
+
+        private BoundStatement BindTryStmt(TryStmt tryStmt)
+        {
+            foreach (var c in tryStmt.Catches)
+            {
+                if (c.Declaration != null)
+                {
+                    var type = BindType(c.Declaration.Type);
+                    var v = BindVar(c.Declaration.Identifier, type);
+                }
+            }
+
+            throw new NotImplementedException();
         }
 
         internal BoundStatement BindVarDecl(VariableDecl varDecl)
@@ -271,7 +287,6 @@ namespace Aquila.CodeAnalysis.Semantics
             return BindVarDecl(varDecl.Declaration);
         }
 
-
         private BoundVariableRef BindVariable(VariableName varName, TextSpan span, TypeSymbol type)
         {
             var localVar = Method.LocalsTable.BindLocalVariable(varName, span, type);
@@ -282,7 +297,6 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             return new BoundVariableRef(new BoundVariableName(localVar.Symbol.Name, localVar.Type), localVar.Type);
         }
-
 
         private BoundStatement BindForeachStmt(ForEachStmt stmt)
         {
@@ -320,7 +334,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
                     var callDispose = new BoundCallEx(disposeMember, ImmutableArray<BoundArgument>.Empty,
                         ImmutableArray<ITypeSymbol>.Empty, assign.Target, Compilation.CoreTypes.Void.Symbol);
-                    
+
                     // //var current = enumerator.Current;
                     // var itemAssign = new BoundExpressionStmt(new BoundAssignEx(forEach.Item.WithAccess(BoundAccess.ReadAndWrite),
                     //         new BoundPropertyRef(bi.CurrentMember, assign.Target).WithAccess(BoundAccess.ReadAndWrite))
@@ -338,7 +352,6 @@ namespace Aquila.CodeAnalysis.Semantics
                         EnumeratorVar = assign.Target,
                         EnumeratorAssignmentEx = assign,
                         MoveNextEx = moveNextCondition,
-                        
                     };
 
                     return new BoundForEachStmt(BindVariable(localVar), collection, bindInfo);
@@ -356,7 +369,14 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
-        public BoundAssignEx CreateTmpAndAssign(TypeSymbol type, BoundExpression expr)
+        private BoundVariableRef BindVar(SyntaxToken identifier, TypeSymbol type)
+        {
+            var local = Method.LocalsTable.BindLocalVariable(new VariableName(identifier.Text), identifier.Span, type);
+            var boundVar = BindVariable(local).WithAccess(BoundAccess.ReadAndWrite);
+            return boundVar;
+        }
+
+        private BoundAssignEx CreateTmpAndAssign(TypeSymbol type, BoundExpression expr)
         {
             var local = Method.LocalsTable.BindTemporalVariable(new VariableName(NextTempVariableName()), type);
             var boundVar = BindVariable(local).WithAccess(BoundAccess.ReadAndWrite);

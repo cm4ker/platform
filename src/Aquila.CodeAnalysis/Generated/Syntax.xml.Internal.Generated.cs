@@ -10914,6 +10914,670 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
     }
 
+    internal sealed partial class TryStmt : StmtSyntax
+    {
+        internal readonly SyntaxToken tryKeyword;
+        internal readonly BlockStmt block;
+        internal readonly GreenNode? catches;
+        internal readonly FinallyClauseSyntax? @finally;
+
+        internal TryStmt(SyntaxKind kind, SyntaxToken tryKeyword, BlockStmt block, GreenNode? catches, FinallyClauseSyntax? @finally, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 4;
+            this.AdjustFlagsAndWidth(tryKeyword);
+            this.tryKeyword = tryKeyword;
+            this.AdjustFlagsAndWidth(block);
+            this.block = block;
+            if (catches != null)
+            {
+                this.AdjustFlagsAndWidth(catches);
+                this.catches = catches;
+            }
+            if (@finally != null)
+            {
+                this.AdjustFlagsAndWidth(@finally);
+                this.@finally = @finally;
+            }
+        }
+
+        internal TryStmt(SyntaxKind kind, SyntaxToken tryKeyword, BlockStmt block, GreenNode? catches, FinallyClauseSyntax? @finally, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 4;
+            this.AdjustFlagsAndWidth(tryKeyword);
+            this.tryKeyword = tryKeyword;
+            this.AdjustFlagsAndWidth(block);
+            this.block = block;
+            if (catches != null)
+            {
+                this.AdjustFlagsAndWidth(catches);
+                this.catches = catches;
+            }
+            if (@finally != null)
+            {
+                this.AdjustFlagsAndWidth(@finally);
+                this.@finally = @finally;
+            }
+        }
+
+        internal TryStmt(SyntaxKind kind, SyntaxToken tryKeyword, BlockStmt block, GreenNode? catches, FinallyClauseSyntax? @finally)
+          : base(kind)
+        {
+            this.SlotCount = 4;
+            this.AdjustFlagsAndWidth(tryKeyword);
+            this.tryKeyword = tryKeyword;
+            this.AdjustFlagsAndWidth(block);
+            this.block = block;
+            if (catches != null)
+            {
+                this.AdjustFlagsAndWidth(catches);
+                this.catches = catches;
+            }
+            if (@finally != null)
+            {
+                this.AdjustFlagsAndWidth(@finally);
+                this.@finally = @finally;
+            }
+        }
+
+        public SyntaxToken TryKeyword => this.tryKeyword;
+        public BlockStmt Block => this.block;
+        public Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<CatchClauseSyntax> Catches => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<CatchClauseSyntax>(this.catches);
+        public FinallyClauseSyntax? Finally => this.@finally;
+
+        internal override GreenNode? GetSlot(int index)
+            => index switch
+            {
+                0 => this.tryKeyword,
+                1 => this.block,
+                2 => this.catches,
+                3 => this.@finally,
+                _ => null,
+            };
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.TryStmt(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitTryStmt(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitTryStmt(this);
+
+        public TryStmt Update(SyntaxToken tryKeyword, BlockStmt block, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<CatchClauseSyntax> catches, FinallyClauseSyntax @finally)
+        {
+            if (tryKeyword != this.TryKeyword || block != this.Block || catches != this.Catches || @finally != this.Finally)
+            {
+                var newNode = SyntaxFactory.TryStmt(tryKeyword, block, catches, @finally);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new TryStmt(this.Kind, this.tryKeyword, this.block, this.catches, this.@finally, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new TryStmt(this.Kind, this.tryKeyword, this.block, this.catches, this.@finally, GetDiagnostics(), annotations);
+
+        internal TryStmt(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 4;
+            var tryKeyword = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(tryKeyword);
+            this.tryKeyword = tryKeyword;
+            var block = (BlockStmt)reader.ReadValue();
+            AdjustFlagsAndWidth(block);
+            this.block = block;
+            var catches = (GreenNode?)reader.ReadValue();
+            if (catches != null)
+            {
+                AdjustFlagsAndWidth(catches);
+                this.catches = catches;
+            }
+            var @finally = (FinallyClauseSyntax?)reader.ReadValue();
+            if (@finally != null)
+            {
+                AdjustFlagsAndWidth(@finally);
+                this.@finally = @finally;
+            }
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.tryKeyword);
+            writer.WriteValue(this.block);
+            writer.WriteValue(this.catches);
+            writer.WriteValue(this.@finally);
+        }
+
+        static TryStmt()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(TryStmt), r => new TryStmt(r));
+        }
+    }
+
+    internal sealed partial class CatchClauseSyntax : AquilaSyntaxNode
+    {
+        internal readonly SyntaxToken catchKeyword;
+        internal readonly CatchDeclarationSyntax? declaration;
+        internal readonly CatchFilterClauseSyntax? filter;
+        internal readonly BlockStmt block;
+
+        internal CatchClauseSyntax(SyntaxKind kind, SyntaxToken catchKeyword, CatchDeclarationSyntax? declaration, CatchFilterClauseSyntax? filter, BlockStmt block, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 4;
+            this.AdjustFlagsAndWidth(catchKeyword);
+            this.catchKeyword = catchKeyword;
+            if (declaration != null)
+            {
+                this.AdjustFlagsAndWidth(declaration);
+                this.declaration = declaration;
+            }
+            if (filter != null)
+            {
+                this.AdjustFlagsAndWidth(filter);
+                this.filter = filter;
+            }
+            this.AdjustFlagsAndWidth(block);
+            this.block = block;
+        }
+
+        internal CatchClauseSyntax(SyntaxKind kind, SyntaxToken catchKeyword, CatchDeclarationSyntax? declaration, CatchFilterClauseSyntax? filter, BlockStmt block, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 4;
+            this.AdjustFlagsAndWidth(catchKeyword);
+            this.catchKeyword = catchKeyword;
+            if (declaration != null)
+            {
+                this.AdjustFlagsAndWidth(declaration);
+                this.declaration = declaration;
+            }
+            if (filter != null)
+            {
+                this.AdjustFlagsAndWidth(filter);
+                this.filter = filter;
+            }
+            this.AdjustFlagsAndWidth(block);
+            this.block = block;
+        }
+
+        internal CatchClauseSyntax(SyntaxKind kind, SyntaxToken catchKeyword, CatchDeclarationSyntax? declaration, CatchFilterClauseSyntax? filter, BlockStmt block)
+          : base(kind)
+        {
+            this.SlotCount = 4;
+            this.AdjustFlagsAndWidth(catchKeyword);
+            this.catchKeyword = catchKeyword;
+            if (declaration != null)
+            {
+                this.AdjustFlagsAndWidth(declaration);
+                this.declaration = declaration;
+            }
+            if (filter != null)
+            {
+                this.AdjustFlagsAndWidth(filter);
+                this.filter = filter;
+            }
+            this.AdjustFlagsAndWidth(block);
+            this.block = block;
+        }
+
+        public SyntaxToken CatchKeyword => this.catchKeyword;
+        public CatchDeclarationSyntax? Declaration => this.declaration;
+        public CatchFilterClauseSyntax? Filter => this.filter;
+        public BlockStmt Block => this.block;
+
+        internal override GreenNode? GetSlot(int index)
+            => index switch
+            {
+                0 => this.catchKeyword,
+                1 => this.declaration,
+                2 => this.filter,
+                3 => this.block,
+                _ => null,
+            };
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.CatchClauseSyntax(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitCatchClause(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitCatchClause(this);
+
+        public CatchClauseSyntax Update(SyntaxToken catchKeyword, CatchDeclarationSyntax declaration, CatchFilterClauseSyntax filter, BlockStmt block)
+        {
+            if (catchKeyword != this.CatchKeyword || declaration != this.Declaration || filter != this.Filter || block != this.Block)
+            {
+                var newNode = SyntaxFactory.CatchClause(catchKeyword, declaration, filter, block);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new CatchClauseSyntax(this.Kind, this.catchKeyword, this.declaration, this.filter, this.block, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new CatchClauseSyntax(this.Kind, this.catchKeyword, this.declaration, this.filter, this.block, GetDiagnostics(), annotations);
+
+        internal CatchClauseSyntax(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 4;
+            var catchKeyword = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(catchKeyword);
+            this.catchKeyword = catchKeyword;
+            var declaration = (CatchDeclarationSyntax?)reader.ReadValue();
+            if (declaration != null)
+            {
+                AdjustFlagsAndWidth(declaration);
+                this.declaration = declaration;
+            }
+            var filter = (CatchFilterClauseSyntax?)reader.ReadValue();
+            if (filter != null)
+            {
+                AdjustFlagsAndWidth(filter);
+                this.filter = filter;
+            }
+            var block = (BlockStmt)reader.ReadValue();
+            AdjustFlagsAndWidth(block);
+            this.block = block;
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.catchKeyword);
+            writer.WriteValue(this.declaration);
+            writer.WriteValue(this.filter);
+            writer.WriteValue(this.block);
+        }
+
+        static CatchClauseSyntax()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(CatchClauseSyntax), r => new CatchClauseSyntax(r));
+        }
+    }
+
+    internal sealed partial class CatchDeclarationSyntax : AquilaSyntaxNode
+    {
+        internal readonly SyntaxToken openParenToken;
+        internal readonly TypeEx type;
+        internal readonly SyntaxToken? identifier;
+        internal readonly SyntaxToken closeParenToken;
+
+        internal CatchDeclarationSyntax(SyntaxKind kind, SyntaxToken openParenToken, TypeEx type, SyntaxToken? identifier, SyntaxToken closeParenToken, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 4;
+            this.AdjustFlagsAndWidth(openParenToken);
+            this.openParenToken = openParenToken;
+            this.AdjustFlagsAndWidth(type);
+            this.type = type;
+            if (identifier != null)
+            {
+                this.AdjustFlagsAndWidth(identifier);
+                this.identifier = identifier;
+            }
+            this.AdjustFlagsAndWidth(closeParenToken);
+            this.closeParenToken = closeParenToken;
+        }
+
+        internal CatchDeclarationSyntax(SyntaxKind kind, SyntaxToken openParenToken, TypeEx type, SyntaxToken? identifier, SyntaxToken closeParenToken, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 4;
+            this.AdjustFlagsAndWidth(openParenToken);
+            this.openParenToken = openParenToken;
+            this.AdjustFlagsAndWidth(type);
+            this.type = type;
+            if (identifier != null)
+            {
+                this.AdjustFlagsAndWidth(identifier);
+                this.identifier = identifier;
+            }
+            this.AdjustFlagsAndWidth(closeParenToken);
+            this.closeParenToken = closeParenToken;
+        }
+
+        internal CatchDeclarationSyntax(SyntaxKind kind, SyntaxToken openParenToken, TypeEx type, SyntaxToken? identifier, SyntaxToken closeParenToken)
+          : base(kind)
+        {
+            this.SlotCount = 4;
+            this.AdjustFlagsAndWidth(openParenToken);
+            this.openParenToken = openParenToken;
+            this.AdjustFlagsAndWidth(type);
+            this.type = type;
+            if (identifier != null)
+            {
+                this.AdjustFlagsAndWidth(identifier);
+                this.identifier = identifier;
+            }
+            this.AdjustFlagsAndWidth(closeParenToken);
+            this.closeParenToken = closeParenToken;
+        }
+
+        public SyntaxToken OpenParenToken => this.openParenToken;
+        public TypeEx Type => this.type;
+        public SyntaxToken? Identifier => this.identifier;
+        public SyntaxToken CloseParenToken => this.closeParenToken;
+
+        internal override GreenNode? GetSlot(int index)
+            => index switch
+            {
+                0 => this.openParenToken,
+                1 => this.type,
+                2 => this.identifier,
+                3 => this.closeParenToken,
+                _ => null,
+            };
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.CatchDeclarationSyntax(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitCatchDeclaration(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitCatchDeclaration(this);
+
+        public CatchDeclarationSyntax Update(SyntaxToken openParenToken, TypeEx type, SyntaxToken identifier, SyntaxToken closeParenToken)
+        {
+            if (openParenToken != this.OpenParenToken || type != this.Type || identifier != this.Identifier || closeParenToken != this.CloseParenToken)
+            {
+                var newNode = SyntaxFactory.CatchDeclaration(openParenToken, type, identifier, closeParenToken);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new CatchDeclarationSyntax(this.Kind, this.openParenToken, this.type, this.identifier, this.closeParenToken, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new CatchDeclarationSyntax(this.Kind, this.openParenToken, this.type, this.identifier, this.closeParenToken, GetDiagnostics(), annotations);
+
+        internal CatchDeclarationSyntax(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 4;
+            var openParenToken = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(openParenToken);
+            this.openParenToken = openParenToken;
+            var type = (TypeEx)reader.ReadValue();
+            AdjustFlagsAndWidth(type);
+            this.type = type;
+            var identifier = (SyntaxToken?)reader.ReadValue();
+            if (identifier != null)
+            {
+                AdjustFlagsAndWidth(identifier);
+                this.identifier = identifier;
+            }
+            var closeParenToken = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(closeParenToken);
+            this.closeParenToken = closeParenToken;
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.openParenToken);
+            writer.WriteValue(this.type);
+            writer.WriteValue(this.identifier);
+            writer.WriteValue(this.closeParenToken);
+        }
+
+        static CatchDeclarationSyntax()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(CatchDeclarationSyntax), r => new CatchDeclarationSyntax(r));
+        }
+    }
+
+    internal sealed partial class CatchFilterClauseSyntax : AquilaSyntaxNode
+    {
+        internal readonly SyntaxToken whenKeyword;
+        internal readonly SyntaxToken openParenToken;
+        internal readonly ExprSyntax filterExpression;
+        internal readonly SyntaxToken closeParenToken;
+
+        internal CatchFilterClauseSyntax(SyntaxKind kind, SyntaxToken whenKeyword, SyntaxToken openParenToken, ExprSyntax filterExpression, SyntaxToken closeParenToken, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 4;
+            this.AdjustFlagsAndWidth(whenKeyword);
+            this.whenKeyword = whenKeyword;
+            this.AdjustFlagsAndWidth(openParenToken);
+            this.openParenToken = openParenToken;
+            this.AdjustFlagsAndWidth(filterExpression);
+            this.filterExpression = filterExpression;
+            this.AdjustFlagsAndWidth(closeParenToken);
+            this.closeParenToken = closeParenToken;
+        }
+
+        internal CatchFilterClauseSyntax(SyntaxKind kind, SyntaxToken whenKeyword, SyntaxToken openParenToken, ExprSyntax filterExpression, SyntaxToken closeParenToken, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 4;
+            this.AdjustFlagsAndWidth(whenKeyword);
+            this.whenKeyword = whenKeyword;
+            this.AdjustFlagsAndWidth(openParenToken);
+            this.openParenToken = openParenToken;
+            this.AdjustFlagsAndWidth(filterExpression);
+            this.filterExpression = filterExpression;
+            this.AdjustFlagsAndWidth(closeParenToken);
+            this.closeParenToken = closeParenToken;
+        }
+
+        internal CatchFilterClauseSyntax(SyntaxKind kind, SyntaxToken whenKeyword, SyntaxToken openParenToken, ExprSyntax filterExpression, SyntaxToken closeParenToken)
+          : base(kind)
+        {
+            this.SlotCount = 4;
+            this.AdjustFlagsAndWidth(whenKeyword);
+            this.whenKeyword = whenKeyword;
+            this.AdjustFlagsAndWidth(openParenToken);
+            this.openParenToken = openParenToken;
+            this.AdjustFlagsAndWidth(filterExpression);
+            this.filterExpression = filterExpression;
+            this.AdjustFlagsAndWidth(closeParenToken);
+            this.closeParenToken = closeParenToken;
+        }
+
+        public SyntaxToken WhenKeyword => this.whenKeyword;
+        public SyntaxToken OpenParenToken => this.openParenToken;
+        public ExprSyntax FilterExpression => this.filterExpression;
+        public SyntaxToken CloseParenToken => this.closeParenToken;
+
+        internal override GreenNode? GetSlot(int index)
+            => index switch
+            {
+                0 => this.whenKeyword,
+                1 => this.openParenToken,
+                2 => this.filterExpression,
+                3 => this.closeParenToken,
+                _ => null,
+            };
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.CatchFilterClauseSyntax(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitCatchFilterClause(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitCatchFilterClause(this);
+
+        public CatchFilterClauseSyntax Update(SyntaxToken whenKeyword, SyntaxToken openParenToken, ExprSyntax filterExpression, SyntaxToken closeParenToken)
+        {
+            if (whenKeyword != this.WhenKeyword || openParenToken != this.OpenParenToken || filterExpression != this.FilterExpression || closeParenToken != this.CloseParenToken)
+            {
+                var newNode = SyntaxFactory.CatchFilterClause(whenKeyword, openParenToken, filterExpression, closeParenToken);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new CatchFilterClauseSyntax(this.Kind, this.whenKeyword, this.openParenToken, this.filterExpression, this.closeParenToken, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new CatchFilterClauseSyntax(this.Kind, this.whenKeyword, this.openParenToken, this.filterExpression, this.closeParenToken, GetDiagnostics(), annotations);
+
+        internal CatchFilterClauseSyntax(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 4;
+            var whenKeyword = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(whenKeyword);
+            this.whenKeyword = whenKeyword;
+            var openParenToken = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(openParenToken);
+            this.openParenToken = openParenToken;
+            var filterExpression = (ExprSyntax)reader.ReadValue();
+            AdjustFlagsAndWidth(filterExpression);
+            this.filterExpression = filterExpression;
+            var closeParenToken = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(closeParenToken);
+            this.closeParenToken = closeParenToken;
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.whenKeyword);
+            writer.WriteValue(this.openParenToken);
+            writer.WriteValue(this.filterExpression);
+            writer.WriteValue(this.closeParenToken);
+        }
+
+        static CatchFilterClauseSyntax()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(CatchFilterClauseSyntax), r => new CatchFilterClauseSyntax(r));
+        }
+    }
+
+    internal sealed partial class FinallyClauseSyntax : AquilaSyntaxNode
+    {
+        internal readonly SyntaxToken finallyKeyword;
+        internal readonly BlockStmt block;
+
+        internal FinallyClauseSyntax(SyntaxKind kind, SyntaxToken finallyKeyword, BlockStmt block, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 2;
+            this.AdjustFlagsAndWidth(finallyKeyword);
+            this.finallyKeyword = finallyKeyword;
+            this.AdjustFlagsAndWidth(block);
+            this.block = block;
+        }
+
+        internal FinallyClauseSyntax(SyntaxKind kind, SyntaxToken finallyKeyword, BlockStmt block, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 2;
+            this.AdjustFlagsAndWidth(finallyKeyword);
+            this.finallyKeyword = finallyKeyword;
+            this.AdjustFlagsAndWidth(block);
+            this.block = block;
+        }
+
+        internal FinallyClauseSyntax(SyntaxKind kind, SyntaxToken finallyKeyword, BlockStmt block)
+          : base(kind)
+        {
+            this.SlotCount = 2;
+            this.AdjustFlagsAndWidth(finallyKeyword);
+            this.finallyKeyword = finallyKeyword;
+            this.AdjustFlagsAndWidth(block);
+            this.block = block;
+        }
+
+        public SyntaxToken FinallyKeyword => this.finallyKeyword;
+        public BlockStmt Block => this.block;
+
+        internal override GreenNode? GetSlot(int index)
+            => index switch
+            {
+                0 => this.finallyKeyword,
+                1 => this.block,
+                _ => null,
+            };
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.FinallyClauseSyntax(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitFinallyClause(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitFinallyClause(this);
+
+        public FinallyClauseSyntax Update(SyntaxToken finallyKeyword, BlockStmt block)
+        {
+            if (finallyKeyword != this.FinallyKeyword || block != this.Block)
+            {
+                var newNode = SyntaxFactory.FinallyClause(finallyKeyword, block);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new FinallyClauseSyntax(this.Kind, this.finallyKeyword, this.block, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new FinallyClauseSyntax(this.Kind, this.finallyKeyword, this.block, GetDiagnostics(), annotations);
+
+        internal FinallyClauseSyntax(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 2;
+            var finallyKeyword = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(finallyKeyword);
+            this.finallyKeyword = finallyKeyword;
+            var block = (BlockStmt)reader.ReadValue();
+            AdjustFlagsAndWidth(block);
+            this.block = block;
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.finallyKeyword);
+            writer.WriteValue(this.block);
+        }
+
+        static FinallyClauseSyntax()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(FinallyClauseSyntax), r => new FinallyClauseSyntax(r));
+        }
+    }
+
     internal sealed partial class DocumentationCommentTriviaSyntax : StructuredTriviaSyntax
     {
         internal readonly GreenNode? content;
@@ -13960,6 +14624,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         public virtual TResult VisitLocalDeclStmt(LocalDeclStmt node) => this.DefaultVisit(node);
         public virtual TResult VisitIfStmt(IfStmt node) => this.DefaultVisit(node);
         public virtual TResult VisitElseClause(ElseClauseSyntax node) => this.DefaultVisit(node);
+        public virtual TResult VisitTryStmt(TryStmt node) => this.DefaultVisit(node);
+        public virtual TResult VisitCatchClause(CatchClauseSyntax node) => this.DefaultVisit(node);
+        public virtual TResult VisitCatchDeclaration(CatchDeclarationSyntax node) => this.DefaultVisit(node);
+        public virtual TResult VisitCatchFilterClause(CatchFilterClauseSyntax node) => this.DefaultVisit(node);
+        public virtual TResult VisitFinallyClause(FinallyClauseSyntax node) => this.DefaultVisit(node);
         public virtual TResult VisitDocumentationCommentTrivia(DocumentationCommentTriviaSyntax node) => this.DefaultVisit(node);
         public virtual TResult VisitTypeCref(TypeCrefSyntax node) => this.DefaultVisit(node);
         public virtual TResult VisitQualifiedCref(QualifiedCrefSyntax node) => this.DefaultVisit(node);
@@ -14068,6 +14737,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         public virtual void VisitLocalDeclStmt(LocalDeclStmt node) => this.DefaultVisit(node);
         public virtual void VisitIfStmt(IfStmt node) => this.DefaultVisit(node);
         public virtual void VisitElseClause(ElseClauseSyntax node) => this.DefaultVisit(node);
+        public virtual void VisitTryStmt(TryStmt node) => this.DefaultVisit(node);
+        public virtual void VisitCatchClause(CatchClauseSyntax node) => this.DefaultVisit(node);
+        public virtual void VisitCatchDeclaration(CatchDeclarationSyntax node) => this.DefaultVisit(node);
+        public virtual void VisitCatchFilterClause(CatchFilterClauseSyntax node) => this.DefaultVisit(node);
+        public virtual void VisitFinallyClause(FinallyClauseSyntax node) => this.DefaultVisit(node);
         public virtual void VisitDocumentationCommentTrivia(DocumentationCommentTriviaSyntax node) => this.DefaultVisit(node);
         public virtual void VisitTypeCref(TypeCrefSyntax node) => this.DefaultVisit(node);
         public virtual void VisitQualifiedCref(QualifiedCrefSyntax node) => this.DefaultVisit(node);
@@ -14337,6 +15011,21 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         public override AquilaSyntaxNode VisitElseClause(ElseClauseSyntax node)
             => node.Update((SyntaxToken)Visit(node.ElseKeyword), (StmtSyntax)Visit(node.Statement));
+
+        public override AquilaSyntaxNode VisitTryStmt(TryStmt node)
+            => node.Update((SyntaxToken)Visit(node.TryKeyword), (BlockStmt)Visit(node.Block), VisitList(node.Catches), (FinallyClauseSyntax)Visit(node.Finally));
+
+        public override AquilaSyntaxNode VisitCatchClause(CatchClauseSyntax node)
+            => node.Update((SyntaxToken)Visit(node.CatchKeyword), (CatchDeclarationSyntax)Visit(node.Declaration), (CatchFilterClauseSyntax)Visit(node.Filter), (BlockStmt)Visit(node.Block));
+
+        public override AquilaSyntaxNode VisitCatchDeclaration(CatchDeclarationSyntax node)
+            => node.Update((SyntaxToken)Visit(node.OpenParenToken), (TypeEx)Visit(node.Type), (SyntaxToken)Visit(node.Identifier), (SyntaxToken)Visit(node.CloseParenToken));
+
+        public override AquilaSyntaxNode VisitCatchFilterClause(CatchFilterClauseSyntax node)
+            => node.Update((SyntaxToken)Visit(node.WhenKeyword), (SyntaxToken)Visit(node.OpenParenToken), (ExprSyntax)Visit(node.FilterExpression), (SyntaxToken)Visit(node.CloseParenToken));
+
+        public override AquilaSyntaxNode VisitFinallyClause(FinallyClauseSyntax node)
+            => node.Update((SyntaxToken)Visit(node.FinallyKeyword), (BlockStmt)Visit(node.Block));
 
         public override AquilaSyntaxNode VisitDocumentationCommentTrivia(DocumentationCommentTriviaSyntax node)
             => node.Update(VisitList(node.Content), (SyntaxToken)Visit(node.EndOfComment));
@@ -16250,6 +16939,86 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             if (cached != null) return (ElseClauseSyntax)cached;
 
             var result = new ElseClauseSyntax(SyntaxKind.ElseClause, elseKeyword, statement, this.context);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
+        public TryStmt TryStmt(SyntaxToken tryKeyword, BlockStmt block, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<CatchClauseSyntax> catches, FinallyClauseSyntax? @finally)
+        {
+#if DEBUG
+            if (tryKeyword == null) throw new ArgumentNullException(nameof(tryKeyword));
+            if (tryKeyword.Kind != SyntaxKind.TryKeyword) throw new ArgumentException(nameof(tryKeyword));
+            if (block == null) throw new ArgumentNullException(nameof(block));
+#endif
+
+            return new TryStmt(SyntaxKind.TryStatement, tryKeyword, block, catches.Node, @finally, this.context);
+        }
+
+        public CatchClauseSyntax CatchClause(SyntaxToken catchKeyword, CatchDeclarationSyntax? declaration, CatchFilterClauseSyntax? filter, BlockStmt block)
+        {
+#if DEBUG
+            if (catchKeyword == null) throw new ArgumentNullException(nameof(catchKeyword));
+            if (catchKeyword.Kind != SyntaxKind.CatchKeyword) throw new ArgumentException(nameof(catchKeyword));
+            if (block == null) throw new ArgumentNullException(nameof(block));
+#endif
+
+            return new CatchClauseSyntax(SyntaxKind.CatchClause, catchKeyword, declaration, filter, block, this.context);
+        }
+
+        public CatchDeclarationSyntax CatchDeclaration(SyntaxToken openParenToken, TypeEx type, SyntaxToken? identifier, SyntaxToken closeParenToken)
+        {
+#if DEBUG
+            if (openParenToken == null) throw new ArgumentNullException(nameof(openParenToken));
+            if (openParenToken.Kind != SyntaxKind.OpenParenToken) throw new ArgumentException(nameof(openParenToken));
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (identifier != null)
+            {
+                switch (identifier.Kind)
+                {
+                    case SyntaxKind.IdentifierToken:
+                    case SyntaxKind.None: break;
+                    default: throw new ArgumentException(nameof(identifier));
+                }
+            }
+            if (closeParenToken == null) throw new ArgumentNullException(nameof(closeParenToken));
+            if (closeParenToken.Kind != SyntaxKind.CloseParenToken) throw new ArgumentException(nameof(closeParenToken));
+#endif
+
+            return new CatchDeclarationSyntax(SyntaxKind.CatchDeclaration, openParenToken, type, identifier, closeParenToken, this.context);
+        }
+
+        public CatchFilterClauseSyntax CatchFilterClause(SyntaxToken whenKeyword, SyntaxToken openParenToken, ExprSyntax filterExpression, SyntaxToken closeParenToken)
+        {
+#if DEBUG
+            if (whenKeyword == null) throw new ArgumentNullException(nameof(whenKeyword));
+            if (whenKeyword.Kind != SyntaxKind.WhenKeyword) throw new ArgumentException(nameof(whenKeyword));
+            if (openParenToken == null) throw new ArgumentNullException(nameof(openParenToken));
+            if (openParenToken.Kind != SyntaxKind.OpenParenToken) throw new ArgumentException(nameof(openParenToken));
+            if (filterExpression == null) throw new ArgumentNullException(nameof(filterExpression));
+            if (closeParenToken == null) throw new ArgumentNullException(nameof(closeParenToken));
+            if (closeParenToken.Kind != SyntaxKind.CloseParenToken) throw new ArgumentException(nameof(closeParenToken));
+#endif
+
+            return new CatchFilterClauseSyntax(SyntaxKind.CatchFilterClause, whenKeyword, openParenToken, filterExpression, closeParenToken, this.context);
+        }
+
+        public FinallyClauseSyntax FinallyClause(SyntaxToken finallyKeyword, BlockStmt block)
+        {
+#if DEBUG
+            if (finallyKeyword == null) throw new ArgumentNullException(nameof(finallyKeyword));
+            if (finallyKeyword.Kind != SyntaxKind.FinallyKeyword) throw new ArgumentException(nameof(finallyKeyword));
+            if (block == null) throw new ArgumentNullException(nameof(block));
+#endif
+
+            int hash;
+            var cached = AquilaSyntaxNodeCache.TryGetNode((int)SyntaxKind.FinallyClause, finallyKeyword, block, this.context, out hash);
+            if (cached != null) return (FinallyClauseSyntax)cached;
+
+            var result = new FinallyClauseSyntax(SyntaxKind.FinallyClause, finallyKeyword, block, this.context);
             if (hash >= 0)
             {
                 SyntaxNodeCache.AddNode(result, hash);
@@ -18602,6 +19371,86 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return result;
         }
 
+        public static TryStmt TryStmt(SyntaxToken tryKeyword, BlockStmt block, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<CatchClauseSyntax> catches, FinallyClauseSyntax? @finally)
+        {
+#if DEBUG
+            if (tryKeyword == null) throw new ArgumentNullException(nameof(tryKeyword));
+            if (tryKeyword.Kind != SyntaxKind.TryKeyword) throw new ArgumentException(nameof(tryKeyword));
+            if (block == null) throw new ArgumentNullException(nameof(block));
+#endif
+
+            return new TryStmt(SyntaxKind.TryStatement, tryKeyword, block, catches.Node, @finally);
+        }
+
+        public static CatchClauseSyntax CatchClause(SyntaxToken catchKeyword, CatchDeclarationSyntax? declaration, CatchFilterClauseSyntax? filter, BlockStmt block)
+        {
+#if DEBUG
+            if (catchKeyword == null) throw new ArgumentNullException(nameof(catchKeyword));
+            if (catchKeyword.Kind != SyntaxKind.CatchKeyword) throw new ArgumentException(nameof(catchKeyword));
+            if (block == null) throw new ArgumentNullException(nameof(block));
+#endif
+
+            return new CatchClauseSyntax(SyntaxKind.CatchClause, catchKeyword, declaration, filter, block);
+        }
+
+        public static CatchDeclarationSyntax CatchDeclaration(SyntaxToken openParenToken, TypeEx type, SyntaxToken? identifier, SyntaxToken closeParenToken)
+        {
+#if DEBUG
+            if (openParenToken == null) throw new ArgumentNullException(nameof(openParenToken));
+            if (openParenToken.Kind != SyntaxKind.OpenParenToken) throw new ArgumentException(nameof(openParenToken));
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (identifier != null)
+            {
+                switch (identifier.Kind)
+                {
+                    case SyntaxKind.IdentifierToken:
+                    case SyntaxKind.None: break;
+                    default: throw new ArgumentException(nameof(identifier));
+                }
+            }
+            if (closeParenToken == null) throw new ArgumentNullException(nameof(closeParenToken));
+            if (closeParenToken.Kind != SyntaxKind.CloseParenToken) throw new ArgumentException(nameof(closeParenToken));
+#endif
+
+            return new CatchDeclarationSyntax(SyntaxKind.CatchDeclaration, openParenToken, type, identifier, closeParenToken);
+        }
+
+        public static CatchFilterClauseSyntax CatchFilterClause(SyntaxToken whenKeyword, SyntaxToken openParenToken, ExprSyntax filterExpression, SyntaxToken closeParenToken)
+        {
+#if DEBUG
+            if (whenKeyword == null) throw new ArgumentNullException(nameof(whenKeyword));
+            if (whenKeyword.Kind != SyntaxKind.WhenKeyword) throw new ArgumentException(nameof(whenKeyword));
+            if (openParenToken == null) throw new ArgumentNullException(nameof(openParenToken));
+            if (openParenToken.Kind != SyntaxKind.OpenParenToken) throw new ArgumentException(nameof(openParenToken));
+            if (filterExpression == null) throw new ArgumentNullException(nameof(filterExpression));
+            if (closeParenToken == null) throw new ArgumentNullException(nameof(closeParenToken));
+            if (closeParenToken.Kind != SyntaxKind.CloseParenToken) throw new ArgumentException(nameof(closeParenToken));
+#endif
+
+            return new CatchFilterClauseSyntax(SyntaxKind.CatchFilterClause, whenKeyword, openParenToken, filterExpression, closeParenToken);
+        }
+
+        public static FinallyClauseSyntax FinallyClause(SyntaxToken finallyKeyword, BlockStmt block)
+        {
+#if DEBUG
+            if (finallyKeyword == null) throw new ArgumentNullException(nameof(finallyKeyword));
+            if (finallyKeyword.Kind != SyntaxKind.FinallyKeyword) throw new ArgumentException(nameof(finallyKeyword));
+            if (block == null) throw new ArgumentNullException(nameof(block));
+#endif
+
+            int hash;
+            var cached = SyntaxNodeCache.TryGetNode((int)SyntaxKind.FinallyClause, finallyKeyword, block, out hash);
+            if (cached != null) return (FinallyClauseSyntax)cached;
+
+            var result = new FinallyClauseSyntax(SyntaxKind.FinallyClause, finallyKeyword, block);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
         public static DocumentationCommentTriviaSyntax DocumentationCommentTrivia(SyntaxKind kind, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<XmlNodeSyntax> content, SyntaxToken endOfComment)
         {
             switch (kind)
@@ -19184,6 +20033,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 typeof(LocalDeclStmt),
                 typeof(IfStmt),
                 typeof(ElseClauseSyntax),
+                typeof(TryStmt),
+                typeof(CatchClauseSyntax),
+                typeof(CatchDeclarationSyntax),
+                typeof(CatchFilterClauseSyntax),
+                typeof(FinallyClauseSyntax),
                 typeof(DocumentationCommentTriviaSyntax),
                 typeof(TypeCrefSyntax),
                 typeof(QualifiedCrefSyntax),

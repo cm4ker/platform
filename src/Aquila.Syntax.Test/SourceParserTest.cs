@@ -360,8 +360,8 @@ fn main()
 ");
             tp.Visit(tree.GetRoot());
         }
-        
-        
+
+
         [Fact]
         public void ParseForTest()
         {
@@ -378,8 +378,8 @@ fn main()
 ");
             tp.Visit(tree.GetRoot());
         }
-        
-        
+
+
         [Fact]
         public void ParseForTest2()
         {
@@ -397,6 +397,38 @@ fn main()
 
             var diags = tree.GetRoot().GetDiagnostics();
             tp.Visit(tree.GetRoot());
+        }
+
+
+        [Fact]
+        public void TryParse()
+        {
+           ParseAndVerify(@"
+fn main()
+{
+    try
+    {
+        a();
+    }
+    catch
+    {
+        b();
+    }
+    finally
+    {
+        c();
+    }
+}");
+        }
+
+        private void ParseAndVerify(string code)
+        {
+            var tp = new TreePrinter(_output);
+            var tree = AquilaSyntaxTree.ParseText(code);
+            var parsedCode = tree.ToString();
+            tp.Visit(tree.GetRoot());
+
+            Assert.Equal(code, parsedCode);
         }
     }
 }

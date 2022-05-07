@@ -1,4 +1,11 @@
 fn main()
 {
-    throw exception();
+    try
+    {
+        throw exception();
+    }
+    catch
+    {
+        print("test");
+    }
 }

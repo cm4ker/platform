@@ -220,6 +220,7 @@ namespace Aquila.CodeAnalysis.Symbols
             //Aq Runtime Types
             AqQuery,
             AqContext,
+            AqException,
             AqHelper,
             AqComparison,
             AqParamValue,
@@ -302,6 +303,7 @@ namespace Aquila.CodeAnalysis.Symbols
             AqFactoryDelegate = CreateFromRuntimeName("AqFactoryDelegate`1");
             AqComparison = CreateFromRuntimeName("AqComparison");
             AqList = CreateFromRuntimeName("AqList`1");
+            AqException = CreateFromRuntimeName("AqException");
 
             #endregion
 

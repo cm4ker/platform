@@ -119,22 +119,35 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         {
             // Stack must be empty at beginning of try block.
             cg.Builder.AssertStackEmpty();
-            
+
             cg.Builder.OpenLocalScope(ScopeType.TryCatchFinally);
-            
+
             //try
             cg.Builder.OpenLocalScope(ScopeType.Try);
-            _body.Emit(cg);
+            cg.Scope.ContinueWith(_body);
             cg.Builder.CloseLocalScope();
-            
+
+
+            //catch
+            foreach (var catchBlock in _catchBlocks)
+            {
+                cg.Builder.OpenLocalScope(ScopeType.Catch, (NamedTypeSymbol)cg.CoreTypes.AqException);
+                cg.Builder.AdjustStack(1); // Account for exception on the stack.
+                cg.EmitPop(cg.CoreTypes.AqException);
+                cg.Scope.ContinueWith(catchBlock);
+                cg.Builder.CloseLocalScope();
+            }
+
             //finally
-            cg.Builder.OpenLocalScope(ScopeType.Finally);
-            this._finallyBlock.Emit(cg);
-            cg.Builder.CloseLocalScope();
-            
+            if (_finallyBlock != null)
+            {
+                cg.Builder.OpenLocalScope(ScopeType.Finally);
+                this._finallyBlock.Emit(cg);
+                cg.Builder.CloseLocalScope();
+            }
+
             //close try-catch
             cg.Builder.CloseLocalScope();
-            
         }
 
         void EmitScriptDiedBlock(CodeGenerator cg)
@@ -185,7 +198,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 if (node == null) continue;
 
                 // jump to next nested "try" or inside "yield" itself
-                var target = (object) node.Next?.Value /*next try block*/ ?? yield /*inside yield*/;
+                var target = (object)node.Next?.Value /*next try block*/ ?? yield /*inside yield*/;
 
                 // case YieldIndex: goto target;
                 yieldExLabels.Add(
@@ -217,21 +230,21 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             // Stack must be empty at beginning of try block.
             cg.Builder.AssertStackEmpty();
 
-             var bi = ForEachStmt.BoundInfo;
+            var bi = ForEachStmt.BoundInfo;
             // bi.EnumeratorAssignmentEx.Emit(cg);
 
-            
+
             cg.Builder.OpenLocalScope(ScopeType.TryCatchFinally);
             //try
             cg.Builder.OpenLocalScope(ScopeType.Try);
             cg.Scope.ContinueWith(Move);
             cg.Builder.CloseLocalScope();
-            
+
             //finally
             cg.Builder.OpenLocalScope(ScopeType.Finally);
             bi.DisposeCall.Emit(cg);
             cg.Builder.CloseLocalScope();
-            
+
             //close try-catch
             cg.Builder.CloseLocalScope();
 
@@ -249,8 +262,8 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
     partial class MatchEdge
     {
         static bool IsInt32(object value) => value is int ||
-                                             (value is long && (long) value <= int.MaxValue &&
-                                              (long) value >= int.MinValue);
+                                             (value is long && (long)value <= int.MaxValue &&
+                                              (long)value >= int.MinValue);
 
         static bool IsString(object value) => value is string;
 
@@ -283,9 +296,9 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         // TODO: move to helpers
         static ConstantValue Int32Constant(object value)
         {
-            if (value is int) return ConstantValue.Create((int) value);
-            if (value is long) return ConstantValue.Create((int) (long) value);
-            if (value is double) return ConstantValue.Create((int) (double) value);
+            if (value is int) return ConstantValue.Create((int)value);
+            if (value is long) return ConstantValue.Create((int)(long)value);
+            if (value is double) return ConstantValue.Create((int)(double)value);
 
             throw new ArgumentException();
         }
