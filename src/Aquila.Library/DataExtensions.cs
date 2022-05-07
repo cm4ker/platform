@@ -22,7 +22,7 @@ namespace Aquila.Library
         {
             context.DataContext.CommitTransaction();
         }
-        
+
         public static void rollback(AqContext context)
         {
             context.DataContext.RollbackTransaction();
@@ -69,16 +69,26 @@ namespace Aquila.Library
             return Path.GetTempPath();
         }
 
+        public static AqException exception(AqContext ctx)
+        {
+            return new AqException();
+        }
+
+        public static AqException exception(AqContext ctx, string message)
+        {
+            return new AqException(message);
+        }
+
         public static void print(AqContext ctx, object obj)
         {
             ctx.OutputText.Write(obj);
         }
-        
+
         public static void print(AqContext ctx, string obj)
         {
             ctx.OutputText.Write(obj);
         }
-        
+
         public static void print(AqContext ctx, int obj)
         {
             ctx.OutputText.Write(obj);
@@ -93,6 +103,5 @@ namespace Aquila.Library
         {
             ctx.OutputText.WriteLine(obj);
         }
-        
     }
 }

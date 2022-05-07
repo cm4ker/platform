@@ -823,6 +823,17 @@ namespace Aquila.CodeAnalysis.Semantics
                 ImmutableArray<BoundArgument>.Empty);
         }
     }
+
+    partial class BoundThrowEx
+    {
+        internal override TypeSymbol Emit(CodeGenerator cg)
+        {
+            cg.EmitConvert(Thrown, cg.CoreTypes.Exception);
+            cg.Builder.EmitThrow(false);
+
+            return cg.CoreTypes.Void;
+        }
+    }
 }
 
 namespace Aquila.CodeAnalysis.Semantics.TypeRef

@@ -35,7 +35,7 @@ namespace ScriptsTest
 
             // separate file name and path so we see the file name in Test Explorer
             return files.Select(f => new object[]
-                { Path.GetFileName(f), Path.GetDirectoryName(f).Substring(testspath.Length), testspath });
+                { Path.GetFileName(f), Path.GetRelativePath(testspath, Path.GetDirectoryName(f)), testspath });
         }
     }
 }

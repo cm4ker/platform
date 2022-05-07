@@ -531,10 +531,8 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 var body = NewBlock();
                 var move = NewBlock();
 
-
                 var endCycle = NewBlock();
                 endCycle.WithEdge(new BuckStopEdge());
-
 
                 var edge = new ForeachEdge(forEach, WithNewOrdinal(move), body, foreachEndBlock);
                 _current.WithEdge(edge);
@@ -666,7 +664,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         {
             base.VisitThrowEx(x);
         }
-
 
         public override void VisitMatchEx(MatchEx arg)
         {
