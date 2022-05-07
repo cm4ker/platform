@@ -29,14 +29,18 @@ let channel: vscode.OutputChannel;
 export async function activate(context: vscode.ExtensionContext) {
     channel = vscode.window.createOutputChannel("AqLang");
     channel.appendLine("AqLang extension was activated.");
-
+    
+    const config = vscode.workspace.getConfiguration("");
+    //config.update("editor.fontSize", 14, false, true);
+    config.update("files.exclude", {".vs": true, "bin": true, "obj": true} , false, true);
+    
     context.subscriptions.push(
         channel,
 
          vscode.commands.registerCommand('aqlang.createproject', async () => {
             await createTemplate("project");
         }),
-
+        
         startLanguageServer(context)
     );
 }
@@ -219,7 +223,7 @@ async function overwriteConfiguration(section: string, configuration: any): Prom
     return true;
 }
 
-// Taken from omnisharp-vscode
+
 function execChildProcess(command: string, workingDirectory: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         cp.exec(command, { cwd: workingDirectory, maxBuffer: 500 * 1024 }, (error, stdout, stderr) => {
@@ -235,7 +239,7 @@ function execChildProcess(command: string, workingDirectory: string): Promise<st
         });
     });
 }
-// this method is called when your extension is deactivated
+
 export function deactivate() 
 {
 }

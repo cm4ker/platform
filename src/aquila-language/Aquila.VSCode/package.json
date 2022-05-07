@@ -52,8 +52,7 @@
         "type": "dummy"
       }
     ],
-  
-    "languages": [
+     "languages": [
       {
         "id": "xml",
         "extensions": [
@@ -78,7 +77,6 @@
         "configuration": "./language-configuration.json"
       }
     ],
-
     "grammars": [
       {
           "language": "aqlang",
