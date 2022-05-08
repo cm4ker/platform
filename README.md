@@ -10,5 +10,11 @@
 
 Try to be modern framework for rapid creating LOB applications from scratch.
 
+# Building
+1. Create required .nugs folder
+2. dotnet restore
+3. dotnet build
+
+# Run server
 
 
