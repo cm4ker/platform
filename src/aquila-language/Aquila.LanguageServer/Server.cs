@@ -49,6 +49,8 @@ public class Server : IDisposable
                 .WithHandler<DocumentSymbolHandler>()
                 .WithHandler<SemanticTokensHandler>()
                 .WithHandler<ShutdownHandler>()
+                .WithHandler<HoverHandler>()
+                .WithHandler<CompletionHandler>()
                 .WithServices(services => RegisterServices(services))
                 .OnInitialize((lgsrv, request, token) =>
                     {

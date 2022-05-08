@@ -129,7 +129,7 @@ pub fn main() int
                 @"
 import Entity;
 
-pub fn main() int
+pub fn main() bool 
 {
     for(int i = 1; i < 10; i ++)
     {

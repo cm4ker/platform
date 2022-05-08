@@ -11,7 +11,7 @@ styles [] {
 }
 
 .keyword : style {
-   color     = cyan
+   color                 = cyan
    ace_scope             = keyword
    textmate_scope        = keyword
    pygments_scope        = Keyword

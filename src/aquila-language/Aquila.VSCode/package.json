@@ -83,7 +83,7 @@
           "scopeName": "source.aqlang",
           "path": "./syntaxes/aqlang.tmLanguage"
       }
-  ],
+    ],
     "configuration": {
       "type": "object",
       "title": "Example configuration",

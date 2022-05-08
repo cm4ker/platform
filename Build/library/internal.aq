@@ -12,13 +12,13 @@ fn take_book(user UserLink, book BookLink)
 
         history.date = get_date();
         history.operation = -1;
-
+        
         history.save();
     }
 }
 
 [endpoint]
-fn is_book_available(book BookLink) bool
+fn is_book_available(book BookLink) bool 
 {
     var q = query();
     q.text = @"FROM History 
@@ -44,9 +44,10 @@ fn return_book(user UserLink, book BookLink)
         //we can't return book twice throw the error
         return;
     }
-
+    
     var history = HistoryManager.create();
     history.book = book;
+ 
     history.user = user;
     history.date = get_date();
     history.operation = 1;
