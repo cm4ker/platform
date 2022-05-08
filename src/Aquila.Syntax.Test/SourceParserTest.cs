@@ -365,18 +365,18 @@ fn main()
         [Fact]
         public void ParseForTest()
         {
-            var tp = new TreePrinter(_output);
-            var tree = AquilaSyntaxTree.ParseText(@"
+            ParseAndVerify(@"
 fn main()
 {
     for(int i=0; i<5; i++)
     {
         println(i);
+        break;
+        continue;
     }
 }
 
 ");
-            tp.Visit(tree.GetRoot());
         }
 
 

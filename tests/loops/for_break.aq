@@ -1,0 +1,12 @@
+import Entity;
+
+fn main()
+{
+  for (int i = 0; i < 5; i ++)
+  {
+     println(i);
+     
+     if(i > 2)
+        break;
+  }
+}

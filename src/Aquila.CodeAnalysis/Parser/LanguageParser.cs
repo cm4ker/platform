@@ -4644,10 +4644,10 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 {
                     // case SyntaxKind.FixedKeyword:
                     //     return this.ParseFixedStatement(attributes);
-                    // case SyntaxKind.BreakKeyword:
-                    //     return this.ParseBreakStatement(attributes);
-                    // case SyntaxKind.ContinueKeyword:
-                    //     return this.ParseContinueStatement(attributes);
+                    case SyntaxKind.BreakKeyword:
+                        return this.ParseBreakStatement(attributes);
+                    case SyntaxKind.ContinueKeyword:
+                        return this.ParseContinueStatement(attributes);
                     case SyntaxKind.TryKeyword:
                     case SyntaxKind.CatchKeyword:
                     case SyntaxKind.FinallyKeyword:

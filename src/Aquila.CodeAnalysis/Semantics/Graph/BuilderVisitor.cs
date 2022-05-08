@@ -600,8 +600,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public override void VisitReturnStmt(ReturnStmt x)
         {
-            // if (x.Type == JumpStmt.Types.Return)
-            // {
             _returnCounter++;
 
             //
@@ -641,11 +639,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             Debug.Assert(_current == end);
             WithNewOrdinal(_current);
-        }
-
-        public override void VisitThrowEx(ThrowEx x)
-        {
-            base.VisitThrowEx(x);
         }
 
         public override void VisitMatchEx(MatchEx arg)
@@ -768,6 +761,43 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             // _current == end
             _current.Ordinal = NewOrdinal();
+        }
+
+
+        public override void VisitBreakStmt(BreakStmt x)
+        {
+            var brk = GetBreakScope(1);
+            var target = brk.BreakTarget;
+            if (target != null)
+            {
+                Connect(_current, target);
+                _current.NextEdge.AquilaSyntax = x;
+            }
+            else
+            {
+                _binder.Diagnostics.Add(_binder.Method, x, Errors.ErrorCode.ERR_NeedsLoopOrSwitch, "break");
+                Connect(_current, this.GetExceptionBlock()); // unreachable, wouldn't compile
+            }
+
+            _current = NewDeadBlock(); // anything after these statements is unreachable
+        }
+
+        public override void VisitContinueStmt(ContinueStmt x)
+        {
+            var brk = GetBreakScope(1);
+            var target = brk.ContinueTarget;
+            if (target != null)
+            {
+                Connect(_current, target);
+                _current.NextEdge.AquilaSyntax = x;
+            }
+            else
+            {
+                _binder.Diagnostics.Add(_binder.Method, x, Errors.ErrorCode.ERR_NeedsLoopOrSwitch, "continue");
+                Connect(_current, this.GetExceptionBlock()); // unreachable, wouldn't compile
+            }
+
+            _current = NewDeadBlock(); // anything after these statements is unreachable
         }
 
         #endregion
