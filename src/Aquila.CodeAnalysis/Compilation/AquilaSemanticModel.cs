@@ -168,6 +168,7 @@ namespace Aquila.CodeAnalysis
 
         protected override ControlFlowAnalysis AnalyzeControlFlowCore(SyntaxNode statement)
         {
+            ControlFlowAnalysis
             throw new NotImplementedException();
         }
 
@@ -241,7 +242,7 @@ namespace Aquila.CodeAnalysis
             //TODO: separate the Bound nodes and Operations
             //bound nodes need to result ISymbol type because
             //bounding between the SyntaxNode and Symbol
-            return SymbolInfo.None;
+            //return SymbolInfo.None;
 
             var binder = _binderFactory.GetBinder(expression);
             var type = binder.BindExpression(expression, BoundAccess.None);
