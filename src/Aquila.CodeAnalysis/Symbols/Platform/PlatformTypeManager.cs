@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+using Aquila.CodeAnalysis.Emit;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
@@ -14,6 +15,10 @@ using MetadataSymbolProvider = Aquila.CodeAnalysis.Metadata.MetadataSymbolProvid
 
 namespace Aquila.CodeAnalysis.Public
 {
+    /// <summary>
+    /// TODO: replace this by <see cref="SynthesizedManager"/> from PEModuleBuilder.
+    /// Not construct entire platform symbols on creating compilation. Construct it on building process and lazy
+    /// </summary>
     internal class PlatformSymbolCollection
     {
         private int instanceNumber = 1;
