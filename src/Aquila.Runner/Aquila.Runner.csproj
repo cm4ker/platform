@@ -21,7 +21,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Aquila.Networking\Aquila.Networking.csproj" />
-        <ProjectReference Include="..\Aquila.WebServiceCore\Aquila.WebServiceCore.csproj" />
+        <ProjectReference Include="..\Aquila.Web\Aquila.Web.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -11,7 +11,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Aquila.WebServiceCore.Swagger;
+namespace Aquila.Web.Swagger;
 
 internal class AquilaSwaggerGenerator : ISwaggerProvider
 {

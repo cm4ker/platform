@@ -10,7 +10,7 @@ using Aquila.Core;
 using Aquila.Core.Instance;
 using Aquila.Logging;
 using Aquila.Runtime.Infrastructure.Helpers;
-using Aquila.WebServiceCore.Swagger;
+using Aquila.Web.Swagger;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;

@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 
-namespace Aquila.WebServiceCore
+namespace Aquila.Web
 {
     public class AquilaAuthorizationOptions
     {

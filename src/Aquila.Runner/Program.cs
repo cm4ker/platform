@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
 using Aquila.Logging;
-using Aquila.WebServiceCore;
+using Aquila.Web;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Aquila.Runner

@@ -45,7 +45,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BufferedDataReader.UnitTest
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquila.Serializer", "src\Aquila.Serializer\Aquila.Serializer.csproj", "{ABF69E77-4DEE-4A74-92BE-B908E1D31E2D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquila.WebServiceCore", "src\Aquila.WebServiceCore\Aquila.WebServiceCore.csproj", "{4E0CBFE7-1D36-40D1-91C8-CDFD47EAB527}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquila.Web", "src\Aquila.Web\Aquila.Web.csproj", "{4E0CBFE7-1D36-40D1-91C8-CDFD47EAB527}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{CABA08BB-CE9F-4F71-9F0C-12B30645D3DB}"
 	ProjectSection(SolutionItems) = preProject

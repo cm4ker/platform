@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Aquila.Logging;
 
-namespace Aquila.WebServiceCore
+namespace Aquila.Web
 {
     public class StartupServiceImpl
     {

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Aquila.WebServiceCore
+namespace Aquila.Web
 {
     // public interface IStartupService
     // {

@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
 
-namespace Aquila.WebServiceCore.Swagger;
+namespace Aquila.Web.Swagger;
 
 public class AquilaApplicationModelProvider : IApiDescriptionProvider
 {

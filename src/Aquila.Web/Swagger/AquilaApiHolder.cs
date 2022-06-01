@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace Aquila.WebServiceCore.Swagger;
+namespace Aquila.Web.Swagger;
 
 public class AquilaApiHolder
 {

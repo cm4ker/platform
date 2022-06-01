@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing.Template;
 
-namespace Aquila.WebServiceCore.Swagger;
+namespace Aquila.Web.Swagger;
 
 public static class GeneratorExtensions
 {

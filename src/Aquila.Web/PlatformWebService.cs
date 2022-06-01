@@ -15,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SoapCore;
 
-namespace Aquila.WebServiceCore
+namespace Aquila.Web
 {
     public class AquilaWebHost : IWebHost, IDisposable
     {

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Aquila.WebServiceCore
+namespace Aquila.Web
 {
     /// <summary>
     /// A middleware that enables authorization capabilities.

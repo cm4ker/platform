@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Aquila.AspNetCore.Web;
 using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
@@ -10,12 +14,22 @@ using Aquila.Core.Utilities;
 using Aquila.Data;
 using Aquila.Logging;
 using Aquila.Migrations;
-using Aquila.WebServiceCore.Swagger;
+using Aquila.Web.Swagger;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,32 +38,40 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Swashbuckle.AspNetCore.Swagger;
+using RouteData = Microsoft.AspNetCore.Routing.RouteData;
 
-namespace Aquila.WebServiceCore
+namespace Aquila.Web
 {
     public static class AquilaWebServerExtensions
     {
         public static IApplicationBuilder UseAquila(this IApplicationBuilder builder, WebHostBuilderContext app)
         {
             builder.UseRouting();
-            builder.UseEndpoints(options =>
+            
+            builder.UseEndpoints(o =>
             {
-                options.MapControllers();
-                options.MapDefaultControllerRoute();
+                o.MapControllers();
+                o.MapDefaultControllerRoute();
+                o.MapBlazorHub();
+                o.MapFallbackToPage("/_Host");
+                o.MapGet("/hello", async context => { });
             });
-
+            
+    
+            builder.UseStaticFiles();
             builder.UseAuthentication();
 
             if (app.HostingEnvironment.IsDevelopment())
             {
-                builder.UseSwagger(o => {});
+                builder.UseSwagger(o => { });
                 builder.UseSwaggerUI(options =>
                 {
-                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-                    options.RoutePrefix = string.Empty;
+                    //TODO: need use {instance} pattern
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "server");
+                    options.RoutePrefix = "swagger";
                 });
             }
-            
+
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "metadata",
                 "api/{instance}/metadata");
 
@@ -93,8 +115,10 @@ namespace Aquila.WebServiceCore
 
             nested.UseMiddleware<T>();
             nested.UseRouting();
-            nested.UseEndpoints(o => { });
-
+            nested.UseEndpoints(o =>
+            {
+                
+            });
 
             var route = new Route(
                 new RouteHandler(nested.Build()),
@@ -103,7 +127,8 @@ namespace Aquila.WebServiceCore
                 defaults: defaultsDictionary,
                 constraints: constraintsDictionary,
                 dataTokens: null,
-                inlineConstraintResolver: routeBuilder.ServiceProvider.GetRequiredService<IInlineConstraintResolver>());
+                inlineConstraintResolver: routeBuilder.ServiceProvider
+                    .GetRequiredService<IInlineConstraintResolver>());
 
 
             routeBuilder.Routes.Add(route);
@@ -153,9 +178,9 @@ namespace Aquila.WebServiceCore
             services.AddSingleton<AqInstanceManager, AqInstanceManager>();
             services.AddSingleton<ISettingsStorage, FileSettingsStorage>();
 
-            
+
             services.AddTransient(typeof(ILogger<>), typeof(SimpleConsoleLogger<>));
-            
+
             services.AddSingleton<ICacheService, DictionaryCacheService>();
 
             // services.TryAddEnumerable(
@@ -163,7 +188,8 @@ namespace Aquila.WebServiceCore
 
             services.AddSingleton<AquilaApiHolder>();
             services.AddSingleton<AquilaHandlerMiddleware>();
-
+            services.AddRazorPages();
+            services.AddServerSideBlazor();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddRouting();
@@ -188,7 +214,7 @@ namespace Aquila.WebServiceCore
                 .AddOpenIdConnect(options =>
                 {
                     //TODO: make it optional by the settings
-                    
+
                     // Note: these settings must match the application details
                     // inserted in the database at the server level.
                     options.ClientId = "mvc";
@@ -224,11 +250,11 @@ namespace Aquila.WebServiceCore
 
             services.AddHttpClient();
 
-            
+
             services.TryAddTransient<ISwaggerProvider, AquilaSwaggerGenerator>();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-            
+
             ContextExtensions.CurrentContextProvider = HttpContextExtension.GetOrCreateContext;
 
             return services;
