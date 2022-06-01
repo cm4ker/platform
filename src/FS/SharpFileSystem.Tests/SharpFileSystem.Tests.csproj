@@ -30,7 +30,7 @@
     
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
     
-    <PackageReference Include="SharpZipLib" Version="1.2.0" />
+    <PackageReference Include="SharpZipLib" Version="1.3.3" />
     
     <PackageReference Include="SqlInMemory" Version="1.0.6" />
     <PackageReference Include="System.Memory" Version="4.5.4" />
