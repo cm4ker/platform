@@ -1,27 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="..\Props\target.props" />
+    <Import Project="..\Props\target.props"/>
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="5.1.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
+        <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="5.1.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="5.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="5.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="5.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Aquila.Networking\Aquila.Networking.csproj" />
-        <ProjectReference Include="..\Aquila.Web\Aquila.Web.csproj" />
+        <ProjectReference Include="..\Aquila.Web\Aquila.Web.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
