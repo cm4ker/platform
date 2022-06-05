@@ -2,6 +2,7 @@
 using System.Linq;
 using Aquila.Core;
 using Aquila.Core.Assemlies;
+using Aquila.Core.Migration;
 using Aquila.Data;
 using Aquila.Initializer;
 using Aquila.Library.Scripting;
@@ -114,7 +115,7 @@ import Entity;
 
                 var cm = new DataContextManager();
                 cm.Initialize(SqlDatabaseType.SqlServer, cs);
-                var mm = new MigrationManager(cm, new NLogger<MigrationManager>());
+                var mm = new AqMigrationManager(cm, new NLogger<AqMigrationManager>());
 
                 mm.Migrate();
             }

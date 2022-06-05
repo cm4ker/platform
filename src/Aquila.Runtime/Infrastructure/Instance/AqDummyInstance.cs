@@ -5,6 +5,7 @@ using System.Reflection;
 using Aquila.Core.Authentication;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Network;
+using Aquila.Core.Migration;
 using Aquila.Data;
 using Aquila.Migrations;
 using Aquila.Runtime;
@@ -16,7 +17,7 @@ public class AqDummyInstance : IAqInstance
     public DatabaseRuntimeContext DatabaseRuntimeContext { get; }
     public bool PendingChanges { get; }
     public IInvokeService InvokeService { get; }
-    public MigrationManager MigrationManager { get; }
+    public AqMigrationManager MigrationManager { get; }
     public string Name { get; }
     public DataContextManager DataContextManager { get; }
     public Assembly BLAssembly { get; }

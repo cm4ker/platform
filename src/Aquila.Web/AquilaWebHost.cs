@@ -48,8 +48,8 @@ namespace Aquila.Web
                 .UseConfiguration(config)
                 .ConfigureServices(services =>
                 {
-                    //services.AddDistributedMemoryCache();
-                    //services.AddSession();
+                    services.AddDistributedMemoryCache();
+                    services.AddSession();
                     services.AddAquila();
                 })
                 .Configure((b, app) =>

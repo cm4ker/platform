@@ -74,6 +74,8 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         public static implicit operator NamedTypeSymbol(CoreType t) => (NamedTypeSymbol)t.Symbol;
 
+        
+        
         /// <summary>
         /// Implicit cast to type symbol.
         /// </summary>
@@ -232,7 +234,14 @@ namespace Aquila.CodeAnalysis.Symbols
             //System.Data.Common Types
             DbCommand,
             DbParameter,
-            DbReader;
+            DbReader,
+
+            //WebTypes
+            Web_ComponentBase,
+            Web_RenderTreeBuilder
+
+            //End
+            ;
 
         public CoreTypes(AquilaCompilation compilation)
         {
@@ -266,13 +275,14 @@ namespace Aquila.CodeAnalysis.Symbols
             ImmutableArray_arg1 = CreateFromFullName("System.Collections.Immutable.ImmutableArray`1");
             List_arg1 = CreateFromFullName("System.Collections.Generic.List`1");
             System_linq_enumerable = CreateFromFullName("System.Linq.Enumerable");
+
             #endregion
 
             #region Linq
-            
+
             #endregion
-            
-            
+
+
             #region Attributes
 
             RuntimeInitAttribute = CreateFromFullName(AquilaRuntimeInitAttributeFullName);
@@ -313,6 +323,13 @@ namespace Aquila.CodeAnalysis.Symbols
             DbParameter = CreateFromFullName(SDCDBParameterFullName);
             DbReader = CreateFromFullName(SDCDBReaderFullName);
 
+            #endregion
+
+
+            #region WebTypes
+
+            Web_ComponentBase = CreateFromFullName("Microsoft.AspNetCore.Components.ComponentBase");
+            Web_RenderTreeBuilder = CreateFromFullName("Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder");
             #endregion
 
             ;

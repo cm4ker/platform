@@ -1,18 +1,17 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Linq;
 using Aquila.Data;
 using Aquila.Logging;
-using Aquila.Metadata;
+using Aquila.Migrations;
 using Aquila.QueryBuilder.Builders;
 using Aquila.Runtime;
 using DBConstantsM = Aquila.Initializer.DBConstNames.Migration;
 using DBConstantsMS = Aquila.Initializer.DBConstNames.MigrationStatus;
 
 
-namespace Aquila.Migrations
+namespace Aquila.Core.Migration
 {
-    public class MigrationManager
+    public class AqMigrationManager
     {
         private readonly DataContextManager _dataContextManager;
 
@@ -20,7 +19,7 @@ namespace Aquila.Migrations
         //private readonly IConfigurationManipulator _m;
         private readonly ILogger _logger;
 
-        public MigrationManager(DataContextManager dataContextManager, ILogger<MigrationManager> logger)
+        public AqMigrationManager(DataContextManager dataContextManager, ILogger<AqMigrationManager> logger)
         {
             _dataContextManager = dataContextManager;
             _logger = logger;
@@ -50,7 +49,7 @@ namespace Aquila.Migrations
                 catch (Exception ex)
                 {
                     _logger.Error(ex, "Migration error, create migration");
-                    throw ex;
+                    throw;
                 }
             }
 
@@ -83,7 +82,7 @@ namespace Aquila.Migrations
                 catch (Exception ex)
                 {
                     _logger.Error(ex, "Migration error, complite migration");
-                    throw ex;
+                    throw;
                 }
             }
 
@@ -164,7 +163,7 @@ namespace Aquila.Migrations
                 catch (Exception ex)
                 {
                     _logger.Error(ex, "Migration error, clear migration status");
-                    throw ex;
+                    throw;
                 }
             }
         }

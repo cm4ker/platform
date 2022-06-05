@@ -109,8 +109,8 @@ namespace Aquila.CodeAnalysis.Public
 
         public SynthesizedMethodSymbol SynthesizeMethod(NamedTypeSymbol container)
         {
-            var prop = new SynthesizedMethodSymbol(container);
-            return prop;
+            var method = new SynthesizedMethodSymbol(container);
+            return method;
         }
 
         public SynthesizedCtorSymbol SynthesizeConstructor(NamedTypeSymbol container)

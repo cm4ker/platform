@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Xml.Serialization;
@@ -12,6 +13,7 @@ using Aquila.Core.CacheService;
 using Aquila.Data;
 using Aquila.Initializer;
 using Aquila.Core.Contracts.Network;
+using Aquila.Core.Migration;
 using Aquila.Logging;
 using Aquila.Metadata;
 using Aquila.Migrations;
@@ -54,16 +56,17 @@ namespace Aquila.Core.Instance
         private AquilaAssemblyLoadContext _asmContext;
 
         public AqInstance(ILogger<AqInstance> logger, IServiceProvider serviceProvider,
-            DataContextManager contextManager, UserManager userManager, ICacheService cacheService,
-            MigrationManager manager)
+            DataContextManager contextManager, AqUserManager userManager, ICacheService cacheService,
+            AqMigrationManager migrationManager, AqAuthenticationManager authenticationManager)
         {
             _locking = new object();
             _serviceProvider = serviceProvider;
             _logger = logger;
             _userManager = userManager;
             _cacheService = cacheService;
+            _authenticationManager = authenticationManager;
 
-            MigrationManager = manager;
+            MigrationManager = migrationManager;
 
             Globals = new Dictionary<string, object>();
             DataContextManager = contextManager;
@@ -97,12 +100,11 @@ namespace Aquila.Core.Instance
             _logger.Info("Current configuration was loaded. It contains {0} elements",
                 DatabaseRuntimeContext.Metadata.GetMetadata().EntityMetadata.Count());
 
-            // AuthenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
-            // _logger.Info("Auth provider was registered");
+            _authenticationManager.RegisterProvider(new BaseAuthenticationProvider(_userManager));
+            _logger.Info("Auth provider was registered");
 
             Reload();
         }
-
 
         private void Reload()
         {
@@ -303,10 +305,11 @@ namespace Aquila.Core.Instance
 
         private IServiceProvider _serviceProvider;
 
-        private UserManager _userManager;
+        private AqUserManager _userManager;
         private readonly ICacheService _cacheService;
+        private readonly AqAuthenticationManager _authenticationManager;
 
-        public MigrationManager MigrationManager { get; }
+        public AqMigrationManager MigrationManager { get; }
 
         public string Name => "Library";
 

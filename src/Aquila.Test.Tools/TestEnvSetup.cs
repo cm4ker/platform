@@ -8,6 +8,7 @@ using Xunit.Abstractions;
 using Aquila.Core.Contracts;
 using Aquila.Core.Contracts.Authentication;
 using Aquila.Core.Contracts.Network;
+using Aquila.Core.Migration;
 using Aquila.Core.Network;
 using Aquila.Core.Serialisers;
 using Aquila.Core.Settings;
@@ -47,11 +48,11 @@ namespace Aquila.Core.Test
             services.AddSingleton<IAqInstanceManager, AqInstanceManager>();
             services.AddScoped<ILinkFactory, LinkFactory>();
             services.AddScoped<AqInstance>();
-            services.AddScoped<MigrationManager>();
+            services.AddScoped<AqMigrationManager>();
 
             services.AddSingleton<ICacheService, DictionaryCacheService>();
 
-            services.AddScoped<UserManager>();
+            services.AddScoped<AqUserManager>();
             services.AddScoped<DataContextManager>();
 
             return services.BuildServiceProvider();

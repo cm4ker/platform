@@ -18,6 +18,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         Accessibility _accessibility;
         private ImmutableArray<AttributeData>.Builder _attributes;
         protected ImmutableArray<ParameterSymbol> _parameters;
+        private MethodSymbol _explicitOverride = null;
 
         /// <summary>
         /// Optional.
@@ -25,8 +26,6 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         /// For informational purposes.
         /// </summary>
         public MethodSymbol ForwardedCall { get; set; }
-
-        internal MethodSymbol ExplicitOverride { get; set; }
 
         /// <summary>
         /// If set to <c>true</c>, the method will emit [EditorBrowsable(Never)] attribute.
@@ -37,7 +36,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         internal bool IsAquilaHiddenInternal { get; set; }
 
-        public override IMethodSymbol OverriddenMethod => ExplicitOverride;
+        public override IMethodSymbol OverriddenMethod => _explicitOverride;
 
         public SynthesizedMethodSymbol(Cci.ITypeDefinition containingType, ModuleSymbol module, string name,
             bool isstatic, bool isvirtual, TypeSymbol returnType, Accessibility accessibility = Accessibility.Private,
@@ -83,6 +82,11 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         internal SynthesizedMethodSymbol SetParameters(ImmutableArray<ParameterSymbol> ps)
         {
+            if (_explicitOverride != null)
+            {
+                throw new Exception("Can't set parameters on the overriden method");
+            }
+
             Debug.Assert(!ps.IsDefault);
             _parameters = ps;
             return this;
@@ -127,6 +131,17 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         internal SynthesizedMethodSymbol SetName(string value)
         {
             _name = value;
+            return this;
+        }
+
+        internal SynthesizedMethodSymbol SetOverride(MethodSymbol symbol)
+        {
+            _explicitOverride = symbol;
+            _parameters = symbol.Parameters.SelectAsArray(x =>
+                (ParameterSymbol)new SynthesizedParameterSymbol(this, x.Type, x.Ordinal,
+                    x.RefKind, x.Name, x.IsParams, x.CustomModifiers,
+                    x.CountOfCustomModifiersPrecedingByRef, null, null));
+
             return this;
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 
@@ -11,6 +12,8 @@ public class AquilaApiHolder
     public ConcurrentDictionary<(string instanceName, string objectName, string methodName, string operationType),
             MethodInfo>
         Cruds { get; } = new();
+
+    public ConcurrentDictionary<(string instanceName, string viewName), Type> Views { get; } = new();
 
     public ConcurrentDictionary<(string instanceName, string methodName), MethodInfo> Endpoints { get; } = new();
 

@@ -91,6 +91,35 @@ namespace Aquila.CodeAnalysis.Emit
             //
         }
 
+        #region New API
+
+        public SynthesizedTypeSymbol SynthesizeType(NamespaceOrTypeSymbol container, string name)
+        {
+            var type = new SynthesizedTypeSymbol(container, DeclaringCompilation);
+            type.SetName(name);
+
+            if (container is SynthesizedNamespaceSymbol ns)
+            {
+                ns.AddType(type);
+            }
+
+            return type;
+        }
+
+        public SynthesizedNamespaceSymbol SynthesizeNamespace(INamespaceSymbol container, string name)
+        {
+            var ns = new SynthesizedNamespaceSymbol(container, name);
+            return ns;
+        }
+
+        public SynthesizedMethodSymbol SynthesizeMethod(NamedTypeSymbol container)
+        {
+            var method = new SynthesizedMethodSymbol(container);
+            return method;
+        }
+
+        #endregion
+
         /// <summary>
         /// Creates synthesized field.
         /// </summary>

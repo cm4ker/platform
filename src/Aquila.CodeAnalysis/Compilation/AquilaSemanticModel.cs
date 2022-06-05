@@ -168,7 +168,6 @@ namespace Aquila.CodeAnalysis
 
         protected override ControlFlowAnalysis AnalyzeControlFlowCore(SyntaxNode statement)
         {
-            ControlFlowAnalysis
             throw new NotImplementedException();
         }
 

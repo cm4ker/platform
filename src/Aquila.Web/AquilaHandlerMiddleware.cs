@@ -13,7 +13,11 @@ using Aquila.Runtime.Infrastructure.Helpers;
 using Aquila.Web.Swagger;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -51,10 +55,13 @@ namespace Aquila.AspNetCore.Web
                 case "metadata": return InvokeGetMetadata(context);
                 case "user": return InvokeGetCurrentUser(context);
                 case "endpoints": return InvokeEndpoints(context);
+                case "view": return InvokeView(context);
+
                 //in that case we not handle this and just invoke next delegate
                 default: return next(context);
             }
         }
+
 
         private void Init()
         {
@@ -198,7 +205,7 @@ namespace Aquila.AspNetCore.Web
 
             instance.Migrate();
             InitInstance(instance);
-            
+
             return Task.CompletedTask;
         }
 
@@ -327,6 +334,49 @@ namespace Aquila.AspNetCore.Web
                 else
                     await context.Response.WriteAsJsonAsync(obj, obj.GetType());
             }
+        }
+
+        private async Task InvokeView(HttpContext context)
+        {
+            var instanceName = context.GetRouteValue("instance")?.ToString();
+            var viewName = context.GetRouteValue("view")?.ToString();
+
+            var instance = _instanceManager.GetInstance(instanceName);
+
+            if (instance is null) return;
+
+            _holder.Views.TryGetValue((instanceName, viewName), out var type);
+            //instance type
+
+            var aqctx = new AqContext(instance);
+
+
+            #region Hook!
+
+            //starting invoke the razor page as in usual dotnet application 
+            IActionInvokerFactory? invokerFactory = null;
+
+            var endpoint = context.GetEndpoint()!;
+            var dataTokens = endpoint.Metadata.GetMetadata<IDataTokensMetadata>();
+
+            var routeData = new RouteData();
+            routeData.PushState(router: null, context.Request.RouteValues,
+                new RouteValueDictionary(dataTokens?.DataTokens));
+
+            var action = endpoint.Metadata.GetMetadata<ActionDescriptor>()!;
+            var actionContext = new ActionContext(context, routeData, action);
+
+            if (invokerFactory == null)
+            {
+                invokerFactory = context.RequestServices.GetRequiredService<IActionInvokerFactory>();
+            }
+
+            var invoker = invokerFactory.CreateInvoker(actionContext);
+            await invoker!.InvokeAsync();
+
+            #endregion
+
+            await context.Response.WriteAsync($"You try to open view {viewName}");
         }
 
         #endregion

@@ -11,14 +11,15 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
     internal class SynthesizedFinalizeSymbol : SynthesizedMethodSymbol
     {
         public SynthesizedFinalizeSymbol(NamedTypeSymbol container)
-            : base(container, WellKnownMemberNames.DestructorName, false, true, container.DeclaringCompilation.CoreTypes.Void, aquilahidden: true)
+            : base(container, WellKnownMemberNames.DestructorName, false, true,
+                container.DeclaringCompilation.CoreTypes.Void, aquilahidden: true)
         {
             Debug.Assert(!container.IsStatic);
 
-            ExplicitOverride = (MethodSymbol)container.DeclaringCompilation
+            SetOverride((MethodSymbol)container.DeclaringCompilation
                 .GetSpecialType(SpecialType.System_Object)
                 .GetMembers(WellKnownMemberNames.DestructorName)
-                .Single();
+                .Single());
         }
 
         public override bool HidesBaseMethodsByName => false;
@@ -47,18 +48,12 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
         }
 
         public override ImmutableArray<Location> Locations
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
         }
 
         public override ImmutableArray<ParameterSymbol> Parameters => ImmutableArray<ParameterSymbol>.Empty;

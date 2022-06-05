@@ -8,12 +8,12 @@ using Aquila.QueryBuilder;
 
 namespace Aquila.Core.Authentication
 {
-    public class UserManager
+    public class AqUserManager
     {
         private readonly DataContextManager _dataContextManager;
-        private readonly ILogger<UserManager> _logger;
+        private readonly ILogger<AqUserManager> _logger;
 
-        public UserManager(DataContextManager dataContextManager, ILogger<UserManager> logger)
+        public AqUserManager(DataContextManager dataContextManager, ILogger<AqUserManager> logger)
         {
             _dataContextManager = dataContextManager;
             _logger = logger;

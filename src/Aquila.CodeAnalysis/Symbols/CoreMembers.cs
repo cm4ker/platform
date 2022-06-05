@@ -292,10 +292,9 @@ namespace Aquila.CodeAnalysis.Symbols
 
                 Select = ct.System_linq_enumerable.Method("Select", ct.IEnumerable_arg1, ct.Func_arg2);
                 ToList = ct.System_linq_enumerable.Method("ToList", ct.IEnumerable_arg1);
-                
-                
-                
-                
+
+                ComponentBase_OnInitialized = null;
+                ComponentBase_BuildRenderTree = null;
             }
 
             public readonly CoreMethod
@@ -316,7 +315,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 //List
                 Select,
                 ToList,
-                
+
                 //Equality
                 //
                 Ceq_long_double,
@@ -334,7 +333,17 @@ namespace Aquila.CodeAnalysis.Symbols
                 Ceq_int_bool,
                 Ceq_int_string,
                 Clt_int_double,
-                Cgt_int_double;
+                Cgt_int_double,
+
+                #region Web
+
+                //ComponentBase
+                ComponentBase_BuildRenderTree,
+                ComponentBase_OnInitialized
+
+                #endregion
+
+                ;
         }
 
         public struct RuntimeHolder

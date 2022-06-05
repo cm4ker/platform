@@ -170,7 +170,12 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         public SynthesizedTypeSymbol SetBaseType(INamedTypeSymbol value)
         {
-            _baseType = (NamedTypeSymbol)value;
+            return SetBaseType((NamedTypeSymbol)value);
+        }
+
+        public SynthesizedTypeSymbol SetBaseType(NamedTypeSymbol value)
+        {
+            _baseType = value;
             return this;
         }
 

@@ -9,6 +9,7 @@ using Aquila.AspNetCore.Web;
 using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
 using Aquila.Core.Instance;
+using Aquila.Core.Migration;
 using Aquila.Core.Settings;
 using Aquila.Core.Utilities;
 using Aquila.Data;
@@ -17,6 +18,7 @@ using Aquila.Migrations;
 using Aquila.Web.Swagger;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
@@ -47,17 +49,17 @@ namespace Aquila.Web
         public static IApplicationBuilder UseAquila(this IApplicationBuilder builder, WebHostBuilderContext app)
         {
             builder.UseRouting();
-            
+
             builder.UseEndpoints(o =>
             {
                 o.MapControllers();
                 o.MapDefaultControllerRoute();
                 o.MapBlazorHub();
-                o.MapFallbackToPage("/_Host");
+                //o.MapFallbackToPage("/_Host");
                 o.MapGet("/hello", async context => { });
             });
-            
-    
+
+
             builder.UseStaticFiles();
             builder.UseAuthentication();
 
@@ -73,23 +75,25 @@ namespace Aquila.Web
             }
 
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "metadata",
-                "api/{instance}/metadata");
+                "api/{instance}/metadata", options => options.AddAuthorizeData(policy: "UserRequired"));
 
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "migrate",
-                "api/{instance}/migrate");
+                "api/{instance}/migrate", options => options.AddAuthorizeData(policy: "UserRequired"));
 
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "user",
-                "api/{instance}/user");
+                "api/{instance}/user", options => options.AddAuthorizeData(policy: "UserRequired"));
 
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "endpoints",
-                "api/{instance}/endpoints/{method}");
+                "api/{instance}/endpoints/{method}", options => options.AddAuthorizeData(policy: "UserRequired"));
 
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "deploy",
-                "api/{instance}/deploy");
+                "api/{instance}/deploy", options => options.AddAuthorizeData(policy: "UserRequired"));
+
+            builder.MapMiddleware<AquilaHandlerMiddleware>("default", "view",
+                "{instance}/{view}", options => options.AddAuthorizeData(policy: "UserRequired"));
 
             return builder.MapMiddleware<AquilaHandlerMiddleware>("default", "crud",
-                "api/{instance}/{object}/{method}/{id?}");
-            //options => options.AddAuthorizeData(policy: "UserRequired"));
+                "api/{instance}/{object}/{method}/{id?}", options => options.AddAuthorizeData(policy: "UserRequired"));
         }
 
         private static IApplicationBuilder MapMiddleware<T>(this IApplicationBuilder builder, string name,
@@ -115,10 +119,7 @@ namespace Aquila.Web
 
             nested.UseMiddleware<T>();
             nested.UseRouting();
-            nested.UseEndpoints(o =>
-            {
-                
-            });
+            nested.UseEndpoints(o => { });
 
             var route = new Route(
                 new RouteHandler(nested.Build()),
@@ -169,11 +170,12 @@ namespace Aquila.Web
             services.Configure<KestrelServerOptions>(options => { options.AllowSynchronousIO = true; });
 
             services.AddScoped<DataContextManager>();
-            services.AddScoped<UserManager>();
+            services.AddScoped<AqUserManager>();
 
-            services.AddSingleton<AqInstanceManager, AqInstanceManager>();
+            services.AddSingleton<AqInstanceManager>();
             services.AddScoped<AqInstance>();
-            services.AddScoped<MigrationManager>();
+            services.AddScoped<AqMigrationManager>();
+            services.AddScoped<AqAuthenticationManager>();
 
             services.AddSingleton<AqInstanceManager, AqInstanceManager>();
             services.AddSingleton<ISettingsStorage, FileSettingsStorage>();
@@ -188,6 +190,8 @@ namespace Aquila.Web
 
             services.AddSingleton<AquilaApiHolder>();
             services.AddSingleton<AquilaHandlerMiddleware>();
+
+
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -196,9 +200,9 @@ namespace Aquila.Web
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("UserRequired", policy => policy.RequireAuthenticatedUser());
-                // options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                //     .RequireAuthenticatedUser()
-                //     .Build();
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
             });
 
             services.AddAuthentication(options =>
