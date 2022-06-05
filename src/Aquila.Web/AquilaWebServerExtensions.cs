@@ -90,7 +90,7 @@ namespace Aquila.Web
                 "api/{instance}/deploy", options => options.AddAuthorizeData(policy: "UserRequired"));
 
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "view",
-                "{instance}/{view}", options => options.AddAuthorizeData(policy: "UserRequired"));
+                "{instance}/{view}"); // not use auth for views for now, options => options.AddAuthorizeData(policy: "UserRequired"));
 
             return builder.MapMiddleware<AquilaHandlerMiddleware>("default", "crud",
                 "api/{instance}/{object}/{method}/{id?}", options => options.AddAuthorizeData(policy: "UserRequired"));
