@@ -1,0 +1,41 @@
+﻿@using System.Reflection
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+<Router AppAssembly="@typeof(App).Assembly" AdditionalAssemblies="AdditionalAssemblies">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
+        <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p role="alert">Sorry, there's nothing at this address</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+
+@code
+{
+    public Assembly[] AdditionalAssemblies { get; set; } = Array.Empty<Assembly>();
+
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+    }
+
+    protected override void OnInitialized()
+    {
+        var httpContext = HttpContextAccessor.HttpContext;
+
+        //rendering will be if we found httpcontext with the key
+        if (httpContext != null)
+        {
+            AdditionalAssemblies = (Assembly[])HttpContextAccessor.HttpContext?.Items["AquilaAssemblies"];
+        }
+
+        base.OnInitialized();
+    }
+}

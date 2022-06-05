@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
-using System.IO;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Aquila.AspNetCore.Web;
 using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
@@ -14,24 +10,12 @@ using Aquila.Core.Settings;
 using Aquila.Core.Utilities;
 using Aquila.Data;
 using Aquila.Logging;
-using Aquila.Migrations;
 using Aquila.Web.Swagger;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Rendering;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,25 +24,16 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Swashbuckle.AspNetCore.Swagger;
-using RouteData = Microsoft.AspNetCore.Routing.RouteData;
 
 namespace Aquila.Web
 {
     public static class AquilaWebServerExtensions
     {
+        private static readonly string AreaKey = "area";
+
         public static IApplicationBuilder UseAquila(this IApplicationBuilder builder, WebHostBuilderContext app)
         {
             builder.UseRouting();
-
-            builder.UseEndpoints(o =>
-            {
-                o.MapControllers();
-                o.MapDefaultControllerRoute();
-                o.MapBlazorHub();
-                //o.MapFallbackToPage("/_Host");
-                o.MapGet("/hello", async context => { });
-            });
-
 
             builder.UseStaticFiles();
             builder.UseAuthentication();
@@ -90,10 +65,26 @@ namespace Aquila.Web
                 "api/{instance}/deploy", options => options.AddAuthorizeData(policy: "UserRequired"));
 
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "view",
-                "{instance}/{view}"); // not use auth for views for now, options => options.AddAuthorizeData(policy: "UserRequired"));
+                "view/{instance}/{view}"); // not use auth for views for now, options => options.AddAuthorizeData(policy: "UserRequired"));
 
-            return builder.MapMiddleware<AquilaHandlerMiddleware>("default", "crud",
+            builder.MapMiddleware<AquilaHandlerMiddleware>("default", "crud",
                 "api/{instance}/{object}/{method}/{id?}", options => options.AddAuthorizeData(policy: "UserRequired"));
+
+            builder.MapMiddleware<AquilaHandlerMiddleware>("default", "resource",
+                "res/{instance}/{resourceId?}", options => options.AddAuthorizeData(policy: "UserRequired"));
+
+
+            builder.UseEndpoints(o =>
+            {
+                o.MapControllers();
+                o.MapDefaultControllerRoute();
+
+                o.MapBlazorHub();
+
+                o.MapFallbackToPage("/_Host");
+            });
+
+            return builder;
         }
 
         private static IApplicationBuilder MapMiddleware<T>(this IApplicationBuilder builder, string name,
@@ -107,8 +98,8 @@ namespace Aquila.Web
         {
             var routeBuilder = new RouteBuilder(builder);
 
-            var defaultsDictionary = new RouteValueDictionary() { { "area", areaName } };
-            var constraintsDictionary = new RouteValueDictionary() { { "area", areaName } };
+            var defaultsDictionary = new RouteValueDictionary() { { AreaKey, areaName } };
+            var constraintsDictionary = new RouteValueDictionary() { { AreaKey, areaName } };
 
             var nested = builder.New();
 
@@ -188,21 +179,24 @@ namespace Aquila.Web
             // services.TryAddEnumerable(
             //     ServiceDescriptor.Transient<IApiDescriptionProvider, AquilaApplicationModelProvider>());
 
+
+            services.AddRazorPages().PartManager.FeatureProviders.Add(new CustomFeatureProvider());
+            services.AddServerSideBlazor();
+
+
             services.AddSingleton<AquilaApiHolder>();
             services.AddSingleton<AquilaHandlerMiddleware>();
 
 
-            services.AddRazorPages();
-            services.AddServerSideBlazor();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddRouting();
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("UserRequired", policy => policy.RequireAuthenticatedUser());
-                options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
+                // options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                //     .RequireAuthenticatedUser()
+                //     .Build();
             });
 
             services.AddAuthentication(options =>

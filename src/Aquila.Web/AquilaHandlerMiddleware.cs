@@ -1,23 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using Aquila.Core;
 using Aquila.Core.Instance;
 using Aquila.Logging;
 using Aquila.Runtime.Infrastructure.Helpers;
 using Aquila.Web.Swagger;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -55,7 +48,7 @@ namespace Aquila.AspNetCore.Web
                 case "metadata": return InvokeGetMetadata(context);
                 case "user": return InvokeGetCurrentUser(context);
                 case "endpoints": return InvokeEndpoints(context);
-                case "view": return InvokeView(context);
+                case "view": return InvokeView(context, next);
 
                 //in that case we not handle this and just invoke next delegate
                 default: return next(context);
@@ -336,47 +329,19 @@ namespace Aquila.AspNetCore.Web
             }
         }
 
-        private async Task InvokeView(HttpContext context)
+        private async Task InvokeView(HttpContext context, RequestDelegate next)
         {
             var instanceName = context.GetRouteValue("instance")?.ToString();
-            var viewName = context.GetRouteValue("view")?.ToString();
-
             var instance = _instanceManager.GetInstance(instanceName);
 
-            if (instance is null) return;
-
-            _holder.Views.TryGetValue((instanceName, viewName), out var type);
-            //instance type
-
-            var aqctx = new AqContext(instance);
-
-
-            #region Hook!
-
-            //starting invoke the razor page as in usual dotnet application 
-            IActionInvokerFactory? invokerFactory = null;
-
-            var endpoint = context.GetEndpoint()!;
-            var dataTokens = endpoint.Metadata.GetMetadata<IDataTokensMetadata>();
-
-            var routeData = new RouteData();
-            routeData.PushState(router: null, context.Request.RouteValues,
-                new RouteValueDictionary(dataTokens?.DataTokens));
-
-            var action = endpoint.Metadata.GetMetadata<ActionDescriptor>()!;
-            var actionContext = new ActionContext(context, routeData, action);
-
-            if (invokerFactory == null)
+            if (instance is null)
             {
-                invokerFactory = context.RequestServices.GetRequiredService<IActionInvokerFactory>();
+                await next(context);
+                return;
             }
 
-            var invoker = invokerFactory.CreateInvoker(actionContext);
-            await invoker!.InvokeAsync();
-
-            #endregion
-
-            await context.Response.WriteAsync($"You try to open view {viewName}");
+            context.Items["AquilaAssemblies"] = new[] { instance.BLAssembly };
+            await next(context);
         }
 
         #endregion

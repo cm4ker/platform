@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel;
@@ -45,12 +46,20 @@ namespace Aquila.Web
                 .Build();
 
             var builder = new WebHostBuilder()
+                
                 .UseConfiguration(config)
                 .ConfigureServices(services =>
                 {
                     services.AddDistributedMemoryCache();
                     services.AddSession();
                     services.AddAquila();
+                })
+                .ConfigureAppConfiguration((ctx, cb) =>
+                {
+                    if (ctx.HostingEnvironment.IsDevelopment())
+                    {
+                        StaticWebAssetsLoader.UseStaticWebAssets(ctx.HostingEnvironment, ctx.Configuration);
+                    }
                 })
                 .Configure((b, app) =>
                 {
