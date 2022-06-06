@@ -163,7 +163,7 @@ internal class SourceGlobalNamespaceSymbol : NamespaceSymbol
         var arr = new ArrayBuilder<Symbol>();
 
         var platformSymbols = DeclaringCompilation.PlatformSymbolCollection.GetNamespaces().OfType<Symbol>();
-
+        
         arr.AddRange(platformSymbols);
 
         var modules = DeclaringCompilation.SourceSymbolCollection.GetModuleTypes();

@@ -38,6 +38,11 @@
         /// <summary>
         /// Corresponds to System.Collections
         /// </summary>
-        SystemCollections
+        SystemCollections,
+        
+        /// <summary>
+        /// Corresponds to Microsoft.AspNetCore.Components
+        /// </summary>
+        AsnetcoreComponents
     }
 }

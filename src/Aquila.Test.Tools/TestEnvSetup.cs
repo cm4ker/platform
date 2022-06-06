@@ -49,6 +49,7 @@ namespace Aquila.Core.Test
             services.AddScoped<ILinkFactory, LinkFactory>();
             services.AddScoped<AqInstance>();
             services.AddScoped<AqMigrationManager>();
+            services.AddScoped<AqAuthenticationManager>();
 
             services.AddSingleton<ICacheService, DictionaryCacheService>();
 

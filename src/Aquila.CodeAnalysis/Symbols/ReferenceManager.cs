@@ -26,8 +26,10 @@ namespace Aquila.CodeAnalysis
             AssemblySymbol _lazyCorLibrary,
                 _lazyAquilaCorLibrary,
                 _systemCommonData,
-                _systemCollectionsImmutable,_systemCollections,
-                _systemLinq;
+                _systemCollectionsImmutable,
+                _systemCollections,
+                _systemLinq,
+                _aspnetcoreComponents;
 
             public Dictionary<AssemblyIdentity, PEAssemblySymbol> ObservedMetadata => _observedMetadata;
             readonly Dictionary<AssemblyIdentity, PEAssemblySymbol> _observedMetadata;
@@ -253,7 +255,11 @@ namespace Aquila.CodeAnalysis
                             if (_systemCollections == null &&
                                 symbol.SpecialAssembly == SpecialAssembly.SystemCollections)
                                 _systemCollections = symbol;
-                            
+
+                            if (_aspnetcoreComponents == null &&
+                                symbol.SpecialAssembly == SpecialAssembly.AsnetcoreComponents)
+                                _aspnetcoreComponents = symbol;
+
                             // cache bound assembly symbol
                             _observedMetadata[symbol.Identity] = symbol;
                         }
@@ -316,6 +322,7 @@ namespace Aquila.CodeAnalysis
                 compilation.CoreTypes.Update(_systemCollectionsImmutable);
                 compilation.CoreTypes.Update(_systemLinq);
                 compilation.CoreTypes.Update(_systemCollections);
+                compilation.CoreTypes.Update(_aspnetcoreComponents);
                 //
                 return assembly;
             }

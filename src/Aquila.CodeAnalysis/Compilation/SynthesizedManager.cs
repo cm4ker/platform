@@ -22,6 +22,8 @@ namespace Aquila.CodeAnalysis.Emit
     {
         readonly PEModuleBuilder _module;
 
+        private List<SynthesizedNamespaceSymbol> _namespaces = new List<SynthesizedNamespaceSymbol>();
+
         public AquilaCompilation DeclaringCompilation => _module.Compilation;
 
         readonly ConcurrentDictionary<Cci.ITypeDefinition, List<Symbol>> _membersByType =
@@ -34,64 +36,10 @@ namespace Aquila.CodeAnalysis.Emit
             _module = module;
         }
 
+        public ImmutableArray<NamespaceSymbol> Namespaces =>
+            _namespaces.ToImmutableArray().CastArray<NamespaceSymbol>();
+
         #region Synthesized Members
-
-        List<Symbol> EnsureList(Cci.ITypeDefinition type)
-        {
-            return _membersByType.GetOrAdd(type, (_) => new List<Symbol>());
-        }
-
-        void AddMember(Cci.ITypeDefinition type, Symbol member)
-        {
-            var members = EnsureList(type);
-            lock (members)
-            {
-                if (members.IndexOf(member) < 0)
-                {
-                    members.Add(member);
-                }
-                else
-                {
-                    Debug.Fail("Member added twice!");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or initializes static constructor symbol.
-        /// </summary>
-        public MethodSymbol EnsureStaticCtor(Cci.ITypeDefinition container)
-        {
-            Contract.ThrowIfNull(container);
-
-            //if (container is NamedTypeSymbol)
-            //{
-            //    var cctors = ((NamedTypeSymbol)container).StaticConstructors;
-            //    if (!cctors.IsDefaultOrEmpty)
-            //    {
-            //        return cctors[0];
-            //    }
-            //}
-
-            //
-            var members = EnsureList(container);
-            lock (members)
-            {
-                //
-                var cctor = members.OfType<SynthesizedCctorSymbol>().FirstOrDefault();
-                if (cctor == null)
-                {
-                    // cctor = new SynthesizedCctorSymbol(container, DeclaringCompilation.SourceModule);
-                    // members.Add(cctor);
-                }
-
-                return cctor;
-            }
-
-            //
-        }
-
-        #region New API
 
         public SynthesizedTypeSymbol SynthesizeType(NamespaceOrTypeSymbol container, string name)
         {
@@ -109,6 +57,7 @@ namespace Aquila.CodeAnalysis.Emit
         public SynthesizedNamespaceSymbol SynthesizeNamespace(INamespaceSymbol container, string name)
         {
             var ns = new SynthesizedNamespaceSymbol(container, name);
+            _namespaces.Add(ns);
             return ns;
         }
 
@@ -118,91 +67,10 @@ namespace Aquila.CodeAnalysis.Emit
             return method;
         }
 
-        #endregion
-
-        /// <summary>
-        /// Creates synthesized field.
-        /// </summary>
-        public SynthesizedFieldSymbol GetOrCreateSynthesizedField(NamedTypeSymbol container, TypeSymbol type,
-            string name, Accessibility accessibility, bool isstatic, bool @readonly, bool autoincrement = false)
+        public SynthesizedCtorSymbol SynthesizeConstructor(NamedTypeSymbol container)
         {
-            SynthesizedFieldSymbol field = null;
-
-            var members = EnsureList(container);
-            lock (members)
-            {
-                if (autoincrement)
-                {
-                    name += "?" + members.Count.ToString("x");
-                }
-
-                if (!autoincrement)
-                {
-                    field = members
-                        .OfType<SynthesizedFieldSymbol>()
-                        .FirstOrDefault(f =>
-                            f.Name == name && f.IsStatic == isstatic && f.Type == type && f.IsReadOnly == @readonly);
-                }
-
-                if (field == null)
-                {
-                    field = new SynthesizedFieldSymbol(container)
-                        .SetType(type)
-                        .SetName(name)
-                        .SetAccess(accessibility)
-                        .SetIsStatic(isstatic)
-                        .SetReadOnly(@readonly);
-                    ;
-                    members.Add(field);
-                }
-            }
-
-            Debug.Assert(field.IsImplicitlyDeclared);
-
-            return field;
-        }
-
-        /// <summary>
-        /// Adds a type member to the class.
-        /// </summary>
-        /// <param name="container">Containing type.</param>
-        /// <param name="nestedType">Type to be added as nested type.</param>
-        public void AddNestedType(Cci.ITypeDefinition container, NamedTypeSymbol nestedType)
-        {
-            Contract.ThrowIfNull(nestedType);
-            Debug.Assert(nestedType.IsImplicitlyDeclared);
-            Debug.Assert((container as ISymbol)?.ContainingType == null); // can't nest in nested type
-
-            AddMember(container, nestedType);
-        }
-
-        /// <summary>
-        /// Adds a synthesized method to the class.
-        /// </summary>
-        public void AddMethod(Cci.ITypeDefinition container, MethodSymbol method)
-        {
-            Contract.ThrowIfNull(method);
-            Debug.Assert(method.IsImplicitlyDeclared);
-
-            AddMember(container, method);
-        }
-
-        /// <summary>
-        /// Adds a synthesized property to the class.
-        /// </summary>
-        public void AddProperty(Cci.ITypeDefinition container, PropertySymbol property)
-        {
-            Contract.ThrowIfNull(property);
-
-            AddMember(container, property);
-        }
-
-        /// <summary>
-        /// Adds a synthesized symbol to the class.
-        /// </summary>
-        public void AddField(Cci.ITypeDefinition container, FieldSymbol field)
-        {
-            AddMember(container, field);
+            var ctor = new SynthesizedCtorSymbol(container);
+            return ctor;
         }
 
         /// <summary>

@@ -115,8 +115,8 @@ namespace Aquila.CodeAnalysis.Public
 
         public SynthesizedCtorSymbol SynthesizeConstructor(NamedTypeSymbol container)
         {
-            var prop = new SynthesizedCtorSymbol(container);
-            return prop;
+            var ctor = new SynthesizedCtorSymbol(container);
+            return ctor;
         }
 
         private object _lock = new object();

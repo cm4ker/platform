@@ -1,5 +1,5 @@
 {
   "urls": "https://localhost:5000;",
   "environment": "Development",
-  "staticWebAssets" : "C:/projects/AquilaPlatform/src/Aquila.Runner/bin/Debug/Aquila.Web.Razor.staticwebassets.runtime.json"
+  "staticWebAssets": "Aquila.Web.Razor"
 }

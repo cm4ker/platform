@@ -19,6 +19,7 @@ using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
+using Aquila.CodeAnalysis.Web;
 using SourceMethodSymbol = Aquila.CodeAnalysis.Symbols.SourceMethodSymbol;
 
 namespace Aquila.CodeAnalysis
@@ -59,7 +60,11 @@ namespace Aquila.CodeAnalysis
             // parallel worklist algorithm
             _worklist = new Worklist<BoundBlock>(AnalyzeBlock);
 
-            // semantic model
+            if (_moduleBuilder != null)
+            {
+                ComponentBaseGenerator cb = new ComponentBaseGenerator(_moduleBuilder);
+                cb.ConstructTypes();
+            }
         }
 
         void WalkMethods(Action<SourceMethodSymbol> action, bool allowParallel = false)
@@ -78,17 +83,16 @@ namespace Aquila.CodeAnalysis
 
         void WalkSynthesizedMethods(Action<SynthesizedMethodSymbol> action, bool allowParallel = false)
         {
-            var ps = _compilation.PlatformSymbolCollection.SynthesizedTypes.SelectMany(x =>
+            var platformSynth = _compilation.PlatformSymbolCollection.SynthesizedTypes.SelectMany(x =>
                 x.GetMembers().OfType<SynthesizedMethodSymbol>());
-
+            
             var moduleTypes = _compilation.SourceSymbolCollection.GetModuleTypes().ToImmutableArray();
 
-            var ss = moduleTypes.SelectMany(x => x.GetMembers().OfType<SynthesizedMethodSymbol>());
-
-            var nestedTypes = moduleTypes.SelectMany(x =>
+            var moduleMethods = moduleTypes.SelectMany(x => x.GetMembers().OfType<SynthesizedMethodSymbol>());
+            var moduleNestedTypesMethods = moduleTypes.SelectMany(x =>
                 x.GetTypeMembers().SelectMany(y => y.GetMembers().OfType<SynthesizedMethodSymbol>()));
 
-            var methods = ps.Union(ss).Union(nestedTypes);
+            var methods = platformSynth.Union(moduleMethods).Union(moduleNestedTypesMethods);
 
             if (ConcurrentBuild && allowParallel)
             {

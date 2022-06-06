@@ -1,6 +1,8 @@
 ﻿@using System.Reflection
+@using Aquila.Core.Instance
 @using Microsoft.AspNetCore.Http
-@inject IHttpContextAccessor HttpContextAccessor
+
+@inject AqInstanceManager InstanceManager
 
 <Router AppAssembly="@typeof(App).Assembly" AdditionalAssemblies="AdditionalAssemblies">
     <Found Context="routeData">
@@ -11,6 +13,14 @@
         <PageTitle>Not found</PageTitle>
         <LayoutView Layout="@typeof(MainLayout)">
             <p role="alert">Sorry, there's nothing at this address</p>
+            <p>@InstanceName</p>
+
+
+            <p>Lookup assemblies: </p>
+            @foreach (var asm in AdditionalAssemblies)
+            {
+                <p>@asm</p>
+            }
         </LayoutView>
     </NotFound>
 </Router>
@@ -20,22 +30,14 @@
 {
     public Assembly[] AdditionalAssemblies { get; set; } = Array.Empty<Assembly>();
 
-
-    protected override void OnParametersSet()
-    {
-        base.OnParametersSet();
-    }
+    [Parameter]
+    public string InstanceName { get; set; }
 
     protected override void OnInitialized()
     {
-        var httpContext = HttpContextAccessor.HttpContext;
-
-        //rendering will be if we found httpcontext with the key
-        if (httpContext != null)
-        {
-            AdditionalAssemblies = (Assembly[])HttpContextAccessor.HttpContext?.Items["AquilaAssemblies"];
-        }
-
         base.OnInitialized();
+
+        if (InstanceManager.ExistsInstance(InstanceName))
+            AdditionalAssemblies = new[] { InstanceManager.GetInstance(InstanceName)?.BLAssembly };
     }
 }

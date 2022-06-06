@@ -215,11 +215,11 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         public override ImmutableArray<MethodSymbol> ExplicitInterfaceImplementations =>
             IsExplicitInterfaceImplementation
-                ? ImmutableArray.Create(ExplicitOverride)
+                ? ImmutableArray.Create(_explicitOverride)
                 : ImmutableArray<MethodSymbol>.Empty;
 
         internal override bool IsExplicitInterfaceImplementation =>
-            ExplicitOverride != null && ExplicitOverride.ContainingType.IsInterface;
+            _explicitOverride != null && _explicitOverride.ContainingType.IsInterface;
 
         public override MethodKind MethodKind
         {

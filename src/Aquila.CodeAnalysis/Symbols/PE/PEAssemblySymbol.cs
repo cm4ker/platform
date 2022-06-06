@@ -158,6 +158,10 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             {
                 _specialAssembly = SpecialAssembly.CorLibrary;
             }
+            else if (IsAspnetcoreComponents(assembly))
+            {
+                _specialAssembly = SpecialAssembly.AsnetcoreComponents;
+            }
             else
             {
                 // extension assembly ?
@@ -173,8 +177,11 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             ass.Identity.Name == "System.Collections.Immutable";
 
         internal static bool IsSystemLinq(PEAssembly ass) => ass.Identity.Name == "System.Linq";
-        
+
         internal static bool IsSystemCollections(PEAssembly ass) => ass.Identity.Name == "System.Collections";
+
+        internal static bool IsAspnetcoreComponents(PEAssembly ass) =>
+            ass.Identity.Name == "Microsoft.AspNetCore.Components";
 
         internal static PEAssemblySymbol Create(PortableExecutableReference reference, PEAssembly ass = null,
             bool isLinked = true)

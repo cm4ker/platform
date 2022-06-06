@@ -29,7 +29,7 @@ namespace Aquila.Web
 {
     public static class AquilaWebServerExtensions
     {
-        private static readonly string AreaKey = "area";
+        public static readonly string AreaKey = "platform-area";
 
         public static IApplicationBuilder UseAquila(this IApplicationBuilder builder, WebHostBuilderContext app)
         {
@@ -50,10 +50,10 @@ namespace Aquila.Web
             }
 
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "metadata",
-                "api/{instance}/metadata", options => options.AddAuthorizeData(policy: "UserRequired"));
+                "api/{instance}/metadata");
 
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "migrate",
-                "api/{instance}/migrate", options => options.AddAuthorizeData(policy: "UserRequired"));
+                "api/{instance}/migrate");
 
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "user",
                 "api/{instance}/user", options => options.AddAuthorizeData(policy: "UserRequired"));
@@ -62,16 +62,17 @@ namespace Aquila.Web
                 "api/{instance}/endpoints/{method}", options => options.AddAuthorizeData(policy: "UserRequired"));
 
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "deploy",
-                "api/{instance}/deploy", options => options.AddAuthorizeData(policy: "UserRequired"));
-
-            builder.MapMiddleware<AquilaHandlerMiddleware>("default", "view",
-                "view/{instance}/{view}"); // not use auth for views for now, options => options.AddAuthorizeData(policy: "UserRequired"));
+                "api/{instance}/deploy");
 
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "crud",
                 "api/{instance}/{object}/{method}/{id?}", options => options.AddAuthorizeData(policy: "UserRequired"));
 
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "resource",
                 "res/{instance}/{resourceId?}", options => options.AddAuthorizeData(policy: "UserRequired"));
+
+            //declare view after the mapping blazor            
+            builder.MapMiddleware<AquilaHandlerMiddleware>("default", "view",
+                "view/{instance}/{view}"); // not use auth for views for now, options => options.AddAuthorizeData(policy: "UserRequired"));
 
 
             builder.UseEndpoints(o =>
@@ -83,6 +84,7 @@ namespace Aquila.Web
 
                 o.MapFallbackToPage("/_Host");
             });
+
 
             return builder;
         }

@@ -53,7 +53,9 @@ namespace Aquila.Compiler.Tests
                 typeof(DbCommand).Assembly, // System.Common.Data
                 typeof(QueryAttribute).Assembly, // Aquila.Runtime
                 typeof(DataExtensions).Assembly, // Aquila.Library
-                typeof(NpgsqlConnection).Assembly // Npgsql
+                typeof(NpgsqlConnection).Assembly, // Npgsql
+                //TODO: I don't like this reference here. Need make it more simple and light
+                typeof(Microsoft.AspNetCore.Components.RouteAttribute).Assembly
             };
 
             var set = new HashSet<Assembly>();

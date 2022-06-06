@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -46,7 +47,6 @@ namespace Aquila.Web
                 .Build();
 
             var builder = new WebHostBuilder()
-                
                 .UseConfiguration(config)
                 .ConfigureServices(services =>
                 {
@@ -58,6 +58,15 @@ namespace Aquila.Web
                 {
                     if (ctx.HostingEnvironment.IsDevelopment())
                     {
+                        var fileName = ctx.Configuration.GetSection(WebHostDefaults.StaticWebAssetsKey).Value;
+                        var assembly = Assembly.Load(ctx.HostingEnvironment.ApplicationName);
+                        var basePath = string.IsNullOrEmpty(assembly.Location)
+                            ? AppContext.BaseDirectory
+                            : Path.GetDirectoryName(assembly.Location);
+                        
+                        ctx.Configuration.GetSection(WebHostDefaults.StaticWebAssetsKey).Value =
+                            Path.Combine(basePath!, $"{fileName}.staticwebassets.runtime.json");
+
                         StaticWebAssetsLoader.UseStaticWebAssets(ctx.HostingEnvironment, ctx.Configuration);
                     }
                 })

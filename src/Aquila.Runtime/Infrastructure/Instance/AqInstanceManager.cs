@@ -58,6 +58,9 @@ namespace Aquila.Core.Instance
             return null;
         }
 
+        public bool ExistsInstance(string name) =>
+            _instances.Any(m => m.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
         public AqInstance GetInstance(string name)
         {
             return _instances.FirstOrDefault(m => m.Name.Equals(name, StringComparison.OrdinalIgnoreCase));

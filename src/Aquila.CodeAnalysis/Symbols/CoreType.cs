@@ -238,7 +238,8 @@ namespace Aquila.CodeAnalysis.Symbols
 
             //WebTypes
             Web_ComponentBase,
-            Web_RenderTreeBuilder
+            Web_RenderTreeBuilder,
+            Web_Route
 
             //End
             ;
@@ -330,6 +331,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
             Web_ComponentBase = CreateFromFullName("Microsoft.AspNetCore.Components.ComponentBase");
             Web_RenderTreeBuilder = CreateFromFullName("Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder");
+            Web_Route = CreateFromFullName("Microsoft.AspNetCore.Components.RouteAttribute");
             #endregion
 
             ;

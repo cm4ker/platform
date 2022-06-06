@@ -8,6 +8,7 @@ using Aquila.Core;
 using Aquila.Core.Instance;
 using Aquila.Logging;
 using Aquila.Runtime.Infrastructure.Helpers;
+using Aquila.Web;
 using Aquila.Web.Swagger;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -38,7 +39,7 @@ namespace Aquila.AspNetCore.Web
 
         public Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            var area = context.GetRouteValue("area");
+            var area = context.GetRouteValue(AquilaWebServerExtensions.AreaKey);
 
             switch (area)
             {
@@ -340,7 +341,7 @@ namespace Aquila.AspNetCore.Web
                 return;
             }
 
-            context.Items["AquilaAssemblies"] = new[] { instance.BLAssembly };
+            context.Items["AquilaAssemblies"] = new[] { instance.BLAssembly, typeof(AquilaHandlerMiddleware).Assembly };
             await next(context);
         }
 

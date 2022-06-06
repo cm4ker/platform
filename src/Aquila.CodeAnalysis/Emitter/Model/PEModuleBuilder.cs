@@ -303,72 +303,6 @@ namespace Aquila.CodeAnalysis.Emit
 
         public override string Name => _sourceModule.Name;
 
-        #region Method Body Map
-
-        /// <summary>
-        /// Gets IL builder for lazy static constructor.
-        /// </summary>
-        public ILBuilder GetStaticCtorBuilder(Cci.ITypeDefinition container)
-        {
-            ILBuilder il;
-
-            lock (container)
-            {
-                if (!_cctorBuilders.TryGetValue(container, out il))
-                {
-                    // TODO: Check whether in some cases we cannot skip it
-                    bool areLocalsZeroed = true;
-
-                    var cctor = SynthesizedManager.EnsureStaticCtor(container); // ensure .cctor is declared
-                    _cctorBuilders[container] = il = new ILBuilder(this, new LocalSlotManager(null),
-                        _compilation.Options.OptimizationLevel.AsOptimizationLevel(), areLocalsZeroed);
-                }
-            }
-
-            return il;
-        }
-
-        /// <summary>
-        /// Any lazily emitted static constructor will be realized and its body saved to method map.
-        /// </summary>
-        public void RealizeStaticCtors()
-        {
-            // Create module static cctor
-            EmitAddScriptReference(GetStaticCtorBuilder(_rootModuleType));
-
-            // finish synthesized .cctor methods:
-            foreach (var pair in _cctorBuilders)
-            {
-                var cctor = SynthesizedManager.EnsureStaticCtor(pair.Key);
-                var il = pair.Value;
-
-                //
-                Debug.Assert(cctor.ReturnsVoid);
-                il.EmitRet(true);
-
-                //
-                var body = CodeGen.MethodGenerator.CreateSynthesizedBody(this, cctor, il);
-                SetMethodBody(cctor, body);
-            }
-        }
-
-        void EmitAddScriptReference(ILBuilder il)
-        {
-            // // Context.DllLoader<TScript>
-            // var tDllLoader_T = this.Compilation.GetTypeByMetadataName(CoreTypes.Context_DllLoader_T);
-            // var tDllLoader = tDllLoader_T.Construct(this.ScriptType);
-            //
-            // // .AddScriptReference()
-            // var addmethod = (MethodSymbol) tDllLoader.GetMembers("AddScriptReference").Single();
-            //
-            // // .call Context.DllLoader<TScript>.Bootstrap()
-            // il
-            //     .EmitCall(this, DiagnosticBag.GetInstance(), System.Reflection.Metadata.ILOpCode.Call, addmethod)
-            //     .Expect(SpecialType.System_Void);
-        }
-
-        #endregion
-
         internal override Compilation CommonCompilation => _compilation;
 
         internal AquilaCompilation Compilation => _compilation;
@@ -622,6 +556,7 @@ namespace Aquila.CodeAnalysis.Emit
             foreach (var t in this.Compilation.PlatformSymbolCollection.GetAllCreatedTypes())
                 yield return t;
 
+
             //foreach (var type in GetAdditionalTopLevelTypes())
             //{
             //    yield return type;
@@ -633,26 +568,25 @@ namespace Aquila.CodeAnalysis.Emit
             foreach (var t in _sourceModule.SymbolCollection.GetModuleTypes())
                 yield return t;
 
-            //var namespacesToProcess = new Stack<INamespaceSymbol>();
-            //namespacesToProcess.Push(this.SourceModule.GlobalNamespace);
+            var namespacesToProcess = new Stack<INamespaceSymbol>(this.SynthesizedManager.Namespaces);
 
-            //while (namespacesToProcess.Count != 0)
-            //{
-            //    var ns = namespacesToProcess.Pop();
-            //    foreach (var member in ns.GetMembers())
-            //    {
-            //        var memberNamespace = member as INamespaceSymbol;
-            //        if (memberNamespace != null)
-            //        {
-            //            namespacesToProcess.Push(memberNamespace);
-            //        }
-            //        else
-            //        {
-            //            var type = (NamedTypeSymbol)member;
-            //            yield return type;
-            //        }
-            //    }
-            //}
+            while (namespacesToProcess.Count != 0)
+            {
+                var ns = namespacesToProcess.Pop();
+                foreach (var member in ns.GetMembers())
+                {
+                    var memberNamespace = member as INamespaceSymbol;
+                    if (memberNamespace != null)
+                    {
+                        namespacesToProcess.Push(memberNamespace);
+                    }
+                    else
+                    {
+                        var type = (NamedTypeSymbol)member;
+                        yield return type;
+                    }
+                }
+            }
         }
 
         public override IEnumerable<Cci.INamespaceTypeDefinition> GetEmbeddedTypeDefinitions(EmitContext context) =>
@@ -719,7 +653,7 @@ namespace Aquila.CodeAnalysis.Emit
                     }
                 case Accessibility.NotApplicable:
                     return Cci.TypeMemberVisibility.Public;
-                
+
                 default:
                     throw ExceptionUtilities.UnexpectedValue(symbol.DeclaredAccessibility);
             }
