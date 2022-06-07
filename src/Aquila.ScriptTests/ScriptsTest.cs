@@ -6,6 +6,7 @@ using Aquila.Core;
 using Aquila.Library.Scripting;
 using Aquila.Metadata;
 using Aquila.Runtime.Tests.DB;
+using Aquila.Test.Tools;
 using Xunit;
 using Xunit.Abstractions;
 

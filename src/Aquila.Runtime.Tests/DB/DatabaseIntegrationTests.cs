@@ -5,6 +5,7 @@ using Aquila.Core.Querying.Model;
 using Aquila.QueryBuilder.Model;
 using Aquila.QueryBuilder.Visitor;
 using Aquila.Runtime.Querying;
+using Aquila.Test.Tools;
 using Npgsql;
 using Xunit;
 using Xunit.Abstractions;

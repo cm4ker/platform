@@ -15,7 +15,7 @@ using DotNet.Testcontainers.Containers.Modules.Databases;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Aquila.Runtime.Tests.DB
+namespace Aquila.Test.Tools
 {
     public class DatabaseFixture : IAsyncLifetime
     {

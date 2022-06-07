@@ -12,6 +12,7 @@ using Aquila.QueryBuilder.Visitor;
 using Aquila.Runtime;
 using Aquila.Runtime.Querying;
 using Aquila.Runtime.Tests.DB;
+using Aquila.Test.Tools;
 using JetBrains.Annotations;
 using Npgsql.Replication.PgOutput.Messages;
 using Xunit;
