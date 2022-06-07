@@ -9,7 +9,6 @@
     <ItemGroup>
         <PackageReference Include="DotNet.Testcontainers" Version="1.5.0" />
         <PackageReference Include="xunit.abstractions" Version="2.0.3" />
-        <PackageReference Include="SqlInMemory" Version="1.0.6" />
         <PackageReference Include="xunit.assert" Version="2.4.1" />
         <PackageReference Include="xunit.extensibility.core" Version="2.4.1" />
     </ItemGroup>
