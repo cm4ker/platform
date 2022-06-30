@@ -62,8 +62,11 @@ namespace Aquila.CodeAnalysis
 
             if (_moduleBuilder != null)
             {
-                ComponentBaseGenerator cb = new ComponentBaseGenerator(_moduleBuilder);
-                cb.ConstructTypes();
+                foreach (var compilationView in _compilation.Views)
+                {
+                    ComponentBaseGenerator cb = new ComponentBaseGenerator(_moduleBuilder, compilationView);
+                    cb.Build();
+                }
             }
         }
 
@@ -85,7 +88,7 @@ namespace Aquila.CodeAnalysis
         {
             var platformSynth = _compilation.PlatformSymbolCollection.SynthesizedTypes.SelectMany(x =>
                 x.GetMembers().OfType<SynthesizedMethodSymbol>());
-            
+
             var moduleTypes = _compilation.SourceSymbolCollection.GetModuleTypes().ToImmutableArray();
 
             var moduleMethods = moduleTypes.SelectMany(x => x.GetMembers().OfType<SynthesizedMethodSymbol>());

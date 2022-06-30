@@ -1,16 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="..\Props\target.props"/>
+    <Import Project="..\Props\target.props" />
 
     <ItemGroup>
-        <ProjectReference Include="..\Aquila.CodeAnalysis\Aquila.CodeAnalysis.csproj"/>
-        <ProjectReference Include="..\Aquila.Library\Aquila.Library.csproj"/>
-        <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj"/>
+        <ProjectReference Include="..\Aquila.CodeAnalysis\Aquila.CodeAnalysis.csproj" />
+        <ProjectReference Include="..\Aquila.Library\Aquila.Library.csproj" />
+        <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj" />
     </ItemGroup>
 
     <!--TODO: I don't like this reference here. Need make it more simple and light-->
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Components" Version="6.0.5"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components" Version="6.0.5" />
     </ItemGroup>
 
 </Project>

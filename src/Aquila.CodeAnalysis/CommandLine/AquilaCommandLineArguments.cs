@@ -22,6 +22,8 @@ namespace Aquila.CodeAnalysis.CommandLine
 
         public ImmutableArray<string> MetadataFiles { get; set; }
 
+        public ImmutableArray<CommandLineSourceFile> ViewFiles { get; set; }
+
         /// <value>
         /// Should the format of error messages include the line and column of
         /// the end of the offending text.

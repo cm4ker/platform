@@ -6,6 +6,8 @@ namespace Aquila.CodeAnalysis
     {
         public const string LanguageId = "aqlang";
         public const string ScriptFileExtension = ".aq";
+        public const string ViewFileExtension = ".aqview";
+        public const string MetadataFileExtension = ".aqmd";
 
         /// <summary>
         /// Aquila language Guid used by debugger.

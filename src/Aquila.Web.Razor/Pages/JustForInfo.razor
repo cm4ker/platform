@@ -1,6 +1,33 @@
 ﻿@page "/JustForInfo"
-<h3>HELLO FROM HERE EPTA</h3>
 
-@code {
 
+@for (int i = 0; i < 5; i++)
+{
+    <!-- print div block with Hello world [i] 5 times -->
+    <div>
+        asdfalsdkhfaksdjhfkjasd
+        //asdfasdfasdfs
+        //asdfasdf
+        //asdfasdfs
+        
+    </div>
+}
+
+@{
+    //hello my name    
+    foreach (var item in Enumerable.Range(0, 10))
+    {
+        <h1>@item</h1>
+    }
+
+    <h1></h1>
+
+    Test();
+}
+
+@code 
+{
+    public void Test()
+    {
+    }
 }

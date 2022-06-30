@@ -75,10 +75,12 @@ namespace Aquila.CodeAnalysis.CommandLine
             bool hadErrors = false;
             var sourceFiles = Arguments.SourceFiles;
             var metadataFiles = Arguments.MetadataFiles;
+            var viewFiles = Arguments.ViewFiles;
 
             IEnumerable<AquilaSyntaxTree> sourceTrees;
 
             IEnumerable<EntityMetadata> metadata;
+            IEnumerable<string> views;
 
             var resources = Enumerable.Empty<ResourceDescription>();
 
@@ -154,6 +156,39 @@ namespace Aquila.CodeAnalysis.CommandLine
                 metadata = mdList;
             }
 
+
+            using (Arguments.CompilationOptions.EventSources.StartMetric("parse-view"))
+            {
+                var viewList = new string[viewFiles.Length];
+
+                var d = new DeserializerBuilder()
+                    .IgnoreUnmatchedProperties()
+                    .Build();
+
+                var diagnosticInfos = new List<DiagnosticInfo>();
+
+                if (Arguments.CompilationOptions.ConcurrentBuild)
+                {
+                    Parallel.For(0, viewFiles.Length,
+                        i =>
+                        {
+                            TryReadFileContent(viewFiles[i], diagnosticInfos, out string content);
+                            viewList[i] = content;
+                        });
+                }
+                else
+                {
+                    for (int i = 0; i < viewFiles.Length; i++)
+                    {
+                        TryReadFileContent(viewFiles[i], diagnosticInfos, out string content);
+                        viewList[i] = content;
+                    }
+                }
+
+                hadErrors = diagnosticInfos.Any();
+                views = viewList;
+            }
+
             // If errors had been reported in ParseFile, while trying to read files, then we should simply exit.
             if (hadErrors)
             {
@@ -183,8 +218,9 @@ namespace Aquila.CodeAnalysis.CommandLine
 
             var compilation = AquilaCompilation.Create(
                 Arguments.CompilationName,
-                sourceTrees.WhereNotNull(),
-                metadata,
+                syntaxTrees: sourceTrees.WhereNotNull(),
+                metadata: metadata,
+                views: views,
                 resolvedReferences,
                 resources: resources,
                 options: Arguments.CompilationOptions.WithMetadataReferenceResolver(referenceResolver)

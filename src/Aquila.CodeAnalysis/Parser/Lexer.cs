@@ -15,42 +15,50 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Syntax.InternalSyntax;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
+using YamlDotNet.Core.Tokens;
 
 namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
     [Flags]
     internal enum LexerMode
     {
-        Syntax = 0x0001,
-        DebuggerSyntax = 0x0002,
-        Directive = 0x0004,
-        XmlDocComment = 0x0008,
-        XmlElementTag = 0x0010,
-        XmlAttributeTextQuote = 0x0020,
-        XmlAttributeTextDoubleQuote = 0x0040,
-        XmlCrefQuote = 0x0080,
-        XmlCrefDoubleQuote = 0x0100,
-        XmlNameQuote = 0x0200,
-        XmlNameDoubleQuote = 0x0400,
-        XmlCDataSectionText = 0x0800,
-        XmlCommentText = 0x1000,
-        XmlProcessingInstructionText = 0x2000,
-        XmlCharacter = 0x4000,
-        MaskLexMode = 0xFFFF,
+        Syntax = 1 << 0,
+        DebuggerSyntax = 1 << 1,
+        Directive = 1 << 2,
+        ViewSyntax = 1 << 3,
+        
+        //xml comments modes
+        XmlDocComment = 1 << 4,
+        XmlElementTag = 1 << 5,
+        XmlAttributeTextQuote = 1 << 6,
+        XmlAttributeTextDoubleQuote = 1 << 7,
+        XmlCrefQuote = 1 << 8,
+        XmlCrefDoubleQuote = 1 << 9,
+        XmlNameQuote = 1 << 10,
+        XmlNameDoubleQuote = 1 << 11,
+        XmlCDataSectionText = 1 << 12,
+        XmlCommentText = 1 << 13,
+        XmlProcessingInstructionText = 1 << 14,
+        XmlCharacter = 1 << 15,
+        
+        //html modes
+        HtmlTag = 1 << 16,
+        
+        MaskLexMode = 0xFFFFF,
 
         // The following are lexer driven, which is to say the lexer can push a change back to the
         // blender. There is in general no need to use a whole bit per enum value, but the debugging
         // experience is bad if you don't do that.
 
-        XmlDocCommentLocationStart = 0x00000,
-        XmlDocCommentLocationInterior = 0x10000,
-        XmlDocCommentLocationExterior = 0x20000,
-        XmlDocCommentLocationEnd = 0x40000,
-        MaskXmlDocCommentLocation = 0xF0000,
+        XmlDocCommentLocationStart = 0,
+        XmlDocCommentLocationInterior = 1 << 21,
+        XmlDocCommentLocationExterior = 1 << 22,
+        XmlDocCommentLocationEnd = 1 << 23,
+        MaskXmlDocCommentLocation = 1 << 24,
 
-        XmlDocCommentStyleSingleLine = 0x000000,
-        XmlDocCommentStyleDelimited = 0x100000,
-        MaskXmlDocCommentStyle = 0x300000,
+        XmlDocCommentStyleSingleLine = 0,
+        XmlDocCommentStyleDelimited = 1 << 25,
+        MaskXmlDocCommentStyle = 1 << 26,
 
         None = 0
     }
@@ -252,6 +260,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     return this.QuickScanSyntaxToken() ?? this.LexSyntaxToken();
                 case LexerMode.Directive:
                     return this.LexDirectiveToken();
+                case LexerMode.ViewSyntax:
+                    return this.LexViewSyntaxToken();
             }
 
             switch (ModeOf(_mode))
@@ -3077,6 +3087,69 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
             return trivia;
         }
+
+
+        #region Html
+
+        private SyntaxToken LexViewSyntaxToken()
+        {
+            this.Start();
+            var savedMode = _mode;
+            TokenInfo info = default(TokenInfo);
+            this.ScanViewSyntaxToken(ref info);
+            var errors = this.GetErrors(leadingTriviaWidth: 0);
+            var trailing = this.LexViewTrailingTrivia(info.Kind == SyntaxKind.EndOfDirectiveToken);
+            return Create(ref info, null, trailing, errors);
+        }
+
+        private SyntaxListBuilder LexViewTrailingTrivia(bool includeEndOfLine)
+        {
+            return null;
+        }
+
+        private void ScanViewSyntaxToken(ref TokenInfo info)
+        {
+            start:
+            switch (TextWindow.PeekChar())
+            {
+                case '\r':
+                case '\n':
+                    TextWindow.AdvanceChar();
+                    goto start;
+                case '<':
+                    info.Kind = SyntaxKind.OpenAngleToken;
+                    _mode |= LexerMode.HtmlTag;
+                    TextWindow.AdvanceChar();
+                    break;
+                case '>':
+                    info.Kind = SyntaxKind.CloseAngleToken;
+                    TextWindow.AdvanceChar();
+                    break;
+                case '/':
+                    info.Kind = SyntaxKind.ForwardSlashToken;
+                    TextWindow.AdvanceChar();
+                    break;
+                case '@':
+                    if (TextWindow.PeekChar(1) != '@')
+                    {
+                        info.Kind = SyntaxKind.MarkupInterruptToken;
+                    }
+
+                    break;
+                case var x when char.IsLetter(x) || char.IsDigit(x):
+                    ScanTagName(ref info);
+                    break;
+                case '=':
+                    info.Kind = SyntaxKind.EqualsToken;
+                    break;
+            }
+        }
+
+        private void ScanTagName(ref TokenInfo info)
+        {
+        }
+
+        #endregion
 
         private AquilaSyntaxNode LexXmlDocComment(XmlDocCommentStyle style)
         {

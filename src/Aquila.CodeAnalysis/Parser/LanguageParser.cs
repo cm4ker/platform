@@ -150,39 +150,20 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         private struct FileBody
         {
             public ModuleDecl ModuleDecl = null;
-            // SyntaxFactory.ModuleDecl(SyntaxToken.Create(SyntaxKind.ModuleKeyword),
-            // SyntaxFactory.IdentifierEx(SyntaxToken.Identifier("main")),
-            // SyntaxToken.Create(SyntaxKind.SemicolonToken));
-
+            
             public SyntaxListBuilder<ImportDecl> Imports;
-
             public SyntaxListBuilder<MemberDecl> Members;
-            // public SyntaxListBuilder<MethodDecl> Methods;
-            // public SyntaxListBuilder<FuncDecl> Functions;
-            // public SyntaxListBuilder<ExtendDecl> Extends;
-            // public SyntaxListBuilder<ComponentDecl> Components;
-            // public SyntaxListBuilder<TypeDecl> Types;
-
+            
             public FileBody(SyntaxListPool pool)
             {
                 Imports = pool.Allocate<ImportDecl>();
                 Members = pool.Allocate<MemberDecl>();
-                //Methods = pool.Allocate<MethodDecl>();
-                // Functions = pool.Allocate<FuncDecl>();
-                // Extends = pool.Allocate<ExtendDecl>();
-                // Components = pool.Allocate<ComponentDecl>();
-                // Types = pool.Allocate<TypeDecl>();
             }
 
             internal void Free(SyntaxListPool pool)
             {
                 pool.Free(Imports);
                 pool.Free(Members);
-                // pool.Free(Methods);
-                // pool.Free(Functions);
-                // pool.Free(Extends);
-                // pool.Free(Components);
-                // pool.Free(Types);
             }
         }
 
@@ -194,10 +175,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     null,
                     new SyntaxList<ImportDecl>(),
                     new SyntaxList<MemberDecl>(),
-                    // new SyntaxList<MethodDecl>(),
-                    // new SyntaxList<FuncDecl>(),
-                    // new SyntaxList<ExtendDecl>(),
-                    // new SyntaxList<ComponentDecl>(),
                     SyntaxFactory.Token(SyntaxKind.EndOfFileToken)));
         }
 
@@ -8197,6 +8174,17 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             _syntaxFactoryContext.QueryDepth--;
         }
 
+        private void EnterHtml()
+        {
+            _syntaxFactoryContext.HtmlDepth++;
+        }
+
+        private void LeaveHtml()
+        {
+            Debug.Assert(_syntaxFactoryContext.HtmlDepth > 0);
+            _syntaxFactoryContext.HtmlDepth--;
+        }
+
         private new ResetPoint GetResetPoint()
         {
             return new ResetPoint(
@@ -8204,7 +8192,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 _termState,
                 _isInTry,
                 _syntaxFactoryContext.IsInAsync,
-                _syntaxFactoryContext.QueryDepth);
+                _syntaxFactoryContext.QueryDepth,
+                _syntaxFactoryContext.HtmlDepth);
         }
 
         private void Reset(ref ResetPoint state)
@@ -8228,19 +8217,23 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             internal readonly bool IsInTry;
             internal readonly bool IsInAsync;
             internal readonly int QueryDepth;
+            internal readonly int HtmlDepth;
+
 
             internal ResetPoint(
                 SyntaxParser.ResetPoint resetPoint,
                 TerminatorState terminatorState,
                 bool isInTry,
                 bool isInAsync,
-                int queryDepth)
+                int queryDepth,
+                int htmlDepth)
             {
                 this.BaseResetPoint = resetPoint;
                 this.TerminatorState = terminatorState;
                 this.IsInTry = isInTry;
                 this.IsInAsync = isInAsync;
                 this.QueryDepth = queryDepth;
+                this.HtmlDepth = htmlDepth;
             }
         }
 

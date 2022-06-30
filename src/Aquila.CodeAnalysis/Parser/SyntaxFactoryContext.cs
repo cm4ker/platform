@@ -35,5 +35,10 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         {
             get { return QueryDepth > 0; }
         }
+
+
+        internal int HtmlDepth;
+
+        internal bool IsInHtml => HtmlDepth > 0;
     }
 }

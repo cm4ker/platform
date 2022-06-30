@@ -58,6 +58,7 @@ namespace Aquila.CodeAnalysis.CommandLine
 
             var sourceFiles = new List<CommandLineSourceFile>();
             var metadataFiles = new List<string>();
+            var viewFiles = new List<CommandLineSourceFile>();
             var metadataReferences = new List<CommandLineReference>();
             var analyzers = new List<CommandLineAnalyzerReference>();
             var analyzerConfigPaths = new List<string>();
@@ -202,7 +203,21 @@ namespace Aquila.CodeAnalysis.CommandLine
                         }
 
                         continue;
+                    //views
+                    case "view":
+                        value = RemoveQuotesAndSlashes(value);
+                        if (string.IsNullOrEmpty(value))
+                        {
+                            diagnostics.Add(
+                                Errors.MessageProvider.Instance.CreateDiagnostic(Errors.ErrorCode.ERR_FileNotFound,
+                                    Location.None, ""));
+                        }
+                        else
+                        {
+                            viewFiles.Add(new CommandLineSourceFile(value, false));
+                        }
 
+                        continue;
                     case "debug":
                     case "debug-type":
                         emitPdb = true;
@@ -901,6 +916,7 @@ namespace Aquila.CodeAnalysis.CommandLine
                 //AppConfigPath = appConfigPath,
                 SourceFiles = sourceFiles.AsImmutable(),
                 MetadataFiles = metadataFiles.ToImmutableArray(),
+                ViewFiles = viewFiles.ToImmutableArray(),
                 Encoding = codepage, // Encoding.UTF8,
                 ChecksumAlgorithm = SourceHashAlgorithm.Sha1, // checksumAlgorithm,
                 MetadataReferences = metadataReferences.AsImmutable(),

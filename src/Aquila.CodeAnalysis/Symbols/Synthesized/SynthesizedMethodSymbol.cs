@@ -130,6 +130,11 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         internal SynthesizedMethodSymbol SetName(string value)
         {
+            if (_explicitOverride != null)
+            {
+                throw new Exception("Can't set name on the overriden method");
+            }
+
             _name = value;
             return this;
         }
@@ -137,6 +142,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         internal SynthesizedMethodSymbol SetOverride(MethodSymbol symbol)
         {
             _explicitOverride = symbol;
+            _name = symbol.Name;
             _parameters = symbol.Parameters.SelectAsArray(x =>
                 (ParameterSymbol)new SynthesizedParameterSymbol(this, x.Type, x.Ordinal,
                     x.RefKind, x.Name, x.IsParams, x.CustomModifiers,

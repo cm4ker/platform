@@ -38,8 +38,8 @@
     <!-- package -->
     <PropertyGroup>
         <RepositoryType>git</RepositoryType>
-        <RepositoryUrl>https://github.com/cm4ler/platform</RepositoryUrl>
-        <PackageProjectUrl>https://github.com/cm4ler/platform</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/cm4ker/platform</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/cm4ker/platform</PackageProjectUrl>
         <PackageOutputPath>$(MSBuildThisFileDirectory).nugs</PackageOutputPath>
         <Authors>cm4ker</Authors>
         <NoWarn>$(NoWarn),NU5048</NoWarn>

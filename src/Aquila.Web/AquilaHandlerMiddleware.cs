@@ -43,6 +43,7 @@ namespace Aquila.AspNetCore.Web
 
             switch (area)
             {
+                case "any": return InvokeAny(context, next);
                 case "crud": return InvokeCrud(context);
                 case "migrate": return InvokeMigrate(context);
                 case "deploy": return InvokeDeploy(context);
@@ -50,6 +51,7 @@ namespace Aquila.AspNetCore.Web
                 case "user": return InvokeGetCurrentUser(context);
                 case "endpoints": return InvokeEndpoints(context);
                 case "view": return InvokeView(context, next);
+
 
                 //in that case we not handle this and just invoke next delegate
                 default: return next(context);
@@ -328,6 +330,11 @@ namespace Aquila.AspNetCore.Web
                 else
                     await context.Response.WriteAsJsonAsync(obj, obj.GetType());
             }
+        }
+
+        private async Task InvokeAny(HttpContext context, RequestDelegate next)
+        {
+            await next(context);
         }
 
         private async Task InvokeView(HttpContext context, RequestDelegate next)

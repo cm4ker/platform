@@ -206,7 +206,16 @@ namespace Aquila.CodeAnalysis
         /// <summary>Represents <c>??=</c> token.</summary>
         QuestionQuestionEqualsToken = 8284,
 
-        // Keywords
+        #region Html tokens
+
+        OpenAngleToken,
+        CloseAngleToken,
+        ForwardSlashToken,
+
+        #endregion
+
+        #region Keywords
+
         /// <summary>Represents <see langword="bool"/>.</summary>
         BoolKeyword = 8304,
 
@@ -684,6 +693,8 @@ namespace Aquila.CodeAnalysis
         DatetimeKeyword,
         ClrKeyword,
 
+        #endregion
+
 
         /// <summary>Represents the end of a file.</summary>
         EndOfFileToken = 8506, //NB: this is assumed to be the last textless token
@@ -1084,6 +1095,6 @@ namespace Aquila.CodeAnalysis
         UnionType,
 
 
-        AllocExpression
+        AllocExpression,
     }
 }

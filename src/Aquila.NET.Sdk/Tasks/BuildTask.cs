@@ -130,6 +130,7 @@ namespace Aquila.NET.Sdk.Tools
 
         public ITaskItem[] ExtensionReference { get; set; }
         public ITaskItem[] Metadata { get; set; }
+        public ITaskItem[] View { get; set; }
 
         public string DbConnection { get; set; }
 
@@ -286,6 +287,14 @@ namespace Aquila.NET.Sdk.Tools
                 foreach (var mdPath in Metadata)
                 {
                     args.Add("/md:" + mdPath);
+                }
+            }
+            
+            if (View != null)
+            {
+                foreach (var viewPath in View)
+                {
+                    args.Add("/view:" + viewPath);
                 }
             }
 

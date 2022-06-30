@@ -91,6 +91,8 @@ namespace Aquila.CodeAnalysis
 
         internal MetadataProvider MetadataProvider => _metadataProvider;
 
+        internal ImmutableArray<string> Views { get; set; } = new();
+
         private IEnumerable<ResourceDescription> SynthesizedResources = null;
 
         /// <summary>
@@ -184,7 +186,8 @@ namespace Aquila.CodeAnalysis
             bool reuseReferenceManager = false,
             SemanticModelProvider semanticModelProvider = null,
             IEnumerable<AquilaSyntaxTree> syntaxTrees = null,
-            IEnumerable<EntityMetadata> metadata = null)
+            IEnumerable<EntityMetadata> metadata = null,
+            IEnumerable<string> view = null)
         {
             var compilation = new AquilaCompilation(
                 assemblyName ?? this.AssemblyName,
@@ -198,6 +201,7 @@ namespace Aquila.CodeAnalysis
 
             compilation.MetadataProvider.AddMetadataRange(metadata ?? MetadataProvider.EntityMetadata);
             compilation.SourceSymbolCollection.AddSyntaxTreeRange(syntaxTrees ?? SyntaxTrees);
+            compilation.Views = (view?.ToImmutableArray() ?? Views);
 
             return compilation;
         }
@@ -230,6 +234,18 @@ namespace Aquila.CodeAnalysis
             return Update(
                 reuseReferenceManager: true,
                 metadata: metadatas);
+        }
+
+        /// <summary>
+        /// Creates a new compilation with additional metadata.
+        /// </summary>
+        /// <param name="metadatas">The new metadata.</param>
+        /// <returns>A new compilation.</returns>
+        public AquilaCompilation AddViews(IEnumerable<string> views)
+        {
+            return Update(
+                reuseReferenceManager: true,
+                view: views);
         }
 
         public AquilaCompilation WithAquilaOptions(AquilaCompilationOptions options)
@@ -324,6 +340,7 @@ namespace Aquila.CodeAnalysis
             string assemblyName,
             IEnumerable<AquilaSyntaxTree> syntaxTrees = null,
             IEnumerable<EntityMetadata> metadata = null,
+            IEnumerable<string> views = null,
             IEnumerable<MetadataReference> references = null,
             IEnumerable<ResourceDescription> resources = null,
             AquilaCompilationOptions options = null)
@@ -348,6 +365,8 @@ namespace Aquila.CodeAnalysis
             if (metadata != null)
                 compilation.MetadataProvider.AddMetadataRange(metadata);
 
+            if (views != null)
+                compilation.Views = views.ToImmutableArray();
             //Delegate to component
 
             return compilation;

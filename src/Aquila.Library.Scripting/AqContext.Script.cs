@@ -241,6 +241,7 @@ namespace Aquila.Library.Scripting
                     //.WithLangVersion(languageVersion)
                     .WithAssemblyName(name.Name)
                     .AddMetadata(metadata.EntityMetadata)
+                    .AddViews(new[] { "<h1>HO HO HO</h1>" })
                     .AddSyntaxTrees(tree)
                     .AddReferences(metadatareferences);
 

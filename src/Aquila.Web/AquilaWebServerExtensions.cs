@@ -11,6 +11,7 @@ using Aquila.Core.Utilities;
 using Aquila.Data;
 using Aquila.Logging;
 using Aquila.Web.Swagger;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
@@ -48,6 +49,8 @@ namespace Aquila.Web
                     options.RoutePrefix = "swagger";
                 });
             }
+
+            builder.MapMiddleware<AquilaHandlerMiddleware>("default", "any", null);
 
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "metadata",
                 "api/{instance}/metadata");
@@ -96,7 +99,7 @@ namespace Aquila.Web
         }
 
         private static IApplicationBuilder MapMiddleware<T>(this IApplicationBuilder builder, string name,
-            string areaName, string template, Action<AquilaAuthorizationOptions> configureAuthorisation)
+            string areaName, [CanBeNull] string template, Action<AquilaAuthorizationOptions> configureAuthorisation)
         {
             var routeBuilder = new RouteBuilder(builder);
 

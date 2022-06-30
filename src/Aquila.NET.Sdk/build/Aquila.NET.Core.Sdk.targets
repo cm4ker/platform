@@ -18,6 +18,7 @@
     <!--  well known compile items -->
     <ItemGroup>
         <Metadata Include="**/*.aqmd" Exclude="obj/**;bin/**;.*/**"/>
+        <View Include="**/*.aqview" Exclude="obj/**;bin/**;.*/**"/>
         <Compile Include="**/*.aq" Exclude="obj/**;bin/**;.*/**"/>
     </ItemGroup>
 
@@ -209,7 +210,8 @@
                    DebuggerAttach="$(DebuggerAttach)"
                    GenerateFullPaths="$(GenerateFullPaths)"
                    ExtensionReference="@(ExtensionReference)"
-                   Metadata="@(Metadata)"/>
+                   Metadata="@(Metadata)"
+                   View="@(View)"/>
 
         <Copy SourceFiles="$(TempOutputDir)$(DocumentationFile)" DestinationFolder="$(OutputPath)" Condition=" '$(GenerateDocumentation)'=='true' "/>
     </Target>

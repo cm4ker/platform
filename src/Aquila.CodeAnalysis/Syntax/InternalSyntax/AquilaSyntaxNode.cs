@@ -62,7 +62,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         public override string Language
         {
-            get { return LanguageNames.CSharp; }
+            get { return LanguageConstants.LanguageId; }
         }
 
         public SyntaxKind Kind
