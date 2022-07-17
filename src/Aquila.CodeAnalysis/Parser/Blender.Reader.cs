@@ -168,14 +168,14 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     _lexer.Reset(_newPosition, _newDirectives);
                 }
 
-                if (mode >= LexerMode.XmlDocComment)
+                if (mode >= LexerMode.SyntaxView)
                 {
                     mode |= _newLexerDrivenMode;
                 }
 
                 var token = _lexer.Lex(ref mode);
                 _newDirectives = _lexer.Directives;
-                _newLexerDrivenMode = mode & (LexerMode.MaskXmlDocCommentLocation | LexerMode.MaskXmlDocCommentStyle);
+                _newLexerDrivenMode = mode & (LexerMode.MaskXmlDocCommentLocation | LexerMode.MaskXmlDocCommentStyle | LexerMode.HtmlTag);
                 return token;
             }
 

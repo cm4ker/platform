@@ -10,20 +10,27 @@ namespace Aquila.CodeAnalysis.Web;
 
 internal class WebParser
 {
-    private readonly LanguageParser _parser;
-    private readonly LexerMode _mode;
+    private LexerMode _mode;
     private Lexer _lexer;
 
-    public WebParser(Lexer lexer, LanguageParser parser, ref LexerMode mode)
+    public WebParser(Lexer lexer, ref LexerMode mode)
     {
-        _parser = new LanguageParser(lexer, null, null, mode, CancellationToken.None);
         _mode = mode;
         _lexer = lexer;
     }
 
+    internal Action ParseLanguage { get; set; }
+
     internal SyntaxToken GetNext()
     {
-        return _lexer.Lex(_mode);
+        var token = _lexer.Lex(ref _mode);
+
+        if (token.Kind == SyntaxKind.MarkupInterruptToken)
+        {
+            ParseLanguage?.Invoke();
+        }
+
+        return token;
     }
 
     public void ParseTag()

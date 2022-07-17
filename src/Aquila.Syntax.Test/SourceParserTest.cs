@@ -2,13 +2,12 @@
 using System.Linq;
 using System.Threading;
 using Aquila.CodeAnalysis;
-using Aquila.Core.Querying.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Aquila.Compiler.Test2
+namespace Aquila.Syntax.Test
 {
     public class TreePrinter : AquilaSyntaxWalker
     {
@@ -31,7 +30,7 @@ namespace Aquila.Compiler.Test2
         }
     }
 
-    public class SourceParserTest
+    public partial class SourceParserTest
     {
         private readonly ITestOutputHelper _output;
 

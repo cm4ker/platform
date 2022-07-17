@@ -8,7 +8,7 @@ namespace Aquila.CodeAnalysis.Parser;
 internal class ViewParser : SyntaxParser
 {
     public ViewParser(Lexer lexer, LexerMode mode)
-        : base(lexer, LexerMode.ViewSyntax, null, null, true)
+        : base(lexer, LexerMode.SyntaxView, null, null, true)
     {
         
     }

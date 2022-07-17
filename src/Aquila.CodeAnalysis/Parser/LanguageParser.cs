@@ -43,8 +43,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             IEnumerable<TextChangeRange> changes,
             LexerMode lexerMode = LexerMode.Syntax,
             CancellationToken cancellationToken = default(CancellationToken))
-            : base(lexer, lexerMode, oldTree, changes, allowModeReset: false,
-                preLexIfNotIncremental: true, cancellationToken: cancellationToken)
+            : base(lexer, lexerMode, oldTree, changes, allowModeReset: true,
+                preLexIfNotIncremental: false, cancellationToken: cancellationToken)
         {
             _syntaxFactoryContext = new SyntaxFactoryContext();
             _syntaxFactory = new ContextAwareSyntax(_syntaxFactoryContext);
@@ -150,20 +150,23 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         private struct FileBody
         {
             public ModuleDecl ModuleDecl = null;
-            
+
             public SyntaxListBuilder<ImportDecl> Imports;
             public SyntaxListBuilder<MemberDecl> Members;
-            
+            public SyntaxListBuilder<HtmlNodeSyntax> HtmlNodes;
+
             public FileBody(SyntaxListPool pool)
             {
                 Imports = pool.Allocate<ImportDecl>();
                 Members = pool.Allocate<MemberDecl>();
+                HtmlNodes = pool.Allocate<HtmlNodeSyntax>();
             }
 
             internal void Free(SyntaxListPool pool)
             {
                 pool.Free(Imports);
                 pool.Free(Members);
+                pool.Free(HtmlNodes);
             }
         }
 
@@ -174,6 +177,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 () => SyntaxFactory.CompilationUnit(
                     null,
                     new SyntaxList<ImportDecl>(),
+                    new SyntaxList<HtmlNodeSyntax>(),
                     new SyntaxList<MemberDecl>(),
                     SyntaxFactory.Token(SyntaxKind.EndOfFileToken)));
         }
@@ -189,7 +193,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
                 var eof = this.EatToken(SyntaxKind.EndOfFileToken);
                 var result =
-                    _syntaxFactory.CompilationUnit(body.ModuleDecl, body.Imports, body.Members, eof);
+                    _syntaxFactory.CompilationUnit(body.ModuleDecl, body.Imports, body.HtmlNodes, body.Members, eof);
 
                 if (initialBadNodes != null)
                 {
@@ -359,6 +363,13 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                             seen = FileParts.Imports;
                             break;
 
+                        case SyntaxKind.LessThanToken:
+                            //Possible start web view
+                            var mode = Mode;
+                            Mode |= LexerMode.SyntaxView;
+                            ParseHtmlContent(body.HtmlNodes);
+                            Mode = mode;
+                            break;
                         case SyntaxKind.EndOfFileToken:
                             // This token marks the end of a namespace body
                             return;

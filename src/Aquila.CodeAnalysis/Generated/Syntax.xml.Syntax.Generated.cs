@@ -84,6 +84,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private ModuleDecl? module;
         private SyntaxNode? imports;
+        private SyntaxNode? htmlNodes;
         private SyntaxNode? members;
 
         internal CompilationUnitSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
@@ -95,16 +96,19 @@ namespace Aquila.CodeAnalysis.Syntax
 
         public SyntaxList<ImportDecl> Imports => new SyntaxList<ImportDecl>(GetRed(ref this.imports, 1));
 
-        public SyntaxList<MemberDecl> Members => new SyntaxList<MemberDecl>(GetRed(ref this.members, 2));
+        public SyntaxList<HtmlNodeSyntax> HtmlNodes => new SyntaxList<HtmlNodeSyntax>(GetRed(ref this.htmlNodes, 2));
 
-        public SyntaxToken EndOfFileToken => new SyntaxToken(this, ((Syntax.InternalSyntax.CompilationUnitSyntax)this.Green).endOfFileToken, GetChildPosition(3), GetChildIndex(3));
+        public SyntaxList<MemberDecl> Members => new SyntaxList<MemberDecl>(GetRed(ref this.members, 3));
+
+        public SyntaxToken EndOfFileToken => new SyntaxToken(this, ((Syntax.InternalSyntax.CompilationUnitSyntax)this.Green).endOfFileToken, GetChildPosition(4), GetChildIndex(4));
 
         internal override SyntaxNode? GetNodeSlot(int index)
             => index switch
             {
                 0 => GetRedAtZero(ref this.module),
                 1 => GetRed(ref this.imports, 1)!,
-                2 => GetRed(ref this.members, 2)!,
+                2 => GetRed(ref this.htmlNodes, 2)!,
+                3 => GetRed(ref this.members, 3)!,
                 _ => null,
             };
 
@@ -113,18 +117,19 @@ namespace Aquila.CodeAnalysis.Syntax
             {
                 0 => this.module,
                 1 => this.imports,
-                2 => this.members,
+                2 => this.htmlNodes,
+                3 => this.members,
                 _ => null,
             };
 
         public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitCompilationUnit(this);
         public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitCompilationUnit(this);
 
-        public CompilationUnitSyntax Update(ModuleDecl? module, SyntaxList<ImportDecl> imports, SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
+        public CompilationUnitSyntax Update(ModuleDecl? module, SyntaxList<ImportDecl> imports, SyntaxList<HtmlNodeSyntax> htmlNodes, SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
         {
-            if (module != this.Module || imports != this.Imports || members != this.Members || endOfFileToken != this.EndOfFileToken)
+            if (module != this.Module || imports != this.Imports || htmlNodes != this.HtmlNodes || members != this.Members || endOfFileToken != this.EndOfFileToken)
             {
-                var newNode = SyntaxFactory.CompilationUnit(module, imports, members, endOfFileToken);
+                var newNode = SyntaxFactory.CompilationUnit(module, imports, htmlNodes, members, endOfFileToken);
                 var annotations = GetAnnotations();
                 return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
             }
@@ -132,12 +137,14 @@ namespace Aquila.CodeAnalysis.Syntax
             return this;
         }
 
-        public CompilationUnitSyntax WithModule(ModuleDecl? module) => Update(module, this.Imports, this.Members, this.EndOfFileToken);
-        public CompilationUnitSyntax WithImports(SyntaxList<ImportDecl> imports) => Update(this.Module, imports, this.Members, this.EndOfFileToken);
-        public CompilationUnitSyntax WithMembers(SyntaxList<MemberDecl> members) => Update(this.Module, this.Imports, members, this.EndOfFileToken);
-        public CompilationUnitSyntax WithEndOfFileToken(SyntaxToken endOfFileToken) => Update(this.Module, this.Imports, this.Members, endOfFileToken);
+        public CompilationUnitSyntax WithModule(ModuleDecl? module) => Update(module, this.Imports, this.HtmlNodes, this.Members, this.EndOfFileToken);
+        public CompilationUnitSyntax WithImports(SyntaxList<ImportDecl> imports) => Update(this.Module, imports, this.HtmlNodes, this.Members, this.EndOfFileToken);
+        public CompilationUnitSyntax WithHtmlNodes(SyntaxList<HtmlNodeSyntax> htmlNodes) => Update(this.Module, this.Imports, htmlNodes, this.Members, this.EndOfFileToken);
+        public CompilationUnitSyntax WithMembers(SyntaxList<MemberDecl> members) => Update(this.Module, this.Imports, this.HtmlNodes, members, this.EndOfFileToken);
+        public CompilationUnitSyntax WithEndOfFileToken(SyntaxToken endOfFileToken) => Update(this.Module, this.Imports, this.HtmlNodes, this.Members, endOfFileToken);
 
         public CompilationUnitSyntax AddImports(params ImportDecl[] items) => WithImports(this.Imports.AddRange(items));
+        public CompilationUnitSyntax AddHtmlNodes(params HtmlNodeSyntax[] items) => WithHtmlNodes(this.HtmlNodes.AddRange(items));
         public CompilationUnitSyntax AddMembers(params MemberDecl[] items) => WithMembers(this.Members.AddRange(items));
     }
 
@@ -6767,5 +6774,593 @@ namespace Aquila.CodeAnalysis.Syntax
         public XmlCommentSyntax WithMinusMinusGreaterThanToken(SyntaxToken minusMinusGreaterThanToken) => Update(this.LessThanExclamationMinusMinusToken, this.TextTokens, minusMinusGreaterThanToken);
 
         public XmlCommentSyntax AddTextTokens(params SyntaxToken[] items) => WithTextTokens(this.TextTokens.AddRange(items));
+    }
+
+    public abstract partial class HtmlNodeSyntax : AquilaSyntaxNode
+    {
+        internal HtmlNodeSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.HtmlElement"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class HtmlElementSyntax : HtmlNodeSyntax
+    {
+        private HtmlElementStartTagSyntax? startTag;
+        private SyntaxNode? content;
+        private HtmlElementEndTagSyntax? endTag;
+
+        internal HtmlElementSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public HtmlElementStartTagSyntax StartTag => GetRedAtZero(ref this.startTag)!;
+
+        public SyntaxList<HtmlNodeSyntax> Content => new SyntaxList<HtmlNodeSyntax>(GetRed(ref this.content, 1));
+
+        public HtmlElementEndTagSyntax EndTag => GetRed(ref this.endTag, 2)!;
+
+        internal override SyntaxNode? GetNodeSlot(int index)
+            => index switch
+            {
+                0 => GetRedAtZero(ref this.startTag)!,
+                1 => GetRed(ref this.content, 1)!,
+                2 => GetRed(ref this.endTag, 2)!,
+                _ => null,
+            };
+
+        internal override SyntaxNode? GetCachedSlot(int index)
+            => index switch
+            {
+                0 => this.startTag,
+                1 => this.content,
+                2 => this.endTag,
+                _ => null,
+            };
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlElement(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitHtmlElement(this);
+
+        public HtmlElementSyntax Update(HtmlElementStartTagSyntax startTag, SyntaxList<HtmlNodeSyntax> content, HtmlElementEndTagSyntax endTag)
+        {
+            if (startTag != this.StartTag || content != this.Content || endTag != this.EndTag)
+            {
+                var newNode = SyntaxFactory.HtmlElement(startTag, content, endTag);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public HtmlElementSyntax WithStartTag(HtmlElementStartTagSyntax startTag) => Update(startTag, this.Content, this.EndTag);
+        public HtmlElementSyntax WithContent(SyntaxList<HtmlNodeSyntax> content) => Update(this.StartTag, content, this.EndTag);
+        public HtmlElementSyntax WithEndTag(HtmlElementEndTagSyntax endTag) => Update(this.StartTag, this.Content, endTag);
+
+        public HtmlElementSyntax AddStartTagAttributes(params HtmlAttributeSyntax[] items) => WithStartTag(this.StartTag.WithAttributes(this.StartTag.Attributes.AddRange(items)));
+        public HtmlElementSyntax AddContent(params HtmlNodeSyntax[] items) => WithContent(this.Content.AddRange(items));
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.HtmlElementStartTag"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class HtmlElementStartTagSyntax : AquilaSyntaxNode
+    {
+        private HtmlNameSyntax? name;
+        private SyntaxNode? attributes;
+
+        internal HtmlElementStartTagSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public SyntaxToken LessThanToken => new SyntaxToken(this, ((Syntax.InternalSyntax.HtmlElementStartTagSyntax)this.Green).lessThanToken, Position, 0);
+
+        public HtmlNameSyntax Name => GetRed(ref this.name, 1)!;
+
+        public SyntaxList<HtmlAttributeSyntax> Attributes => new SyntaxList<HtmlAttributeSyntax>(GetRed(ref this.attributes, 2));
+
+        public SyntaxToken GreaterThanToken => new SyntaxToken(this, ((Syntax.InternalSyntax.HtmlElementStartTagSyntax)this.Green).greaterThanToken, GetChildPosition(3), GetChildIndex(3));
+
+        internal override SyntaxNode? GetNodeSlot(int index)
+            => index switch
+            {
+                1 => GetRed(ref this.name, 1)!,
+                2 => GetRed(ref this.attributes, 2)!,
+                _ => null,
+            };
+
+        internal override SyntaxNode? GetCachedSlot(int index)
+            => index switch
+            {
+                1 => this.name,
+                2 => this.attributes,
+                _ => null,
+            };
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlElementStartTag(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitHtmlElementStartTag(this);
+
+        public HtmlElementStartTagSyntax Update(SyntaxToken lessThanToken, HtmlNameSyntax name, SyntaxList<HtmlAttributeSyntax> attributes, SyntaxToken greaterThanToken)
+        {
+            if (lessThanToken != this.LessThanToken || name != this.Name || attributes != this.Attributes || greaterThanToken != this.GreaterThanToken)
+            {
+                var newNode = SyntaxFactory.HtmlElementStartTag(lessThanToken, name, attributes, greaterThanToken);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public HtmlElementStartTagSyntax WithLessThanToken(SyntaxToken lessThanToken) => Update(lessThanToken, this.Name, this.Attributes, this.GreaterThanToken);
+        public HtmlElementStartTagSyntax WithName(HtmlNameSyntax name) => Update(this.LessThanToken, name, this.Attributes, this.GreaterThanToken);
+        public HtmlElementStartTagSyntax WithAttributes(SyntaxList<HtmlAttributeSyntax> attributes) => Update(this.LessThanToken, this.Name, attributes, this.GreaterThanToken);
+        public HtmlElementStartTagSyntax WithGreaterThanToken(SyntaxToken greaterThanToken) => Update(this.LessThanToken, this.Name, this.Attributes, greaterThanToken);
+
+        public HtmlElementStartTagSyntax AddAttributes(params HtmlAttributeSyntax[] items) => WithAttributes(this.Attributes.AddRange(items));
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.HtmlElementEndTag"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class HtmlElementEndTagSyntax : AquilaSyntaxNode
+    {
+        private HtmlNodeSyntax? name;
+
+        internal HtmlElementEndTagSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public SyntaxToken LessThanSlashToken => new SyntaxToken(this, ((Syntax.InternalSyntax.HtmlElementEndTagSyntax)this.Green).lessThanSlashToken, Position, 0);
+
+        public HtmlNodeSyntax Name => GetRed(ref this.name, 1)!;
+
+        public SyntaxToken GreaterThanToken => new SyntaxToken(this, ((Syntax.InternalSyntax.HtmlElementEndTagSyntax)this.Green).greaterThanToken, GetChildPosition(2), GetChildIndex(2));
+
+        internal override SyntaxNode? GetNodeSlot(int index) => index == 1 ? GetRed(ref this.name, 1)! : null;
+
+        internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.name : null;
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlElementEndTag(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitHtmlElementEndTag(this);
+
+        public HtmlElementEndTagSyntax Update(SyntaxToken lessThanSlashToken, HtmlNodeSyntax name, SyntaxToken greaterThanToken)
+        {
+            if (lessThanSlashToken != this.LessThanSlashToken || name != this.Name || greaterThanToken != this.GreaterThanToken)
+            {
+                var newNode = SyntaxFactory.HtmlElementEndTag(lessThanSlashToken, name, greaterThanToken);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public HtmlElementEndTagSyntax WithLessThanSlashToken(SyntaxToken lessThanSlashToken) => Update(lessThanSlashToken, this.Name, this.GreaterThanToken);
+        public HtmlElementEndTagSyntax WithName(HtmlNodeSyntax name) => Update(this.LessThanSlashToken, name, this.GreaterThanToken);
+        public HtmlElementEndTagSyntax WithGreaterThanToken(SyntaxToken greaterThanToken) => Update(this.LessThanSlashToken, this.Name, greaterThanToken);
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.HtmlEmptyElement"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class HtmlEmptyElementSyntax : HtmlNodeSyntax
+    {
+        private HtmlNameSyntax? name;
+        private SyntaxNode? attributes;
+
+        internal HtmlEmptyElementSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public SyntaxToken LessThanToken => new SyntaxToken(this, ((Syntax.InternalSyntax.HtmlEmptyElementSyntax)this.Green).lessThanToken, Position, 0);
+
+        public HtmlNameSyntax Name => GetRed(ref this.name, 1)!;
+
+        public SyntaxList<HtmlAttributeSyntax> Attributes => new SyntaxList<HtmlAttributeSyntax>(GetRed(ref this.attributes, 2));
+
+        public SyntaxToken SlashGreaterThanToken => new SyntaxToken(this, ((Syntax.InternalSyntax.HtmlEmptyElementSyntax)this.Green).slashGreaterThanToken, GetChildPosition(3), GetChildIndex(3));
+
+        internal override SyntaxNode? GetNodeSlot(int index)
+            => index switch
+            {
+                1 => GetRed(ref this.name, 1)!,
+                2 => GetRed(ref this.attributes, 2)!,
+                _ => null,
+            };
+
+        internal override SyntaxNode? GetCachedSlot(int index)
+            => index switch
+            {
+                1 => this.name,
+                2 => this.attributes,
+                _ => null,
+            };
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlEmptyElement(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitHtmlEmptyElement(this);
+
+        public HtmlEmptyElementSyntax Update(SyntaxToken lessThanToken, HtmlNameSyntax name, SyntaxList<HtmlAttributeSyntax> attributes, SyntaxToken slashGreaterThanToken)
+        {
+            if (lessThanToken != this.LessThanToken || name != this.Name || attributes != this.Attributes || slashGreaterThanToken != this.SlashGreaterThanToken)
+            {
+                var newNode = SyntaxFactory.HtmlEmptyElement(lessThanToken, name, attributes, slashGreaterThanToken);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public HtmlEmptyElementSyntax WithLessThanToken(SyntaxToken lessThanToken) => Update(lessThanToken, this.Name, this.Attributes, this.SlashGreaterThanToken);
+        public HtmlEmptyElementSyntax WithName(HtmlNameSyntax name) => Update(this.LessThanToken, name, this.Attributes, this.SlashGreaterThanToken);
+        public HtmlEmptyElementSyntax WithAttributes(SyntaxList<HtmlAttributeSyntax> attributes) => Update(this.LessThanToken, this.Name, attributes, this.SlashGreaterThanToken);
+        public HtmlEmptyElementSyntax WithSlashGreaterThanToken(SyntaxToken slashGreaterThanToken) => Update(this.LessThanToken, this.Name, this.Attributes, slashGreaterThanToken);
+
+        public HtmlEmptyElementSyntax AddAttributes(params HtmlAttributeSyntax[] items) => WithAttributes(this.Attributes.AddRange(items));
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.HtmlName"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class HtmlNameSyntax : HtmlNodeSyntax
+    {
+        internal HtmlNameSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public SyntaxToken TagName => new SyntaxToken(this, ((Syntax.InternalSyntax.HtmlNameSyntax)this.Green).tagName, Position, 0);
+
+        internal override SyntaxNode? GetNodeSlot(int index) => null;
+
+        internal override SyntaxNode? GetCachedSlot(int index) => null;
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlName(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitHtmlName(this);
+
+        public HtmlNameSyntax Update(SyntaxToken tagName)
+        {
+            if (tagName != this.TagName)
+            {
+                var newNode = SyntaxFactory.HtmlName(tagName);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public HtmlNameSyntax WithTagName(SyntaxToken tagName) => Update(tagName);
+    }
+
+    public abstract partial class BaseHtmlAttributeSyntax : AquilaSyntaxNode
+    {
+        internal BaseHtmlAttributeSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.HtmlExpressionAttribute"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class HtmlExpressionAttributeSyntax : BaseHtmlAttributeSyntax
+    {
+        private ExprSyntax? expression;
+
+        internal HtmlExpressionAttributeSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public ExprSyntax Expression => GetRedAtZero(ref this.expression)!;
+
+        internal override SyntaxNode? GetNodeSlot(int index) => index == 0 ? GetRedAtZero(ref this.expression)! : null;
+
+        internal override SyntaxNode? GetCachedSlot(int index) => index == 0 ? this.expression : null;
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlExpressionAttribute(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitHtmlExpressionAttribute(this);
+
+        public HtmlExpressionAttributeSyntax Update(ExprSyntax expression)
+        {
+            if (expression != this.Expression)
+            {
+                var newNode = SyntaxFactory.HtmlExpressionAttribute(expression);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public HtmlExpressionAttributeSyntax WithExpression(ExprSyntax expression) => Update(expression);
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.HtmlAttribute"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class HtmlAttributeSyntax : BaseHtmlAttributeSyntax
+    {
+        private HtmlNameSyntax? name;
+        private SyntaxNode? nodes;
+
+        internal HtmlAttributeSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public HtmlNameSyntax Name => GetRedAtZero(ref this.name)!;
+
+        public SyntaxToken EqualsToken
+        {
+            get
+            {
+                var slot = ((Syntax.InternalSyntax.HtmlAttributeSyntax)this.Green).equalsToken;
+                return slot != null ? new SyntaxToken(this, slot, GetChildPosition(1), GetChildIndex(1)) : default;
+            }
+        }
+
+        public SyntaxToken StartQuoteToken
+        {
+            get
+            {
+                var slot = ((Syntax.InternalSyntax.HtmlAttributeSyntax)this.Green).startQuoteToken;
+                return slot != null ? new SyntaxToken(this, slot, GetChildPosition(2), GetChildIndex(2)) : default;
+            }
+        }
+
+        public SyntaxList<AquilaSyntaxNode> Nodes => new SyntaxList<AquilaSyntaxNode>(GetRed(ref this.nodes, 3));
+
+        public SyntaxToken EndQuoteToken
+        {
+            get
+            {
+                var slot = ((Syntax.InternalSyntax.HtmlAttributeSyntax)this.Green).endQuoteToken;
+                return slot != null ? new SyntaxToken(this, slot, GetChildPosition(4), GetChildIndex(4)) : default;
+            }
+        }
+
+        internal override SyntaxNode? GetNodeSlot(int index)
+            => index switch
+            {
+                0 => GetRedAtZero(ref this.name)!,
+                3 => GetRed(ref this.nodes, 3),
+                _ => null,
+            };
+
+        internal override SyntaxNode? GetCachedSlot(int index)
+            => index switch
+            {
+                0 => this.name,
+                3 => this.nodes,
+                _ => null,
+            };
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlAttribute(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitHtmlAttribute(this);
+
+        public HtmlAttributeSyntax Update(HtmlNameSyntax name, SyntaxToken equalsToken, SyntaxToken startQuoteToken, SyntaxList<AquilaSyntaxNode> nodes, SyntaxToken endQuoteToken)
+        {
+            if (name != this.Name || equalsToken != this.EqualsToken || startQuoteToken != this.StartQuoteToken || nodes != this.Nodes || endQuoteToken != this.EndQuoteToken)
+            {
+                var newNode = SyntaxFactory.HtmlAttribute(name, equalsToken, startQuoteToken, nodes, endQuoteToken);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public HtmlAttributeSyntax WithName(HtmlNameSyntax name) => Update(name, this.EqualsToken, this.StartQuoteToken, this.Nodes, this.EndQuoteToken);
+        public HtmlAttributeSyntax WithEqualsToken(SyntaxToken equalsToken) => Update(this.Name, equalsToken, this.StartQuoteToken, this.Nodes, this.EndQuoteToken);
+        public HtmlAttributeSyntax WithStartQuoteToken(SyntaxToken startQuoteToken) => Update(this.Name, this.EqualsToken, startQuoteToken, this.Nodes, this.EndQuoteToken);
+        public HtmlAttributeSyntax WithNodes(SyntaxList<AquilaSyntaxNode> nodes) => Update(this.Name, this.EqualsToken, this.StartQuoteToken, nodes, this.EndQuoteToken);
+        public HtmlAttributeSyntax WithEndQuoteToken(SyntaxToken endQuoteToken) => Update(this.Name, this.EqualsToken, this.StartQuoteToken, this.Nodes, endQuoteToken);
+
+        public HtmlAttributeSyntax AddNodes(params AquilaSyntaxNode[] items) => WithNodes(this.Nodes.AddRange(items));
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.HtmlText"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class HtmlTextSyntax : HtmlNodeSyntax
+    {
+        internal HtmlTextSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public SyntaxToken Text => new SyntaxToken(this, ((Syntax.InternalSyntax.HtmlTextSyntax)this.Green).text, Position, 0);
+
+        internal override SyntaxNode? GetNodeSlot(int index) => null;
+
+        internal override SyntaxNode? GetCachedSlot(int index) => null;
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlText(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitHtmlText(this);
+
+        public HtmlTextSyntax Update(SyntaxToken text)
+        {
+            if (text != this.Text)
+            {
+                var newNode = SyntaxFactory.HtmlText(text);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public HtmlTextSyntax WithText(SyntaxToken text) => Update(text);
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.HtmlExpression"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class HtmlExpressionSyntax : HtmlNodeSyntax
+    {
+        private ExprSyntax? expression;
+
+        internal HtmlExpressionSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public SyntaxToken AtToken => new SyntaxToken(this, ((Syntax.InternalSyntax.HtmlExpressionSyntax)this.Green).atToken, Position, 0);
+
+        public ExprSyntax Expression => GetRed(ref this.expression, 1)!;
+
+        internal override SyntaxNode? GetNodeSlot(int index) => index == 1 ? GetRed(ref this.expression, 1)! : null;
+
+        internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.expression : null;
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlExpression(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitHtmlExpression(this);
+
+        public HtmlExpressionSyntax Update(SyntaxToken atToken, ExprSyntax expression)
+        {
+            if (atToken != this.AtToken || expression != this.Expression)
+            {
+                var newNode = SyntaxFactory.HtmlExpression(atToken, expression);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public HtmlExpressionSyntax WithAtToken(SyntaxToken atToken) => Update(atToken, this.Expression);
+        public HtmlExpressionSyntax WithExpression(ExprSyntax expression) => Update(this.AtToken, expression);
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.HtmlStatement"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class HtmlStatementSyntax : HtmlNodeSyntax
+    {
+        private StmtSyntax? statement;
+
+        internal HtmlStatementSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public SyntaxToken AtToken => new SyntaxToken(this, ((Syntax.InternalSyntax.HtmlStatementSyntax)this.Green).atToken, Position, 0);
+
+        public StmtSyntax Statement => GetRed(ref this.statement, 1)!;
+
+        internal override SyntaxNode? GetNodeSlot(int index) => index == 1 ? GetRed(ref this.statement, 1)! : null;
+
+        internal override SyntaxNode? GetCachedSlot(int index) => index == 1 ? this.statement : null;
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlStatement(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitHtmlStatement(this);
+
+        public HtmlStatementSyntax Update(SyntaxToken atToken, StmtSyntax statement)
+        {
+            if (atToken != this.AtToken || statement != this.Statement)
+            {
+                var newNode = SyntaxFactory.HtmlStatement(atToken, statement);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public HtmlStatementSyntax WithAtToken(SyntaxToken atToken) => Update(atToken, this.Statement);
+        public HtmlStatementSyntax WithStatement(StmtSyntax statement) => Update(this.AtToken, statement);
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.HtmlCode"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class HtmlCodeSyntax : HtmlNodeSyntax
+    {
+        private SyntaxNode? members;
+
+        internal HtmlCodeSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public SyntaxToken AtToken => new SyntaxToken(this, ((Syntax.InternalSyntax.HtmlCodeSyntax)this.Green).atToken, Position, 0);
+
+        public SyntaxToken HtmlCodeKeyword => new SyntaxToken(this, ((Syntax.InternalSyntax.HtmlCodeSyntax)this.Green).htmlCodeKeyword, GetChildPosition(1), GetChildIndex(1));
+
+        public SyntaxToken OpenBrace => new SyntaxToken(this, ((Syntax.InternalSyntax.HtmlCodeSyntax)this.Green).openBrace, GetChildPosition(2), GetChildIndex(2));
+
+        public SyntaxList<MemberDecl> Members => new SyntaxList<MemberDecl>(GetRed(ref this.members, 3));
+
+        public SyntaxToken CloseBrace => new SyntaxToken(this, ((Syntax.InternalSyntax.HtmlCodeSyntax)this.Green).closeBrace, GetChildPosition(4), GetChildIndex(4));
+
+        internal override SyntaxNode? GetNodeSlot(int index) => index == 3 ? GetRed(ref this.members, 3)! : null;
+
+        internal override SyntaxNode? GetCachedSlot(int index) => index == 3 ? this.members : null;
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlCode(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitHtmlCode(this);
+
+        public HtmlCodeSyntax Update(SyntaxToken atToken, SyntaxToken htmlCodeKeyword, SyntaxToken openBrace, SyntaxList<MemberDecl> members, SyntaxToken closeBrace)
+        {
+            if (atToken != this.AtToken || htmlCodeKeyword != this.HtmlCodeKeyword || openBrace != this.OpenBrace || members != this.Members || closeBrace != this.CloseBrace)
+            {
+                var newNode = SyntaxFactory.HtmlCode(atToken, htmlCodeKeyword, openBrace, members, closeBrace);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public HtmlCodeSyntax WithAtToken(SyntaxToken atToken) => Update(atToken, this.HtmlCodeKeyword, this.OpenBrace, this.Members, this.CloseBrace);
+        public HtmlCodeSyntax WithHtmlCodeKeyword(SyntaxToken htmlCodeKeyword) => Update(this.AtToken, htmlCodeKeyword, this.OpenBrace, this.Members, this.CloseBrace);
+        public HtmlCodeSyntax WithOpenBrace(SyntaxToken openBrace) => Update(this.AtToken, this.HtmlCodeKeyword, openBrace, this.Members, this.CloseBrace);
+        public HtmlCodeSyntax WithMembers(SyntaxList<MemberDecl> members) => Update(this.AtToken, this.HtmlCodeKeyword, this.OpenBrace, members, this.CloseBrace);
+        public HtmlCodeSyntax WithCloseBrace(SyntaxToken closeBrace) => Update(this.AtToken, this.HtmlCodeKeyword, this.OpenBrace, this.Members, closeBrace);
+
+        public HtmlCodeSyntax AddMembers(params MemberDecl[] items) => WithMembers(this.Members.AddRange(items));
     }
 }

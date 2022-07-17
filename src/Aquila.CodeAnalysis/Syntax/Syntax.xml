@@ -36,11 +36,13 @@
         <Field Name="Module" Type="ModuleDecl" Optional="true"/>
 
         <Field Name="Imports" Type="SyntaxList&lt;ImportDecl&gt;"/>
+        <Field Name="HtmlNodes" Type="SyntaxList&lt;HtmlNodeSyntax&gt;"/>
         <Field Name="Members" Type="SyntaxList&lt;MemberDecl&gt;"/>
-<!--        <Field Name="Methods" Type="SyntaxList&lt;MethodDecl&gt;"/>-->
-<!--        <Field Name="Functions" Type="SyntaxList&lt;FuncDecl&gt;"/>-->
-<!--        <Field Name="Extends" Type="SyntaxList&lt;ExtendDecl&gt;"/>-->
-<!--        <Field Name="Components" Type="SyntaxList&lt;ComponentDecl&gt;"/>-->
+        
+        <!--        <Field Name="Methods" Type="SyntaxList&lt;MethodDecl&gt;"/>-->
+        <!--        <Field Name="Functions" Type="SyntaxList&lt;FuncDecl&gt;"/>-->
+        <!--        <Field Name="Extends" Type="SyntaxList&lt;ExtendDecl&gt;"/>-->
+        <!--        <Field Name="Components" Type="SyntaxList&lt;ComponentDecl&gt;"/>-->
         <Field Name="EndOfFileToken" Type="SyntaxToken">
             <Kind Name="EndOfFileToken"/>
         </Field>
@@ -183,9 +185,9 @@
             </PropertyComment>
             <Kind Name="IdentifierToken"/>
         </Field>
-        
+
         <Field Name="OwnerType" Type="TypeEx"/>
-        
+
         <Field Name="CloseParenToken" Type="SyntaxToken" Optional="true">
             <PropertyComment>
                 <summary>Gets the close paren token.</summary>
@@ -1756,12 +1758,12 @@
         <Field Name="InKeyword" Type="SyntaxToken">
             <Kind Name="InKeyword"/>
         </Field>
-        <Field Name="Expression" Type="ExprSyntax" />
-        <Field Name="CloseParenToken" Type="SyntaxToken" >
+        <Field Name="Expression" Type="ExprSyntax"/>
+        <Field Name="CloseParenToken" Type="SyntaxToken">
             <Kind Name="CloseParenToken"/>
         </Field>
-        <Field Name="Statement" Type="StmtSyntax" />
-    </Node>    
+        <Field Name="Statement" Type="StmtSyntax"/>
+    </Node>
     <Node Name="LocalDeclStmt" Base="StmtSyntax">
         <Kind Name="LocalDeclarationStatement"/>
         <Field Name="AttributeLists" Type="SyntaxList&lt;AttributeListSyntax&gt;"/>
@@ -1908,9 +1910,9 @@
         </Field>
         <Field Name="Block" Type="BlockStmt"/>
     </Node>
-    <!-- endregion TryStmt --> 
-    
-    
+    <!-- endregion TryStmt -->
+
+
     <!--endregion Statements-->
 
     <!--region Xml -->
@@ -2291,4 +2293,104 @@
     </Node>
 
     <!--endregion Xml-->
+
+    <!-- region Html -->
+    <AbstractNode Name="HtmlNodeSyntax" Base="AquilaSyntaxNode"/>
+
+    <Node Name="HtmlElementSyntax" Base="HtmlNodeSyntax">
+        <Kind Name="HtmlElement"/>
+        <Field Name="StartTag" Type="HtmlElementStartTagSyntax"/>
+        <Field Name="Content" Type="SyntaxList&lt;HtmlNodeSyntax&gt;"/>
+        <Field Name="EndTag" Type="HtmlElementEndTagSyntax"/>
+    </Node>
+    <Node Name="HtmlElementStartTagSyntax" Base="AquilaSyntaxNode">
+        <Kind Name="HtmlElementStartTag"/>
+        <Field Name="LessThanToken" Type="SyntaxToken">
+            <Kind Name="LessThanToken"/>
+        </Field>
+        <Field Name="Name" Type="HtmlNameSyntax"/>
+        <Field Name="Attributes" Type="SyntaxList&lt;HtmlAttributeSyntax&gt;"/>
+        <Field Name="GreaterThanToken" Type="SyntaxToken">
+            <Kind Name="GreaterThanToken"/>
+        </Field>
+    </Node>
+    <Node Name="HtmlElementEndTagSyntax" Base="AquilaSyntaxNode">
+        <Kind Name="HtmlElementEndTag"/>
+        <Field Name="LessThanSlashToken" Type="SyntaxToken">
+            <Kind Name="LessThanSlashToken"/>
+        </Field>
+        <Field Name="Name" Type="HtmlNodeSyntax"/>
+        <Field Name="GreaterThanToken" Type="SyntaxToken">
+            <Kind Name="GreaterThanToken"/>
+        </Field>
+    </Node>
+    <Node Name="HtmlEmptyElementSyntax" Base="HtmlNodeSyntax">
+        <Kind Name="HtmlEmptyElement"/>
+        <Field Name="LessThanToken" Type="SyntaxToken">
+            <Kind Name="LessThanToken"/>
+        </Field>
+        <Field Name="Name" Type="HtmlNameSyntax"/>
+        <Field Name="Attributes" Type="SyntaxList&lt;HtmlAttributeSyntax&gt;"/>
+        <Field Name="SlashGreaterThanToken" Type="SyntaxToken">
+            <Kind Name="SlashGreaterThanToken"/>
+        </Field>
+    </Node>
+
+    <Node Name="HtmlNameSyntax" Base="HtmlNodeSyntax">
+        <Kind Name="HtmlName"/>
+        <Field Name="TagName" Type="SyntaxToken">
+            <Kind Name="IdentifierToken"/>
+        </Field>
+    </Node>
+
+    <AbstractNode Name="BaseHtmlAttributeSyntax" Base="AquilaSyntaxNode"/>
+    
+    <Node Name="HtmlExpressionAttributeSyntax" Base="BaseHtmlAttributeSyntax">
+        <Kind Name="HtmlExpressionAttribute"/>
+        <Field Name="Expression" Type="ExprSyntax"/>
+    </Node>
+        <Node Name="HtmlAttributeSyntax" Base="BaseHtmlAttributeSyntax">
+        <Kind Name="HtmlAttribute"/>
+        <Field Name="Name" Type="HtmlNameSyntax"/>
+        <Field Name="EqualsToken" Type="SyntaxToken" Optional="true">
+            <Kind Name="EqualsToken"/>
+        </Field>
+        <Field Name="StartQuoteToken" Type="SyntaxToken" Optional="true">
+            <Kind Name="SingleQuoteToken"/>
+            <Kind Name="DoubleQuoteToken"/>
+        </Field>
+        <Field Name="Nodes" Type="SyntaxList&lt;AquilaSyntaxNode&gt;" Optional="true"/>
+        <Field Name="EndQuoteToken" Type="SyntaxToken" Optional="true">
+            <Kind Name="SingleQuoteToken"/>
+            <Kind Name="DoubleQuoteToken"/>
+        </Field>
+    </Node>
+
+    <Node Name="HtmlTextSyntax" Base="HtmlNodeSyntax">
+        <Kind Name="HtmlText"/>
+        <Field Name="Text" Type="SyntaxToken"/>
+    </Node>
+    <Node Name="HtmlExpressionSyntax" Base="HtmlNodeSyntax">
+        <Kind Name="HtmlExpression"/>
+        <Field Name="AtToken" Type="SyntaxToken"/>
+        <Field Name="Expression" Type="ExprSyntax"/>
+    </Node>
+
+    <Node Name="HtmlStatementSyntax" Base="HtmlNodeSyntax">
+        <Kind Name="HtmlStatement"/>
+        <Field Name="AtToken" Type="SyntaxToken"/>
+        <Field Name="Statement" Type="StmtSyntax"/>
+    </Node>
+
+    <Node Name="HtmlCodeSyntax" Base="HtmlNodeSyntax">
+        <Kind Name="HtmlCode"/>
+        <Field Name="AtToken" Type="SyntaxToken"/>
+        <Field Name="HtmlCodeKeyword" Type="SyntaxToken"/>
+        <Field Name="OpenBrace" Type="SyntaxToken" />
+        <Field Name="Members" Type="SyntaxList&lt;MemberDecl&gt;"/>
+        <Field Name="CloseBrace" Type="SyntaxToken" />
+    </Node>
+
+
+    <!-- endregion -->
 </Tree>

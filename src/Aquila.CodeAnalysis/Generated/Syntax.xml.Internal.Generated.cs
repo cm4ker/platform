@@ -166,13 +166,14 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
     {
         internal readonly ModuleDecl? module;
         internal readonly GreenNode? imports;
+        internal readonly GreenNode? htmlNodes;
         internal readonly GreenNode? members;
         internal readonly SyntaxToken endOfFileToken;
 
-        internal CompilationUnitSyntax(SyntaxKind kind, ModuleDecl? module, GreenNode? imports, GreenNode? members, SyntaxToken endOfFileToken, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+        internal CompilationUnitSyntax(SyntaxKind kind, ModuleDecl? module, GreenNode? imports, GreenNode? htmlNodes, GreenNode? members, SyntaxToken endOfFileToken, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
           : base(kind, diagnostics, annotations)
         {
-            this.SlotCount = 4;
+            this.SlotCount = 5;
             if (module != null)
             {
                 this.AdjustFlagsAndWidth(module);
@@ -183,6 +184,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 this.AdjustFlagsAndWidth(imports);
                 this.imports = imports;
             }
+            if (htmlNodes != null)
+            {
+                this.AdjustFlagsAndWidth(htmlNodes);
+                this.htmlNodes = htmlNodes;
+            }
             if (members != null)
             {
                 this.AdjustFlagsAndWidth(members);
@@ -192,11 +198,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             this.endOfFileToken = endOfFileToken;
         }
 
-        internal CompilationUnitSyntax(SyntaxKind kind, ModuleDecl? module, GreenNode? imports, GreenNode? members, SyntaxToken endOfFileToken, SyntaxFactoryContext context)
+        internal CompilationUnitSyntax(SyntaxKind kind, ModuleDecl? module, GreenNode? imports, GreenNode? htmlNodes, GreenNode? members, SyntaxToken endOfFileToken, SyntaxFactoryContext context)
           : base(kind)
         {
             this.SetFactoryContext(context);
-            this.SlotCount = 4;
+            this.SlotCount = 5;
             if (module != null)
             {
                 this.AdjustFlagsAndWidth(module);
@@ -206,6 +212,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             {
                 this.AdjustFlagsAndWidth(imports);
                 this.imports = imports;
+            }
+            if (htmlNodes != null)
+            {
+                this.AdjustFlagsAndWidth(htmlNodes);
+                this.htmlNodes = htmlNodes;
             }
             if (members != null)
             {
@@ -216,10 +227,10 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             this.endOfFileToken = endOfFileToken;
         }
 
-        internal CompilationUnitSyntax(SyntaxKind kind, ModuleDecl? module, GreenNode? imports, GreenNode? members, SyntaxToken endOfFileToken)
+        internal CompilationUnitSyntax(SyntaxKind kind, ModuleDecl? module, GreenNode? imports, GreenNode? htmlNodes, GreenNode? members, SyntaxToken endOfFileToken)
           : base(kind)
         {
-            this.SlotCount = 4;
+            this.SlotCount = 5;
             if (module != null)
             {
                 this.AdjustFlagsAndWidth(module);
@@ -229,6 +240,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             {
                 this.AdjustFlagsAndWidth(imports);
                 this.imports = imports;
+            }
+            if (htmlNodes != null)
+            {
+                this.AdjustFlagsAndWidth(htmlNodes);
+                this.htmlNodes = htmlNodes;
             }
             if (members != null)
             {
@@ -241,6 +257,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         public ModuleDecl? Module => this.module;
         public Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> Imports => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl>(this.imports);
+        public Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax> HtmlNodes => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax>(this.htmlNodes);
         public Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl> Members => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl>(this.members);
         public SyntaxToken EndOfFileToken => this.endOfFileToken;
 
@@ -249,8 +266,9 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             {
                 0 => this.module,
                 1 => this.imports,
-                2 => this.members,
-                3 => this.endOfFileToken,
+                2 => this.htmlNodes,
+                3 => this.members,
+                4 => this.endOfFileToken,
                 _ => null,
             };
 
@@ -259,11 +277,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitCompilationUnit(this);
         public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitCompilationUnit(this);
 
-        public CompilationUnitSyntax Update(ModuleDecl module, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> imports, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
+        public CompilationUnitSyntax Update(ModuleDecl module, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> imports, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax> htmlNodes, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
         {
-            if (module != this.Module || imports != this.Imports || members != this.Members || endOfFileToken != this.EndOfFileToken)
+            if (module != this.Module || imports != this.Imports || htmlNodes != this.HtmlNodes || members != this.Members || endOfFileToken != this.EndOfFileToken)
             {
-                var newNode = SyntaxFactory.CompilationUnit(module, imports, members, endOfFileToken);
+                var newNode = SyntaxFactory.CompilationUnit(module, imports, htmlNodes, members, endOfFileToken);
                 var diags = GetDiagnostics();
                 if (diags?.Length > 0)
                     newNode = newNode.WithDiagnosticsGreen(diags);
@@ -277,15 +295,15 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
 
         internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
-            => new CompilationUnitSyntax(this.Kind, this.module, this.imports, this.members, this.endOfFileToken, diagnostics, GetAnnotations());
+            => new CompilationUnitSyntax(this.Kind, this.module, this.imports, this.htmlNodes, this.members, this.endOfFileToken, diagnostics, GetAnnotations());
 
         internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
-            => new CompilationUnitSyntax(this.Kind, this.module, this.imports, this.members, this.endOfFileToken, GetDiagnostics(), annotations);
+            => new CompilationUnitSyntax(this.Kind, this.module, this.imports, this.htmlNodes, this.members, this.endOfFileToken, GetDiagnostics(), annotations);
 
         internal CompilationUnitSyntax(ObjectReader reader)
           : base(reader)
         {
-            this.SlotCount = 4;
+            this.SlotCount = 5;
             var module = (ModuleDecl?)reader.ReadValue();
             if (module != null)
             {
@@ -297,6 +315,12 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             {
                 AdjustFlagsAndWidth(imports);
                 this.imports = imports;
+            }
+            var htmlNodes = (GreenNode?)reader.ReadValue();
+            if (htmlNodes != null)
+            {
+                AdjustFlagsAndWidth(htmlNodes);
+                this.htmlNodes = htmlNodes;
             }
             var members = (GreenNode?)reader.ReadValue();
             if (members != null)
@@ -314,6 +338,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             base.WriteTo(writer);
             writer.WriteValue(this.module);
             writer.WriteValue(this.imports);
+            writer.WriteValue(this.htmlNodes);
             writer.WriteValue(this.members);
             writer.WriteValue(this.endOfFileToken);
         }
@@ -14541,6 +14566,1343 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
     }
 
+    internal abstract partial class HtmlNodeSyntax : AquilaSyntaxNode
+    {
+        internal HtmlNodeSyntax(SyntaxKind kind, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+        }
+
+        internal HtmlNodeSyntax(SyntaxKind kind)
+          : base(kind)
+        {
+        }
+
+        protected HtmlNodeSyntax(ObjectReader reader)
+          : base(reader)
+        {
+        }
+    }
+
+    internal sealed partial class HtmlElementSyntax : HtmlNodeSyntax
+    {
+        internal readonly HtmlElementStartTagSyntax startTag;
+        internal readonly GreenNode? content;
+        internal readonly HtmlElementEndTagSyntax endTag;
+
+        internal HtmlElementSyntax(SyntaxKind kind, HtmlElementStartTagSyntax startTag, GreenNode? content, HtmlElementEndTagSyntax endTag, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 3;
+            this.AdjustFlagsAndWidth(startTag);
+            this.startTag = startTag;
+            if (content != null)
+            {
+                this.AdjustFlagsAndWidth(content);
+                this.content = content;
+            }
+            this.AdjustFlagsAndWidth(endTag);
+            this.endTag = endTag;
+        }
+
+        internal HtmlElementSyntax(SyntaxKind kind, HtmlElementStartTagSyntax startTag, GreenNode? content, HtmlElementEndTagSyntax endTag, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 3;
+            this.AdjustFlagsAndWidth(startTag);
+            this.startTag = startTag;
+            if (content != null)
+            {
+                this.AdjustFlagsAndWidth(content);
+                this.content = content;
+            }
+            this.AdjustFlagsAndWidth(endTag);
+            this.endTag = endTag;
+        }
+
+        internal HtmlElementSyntax(SyntaxKind kind, HtmlElementStartTagSyntax startTag, GreenNode? content, HtmlElementEndTagSyntax endTag)
+          : base(kind)
+        {
+            this.SlotCount = 3;
+            this.AdjustFlagsAndWidth(startTag);
+            this.startTag = startTag;
+            if (content != null)
+            {
+                this.AdjustFlagsAndWidth(content);
+                this.content = content;
+            }
+            this.AdjustFlagsAndWidth(endTag);
+            this.endTag = endTag;
+        }
+
+        public HtmlElementStartTagSyntax StartTag => this.startTag;
+        public Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax> Content => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax>(this.content);
+        public HtmlElementEndTagSyntax EndTag => this.endTag;
+
+        internal override GreenNode? GetSlot(int index)
+            => index switch
+            {
+                0 => this.startTag,
+                1 => this.content,
+                2 => this.endTag,
+                _ => null,
+            };
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.HtmlElementSyntax(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlElement(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitHtmlElement(this);
+
+        public HtmlElementSyntax Update(HtmlElementStartTagSyntax startTag, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax> content, HtmlElementEndTagSyntax endTag)
+        {
+            if (startTag != this.StartTag || content != this.Content || endTag != this.EndTag)
+            {
+                var newNode = SyntaxFactory.HtmlElement(startTag, content, endTag);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new HtmlElementSyntax(this.Kind, this.startTag, this.content, this.endTag, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new HtmlElementSyntax(this.Kind, this.startTag, this.content, this.endTag, GetDiagnostics(), annotations);
+
+        internal HtmlElementSyntax(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 3;
+            var startTag = (HtmlElementStartTagSyntax)reader.ReadValue();
+            AdjustFlagsAndWidth(startTag);
+            this.startTag = startTag;
+            var content = (GreenNode?)reader.ReadValue();
+            if (content != null)
+            {
+                AdjustFlagsAndWidth(content);
+                this.content = content;
+            }
+            var endTag = (HtmlElementEndTagSyntax)reader.ReadValue();
+            AdjustFlagsAndWidth(endTag);
+            this.endTag = endTag;
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.startTag);
+            writer.WriteValue(this.content);
+            writer.WriteValue(this.endTag);
+        }
+
+        static HtmlElementSyntax()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(HtmlElementSyntax), r => new HtmlElementSyntax(r));
+        }
+    }
+
+    internal sealed partial class HtmlElementStartTagSyntax : AquilaSyntaxNode
+    {
+        internal readonly SyntaxToken lessThanToken;
+        internal readonly HtmlNameSyntax name;
+        internal readonly GreenNode? attributes;
+        internal readonly SyntaxToken greaterThanToken;
+
+        internal HtmlElementStartTagSyntax(SyntaxKind kind, SyntaxToken lessThanToken, HtmlNameSyntax name, GreenNode? attributes, SyntaxToken greaterThanToken, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 4;
+            this.AdjustFlagsAndWidth(lessThanToken);
+            this.lessThanToken = lessThanToken;
+            this.AdjustFlagsAndWidth(name);
+            this.name = name;
+            if (attributes != null)
+            {
+                this.AdjustFlagsAndWidth(attributes);
+                this.attributes = attributes;
+            }
+            this.AdjustFlagsAndWidth(greaterThanToken);
+            this.greaterThanToken = greaterThanToken;
+        }
+
+        internal HtmlElementStartTagSyntax(SyntaxKind kind, SyntaxToken lessThanToken, HtmlNameSyntax name, GreenNode? attributes, SyntaxToken greaterThanToken, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 4;
+            this.AdjustFlagsAndWidth(lessThanToken);
+            this.lessThanToken = lessThanToken;
+            this.AdjustFlagsAndWidth(name);
+            this.name = name;
+            if (attributes != null)
+            {
+                this.AdjustFlagsAndWidth(attributes);
+                this.attributes = attributes;
+            }
+            this.AdjustFlagsAndWidth(greaterThanToken);
+            this.greaterThanToken = greaterThanToken;
+        }
+
+        internal HtmlElementStartTagSyntax(SyntaxKind kind, SyntaxToken lessThanToken, HtmlNameSyntax name, GreenNode? attributes, SyntaxToken greaterThanToken)
+          : base(kind)
+        {
+            this.SlotCount = 4;
+            this.AdjustFlagsAndWidth(lessThanToken);
+            this.lessThanToken = lessThanToken;
+            this.AdjustFlagsAndWidth(name);
+            this.name = name;
+            if (attributes != null)
+            {
+                this.AdjustFlagsAndWidth(attributes);
+                this.attributes = attributes;
+            }
+            this.AdjustFlagsAndWidth(greaterThanToken);
+            this.greaterThanToken = greaterThanToken;
+        }
+
+        public SyntaxToken LessThanToken => this.lessThanToken;
+        public HtmlNameSyntax Name => this.name;
+        public Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlAttributeSyntax> Attributes => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlAttributeSyntax>(this.attributes);
+        public SyntaxToken GreaterThanToken => this.greaterThanToken;
+
+        internal override GreenNode? GetSlot(int index)
+            => index switch
+            {
+                0 => this.lessThanToken,
+                1 => this.name,
+                2 => this.attributes,
+                3 => this.greaterThanToken,
+                _ => null,
+            };
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.HtmlElementStartTagSyntax(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlElementStartTag(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitHtmlElementStartTag(this);
+
+        public HtmlElementStartTagSyntax Update(SyntaxToken lessThanToken, HtmlNameSyntax name, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlAttributeSyntax> attributes, SyntaxToken greaterThanToken)
+        {
+            if (lessThanToken != this.LessThanToken || name != this.Name || attributes != this.Attributes || greaterThanToken != this.GreaterThanToken)
+            {
+                var newNode = SyntaxFactory.HtmlElementStartTag(lessThanToken, name, attributes, greaterThanToken);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new HtmlElementStartTagSyntax(this.Kind, this.lessThanToken, this.name, this.attributes, this.greaterThanToken, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new HtmlElementStartTagSyntax(this.Kind, this.lessThanToken, this.name, this.attributes, this.greaterThanToken, GetDiagnostics(), annotations);
+
+        internal HtmlElementStartTagSyntax(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 4;
+            var lessThanToken = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(lessThanToken);
+            this.lessThanToken = lessThanToken;
+            var name = (HtmlNameSyntax)reader.ReadValue();
+            AdjustFlagsAndWidth(name);
+            this.name = name;
+            var attributes = (GreenNode?)reader.ReadValue();
+            if (attributes != null)
+            {
+                AdjustFlagsAndWidth(attributes);
+                this.attributes = attributes;
+            }
+            var greaterThanToken = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(greaterThanToken);
+            this.greaterThanToken = greaterThanToken;
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.lessThanToken);
+            writer.WriteValue(this.name);
+            writer.WriteValue(this.attributes);
+            writer.WriteValue(this.greaterThanToken);
+        }
+
+        static HtmlElementStartTagSyntax()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(HtmlElementStartTagSyntax), r => new HtmlElementStartTagSyntax(r));
+        }
+    }
+
+    internal sealed partial class HtmlElementEndTagSyntax : AquilaSyntaxNode
+    {
+        internal readonly SyntaxToken lessThanSlashToken;
+        internal readonly HtmlNodeSyntax name;
+        internal readonly SyntaxToken greaterThanToken;
+
+        internal HtmlElementEndTagSyntax(SyntaxKind kind, SyntaxToken lessThanSlashToken, HtmlNodeSyntax name, SyntaxToken greaterThanToken, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 3;
+            this.AdjustFlagsAndWidth(lessThanSlashToken);
+            this.lessThanSlashToken = lessThanSlashToken;
+            this.AdjustFlagsAndWidth(name);
+            this.name = name;
+            this.AdjustFlagsAndWidth(greaterThanToken);
+            this.greaterThanToken = greaterThanToken;
+        }
+
+        internal HtmlElementEndTagSyntax(SyntaxKind kind, SyntaxToken lessThanSlashToken, HtmlNodeSyntax name, SyntaxToken greaterThanToken, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 3;
+            this.AdjustFlagsAndWidth(lessThanSlashToken);
+            this.lessThanSlashToken = lessThanSlashToken;
+            this.AdjustFlagsAndWidth(name);
+            this.name = name;
+            this.AdjustFlagsAndWidth(greaterThanToken);
+            this.greaterThanToken = greaterThanToken;
+        }
+
+        internal HtmlElementEndTagSyntax(SyntaxKind kind, SyntaxToken lessThanSlashToken, HtmlNodeSyntax name, SyntaxToken greaterThanToken)
+          : base(kind)
+        {
+            this.SlotCount = 3;
+            this.AdjustFlagsAndWidth(lessThanSlashToken);
+            this.lessThanSlashToken = lessThanSlashToken;
+            this.AdjustFlagsAndWidth(name);
+            this.name = name;
+            this.AdjustFlagsAndWidth(greaterThanToken);
+            this.greaterThanToken = greaterThanToken;
+        }
+
+        public SyntaxToken LessThanSlashToken => this.lessThanSlashToken;
+        public HtmlNodeSyntax Name => this.name;
+        public SyntaxToken GreaterThanToken => this.greaterThanToken;
+
+        internal override GreenNode? GetSlot(int index)
+            => index switch
+            {
+                0 => this.lessThanSlashToken,
+                1 => this.name,
+                2 => this.greaterThanToken,
+                _ => null,
+            };
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.HtmlElementEndTagSyntax(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlElementEndTag(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitHtmlElementEndTag(this);
+
+        public HtmlElementEndTagSyntax Update(SyntaxToken lessThanSlashToken, HtmlNodeSyntax name, SyntaxToken greaterThanToken)
+        {
+            if (lessThanSlashToken != this.LessThanSlashToken || name != this.Name || greaterThanToken != this.GreaterThanToken)
+            {
+                var newNode = SyntaxFactory.HtmlElementEndTag(lessThanSlashToken, name, greaterThanToken);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new HtmlElementEndTagSyntax(this.Kind, this.lessThanSlashToken, this.name, this.greaterThanToken, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new HtmlElementEndTagSyntax(this.Kind, this.lessThanSlashToken, this.name, this.greaterThanToken, GetDiagnostics(), annotations);
+
+        internal HtmlElementEndTagSyntax(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 3;
+            var lessThanSlashToken = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(lessThanSlashToken);
+            this.lessThanSlashToken = lessThanSlashToken;
+            var name = (HtmlNodeSyntax)reader.ReadValue();
+            AdjustFlagsAndWidth(name);
+            this.name = name;
+            var greaterThanToken = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(greaterThanToken);
+            this.greaterThanToken = greaterThanToken;
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.lessThanSlashToken);
+            writer.WriteValue(this.name);
+            writer.WriteValue(this.greaterThanToken);
+        }
+
+        static HtmlElementEndTagSyntax()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(HtmlElementEndTagSyntax), r => new HtmlElementEndTagSyntax(r));
+        }
+    }
+
+    internal sealed partial class HtmlEmptyElementSyntax : HtmlNodeSyntax
+    {
+        internal readonly SyntaxToken lessThanToken;
+        internal readonly HtmlNameSyntax name;
+        internal readonly GreenNode? attributes;
+        internal readonly SyntaxToken slashGreaterThanToken;
+
+        internal HtmlEmptyElementSyntax(SyntaxKind kind, SyntaxToken lessThanToken, HtmlNameSyntax name, GreenNode? attributes, SyntaxToken slashGreaterThanToken, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 4;
+            this.AdjustFlagsAndWidth(lessThanToken);
+            this.lessThanToken = lessThanToken;
+            this.AdjustFlagsAndWidth(name);
+            this.name = name;
+            if (attributes != null)
+            {
+                this.AdjustFlagsAndWidth(attributes);
+                this.attributes = attributes;
+            }
+            this.AdjustFlagsAndWidth(slashGreaterThanToken);
+            this.slashGreaterThanToken = slashGreaterThanToken;
+        }
+
+        internal HtmlEmptyElementSyntax(SyntaxKind kind, SyntaxToken lessThanToken, HtmlNameSyntax name, GreenNode? attributes, SyntaxToken slashGreaterThanToken, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 4;
+            this.AdjustFlagsAndWidth(lessThanToken);
+            this.lessThanToken = lessThanToken;
+            this.AdjustFlagsAndWidth(name);
+            this.name = name;
+            if (attributes != null)
+            {
+                this.AdjustFlagsAndWidth(attributes);
+                this.attributes = attributes;
+            }
+            this.AdjustFlagsAndWidth(slashGreaterThanToken);
+            this.slashGreaterThanToken = slashGreaterThanToken;
+        }
+
+        internal HtmlEmptyElementSyntax(SyntaxKind kind, SyntaxToken lessThanToken, HtmlNameSyntax name, GreenNode? attributes, SyntaxToken slashGreaterThanToken)
+          : base(kind)
+        {
+            this.SlotCount = 4;
+            this.AdjustFlagsAndWidth(lessThanToken);
+            this.lessThanToken = lessThanToken;
+            this.AdjustFlagsAndWidth(name);
+            this.name = name;
+            if (attributes != null)
+            {
+                this.AdjustFlagsAndWidth(attributes);
+                this.attributes = attributes;
+            }
+            this.AdjustFlagsAndWidth(slashGreaterThanToken);
+            this.slashGreaterThanToken = slashGreaterThanToken;
+        }
+
+        public SyntaxToken LessThanToken => this.lessThanToken;
+        public HtmlNameSyntax Name => this.name;
+        public Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlAttributeSyntax> Attributes => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlAttributeSyntax>(this.attributes);
+        public SyntaxToken SlashGreaterThanToken => this.slashGreaterThanToken;
+
+        internal override GreenNode? GetSlot(int index)
+            => index switch
+            {
+                0 => this.lessThanToken,
+                1 => this.name,
+                2 => this.attributes,
+                3 => this.slashGreaterThanToken,
+                _ => null,
+            };
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.HtmlEmptyElementSyntax(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlEmptyElement(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitHtmlEmptyElement(this);
+
+        public HtmlEmptyElementSyntax Update(SyntaxToken lessThanToken, HtmlNameSyntax name, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlAttributeSyntax> attributes, SyntaxToken slashGreaterThanToken)
+        {
+            if (lessThanToken != this.LessThanToken || name != this.Name || attributes != this.Attributes || slashGreaterThanToken != this.SlashGreaterThanToken)
+            {
+                var newNode = SyntaxFactory.HtmlEmptyElement(lessThanToken, name, attributes, slashGreaterThanToken);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new HtmlEmptyElementSyntax(this.Kind, this.lessThanToken, this.name, this.attributes, this.slashGreaterThanToken, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new HtmlEmptyElementSyntax(this.Kind, this.lessThanToken, this.name, this.attributes, this.slashGreaterThanToken, GetDiagnostics(), annotations);
+
+        internal HtmlEmptyElementSyntax(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 4;
+            var lessThanToken = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(lessThanToken);
+            this.lessThanToken = lessThanToken;
+            var name = (HtmlNameSyntax)reader.ReadValue();
+            AdjustFlagsAndWidth(name);
+            this.name = name;
+            var attributes = (GreenNode?)reader.ReadValue();
+            if (attributes != null)
+            {
+                AdjustFlagsAndWidth(attributes);
+                this.attributes = attributes;
+            }
+            var slashGreaterThanToken = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(slashGreaterThanToken);
+            this.slashGreaterThanToken = slashGreaterThanToken;
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.lessThanToken);
+            writer.WriteValue(this.name);
+            writer.WriteValue(this.attributes);
+            writer.WriteValue(this.slashGreaterThanToken);
+        }
+
+        static HtmlEmptyElementSyntax()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(HtmlEmptyElementSyntax), r => new HtmlEmptyElementSyntax(r));
+        }
+    }
+
+    internal sealed partial class HtmlNameSyntax : HtmlNodeSyntax
+    {
+        internal readonly SyntaxToken tagName;
+
+        internal HtmlNameSyntax(SyntaxKind kind, SyntaxToken tagName, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 1;
+            this.AdjustFlagsAndWidth(tagName);
+            this.tagName = tagName;
+        }
+
+        internal HtmlNameSyntax(SyntaxKind kind, SyntaxToken tagName, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 1;
+            this.AdjustFlagsAndWidth(tagName);
+            this.tagName = tagName;
+        }
+
+        internal HtmlNameSyntax(SyntaxKind kind, SyntaxToken tagName)
+          : base(kind)
+        {
+            this.SlotCount = 1;
+            this.AdjustFlagsAndWidth(tagName);
+            this.tagName = tagName;
+        }
+
+        public SyntaxToken TagName => this.tagName;
+
+        internal override GreenNode? GetSlot(int index)
+            => index == 0 ? this.tagName : null;
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.HtmlNameSyntax(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlName(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitHtmlName(this);
+
+        public HtmlNameSyntax Update(SyntaxToken tagName)
+        {
+            if (tagName != this.TagName)
+            {
+                var newNode = SyntaxFactory.HtmlName(tagName);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new HtmlNameSyntax(this.Kind, this.tagName, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new HtmlNameSyntax(this.Kind, this.tagName, GetDiagnostics(), annotations);
+
+        internal HtmlNameSyntax(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 1;
+            var tagName = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(tagName);
+            this.tagName = tagName;
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.tagName);
+        }
+
+        static HtmlNameSyntax()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(HtmlNameSyntax), r => new HtmlNameSyntax(r));
+        }
+    }
+
+    internal abstract partial class BaseHtmlAttributeSyntax : AquilaSyntaxNode
+    {
+        internal BaseHtmlAttributeSyntax(SyntaxKind kind, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+        }
+
+        internal BaseHtmlAttributeSyntax(SyntaxKind kind)
+          : base(kind)
+        {
+        }
+
+        protected BaseHtmlAttributeSyntax(ObjectReader reader)
+          : base(reader)
+        {
+        }
+    }
+
+    internal sealed partial class HtmlExpressionAttributeSyntax : BaseHtmlAttributeSyntax
+    {
+        internal readonly ExprSyntax expression;
+
+        internal HtmlExpressionAttributeSyntax(SyntaxKind kind, ExprSyntax expression, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 1;
+            this.AdjustFlagsAndWidth(expression);
+            this.expression = expression;
+        }
+
+        internal HtmlExpressionAttributeSyntax(SyntaxKind kind, ExprSyntax expression, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 1;
+            this.AdjustFlagsAndWidth(expression);
+            this.expression = expression;
+        }
+
+        internal HtmlExpressionAttributeSyntax(SyntaxKind kind, ExprSyntax expression)
+          : base(kind)
+        {
+            this.SlotCount = 1;
+            this.AdjustFlagsAndWidth(expression);
+            this.expression = expression;
+        }
+
+        public ExprSyntax Expression => this.expression;
+
+        internal override GreenNode? GetSlot(int index)
+            => index == 0 ? this.expression : null;
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.HtmlExpressionAttributeSyntax(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlExpressionAttribute(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitHtmlExpressionAttribute(this);
+
+        public HtmlExpressionAttributeSyntax Update(ExprSyntax expression)
+        {
+            if (expression != this.Expression)
+            {
+                var newNode = SyntaxFactory.HtmlExpressionAttribute(expression);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new HtmlExpressionAttributeSyntax(this.Kind, this.expression, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new HtmlExpressionAttributeSyntax(this.Kind, this.expression, GetDiagnostics(), annotations);
+
+        internal HtmlExpressionAttributeSyntax(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 1;
+            var expression = (ExprSyntax)reader.ReadValue();
+            AdjustFlagsAndWidth(expression);
+            this.expression = expression;
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.expression);
+        }
+
+        static HtmlExpressionAttributeSyntax()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(HtmlExpressionAttributeSyntax), r => new HtmlExpressionAttributeSyntax(r));
+        }
+    }
+
+    internal sealed partial class HtmlAttributeSyntax : BaseHtmlAttributeSyntax
+    {
+        internal readonly HtmlNameSyntax name;
+        internal readonly SyntaxToken? equalsToken;
+        internal readonly SyntaxToken? startQuoteToken;
+        internal readonly GreenNode? nodes;
+        internal readonly SyntaxToken? endQuoteToken;
+
+        internal HtmlAttributeSyntax(SyntaxKind kind, HtmlNameSyntax name, SyntaxToken? equalsToken, SyntaxToken? startQuoteToken, GreenNode? nodes, SyntaxToken? endQuoteToken, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 5;
+            this.AdjustFlagsAndWidth(name);
+            this.name = name;
+            if (equalsToken != null)
+            {
+                this.AdjustFlagsAndWidth(equalsToken);
+                this.equalsToken = equalsToken;
+            }
+            if (startQuoteToken != null)
+            {
+                this.AdjustFlagsAndWidth(startQuoteToken);
+                this.startQuoteToken = startQuoteToken;
+            }
+            if (nodes != null)
+            {
+                this.AdjustFlagsAndWidth(nodes);
+                this.nodes = nodes;
+            }
+            if (endQuoteToken != null)
+            {
+                this.AdjustFlagsAndWidth(endQuoteToken);
+                this.endQuoteToken = endQuoteToken;
+            }
+        }
+
+        internal HtmlAttributeSyntax(SyntaxKind kind, HtmlNameSyntax name, SyntaxToken? equalsToken, SyntaxToken? startQuoteToken, GreenNode? nodes, SyntaxToken? endQuoteToken, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 5;
+            this.AdjustFlagsAndWidth(name);
+            this.name = name;
+            if (equalsToken != null)
+            {
+                this.AdjustFlagsAndWidth(equalsToken);
+                this.equalsToken = equalsToken;
+            }
+            if (startQuoteToken != null)
+            {
+                this.AdjustFlagsAndWidth(startQuoteToken);
+                this.startQuoteToken = startQuoteToken;
+            }
+            if (nodes != null)
+            {
+                this.AdjustFlagsAndWidth(nodes);
+                this.nodes = nodes;
+            }
+            if (endQuoteToken != null)
+            {
+                this.AdjustFlagsAndWidth(endQuoteToken);
+                this.endQuoteToken = endQuoteToken;
+            }
+        }
+
+        internal HtmlAttributeSyntax(SyntaxKind kind, HtmlNameSyntax name, SyntaxToken? equalsToken, SyntaxToken? startQuoteToken, GreenNode? nodes, SyntaxToken? endQuoteToken)
+          : base(kind)
+        {
+            this.SlotCount = 5;
+            this.AdjustFlagsAndWidth(name);
+            this.name = name;
+            if (equalsToken != null)
+            {
+                this.AdjustFlagsAndWidth(equalsToken);
+                this.equalsToken = equalsToken;
+            }
+            if (startQuoteToken != null)
+            {
+                this.AdjustFlagsAndWidth(startQuoteToken);
+                this.startQuoteToken = startQuoteToken;
+            }
+            if (nodes != null)
+            {
+                this.AdjustFlagsAndWidth(nodes);
+                this.nodes = nodes;
+            }
+            if (endQuoteToken != null)
+            {
+                this.AdjustFlagsAndWidth(endQuoteToken);
+                this.endQuoteToken = endQuoteToken;
+            }
+        }
+
+        public HtmlNameSyntax Name => this.name;
+        public SyntaxToken? EqualsToken => this.equalsToken;
+        public SyntaxToken? StartQuoteToken => this.startQuoteToken;
+        public Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode> Nodes => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode>(this.nodes);
+        public SyntaxToken? EndQuoteToken => this.endQuoteToken;
+
+        internal override GreenNode? GetSlot(int index)
+            => index switch
+            {
+                0 => this.name,
+                1 => this.equalsToken,
+                2 => this.startQuoteToken,
+                3 => this.nodes,
+                4 => this.endQuoteToken,
+                _ => null,
+            };
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.HtmlAttributeSyntax(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlAttribute(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitHtmlAttribute(this);
+
+        public HtmlAttributeSyntax Update(HtmlNameSyntax name, SyntaxToken equalsToken, SyntaxToken startQuoteToken, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode> nodes, SyntaxToken endQuoteToken)
+        {
+            if (name != this.Name || equalsToken != this.EqualsToken || startQuoteToken != this.StartQuoteToken || nodes != this.Nodes || endQuoteToken != this.EndQuoteToken)
+            {
+                var newNode = SyntaxFactory.HtmlAttribute(name, equalsToken, startQuoteToken, nodes, endQuoteToken);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new HtmlAttributeSyntax(this.Kind, this.name, this.equalsToken, this.startQuoteToken, this.nodes, this.endQuoteToken, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new HtmlAttributeSyntax(this.Kind, this.name, this.equalsToken, this.startQuoteToken, this.nodes, this.endQuoteToken, GetDiagnostics(), annotations);
+
+        internal HtmlAttributeSyntax(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 5;
+            var name = (HtmlNameSyntax)reader.ReadValue();
+            AdjustFlagsAndWidth(name);
+            this.name = name;
+            var equalsToken = (SyntaxToken?)reader.ReadValue();
+            if (equalsToken != null)
+            {
+                AdjustFlagsAndWidth(equalsToken);
+                this.equalsToken = equalsToken;
+            }
+            var startQuoteToken = (SyntaxToken?)reader.ReadValue();
+            if (startQuoteToken != null)
+            {
+                AdjustFlagsAndWidth(startQuoteToken);
+                this.startQuoteToken = startQuoteToken;
+            }
+            var nodes = (GreenNode?)reader.ReadValue();
+            if (nodes != null)
+            {
+                AdjustFlagsAndWidth(nodes);
+                this.nodes = nodes;
+            }
+            var endQuoteToken = (SyntaxToken?)reader.ReadValue();
+            if (endQuoteToken != null)
+            {
+                AdjustFlagsAndWidth(endQuoteToken);
+                this.endQuoteToken = endQuoteToken;
+            }
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.name);
+            writer.WriteValue(this.equalsToken);
+            writer.WriteValue(this.startQuoteToken);
+            writer.WriteValue(this.nodes);
+            writer.WriteValue(this.endQuoteToken);
+        }
+
+        static HtmlAttributeSyntax()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(HtmlAttributeSyntax), r => new HtmlAttributeSyntax(r));
+        }
+    }
+
+    internal sealed partial class HtmlTextSyntax : HtmlNodeSyntax
+    {
+        internal readonly SyntaxToken text;
+
+        internal HtmlTextSyntax(SyntaxKind kind, SyntaxToken text, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 1;
+            this.AdjustFlagsAndWidth(text);
+            this.text = text;
+        }
+
+        internal HtmlTextSyntax(SyntaxKind kind, SyntaxToken text, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 1;
+            this.AdjustFlagsAndWidth(text);
+            this.text = text;
+        }
+
+        internal HtmlTextSyntax(SyntaxKind kind, SyntaxToken text)
+          : base(kind)
+        {
+            this.SlotCount = 1;
+            this.AdjustFlagsAndWidth(text);
+            this.text = text;
+        }
+
+        public SyntaxToken Text => this.text;
+
+        internal override GreenNode? GetSlot(int index)
+            => index == 0 ? this.text : null;
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.HtmlTextSyntax(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlText(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitHtmlText(this);
+
+        public HtmlTextSyntax Update(SyntaxToken text)
+        {
+            if (text != this.Text)
+            {
+                var newNode = SyntaxFactory.HtmlText(text);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new HtmlTextSyntax(this.Kind, this.text, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new HtmlTextSyntax(this.Kind, this.text, GetDiagnostics(), annotations);
+
+        internal HtmlTextSyntax(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 1;
+            var text = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(text);
+            this.text = text;
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.text);
+        }
+
+        static HtmlTextSyntax()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(HtmlTextSyntax), r => new HtmlTextSyntax(r));
+        }
+    }
+
+    internal sealed partial class HtmlExpressionSyntax : HtmlNodeSyntax
+    {
+        internal readonly SyntaxToken atToken;
+        internal readonly ExprSyntax expression;
+
+        internal HtmlExpressionSyntax(SyntaxKind kind, SyntaxToken atToken, ExprSyntax expression, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 2;
+            this.AdjustFlagsAndWidth(atToken);
+            this.atToken = atToken;
+            this.AdjustFlagsAndWidth(expression);
+            this.expression = expression;
+        }
+
+        internal HtmlExpressionSyntax(SyntaxKind kind, SyntaxToken atToken, ExprSyntax expression, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 2;
+            this.AdjustFlagsAndWidth(atToken);
+            this.atToken = atToken;
+            this.AdjustFlagsAndWidth(expression);
+            this.expression = expression;
+        }
+
+        internal HtmlExpressionSyntax(SyntaxKind kind, SyntaxToken atToken, ExprSyntax expression)
+          : base(kind)
+        {
+            this.SlotCount = 2;
+            this.AdjustFlagsAndWidth(atToken);
+            this.atToken = atToken;
+            this.AdjustFlagsAndWidth(expression);
+            this.expression = expression;
+        }
+
+        public SyntaxToken AtToken => this.atToken;
+        public ExprSyntax Expression => this.expression;
+
+        internal override GreenNode? GetSlot(int index)
+            => index switch
+            {
+                0 => this.atToken,
+                1 => this.expression,
+                _ => null,
+            };
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.HtmlExpressionSyntax(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlExpression(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitHtmlExpression(this);
+
+        public HtmlExpressionSyntax Update(SyntaxToken atToken, ExprSyntax expression)
+        {
+            if (atToken != this.AtToken || expression != this.Expression)
+            {
+                var newNode = SyntaxFactory.HtmlExpression(atToken, expression);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new HtmlExpressionSyntax(this.Kind, this.atToken, this.expression, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new HtmlExpressionSyntax(this.Kind, this.atToken, this.expression, GetDiagnostics(), annotations);
+
+        internal HtmlExpressionSyntax(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 2;
+            var atToken = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(atToken);
+            this.atToken = atToken;
+            var expression = (ExprSyntax)reader.ReadValue();
+            AdjustFlagsAndWidth(expression);
+            this.expression = expression;
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.atToken);
+            writer.WriteValue(this.expression);
+        }
+
+        static HtmlExpressionSyntax()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(HtmlExpressionSyntax), r => new HtmlExpressionSyntax(r));
+        }
+    }
+
+    internal sealed partial class HtmlStatementSyntax : HtmlNodeSyntax
+    {
+        internal readonly SyntaxToken atToken;
+        internal readonly StmtSyntax statement;
+
+        internal HtmlStatementSyntax(SyntaxKind kind, SyntaxToken atToken, StmtSyntax statement, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 2;
+            this.AdjustFlagsAndWidth(atToken);
+            this.atToken = atToken;
+            this.AdjustFlagsAndWidth(statement);
+            this.statement = statement;
+        }
+
+        internal HtmlStatementSyntax(SyntaxKind kind, SyntaxToken atToken, StmtSyntax statement, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 2;
+            this.AdjustFlagsAndWidth(atToken);
+            this.atToken = atToken;
+            this.AdjustFlagsAndWidth(statement);
+            this.statement = statement;
+        }
+
+        internal HtmlStatementSyntax(SyntaxKind kind, SyntaxToken atToken, StmtSyntax statement)
+          : base(kind)
+        {
+            this.SlotCount = 2;
+            this.AdjustFlagsAndWidth(atToken);
+            this.atToken = atToken;
+            this.AdjustFlagsAndWidth(statement);
+            this.statement = statement;
+        }
+
+        public SyntaxToken AtToken => this.atToken;
+        public StmtSyntax Statement => this.statement;
+
+        internal override GreenNode? GetSlot(int index)
+            => index switch
+            {
+                0 => this.atToken,
+                1 => this.statement,
+                _ => null,
+            };
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.HtmlStatementSyntax(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlStatement(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitHtmlStatement(this);
+
+        public HtmlStatementSyntax Update(SyntaxToken atToken, StmtSyntax statement)
+        {
+            if (atToken != this.AtToken || statement != this.Statement)
+            {
+                var newNode = SyntaxFactory.HtmlStatement(atToken, statement);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new HtmlStatementSyntax(this.Kind, this.atToken, this.statement, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new HtmlStatementSyntax(this.Kind, this.atToken, this.statement, GetDiagnostics(), annotations);
+
+        internal HtmlStatementSyntax(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 2;
+            var atToken = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(atToken);
+            this.atToken = atToken;
+            var statement = (StmtSyntax)reader.ReadValue();
+            AdjustFlagsAndWidth(statement);
+            this.statement = statement;
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.atToken);
+            writer.WriteValue(this.statement);
+        }
+
+        static HtmlStatementSyntax()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(HtmlStatementSyntax), r => new HtmlStatementSyntax(r));
+        }
+    }
+
+    internal sealed partial class HtmlCodeSyntax : HtmlNodeSyntax
+    {
+        internal readonly SyntaxToken atToken;
+        internal readonly SyntaxToken htmlCodeKeyword;
+        internal readonly SyntaxToken openBrace;
+        internal readonly GreenNode? members;
+        internal readonly SyntaxToken closeBrace;
+
+        internal HtmlCodeSyntax(SyntaxKind kind, SyntaxToken atToken, SyntaxToken htmlCodeKeyword, SyntaxToken openBrace, GreenNode? members, SyntaxToken closeBrace, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 5;
+            this.AdjustFlagsAndWidth(atToken);
+            this.atToken = atToken;
+            this.AdjustFlagsAndWidth(htmlCodeKeyword);
+            this.htmlCodeKeyword = htmlCodeKeyword;
+            this.AdjustFlagsAndWidth(openBrace);
+            this.openBrace = openBrace;
+            if (members != null)
+            {
+                this.AdjustFlagsAndWidth(members);
+                this.members = members;
+            }
+            this.AdjustFlagsAndWidth(closeBrace);
+            this.closeBrace = closeBrace;
+        }
+
+        internal HtmlCodeSyntax(SyntaxKind kind, SyntaxToken atToken, SyntaxToken htmlCodeKeyword, SyntaxToken openBrace, GreenNode? members, SyntaxToken closeBrace, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 5;
+            this.AdjustFlagsAndWidth(atToken);
+            this.atToken = atToken;
+            this.AdjustFlagsAndWidth(htmlCodeKeyword);
+            this.htmlCodeKeyword = htmlCodeKeyword;
+            this.AdjustFlagsAndWidth(openBrace);
+            this.openBrace = openBrace;
+            if (members != null)
+            {
+                this.AdjustFlagsAndWidth(members);
+                this.members = members;
+            }
+            this.AdjustFlagsAndWidth(closeBrace);
+            this.closeBrace = closeBrace;
+        }
+
+        internal HtmlCodeSyntax(SyntaxKind kind, SyntaxToken atToken, SyntaxToken htmlCodeKeyword, SyntaxToken openBrace, GreenNode? members, SyntaxToken closeBrace)
+          : base(kind)
+        {
+            this.SlotCount = 5;
+            this.AdjustFlagsAndWidth(atToken);
+            this.atToken = atToken;
+            this.AdjustFlagsAndWidth(htmlCodeKeyword);
+            this.htmlCodeKeyword = htmlCodeKeyword;
+            this.AdjustFlagsAndWidth(openBrace);
+            this.openBrace = openBrace;
+            if (members != null)
+            {
+                this.AdjustFlagsAndWidth(members);
+                this.members = members;
+            }
+            this.AdjustFlagsAndWidth(closeBrace);
+            this.closeBrace = closeBrace;
+        }
+
+        public SyntaxToken AtToken => this.atToken;
+        public SyntaxToken HtmlCodeKeyword => this.htmlCodeKeyword;
+        public SyntaxToken OpenBrace => this.openBrace;
+        public Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl> Members => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl>(this.members);
+        public SyntaxToken CloseBrace => this.closeBrace;
+
+        internal override GreenNode? GetSlot(int index)
+            => index switch
+            {
+                0 => this.atToken,
+                1 => this.htmlCodeKeyword,
+                2 => this.openBrace,
+                3 => this.members,
+                4 => this.closeBrace,
+                _ => null,
+            };
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.HtmlCodeSyntax(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlCode(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitHtmlCode(this);
+
+        public HtmlCodeSyntax Update(SyntaxToken atToken, SyntaxToken htmlCodeKeyword, SyntaxToken openBrace, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl> members, SyntaxToken closeBrace)
+        {
+            if (atToken != this.AtToken || htmlCodeKeyword != this.HtmlCodeKeyword || openBrace != this.OpenBrace || members != this.Members || closeBrace != this.CloseBrace)
+            {
+                var newNode = SyntaxFactory.HtmlCode(atToken, htmlCodeKeyword, openBrace, members, closeBrace);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new HtmlCodeSyntax(this.Kind, this.atToken, this.htmlCodeKeyword, this.openBrace, this.members, this.closeBrace, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new HtmlCodeSyntax(this.Kind, this.atToken, this.htmlCodeKeyword, this.openBrace, this.members, this.closeBrace, GetDiagnostics(), annotations);
+
+        internal HtmlCodeSyntax(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 5;
+            var atToken = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(atToken);
+            this.atToken = atToken;
+            var htmlCodeKeyword = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(htmlCodeKeyword);
+            this.htmlCodeKeyword = htmlCodeKeyword;
+            var openBrace = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(openBrace);
+            this.openBrace = openBrace;
+            var members = (GreenNode?)reader.ReadValue();
+            if (members != null)
+            {
+                AdjustFlagsAndWidth(members);
+                this.members = members;
+            }
+            var closeBrace = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(closeBrace);
+            this.closeBrace = closeBrace;
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.atToken);
+            writer.WriteValue(this.htmlCodeKeyword);
+            writer.WriteValue(this.openBrace);
+            writer.WriteValue(this.members);
+            writer.WriteValue(this.closeBrace);
+        }
+
+        static HtmlCodeSyntax()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(HtmlCodeSyntax), r => new HtmlCodeSyntax(r));
+        }
+    }
+
     internal partial class AquilaSyntaxVisitor<TResult>
     {
         public virtual TResult VisitModuleDecl(ModuleDecl node) => this.DefaultVisit(node);
@@ -14652,6 +16014,17 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         public virtual TResult VisitXmlCDataSection(XmlCDataSectionSyntax node) => this.DefaultVisit(node);
         public virtual TResult VisitXmlProcessingInstruction(XmlProcessingInstructionSyntax node) => this.DefaultVisit(node);
         public virtual TResult VisitXmlComment(XmlCommentSyntax node) => this.DefaultVisit(node);
+        public virtual TResult VisitHtmlElement(HtmlElementSyntax node) => this.DefaultVisit(node);
+        public virtual TResult VisitHtmlElementStartTag(HtmlElementStartTagSyntax node) => this.DefaultVisit(node);
+        public virtual TResult VisitHtmlElementEndTag(HtmlElementEndTagSyntax node) => this.DefaultVisit(node);
+        public virtual TResult VisitHtmlEmptyElement(HtmlEmptyElementSyntax node) => this.DefaultVisit(node);
+        public virtual TResult VisitHtmlName(HtmlNameSyntax node) => this.DefaultVisit(node);
+        public virtual TResult VisitHtmlExpressionAttribute(HtmlExpressionAttributeSyntax node) => this.DefaultVisit(node);
+        public virtual TResult VisitHtmlAttribute(HtmlAttributeSyntax node) => this.DefaultVisit(node);
+        public virtual TResult VisitHtmlText(HtmlTextSyntax node) => this.DefaultVisit(node);
+        public virtual TResult VisitHtmlExpression(HtmlExpressionSyntax node) => this.DefaultVisit(node);
+        public virtual TResult VisitHtmlStatement(HtmlStatementSyntax node) => this.DefaultVisit(node);
+        public virtual TResult VisitHtmlCode(HtmlCodeSyntax node) => this.DefaultVisit(node);
     }
 
     internal partial class AquilaSyntaxVisitor
@@ -14765,6 +16138,17 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         public virtual void VisitXmlCDataSection(XmlCDataSectionSyntax node) => this.DefaultVisit(node);
         public virtual void VisitXmlProcessingInstruction(XmlProcessingInstructionSyntax node) => this.DefaultVisit(node);
         public virtual void VisitXmlComment(XmlCommentSyntax node) => this.DefaultVisit(node);
+        public virtual void VisitHtmlElement(HtmlElementSyntax node) => this.DefaultVisit(node);
+        public virtual void VisitHtmlElementStartTag(HtmlElementStartTagSyntax node) => this.DefaultVisit(node);
+        public virtual void VisitHtmlElementEndTag(HtmlElementEndTagSyntax node) => this.DefaultVisit(node);
+        public virtual void VisitHtmlEmptyElement(HtmlEmptyElementSyntax node) => this.DefaultVisit(node);
+        public virtual void VisitHtmlName(HtmlNameSyntax node) => this.DefaultVisit(node);
+        public virtual void VisitHtmlExpressionAttribute(HtmlExpressionAttributeSyntax node) => this.DefaultVisit(node);
+        public virtual void VisitHtmlAttribute(HtmlAttributeSyntax node) => this.DefaultVisit(node);
+        public virtual void VisitHtmlText(HtmlTextSyntax node) => this.DefaultVisit(node);
+        public virtual void VisitHtmlExpression(HtmlExpressionSyntax node) => this.DefaultVisit(node);
+        public virtual void VisitHtmlStatement(HtmlStatementSyntax node) => this.DefaultVisit(node);
+        public virtual void VisitHtmlCode(HtmlCodeSyntax node) => this.DefaultVisit(node);
     }
 
     internal partial class AquilaSyntaxRewriter : AquilaSyntaxVisitor<AquilaSyntaxNode>
@@ -14773,7 +16157,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             => node.Update((SyntaxToken)Visit(node.ModuleKeyword), (NameEx)Visit(node.Name), (SyntaxToken)Visit(node.SemicolonToken));
 
         public override AquilaSyntaxNode VisitCompilationUnit(CompilationUnitSyntax node)
-            => node.Update((ModuleDecl)Visit(node.Module), VisitList(node.Imports), VisitList(node.Members), (SyntaxToken)Visit(node.EndOfFileToken));
+            => node.Update((ModuleDecl)Visit(node.Module), VisitList(node.Imports), VisitList(node.HtmlNodes), VisitList(node.Members), (SyntaxToken)Visit(node.EndOfFileToken));
 
         public override AquilaSyntaxNode VisitImportDecl(ImportDecl node)
             => node.Update((SyntaxToken)Visit(node.ImportKeyword), (SyntaxToken)Visit(node.ClrKeyword), (NameEx)Visit(node.Name), (SyntaxToken)Visit(node.SemicolonToken));
@@ -15095,6 +16479,39 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         public override AquilaSyntaxNode VisitXmlComment(XmlCommentSyntax node)
             => node.Update((SyntaxToken)Visit(node.LessThanExclamationMinusMinusToken), VisitList(node.TextTokens), (SyntaxToken)Visit(node.MinusMinusGreaterThanToken));
+
+        public override AquilaSyntaxNode VisitHtmlElement(HtmlElementSyntax node)
+            => node.Update((HtmlElementStartTagSyntax)Visit(node.StartTag), VisitList(node.Content), (HtmlElementEndTagSyntax)Visit(node.EndTag));
+
+        public override AquilaSyntaxNode VisitHtmlElementStartTag(HtmlElementStartTagSyntax node)
+            => node.Update((SyntaxToken)Visit(node.LessThanToken), (HtmlNameSyntax)Visit(node.Name), VisitList(node.Attributes), (SyntaxToken)Visit(node.GreaterThanToken));
+
+        public override AquilaSyntaxNode VisitHtmlElementEndTag(HtmlElementEndTagSyntax node)
+            => node.Update((SyntaxToken)Visit(node.LessThanSlashToken), (HtmlNodeSyntax)Visit(node.Name), (SyntaxToken)Visit(node.GreaterThanToken));
+
+        public override AquilaSyntaxNode VisitHtmlEmptyElement(HtmlEmptyElementSyntax node)
+            => node.Update((SyntaxToken)Visit(node.LessThanToken), (HtmlNameSyntax)Visit(node.Name), VisitList(node.Attributes), (SyntaxToken)Visit(node.SlashGreaterThanToken));
+
+        public override AquilaSyntaxNode VisitHtmlName(HtmlNameSyntax node)
+            => node.Update((SyntaxToken)Visit(node.TagName));
+
+        public override AquilaSyntaxNode VisitHtmlExpressionAttribute(HtmlExpressionAttributeSyntax node)
+            => node.Update((ExprSyntax)Visit(node.Expression));
+
+        public override AquilaSyntaxNode VisitHtmlAttribute(HtmlAttributeSyntax node)
+            => node.Update((HtmlNameSyntax)Visit(node.Name), (SyntaxToken)Visit(node.EqualsToken), (SyntaxToken)Visit(node.StartQuoteToken), VisitList(node.Nodes), (SyntaxToken)Visit(node.EndQuoteToken));
+
+        public override AquilaSyntaxNode VisitHtmlText(HtmlTextSyntax node)
+            => node.Update((SyntaxToken)Visit(node.Text));
+
+        public override AquilaSyntaxNode VisitHtmlExpression(HtmlExpressionSyntax node)
+            => node.Update((SyntaxToken)Visit(node.AtToken), (ExprSyntax)Visit(node.Expression));
+
+        public override AquilaSyntaxNode VisitHtmlStatement(HtmlStatementSyntax node)
+            => node.Update((SyntaxToken)Visit(node.AtToken), (StmtSyntax)Visit(node.Statement));
+
+        public override AquilaSyntaxNode VisitHtmlCode(HtmlCodeSyntax node)
+            => node.Update((SyntaxToken)Visit(node.AtToken), (SyntaxToken)Visit(node.HtmlCodeKeyword), (SyntaxToken)Visit(node.OpenBrace), VisitList(node.Members), (SyntaxToken)Visit(node.CloseBrace));
     }
 
     internal partial class ContextAwareSyntax
@@ -15127,14 +16544,14 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return result;
         }
 
-        public CompilationUnitSyntax CompilationUnit(ModuleDecl? module, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> imports, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
+        public CompilationUnitSyntax CompilationUnit(ModuleDecl? module, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> imports, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax> htmlNodes, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
         {
 #if DEBUG
             if (endOfFileToken == null) throw new ArgumentNullException(nameof(endOfFileToken));
             if (endOfFileToken.Kind != SyntaxKind.EndOfFileToken) throw new ArgumentException(nameof(endOfFileToken));
 #endif
 
-            return new CompilationUnitSyntax(SyntaxKind.CompilationUnit, module, imports.Node, members.Node, endOfFileToken, this.context);
+            return new CompilationUnitSyntax(SyntaxKind.CompilationUnit, module, imports.Node, htmlNodes.Node, members.Node, endOfFileToken, this.context);
         }
 
         public ImportDecl ImportDecl(SyntaxToken importKeyword, SyntaxToken? clrKeyword, NameEx name, SyntaxToken semicolonToken)
@@ -17524,6 +18941,223 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
             return result;
         }
+
+        public HtmlElementSyntax HtmlElement(HtmlElementStartTagSyntax startTag, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax> content, HtmlElementEndTagSyntax endTag)
+        {
+#if DEBUG
+            if (startTag == null) throw new ArgumentNullException(nameof(startTag));
+            if (endTag == null) throw new ArgumentNullException(nameof(endTag));
+#endif
+
+            int hash;
+            var cached = AquilaSyntaxNodeCache.TryGetNode((int)SyntaxKind.HtmlElement, startTag, content.Node, endTag, this.context, out hash);
+            if (cached != null) return (HtmlElementSyntax)cached;
+
+            var result = new HtmlElementSyntax(SyntaxKind.HtmlElement, startTag, content.Node, endTag, this.context);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
+        public HtmlElementStartTagSyntax HtmlElementStartTag(SyntaxToken lessThanToken, HtmlNameSyntax name, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlAttributeSyntax> attributes, SyntaxToken greaterThanToken)
+        {
+#if DEBUG
+            if (lessThanToken == null) throw new ArgumentNullException(nameof(lessThanToken));
+            if (lessThanToken.Kind != SyntaxKind.LessThanToken) throw new ArgumentException(nameof(lessThanToken));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (greaterThanToken == null) throw new ArgumentNullException(nameof(greaterThanToken));
+            if (greaterThanToken.Kind != SyntaxKind.GreaterThanToken) throw new ArgumentException(nameof(greaterThanToken));
+#endif
+
+            return new HtmlElementStartTagSyntax(SyntaxKind.HtmlElementStartTag, lessThanToken, name, attributes.Node, greaterThanToken, this.context);
+        }
+
+        public HtmlElementEndTagSyntax HtmlElementEndTag(SyntaxToken lessThanSlashToken, HtmlNodeSyntax name, SyntaxToken greaterThanToken)
+        {
+#if DEBUG
+            if (lessThanSlashToken == null) throw new ArgumentNullException(nameof(lessThanSlashToken));
+            if (lessThanSlashToken.Kind != SyntaxKind.LessThanSlashToken) throw new ArgumentException(nameof(lessThanSlashToken));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (greaterThanToken == null) throw new ArgumentNullException(nameof(greaterThanToken));
+            if (greaterThanToken.Kind != SyntaxKind.GreaterThanToken) throw new ArgumentException(nameof(greaterThanToken));
+#endif
+
+            int hash;
+            var cached = AquilaSyntaxNodeCache.TryGetNode((int)SyntaxKind.HtmlElementEndTag, lessThanSlashToken, name, greaterThanToken, this.context, out hash);
+            if (cached != null) return (HtmlElementEndTagSyntax)cached;
+
+            var result = new HtmlElementEndTagSyntax(SyntaxKind.HtmlElementEndTag, lessThanSlashToken, name, greaterThanToken, this.context);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
+        public HtmlEmptyElementSyntax HtmlEmptyElement(SyntaxToken lessThanToken, HtmlNameSyntax name, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlAttributeSyntax> attributes, SyntaxToken slashGreaterThanToken)
+        {
+#if DEBUG
+            if (lessThanToken == null) throw new ArgumentNullException(nameof(lessThanToken));
+            if (lessThanToken.Kind != SyntaxKind.LessThanToken) throw new ArgumentException(nameof(lessThanToken));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (slashGreaterThanToken == null) throw new ArgumentNullException(nameof(slashGreaterThanToken));
+            if (slashGreaterThanToken.Kind != SyntaxKind.SlashGreaterThanToken) throw new ArgumentException(nameof(slashGreaterThanToken));
+#endif
+
+            return new HtmlEmptyElementSyntax(SyntaxKind.HtmlEmptyElement, lessThanToken, name, attributes.Node, slashGreaterThanToken, this.context);
+        }
+
+        public HtmlNameSyntax HtmlName(SyntaxToken tagName)
+        {
+#if DEBUG
+            if (tagName == null) throw new ArgumentNullException(nameof(tagName));
+            if (tagName.Kind != SyntaxKind.IdentifierToken) throw new ArgumentException(nameof(tagName));
+#endif
+
+            int hash;
+            var cached = AquilaSyntaxNodeCache.TryGetNode((int)SyntaxKind.HtmlName, tagName, this.context, out hash);
+            if (cached != null) return (HtmlNameSyntax)cached;
+
+            var result = new HtmlNameSyntax(SyntaxKind.HtmlName, tagName, this.context);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
+        public HtmlExpressionAttributeSyntax HtmlExpressionAttribute(ExprSyntax expression)
+        {
+#if DEBUG
+            if (expression == null) throw new ArgumentNullException(nameof(expression));
+#endif
+
+            int hash;
+            var cached = AquilaSyntaxNodeCache.TryGetNode((int)SyntaxKind.HtmlExpressionAttribute, expression, this.context, out hash);
+            if (cached != null) return (HtmlExpressionAttributeSyntax)cached;
+
+            var result = new HtmlExpressionAttributeSyntax(SyntaxKind.HtmlExpressionAttribute, expression, this.context);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
+        public HtmlAttributeSyntax HtmlAttribute(HtmlNameSyntax name, SyntaxToken? equalsToken, SyntaxToken? startQuoteToken, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode> nodes, SyntaxToken? endQuoteToken)
+        {
+#if DEBUG
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (equalsToken != null)
+            {
+                switch (equalsToken.Kind)
+                {
+                    case SyntaxKind.EqualsToken:
+                    case SyntaxKind.None: break;
+                    default: throw new ArgumentException(nameof(equalsToken));
+                }
+            }
+            if (startQuoteToken != null)
+            {
+                switch (startQuoteToken.Kind)
+                {
+                    case SyntaxKind.SingleQuoteToken:
+                    case SyntaxKind.DoubleQuoteToken:
+                    case SyntaxKind.None: break;
+                    default: throw new ArgumentException(nameof(startQuoteToken));
+                }
+            }
+            if (endQuoteToken != null)
+            {
+                switch (endQuoteToken.Kind)
+                {
+                    case SyntaxKind.SingleQuoteToken:
+                    case SyntaxKind.DoubleQuoteToken:
+                    case SyntaxKind.None: break;
+                    default: throw new ArgumentException(nameof(endQuoteToken));
+                }
+            }
+#endif
+
+            return new HtmlAttributeSyntax(SyntaxKind.HtmlAttribute, name, equalsToken, startQuoteToken, nodes.Node, endQuoteToken, this.context);
+        }
+
+        public HtmlTextSyntax HtmlText(SyntaxToken text)
+        {
+#if DEBUG
+            if (text == null) throw new ArgumentNullException(nameof(text));
+#endif
+
+            int hash;
+            var cached = AquilaSyntaxNodeCache.TryGetNode((int)SyntaxKind.HtmlText, text, this.context, out hash);
+            if (cached != null) return (HtmlTextSyntax)cached;
+
+            var result = new HtmlTextSyntax(SyntaxKind.HtmlText, text, this.context);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
+        public HtmlExpressionSyntax HtmlExpression(SyntaxToken atToken, ExprSyntax expression)
+        {
+#if DEBUG
+            if (atToken == null) throw new ArgumentNullException(nameof(atToken));
+            if (expression == null) throw new ArgumentNullException(nameof(expression));
+#endif
+
+            int hash;
+            var cached = AquilaSyntaxNodeCache.TryGetNode((int)SyntaxKind.HtmlExpression, atToken, expression, this.context, out hash);
+            if (cached != null) return (HtmlExpressionSyntax)cached;
+
+            var result = new HtmlExpressionSyntax(SyntaxKind.HtmlExpression, atToken, expression, this.context);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
+        public HtmlStatementSyntax HtmlStatement(SyntaxToken atToken, StmtSyntax statement)
+        {
+#if DEBUG
+            if (atToken == null) throw new ArgumentNullException(nameof(atToken));
+            if (statement == null) throw new ArgumentNullException(nameof(statement));
+#endif
+
+            int hash;
+            var cached = AquilaSyntaxNodeCache.TryGetNode((int)SyntaxKind.HtmlStatement, atToken, statement, this.context, out hash);
+            if (cached != null) return (HtmlStatementSyntax)cached;
+
+            var result = new HtmlStatementSyntax(SyntaxKind.HtmlStatement, atToken, statement, this.context);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
+        public HtmlCodeSyntax HtmlCode(SyntaxToken atToken, SyntaxToken htmlCodeKeyword, SyntaxToken openBrace, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl> members, SyntaxToken closeBrace)
+        {
+#if DEBUG
+            if (atToken == null) throw new ArgumentNullException(nameof(atToken));
+            if (htmlCodeKeyword == null) throw new ArgumentNullException(nameof(htmlCodeKeyword));
+            if (openBrace == null) throw new ArgumentNullException(nameof(openBrace));
+            if (closeBrace == null) throw new ArgumentNullException(nameof(closeBrace));
+#endif
+
+            return new HtmlCodeSyntax(SyntaxKind.HtmlCode, atToken, htmlCodeKeyword, openBrace, members.Node, closeBrace, this.context);
+        }
     }
 
     internal static partial class SyntaxFactory
@@ -17551,14 +19185,14 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return result;
         }
 
-        public static CompilationUnitSyntax CompilationUnit(ModuleDecl? module, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> imports, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
+        public static CompilationUnitSyntax CompilationUnit(ModuleDecl? module, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> imports, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax> htmlNodes, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
         {
 #if DEBUG
             if (endOfFileToken == null) throw new ArgumentNullException(nameof(endOfFileToken));
             if (endOfFileToken.Kind != SyntaxKind.EndOfFileToken) throw new ArgumentException(nameof(endOfFileToken));
 #endif
 
-            return new CompilationUnitSyntax(SyntaxKind.CompilationUnit, module, imports.Node, members.Node, endOfFileToken);
+            return new CompilationUnitSyntax(SyntaxKind.CompilationUnit, module, imports.Node, htmlNodes.Node, members.Node, endOfFileToken);
         }
 
         public static ImportDecl ImportDecl(SyntaxToken importKeyword, SyntaxToken? clrKeyword, NameEx name, SyntaxToken semicolonToken)
@@ -19949,6 +21583,223 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return result;
         }
 
+        public static HtmlElementSyntax HtmlElement(HtmlElementStartTagSyntax startTag, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax> content, HtmlElementEndTagSyntax endTag)
+        {
+#if DEBUG
+            if (startTag == null) throw new ArgumentNullException(nameof(startTag));
+            if (endTag == null) throw new ArgumentNullException(nameof(endTag));
+#endif
+
+            int hash;
+            var cached = SyntaxNodeCache.TryGetNode((int)SyntaxKind.HtmlElement, startTag, content.Node, endTag, out hash);
+            if (cached != null) return (HtmlElementSyntax)cached;
+
+            var result = new HtmlElementSyntax(SyntaxKind.HtmlElement, startTag, content.Node, endTag);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
+        public static HtmlElementStartTagSyntax HtmlElementStartTag(SyntaxToken lessThanToken, HtmlNameSyntax name, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlAttributeSyntax> attributes, SyntaxToken greaterThanToken)
+        {
+#if DEBUG
+            if (lessThanToken == null) throw new ArgumentNullException(nameof(lessThanToken));
+            if (lessThanToken.Kind != SyntaxKind.LessThanToken) throw new ArgumentException(nameof(lessThanToken));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (greaterThanToken == null) throw new ArgumentNullException(nameof(greaterThanToken));
+            if (greaterThanToken.Kind != SyntaxKind.GreaterThanToken) throw new ArgumentException(nameof(greaterThanToken));
+#endif
+
+            return new HtmlElementStartTagSyntax(SyntaxKind.HtmlElementStartTag, lessThanToken, name, attributes.Node, greaterThanToken);
+        }
+
+        public static HtmlElementEndTagSyntax HtmlElementEndTag(SyntaxToken lessThanSlashToken, HtmlNodeSyntax name, SyntaxToken greaterThanToken)
+        {
+#if DEBUG
+            if (lessThanSlashToken == null) throw new ArgumentNullException(nameof(lessThanSlashToken));
+            if (lessThanSlashToken.Kind != SyntaxKind.LessThanSlashToken) throw new ArgumentException(nameof(lessThanSlashToken));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (greaterThanToken == null) throw new ArgumentNullException(nameof(greaterThanToken));
+            if (greaterThanToken.Kind != SyntaxKind.GreaterThanToken) throw new ArgumentException(nameof(greaterThanToken));
+#endif
+
+            int hash;
+            var cached = SyntaxNodeCache.TryGetNode((int)SyntaxKind.HtmlElementEndTag, lessThanSlashToken, name, greaterThanToken, out hash);
+            if (cached != null) return (HtmlElementEndTagSyntax)cached;
+
+            var result = new HtmlElementEndTagSyntax(SyntaxKind.HtmlElementEndTag, lessThanSlashToken, name, greaterThanToken);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
+        public static HtmlEmptyElementSyntax HtmlEmptyElement(SyntaxToken lessThanToken, HtmlNameSyntax name, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlAttributeSyntax> attributes, SyntaxToken slashGreaterThanToken)
+        {
+#if DEBUG
+            if (lessThanToken == null) throw new ArgumentNullException(nameof(lessThanToken));
+            if (lessThanToken.Kind != SyntaxKind.LessThanToken) throw new ArgumentException(nameof(lessThanToken));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (slashGreaterThanToken == null) throw new ArgumentNullException(nameof(slashGreaterThanToken));
+            if (slashGreaterThanToken.Kind != SyntaxKind.SlashGreaterThanToken) throw new ArgumentException(nameof(slashGreaterThanToken));
+#endif
+
+            return new HtmlEmptyElementSyntax(SyntaxKind.HtmlEmptyElement, lessThanToken, name, attributes.Node, slashGreaterThanToken);
+        }
+
+        public static HtmlNameSyntax HtmlName(SyntaxToken tagName)
+        {
+#if DEBUG
+            if (tagName == null) throw new ArgumentNullException(nameof(tagName));
+            if (tagName.Kind != SyntaxKind.IdentifierToken) throw new ArgumentException(nameof(tagName));
+#endif
+
+            int hash;
+            var cached = SyntaxNodeCache.TryGetNode((int)SyntaxKind.HtmlName, tagName, out hash);
+            if (cached != null) return (HtmlNameSyntax)cached;
+
+            var result = new HtmlNameSyntax(SyntaxKind.HtmlName, tagName);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
+        public static HtmlExpressionAttributeSyntax HtmlExpressionAttribute(ExprSyntax expression)
+        {
+#if DEBUG
+            if (expression == null) throw new ArgumentNullException(nameof(expression));
+#endif
+
+            int hash;
+            var cached = SyntaxNodeCache.TryGetNode((int)SyntaxKind.HtmlExpressionAttribute, expression, out hash);
+            if (cached != null) return (HtmlExpressionAttributeSyntax)cached;
+
+            var result = new HtmlExpressionAttributeSyntax(SyntaxKind.HtmlExpressionAttribute, expression);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
+        public static HtmlAttributeSyntax HtmlAttribute(HtmlNameSyntax name, SyntaxToken? equalsToken, SyntaxToken? startQuoteToken, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<AquilaSyntaxNode> nodes, SyntaxToken? endQuoteToken)
+        {
+#if DEBUG
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (equalsToken != null)
+            {
+                switch (equalsToken.Kind)
+                {
+                    case SyntaxKind.EqualsToken:
+                    case SyntaxKind.None: break;
+                    default: throw new ArgumentException(nameof(equalsToken));
+                }
+            }
+            if (startQuoteToken != null)
+            {
+                switch (startQuoteToken.Kind)
+                {
+                    case SyntaxKind.SingleQuoteToken:
+                    case SyntaxKind.DoubleQuoteToken:
+                    case SyntaxKind.None: break;
+                    default: throw new ArgumentException(nameof(startQuoteToken));
+                }
+            }
+            if (endQuoteToken != null)
+            {
+                switch (endQuoteToken.Kind)
+                {
+                    case SyntaxKind.SingleQuoteToken:
+                    case SyntaxKind.DoubleQuoteToken:
+                    case SyntaxKind.None: break;
+                    default: throw new ArgumentException(nameof(endQuoteToken));
+                }
+            }
+#endif
+
+            return new HtmlAttributeSyntax(SyntaxKind.HtmlAttribute, name, equalsToken, startQuoteToken, nodes.Node, endQuoteToken);
+        }
+
+        public static HtmlTextSyntax HtmlText(SyntaxToken text)
+        {
+#if DEBUG
+            if (text == null) throw new ArgumentNullException(nameof(text));
+#endif
+
+            int hash;
+            var cached = SyntaxNodeCache.TryGetNode((int)SyntaxKind.HtmlText, text, out hash);
+            if (cached != null) return (HtmlTextSyntax)cached;
+
+            var result = new HtmlTextSyntax(SyntaxKind.HtmlText, text);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
+        public static HtmlExpressionSyntax HtmlExpression(SyntaxToken atToken, ExprSyntax expression)
+        {
+#if DEBUG
+            if (atToken == null) throw new ArgumentNullException(nameof(atToken));
+            if (expression == null) throw new ArgumentNullException(nameof(expression));
+#endif
+
+            int hash;
+            var cached = SyntaxNodeCache.TryGetNode((int)SyntaxKind.HtmlExpression, atToken, expression, out hash);
+            if (cached != null) return (HtmlExpressionSyntax)cached;
+
+            var result = new HtmlExpressionSyntax(SyntaxKind.HtmlExpression, atToken, expression);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
+        public static HtmlStatementSyntax HtmlStatement(SyntaxToken atToken, StmtSyntax statement)
+        {
+#if DEBUG
+            if (atToken == null) throw new ArgumentNullException(nameof(atToken));
+            if (statement == null) throw new ArgumentNullException(nameof(statement));
+#endif
+
+            int hash;
+            var cached = SyntaxNodeCache.TryGetNode((int)SyntaxKind.HtmlStatement, atToken, statement, out hash);
+            if (cached != null) return (HtmlStatementSyntax)cached;
+
+            var result = new HtmlStatementSyntax(SyntaxKind.HtmlStatement, atToken, statement);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
+        public static HtmlCodeSyntax HtmlCode(SyntaxToken atToken, SyntaxToken htmlCodeKeyword, SyntaxToken openBrace, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl> members, SyntaxToken closeBrace)
+        {
+#if DEBUG
+            if (atToken == null) throw new ArgumentNullException(nameof(atToken));
+            if (htmlCodeKeyword == null) throw new ArgumentNullException(nameof(htmlCodeKeyword));
+            if (openBrace == null) throw new ArgumentNullException(nameof(openBrace));
+            if (closeBrace == null) throw new ArgumentNullException(nameof(closeBrace));
+#endif
+
+            return new HtmlCodeSyntax(SyntaxKind.HtmlCode, atToken, htmlCodeKeyword, openBrace, members.Node, closeBrace);
+        }
+
         internal static IEnumerable<Type> GetNodeTypes()
             => new Type[]
             {
@@ -20061,6 +21912,17 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 typeof(XmlCDataSectionSyntax),
                 typeof(XmlProcessingInstructionSyntax),
                 typeof(XmlCommentSyntax),
+                typeof(HtmlElementSyntax),
+                typeof(HtmlElementStartTagSyntax),
+                typeof(HtmlElementEndTagSyntax),
+                typeof(HtmlEmptyElementSyntax),
+                typeof(HtmlNameSyntax),
+                typeof(HtmlExpressionAttributeSyntax),
+                typeof(HtmlAttributeSyntax),
+                typeof(HtmlTextSyntax),
+                typeof(HtmlExpressionSyntax),
+                typeof(HtmlStatementSyntax),
+                typeof(HtmlCodeSyntax),
             };
     }
 }

@@ -100,7 +100,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             _changeDelta = changeDelta;
             _newDirectives = newDirectives;
             _oldDirectives = oldDirectives;
-            _newLexerDrivenMode = newLexerDrivenMode & (LexerMode.MaskXmlDocCommentLocation | LexerMode.MaskXmlDocCommentStyle);
+            _newLexerDrivenMode = newLexerDrivenMode & (LexerMode.MaskXmlDocCommentLocation | LexerMode.MaskXmlDocCommentStyle | LexerMode.HtmlTag);
         }
 
         /// <summary>

@@ -222,6 +222,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         {
             return SyntaxToken.WithValue(SyntaxKind.XmlTextLiteralToken, leading, text, value, trailing);
         }
+        
+        internal static SyntaxToken HtmlTextLiteral(GreenNode leading, string text, string value, GreenNode trailing)
+        {
+            return SyntaxToken.WithValue(SyntaxKind.HtmlTextToken, leading, text, value, trailing);
+        }
 
         internal static SyntaxToken XmlTextNewLine(GreenNode leading, string text, string value, GreenNode trailing)
         {

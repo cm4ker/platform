@@ -79,7 +79,7 @@ internal class ComponentBaseGenerator
     }
 }
 
-internal class Visitor : AqViewBaseVisitor<VoidResult>
+internal class Visitor
 {
     private readonly TypeSymbol _componentType;
     private readonly CoreTypes _ct;

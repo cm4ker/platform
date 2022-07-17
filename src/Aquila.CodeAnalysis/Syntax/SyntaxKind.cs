@@ -211,7 +211,10 @@ namespace Aquila.CodeAnalysis
         OpenAngleToken,
         CloseAngleToken,
         ForwardSlashToken,
-
+        MarkupInterruptToken,
+        AtToken,
+        AtAtToken,
+        HtmlTextToken,
         #endregion
 
         #region Keywords
@@ -692,7 +695,10 @@ namespace Aquila.CodeAnalysis
         MatchKeyword,
         DatetimeKeyword,
         ClrKeyword,
-
+        
+        HtmlCodeKeyword,
+        HtmlForKeyword,
+        HtmlWhileKeyword,
         #endregion
 
 
@@ -1094,7 +1100,21 @@ namespace Aquila.CodeAnalysis
         MatchArm,
         UnionType,
 
-
         AllocExpression,
+
+        #region Html
+
+        HtmlExpression,
+        HtmlStatement,
+        HtmlCode,
+        HtmlElement,
+        HtmlElementStartTag,
+        HtmlElementEndTag,
+        HtmlName,
+        HtmlText,
+        HtmlEmptyElement,
+        HtmlAttribute,
+        HtmlExpressionAttribute
+        #endregion
     }
 }

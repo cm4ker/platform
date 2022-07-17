@@ -342,6 +342,39 @@ namespace Aquila.CodeAnalysis
 
         /// <summary>Called when the visitor visits a XmlCommentSyntax node.</summary>
         public virtual TResult? VisitXmlComment(XmlCommentSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlElementSyntax node.</summary>
+        public virtual TResult? VisitHtmlElement(HtmlElementSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlElementStartTagSyntax node.</summary>
+        public virtual TResult? VisitHtmlElementStartTag(HtmlElementStartTagSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlElementEndTagSyntax node.</summary>
+        public virtual TResult? VisitHtmlElementEndTag(HtmlElementEndTagSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlEmptyElementSyntax node.</summary>
+        public virtual TResult? VisitHtmlEmptyElement(HtmlEmptyElementSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlNameSyntax node.</summary>
+        public virtual TResult? VisitHtmlName(HtmlNameSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlExpressionAttributeSyntax node.</summary>
+        public virtual TResult? VisitHtmlExpressionAttribute(HtmlExpressionAttributeSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlAttributeSyntax node.</summary>
+        public virtual TResult? VisitHtmlAttribute(HtmlAttributeSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlTextSyntax node.</summary>
+        public virtual TResult? VisitHtmlText(HtmlTextSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlExpressionSyntax node.</summary>
+        public virtual TResult? VisitHtmlExpression(HtmlExpressionSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlStatementSyntax node.</summary>
+        public virtual TResult? VisitHtmlStatement(HtmlStatementSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlCodeSyntax node.</summary>
+        public virtual TResult? VisitHtmlCode(HtmlCodeSyntax node) => this.DefaultVisit(node);
     }
 
     public partial class AquilaSyntaxVisitor
@@ -672,6 +705,39 @@ namespace Aquila.CodeAnalysis
 
         /// <summary>Called when the visitor visits a XmlCommentSyntax node.</summary>
         public virtual void VisitXmlComment(XmlCommentSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlElementSyntax node.</summary>
+        public virtual void VisitHtmlElement(HtmlElementSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlElementStartTagSyntax node.</summary>
+        public virtual void VisitHtmlElementStartTag(HtmlElementStartTagSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlElementEndTagSyntax node.</summary>
+        public virtual void VisitHtmlElementEndTag(HtmlElementEndTagSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlEmptyElementSyntax node.</summary>
+        public virtual void VisitHtmlEmptyElement(HtmlEmptyElementSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlNameSyntax node.</summary>
+        public virtual void VisitHtmlName(HtmlNameSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlExpressionAttributeSyntax node.</summary>
+        public virtual void VisitHtmlExpressionAttribute(HtmlExpressionAttributeSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlAttributeSyntax node.</summary>
+        public virtual void VisitHtmlAttribute(HtmlAttributeSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlTextSyntax node.</summary>
+        public virtual void VisitHtmlText(HtmlTextSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlExpressionSyntax node.</summary>
+        public virtual void VisitHtmlExpression(HtmlExpressionSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlStatementSyntax node.</summary>
+        public virtual void VisitHtmlStatement(HtmlStatementSyntax node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlCodeSyntax node.</summary>
+        public virtual void VisitHtmlCode(HtmlCodeSyntax node) => this.DefaultVisit(node);
     }
 
     public partial class AquilaSyntaxRewriter : AquilaSyntaxVisitor<SyntaxNode?>
@@ -680,7 +746,7 @@ namespace Aquila.CodeAnalysis
             => node.Update(VisitToken(node.ModuleKeyword), (NameEx?)Visit(node.Name) ?? throw new ArgumentNullException("name"), VisitToken(node.SemicolonToken));
 
         public override SyntaxNode? VisitCompilationUnit(CompilationUnitSyntax node)
-            => node.Update((ModuleDecl?)Visit(node.Module), VisitList(node.Imports), VisitList(node.Members), VisitToken(node.EndOfFileToken));
+            => node.Update((ModuleDecl?)Visit(node.Module), VisitList(node.Imports), VisitList(node.HtmlNodes), VisitList(node.Members), VisitToken(node.EndOfFileToken));
 
         public override SyntaxNode? VisitImportDecl(ImportDecl node)
             => node.Update(VisitToken(node.ImportKeyword), VisitToken(node.ClrKeyword), (NameEx?)Visit(node.Name) ?? throw new ArgumentNullException("name"), VisitToken(node.SemicolonToken));
@@ -1002,6 +1068,39 @@ namespace Aquila.CodeAnalysis
 
         public override SyntaxNode? VisitXmlComment(XmlCommentSyntax node)
             => node.Update(VisitToken(node.LessThanExclamationMinusMinusToken), VisitList(node.TextTokens), VisitToken(node.MinusMinusGreaterThanToken));
+
+        public override SyntaxNode? VisitHtmlElement(HtmlElementSyntax node)
+            => node.Update((HtmlElementStartTagSyntax?)Visit(node.StartTag) ?? throw new ArgumentNullException("startTag"), VisitList(node.Content), (HtmlElementEndTagSyntax?)Visit(node.EndTag) ?? throw new ArgumentNullException("endTag"));
+
+        public override SyntaxNode? VisitHtmlElementStartTag(HtmlElementStartTagSyntax node)
+            => node.Update(VisitToken(node.LessThanToken), (HtmlNameSyntax?)Visit(node.Name) ?? throw new ArgumentNullException("name"), VisitList(node.Attributes), VisitToken(node.GreaterThanToken));
+
+        public override SyntaxNode? VisitHtmlElementEndTag(HtmlElementEndTagSyntax node)
+            => node.Update(VisitToken(node.LessThanSlashToken), (HtmlNodeSyntax?)Visit(node.Name) ?? throw new ArgumentNullException("name"), VisitToken(node.GreaterThanToken));
+
+        public override SyntaxNode? VisitHtmlEmptyElement(HtmlEmptyElementSyntax node)
+            => node.Update(VisitToken(node.LessThanToken), (HtmlNameSyntax?)Visit(node.Name) ?? throw new ArgumentNullException("name"), VisitList(node.Attributes), VisitToken(node.SlashGreaterThanToken));
+
+        public override SyntaxNode? VisitHtmlName(HtmlNameSyntax node)
+            => node.Update(VisitToken(node.TagName));
+
+        public override SyntaxNode? VisitHtmlExpressionAttribute(HtmlExpressionAttributeSyntax node)
+            => node.Update((ExprSyntax?)Visit(node.Expression) ?? throw new ArgumentNullException("expression"));
+
+        public override SyntaxNode? VisitHtmlAttribute(HtmlAttributeSyntax node)
+            => node.Update((HtmlNameSyntax?)Visit(node.Name) ?? throw new ArgumentNullException("name"), VisitToken(node.EqualsToken), VisitToken(node.StartQuoteToken), VisitList(node.Nodes), VisitToken(node.EndQuoteToken));
+
+        public override SyntaxNode? VisitHtmlText(HtmlTextSyntax node)
+            => node.Update(VisitToken(node.Text));
+
+        public override SyntaxNode? VisitHtmlExpression(HtmlExpressionSyntax node)
+            => node.Update(VisitToken(node.AtToken), (ExprSyntax?)Visit(node.Expression) ?? throw new ArgumentNullException("expression"));
+
+        public override SyntaxNode? VisitHtmlStatement(HtmlStatementSyntax node)
+            => node.Update(VisitToken(node.AtToken), (StmtSyntax?)Visit(node.Statement) ?? throw new ArgumentNullException("statement"));
+
+        public override SyntaxNode? VisitHtmlCode(HtmlCodeSyntax node)
+            => node.Update(VisitToken(node.AtToken), VisitToken(node.HtmlCodeKeyword), VisitToken(node.OpenBrace), VisitList(node.Members), VisitToken(node.CloseBrace));
     }
 
     public static partial class SyntaxFactory
@@ -1020,19 +1119,19 @@ namespace Aquila.CodeAnalysis
             => SyntaxFactory.ModuleDecl(SyntaxFactory.Token(SyntaxKind.ModuleKeyword), name, SyntaxFactory.Token(SyntaxKind.SemicolonToken));
 
         /// <summary>Creates a new CompilationUnitSyntax instance.</summary>
-        public static CompilationUnitSyntax CompilationUnit(ModuleDecl? module, SyntaxList<ImportDecl> imports, SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
+        public static CompilationUnitSyntax CompilationUnit(ModuleDecl? module, SyntaxList<ImportDecl> imports, SyntaxList<HtmlNodeSyntax> htmlNodes, SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
         {
             if (endOfFileToken.Kind() != SyntaxKind.EndOfFileToken) throw new ArgumentException(nameof(endOfFileToken));
-            return (CompilationUnitSyntax)Syntax.InternalSyntax.SyntaxFactory.CompilationUnit(module == null ? null : (Syntax.InternalSyntax.ModuleDecl)module.Green, imports.Node.ToGreenList<Syntax.InternalSyntax.ImportDecl>(), members.Node.ToGreenList<Syntax.InternalSyntax.MemberDecl>(), (Syntax.InternalSyntax.SyntaxToken)endOfFileToken.Node!).CreateRed();
+            return (CompilationUnitSyntax)Syntax.InternalSyntax.SyntaxFactory.CompilationUnit(module == null ? null : (Syntax.InternalSyntax.ModuleDecl)module.Green, imports.Node.ToGreenList<Syntax.InternalSyntax.ImportDecl>(), htmlNodes.Node.ToGreenList<Syntax.InternalSyntax.HtmlNodeSyntax>(), members.Node.ToGreenList<Syntax.InternalSyntax.MemberDecl>(), (Syntax.InternalSyntax.SyntaxToken)endOfFileToken.Node!).CreateRed();
         }
 
         /// <summary>Creates a new CompilationUnitSyntax instance.</summary>
-        public static CompilationUnitSyntax CompilationUnit(ModuleDecl? module, SyntaxList<ImportDecl> imports, SyntaxList<MemberDecl> members)
-            => SyntaxFactory.CompilationUnit(module, imports, members, SyntaxFactory.Token(SyntaxKind.EndOfFileToken));
+        public static CompilationUnitSyntax CompilationUnit(ModuleDecl? module, SyntaxList<ImportDecl> imports, SyntaxList<HtmlNodeSyntax> htmlNodes, SyntaxList<MemberDecl> members)
+            => SyntaxFactory.CompilationUnit(module, imports, htmlNodes, members, SyntaxFactory.Token(SyntaxKind.EndOfFileToken));
 
         /// <summary>Creates a new CompilationUnitSyntax instance.</summary>
         public static CompilationUnitSyntax CompilationUnit(ModuleDecl? module = default)
-            => SyntaxFactory.CompilationUnit(module, default, default, SyntaxFactory.Token(SyntaxKind.EndOfFileToken));
+            => SyntaxFactory.CompilationUnit(module, default, default, default, SyntaxFactory.Token(SyntaxKind.EndOfFileToken));
 
         /// <summary>Creates a new ImportDecl instance.</summary>
         public static ImportDecl ImportDecl(SyntaxToken importKeyword, SyntaxToken clrKeyword, NameEx name, SyntaxToken semicolonToken)
@@ -2922,5 +3021,143 @@ namespace Aquila.CodeAnalysis
         /// <summary>Creates a new XmlCommentSyntax instance.</summary>
         public static XmlCommentSyntax XmlComment(SyntaxTokenList textTokens = default)
             => SyntaxFactory.XmlComment(SyntaxFactory.Token(SyntaxKind.XmlCommentStartToken), textTokens, SyntaxFactory.Token(SyntaxKind.XmlCommentEndToken));
+
+        /// <summary>Creates a new HtmlElementSyntax instance.</summary>
+        public static HtmlElementSyntax HtmlElement(HtmlElementStartTagSyntax startTag, SyntaxList<HtmlNodeSyntax> content, HtmlElementEndTagSyntax endTag)
+        {
+            if (startTag == null) throw new ArgumentNullException(nameof(startTag));
+            if (endTag == null) throw new ArgumentNullException(nameof(endTag));
+            return (HtmlElementSyntax)Syntax.InternalSyntax.SyntaxFactory.HtmlElement((Syntax.InternalSyntax.HtmlElementStartTagSyntax)startTag.Green, content.Node.ToGreenList<Syntax.InternalSyntax.HtmlNodeSyntax>(), (Syntax.InternalSyntax.HtmlElementEndTagSyntax)endTag.Green).CreateRed();
+        }
+
+        /// <summary>Creates a new HtmlElementSyntax instance.</summary>
+        public static HtmlElementSyntax HtmlElement(HtmlElementStartTagSyntax startTag, HtmlElementEndTagSyntax endTag)
+            => SyntaxFactory.HtmlElement(startTag, default, endTag);
+
+        /// <summary>Creates a new HtmlElementStartTagSyntax instance.</summary>
+        public static HtmlElementStartTagSyntax HtmlElementStartTag(SyntaxToken lessThanToken, HtmlNameSyntax name, SyntaxList<HtmlAttributeSyntax> attributes, SyntaxToken greaterThanToken)
+        {
+            if (lessThanToken.Kind() != SyntaxKind.LessThanToken) throw new ArgumentException(nameof(lessThanToken));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (greaterThanToken.Kind() != SyntaxKind.GreaterThanToken) throw new ArgumentException(nameof(greaterThanToken));
+            return (HtmlElementStartTagSyntax)Syntax.InternalSyntax.SyntaxFactory.HtmlElementStartTag((Syntax.InternalSyntax.SyntaxToken)lessThanToken.Node!, (Syntax.InternalSyntax.HtmlNameSyntax)name.Green, attributes.Node.ToGreenList<Syntax.InternalSyntax.HtmlAttributeSyntax>(), (Syntax.InternalSyntax.SyntaxToken)greaterThanToken.Node!).CreateRed();
+        }
+
+        /// <summary>Creates a new HtmlElementStartTagSyntax instance.</summary>
+        public static HtmlElementStartTagSyntax HtmlElementStartTag(HtmlNameSyntax name, SyntaxList<HtmlAttributeSyntax> attributes)
+            => SyntaxFactory.HtmlElementStartTag(SyntaxFactory.Token(SyntaxKind.LessThanToken), name, attributes, SyntaxFactory.Token(SyntaxKind.GreaterThanToken));
+
+        /// <summary>Creates a new HtmlElementStartTagSyntax instance.</summary>
+        public static HtmlElementStartTagSyntax HtmlElementStartTag(HtmlNameSyntax name)
+            => SyntaxFactory.HtmlElementStartTag(SyntaxFactory.Token(SyntaxKind.LessThanToken), name, default, SyntaxFactory.Token(SyntaxKind.GreaterThanToken));
+
+        /// <summary>Creates a new HtmlElementEndTagSyntax instance.</summary>
+        public static HtmlElementEndTagSyntax HtmlElementEndTag(SyntaxToken lessThanSlashToken, HtmlNodeSyntax name, SyntaxToken greaterThanToken)
+        {
+            if (lessThanSlashToken.Kind() != SyntaxKind.LessThanSlashToken) throw new ArgumentException(nameof(lessThanSlashToken));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (greaterThanToken.Kind() != SyntaxKind.GreaterThanToken) throw new ArgumentException(nameof(greaterThanToken));
+            return (HtmlElementEndTagSyntax)Syntax.InternalSyntax.SyntaxFactory.HtmlElementEndTag((Syntax.InternalSyntax.SyntaxToken)lessThanSlashToken.Node!, (Syntax.InternalSyntax.HtmlNodeSyntax)name.Green, (Syntax.InternalSyntax.SyntaxToken)greaterThanToken.Node!).CreateRed();
+        }
+
+        /// <summary>Creates a new HtmlElementEndTagSyntax instance.</summary>
+        public static HtmlElementEndTagSyntax HtmlElementEndTag(HtmlNodeSyntax name)
+            => SyntaxFactory.HtmlElementEndTag(SyntaxFactory.Token(SyntaxKind.LessThanSlashToken), name, SyntaxFactory.Token(SyntaxKind.GreaterThanToken));
+
+        /// <summary>Creates a new HtmlEmptyElementSyntax instance.</summary>
+        public static HtmlEmptyElementSyntax HtmlEmptyElement(SyntaxToken lessThanToken, HtmlNameSyntax name, SyntaxList<HtmlAttributeSyntax> attributes, SyntaxToken slashGreaterThanToken)
+        {
+            if (lessThanToken.Kind() != SyntaxKind.LessThanToken) throw new ArgumentException(nameof(lessThanToken));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (slashGreaterThanToken.Kind() != SyntaxKind.SlashGreaterThanToken) throw new ArgumentException(nameof(slashGreaterThanToken));
+            return (HtmlEmptyElementSyntax)Syntax.InternalSyntax.SyntaxFactory.HtmlEmptyElement((Syntax.InternalSyntax.SyntaxToken)lessThanToken.Node!, (Syntax.InternalSyntax.HtmlNameSyntax)name.Green, attributes.Node.ToGreenList<Syntax.InternalSyntax.HtmlAttributeSyntax>(), (Syntax.InternalSyntax.SyntaxToken)slashGreaterThanToken.Node!).CreateRed();
+        }
+
+        /// <summary>Creates a new HtmlEmptyElementSyntax instance.</summary>
+        public static HtmlEmptyElementSyntax HtmlEmptyElement(HtmlNameSyntax name, SyntaxList<HtmlAttributeSyntax> attributes)
+            => SyntaxFactory.HtmlEmptyElement(SyntaxFactory.Token(SyntaxKind.LessThanToken), name, attributes, SyntaxFactory.Token(SyntaxKind.SlashGreaterThanToken));
+
+        /// <summary>Creates a new HtmlEmptyElementSyntax instance.</summary>
+        public static HtmlEmptyElementSyntax HtmlEmptyElement(HtmlNameSyntax name)
+            => SyntaxFactory.HtmlEmptyElement(SyntaxFactory.Token(SyntaxKind.LessThanToken), name, default, SyntaxFactory.Token(SyntaxKind.SlashGreaterThanToken));
+
+        /// <summary>Creates a new HtmlNameSyntax instance.</summary>
+        public static HtmlNameSyntax HtmlName(SyntaxToken tagName)
+        {
+            if (tagName.Kind() != SyntaxKind.IdentifierToken) throw new ArgumentException(nameof(tagName));
+            return (HtmlNameSyntax)Syntax.InternalSyntax.SyntaxFactory.HtmlName((Syntax.InternalSyntax.SyntaxToken)tagName.Node!).CreateRed();
+        }
+
+        /// <summary>Creates a new HtmlExpressionAttributeSyntax instance.</summary>
+        public static HtmlExpressionAttributeSyntax HtmlExpressionAttribute(ExprSyntax expression)
+        {
+            if (expression == null) throw new ArgumentNullException(nameof(expression));
+            return (HtmlExpressionAttributeSyntax)Syntax.InternalSyntax.SyntaxFactory.HtmlExpressionAttribute((Syntax.InternalSyntax.ExprSyntax)expression.Green).CreateRed();
+        }
+
+        /// <summary>Creates a new HtmlAttributeSyntax instance.</summary>
+        public static HtmlAttributeSyntax HtmlAttribute(HtmlNameSyntax name, SyntaxToken equalsToken, SyntaxToken startQuoteToken, SyntaxList<AquilaSyntaxNode> nodes, SyntaxToken endQuoteToken)
+        {
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            switch (equalsToken.Kind())
+            {
+                case SyntaxKind.EqualsToken:
+                case SyntaxKind.None: break;
+                default: throw new ArgumentException(nameof(equalsToken));
+            }
+            switch (startQuoteToken.Kind())
+            {
+                case SyntaxKind.SingleQuoteToken:
+                case SyntaxKind.DoubleQuoteToken:
+                case SyntaxKind.None: break;
+                default: throw new ArgumentException(nameof(startQuoteToken));
+            }
+            switch (endQuoteToken.Kind())
+            {
+                case SyntaxKind.SingleQuoteToken:
+                case SyntaxKind.DoubleQuoteToken:
+                case SyntaxKind.None: break;
+                default: throw new ArgumentException(nameof(endQuoteToken));
+            }
+            return (HtmlAttributeSyntax)Syntax.InternalSyntax.SyntaxFactory.HtmlAttribute((Syntax.InternalSyntax.HtmlNameSyntax)name.Green, (Syntax.InternalSyntax.SyntaxToken?)equalsToken.Node, (Syntax.InternalSyntax.SyntaxToken?)startQuoteToken.Node, nodes.Node.ToGreenList<Syntax.InternalSyntax.AquilaSyntaxNode>(), (Syntax.InternalSyntax.SyntaxToken?)endQuoteToken.Node).CreateRed();
+        }
+
+        /// <summary>Creates a new HtmlAttributeSyntax instance.</summary>
+        public static HtmlAttributeSyntax HtmlAttribute(HtmlNameSyntax name, SyntaxToken startQuoteToken, SyntaxList<AquilaSyntaxNode> nodes, SyntaxToken endQuoteToken)
+            => SyntaxFactory.HtmlAttribute(name, default, startQuoteToken, nodes, endQuoteToken);
+
+        /// <summary>Creates a new HtmlAttributeSyntax instance.</summary>
+        public static HtmlAttributeSyntax HtmlAttribute(HtmlNameSyntax name)
+            => SyntaxFactory.HtmlAttribute(name, default, default, default, default);
+
+        /// <summary>Creates a new HtmlTextSyntax instance.</summary>
+        public static HtmlTextSyntax HtmlText(SyntaxToken text)
+        {
+            return (HtmlTextSyntax)Syntax.InternalSyntax.SyntaxFactory.HtmlText((Syntax.InternalSyntax.SyntaxToken)text.Node!).CreateRed();
+        }
+
+        /// <summary>Creates a new HtmlExpressionSyntax instance.</summary>
+        public static HtmlExpressionSyntax HtmlExpression(SyntaxToken atToken, ExprSyntax expression)
+        {
+            if (expression == null) throw new ArgumentNullException(nameof(expression));
+            return (HtmlExpressionSyntax)Syntax.InternalSyntax.SyntaxFactory.HtmlExpression((Syntax.InternalSyntax.SyntaxToken)atToken.Node!, (Syntax.InternalSyntax.ExprSyntax)expression.Green).CreateRed();
+        }
+
+        /// <summary>Creates a new HtmlStatementSyntax instance.</summary>
+        public static HtmlStatementSyntax HtmlStatement(SyntaxToken atToken, StmtSyntax statement)
+        {
+            if (statement == null) throw new ArgumentNullException(nameof(statement));
+            return (HtmlStatementSyntax)Syntax.InternalSyntax.SyntaxFactory.HtmlStatement((Syntax.InternalSyntax.SyntaxToken)atToken.Node!, (Syntax.InternalSyntax.StmtSyntax)statement.Green).CreateRed();
+        }
+
+        /// <summary>Creates a new HtmlCodeSyntax instance.</summary>
+        public static HtmlCodeSyntax HtmlCode(SyntaxToken atToken, SyntaxToken htmlCodeKeyword, SyntaxToken openBrace, SyntaxList<MemberDecl> members, SyntaxToken closeBrace)
+        {
+            return (HtmlCodeSyntax)Syntax.InternalSyntax.SyntaxFactory.HtmlCode((Syntax.InternalSyntax.SyntaxToken)atToken.Node!, (Syntax.InternalSyntax.SyntaxToken)htmlCodeKeyword.Node!, (Syntax.InternalSyntax.SyntaxToken)openBrace.Node!, members.Node.ToGreenList<Syntax.InternalSyntax.MemberDecl>(), (Syntax.InternalSyntax.SyntaxToken)closeBrace.Node!).CreateRed();
+        }
+
+        /// <summary>Creates a new HtmlCodeSyntax instance.</summary>
+        public static HtmlCodeSyntax HtmlCode(SyntaxToken atToken, SyntaxToken htmlCodeKeyword, SyntaxToken openBrace, SyntaxToken closeBrace)
+            => SyntaxFactory.HtmlCode(atToken, htmlCodeKeyword, openBrace, default, closeBrace);
     }
 }

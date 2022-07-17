@@ -10,7 +10,6 @@
 
     <ItemGroup>
         <PackageReference Include="xunit.assert" Version="2.4.1" />
-        <ProjectReference Include="..\Aquila.CodeAnalysis.Web\Aquila.CodeAnalysis.Web.csproj" />
         <ProjectReference Include="..\Aquila.SyntaxGenerator2\Aquila.SyntaxGenerator2.csproj">
             <OutputItemType>Analyzer</OutputItemType>
             <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Net.Mime;
 using System.Text;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Errors;
@@ -19,46 +20,52 @@ using YamlDotNet.Core.Tokens;
 
 namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
+    class InternalMagicConstants
+    {
+        public const int XmlDocLocationShift = 25;
+        public const int XmlDocStyle = 29;
+    }
+
     [Flags]
     internal enum LexerMode
     {
         Syntax = 1 << 0,
         DebuggerSyntax = 1 << 1,
         Directive = 1 << 2,
-        ViewSyntax = 1 << 3,
-        
-        //xml comments modes
-        XmlDocComment = 1 << 4,
-        XmlElementTag = 1 << 5,
-        XmlAttributeTextQuote = 1 << 6,
-        XmlAttributeTextDoubleQuote = 1 << 7,
-        XmlCrefQuote = 1 << 8,
-        XmlCrefDoubleQuote = 1 << 9,
-        XmlNameQuote = 1 << 10,
-        XmlNameDoubleQuote = 1 << 11,
-        XmlCDataSectionText = 1 << 12,
-        XmlCommentText = 1 << 13,
-        XmlProcessingInstructionText = 1 << 14,
-        XmlCharacter = 1 << 15,
-        
+
         //html modes
-        HtmlTag = 1 << 16,
-        
-        MaskLexMode = 0xFFFFF,
+        SyntaxView = 1 << 4,
+        HtmlTag = 1 << 5,
+
+        //xml comments modes
+        XmlDocComment = 1 << 12,
+        XmlElementTag = 1 << 13,
+        XmlAttributeTextQuote = 1 << 14,
+        XmlAttributeTextDoubleQuote = 1 << 15,
+        XmlCrefQuote = 1 << 16,
+        XmlCrefDoubleQuote = 1 << 17,
+        XmlNameQuote = 1 << 18,
+        XmlNameDoubleQuote = 1 << 19,
+        XmlCDataSectionText = 1 << 20,
+        XmlCommentText = 1 << 21,
+        XmlProcessingInstructionText = 1 << 22,
+        XmlCharacter = 1 << 23,
+
+        MaskLexMode = 0xFFFFF0,
 
         // The following are lexer driven, which is to say the lexer can push a change back to the
         // blender. There is in general no need to use a whole bit per enum value, but the debugging
         // experience is bad if you don't do that.
 
         XmlDocCommentLocationStart = 0,
-        XmlDocCommentLocationInterior = 1 << 21,
-        XmlDocCommentLocationExterior = 1 << 22,
-        XmlDocCommentLocationEnd = 1 << 23,
-        MaskXmlDocCommentLocation = 1 << 24,
+        XmlDocCommentLocationInterior = 1 << InternalMagicConstants.XmlDocLocationShift,
+        XmlDocCommentLocationExterior = 1 << InternalMagicConstants.XmlDocLocationShift + 1,
+        XmlDocCommentLocationEnd = 1 << InternalMagicConstants.XmlDocLocationShift + 2,
+        MaskXmlDocCommentLocation = 1 << InternalMagicConstants.XmlDocLocationShift + 3,
 
         XmlDocCommentStyleSingleLine = 0,
-        XmlDocCommentStyleDelimited = 1 << 25,
-        MaskXmlDocCommentStyle = 1 << 26,
+        XmlDocCommentStyleDelimited = 1 << InternalMagicConstants.XmlDocStyle,
+        MaskXmlDocCommentStyle = 1 << InternalMagicConstants.XmlDocStyle + 1,
 
         None = 0
     }
@@ -187,7 +194,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         private static XmlDocCommentLocation LocationOf(LexerMode mode)
         {
-            return (XmlDocCommentLocation)((int)(mode & LexerMode.MaskXmlDocCommentLocation) >> 16);
+            return (XmlDocCommentLocation)((int)(mode & LexerMode.MaskXmlDocCommentLocation) >>
+                                           InternalMagicConstants.XmlDocLocationShift);
         }
 
         private bool LocationIs(XmlDocCommentLocation location)
@@ -198,12 +206,13 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         private void MutateLocation(XmlDocCommentLocation location)
         {
             _mode &= ~LexerMode.MaskXmlDocCommentLocation;
-            _mode |= (LexerMode)((int)location << 16);
+            _mode |= (LexerMode)((int)location << InternalMagicConstants.XmlDocLocationShift);
         }
 
         private static XmlDocCommentStyle StyleOf(LexerMode mode)
         {
-            return (XmlDocCommentStyle)((int)(mode & LexerMode.MaskXmlDocCommentStyle) >> 20);
+            return (XmlDocCommentStyle)((int)(mode & LexerMode.MaskXmlDocCommentStyle) >>
+                                        InternalMagicConstants.XmlDocStyle);
         }
 
         private bool StyleIs(XmlDocCommentStyle style)
@@ -260,8 +269,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     return this.QuickScanSyntaxToken() ?? this.LexSyntaxToken();
                 case LexerMode.Directive:
                     return this.LexDirectiveToken();
-                case LexerMode.ViewSyntax:
-                    return this.LexViewSyntaxToken();
             }
 
             switch (ModeOf(_mode))
@@ -288,6 +295,10 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     return this.LexXmlCrefOrNameToken();
                 case LexerMode.XmlCharacter:
                     return this.LexXmlCharacter();
+                case LexerMode.SyntaxView:
+                    return this.LexViewSyntaxToken();
+                case LexerMode.SyntaxView | LexerMode.HtmlTag:
+                    return LexViewSyntaxToken();
                 default:
                     throw ExceptionUtilities.UnexpectedValue(ModeOf(_mode));
             }
@@ -422,10 +433,12 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     case SyntaxKind.EndOfFileToken:
                         token = SyntaxFactory.Token(leadingNode, info.Kind, trailingNode);
                         break;
+                    case SyntaxKind.HtmlTextToken:
+                        token = SyntaxFactory.HtmlTextLiteral(leadingNode, info.Text, info.StringValue, trailingNode);
+                        break;
                     case SyntaxKind.None:
                         token = SyntaxFactory.BadToken(leadingNode, info.Text, trailingNode);
                         break;
-
                     default:
                         Debug.Assert(SyntaxFacts.IsPunctuationOrKeyword(info.Kind));
                         token = SyntaxFactory.Token(leadingNode, info.Kind, trailingNode);
@@ -3093,13 +3106,22 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         private SyntaxToken LexViewSyntaxToken()
         {
+            _leadingTriviaCache.Clear();
+            this.LexSyntaxTrivia(afterFirstToken: TextWindow.Position > 0, isTrailing: false,
+                triviaList: ref _leadingTriviaCache);
+            var leading = _leadingTriviaCache;
+
             this.Start();
             var savedMode = _mode;
             TokenInfo info = default(TokenInfo);
             this.ScanViewSyntaxToken(ref info);
             var errors = this.GetErrors(leadingTriviaWidth: 0);
-            var trailing = this.LexViewTrailingTrivia(info.Kind == SyntaxKind.EndOfDirectiveToken);
-            return Create(ref info, null, trailing, errors);
+
+            _trailingTriviaCache.Clear();
+            this.LexSyntaxTrivia(afterFirstToken: true, isTrailing: true, triviaList: ref _trailingTriviaCache);
+            var trailing = _trailingTriviaCache;
+
+            return Create(ref info, leading, trailing, errors);
         }
 
         private SyntaxListBuilder LexViewTrailingTrivia(bool includeEndOfLine)
@@ -3110,43 +3132,148 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         private void ScanViewSyntaxToken(ref TokenInfo info)
         {
             start:
-            switch (TextWindow.PeekChar())
+            var ch = TextWindow.PeekChar();
+
+            switch (ch)
             {
                 case '\r':
                 case '\n':
                     TextWindow.AdvanceChar();
                     goto start;
                 case '<':
-                    info.Kind = SyntaxKind.OpenAngleToken;
+                    info.Kind = SyntaxKind.LessThanToken;
+
+                    if (TextWindow.PeekChar(1) == '/')
+                    {
+                        info.Kind = SyntaxKind.LessThanSlashToken;
+                        TextWindow.AdvanceChar();
+                    }
+
                     _mode |= LexerMode.HtmlTag;
                     TextWindow.AdvanceChar();
                     break;
                 case '>':
-                    info.Kind = SyntaxKind.CloseAngleToken;
+                    info.Kind = SyntaxKind.GreaterThanToken;
+                    _mode ^= LexerMode.HtmlTag;
                     TextWindow.AdvanceChar();
                     break;
                 case '/':
-                    info.Kind = SyntaxKind.ForwardSlashToken;
-                    TextWindow.AdvanceChar();
-                    break;
-                case '@':
-                    if (TextWindow.PeekChar(1) != '@')
+                    if (TextWindow.PeekChar(1) == '>')
                     {
-                        info.Kind = SyntaxKind.MarkupInterruptToken;
+                        info.Kind = SyntaxKind.SlashGreaterThanToken;
+                        _mode ^= LexerMode.HtmlTag;
+                        TextWindow.AdvanceChar(2);
+                    }
+                    else
+                    {
+                        info.Kind = SyntaxKind.GreaterThanToken;
+                        TextWindow.AdvanceChar();
                     }
 
                     break;
-                case var x when char.IsLetter(x) || char.IsDigit(x):
-                    ScanTagName(ref info);
+                case '@':
+                    if (TextWindow.PeekChar(1) == '@')
+                    {
+                        info.Kind = SyntaxKind.AtAtToken;
+                        TextWindow.AdvanceChar(2);
+                        break;
+                    }
+
+                    info.Kind = SyntaxKind.AtToken;
+                    TextWindow.AdvanceChar();
                     break;
+
                 case '=':
                     info.Kind = SyntaxKind.EqualsToken;
+                    TextWindow.AdvanceChar();
+                    break;
+
+                case SlidingTextWindow.InvalidCharacter:
+                    info.Kind = SyntaxKind.EndOfFileToken;
+                    break;
+
+                case var _ when TextWindow.PeekChar(-1) == '@':
+                    ScanViewKeyword(ref info);
+                    break;
+
+                case var x when char.IsLetterOrDigit(x) && _mode.HasFlag(LexerMode.HtmlTag):
+                    ScanName(ref info);
+                    break;
+
+                case var _ when !_mode.HasFlag(LexerMode.HtmlTag):
+                    ScanContent(ref info);
                     break;
             }
         }
 
-        private void ScanTagName(ref TokenInfo info)
+        private void ScanViewKeyword(ref TokenInfo info)
         {
+            var x = TextWindow.PeekChar();
+            var position = TextWindow.Position;
+
+            while (char.IsLetterOrDigit(x))
+            {
+                TextWindow.AdvanceChar();
+                x = TextWindow.PeekChar();
+
+                if (x == SlidingTextWindow.InvalidCharacter)
+                    break;
+            }
+
+            var keywordText = TextWindow.GetInternedText();
+            var kind = keywordText switch
+            {
+                "code" => SyntaxKind.HtmlCodeKeyword,
+                _ => SyntaxKind.MarkupInterruptToken
+            };
+
+            if (kind == SyntaxKind.MarkupInterruptToken)
+                Reset(position, DirectiveStack.Empty);
+
+            info.Kind = kind;
+        }
+
+        private void ScanContent(ref TokenInfo info)
+        {
+            start:
+            var x = TextWindow.PeekChar();
+
+            while (x is not ('<' or '>' or '@'))
+            {
+                TextWindow.AdvanceChar();
+                x = TextWindow.PeekChar();
+
+                if (x == SlidingTextWindow.InvalidCharacter)
+                    break;
+            }
+
+            if (x == '@' && TextWindow.PeekChar(1) == '@')
+            {
+                TextWindow.AdvanceChar();
+                goto start;
+            }
+
+            info.Text = TextWindow.GetInternedText();
+            info.StringValue = info.Text;
+            info.Kind = SyntaxKind.HtmlTextToken;
+        }
+
+        private void ScanName(ref TokenInfo info)
+        {
+            var x = TextWindow.PeekChar();
+
+            while (char.IsLetter(x) || char.IsDigit(x))
+            {
+                TextWindow.AdvanceChar();
+                x = TextWindow.PeekChar();
+
+                if (x == SlidingTextWindow.InvalidCharacter)
+                    break;
+            }
+
+            info.StringValue = TextWindow.GetInternedText();
+            info.Text = info.StringValue;
+            info.Kind = SyntaxKind.IdentifierToken;
         }
 
         #endregion
