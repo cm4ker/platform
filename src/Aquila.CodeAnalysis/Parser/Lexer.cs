@@ -36,6 +36,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         //html modes
         SyntaxView = 1 << 4,
         HtmlTag = 1 << 5,
+        HtmlAttribute = 1 << 6,
 
         //xml comments modes
         XmlDocComment = 1 << 12,
@@ -298,6 +299,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 case LexerMode.SyntaxView:
                     return this.LexViewSyntaxToken();
                 case LexerMode.SyntaxView | LexerMode.HtmlTag:
+                    return LexViewSyntaxToken();
+                case LexerMode.SyntaxView | LexerMode.HtmlTag | LexerMode.HtmlAttribute:
                     return LexViewSyntaxToken();
                 default:
                     throw ExceptionUtilities.UnexpectedValue(ModeOf(_mode));
@@ -3187,14 +3190,27 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     info.Kind = SyntaxKind.EqualsToken;
                     TextWindow.AdvanceChar();
                     break;
-
+                case '"':
+                    info.Kind = SyntaxKind.DoubleQuoteToken;
+                    TextWindow.AdvanceChar();
+                    _mode ^= LexerMode.HtmlAttribute;
+                    break;
+                case '\'':
+                    info.Kind = SyntaxKind.SingleQuoteToken;
+                    TextWindow.AdvanceChar();
+                    break;
                 case SlidingTextWindow.InvalidCharacter:
                     info.Kind = SyntaxKind.EndOfFileToken;
                     break;
 
+                case var x when _mode.HasFlag(LexerMode.HtmlAttribute):
+                    ScanAttributeContent(ref info);
+                    break;
+                
                 case var _ when TextWindow.PeekChar(-1) == '@':
                     ScanViewKeyword(ref info);
                     break;
+
 
                 case var x when char.IsLetterOrDigit(x) && _mode.HasFlag(LexerMode.HtmlTag):
                     ScanName(ref info);
@@ -3203,7 +3219,42 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 case var _ when !_mode.HasFlag(LexerMode.HtmlTag):
                     ScanContent(ref info);
                     break;
+
+
+                default:
+                    throw new Exception("No progress");
             }
+        }
+
+        private void ScanAttributeContent(ref TokenInfo info)
+        {
+            start:
+            var x = TextWindow.PeekChar();
+
+            while (x is not ('<' or '>' or '@' or '"'))
+            {
+                TextWindow.AdvanceChar();
+                x = TextWindow.PeekChar();
+
+                if (x == SlidingTextWindow.InvalidCharacter)
+                    break;
+            }
+
+            if (x == '"' && TextWindow.PeekChar(-1) == '\\')
+            {
+                TextWindow.AdvanceChar();
+                goto start;
+            }
+
+            if (x == '@' && TextWindow.PeekChar(1) == '@')
+            {
+                TextWindow.AdvanceChar();
+                goto start;
+            }
+
+            info.Text = TextWindow.GetInternedText();
+            info.StringValue = info.Text;
+            info.Kind = SyntaxKind.HtmlTextToken;
         }
 
         private void ScanViewKeyword(ref TokenInfo info)

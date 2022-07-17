@@ -175,7 +175,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
                 var token = _lexer.Lex(ref mode);
                 _newDirectives = _lexer.Directives;
-                _newLexerDrivenMode = mode & (LexerMode.MaskXmlDocCommentLocation | LexerMode.MaskXmlDocCommentStyle | LexerMode.HtmlTag);
+                _newLexerDrivenMode = mode & (LexerMode.MaskXmlDocCommentLocation | LexerMode.MaskXmlDocCommentStyle
+                    | LexerMode.HtmlTag | LexerMode.HtmlAttribute);
                 return token;
             }
 

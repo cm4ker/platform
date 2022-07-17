@@ -27,6 +27,16 @@ public partial class SourceParserTest
    }
    
    [Fact]
+   public void ParseSimpleWebWithAttributeTest()
+   {
+      var tp = new TreePrinter(_output);
+
+      var graph = AquilaSyntaxTree.ParseText(@"<h1 a=""value value value @value @value @(1+1) asjdfalksdjhf"" c=""123"">HelloFromContent</h1>");
+
+      tp.Visit(graph.GetRoot());
+   }
+   
+   [Fact]
    public void ParseSimpleWebWithContentExpressionTest()
    {
       var tp = new TreePrinter(_output);

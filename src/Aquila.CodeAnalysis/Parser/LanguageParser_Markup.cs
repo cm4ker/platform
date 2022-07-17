@@ -18,19 +18,23 @@ internal partial class LanguageParser
 
     private void ParseAttributeNodes(SyntaxListBuilder<AquilaSyntaxNode> nodes)
     {
-        switch (CurrentToken.Kind)
+        while (true)
         {
-            case SyntaxKind.HtmlText:
-                var text = ParseHtmlText();
-                nodes.Add(text);
-                break;
-            case SyntaxKind.AtToken when IsCodeExpression():
-                var rp = GetResetPoint();
-                Mode = LexerMode.Syntax;
-                var expression = ParseExpression();
-                Mode = rp.BaseResetPoint.Mode;
-                nodes.Add(expression);
-                break;
+            switch (CurrentToken.Kind)
+            {
+                case SyntaxKind.HtmlTextToken:
+                    var text = ParseHtmlText();
+                    nodes.Add(text);
+                    break;
+                case SyntaxKind.AtToken when IsCodeExpression():
+                    var mode = Mode | LexerMode.HtmlAttribute | LexerMode.HtmlTag;
+                    var expression = ParseHtmlExpression();
+                    Mode = mode;
+                    nodes.Add(expression);
+                    break;
+                default:
+                    return;
+            }
         }
     }
 
@@ -48,7 +52,6 @@ internal partial class LanguageParser
         {
             if (CurrentToken.Kind != SyntaxKind.IdentifierToken)
                 break;
-
 
             var name = ParseHtmlName();
 
@@ -133,7 +136,7 @@ internal partial class LanguageParser
             var closeParen = EatToken(SyntaxKind.CloseParenToken);
             expr = _syntaxFactory.ParenthesizedEx(openParen, expr, closeParen);
         }
-        
+
         Mode = mode;
         return SyntaxFactory.HtmlExpression(atToken, expr);
     }

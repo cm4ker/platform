@@ -27,6 +27,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         /// oldTreeCursor.  The oldPosition is implicitly defined by the position of the cursor.
         /// </summary>
         private readonly int _newPosition;
+
         private readonly int _changeDelta;
         private readonly DirectiveStack _newDirectives;
         private readonly DirectiveStack _oldDirectives;
@@ -100,7 +101,10 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             _changeDelta = changeDelta;
             _newDirectives = newDirectives;
             _oldDirectives = oldDirectives;
-            _newLexerDrivenMode = newLexerDrivenMode & (LexerMode.MaskXmlDocCommentLocation | LexerMode.MaskXmlDocCommentStyle | LexerMode.HtmlTag);
+            _newLexerDrivenMode = newLexerDrivenMode & (LexerMode.MaskXmlDocCommentLocation |
+                                                        LexerMode.MaskXmlDocCommentStyle | 
+                                                        LexerMode.HtmlTag |
+                                                        LexerMode.HtmlAttribute);
         }
 
         /// <summary>
@@ -161,8 +165,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         {
             var token = oldTree.FindToken(start, findInsideTrivia: false);
             for (var parent = token.Parent; // for each parent
-                parent != null;
-                parent = parent.Parent)
+                 parent != null;
+                 parent = parent.Parent)
             {
                 if (parent.Kind() == SyntaxKind.InterpolatedStringExpression)
                 {
