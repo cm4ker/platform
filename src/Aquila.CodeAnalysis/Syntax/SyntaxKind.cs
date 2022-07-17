@@ -207,10 +207,6 @@ namespace Aquila.CodeAnalysis
         QuestionQuestionEqualsToken = 8284,
 
         #region Html tokens
-
-        OpenAngleToken,
-        CloseAngleToken,
-        ForwardSlashToken,
         MarkupInterruptToken,
         AtToken,
         AtAtToken,

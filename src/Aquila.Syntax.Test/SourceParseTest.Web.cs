@@ -31,7 +31,7 @@ public partial class SourceParserTest
    {
       var tp = new TreePrinter(_output);
 
-      var graph = AquilaSyntaxTree.ParseText(@"<h1>@(thisIsExpression)</h1>");
+      var graph = AquilaSyntaxTree.ParseText(@"<h1>@(1 > hello_my_name(a,b)) sex</h1>");
 
       tp.Visit(graph.GetRoot());
    }
