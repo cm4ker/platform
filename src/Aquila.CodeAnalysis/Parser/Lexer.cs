@@ -3152,19 +3152,16 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                         TextWindow.AdvanceChar();
                     }
 
-                    _mode |= LexerMode.HtmlTag;
                     TextWindow.AdvanceChar();
                     break;
                 case '>':
                     info.Kind = SyntaxKind.GreaterThanToken;
-                    _mode ^= LexerMode.HtmlTag;
                     TextWindow.AdvanceChar();
                     break;
                 case '/':
                     if (TextWindow.PeekChar(1) == '>')
                     {
                         info.Kind = SyntaxKind.SlashGreaterThanToken;
-                        _mode ^= LexerMode.HtmlTag;
                         TextWindow.AdvanceChar(2);
                     }
                     else
@@ -3193,7 +3190,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 case '"':
                     info.Kind = SyntaxKind.DoubleQuoteToken;
                     TextWindow.AdvanceChar();
-                    _mode ^= LexerMode.HtmlAttribute;
                     break;
                 case '\'':
                     info.Kind = SyntaxKind.SingleQuoteToken;
@@ -3206,11 +3202,10 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 case var x when _mode.HasFlag(LexerMode.HtmlAttribute):
                     ScanAttributeContent(ref info);
                     break;
-                
+
                 case var _ when TextWindow.PeekChar(-1) == '@':
                     ScanViewKeyword(ref info);
                     break;
-
 
                 case var x when char.IsLetterOrDigit(x) && _mode.HasFlag(LexerMode.HtmlTag):
                     ScanName(ref info);

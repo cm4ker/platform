@@ -365,10 +365,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
                         case SyntaxKind.LessThanToken:
                             //Possible start web view
-                            var mode = Mode;
-                            Mode |= LexerMode.SyntaxView;
-                            ParseHtmlContent(body.HtmlNodes);
-                            Mode = mode;
+                            using (EnterMode(LexerMode.SyntaxView))
+                                ParseHtmlContent(body.HtmlNodes);
                             break;
                         case SyntaxKind.EndOfFileToken:
                             // This token marks the end of a namespace body

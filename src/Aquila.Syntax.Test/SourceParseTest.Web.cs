@@ -31,7 +31,17 @@ public partial class SourceParserTest
    {
       var tp = new TreePrinter(_output);
 
-      var graph = AquilaSyntaxTree.ParseText(@"<h1 a=""value value value @value @value @(1+1) asjdfalksdjhf"" c=""123"">HelloFromContent</h1>");
+      var graph = AquilaSyntaxTree.ParseText(@"<h1 a=""value value value @value @value @(1+1)"" c=""test"">HelloFromContent</h1>");
+
+      tp.Visit(graph.GetRoot());
+   }
+   
+   [Fact]
+   public void ParseWebMultiplyAttributeTest()
+   {
+      var tp = new TreePrinter(_output);
+
+      var graph = AquilaSyntaxTree.ParseText(@"<t a=""@(1+1)"" c=""test""></t>");
 
       tp.Visit(graph.GetRoot());
    }
@@ -43,6 +53,17 @@ public partial class SourceParserTest
 
       var graph = AquilaSyntaxTree.ParseText(@"<h1>@(1 > hello_my_name(a,b)) sex</h1>");
 
+      tp.Visit(graph.GetRoot());
+   }
+   
+   
+   [Fact]
+   public void ParseSimpleWebEmptyTagTest()
+   {
+      var tp = new TreePrinter(_output);
+
+
+      var graph = AquilaSyntaxTree.ParseText(@"<h1 attribute />");
       tp.Visit(graph.GetRoot());
    }
 }
