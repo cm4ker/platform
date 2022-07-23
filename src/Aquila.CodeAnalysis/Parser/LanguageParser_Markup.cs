@@ -6,10 +6,111 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax;
 
 internal partial class LanguageParser
 {
+    /*
+     this part of LanguageParser response for parsing
+     html constructions while describing view
+     like a 
+     <html>
+        Hello this is view, @user_name
+     </html>
+     */
+
+    #region Mode controller
+
+    private ContextMode EnterMode(LexerMode mode, bool @override = false)
+    {
+        var context = new ContextMode(Mode, this);
+        if (@override)
+            Mode = mode;
+        else
+            Mode |= mode;
+
+        return context;
+    }
+
+    private class ContextMode : IDisposable
+    {
+        private readonly LanguageParser _parser;
+        public LexerMode Mode { get; }
+
+        public ContextMode(LexerMode mode, LanguageParser parser)
+        {
+            _parser = parser;
+            Mode = mode;
+        }
+
+        public void Exit()
+        {
+            _parser.Mode = Mode;
+        }
+
+        public void Dispose()
+        {
+            Exit();
+        }
+    }
+
+    #endregion
+
+    private HtmlNodeSyntax ParseHtmlNode()
+    {
+        var startOrEmpty = ParseHtmlStartOrEmpty();
+
+        switch (startOrEmpty.Kind)
+        {
+            case SyntaxKind.HtmlEmptyElement:
+                return (HtmlEmptyElementSyntax)startOrEmpty;
+            case SyntaxKind.HtmlElementStartTag:
+                var nodes = _pool.Allocate<HtmlNodeSyntax>();
+                ParseHtmlContent(nodes);
+                var end = ParseHtmlEnd();
+
+                return SyntaxFactory.HtmlElement((HtmlElementStartTagSyntax)startOrEmpty, _pool.ToListAndFree(nodes),
+                    end);
+            default:
+                AddError(startOrEmpty, ErrorCode.Unknown);
+                return null;
+        }
+    }
+
     private HtmlNameSyntax ParseHtmlName()
     {
         var tagName = EatToken(SyntaxKind.IdentifierToken);
         return SyntaxFactory.HtmlName(tagName);
+    }
+
+    private AquilaSyntaxNode ParseHtmlStartOrEmpty()
+    {
+        using (EnterMode(LexerMode.HtmlTag))
+        {
+            var lessThanToken = EatToken(SyntaxKind.LessThanToken);
+            var htmlName = ParseHtmlName();
+            var attributes = _pool.Allocate<HtmlAttributeSyntax>();
+            ParseAttributes(attributes);
+
+            if (CurrentToken.Kind == SyntaxKind.SlashGreaterThanToken)
+            {
+                var slashGreaterThanToken = EatToken(SyntaxKind.SlashGreaterThanToken);
+                return SyntaxFactory.HtmlEmptyElement(lessThanToken, htmlName, _pool.ToListAndFree(attributes),
+                    slashGreaterThanToken);
+            }
+
+            var greaterThanToken = EatToken(SyntaxKind.GreaterThanToken);
+
+            return SyntaxFactory.HtmlElementStartTag(lessThanToken, htmlName, _pool.ToListAndFree(attributes),
+                greaterThanToken);
+        }
+    }
+
+    private HtmlElementEndTagSyntax ParseHtmlEnd()
+    {
+        using (EnterMode(LexerMode.HtmlTag))
+        {
+            var lessThanSlshToken = EatToken(SyntaxKind.LessThanSlashToken);
+            var htmlName = ParseHtmlName();
+            var greatThanToken = EatToken(SyntaxKind.GreaterThanToken);
+            return SyntaxFactory.HtmlElementEndTag(lessThanSlshToken, htmlName, greatThanToken);
+        }
     }
 
     private HtmlTextSyntax ParseHtmlText()
@@ -28,7 +129,7 @@ internal partial class LanguageParser
                     var text = ParseHtmlText();
                     nodes.Add(text);
                     break;
-                case SyntaxKind.AtToken when IsCodeExpression():
+                case SyntaxKind.AtToken when IsHtmlCodeExpression():
                     var expression = ParseHtmlExpression();
                     nodes.Add(expression);
                     break;
@@ -37,14 +138,6 @@ internal partial class LanguageParser
             }
         }
     }
-
-    private bool IsCodeExpression()
-    {
-        return CurrentToken.Kind == SyntaxKind.AtToken
-               && PeekToken(1).Kind != SyntaxKind.AtToken;
-    }
-
-    private bool IsEmptyHtmlElement() => this.CurrentToken.Kind == SyntaxKind.SlashGreaterThanToken;
 
     private void ParseAttributes(SyntaxListBuilder<HtmlAttributeSyntax> attributes)
     {
@@ -80,74 +173,13 @@ internal partial class LanguageParser
         }
     }
 
-    private AquilaSyntaxNode ParseHtmlStartOrEmpty()
+    private bool IsHtmlCodeExpression()
     {
-        using (EnterMode(LexerMode.HtmlTag))
-        {
-            var lessThanToken = EatToken(SyntaxKind.LessThanToken);
-            var htmlName = ParseHtmlName();
-            var attributes = _pool.Allocate<HtmlAttributeSyntax>();
-            ParseAttributes(attributes);
-
-            if (CurrentToken.Kind == SyntaxKind.SlashGreaterThanToken)
-            {
-                var slashGreaterThanToken = EatToken(SyntaxKind.SlashGreaterThanToken);
-                return SyntaxFactory.HtmlEmptyElement(lessThanToken, htmlName, _pool.ToListAndFree(attributes),
-                    slashGreaterThanToken);
-            }
-
-            var greaterThanToken = EatToken(SyntaxKind.GreaterThanToken);
-
-            return SyntaxFactory.HtmlElementStartTag(lessThanToken, htmlName, _pool.ToListAndFree(attributes),
-                greaterThanToken);
-        }
+        return CurrentToken.Kind == SyntaxKind.AtToken
+               && PeekToken(1).Kind != SyntaxKind.AtToken;
     }
 
-    private ContextMode EnterMode(LexerMode mode, bool @override = false)
-    {
-        var context = new ContextMode(Mode, this);
-        if (@override)
-            Mode = mode;
-        else
-            Mode |= mode;
-
-        return context;
-    }
-
-    private class ContextMode : IDisposable
-    {
-        private readonly LanguageParser _parser;
-        public LexerMode Mode { get; }
-
-        public ContextMode(LexerMode mode, LanguageParser parser)
-        {
-            _parser = parser;
-            Mode = mode;
-        }
-
-        public void Exit()
-        {
-            _parser.Mode = Mode;
-        }
-
-        public void Dispose()
-        {
-            Exit();
-        }
-    }
-
-    private HtmlElementEndTagSyntax ParseHtmlEnd()
-    {
-        using (EnterMode(LexerMode.HtmlTag))
-        {
-            var lessThanSlshToken = EatToken(SyntaxKind.LessThanSlashToken);
-            var htmlName = ParseHtmlName();
-            var greatThanToken = EatToken(SyntaxKind.GreaterThanToken);
-            return SyntaxFactory.HtmlElementEndTag(lessThanSlshToken, htmlName, greatThanToken);
-        }
-    }
-
-    private bool IsHtmlStatement()
+    private bool IsHtmlCodeStatement()
     {
         return CurrentToken.Kind == SyntaxKind.AtToken
                && (PeekToken(1).Kind == SyntaxKind.ForKeyword
@@ -165,11 +197,6 @@ internal partial class LanguageParser
             var stmt = ParseStatementCore(null, false);
             return SyntaxFactory.HtmlStatement(atToken, stmt);
         }
-    }
-
-    private bool IsPrimaryHtmlExpression()
-    {
-        return PeekToken(1).Kind != SyntaxKind.OpenParenToken;
     }
 
     HtmlExpressionSyntax ParseHtmlExpression()
@@ -193,9 +220,14 @@ internal partial class LanguageParser
         return SyntaxFactory.HtmlExpression(atToken, expr);
     }
 
+    private bool IsPrimaryHtmlExpression()
+    {
+        return PeekToken(1).Kind != SyntaxKind.OpenParenToken;
+    }
+
     private HtmlNodeSyntax ParseHtmlInterrupt()
     {
-        if (IsHtmlStatement())
+        if (IsHtmlCodeStatement())
         {
             return ParseHtmlStatement();
         }
@@ -212,7 +244,7 @@ internal partial class LanguageParser
             switch (CurrentToken.Kind)
             {
                 case SyntaxKind.LessThanToken:
-                    var node = ParseHtmlTagNode();
+                    var node = ParseHtmlNode();
                     contentNodes.Add(node);
                     break;
                 case SyntaxKind.AtToken:
@@ -226,26 +258,5 @@ internal partial class LanguageParser
                 default:
                     return;
             }
-    }
-
-    private HtmlNodeSyntax ParseHtmlTagNode()
-    {
-        var startOrEmpty = ParseHtmlStartOrEmpty();
-
-        switch (startOrEmpty.Kind)
-        {
-            case SyntaxKind.HtmlEmptyElement:
-                return (HtmlEmptyElementSyntax)startOrEmpty;
-            case SyntaxKind.HtmlElementStartTag:
-                var nodes = _pool.Allocate<HtmlNodeSyntax>();
-                ParseHtmlContent(nodes);
-                var end = ParseHtmlEnd();
-
-                return SyntaxFactory.HtmlElement((HtmlElementStartTagSyntax)startOrEmpty, _pool.ToListAndFree(nodes),
-                    end);
-            default:
-                AddError(startOrEmpty, ErrorCode.Unknown);
-                return null;
-        }
     }
 }
