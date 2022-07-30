@@ -162,15 +162,110 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
     }
 
+    internal sealed partial class HtmlDecl : AquilaSyntaxNode
+    {
+        internal readonly GreenNode? htmlNodes;
+
+        internal HtmlDecl(SyntaxKind kind, GreenNode? htmlNodes, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 1;
+            if (htmlNodes != null)
+            {
+                this.AdjustFlagsAndWidth(htmlNodes);
+                this.htmlNodes = htmlNodes;
+            }
+        }
+
+        internal HtmlDecl(SyntaxKind kind, GreenNode? htmlNodes, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 1;
+            if (htmlNodes != null)
+            {
+                this.AdjustFlagsAndWidth(htmlNodes);
+                this.htmlNodes = htmlNodes;
+            }
+        }
+
+        internal HtmlDecl(SyntaxKind kind, GreenNode? htmlNodes)
+          : base(kind)
+        {
+            this.SlotCount = 1;
+            if (htmlNodes != null)
+            {
+                this.AdjustFlagsAndWidth(htmlNodes);
+                this.htmlNodes = htmlNodes;
+            }
+        }
+
+        public Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax> HtmlNodes => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax>(this.htmlNodes);
+
+        internal override GreenNode? GetSlot(int index)
+            => index == 0 ? this.htmlNodes : null;
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.HtmlDecl(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlDecl(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitHtmlDecl(this);
+
+        public HtmlDecl Update(Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax> htmlNodes)
+        {
+            if (htmlNodes != this.HtmlNodes)
+            {
+                var newNode = SyntaxFactory.HtmlDecl(htmlNodes);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new HtmlDecl(this.Kind, this.htmlNodes, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new HtmlDecl(this.Kind, this.htmlNodes, GetDiagnostics(), annotations);
+
+        internal HtmlDecl(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 1;
+            var htmlNodes = (GreenNode?)reader.ReadValue();
+            if (htmlNodes != null)
+            {
+                AdjustFlagsAndWidth(htmlNodes);
+                this.htmlNodes = htmlNodes;
+            }
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.htmlNodes);
+        }
+
+        static HtmlDecl()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(HtmlDecl), r => new HtmlDecl(r));
+        }
+    }
+
     internal sealed partial class CompilationUnitSyntax : AquilaSyntaxNode
     {
         internal readonly ModuleDecl? module;
         internal readonly GreenNode? imports;
-        internal readonly GreenNode? htmlNodes;
+        internal readonly HtmlDecl? html;
         internal readonly GreenNode? members;
         internal readonly SyntaxToken endOfFileToken;
 
-        internal CompilationUnitSyntax(SyntaxKind kind, ModuleDecl? module, GreenNode? imports, GreenNode? htmlNodes, GreenNode? members, SyntaxToken endOfFileToken, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+        internal CompilationUnitSyntax(SyntaxKind kind, ModuleDecl? module, GreenNode? imports, HtmlDecl? html, GreenNode? members, SyntaxToken endOfFileToken, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
           : base(kind, diagnostics, annotations)
         {
             this.SlotCount = 5;
@@ -184,10 +279,10 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 this.AdjustFlagsAndWidth(imports);
                 this.imports = imports;
             }
-            if (htmlNodes != null)
+            if (html != null)
             {
-                this.AdjustFlagsAndWidth(htmlNodes);
-                this.htmlNodes = htmlNodes;
+                this.AdjustFlagsAndWidth(html);
+                this.html = html;
             }
             if (members != null)
             {
@@ -198,7 +293,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             this.endOfFileToken = endOfFileToken;
         }
 
-        internal CompilationUnitSyntax(SyntaxKind kind, ModuleDecl? module, GreenNode? imports, GreenNode? htmlNodes, GreenNode? members, SyntaxToken endOfFileToken, SyntaxFactoryContext context)
+        internal CompilationUnitSyntax(SyntaxKind kind, ModuleDecl? module, GreenNode? imports, HtmlDecl? html, GreenNode? members, SyntaxToken endOfFileToken, SyntaxFactoryContext context)
           : base(kind)
         {
             this.SetFactoryContext(context);
@@ -213,10 +308,10 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 this.AdjustFlagsAndWidth(imports);
                 this.imports = imports;
             }
-            if (htmlNodes != null)
+            if (html != null)
             {
-                this.AdjustFlagsAndWidth(htmlNodes);
-                this.htmlNodes = htmlNodes;
+                this.AdjustFlagsAndWidth(html);
+                this.html = html;
             }
             if (members != null)
             {
@@ -227,7 +322,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             this.endOfFileToken = endOfFileToken;
         }
 
-        internal CompilationUnitSyntax(SyntaxKind kind, ModuleDecl? module, GreenNode? imports, GreenNode? htmlNodes, GreenNode? members, SyntaxToken endOfFileToken)
+        internal CompilationUnitSyntax(SyntaxKind kind, ModuleDecl? module, GreenNode? imports, HtmlDecl? html, GreenNode? members, SyntaxToken endOfFileToken)
           : base(kind)
         {
             this.SlotCount = 5;
@@ -241,10 +336,10 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 this.AdjustFlagsAndWidth(imports);
                 this.imports = imports;
             }
-            if (htmlNodes != null)
+            if (html != null)
             {
-                this.AdjustFlagsAndWidth(htmlNodes);
-                this.htmlNodes = htmlNodes;
+                this.AdjustFlagsAndWidth(html);
+                this.html = html;
             }
             if (members != null)
             {
@@ -257,7 +352,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         public ModuleDecl? Module => this.module;
         public Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> Imports => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl>(this.imports);
-        public Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax> HtmlNodes => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax>(this.htmlNodes);
+        public HtmlDecl? Html => this.html;
         public Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl> Members => new Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl>(this.members);
         public SyntaxToken EndOfFileToken => this.endOfFileToken;
 
@@ -266,7 +361,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             {
                 0 => this.module,
                 1 => this.imports,
-                2 => this.htmlNodes,
+                2 => this.html,
                 3 => this.members,
                 4 => this.endOfFileToken,
                 _ => null,
@@ -277,11 +372,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitCompilationUnit(this);
         public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitCompilationUnit(this);
 
-        public CompilationUnitSyntax Update(ModuleDecl module, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> imports, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax> htmlNodes, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
+        public CompilationUnitSyntax Update(ModuleDecl module, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> imports, HtmlDecl html, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
         {
-            if (module != this.Module || imports != this.Imports || htmlNodes != this.HtmlNodes || members != this.Members || endOfFileToken != this.EndOfFileToken)
+            if (module != this.Module || imports != this.Imports || html != this.Html || members != this.Members || endOfFileToken != this.EndOfFileToken)
             {
-                var newNode = SyntaxFactory.CompilationUnit(module, imports, htmlNodes, members, endOfFileToken);
+                var newNode = SyntaxFactory.CompilationUnit(module, imports, html, members, endOfFileToken);
                 var diags = GetDiagnostics();
                 if (diags?.Length > 0)
                     newNode = newNode.WithDiagnosticsGreen(diags);
@@ -295,10 +390,10 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
 
         internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
-            => new CompilationUnitSyntax(this.Kind, this.module, this.imports, this.htmlNodes, this.members, this.endOfFileToken, diagnostics, GetAnnotations());
+            => new CompilationUnitSyntax(this.Kind, this.module, this.imports, this.html, this.members, this.endOfFileToken, diagnostics, GetAnnotations());
 
         internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
-            => new CompilationUnitSyntax(this.Kind, this.module, this.imports, this.htmlNodes, this.members, this.endOfFileToken, GetDiagnostics(), annotations);
+            => new CompilationUnitSyntax(this.Kind, this.module, this.imports, this.html, this.members, this.endOfFileToken, GetDiagnostics(), annotations);
 
         internal CompilationUnitSyntax(ObjectReader reader)
           : base(reader)
@@ -316,11 +411,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 AdjustFlagsAndWidth(imports);
                 this.imports = imports;
             }
-            var htmlNodes = (GreenNode?)reader.ReadValue();
-            if (htmlNodes != null)
+            var html = (HtmlDecl?)reader.ReadValue();
+            if (html != null)
             {
-                AdjustFlagsAndWidth(htmlNodes);
-                this.htmlNodes = htmlNodes;
+                AdjustFlagsAndWidth(html);
+                this.html = html;
             }
             var members = (GreenNode?)reader.ReadValue();
             if (members != null)
@@ -338,7 +433,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             base.WriteTo(writer);
             writer.WriteValue(this.module);
             writer.WriteValue(this.imports);
-            writer.WriteValue(this.htmlNodes);
+            writer.WriteValue(this.html);
             writer.WriteValue(this.members);
             writer.WriteValue(this.endOfFileToken);
         }
@@ -15906,6 +16001,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
     internal partial class AquilaSyntaxVisitor<TResult>
     {
         public virtual TResult VisitModuleDecl(ModuleDecl node) => this.DefaultVisit(node);
+        public virtual TResult VisitHtmlDecl(HtmlDecl node) => this.DefaultVisit(node);
         public virtual TResult VisitCompilationUnit(CompilationUnitSyntax node) => this.DefaultVisit(node);
         public virtual TResult VisitImportDecl(ImportDecl node) => this.DefaultVisit(node);
         public virtual TResult VisitTypeDecl(TypeDecl node) => this.DefaultVisit(node);
@@ -16030,6 +16126,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
     internal partial class AquilaSyntaxVisitor
     {
         public virtual void VisitModuleDecl(ModuleDecl node) => this.DefaultVisit(node);
+        public virtual void VisitHtmlDecl(HtmlDecl node) => this.DefaultVisit(node);
         public virtual void VisitCompilationUnit(CompilationUnitSyntax node) => this.DefaultVisit(node);
         public virtual void VisitImportDecl(ImportDecl node) => this.DefaultVisit(node);
         public virtual void VisitTypeDecl(TypeDecl node) => this.DefaultVisit(node);
@@ -16156,8 +16253,11 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         public override AquilaSyntaxNode VisitModuleDecl(ModuleDecl node)
             => node.Update((SyntaxToken)Visit(node.ModuleKeyword), (NameEx)Visit(node.Name), (SyntaxToken)Visit(node.SemicolonToken));
 
+        public override AquilaSyntaxNode VisitHtmlDecl(HtmlDecl node)
+            => node.Update(VisitList(node.HtmlNodes));
+
         public override AquilaSyntaxNode VisitCompilationUnit(CompilationUnitSyntax node)
-            => node.Update((ModuleDecl)Visit(node.Module), VisitList(node.Imports), VisitList(node.HtmlNodes), VisitList(node.Members), (SyntaxToken)Visit(node.EndOfFileToken));
+            => node.Update((ModuleDecl)Visit(node.Module), VisitList(node.Imports), (HtmlDecl)Visit(node.Html), VisitList(node.Members), (SyntaxToken)Visit(node.EndOfFileToken));
 
         public override AquilaSyntaxNode VisitImportDecl(ImportDecl node)
             => node.Update((SyntaxToken)Visit(node.ImportKeyword), (SyntaxToken)Visit(node.ClrKeyword), (NameEx)Visit(node.Name), (SyntaxToken)Visit(node.SemicolonToken));
@@ -16544,14 +16644,32 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return result;
         }
 
-        public CompilationUnitSyntax CompilationUnit(ModuleDecl? module, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> imports, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax> htmlNodes, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
+        public HtmlDecl HtmlDecl(Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax> htmlNodes)
+        {
+#if DEBUG
+#endif
+
+            int hash;
+            var cached = AquilaSyntaxNodeCache.TryGetNode((int)SyntaxKind.HtmlDecl, htmlNodes.Node, this.context, out hash);
+            if (cached != null) return (HtmlDecl)cached;
+
+            var result = new HtmlDecl(SyntaxKind.HtmlDecl, htmlNodes.Node, this.context);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
+        public CompilationUnitSyntax CompilationUnit(ModuleDecl? module, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> imports, HtmlDecl? html, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
         {
 #if DEBUG
             if (endOfFileToken == null) throw new ArgumentNullException(nameof(endOfFileToken));
             if (endOfFileToken.Kind != SyntaxKind.EndOfFileToken) throw new ArgumentException(nameof(endOfFileToken));
 #endif
 
-            return new CompilationUnitSyntax(SyntaxKind.CompilationUnit, module, imports.Node, htmlNodes.Node, members.Node, endOfFileToken, this.context);
+            return new CompilationUnitSyntax(SyntaxKind.CompilationUnit, module, imports.Node, html, members.Node, endOfFileToken, this.context);
         }
 
         public ImportDecl ImportDecl(SyntaxToken importKeyword, SyntaxToken? clrKeyword, NameEx name, SyntaxToken semicolonToken)
@@ -19185,14 +19303,32 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return result;
         }
 
-        public static CompilationUnitSyntax CompilationUnit(ModuleDecl? module, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> imports, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax> htmlNodes, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
+        public static HtmlDecl HtmlDecl(Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<HtmlNodeSyntax> htmlNodes)
+        {
+#if DEBUG
+#endif
+
+            int hash;
+            var cached = SyntaxNodeCache.TryGetNode((int)SyntaxKind.HtmlDecl, htmlNodes.Node, out hash);
+            if (cached != null) return (HtmlDecl)cached;
+
+            var result = new HtmlDecl(SyntaxKind.HtmlDecl, htmlNodes.Node);
+            if (hash >= 0)
+            {
+                SyntaxNodeCache.AddNode(result, hash);
+            }
+
+            return result;
+        }
+
+        public static CompilationUnitSyntax CompilationUnit(ModuleDecl? module, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<ImportDecl> imports, HtmlDecl? html, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
         {
 #if DEBUG
             if (endOfFileToken == null) throw new ArgumentNullException(nameof(endOfFileToken));
             if (endOfFileToken.Kind != SyntaxKind.EndOfFileToken) throw new ArgumentException(nameof(endOfFileToken));
 #endif
 
-            return new CompilationUnitSyntax(SyntaxKind.CompilationUnit, module, imports.Node, htmlNodes.Node, members.Node, endOfFileToken);
+            return new CompilationUnitSyntax(SyntaxKind.CompilationUnit, module, imports.Node, html, members.Node, endOfFileToken);
         }
 
         public static ImportDecl ImportDecl(SyntaxToken importKeyword, SyntaxToken? clrKeyword, NameEx name, SyntaxToken semicolonToken)
@@ -21804,6 +21940,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             => new Type[]
             {
                 typeof(ModuleDecl),
+                typeof(HtmlDecl),
                 typeof(CompilationUnitSyntax),
                 typeof(ImportDecl),
                 typeof(TypeDecl),

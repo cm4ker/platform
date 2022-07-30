@@ -153,7 +153,7 @@ namespace Aquila.CodeAnalysis
             {
                 if (p.Initializer != null)
                 {
-                    EnqueueExpression(p.Initializer, method.TypeRefContext);
+                    EnqueueExpression(p.Initializer);
                 }
             });
         }
@@ -161,14 +161,13 @@ namespace Aquila.CodeAnalysis
         /// <summary>
         /// Enqueues the standalone expression for analysis.
         /// </summary>
-        void EnqueueExpression(BoundExpression expression, TypeRefContext ctx)
+        void EnqueueExpression(BoundExpression expression)
         {
             Contract.ThrowIfNull(expression);
-            Contract.ThrowIfNull(ctx);
-
+            
             var dummy = new BoundBlock()
             {
-                FlowState = new FlowState(new FlowContext(ctx, null)),
+                FlowState = new FlowState(new FlowContext(null)),
             };
 
             dummy.Add(new BoundExpressionStmt(expression));

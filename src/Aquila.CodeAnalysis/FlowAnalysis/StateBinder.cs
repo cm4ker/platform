@@ -16,12 +16,11 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             Contract.ThrowIfNull(method);
 
             // get or create typeCtx
-            var typeCtx = method.TypeRefContext;
 
             if (flowCtx == null)
             {
                 // create FlowContext 
-                flowCtx = new FlowContext(typeCtx, method);
+                flowCtx = new FlowContext(method);
             }
 
             // create FlowState

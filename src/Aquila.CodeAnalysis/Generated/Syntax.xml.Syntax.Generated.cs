@@ -77,6 +77,47 @@ namespace Aquila.CodeAnalysis.Syntax
     /// <remarks>
     /// <para>This node is associated with the following syntax kinds:</para>
     /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.HtmlDecl"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class HtmlDecl : AquilaSyntaxNode
+    {
+        private SyntaxNode? htmlNodes;
+
+        internal HtmlDecl(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public SyntaxList<HtmlNodeSyntax> HtmlNodes => new SyntaxList<HtmlNodeSyntax>(GetRed(ref this.htmlNodes, 0));
+
+        internal override SyntaxNode? GetNodeSlot(int index) => index == 0 ? GetRedAtZero(ref this.htmlNodes)! : null;
+
+        internal override SyntaxNode? GetCachedSlot(int index) => index == 0 ? this.htmlNodes : null;
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlDecl(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitHtmlDecl(this);
+
+        public HtmlDecl Update(SyntaxList<HtmlNodeSyntax> htmlNodes)
+        {
+            if (htmlNodes != this.HtmlNodes)
+            {
+                var newNode = SyntaxFactory.HtmlDecl(htmlNodes);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public HtmlDecl WithHtmlNodes(SyntaxList<HtmlNodeSyntax> htmlNodes) => Update(htmlNodes);
+
+        public HtmlDecl AddHtmlNodes(params HtmlNodeSyntax[] items) => WithHtmlNodes(this.HtmlNodes.AddRange(items));
+    }
+
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
     /// <item><description><see cref="SyntaxKind.CompilationUnit"/></description></item>
     /// </list>
     /// </remarks>
@@ -84,7 +125,7 @@ namespace Aquila.CodeAnalysis.Syntax
     {
         private ModuleDecl? module;
         private SyntaxNode? imports;
-        private SyntaxNode? htmlNodes;
+        private HtmlDecl? html;
         private SyntaxNode? members;
 
         internal CompilationUnitSyntax(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
@@ -96,7 +137,7 @@ namespace Aquila.CodeAnalysis.Syntax
 
         public SyntaxList<ImportDecl> Imports => new SyntaxList<ImportDecl>(GetRed(ref this.imports, 1));
 
-        public SyntaxList<HtmlNodeSyntax> HtmlNodes => new SyntaxList<HtmlNodeSyntax>(GetRed(ref this.htmlNodes, 2));
+        public HtmlDecl? Html => GetRed(ref this.html, 2);
 
         public SyntaxList<MemberDecl> Members => new SyntaxList<MemberDecl>(GetRed(ref this.members, 3));
 
@@ -107,7 +148,7 @@ namespace Aquila.CodeAnalysis.Syntax
             {
                 0 => GetRedAtZero(ref this.module),
                 1 => GetRed(ref this.imports, 1)!,
-                2 => GetRed(ref this.htmlNodes, 2)!,
+                2 => GetRed(ref this.html, 2),
                 3 => GetRed(ref this.members, 3)!,
                 _ => null,
             };
@@ -117,7 +158,7 @@ namespace Aquila.CodeAnalysis.Syntax
             {
                 0 => this.module,
                 1 => this.imports,
-                2 => this.htmlNodes,
+                2 => this.html,
                 3 => this.members,
                 _ => null,
             };
@@ -125,11 +166,11 @@ namespace Aquila.CodeAnalysis.Syntax
         public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitCompilationUnit(this);
         public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitCompilationUnit(this);
 
-        public CompilationUnitSyntax Update(ModuleDecl? module, SyntaxList<ImportDecl> imports, SyntaxList<HtmlNodeSyntax> htmlNodes, SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
+        public CompilationUnitSyntax Update(ModuleDecl? module, SyntaxList<ImportDecl> imports, HtmlDecl? html, SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
         {
-            if (module != this.Module || imports != this.Imports || htmlNodes != this.HtmlNodes || members != this.Members || endOfFileToken != this.EndOfFileToken)
+            if (module != this.Module || imports != this.Imports || html != this.Html || members != this.Members || endOfFileToken != this.EndOfFileToken)
             {
-                var newNode = SyntaxFactory.CompilationUnit(module, imports, htmlNodes, members, endOfFileToken);
+                var newNode = SyntaxFactory.CompilationUnit(module, imports, html, members, endOfFileToken);
                 var annotations = GetAnnotations();
                 return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
             }
@@ -137,14 +178,18 @@ namespace Aquila.CodeAnalysis.Syntax
             return this;
         }
 
-        public CompilationUnitSyntax WithModule(ModuleDecl? module) => Update(module, this.Imports, this.HtmlNodes, this.Members, this.EndOfFileToken);
-        public CompilationUnitSyntax WithImports(SyntaxList<ImportDecl> imports) => Update(this.Module, imports, this.HtmlNodes, this.Members, this.EndOfFileToken);
-        public CompilationUnitSyntax WithHtmlNodes(SyntaxList<HtmlNodeSyntax> htmlNodes) => Update(this.Module, this.Imports, htmlNodes, this.Members, this.EndOfFileToken);
-        public CompilationUnitSyntax WithMembers(SyntaxList<MemberDecl> members) => Update(this.Module, this.Imports, this.HtmlNodes, members, this.EndOfFileToken);
-        public CompilationUnitSyntax WithEndOfFileToken(SyntaxToken endOfFileToken) => Update(this.Module, this.Imports, this.HtmlNodes, this.Members, endOfFileToken);
+        public CompilationUnitSyntax WithModule(ModuleDecl? module) => Update(module, this.Imports, this.Html, this.Members, this.EndOfFileToken);
+        public CompilationUnitSyntax WithImports(SyntaxList<ImportDecl> imports) => Update(this.Module, imports, this.Html, this.Members, this.EndOfFileToken);
+        public CompilationUnitSyntax WithHtml(HtmlDecl? html) => Update(this.Module, this.Imports, html, this.Members, this.EndOfFileToken);
+        public CompilationUnitSyntax WithMembers(SyntaxList<MemberDecl> members) => Update(this.Module, this.Imports, this.Html, members, this.EndOfFileToken);
+        public CompilationUnitSyntax WithEndOfFileToken(SyntaxToken endOfFileToken) => Update(this.Module, this.Imports, this.Html, this.Members, endOfFileToken);
 
         public CompilationUnitSyntax AddImports(params ImportDecl[] items) => WithImports(this.Imports.AddRange(items));
-        public CompilationUnitSyntax AddHtmlNodes(params HtmlNodeSyntax[] items) => WithHtmlNodes(this.HtmlNodes.AddRange(items));
+        public CompilationUnitSyntax AddHtmlHtmlNodes(params HtmlNodeSyntax[] items)
+        {
+            var html = this.Html ?? SyntaxFactory.HtmlDecl();
+            return WithHtml(html.WithHtmlNodes(html.HtmlNodes.AddRange(items)));
+        }
         public CompilationUnitSyntax AddMembers(params MemberDecl[] items) => WithMembers(this.Members.AddRange(items));
     }
 

@@ -570,15 +570,6 @@ namespace Aquila.CodeAnalysis
         }
 
         /// <summary>
-        /// Resolves <see cref="INamedTypeSymbol"/> best fitting given type mask.
-        /// </summary>
-        internal TypeSymbol GetTypeFromTypeRef(SourceMethodSymbol method)
-        {
-            Debug.Assert(method != null);
-            return this.GetTypeFromTypeRef(method.TypeRefContext);
-        }
-
-        /// <summary>
         /// Aquila has a different semantic of explicit conversions,
         /// try to resolve explicit conversion first.
         /// </summary>

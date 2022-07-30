@@ -19,6 +19,9 @@ namespace Aquila.CodeAnalysis
         /// <summary>Called when the visitor visits a ModuleDecl node.</summary>
         public virtual TResult? VisitModuleDecl(ModuleDecl node) => this.DefaultVisit(node);
 
+        /// <summary>Called when the visitor visits a HtmlDecl node.</summary>
+        public virtual TResult? VisitHtmlDecl(HtmlDecl node) => this.DefaultVisit(node);
+
         /// <summary>Called when the visitor visits a CompilationUnitSyntax node.</summary>
         public virtual TResult? VisitCompilationUnit(CompilationUnitSyntax node) => this.DefaultVisit(node);
 
@@ -381,6 +384,9 @@ namespace Aquila.CodeAnalysis
     {
         /// <summary>Called when the visitor visits a ModuleDecl node.</summary>
         public virtual void VisitModuleDecl(ModuleDecl node) => this.DefaultVisit(node);
+
+        /// <summary>Called when the visitor visits a HtmlDecl node.</summary>
+        public virtual void VisitHtmlDecl(HtmlDecl node) => this.DefaultVisit(node);
 
         /// <summary>Called when the visitor visits a CompilationUnitSyntax node.</summary>
         public virtual void VisitCompilationUnit(CompilationUnitSyntax node) => this.DefaultVisit(node);
@@ -745,8 +751,11 @@ namespace Aquila.CodeAnalysis
         public override SyntaxNode? VisitModuleDecl(ModuleDecl node)
             => node.Update(VisitToken(node.ModuleKeyword), (NameEx?)Visit(node.Name) ?? throw new ArgumentNullException("name"), VisitToken(node.SemicolonToken));
 
+        public override SyntaxNode? VisitHtmlDecl(HtmlDecl node)
+            => node.Update(VisitList(node.HtmlNodes));
+
         public override SyntaxNode? VisitCompilationUnit(CompilationUnitSyntax node)
-            => node.Update((ModuleDecl?)Visit(node.Module), VisitList(node.Imports), VisitList(node.HtmlNodes), VisitList(node.Members), VisitToken(node.EndOfFileToken));
+            => node.Update((ModuleDecl?)Visit(node.Module), VisitList(node.Imports), (HtmlDecl?)Visit(node.Html), VisitList(node.Members), VisitToken(node.EndOfFileToken));
 
         public override SyntaxNode? VisitImportDecl(ImportDecl node)
             => node.Update(VisitToken(node.ImportKeyword), VisitToken(node.ClrKeyword), (NameEx?)Visit(node.Name) ?? throw new ArgumentNullException("name"), VisitToken(node.SemicolonToken));
@@ -1118,20 +1127,30 @@ namespace Aquila.CodeAnalysis
         public static ModuleDecl ModuleDecl(NameEx name)
             => SyntaxFactory.ModuleDecl(SyntaxFactory.Token(SyntaxKind.ModuleKeyword), name, SyntaxFactory.Token(SyntaxKind.SemicolonToken));
 
+        /// <summary>Creates a new HtmlDecl instance.</summary>
+        public static HtmlDecl HtmlDecl(SyntaxList<HtmlNodeSyntax> htmlNodes)
+        {
+            return (HtmlDecl)Syntax.InternalSyntax.SyntaxFactory.HtmlDecl(htmlNodes.Node.ToGreenList<Syntax.InternalSyntax.HtmlNodeSyntax>()).CreateRed();
+        }
+
+        /// <summary>Creates a new HtmlDecl instance.</summary>
+        public static HtmlDecl HtmlDecl()
+            => SyntaxFactory.HtmlDecl(default);
+
         /// <summary>Creates a new CompilationUnitSyntax instance.</summary>
-        public static CompilationUnitSyntax CompilationUnit(ModuleDecl? module, SyntaxList<ImportDecl> imports, SyntaxList<HtmlNodeSyntax> htmlNodes, SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
+        public static CompilationUnitSyntax CompilationUnit(ModuleDecl? module, SyntaxList<ImportDecl> imports, HtmlDecl? html, SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
         {
             if (endOfFileToken.Kind() != SyntaxKind.EndOfFileToken) throw new ArgumentException(nameof(endOfFileToken));
-            return (CompilationUnitSyntax)Syntax.InternalSyntax.SyntaxFactory.CompilationUnit(module == null ? null : (Syntax.InternalSyntax.ModuleDecl)module.Green, imports.Node.ToGreenList<Syntax.InternalSyntax.ImportDecl>(), htmlNodes.Node.ToGreenList<Syntax.InternalSyntax.HtmlNodeSyntax>(), members.Node.ToGreenList<Syntax.InternalSyntax.MemberDecl>(), (Syntax.InternalSyntax.SyntaxToken)endOfFileToken.Node!).CreateRed();
+            return (CompilationUnitSyntax)Syntax.InternalSyntax.SyntaxFactory.CompilationUnit(module == null ? null : (Syntax.InternalSyntax.ModuleDecl)module.Green, imports.Node.ToGreenList<Syntax.InternalSyntax.ImportDecl>(), html == null ? null : (Syntax.InternalSyntax.HtmlDecl)html.Green, members.Node.ToGreenList<Syntax.InternalSyntax.MemberDecl>(), (Syntax.InternalSyntax.SyntaxToken)endOfFileToken.Node!).CreateRed();
         }
 
         /// <summary>Creates a new CompilationUnitSyntax instance.</summary>
-        public static CompilationUnitSyntax CompilationUnit(ModuleDecl? module, SyntaxList<ImportDecl> imports, SyntaxList<HtmlNodeSyntax> htmlNodes, SyntaxList<MemberDecl> members)
-            => SyntaxFactory.CompilationUnit(module, imports, htmlNodes, members, SyntaxFactory.Token(SyntaxKind.EndOfFileToken));
+        public static CompilationUnitSyntax CompilationUnit(ModuleDecl? module, SyntaxList<ImportDecl> imports, HtmlDecl? html, SyntaxList<MemberDecl> members)
+            => SyntaxFactory.CompilationUnit(module, imports, html, members, SyntaxFactory.Token(SyntaxKind.EndOfFileToken));
 
         /// <summary>Creates a new CompilationUnitSyntax instance.</summary>
-        public static CompilationUnitSyntax CompilationUnit(ModuleDecl? module = default)
-            => SyntaxFactory.CompilationUnit(module, default, default, default, SyntaxFactory.Token(SyntaxKind.EndOfFileToken));
+        public static CompilationUnitSyntax CompilationUnit()
+            => SyntaxFactory.CompilationUnit(default, default, default, default, SyntaxFactory.Token(SyntaxKind.EndOfFileToken));
 
         /// <summary>Creates a new ImportDecl instance.</summary>
         public static ImportDecl ImportDecl(SyntaxToken importKeyword, SyntaxToken clrKeyword, NameEx name, SyntaxToken semicolonToken)

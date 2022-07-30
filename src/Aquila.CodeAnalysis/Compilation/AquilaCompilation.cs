@@ -91,7 +91,7 @@ namespace Aquila.CodeAnalysis
 
         internal MetadataProvider MetadataProvider => _metadataProvider;
 
-        internal ImmutableArray<string> Views { get; set; } = new();
+        internal ImmutableArray<AquilaSyntaxTree> Views { get; set; } = new();
 
         private IEnumerable<ResourceDescription> SynthesizedResources = null;
 
@@ -187,7 +187,7 @@ namespace Aquila.CodeAnalysis
             SemanticModelProvider semanticModelProvider = null,
             IEnumerable<AquilaSyntaxTree> syntaxTrees = null,
             IEnumerable<EntityMetadata> metadata = null,
-            IEnumerable<string> view = null)
+            IEnumerable<AquilaSyntaxTree> view = null)
         {
             var compilation = new AquilaCompilation(
                 assemblyName ?? this.AssemblyName,
@@ -241,7 +241,7 @@ namespace Aquila.CodeAnalysis
         /// </summary>
         /// <param name="metadatas">The new metadata.</param>
         /// <returns>A new compilation.</returns>
-        public AquilaCompilation AddViews(IEnumerable<string> views)
+        public AquilaCompilation AddViews(IEnumerable<AquilaSyntaxTree> views)
         {
             return Update(
                 reuseReferenceManager: true,
@@ -340,7 +340,7 @@ namespace Aquila.CodeAnalysis
             string assemblyName,
             IEnumerable<AquilaSyntaxTree> syntaxTrees = null,
             IEnumerable<EntityMetadata> metadata = null,
-            IEnumerable<string> views = null,
+            IEnumerable<AquilaSyntaxTree> views = null,
             IEnumerable<MetadataReference> references = null,
             IEnumerable<ResourceDescription> resources = null,
             AquilaCompilationOptions options = null)

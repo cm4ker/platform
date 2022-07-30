@@ -11,13 +11,6 @@ namespace Aquila.CodeAnalysis.Symbols
     partial class SourceMethodSymbol
     {
         /// <summary>
-        /// Method <see cref="TypeRefContext"/> instance.
-        /// </summary>
-        internal TypeRefContext TypeRefContext => _typeCtx ?? (_typeCtx = CreateTypeRefContext());
-
-        TypeRefContext _typeCtx;
-
-        /// <summary>
         /// Method flags lazily collected during code analysis.
         /// </summary>
         internal MethodFlags Flags { get; set; }

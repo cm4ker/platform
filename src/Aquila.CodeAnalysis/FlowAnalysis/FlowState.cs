@@ -17,11 +17,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         public FlowContext FlowContext { get; }
 
         /// <summary>
-        /// Gets type context.
-        /// </summary>
-        public TypeRefContext TypeRefContext => FlowContext.TypeRefContext;
-
-        /// <summary>
         /// Source method.
         /// Can be <c>null</c>.
         /// </summary>

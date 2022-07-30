@@ -23,8 +23,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 
         AquilaCompilation DeclaringCompilation => _method.DeclaringCompilation;
 
-        TypeRefContext TypeCtx => _method.TypeRefContext;
-
         void CheckMissusedPrimitiveType(IBoundTypeRef tref)
         {
             if (tref.IsPrimitiveType)

@@ -263,17 +263,6 @@ namespace Aquila.CodeAnalysis.CodeGen
         /// </summary>
         internal MethodSymbol DebugMethod { get; set; }
 
-        /// <summary>
-        /// Type context of currently emitted expressions. Can be <c>null</c>.
-        /// </summary>
-        internal TypeRefContext TypeRefContext
-        {
-            get => _typeRefContext ?? this.Method?.TypeRefContext;
-            set => _typeRefContext = value;
-        }
-
-        TypeRefContext _typeRefContext;
-
         public DiagnosticBag Diagnostics => _diagnostics;
 
         /// <summary>

@@ -207,9 +207,38 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             Debug.Assert(_breakTargets == null || _breakTargets.Count == 0);
         }
 
+        private BuilderVisitor(IReadOnlyList<HtmlNodeSyntax> nodes, Binder binder)
+        {
+            Contract.ThrowIfNull(nodes);
+            Contract.ThrowIfNull(binder);
+
+            _binder = binder;
+
+            this.Start = WithNewOrdinal(new StartBlock());
+            this.Exit = new ExitBlock();
+
+            _current = WithOpenScope(this.Start);
+
+            nodes.ForEach(this.Visit);
+            FinalizeMethod();
+            _current = Connect(_current, this.Exit);
+
+            WithNewOrdinal(this.Exit);
+            CloseScope();
+
+            Debug.Assert(_scopes.Count == 0);
+            Debug.Assert(_tryTargets == null || _tryTargets.Count == 0);
+            Debug.Assert(_breakTargets == null || _breakTargets.Count == 0);
+        }
+
         public static BuilderVisitor Build(IList<StmtSyntax> statements, Binder binder)
         {
             return new BuilderVisitor(statements, binder);
+        }
+
+        public static BuilderVisitor Build(IReadOnlyList<HtmlNodeSyntax> nodes, Binder binder)
+        {
+            return new BuilderVisitor(nodes, binder);
         }
 
         #endregion
@@ -801,5 +830,31 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         }
 
         #endregion
+
+        #region Html
+
+        /*
+         We need transform html 
+         */
+
+        public override void VisitHtmlEmptyElement(HtmlEmptyElementSyntax node)
+        {
+            base.VisitHtmlEmptyElement(node);
+        }
+
+        #endregion
+    }
+
+
+    internal class HtmlBoundStatementsBuilder
+    {
+        public HtmlBoundStatementsBuilder()
+        {
+        }
+
+        BoundStatement CreateStatement()
+        {
+            return null;
+        }
     }
 }

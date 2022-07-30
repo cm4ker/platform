@@ -145,6 +145,11 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         {
         }
 
+        internal ControlFlowGraph(IReadOnlyList<HtmlNodeSyntax> nodes, Binder binder)
+            : this(BuilderVisitor.Build(nodes, binder))
+        {
+        }
+        
         private ControlFlowGraph(BuilderVisitor builder)
             : this(builder.Start, builder.Exit, builder.Declarations, /*builder.Exception*/null, builder.Labels,
                 builder.DeadBlocks)

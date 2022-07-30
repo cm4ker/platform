@@ -31,7 +31,6 @@ namespace Aquila.LanguageServer
 
         private int _position;
 
-        private TypeRefContext _tctx;
         private SymbolStat _result;
 
         AquilaCompilation DeclaringCompilation { get; set; }
@@ -49,12 +48,6 @@ namespace Aquila.LanguageServer
             };
             visitor.VisitCFG(cfg);
             return visitor._result;
-        }
-
-        protected override void VisitCFGInternal(ControlFlowGraph x)
-        {
-            _tctx = x.FlowContext?.TypeRefContext;
-            base.VisitCFGInternal(x);
         }
 
         protected override void DefaultVisitUnexploredBlock(BoundBlock x)

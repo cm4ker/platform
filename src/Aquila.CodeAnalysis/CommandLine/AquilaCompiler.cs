@@ -78,9 +78,8 @@ namespace Aquila.CodeAnalysis.CommandLine
             var viewFiles = Arguments.ViewFiles;
 
             IEnumerable<AquilaSyntaxTree> sourceTrees;
-
             IEnumerable<EntityMetadata> metadata;
-            IEnumerable<string> views;
+            IEnumerable<AquilaSyntaxTree> viewTrees;
 
             var resources = Enumerable.Empty<ResourceDescription>();
 
@@ -159,34 +158,48 @@ namespace Aquila.CodeAnalysis.CommandLine
 
             using (Arguments.CompilationOptions.EventSources.StartMetric("parse-view"))
             {
-                var viewList = new string[viewFiles.Length];
-
                 var d = new DeserializerBuilder()
                     .IgnoreUnmatchedProperties()
                     .Build();
 
+                var parseOptions = Arguments.ParseOptions;
+
                 var diagnosticInfos = new List<DiagnosticInfo>();
+
+                var views = new AquilaSyntaxTree[viewFiles.Length];
+
+                void ProcessParsedSource(int index, ParsedSource parsed)
+                {
+                    views[index] = parsed.SyntaxTree;
+                }
+
+                // We compute script parse options once so we don't have to do it repeatedly in
+                // case there are many script files.
+                var scriptParseOptions = parseOptions.WithKind(SourceCodeKind.Script);
 
                 if (Arguments.CompilationOptions.ConcurrentBuild)
                 {
                     Parallel.For(0, viewFiles.Length,
                         i =>
                         {
-                            TryReadFileContent(viewFiles[i], diagnosticInfos, out string content);
-                            viewList[i] = content;
+                            ProcessParsedSource(i,
+                                ParseFile(consoleOutput, parseOptions, scriptParseOptions, ref hadErrors, viewFiles[i],
+                                    errorLogger));
                         });
                 }
                 else
                 {
                     for (int i = 0; i < viewFiles.Length; i++)
                     {
-                        TryReadFileContent(viewFiles[i], diagnosticInfos, out string content);
-                        viewList[i] = content;
+                        ProcessParsedSource(i,
+                            ParseFile(consoleOutput, parseOptions, scriptParseOptions, ref hadErrors, viewFiles[i],
+                                errorLogger));
                     }
                 }
 
+                viewTrees = views;
+
                 hadErrors = diagnosticInfos.Any();
-                views = viewList;
             }
 
             // If errors had been reported in ParseFile, while trying to read files, then we should simply exit.
@@ -220,7 +233,7 @@ namespace Aquila.CodeAnalysis.CommandLine
                 Arguments.CompilationName,
                 syntaxTrees: sourceTrees.WhereNotNull(),
                 metadata: metadata,
-                views: views,
+                views: viewTrees,
                 resolvedReferences,
                 resources: resources,
                 options: Arguments.CompilationOptions.WithMetadataReferenceResolver(referenceResolver)

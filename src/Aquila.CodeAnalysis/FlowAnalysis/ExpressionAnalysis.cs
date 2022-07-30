@@ -36,11 +36,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// </summary>
         protected SourceMethodSymbol Method => State.Method;
 
-        /// <summary>
-        /// Gets current type context for type masks resolving.
-        /// </summary>
-        internal TypeRefContext TypeCtx => State.TypeRefContext;
-
         protected AquilaCompilation DeclaringCompilation => _model.Compilation;
 
         #endregion
@@ -63,7 +58,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Gets current visibility scope.
         /// </summary>
-        protected OverloadsList.VisibilityScope VisibilityScope => new((NamedTypeSymbol)TypeCtx.SelfType, Method);
+        protected OverloadsList.VisibilityScope VisibilityScope => new(Method.ContainingType, Method);
 
         protected void PingSubscribers(ExitBlock exit)
         {

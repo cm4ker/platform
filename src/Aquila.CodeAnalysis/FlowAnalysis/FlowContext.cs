@@ -101,11 +101,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         #region Construction
 
-        internal FlowContext(TypeRefContext typeCtx, SourceMethodSymbol method)
+        internal FlowContext(SourceMethodSymbol method)
         {
-            Contract.ThrowIfNull(typeCtx);
-
-            _typeCtx = typeCtx;
             _method = method;
 
             //

@@ -31,12 +31,16 @@
             </PropertyComment>
         </Field>
     </Node>
+    <Node Name="HtmlDecl" Base="AquilaSyntaxNode">
+        <Kind Name="HtmlDecl"/>
+        <Field Name="HtmlNodes" Type="SyntaxList&lt;HtmlNodeSyntax&gt;"/>
+    </Node>
     <Node Name="CompilationUnitSyntax" Base="AquilaSyntaxNode">
         <Kind Name="CompilationUnit"/>
         <Field Name="Module" Type="ModuleDecl" Optional="true"/>
 
         <Field Name="Imports" Type="SyntaxList&lt;ImportDecl&gt;"/>
-        <Field Name="HtmlNodes" Type="SyntaxList&lt;HtmlNodeSyntax&gt;"/>
+        <Field Name="Html" Type="HtmlDecl" Optional="true" />
         <Field Name="Members" Type="SyntaxList&lt;MemberDecl&gt;"/>
         
         <!--        <Field Name="Methods" Type="SyntaxList&lt;MethodDecl&gt;"/>-->

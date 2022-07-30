@@ -24,7 +24,5 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             _thisType = thisType;
             _type = type;
         }
-
-        internal TypeSymbol SelfType => _thisType;
     }
 }

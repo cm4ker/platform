@@ -21,12 +21,12 @@ internal class ComponentBaseGenerator
     private readonly CoreTypes _ct;
     private readonly AquilaCompilation _compilation;
     private readonly PEModuleBuilder _m;
-    private readonly string _content;
+    private readonly AquilaSyntaxTree _syntaxTree;
 
-    public ComponentBaseGenerator(PEModuleBuilder builder, string content)
+    public ComponentBaseGenerator(PEModuleBuilder builder, AquilaSyntaxTree syntaxTree)
     {
         _m = builder;
-        _content = content;
+        _syntaxTree = syntaxTree;
         _mrg = builder.SynthesizedManager;
         _webNs = _mrg.SynthesizeNamespace(builder.SourceModule.GlobalNamespace, "Web");
         _ct = builder.Compilation.CoreTypes;
@@ -55,9 +55,10 @@ internal class ComponentBaseGenerator
             {
                 var builderArg = new ParamPlace(renderMethod.Parameters.First());
                 var v = new Visitor(type, _ct, builderArg, m, d, il);
-                v.AddMarkupContent(_content);
+                //v.AddMarkupContent(_syntaxTree);
                 il.EmitRet(true);
             });
+
         var ctor = _mrg.SynthesizeConstructor(type)
             .SetMethodBuilder((m, d) => il =>
             {

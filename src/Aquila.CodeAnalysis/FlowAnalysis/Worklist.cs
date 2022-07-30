@@ -257,7 +257,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         int Dequeue(T[] todoBlocks)
         {
             // Helper data structures to enable adding only one block per method to a batch
-            var todoContexts = new HashSet<TypeRefContext>();
+            var todoContexts = new HashSet<NamedTypeSymbol>();
             List<T> delayedBlocks = null;
 
             // Insert the blocks with the highest priority to the batch while having at most one block
@@ -266,7 +266,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             while (n < todoBlocks.Length && _queue.TryDequeue(out T block))
                 //TODO: TryDequeue() with a predicate so we won't have to maintain {delayedBlocks}
             {
-                var typeCtx = block.FlowState?.FlowContext?.TypeRefContext;
+                var typeCtx = block.FlowState?.Method.ContainingType;
 
                 if (todoContexts.Add(typeCtx))
                 {

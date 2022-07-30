@@ -238,6 +238,13 @@ internal partial class LanguageParser
         }
     }
 
+    private HtmlDecl ParseHtmlDecl()
+    {
+        var nodes = _pool.Allocate<HtmlNodeSyntax>();
+        ParseHtmlContent(nodes);
+        return _syntaxFactory.HtmlDecl(_pool.ToListAndFree(nodes));
+    }
+
     private void ParseHtmlContent(SyntaxListBuilder<HtmlNodeSyntax> contentNodes)
     {
         while (true)

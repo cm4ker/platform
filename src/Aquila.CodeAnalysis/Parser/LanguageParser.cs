@@ -153,20 +153,18 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
             public SyntaxListBuilder<ImportDecl> Imports;
             public SyntaxListBuilder<MemberDecl> Members;
-            public SyntaxListBuilder<HtmlNodeSyntax> HtmlNodes;
+            public HtmlDecl HtmlDecl = null;
 
             public FileBody(SyntaxListPool pool)
             {
                 Imports = pool.Allocate<ImportDecl>();
                 Members = pool.Allocate<MemberDecl>();
-                HtmlNodes = pool.Allocate<HtmlNodeSyntax>();
             }
 
             internal void Free(SyntaxListPool pool)
             {
                 pool.Free(Imports);
                 pool.Free(Members);
-                pool.Free(HtmlNodes);
             }
         }
 
@@ -177,7 +175,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 () => SyntaxFactory.CompilationUnit(
                     null,
                     new SyntaxList<ImportDecl>(),
-                    new SyntaxList<HtmlNodeSyntax>(),
+                    null,
                     new SyntaxList<MemberDecl>(),
                     SyntaxFactory.Token(SyntaxKind.EndOfFileToken)));
         }
@@ -193,7 +191,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
                 var eof = this.EatToken(SyntaxKind.EndOfFileToken);
                 var result =
-                    _syntaxFactory.CompilationUnit(body.ModuleDecl, body.Imports, body.HtmlNodes, body.Members, eof);
+                    _syntaxFactory.CompilationUnit(body.ModuleDecl, body.Imports, body.HtmlDecl, body.Members, eof);
 
                 if (initialBadNodes != null)
                 {
@@ -366,7 +364,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                         case SyntaxKind.LessThanToken:
                             //Possible start web view
                             using (EnterMode(LexerMode.SyntaxView))
-                                ParseHtmlContent(body.HtmlNodes);
+                                body.HtmlDecl = ParseHtmlDecl();
                             break;
                         case SyntaxKind.EndOfFileToken:
                             // This token marks the end of a namespace body
