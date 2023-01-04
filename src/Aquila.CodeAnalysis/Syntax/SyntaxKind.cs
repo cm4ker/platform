@@ -1089,6 +1089,7 @@ namespace Aquila.CodeAnalysis
         FieldDecl,
         FuncDecl,
         ModuleDecl,
+        HtmlDecl,
 
         IdentifierEx,
         NamedTypeEx,
@@ -1099,7 +1100,6 @@ namespace Aquila.CodeAnalysis
         AllocExpression,
 
         #region Html
-
         HtmlExpression,
         HtmlStatement,
         HtmlCode,

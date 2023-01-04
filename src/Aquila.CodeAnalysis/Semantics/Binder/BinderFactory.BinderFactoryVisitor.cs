@@ -138,12 +138,12 @@ namespace Aquila.CodeAnalysis.Semantics
 
                     var methods = container.GetMembers(fd.Identifier.Text).OfType<SourceMethodSymbol>();
 
-                    SourceMethodSymbol candidate = null;
+                    MethodSymbol candidate = null;
 
-                    if (methods.Count() == 0)
+                    if (!methods.Any())
                     {
-                        //candidate = new MissingMethodSymbol(fd.Identifier.Text);
-                        //return next;
+                        candidate = new MissingMethodSymbol(name: fd.Identifier.Text);
+                        return next;
                     }
                     else
                         //TODO: resolution overloads

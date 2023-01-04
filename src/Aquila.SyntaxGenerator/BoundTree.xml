@@ -30,7 +30,6 @@
         </Arguments>
     </Syntax>
 
-
     <Syntax Name="GlobalConstDeclStmt" Base="Statement" OperationKind="VariableDeclaration">
         <Arguments>
             <Single Name="Name" Type="QualifiedName" IsUpdatable="true"/>
@@ -51,6 +50,26 @@
             <Single Name="Item" Type="BoundReferenceEx" IsUpdatable="true"/>
             <Single Name="Collection" Type="BoundExpression" IsUpdatable="true"/>
             <Single Name="BoundInfo" Type="ForeachBindInfo" IsUpdatable="false"/>
+        </Arguments>
+    </Syntax>
+    
+    <Syntax Name="HtmlMarkupStmt" Base="Statement" OperationKind="None">
+        <Arguments>
+            <Single Name="Markup" Type="string" IsUpdatable="true"/>
+        </Arguments>    
+    </Syntax>
+
+    <Syntax Name="HtmlOpenElementStmt" Base="Statement" OperationKind="None">
+        <Arguments>
+            <Single Name="ElementName" Type="string" IsUpdatable="true"/>
+        </Arguments>
+    </Syntax>
+
+    <Syntax Name="HtmlCloseElementStmt" Base="Statement" OperationKind="None" />
+    <Syntax Name="HtmlAddAttributeStmt" Base="Statement" OperationKind="None">
+        <Arguments>
+            <Single Name="AttributeName" Type="string" IsUpdatable="true"/>
+            <Single Name="Expression" Type="BoundExpression" IsUpdatable="true"/>
         </Arguments>
     </Syntax>
     <!-- endregion -->

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Syntax;
+using Aquila.Syntax.Ast;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
@@ -833,13 +834,40 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #region Html
 
-        /*
-         We need transform html 
-         */
-
         public override void VisitHtmlEmptyElement(HtmlEmptyElementSyntax node)
         {
+            Add(new BoundHtmlOpenElementStmt(node.Name.TagName.Text));
+            node.Attributes.ForEach(Visit);
             base.VisitHtmlEmptyElement(node);
+            Add(new BoundHtmlCloseElementStmt());
+        }
+        
+        public override void VisitHtmlElement(HtmlElementSyntax node)
+        {
+            Add(new BoundHtmlOpenElementStmt(node.StartTag.Name.TagName.Text));
+            node.StartTag.Attributes.ForEach(Visit);
+            node.Content.ForEach(Visit);
+            Add(new BoundHtmlCloseElementStmt());
+        }
+
+        public override void VisitHtmlAttribute(HtmlAttributeSyntax node)
+        {
+            BoundExpression main = null;
+            var stringType = _binder.Compilation.CoreTypes.String.Symbol;
+            
+            foreach (var attributeItem in node.Nodes)
+            {
+                BoundExpression expression = attributeItem switch
+                {
+                    HtmlTextSyntax t => new BoundLiteral(t.Text.Text, stringType),
+                    HtmlExpressionSyntax ex => _binder.BindExpression(ex.Expression, BoundAccess.Read),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
+                main = main == null ? expression : new BoundBinaryEx(main, expression, Operations.Add, stringType);
+            }
+            
+            Add(new BoundHtmlAddAttributeStmt(node.Name.TagName.Text, main));
         }
 
         #endregion

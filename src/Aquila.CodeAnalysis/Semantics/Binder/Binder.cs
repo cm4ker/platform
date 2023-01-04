@@ -141,11 +141,16 @@ namespace Aquila.CodeAnalysis.Semantics
     internal class InMethodBinder : Binder
     {
         private readonly SourceMethodSymbol _method;
-        private LocalsTable _locals;
 
-        public InMethodBinder(SourceMethodSymbol method, Binder next) : base(next)
+        public InMethodBinder(MethodSymbol method, Binder next) : base(next)
         {
-            _method = method ?? throw new ArgumentNullException(nameof(method));
+            if(method is null)
+                throw new ArgumentNullException(nameof(method));
+            
+            if (method is not SourceMethodSymbol m)
+                throw new ArgumentException($@"The method must be {nameof(SourceMethodSymbol)} type", nameof(method));
+            
+            _method = m;
         }
 
         public override SourceMethodSymbol Method => _method;
@@ -535,75 +540,6 @@ namespace Aquila.CodeAnalysis.Semantics
                 }
 
             return new BoundAllocEx(type, inits, type);
-
-            // //we need parameterless constructor 
-            // var ctor = type.InstanceConstructors.FirstOrDefault(x => x.ParameterCount == 0);
-            //
-            // if (ctor == null)
-            //     throw new Exception("Parameterless constructor not found");
-            //
-            // var boundNewEx = new BoundNewEx(ctor, type, ImmutableArray<BoundArgument>.Empty,
-            //     ImmutableArray<ITypeSymbol>.Empty, type);
-            //
-            // if (!ex.Initializer.Expressions.Any())
-            // {
-            //     //we just create new type
-            //     return boundNewEx;
-            // }
-            //
-            // var instance = new BoundTemporalVariableRef(new BoundVariableName(NextTmpVariableName(), type), type);
-            // var tmpVar = Locals.BindTemporalVariable(instance.Name.NameValue, type);
-            //
-            // var firstAssign = new BoundAssignEx(instance, boundNewEx.WithAccess(BoundAccess.Read));
-            //
-            // var kind = ex.Initializer.Kind();
-            //
-            // switch (kind)
-            // {
-            //     case SyntaxKind.ObjectInitializerExpression:
-            //         var list = new List<BoundAssignEx>();
-            //         list.Add(firstAssign);
-            //
-            //         foreach (var iex in ex.Initializer.Expressions)
-            //         {
-            //             var ae = iex as AssignEx;
-            //
-            //             var left = (ae.Left as IdentifierEx);
-            //             var right = BindExpression(ae.Right);
-            //
-            //             var mems = type.GetMembers(left.Identifier.Text)
-            //                 .Where(x => !x.IsStatic && (x.Kind & (SymbolKind.Field | SymbolKind.Property)) > 0)
-            //                 .ToImmutableArray();
-            //             if (mems.Length > 1)
-            //             {
-            //                 //ambiguity
-            //             }
-            //             else if (mems.Length == 1)
-            //             {
-            //                 var item = mems[0];
-            //
-            //                 BoundReferenceEx target = item.Kind switch
-            //                 {
-            //                     SymbolKind.Field => new BoundFieldRef((IFieldSymbol)item, instance),
-            //                     SymbolKind.Property => new BoundPropertyRef((IPropertySymbol)item, instance),
-            //                     _ => throw new NotImplementedException("this symbol kind is not implemented")
-            //                 };
-            //
-            //                 list.Add(new BoundAssignEx(target.WithAccess(BoundAccess.Write),
-            //                     right.WithAccess(BoundAccess.Read)));
-            //             }
-            //         }
-            //
-            //         return new BoundMultiAssignEx(instance, list);
-            //
-            //         break;
-            //     case SyntaxKind.CollectionInitializerExpression:
-            //     case SyntaxKind.ArrayInitializerExpression:
-            //         throw new NotImplementedException();
-            //         break;
-            // }
-            //
-            // return null;
         }
 
         private BoundExpression BindMatchEx(MatchEx me)
@@ -717,49 +653,6 @@ namespace Aquila.CodeAnalysis.Semantics
 
             return new BoundLiteral(cv.Value, type);
         }
-
-        // protected BoundExpression BindLiteral(LiteralEx expr)
-        // {
-        //     var op = ToOp(expr.Kind());
-        //
-        //     switch (op)
-        //     {
-        //         case Operations.IntLiteral:
-        //         case Operations.StringLiteral:
-        //         case Operations.DoubleLiteral:
-        //         case Operations.NullLiteral:
-        //         case Operations.BinaryStringLiteral:
-        //         case Operations.BoolLiteral:
-        //             return new BoundLiteral(expr.ObjectiveValue, GetSymbolFromLiteralOperation(op));
-        //
-        //         case Operations.QueryLiteral:
-        //
-        //             var query = (string)expr.ObjectiveValue;
-        //             var element = QLang.Parse(query, DeclaringCompilation.MetadataCollection);
-        //
-        //             var vars = element.Find<QVar>().ToArray();
-        //
-        //             foreach (var @var in vars)
-        //             {
-        //                 var bVar = BindVariableName(@var.Name, null);
-        //                 var vType = bVar.Type;
-        //                 var smType = MetadataTypeProvider.Resolve(DeclaringCompilation, vType);
-        //
-        //                 @var.BindType(smType);
-        //             }
-        //
-        //             //var transforms into parameter
-        //
-        //
-        //             //TODO: Add errors to the DiagnosticBug if we catch error
-        //             //DeclaringCompilation.GetDiagnostics()
-        //
-        //             return new BoundLiteral(expr.ObjectiveValue, GetSymbolFromLiteralOperation(expr.Operation));
-        //
-        //         default:
-        //             throw new NotImplementedException();
-        //     }
-        // }
 
         protected ITypeSymbol GetSymbolFromLiteralOperation(Operations op)
         {
@@ -908,16 +801,6 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             var operandAccess = BoundAccess.Read;
 
-            switch (expr.Kind())
-            {
-                // case SyntaxKind.:
-                //     operandAccess = access; // TODO: | Quiet
-                //     break;
-                // case Operations.UnsetCast:
-                //     operandAccess = BoundAccess.None;
-                //     break;
-            }
-
             var boundOperation = BindExpression(expr.Operand, operandAccess);
 
             switch (expr.Kind())
@@ -934,20 +817,8 @@ namespace Aquila.CodeAnalysis.Semantics
                 case SyntaxKind.FloatKeyword:
                     return new BoundConversionEx(boundOperation, PrimitiveBoundTypeRefs.DoubleTypeRef, null);
 
-                // case Operations.UnicodeCast:
-                //     return new BoundConversionEx(boundOperation, PrimitiveBoundTypeRefs.StringTypeRef, null);
-
                 case SyntaxKind.StringKeyword:
-
-                    // // workaround (binary) is parsed as (StringCast)
-                    // if (expr.ContainingSourceUnit.GetSourceCode(expr.Span).StartsWith("(binary)"))
-                    // {
-                    //     goto case Operations.BinaryCast;
-                    // }
-
-                    return
-                        new BoundConversionEx(boundOperation,
-                            PrimitiveBoundTypeRefs.StringTypeRef, null);
+                    return new BoundConversionEx(boundOperation, PrimitiveBoundTypeRefs.StringTypeRef, null);
 
                 default:
                     return new BoundUnaryEx(BindExpression(expr.Operand, operandAccess), ToOp(expr.Kind()), null);
@@ -981,12 +852,6 @@ namespace Aquila.CodeAnalysis.Semantics
             BoundExpression value;
 
             value = BindExpression(expr.Right, BoundAccess.Read);
-
-            // if (expr.Operation == Operations.AssignValue && !(target is BoundListEx))
-            // {
-            //     value = BindCopyValue(value);
-            // }
-
 
             var op = ToOp(expr.Kind());
 

@@ -41,7 +41,17 @@ public partial class SourceParserTest
    {
       var tp = new TreePrinter(_output);
 
-      var graph = AquilaSyntaxTree.ParseText(@"<t a=""@(1+1)"" c=""test""></t>");
+      var graph = AquilaSyntaxTree.ParseText(@"<t a=""@(1+1)"" c=""test @a""></t>");
+
+      tp.Visit(graph.GetRoot());
+   }
+   
+   [Fact]
+   public void ParseWebAttributeWithJsonInsideTest()
+   {
+      var tp = new TreePrinter(_output);
+
+      var graph = AquilaSyntaxTree.ParseText(@"<t a=""{test: 'abc' }""></t>");
 
       tp.Visit(graph.GetRoot());
    }
@@ -64,6 +74,17 @@ public partial class SourceParserTest
 
 
       var graph = AquilaSyntaxTree.ParseText(@"<h1 attribute />");
+      tp.Visit(graph.GetRoot());
+   }
+   
+      
+   [Fact]
+   public void ParseInnerHtmlText()
+   {
+      var tp = new TreePrinter(_output);
+
+
+      var graph = AquilaSyntaxTree.ParseText(@"<div><br /></div>");
       tp.Visit(graph.GetRoot());
    }
 }

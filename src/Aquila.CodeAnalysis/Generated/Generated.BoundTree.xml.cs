@@ -21,6 +21,10 @@ public enum BoundKind
     StaticVarStmt,
     YieldStmt,
     ForEachStmt,
+    HtmlMarkupStmt,
+    HtmlOpenElementStmt,
+    HtmlCloseElementStmt,
+    HtmlAddAttributeStmt,
     ArrayEx,
     AssignEx,
     CompoundAssignEx,
@@ -576,6 +580,199 @@ namespace Aquila.CodeAnalysis.Semantics
             if (_item == item && _collection == collection)
                 return this;
             return new BoundForEachStmt(item, collection, this.BoundInfo).WithSyntax(this.AquilaSyntax);
+        }
+    }
+}
+
+namespace Aquila.CodeAnalysis.Semantics
+{
+    partial class BoundHtmlMarkupStmt : BoundStatement
+    {
+        private string _markup;
+        public BoundHtmlMarkupStmt(string markup)
+        {
+            _markup = markup;
+            OnCreateImpl(markup);
+        }
+
+        partial void OnCreateImpl(string markup);
+        public string Markup
+        {
+            get
+            {
+                return _markup;
+            }
+        }
+
+        public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.HtmlMarkupStmt;
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
+        partial void AcceptImpl(OperationVisitor visitor);
+        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
+        {
+            TRes res = default;
+            AcceptImpl(visitor, argument, ref res);
+            return res;
+        }
+
+        public override void Accept(OperationVisitor visitor)
+        {
+            AcceptImpl(visitor);
+        }
+
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        {
+            return visitor.VisitHtmlMarkupStmt(this);
+        }
+
+        public BoundHtmlMarkupStmt Update(string markup)
+        {
+            if (_markup == markup)
+                return this;
+            return new BoundHtmlMarkupStmt(markup).WithSyntax(this.AquilaSyntax);
+        }
+    }
+}
+
+namespace Aquila.CodeAnalysis.Semantics
+{
+    partial class BoundHtmlOpenElementStmt : BoundStatement
+    {
+        private string _elementName;
+        public BoundHtmlOpenElementStmt(string elementName)
+        {
+            _elementName = elementName;
+            OnCreateImpl(elementName);
+        }
+
+        partial void OnCreateImpl(string elementName);
+        public string ElementName
+        {
+            get
+            {
+                return _elementName;
+            }
+        }
+
+        public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.HtmlOpenElementStmt;
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
+        partial void AcceptImpl(OperationVisitor visitor);
+        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
+        {
+            TRes res = default;
+            AcceptImpl(visitor, argument, ref res);
+            return res;
+        }
+
+        public override void Accept(OperationVisitor visitor)
+        {
+            AcceptImpl(visitor);
+        }
+
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        {
+            return visitor.VisitHtmlOpenElementStmt(this);
+        }
+
+        public BoundHtmlOpenElementStmt Update(string elementName)
+        {
+            if (_elementName == elementName)
+                return this;
+            return new BoundHtmlOpenElementStmt(elementName).WithSyntax(this.AquilaSyntax);
+        }
+    }
+}
+
+namespace Aquila.CodeAnalysis.Semantics
+{
+    partial class BoundHtmlCloseElementStmt : BoundStatement
+    {
+        public BoundHtmlCloseElementStmt()
+        {
+            OnCreateImpl();
+        }
+
+        partial void OnCreateImpl();
+        public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.HtmlCloseElementStmt;
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
+        partial void AcceptImpl(OperationVisitor visitor);
+        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
+        {
+            TRes res = default;
+            AcceptImpl(visitor, argument, ref res);
+            return res;
+        }
+
+        public override void Accept(OperationVisitor visitor)
+        {
+            AcceptImpl(visitor);
+        }
+
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        {
+            return visitor.VisitHtmlCloseElementStmt(this);
+        }
+    }
+}
+
+namespace Aquila.CodeAnalysis.Semantics
+{
+    partial class BoundHtmlAddAttributeStmt : BoundStatement
+    {
+        private string _attributeName;
+        private BoundExpression _expression;
+        public BoundHtmlAddAttributeStmt(string attributeName, BoundExpression expression)
+        {
+            _attributeName = attributeName;
+            _expression = expression;
+            OnCreateImpl(attributeName, expression);
+        }
+
+        partial void OnCreateImpl(string attributeName, BoundExpression expression);
+        public string AttributeName
+        {
+            get
+            {
+                return _attributeName;
+            }
+        }
+
+        public BoundExpression Expression
+        {
+            get
+            {
+                return _expression;
+            }
+        }
+
+        public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.HtmlAddAttributeStmt;
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
+        partial void AcceptImpl(OperationVisitor visitor);
+        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
+        {
+            TRes res = default;
+            AcceptImpl(visitor, argument, ref res);
+            return res;
+        }
+
+        public override void Accept(OperationVisitor visitor)
+        {
+            AcceptImpl(visitor);
+        }
+
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        {
+            return visitor.VisitHtmlAddAttributeStmt(this);
+        }
+
+        public BoundHtmlAddAttributeStmt Update(string attributeName, BoundExpression expression)
+        {
+            if (_attributeName == attributeName && _expression == expression)
+                return this;
+            return new BoundHtmlAddAttributeStmt(attributeName, expression).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -2806,6 +3003,10 @@ namespace Aquila.CodeAnalysis.Semantics
         public virtual TResult VisitStaticVarStmt(BoundStaticVarStmt x) => VisitDefault(x);
         public virtual TResult VisitYieldStmt(BoundYieldStmt x) => VisitDefault(x);
         public virtual TResult VisitForEachStmt(BoundForEachStmt x) => VisitDefault(x);
+        public virtual TResult VisitHtmlMarkupStmt(BoundHtmlMarkupStmt x) => VisitDefault(x);
+        public virtual TResult VisitHtmlOpenElementStmt(BoundHtmlOpenElementStmt x) => VisitDefault(x);
+        public virtual TResult VisitHtmlCloseElementStmt(BoundHtmlCloseElementStmt x) => VisitDefault(x);
+        public virtual TResult VisitHtmlAddAttributeStmt(BoundHtmlAddAttributeStmt x) => VisitDefault(x);
         public virtual TResult VisitExpression(BoundExpression x) => VisitDefault(x);
         public virtual TResult VisitArrayEx(BoundArrayEx x) => VisitDefault(x);
         public virtual TResult VisitAssignEx(BoundAssignEx x) => VisitDefault(x);

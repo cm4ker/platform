@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection.Emit;
 using System.Reflection.Metadata;
 using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Emit;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Attributes;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
+using Aquila.CodeAnalysis.Syntax.InternalSyntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
-using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Web;
 
@@ -77,10 +76,11 @@ internal class ComponentBaseGenerator
 
     public void AddMarkupContent()
     {
+        
     }
 }
 
-internal class Visitor
+internal class Visitor : AquilaSyntaxVisitor
 {
     private readonly TypeSymbol _componentType;
     private readonly CoreTypes _ct;
