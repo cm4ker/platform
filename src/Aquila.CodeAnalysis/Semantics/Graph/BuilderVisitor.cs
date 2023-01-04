@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Syntax;
 using Aquila.Syntax.Ast;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
 namespace Aquila.CodeAnalysis.Semantics.Graph
@@ -37,9 +35,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         public List<BoundStatement> _declarations;
 
         public BoundBlock Start { get; private set; }
-
         public BoundBlock Exit { get; private set; }
-        //public BoundBlock Exception { get; private set; }
 
         /// <summary>
         /// Gets labels defined within the method.
@@ -57,13 +53,9 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// Blocks we know nothing is pointing to (right after jump, throw, etc.).
         /// </summary>
-        public ImmutableArray<BoundBlock> DeadBlocks
-        {
-            get { return _deadBlocks.ToImmutableArray(); }
-        }
+        public ImmutableArray<BoundBlock> DeadBlocks => _deadBlocks.ToImmutableArray();
 
-        private readonly List<BoundBlock>
-            _deadBlocks = new List<BoundBlock>();
+        private readonly List<BoundBlock> _deadBlocks = new();
 
         #region LocalScope
 
@@ -841,7 +833,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             base.VisitHtmlEmptyElement(node);
             Add(new BoundHtmlCloseElementStmt());
         }
-        
+
         public override void VisitHtmlElement(HtmlElementSyntax node)
         {
             Add(new BoundHtmlOpenElementStmt(node.StartTag.Name.TagName.Text));
@@ -854,7 +846,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         {
             BoundExpression main = null;
             var stringType = _binder.Compilation.CoreTypes.String.Symbol;
-            
+
             foreach (var attributeItem in node.Nodes)
             {
                 BoundExpression expression = attributeItem switch
@@ -866,7 +858,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
                 main = main == null ? expression : new BoundBinaryEx(main, expression, Operations.Add, stringType);
             }
-            
+
             Add(new BoundHtmlAddAttributeStmt(node.Name.TagName.Text, main));
         }
 
