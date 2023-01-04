@@ -872,17 +872,4 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #endregion
     }
-
-
-    internal class HtmlBoundStatementsBuilder
-    {
-        public HtmlBoundStatementsBuilder()
-        {
-        }
-
-        BoundStatement CreateStatement()
-        {
-            return null;
-        }
-    }
 }
