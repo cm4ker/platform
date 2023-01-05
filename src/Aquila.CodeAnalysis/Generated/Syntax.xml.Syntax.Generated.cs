@@ -83,6 +83,7 @@ namespace Aquila.CodeAnalysis.Syntax
     public sealed partial class HtmlDecl : AquilaSyntaxNode
     {
         private SyntaxNode? htmlNodes;
+        private HtmlCodeSyntax? htmlCode;
 
         internal HtmlDecl(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
           : base(green, parent, position)
@@ -91,18 +92,32 @@ namespace Aquila.CodeAnalysis.Syntax
 
         public SyntaxList<HtmlNodeSyntax> HtmlNodes => new SyntaxList<HtmlNodeSyntax>(GetRed(ref this.htmlNodes, 0));
 
-        internal override SyntaxNode? GetNodeSlot(int index) => index == 0 ? GetRedAtZero(ref this.htmlNodes)! : null;
+        public HtmlCodeSyntax? HtmlCode => GetRed(ref this.htmlCode, 1);
 
-        internal override SyntaxNode? GetCachedSlot(int index) => index == 0 ? this.htmlNodes : null;
+        internal override SyntaxNode? GetNodeSlot(int index)
+            => index switch
+            {
+                0 => GetRedAtZero(ref this.htmlNodes)!,
+                1 => GetRed(ref this.htmlCode, 1),
+                _ => null,
+            };
+
+        internal override SyntaxNode? GetCachedSlot(int index)
+            => index switch
+            {
+                0 => this.htmlNodes,
+                1 => this.htmlCode,
+                _ => null,
+            };
 
         public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitHtmlDecl(this);
         public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitHtmlDecl(this);
 
-        public HtmlDecl Update(SyntaxList<HtmlNodeSyntax> htmlNodes)
+        public HtmlDecl Update(SyntaxList<HtmlNodeSyntax> htmlNodes, HtmlCodeSyntax? htmlCode)
         {
-            if (htmlNodes != this.HtmlNodes)
+            if (htmlNodes != this.HtmlNodes || htmlCode != this.HtmlCode)
             {
-                var newNode = SyntaxFactory.HtmlDecl(htmlNodes);
+                var newNode = SyntaxFactory.HtmlDecl(htmlNodes, htmlCode);
                 var annotations = GetAnnotations();
                 return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
             }
@@ -110,7 +125,8 @@ namespace Aquila.CodeAnalysis.Syntax
             return this;
         }
 
-        public HtmlDecl WithHtmlNodes(SyntaxList<HtmlNodeSyntax> htmlNodes) => Update(htmlNodes);
+        public HtmlDecl WithHtmlNodes(SyntaxList<HtmlNodeSyntax> htmlNodes) => Update(htmlNodes, this.HtmlCode);
+        public HtmlDecl WithHtmlCode(HtmlCodeSyntax? htmlCode) => Update(this.HtmlNodes, htmlCode);
 
         public HtmlDecl AddHtmlNodes(params HtmlNodeSyntax[] items) => WithHtmlNodes(this.HtmlNodes.AddRange(items));
     }

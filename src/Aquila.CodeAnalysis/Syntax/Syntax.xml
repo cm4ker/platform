@@ -34,6 +34,7 @@
     <Node Name="HtmlDecl" Base="AquilaSyntaxNode">
         <Kind Name="HtmlDecl"/>
         <Field Name="HtmlNodes" Type="SyntaxList&lt;HtmlNodeSyntax&gt;"/>
+        <Field Name="HtmlCode" Type="HtmlCodeSyntax" Optional="true"/>
     </Node>
     <Node Name="CompilationUnitSyntax" Base="AquilaSyntaxNode">
         <Kind Name="CompilationUnit"/>

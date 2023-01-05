@@ -752,7 +752,7 @@ namespace Aquila.CodeAnalysis
             => node.Update(VisitToken(node.ModuleKeyword), (NameEx?)Visit(node.Name) ?? throw new ArgumentNullException("name"), VisitToken(node.SemicolonToken));
 
         public override SyntaxNode? VisitHtmlDecl(HtmlDecl node)
-            => node.Update(VisitList(node.HtmlNodes));
+            => node.Update(VisitList(node.HtmlNodes), (HtmlCodeSyntax?)Visit(node.HtmlCode));
 
         public override SyntaxNode? VisitCompilationUnit(CompilationUnitSyntax node)
             => node.Update((ModuleDecl?)Visit(node.Module), VisitList(node.Imports), (HtmlDecl?)Visit(node.Html), VisitList(node.Members), VisitToken(node.EndOfFileToken));
@@ -1128,14 +1128,14 @@ namespace Aquila.CodeAnalysis
             => SyntaxFactory.ModuleDecl(SyntaxFactory.Token(SyntaxKind.ModuleKeyword), name, SyntaxFactory.Token(SyntaxKind.SemicolonToken));
 
         /// <summary>Creates a new HtmlDecl instance.</summary>
-        public static HtmlDecl HtmlDecl(SyntaxList<HtmlNodeSyntax> htmlNodes)
+        public static HtmlDecl HtmlDecl(SyntaxList<HtmlNodeSyntax> htmlNodes, HtmlCodeSyntax? htmlCode)
         {
-            return (HtmlDecl)Syntax.InternalSyntax.SyntaxFactory.HtmlDecl(htmlNodes.Node.ToGreenList<Syntax.InternalSyntax.HtmlNodeSyntax>()).CreateRed();
+            return (HtmlDecl)Syntax.InternalSyntax.SyntaxFactory.HtmlDecl(htmlNodes.Node.ToGreenList<Syntax.InternalSyntax.HtmlNodeSyntax>(), htmlCode == null ? null : (Syntax.InternalSyntax.HtmlCodeSyntax)htmlCode.Green).CreateRed();
         }
 
         /// <summary>Creates a new HtmlDecl instance.</summary>
-        public static HtmlDecl HtmlDecl()
-            => SyntaxFactory.HtmlDecl(default);
+        public static HtmlDecl HtmlDecl(SyntaxList<HtmlNodeSyntax> htmlNodes = default)
+            => SyntaxFactory.HtmlDecl(htmlNodes, default);
 
         /// <summary>Creates a new CompilationUnitSyntax instance.</summary>
         public static CompilationUnitSyntax CompilationUnit(ModuleDecl? module, SyntaxList<ImportDecl> imports, HtmlDecl? html, SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)

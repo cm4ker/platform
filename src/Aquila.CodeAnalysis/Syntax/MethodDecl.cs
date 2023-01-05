@@ -37,4 +37,12 @@ namespace Aquila.CodeAnalysis.Syntax
         public ImmutableArray<TypeDecl> Types =>
             (_types.IsDefaultOrEmpty) ? _types = this.Members.OfType<TypeDecl>().ToImmutableArray() : _types;
     }
+
+    public partial class HtmlCodeSyntax
+    {
+        private ImmutableArray<FuncDecl> _funcs;
+
+        public ImmutableArray<FuncDecl> Functions =>
+            (_funcs.IsDefaultOrEmpty) ? _funcs = this.Members.OfType<FuncDecl>().ToImmutableArray() : _funcs;
+    }
 }

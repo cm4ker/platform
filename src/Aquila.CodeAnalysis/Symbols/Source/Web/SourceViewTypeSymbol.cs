@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -16,6 +17,7 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
 {
     private readonly NamespaceOrTypeSymbol _container;
     private readonly CompilationUnitSyntax _cu;
+    private readonly HtmlDecl _htmlDecl;
     private readonly CoreTypes _ct;
     private ImmutableArray<Symbol> _members;
 
@@ -24,6 +26,7 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
         _container = container;
         _cu = tree.GetCompilationUnitRoot();
         _ct = container.DeclaringCompilation.CoreTypes;
+        _htmlDecl = _cu.Html ?? throw new ArgumentException("Syntax tree for view type must contains the html node tree", nameof(tree));
     }
 
     internal override ObsoleteAttributeData ObsoleteAttributeData { get; }
@@ -71,7 +74,9 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
         {
             var builder = ImmutableArray.CreateBuilder<Symbol>();
             builder.Add(new MethodTreeBuilderSymbol(this, _cu.Html));
-            builder.AddRange(_cu.Functions.Select(x => new SourceMethodSymbol(this, x)));
+            
+            if(_htmlDecl.HtmlCode != null)
+                builder.AddRange(_htmlDecl.HtmlCode.Functions.Select(x => new SourceMethodSymbol(this, x)));
 
             _members = builder.ToImmutable();
         }

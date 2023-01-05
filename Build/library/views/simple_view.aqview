@@ -2,7 +2,9 @@
     Hello world
 </div>
 
-fn function_in_view() 
-{
-    
+@code {
+    fn function_in_view() 
+    {
+        
+    }
 }
