@@ -33,7 +33,7 @@ namespace Aquila.CodeAnalysis
 {
     public sealed partial class AquilaCompilation : Compilation
     {
-        readonly SourceSymbolCollection _sourceSymbolCollection;
+        private readonly SourceSymbolCollection _sourceSymbolCollection;
         private readonly MetadataProvider _metadataProvider;
 
         MethodSymbol _lazyMainMethod;

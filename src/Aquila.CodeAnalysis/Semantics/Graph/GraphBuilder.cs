@@ -12,7 +12,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
     /// <summary>
     /// Visitor implementation that constructs the graph.
     /// </summary>
-    internal sealed class BuilderVisitor : AquilaSyntaxWalker
+    internal sealed class GraphBuilder : AquilaSyntaxWalker
     {
         readonly Binder _binder;
 
@@ -174,7 +174,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #region Construction
 
-        private BuilderVisitor(IList<StmtSyntax> statements, Binder binder)
+        private GraphBuilder(IList<StmtSyntax> statements, Binder binder)
         {
             Contract.ThrowIfNull(statements);
             Contract.ThrowIfNull(binder);
@@ -200,7 +200,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             Debug.Assert(_breakTargets == null || _breakTargets.Count == 0);
         }
 
-        private BuilderVisitor(IReadOnlyList<HtmlNodeSyntax> nodes, Binder binder)
+        private GraphBuilder(IReadOnlyList<HtmlNodeSyntax> nodes, Binder binder)
         {
             Contract.ThrowIfNull(nodes);
             Contract.ThrowIfNull(binder);
@@ -224,14 +224,14 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             Debug.Assert(_breakTargets == null || _breakTargets.Count == 0);
         }
 
-        public static BuilderVisitor Build(IList<StmtSyntax> statements, Binder binder)
+        public static GraphBuilder Build(IList<StmtSyntax> statements, Binder binder)
         {
-            return new BuilderVisitor(statements, binder);
+            return new GraphBuilder(statements, binder);
         }
 
-        public static BuilderVisitor Build(IReadOnlyList<HtmlNodeSyntax> nodes, Binder binder)
+        public static GraphBuilder Build(IReadOnlyList<HtmlNodeSyntax> nodes, Binder binder)
         {
-            return new BuilderVisitor(nodes, binder);
+            return new GraphBuilder(nodes, binder);
         }
 
         #endregion

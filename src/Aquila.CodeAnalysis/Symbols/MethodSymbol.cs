@@ -291,6 +291,8 @@ namespace Aquila.CodeAnalysis.Symbols
         /// <summary>
         /// For source methods, gets their control flow graph.
         /// Can be <c>null</c> for methods from PE or synthesized methods.
+        /// Lazily bound semantic block.
+        /// Entry point of analysis and emitting.
         /// </summary>
         public virtual ControlFlowGraph ControlFlowGraph
         {

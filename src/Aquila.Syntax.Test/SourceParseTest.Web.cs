@@ -87,4 +87,13 @@ public partial class SourceParserTest
       var graph = AquilaSyntaxTree.ParseText(@"<div><br /></div>");
       tp.Visit(graph.GetRoot());
    }
+   
+   [Fact]
+   public void ParseHtmlAndCode()
+   {
+      var tp = new TreePrinter(_output);
+      var graph = AquilaSyntaxTree.ParseText(@"<div><br /></div> 
+fn test_func() {}");
+      tp.Visit(graph.GetRoot());
+   }
 }

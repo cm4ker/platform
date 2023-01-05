@@ -9,7 +9,6 @@ using Aquila.Syntax;
 using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis;
 using Aquila.CodeAnalysis.Semantics;
-using Aquila.CodeAnalysis.Utilities;
 using Aquila.Syntax.Declarations;
 using Roslyn.Utilities;
 using Xunit;
@@ -87,11 +86,6 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             {
                 _types.Add(new SourceModuleTypeSymbol(SourceTypeContainer, module));
 
-                // foreach (var type in module.Types)
-                // {
-                //     _types.Add(new SourceTypeSymbol(SourceTypeContainer, type));
-                // }
-
                 foreach (var function in module.OwnedFunctions)
                 {
                     if (function.FuncOwner != null && AstUtils.GetModifiers(function.Modifiers).IsPartial())
@@ -109,34 +103,19 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                             sts.AddMember(m);
                         }
                     }
-                    // else
-                    // {
-                    //     var method = new SourceGlobalMethodSymbol(DefinedConstantsContainer, function);
-                    //
-                    //     _globalMethods.Add(method);
-                    //     DefinedConstantsContainer.AddMember(method);
-                    // }
                 }
             }
-        }
 
-        public bool RemoveSyntaxTree(string fname)
-        {
-            var relative = AquilaFileUtilities.GetRelativePath(fname, _compilation.Options.BaseDirectory);
-            // if (_files.Remove(relative))
-            // {
-            //     _version++;
-            //
-            //     return true;
-            // }
-
-            return false;
+            foreach (var view in _compilation.Views)
+            { 
+                _types.Add(new SourceViewTypeSymbol(SourceTypeContainer, view));
+            }
         }
 
         /// <summary>
         /// Gets compilation syntax trees.
         /// </summary>
-        public ImmutableArray<AquilaSyntaxTree> SyntaxTrees => _sourceCode.SyntaxTrees;
+        public ImmutableArray<AquilaSyntaxTree> SyntaxTrees => _sourceCode.SyntaxTrees.Concat(_compilation.Views);
 
         public IEnumerable<MethodSymbol> GetMethods()
         {
@@ -195,4 +174,5 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             UpdateSymbolsCore();
         }
     }
+    
 }

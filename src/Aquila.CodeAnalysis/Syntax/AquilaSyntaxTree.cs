@@ -24,7 +24,7 @@ using InternalSyntax = Aquila.CodeAnalysis.Syntax.InternalSyntax;
 namespace Aquila.CodeAnalysis
 {
     /// <summary>
-    /// The parsed representation of a C# source document.
+    /// The parsed representation of a Aquila source document.
     /// </summary>
     public abstract partial class AquilaSyntaxTree : SyntaxTree
     {

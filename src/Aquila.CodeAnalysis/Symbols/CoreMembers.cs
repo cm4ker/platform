@@ -244,9 +244,7 @@ namespace Aquila.CodeAnalysis.Symbols
     {
         public readonly OperatorsHolder Operators;
         public readonly RuntimeHolder Runtime;
-
-        /// <summary>Property name of <c>ScriptAttribute.IsAutoloaded</c>.</summary>
-        public static string ScriptAttribute_IsAutoloaded => "IsAutoloaded";
+        public readonly RenderTreeBuilderHolder RenderTreeBuilder;
 
         public CoreMethods(CoreTypes types)
         {
@@ -254,6 +252,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
             Operators = new OperatorsHolder(types);
             Runtime = new RuntimeHolder(types);
+            RenderTreeBuilder = new RenderTreeBuilderHolder(types);
         }
 
         public struct OperatorsHolder
@@ -375,6 +374,23 @@ namespace Aquila.CodeAnalysis.Symbols
             public readonly CoreProperty
                 DataContext,
                 DataRuntimeContext;
+        }
+        
+        public struct RenderTreeBuilderHolder
+        {
+            public RenderTreeBuilderHolder(CoreTypes ct)
+            {
+                OpenElement = ct.Web_RenderTreeBuilder.Method(nameof(OpenElement), ct.Int32, ct.String);
+                CloseElement = ct.Web_RenderTreeBuilder.Method(nameof(CloseElement));
+                AddAttribute = ct.Web_RenderTreeBuilder.Method(nameof(AddAttribute), ct.Int32, ct.String, ct.String);
+            }
+
+            public readonly CoreMethod
+                OpenElement,
+                CloseElement,
+                AddAttribute
+                ;
+
         }
     }
 }

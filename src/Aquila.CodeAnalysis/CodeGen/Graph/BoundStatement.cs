@@ -1,5 +1,6 @@
 ﻿using Aquila.CodeAnalysis.Symbols;
 using System;
+using System.Reflection.Metadata;
 using Aquila.CodeAnalysis.CodeGen;
 
 namespace Aquila.CodeAnalysis.Semantics
@@ -75,4 +76,44 @@ namespace Aquila.CodeAnalysis.Semantics
             cg.EmitRet(rtype);
         }
     }
+
+    partial class BoundHtmlOpenElementStmt
+    {
+        internal override void Emit(CodeGenerator cg)
+        {
+            cg.EmitLoadArgument(null); // TODO: BoundArgument __builder
+            cg.EmitLoadConstant(1); //TODO: Insert index of operation
+            cg.EmitLoadConstant(this.ElementName);
+            cg.EmitCall(ILOpCode.Call, cg.CoreMethods.RenderTreeBuilder.OpenElement);
+        }
+    }
+    
+    partial class BoundHtmlCloseElementStmt
+    {
+        internal override void Emit(CodeGenerator cg)
+        {
+            cg.EmitLoadArgument(null); // TODO: BoundArgument __builder
+            cg.EmitCall(ILOpCode.Call, cg.CoreMethods.RenderTreeBuilder.CloseElement);
+        }
+    }
+
+    partial class BoundHtmlAddAttributeStmt
+    {
+        internal override void Emit(CodeGenerator cg)
+        {
+            cg.EmitLoadArgument(null); // TODO: BoundArgument __builder
+            cg.EmitLoadConstant(1); //TODO: Insert index of operation
+            cg.Emit(this.Expression);
+            cg.EmitCall(ILOpCode.Call, cg.CoreMethods.RenderTreeBuilder.AddAttribute);
+        }
+    }
+    
+    partial class BoundHtmlMarkupStmt
+    {
+        internal override void Emit(CodeGenerator cg)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
+
