@@ -28,8 +28,7 @@ namespace ScriptsTest
         /// </summary>
         const string SkippedTestReturn = "***SKIP***";
 
-        static readonly AqContext.IScriptingProvider
-            _provider = new ScriptingProvider(); // use IScriptingProvider singleton
+        static readonly AqContext.IScriptingProvider _provider = new ScriptingProvider();
 
         private readonly ITestOutputHelper _output;
         private readonly DatabaseFixture _fixture;
@@ -80,7 +79,6 @@ namespace ScriptsTest
                 IsSubmission = false,
                 EmitDebugInformation = true,
                 Location = new Location(path, 0, 0),
-                //AdditionalReferences = AdditionalReferences,
             }, File.ReadAllText(path), TestMetadata.GetTestMetadata());
 
             // run

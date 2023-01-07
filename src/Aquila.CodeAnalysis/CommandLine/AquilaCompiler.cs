@@ -233,7 +233,6 @@ namespace Aquila.CodeAnalysis.CommandLine
                 Arguments.CompilationName,
                 syntaxTrees: sourceTrees.WhereNotNull(),
                 metadata: metadata,
-                views: viewTrees,
                 resolvedReferences,
                 resources: resources,
                 options: Arguments.CompilationOptions.WithMetadataReferenceResolver(referenceResolver)

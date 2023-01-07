@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using Aquila.CodeAnalysis.Semantics.Graph;
+using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.CodeAnalysis.Syntax;
 using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
@@ -16,19 +16,18 @@ namespace Aquila.CodeAnalysis.Symbols.Source;
 internal class SourceViewTypeSymbol : NamedTypeSymbol
 {
     private readonly NamespaceOrTypeSymbol _container;
-    private readonly CompilationUnitSyntax _cu;
     private readonly HtmlDecl _htmlDecl;
     private readonly CoreTypes _ct;
     private ImmutableArray<Symbol> _members;
 
-    public SourceViewTypeSymbol(NamespaceOrTypeSymbol container, AquilaSyntaxTree tree)
+    public SourceViewTypeSymbol(NamespaceOrTypeSymbol container, HtmlDecl htmlDecl)
     {
         _container = container;
-        _cu = tree.GetCompilationUnitRoot();
         _ct = container.DeclaringCompilation.CoreTypes;
-        _htmlDecl = _cu.Html ?? throw new ArgumentException("Syntax tree for view type must contains the html node tree", nameof(tree));
+        _htmlDecl = htmlDecl;
     }
 
+    public override string Name => "AquilaView";
     internal override ObsoleteAttributeData ObsoleteAttributeData { get; }
     public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences { get; }
     public override Symbol ContainingSymbol => _container;
@@ -73,7 +72,8 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
         if (_members == null)
         {
             var builder = ImmutableArray.CreateBuilder<Symbol>();
-            builder.Add(new MethodTreeBuilderSymbol(this, _cu.Html));
+            builder.Add(new MethodTreeBuilderSymbol(this, _htmlDecl));
+            SourceTypeSymbolHelper.AddDefaultInstanceTypeSymbolMembers(this, builder);
             
             if(_htmlDecl.HtmlCode != null)
                 builder.AddRange(_htmlDecl.HtmlCode.Functions.Select(x => new SourceMethodSymbol(this, x)));
@@ -139,7 +139,10 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
             return false;
         }
 
-        public override ImmutableArray<ParameterSymbol> Parameters { get; }
+        public override ImmutableArray<ParameterSymbol> Parameters =>
+            _overridenMethod.Parameters.Select(x => 
+                    (ParameterSymbol)new SynthesizedParameterSymbol(this, x.Type, x.Ordinal, x.RefKind))
+                .ToImmutableArray();
 
         public override bool ReturnsVoid => _overridenMethod.ReturnsVoid;
         public override RefKind RefKind => _overridenMethod.RefKind;

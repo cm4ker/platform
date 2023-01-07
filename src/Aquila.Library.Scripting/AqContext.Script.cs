@@ -214,6 +214,8 @@ namespace Aquila.Library.Scripting
                     shortOpenTags: shortOpenTags),
                 options.IsSubmission ? BuildSubmissionFileName(options.Location.Path, name.Name) : options.Location.Path
             );
+            var viewTree = (AquilaSyntaxTree)AquilaSyntaxTree.ParseText(
+                "<div>Hello world</div> @code{fn test_view_func(){}}", new AquilaParseOptions(kind: SourceCodeKind.View));
 
             var diagnostics = tree.GetDiagnostics().ToImmutableArray();
             if (!HasErrors(diagnostics))
@@ -238,11 +240,10 @@ namespace Aquila.Library.Scripting
                 // create the compilation object
                 // TODO: add conditionally declared types into the compilation tables
                 var compilation = (AquilaCompilation)builder.CoreCompilation
-                    //.WithLangVersion(languageVersion)
+                    
                     .WithAssemblyName(name.Name)
                     .AddMetadata(metadata.EntityMetadata)
-                    .AddViews(new[] { "<h1>HO HO HO</h1>" })
-                    .AddSyntaxTrees(tree)
+                    .AddSyntaxTrees(tree, viewTree)
                     .AddReferences(metadatareferences);
 
                 var emitOptions = new EmitOptions();
@@ -253,7 +254,7 @@ namespace Aquila.Library.Scripting
                     compilation = compilation.WithAquilaOptions(compilation.Options
                         .WithOptimizationLevel(OptimizationLevel.Debug)
                         .WithDebugPlusMode(true)
-                        .WithConcurrentBuild(true)
+                        .WithConcurrentBuild(false)
                     );
 
                     if (options.IsSubmission)

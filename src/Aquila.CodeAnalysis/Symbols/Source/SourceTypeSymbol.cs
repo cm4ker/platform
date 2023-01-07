@@ -93,43 +93,12 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         {
             if (_members == null || _members.IsDefaultOrEmpty)
             {
-                var result = ImmutableArray.CreateBuilder<Symbol>();
+                var builder = ImmutableArray.CreateBuilder<Symbol>();
+                builder.AddRange(_typeSyntax.TypeDecl.Fields.Select(x => (Symbol)new SourceFieldSymbol(x, this)));
+                builder.AddRange(_typeSyntax.FuncDecls.Select(x => new SourceMethodSymbol(this, x)));
 
-                result.AddRange(_typeSyntax.TypeDecl.Fields.Select(x => (Symbol)new SourceFieldSymbol(x, this)));
-                result.AddRange(_typeSyntax.FuncDecls.Select(x => new SourceMethodSymbol(this, x)));
-
-                var ctxField = new SynthesizedFieldSymbol(this)
-                    .SetName(SpecialParameterSymbol.ContextName)
-                    .SetAccess(Accessibility.Private)
-                    .SetType(DeclaringCompilation.CoreTypes.AqContext);
-
-                result.Add(ctxField);
-                var ctor = new SynthesizedCtorSymbol(this);
-                var ctxParam = new SpecialParameterSymbol(ctor, DeclaringCompilation.CoreTypes.AqContext,
-                    SpecialParameterSymbol.ContextName, 0);
-
-                var thisPlace = new ThisArgPlace(this);
-                var ctxPS = new ParamPlace(ctxParam);
-                var ctxFieldPlace = new FieldPlace(ctxField);
-
-                ctor.SetParameters(ctxParam)
-                    .SetMethodBuilder((m, db) =>
-                    {
-                        return il =>
-                        {
-                            thisPlace.EmitLoad(il);
-                            il.EmitCall(m, db, ILOpCode.Call, this.BaseType.Ctor());
-
-                            thisPlace.EmitLoad(il);
-                            ctxPS.EmitLoad(il);
-                            ctxFieldPlace.EmitStore(il);
-
-                            il.EmitRet(true);
-                        };
-                    });
-
-                result.Add(ctor);
-                _members = result.ToImmutable();
+                SourceTypeSymbolHelper.AddDefaultInstanceTypeSymbolMembers(this, builder);
+                _members = builder.ToImmutable();
             }
         }
 

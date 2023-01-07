@@ -59,15 +59,6 @@ namespace Aquila.CodeAnalysis
 
             // parallel worklist algorithm
             _worklist = new Worklist<BoundBlock>(AnalyzeBlock);
-
-            if (_moduleBuilder != null)
-            {
-                foreach (var compilationView in _compilation.Views)
-                {
-                    ComponentBaseGenerator cb = new ComponentBaseGenerator(_moduleBuilder, compilationView);
-                    cb.Build();
-                }
-            }
         }
 
         void WalkMethods(Action<SourceMethodSymbol> action, bool allowParallel = false)
@@ -107,6 +98,20 @@ namespace Aquila.CodeAnalysis
             }
         }
 
+        void ViewBuilderMethods(Action<MethodSymbol> action, bool allowParallel = false)
+        {
+            var methods = _compilation.SourceSymbolCollection.GetViewTypes().SelectMany(x=>x.GetMembers().OfType<SourceViewTypeSymbol.MethodTreeBuilderSymbol>());
+
+            if (ConcurrentBuild && allowParallel)
+            {
+                Parallel.ForEach(methods, action);
+            }
+            else
+            {
+                methods.ForEach(action);
+            }
+        }
+
         void WalkSynthesizedTypes(Action<SynthesizedTypeSymbol> action, bool allowParallel = false)
         {
             var types = _compilation.PlatformSymbolCollection.SynthesizedTypes;
@@ -124,6 +129,20 @@ namespace Aquila.CodeAnalysis
         void WalkTypes(Action<SourceModuleTypeSymbol> action, bool allowParallel = false)
         {
             var types = _compilation.SourceSymbolCollection.GetModuleTypes();
+
+            if (ConcurrentBuild && allowParallel)
+            {
+                Parallel.ForEach(types, action);
+            }
+            else
+            {
+                types.ForEach(action);
+            }
+        }
+        
+        void WalkViews(Action<SourceViewTypeSymbol> action, bool allowParallel = false)
+        {
+            var types = _compilation.SourceSymbolCollection.GetViewTypes();
 
             if (ConcurrentBuild && allowParallel)
             {
@@ -329,7 +348,7 @@ namespace Aquila.CodeAnalysis
         {
             this.WalkTypes(DiagnoseType, allowParallel: true);
         }
-
+       
         private void DiagnoseType(SourceModuleTypeSymbol type)
         {
             type.GetDiagnostics(_diagnostics);

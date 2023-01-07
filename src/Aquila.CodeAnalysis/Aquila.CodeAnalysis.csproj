@@ -22,7 +22,7 @@
         </PackageReference>
 
         <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
-        <PackageReference Include="Aquila.Microsoft.CodeAnalysis" Version="4.1.0">
+        <PackageReference Include="Aquila.Microsoft.CodeAnalysis" Version="4.2.2">
             <SetTargetFramework>TargetFramework=netstandard2.0</SetTargetFramework>
         </PackageReference>
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.4" />

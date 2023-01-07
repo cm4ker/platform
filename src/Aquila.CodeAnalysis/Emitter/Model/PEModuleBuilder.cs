@@ -568,6 +568,11 @@ namespace Aquila.CodeAnalysis.Emit
             foreach (var t in _sourceModule.SymbolCollection.GetModuleTypes())
                 yield return t;
 
+            foreach (var t in _sourceModule.SymbolCollection.GetViewTypes())
+            {
+                yield return t;
+            }
+
             var namespacesToProcess = new Stack<INamespaceSymbol>(this.SynthesizedManager.Namespaces);
 
             while (namespacesToProcess.Count != 0)

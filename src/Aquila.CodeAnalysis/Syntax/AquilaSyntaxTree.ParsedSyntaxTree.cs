@@ -56,6 +56,8 @@ namespace Aquila.CodeAnalysis
                 _diagnosticOptions = diagnosticOptions ?? EmptyDiagnosticOptions;
             }
 
+            public override bool IsView => _options.Kind == SourceCodeKind.View;
+
             public override string FilePath
             {
                 get { return _path; }

@@ -29,6 +29,7 @@ namespace Aquila.Syntax.Declarations
         private readonly ConcurrentBag<AquilaSyntaxTree> _trees = new ConcurrentBag<AquilaSyntaxTree>();
 
         private List<MergeModuleDecl> _mergedModules;
+        private List<HtmlDecl> _views;
 
         public MergedSourceCode()
         {
@@ -64,6 +65,12 @@ namespace Aquila.Syntax.Declarations
             return _mergedModules;
         }
 
+        public IEnumerable<HtmlDecl> GetViews()
+        {
+            EnsureViews();
+            return _views;
+        }
+
         public MergeModuleDecl GetModule(string name)
         {
             return GetModules().FirstOrDefault(x => x.Name == name);
@@ -76,7 +83,7 @@ namespace Aquila.Syntax.Declarations
 
             var modDic = new Dictionary<string, List<CompilationUnitSyntax>>();
 
-            foreach (var unit in _trees.Select(x => x.GetCompilationUnitRoot()))
+            foreach (var unit in _trees.Where(x=>!x.IsView).Select(x => x.GetCompilationUnitRoot()))
             {
                 if (unit != null)
                     if (modDic.TryGetValue(unit.ModuleName, out var list))
@@ -90,6 +97,19 @@ namespace Aquila.Syntax.Declarations
             var modules = modDic.Select(x => new MergeModuleDecl(x.Value.ToImmutableArray())).ToList();
 
             Interlocked.CompareExchange(ref _mergedModules, modules, null);
+        }
+
+        private void EnsureViews()
+        {
+            if (_views != null)
+                return;
+
+            _views = new List<HtmlDecl>();
+            foreach (var unit in _trees.Where(x=>x.IsView).Select(x=>x.GetCompilationUnitRoot()))
+            {
+                if(unit != null && unit.Html != null)
+                    _views.Add(unit.Html);
+            }
         }
     }
 }

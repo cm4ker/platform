@@ -33,6 +33,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         private List<SourceMethodSymbol> _extendMethods;
         private List<SourceMethodSymbol> _globalMethods;
         private List<NamedTypeSymbol> _types;
+        private IEnumerable<AquilaSyntaxTree> _views = ImmutableArray<AquilaSyntaxTree>.Empty;
 
 
         /// <summary>
@@ -53,9 +54,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             _extendMethods = new List<SourceMethodSymbol>();
             _globalMethods = new List<SourceMethodSymbol>();
             _types = new List<NamedTypeSymbol>();
-
-            // class <constants> { ... }
-
+            
             this.DefinedConstantsContainer =
                 _compilation.AnonymousTypeManager.SynthesizeType("<Constants>", true);
 
@@ -65,15 +64,9 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             SourceTypeContainer = (NamespaceSymbol)_compilation.SourceModule.GlobalNamespace;
         }
 
-        void PopulateDefinedConstants(SynthesizedTypeSymbol container,
-            ImmutableDictionary<string, string> defines)
+        void PopulateDefinedConstants(SynthesizedTypeSymbol container, ImmutableDictionary<string, string> defines)
         {
             if (defines == null || defines.IsEmpty)
-            {
-                return;
-            }
-
-            foreach (var d in defines)
             {
             }
         }
@@ -106,16 +99,21 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 }
             }
 
-            foreach (var view in _compilation.Views)
-            { 
+            var views = _sourceCode.GetViews();
+
+            foreach (var view in views)
+            {
                 _types.Add(new SourceViewTypeSymbol(SourceTypeContainer, view));
             }
+
         }
 
         /// <summary>
         /// Gets compilation syntax trees.
         /// </summary>
-        public ImmutableArray<AquilaSyntaxTree> SyntaxTrees => _sourceCode.SyntaxTrees.Concat(_compilation.Views);
+        public ImmutableArray<AquilaSyntaxTree> SyntaxTrees => _sourceCode.SyntaxTrees;
+
+        public ImmutableArray<AquilaSyntaxTree> Views => _views.ToImmutableArray();
 
         public IEnumerable<MethodSymbol> GetMethods()
         {
@@ -148,6 +146,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public IEnumerable<SourceModuleTypeSymbol> GetModuleTypes() => _types.OfType<SourceModuleTypeSymbol>();
 
+        public IEnumerable<SourceViewTypeSymbol> GetViewTypes() => _types.OfType<SourceViewTypeSymbol>();
+
         public SourceModuleTypeSymbol GetModuleType(string name) => GetModuleTypes().FirstOrDefault(x => x.Name == name);
 
         public MergedSourceCode GetMergedSourceCode() => _sourceCode;
@@ -167,6 +167,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
             return new MissingMetadataTypeSymbol(name.ClrName(), 0, false);
         }
+
 
         public void AddSyntaxTreeRange(IEnumerable<AquilaSyntaxTree> syntaxTrees)
         {

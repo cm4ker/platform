@@ -190,7 +190,7 @@ internal partial class LanguageParser
 
     private bool IsHtmlCodeDecl()
     {
-        return CurrentToken.Kind == SyntaxKind.AtToken 
+        return CurrentToken.Kind == SyntaxKind.AtToken
                && PeekToken(1).Kind == SyntaxKind.HtmlCodeKeyword;
     }
 
@@ -225,13 +225,13 @@ internal partial class LanguageParser
 
         return SyntaxFactory.HtmlExpression(atToken, expr);
     }
-    
+
     HtmlCodeSyntax ParseHtmlCode()
     {
         var atToken = EatToken(SyntaxKind.AtToken);
         var codeKeyword = EatToken(SyntaxKind.HtmlCodeKeyword);
         MemberDecl memberDecl;
-        
+
         using (EnterMode(LexerMode.Syntax, true))
         {
             var openBrace = EatToken(SyntaxKind.OpenBraceToken);
@@ -241,9 +241,9 @@ internal partial class LanguageParser
             {
                 members.Add(memberDecl);
             }
-            
+
             var closeBrace = EatToken(SyntaxKind.CloseBraceToken);
-            
+
             return SyntaxFactory.HtmlCode(atToken, codeKeyword, openBrace, members.ToList(), closeBrace);
         }
     }
@@ -261,19 +261,18 @@ internal partial class LanguageParser
         }
 
         return ParseHtmlExpression();
-        
     }
 
     private HtmlDecl ParseHtmlDecl()
     {
         var nodes = _pool.Allocate<HtmlNodeSyntax>();
         HtmlCodeSyntax htmlCode = null;
-        
+
         ParseHtmlContent(nodes);
-        
+
         if (IsHtmlCodeDecl())
-            htmlCode = ParseHtmlCode();    
-        
+            htmlCode = ParseHtmlCode();
+
         return _syntaxFactory.HtmlDecl(_pool.ToListAndFree(nodes), htmlCode);
     }
 
