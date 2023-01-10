@@ -1090,6 +1090,7 @@ namespace Aquila.CodeAnalysis
         FuncDecl,
         ModuleDecl,
         HtmlDecl,
+        HtmlMarkupDecl,
 
         IdentifierEx,
         NamedTypeEx,

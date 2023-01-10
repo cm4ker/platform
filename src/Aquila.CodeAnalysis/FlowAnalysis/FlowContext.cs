@@ -56,9 +56,9 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Reference to corresponding method symbol. Can be a <c>null</c> reference.
         /// </summary>
-        internal SourceMethodSymbol Method => _method;
+        internal SourceMethodSymbolBase Method => _method;
 
-        readonly SourceMethodSymbol _method;
+        readonly SourceMethodSymbolBase _method;
 
         /// <summary>
         /// Map of variables name and their index.
@@ -101,7 +101,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         #region Construction
 
-        internal FlowContext(SourceMethodSymbol method)
+        internal FlowContext(SourceMethodSymbolBase method)
         {
             _method = method;
 

@@ -17,7 +17,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
         /// <summary>
         /// Methods with unreachable declarations.
         /// </summary>
-        public ConcurrentBag<SourceMethodSymbol> UnreachableMethods { get; } = new ConcurrentBag<SourceMethodSymbol>();
+        public ConcurrentBag<SourceMethodSymbolBase> UnreachableMethods { get; } = new ConcurrentBag<SourceMethodSymbolBase>();
 
         // /// <summary>
         // /// Types with unreachable declarations.

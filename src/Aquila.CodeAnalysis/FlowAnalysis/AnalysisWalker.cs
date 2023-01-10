@@ -278,18 +278,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return default;
         }
 
-        //protected override TResult AcceptEdge(BoundBlock fromBlock, Edge edge)
-        //{
-        //    if ((_flags & AnalysisFlags.IsCanceled) == 0)
-        //    {
-        //        return base.AcceptEdge(fromBlock, edge);
-        //    }
-        //    else
-        //    {
-        //        return default;
-        //    }
-        //}
-
         public override TResult VisitCFGBlock(BoundBlock x)
         {
             VisitCFGBlockInit(x);
@@ -301,17 +289,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         public override TResult VisitCFGCaseBlock(MatchArmBlock x)
         {
             VisitCFGBlockInit(x);
-            
-            // if (!x.MatchValue.IsOnlyBoundElement)
-            // {
-            //     VisitCFGBlock(x.MatchValue.PreBoundBlockFirst);
-            // }
-            //
-            // if (!x.MatchValue.IsEmpty)
-            // {
-            //     Accept(x.MatchValue.BoundElement);
-            // }
-
             DefaultVisitBlock(x);
 
             return default;

@@ -162,7 +162,7 @@ using System.Text;
                 set.Add(value);
             }
 
-            public static HashSet<BoundCopyValue> TryGetUnnecessaryCopies(SourceMethodSymbol method)
+            public static HashSet<BoundCopyValue> TryGetUnnecessaryCopies(SourceMethodSymbolBase method)
             {
                 var cfg = method.ControlFlowGraph;
                 var analysis = new CopyAnalysis(cfg.FlowContext);

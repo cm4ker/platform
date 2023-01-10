@@ -33,9 +33,9 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// Containing method. Cannot be <c>null</c>.
         /// </summary>
-        public SourceMethodSymbol Method => _method;
+        public SourceMethodSymbolBase Method => _method;
 
-        readonly SourceMethodSymbol _method;
+        readonly SourceMethodSymbolBase _method;
 
         #endregion
 
@@ -44,7 +44,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// Initializes table of locals of given method.
         /// </summary>
-        public LocalsTable(SourceMethodSymbol method)
+        public LocalsTable(SourceMethodSymbolBase method)
         {
             Contract.ThrowIfNull(method);
 

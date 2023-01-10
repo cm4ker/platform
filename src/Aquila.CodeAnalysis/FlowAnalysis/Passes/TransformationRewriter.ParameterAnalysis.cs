@@ -68,7 +68,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 _flowContext = flowContext;
             }
 
-            public static BitMask64 GetNeedPassValueParams(SourceMethodSymbol method)
+            public static BitMask64 GetNeedPassValueParams(SourceMethodSymbolBase method)
             {
                 if (method.ParameterCount == 0)
                 {

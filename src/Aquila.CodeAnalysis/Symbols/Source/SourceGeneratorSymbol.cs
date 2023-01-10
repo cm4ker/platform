@@ -8,7 +8,7 @@ namespace Aquila.CodeAnalysis.Symbols
     /// </summary>
     internal sealed partial class SourceGeneratorSymbol : SynthesizedMethodSymbol
     {
-        public SourceGeneratorSymbol(SourceMethodSymbol originalMethod)
+        public SourceGeneratorSymbol(SourceMethodSymbolBase originalMethod)
             : base(originalMethod.ContainingType,
                 string.Format(WellKnownAquilaNames.GeneratorStateMachineNameFormatString, originalMethod.MethodName),
                 isstatic: true, isvirtual: false,
@@ -21,7 +21,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// <summary>
         /// Parameters for <see cref="SourceGeneratorSymbol"/> method are defined by <c>GeneratorStateMachineDelegate</c>.
         /// </summary>
-        ParameterSymbol[] CreateParameters(SourceMethodSymbol originalMethod)
+        ParameterSymbol[] CreateParameters(SourceMethodSymbolBase originalMethod)
         {
             // resolve type of $this
             var thisType = originalMethod.ContainingType ??

@@ -272,8 +272,8 @@ internal partial class LanguageParser
 
         if (IsHtmlCodeDecl())
             htmlCode = ParseHtmlCode();
-
-        return _syntaxFactory.HtmlDecl(_pool.ToListAndFree(nodes), htmlCode);
+        
+        return _syntaxFactory.HtmlDecl(_syntaxFactory.HtmlMarkupDecl(_pool.ToListAndFree(nodes)), htmlCode);
     }
 
     private void ParseHtmlContent(SyntaxListBuilder<HtmlNodeSyntax> contentNodes)

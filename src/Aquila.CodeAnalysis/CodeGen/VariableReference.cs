@@ -341,7 +341,7 @@ namespace Aquila.CodeAnalysis.Semantics
         public Symbol Symbol { get; protected set; }
 
         /// <summary>Containing method symbol. Cannot be <c>null</c>.</summary>
-        internal SourceMethodSymbol Method { get; }
+        internal SourceMethodSymbolBase Method { get; }
 
         public virtual TypeSymbol Type => Symbol.GetTypeOrReturnType();
 
@@ -367,7 +367,7 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
-        public LocalVariableReference(VariableKind kind, SourceMethodSymbol method, Symbol symbol,
+        public LocalVariableReference(VariableKind kind, SourceMethodSymbolBase method, Symbol symbol,
             BoundVariableName name)
         {
             this.VariableKind = kind;
@@ -588,7 +588,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public override TypeSymbol Type => Place != null ? Place.Type : base.Type;
 
-        public ParameterReference(ParameterSymbol symbol, SourceMethodSymbol method)
+        public ParameterReference(ParameterSymbol symbol, SourceMethodSymbolBase method)
             : base(VariableKind.Parameter, method, symbol, new BoundVariableName(symbol.Name, symbol.Type))
         {
         }
@@ -606,7 +606,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
     class ThisVariableReference : LocalVariableReference
     {
-        public ThisVariableReference(SourceMethodSymbol method)
+        public ThisVariableReference(SourceMethodSymbolBase method)
             : base(VariableKind.ThisParameter, method, null,
                 new BoundVariableName(VariableName.ThisVariableName, method.ContainingType))
         {

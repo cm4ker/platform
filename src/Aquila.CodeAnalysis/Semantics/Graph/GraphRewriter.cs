@@ -342,7 +342,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #endregion
 
-        protected private virtual void OnUnreachableMethodFound(SourceMethodSymbol method)
+        protected private virtual void OnUnreachableMethodFound(SourceMethodSymbolBase method)
         {
         }
 

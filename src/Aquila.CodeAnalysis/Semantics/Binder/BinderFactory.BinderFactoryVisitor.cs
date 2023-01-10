@@ -7,6 +7,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Syntax;
 using Aquila.Syntax.Declarations;
 using Microsoft.CodeAnalysis;
@@ -19,7 +20,6 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         internal class BinderFactoryVisitor : AquilaSyntaxVisitor<Binder>
         {
-            private readonly ConcurrentDictionary<AquilaSyntaxNode, Binder> _resolvedBinders;
             private Stack<Binder> _binderHierarcy;
 
             private Binder TopStack
@@ -51,7 +51,6 @@ namespace Aquila.CodeAnalysis.Semantics
                 _compilation = factory._compilation;
                 _merged = _compilation.SourceSymbolCollection.GetMergedSourceCode();
 
-                _resolvedBinders = new ConcurrentDictionary<AquilaSyntaxNode, Binder>();
                 _binderHierarcy = new Stack<Binder>();
 
                 _global = new GlobalBinder(_compilation.SourceModule.GlobalNamespace, buckStopsHereBinder);
@@ -98,10 +97,8 @@ namespace Aquila.CodeAnalysis.Semantics
                             .Identifier
                             .Text);
 
-                        var icBinder = new InContainerBinder(ns, next);
-                        _resolvedBinders.TryAdd(element, icBinder);
-
-                        return icBinder;
+                        return new InContainerBinder(ns, next);
+                        ;
                     }
                     case ExtendDecl ext:
                     {
@@ -109,17 +106,27 @@ namespace Aquila.CodeAnalysis.Semantics
 
                         if (Roslyn.Utilities.EnumerableExtensions.IsSingle(types))
                         {
-                            var icBinder = new InContainerBinder(types[0], next);
-                            _resolvedBinders.TryAdd(element, icBinder);
-
-                            return icBinder;
+                            return new InContainerBinder(types[0], next);
+                            ;
                         }
 
                         break;
                     }
+                    case HtmlMarkupDecl:
+                    {
+                        var container = next.Container as SourceViewTypeSymbol;
+                        if (container == null)
+                            throw new InvalidOperationException("Can't resolve ViewComponent symbol");
+
+                        var builder = container.GetMembers().OfType<SourceViewTypeSymbol.MethodTreeBuilderSymbol>()
+                            .Single();
+                        return new InMethodBinder(builder, next);
+                    }
                     case HtmlDecl:
+                    {
                         var type = _compilation.SourceSymbolCollection.GetViewTypes().Single();
                         return new InContainerBinder(type, next);
+                    }
                     case ImportDecl import:
                         break;
                     case FuncDecl fd:
@@ -155,18 +162,12 @@ namespace Aquila.CodeAnalysis.Semantics
                             //TODO: resolution overloads
                             candidate = methods.First();
 
-
-                        var ib = new InMethodBinder(candidate, next);
-                        _resolvedBinders.TryAdd(element, ib);
-
-                        return ib;
+                        return new InMethodBinder(candidate, next);
+                        ;
                     }
                     case BlockStmt blc:
                     {
-                        var b = new InMethodBinder(next.Method, next);
-                        _resolvedBinders.TryAdd(element, b);
-
-                        return b;
+                        return new InMethodBinder(next.Method, next);
                     }
                 }
 
@@ -199,20 +200,12 @@ namespace Aquila.CodeAnalysis.Semantics
 
                 if (ns.Count() == 1)
                 {
-                    Binder b;
-
                     if (arg.ClrKeyword != default)
                     {
-                        b = new InClrImportBinder(ns.First(), next);
+                        return new InClrImportBinder(ns.First(), next);
                     }
-                    else
-                    {
-                        b = new InContainerBinder(ns.First(), next);
-                    }
-
-                    _resolvedBinders.TryAdd((AquilaSyntaxNode)arg, b);
-
-                    return b;
+                    
+                    return new InContainerBinder(ns.First(), next);
                 }
 
                 return new InContainerBinder(new MissingNamespaceSymbol(_compilation.GlobalNamespace, nsName),
@@ -256,10 +249,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
                 if (ns.Count() == 1)
                 {
-                    var b = new InContainerBinder(ns.First(), nextBinder);
-                    _resolvedBinders.TryAdd(node, b);
-
-                    return b;
+                    return new InContainerBinder(ns.First(), nextBinder);
                 }
 
                 throw new Exception(
@@ -267,6 +257,12 @@ namespace Aquila.CodeAnalysis.Semantics
             }
 
             public override Binder VisitHtmlDecl(HtmlDecl arg)
+            {
+                GetBinder(arg, out var binder);
+                return binder;
+            }
+
+            public override Binder VisitHtmlMarkupDecl(HtmlMarkupDecl arg)
             {
                 GetBinder(arg, out var binder);
                 return binder;

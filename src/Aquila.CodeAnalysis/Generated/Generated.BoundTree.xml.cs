@@ -293,15 +293,15 @@ namespace Aquila.CodeAnalysis.Semantics
 {
     partial class BoundMethodDeclStmt : BoundStatement
     {
-        private SourceMethodSymbol _method;
-        internal BoundMethodDeclStmt(SourceMethodSymbol method)
+        private SourceMethodSymbolBase _method;
+        internal BoundMethodDeclStmt(SourceMethodSymbolBase method)
         {
             _method = method;
             OnCreateImpl(method);
         }
 
-        partial void OnCreateImpl(SourceMethodSymbol method);
-        internal SourceMethodSymbol Method
+        partial void OnCreateImpl(SourceMethodSymbolBase method);
+        internal SourceMethodSymbolBase Method
         {
             get
             {
@@ -330,7 +330,7 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitMethodDeclStmt(this);
         }
 
-        internal BoundMethodDeclStmt Update(SourceMethodSymbol method)
+        internal BoundMethodDeclStmt Update(SourceMethodSymbolBase method)
         {
             if (_method == method)
                 return this;
@@ -2503,9 +2503,9 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
     partial class BoundClassTypeRef : BoundTypeRef
     {
         private QualifiedName _qName;
-        private SourceMethodSymbol _method;
+        private SourceMethodSymbolBase _method;
         private int _arity;
-        internal BoundClassTypeRef(QualifiedName qName, SourceMethodSymbol method, ITypeSymbol resultType, int arity = -1): base(resultType)
+        internal BoundClassTypeRef(QualifiedName qName, SourceMethodSymbolBase method, ITypeSymbol resultType, int arity = -1): base(resultType)
         {
             _qName = qName;
             _method = method;
@@ -2513,7 +2513,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             OnCreateImpl(qName, method, resultType, arity);
         }
 
-        partial void OnCreateImpl(QualifiedName qName, SourceMethodSymbol method, ITypeSymbol resultType, int arity);
+        partial void OnCreateImpl(QualifiedName qName, SourceMethodSymbolBase method, ITypeSymbol resultType, int arity);
         public QualifiedName QName
         {
             get
@@ -2522,7 +2522,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             }
         }
 
-        internal SourceMethodSymbol Method
+        internal SourceMethodSymbolBase Method
         {
             get
             {

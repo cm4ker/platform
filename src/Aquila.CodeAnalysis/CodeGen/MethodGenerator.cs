@@ -43,7 +43,7 @@ namespace Aquila.CodeAnalysis.CodeGen
 
         internal static MethodBody GenerateMethodBody(
             PEModuleBuilder moduleBuilder,
-            SourceMethodSymbol method,
+            SourceMethodSymbolBase method,
             int methodOrdinal,
             //ImmutableArray<LambdaDebugInfo> lambdaDebugInfo,
             //ImmutableArray<ClosureDebugInfo> closureDebugInfo,

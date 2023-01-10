@@ -66,7 +66,7 @@ public sealed partial class BoundMethodDeclStmt : IInvalidOperation
 {
     internal MethodDecl FunctionDecl => (MethodDecl)AquilaSyntax;
 
-    partial void OnCreateImpl(SourceMethodSymbol method)
+    partial void OnCreateImpl(SourceMethodSymbolBase method)
     {
         this.AquilaSyntax = (MethodDecl)method.Syntax;
     }

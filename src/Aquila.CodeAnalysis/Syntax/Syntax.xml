@@ -33,7 +33,7 @@
     </Node>
     <Node Name="HtmlDecl" Base="AquilaSyntaxNode">
         <Kind Name="HtmlDecl"/>
-        <Field Name="HtmlNodes" Type="SyntaxList&lt;HtmlNodeSyntax&gt;"/>
+        <Field Name="HtmlMarkup" Type="HtmlMarkupDecl" Optional="true" />
         <Field Name="HtmlCode" Type="HtmlCodeSyntax" Optional="true"/>
     </Node>
     <Node Name="CompilationUnitSyntax" Base="AquilaSyntaxNode">
@@ -2300,6 +2300,10 @@
     <!--endregion Xml-->
 
     <!-- region Html -->
+    <Node Name="HtmlMarkupDecl" Base="AquilaSyntaxNode">
+        <Kind Name="HtmlMarkupDecl" />
+        <Field Name="HtmlNodes" Type="SyntaxList&lt;HtmlNodeSyntax&gt;"/>
+    </Node>
     <AbstractNode Name="HtmlNodeSyntax" Base="AquilaSyntaxNode"/>
 
     <Node Name="HtmlElementSyntax" Base="HtmlNodeSyntax">

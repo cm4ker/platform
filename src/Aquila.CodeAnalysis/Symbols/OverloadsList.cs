@@ -35,7 +35,7 @@ namespace Aquila.CodeAnalysis.Symbols
             /// <summary>
             /// Builds the visibility scope.
             /// </summary>
-            public VisibilityScope(NamedTypeSymbol self, SourceMethodSymbol method)
+            public VisibilityScope(NamedTypeSymbol self, SourceMethodSymbolBase method)
             {
                 Scope = self;
                 ScopeIsDynamic = (method?.IsGlobalScope == true);

@@ -1,7 +1,10 @@
 ﻿using Aquila.CodeAnalysis.Symbols;
 using System;
+using System.Linq;
 using System.Reflection.Metadata;
 using Aquila.CodeAnalysis.CodeGen;
+using Aquila.CodeAnalysis.Symbols.Source;
+using Microsoft.CodeAnalysis.Emit.NoPia;
 
 namespace Aquila.CodeAnalysis.Semantics
 {
@@ -81,7 +84,12 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         internal override void Emit(CodeGenerator cg)
         {
-            cg.EmitLoadArgument(null); // TODO: BoundArgument __builder
+            if (cg.Method is not SourceViewTypeSymbol.MethodTreeBuilderSymbol s)
+            {
+                throw new InvalidOperationException(
+                    $"Only {nameof(SourceViewTypeSymbol.MethodTreeBuilderSymbol)} can be a host for this instruction");
+            }
+            s.GetBuilderPlace().EmitLoad(cg.Builder);
             cg.EmitLoadConstant(1); //TODO: Insert index of operation
             cg.EmitLoadConstant(this.ElementName);
             cg.EmitCall(ILOpCode.Call, cg.CoreMethods.RenderTreeBuilder.OpenElement);
@@ -92,7 +100,12 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         internal override void Emit(CodeGenerator cg)
         {
-            cg.EmitLoadArgument(null); // TODO: BoundArgument __builder
+            if (cg.Method is not SourceViewTypeSymbol.MethodTreeBuilderSymbol s)
+            {
+                throw new InvalidOperationException(
+                    $"Only {nameof(SourceViewTypeSymbol.MethodTreeBuilderSymbol)} can be a host for this instruction");
+            }
+            s.GetBuilderPlace().EmitLoad(cg.Builder);
             cg.EmitCall(ILOpCode.Call, cg.CoreMethods.RenderTreeBuilder.CloseElement);
         }
     }
@@ -101,9 +114,15 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         internal override void Emit(CodeGenerator cg)
         {
-            cg.EmitLoadArgument(null); // TODO: BoundArgument __builder
-            cg.EmitLoadConstant(1); //TODO: Insert index of operation
-            cg.Emit(this.Expression);
+            if (cg.Method is not SourceViewTypeSymbol.MethodTreeBuilderSymbol s)
+            {
+                throw new InvalidOperationException(
+                    $"Only {nameof(SourceViewTypeSymbol.MethodTreeBuilderSymbol)} can be a host for this instruction");
+            }
+
+            s.GetBuilderPlace().EmitLoad(cg.Builder);
+            cg.EmitLoadConstant(1);
+            cg.Emit(Expression);
             cg.EmitCall(ILOpCode.Call, cg.CoreMethods.RenderTreeBuilder.AddAttribute);
         }
     }
