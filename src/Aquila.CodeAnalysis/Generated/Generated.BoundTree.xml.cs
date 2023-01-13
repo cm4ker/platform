@@ -589,18 +589,28 @@ namespace Aquila.CodeAnalysis.Semantics
     partial class BoundHtmlMarkupStmt : BoundStatement
     {
         private string _markup;
-        public BoundHtmlMarkupStmt(string markup)
+        private int _instructionIndex;
+        public BoundHtmlMarkupStmt(string markup, int instructionIndex)
         {
             _markup = markup;
-            OnCreateImpl(markup);
+            _instructionIndex = instructionIndex;
+            OnCreateImpl(markup, instructionIndex);
         }
 
-        partial void OnCreateImpl(string markup);
+        partial void OnCreateImpl(string markup, int instructionIndex);
         public string Markup
         {
             get
             {
                 return _markup;
+            }
+        }
+
+        public int InstructionIndex
+        {
+            get
+            {
+                return _instructionIndex;
             }
         }
 
@@ -625,11 +635,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitHtmlMarkupStmt(this);
         }
 
-        public BoundHtmlMarkupStmt Update(string markup)
+        public BoundHtmlMarkupStmt Update(string markup, int instructionIndex)
         {
-            if (_markup == markup)
+            if (_markup == markup && _instructionIndex == instructionIndex)
                 return this;
-            return new BoundHtmlMarkupStmt(markup).WithSyntax(this.AquilaSyntax);
+            return new BoundHtmlMarkupStmt(markup, instructionIndex).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -639,18 +649,28 @@ namespace Aquila.CodeAnalysis.Semantics
     partial class BoundHtmlOpenElementStmt : BoundStatement
     {
         private string _elementName;
-        public BoundHtmlOpenElementStmt(string elementName)
+        private int _instructionIndex;
+        public BoundHtmlOpenElementStmt(string elementName, int instructionIndex)
         {
             _elementName = elementName;
-            OnCreateImpl(elementName);
+            _instructionIndex = instructionIndex;
+            OnCreateImpl(elementName, instructionIndex);
         }
 
-        partial void OnCreateImpl(string elementName);
+        partial void OnCreateImpl(string elementName, int instructionIndex);
         public string ElementName
         {
             get
             {
                 return _elementName;
+            }
+        }
+
+        public int InstructionIndex
+        {
+            get
+            {
+                return _instructionIndex;
             }
         }
 
@@ -675,11 +695,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitHtmlOpenElementStmt(this);
         }
 
-        public BoundHtmlOpenElementStmt Update(string elementName)
+        public BoundHtmlOpenElementStmt Update(string elementName, int instructionIndex)
         {
-            if (_elementName == elementName)
+            if (_elementName == elementName && _instructionIndex == instructionIndex)
                 return this;
-            return new BoundHtmlOpenElementStmt(elementName).WithSyntax(this.AquilaSyntax);
+            return new BoundHtmlOpenElementStmt(elementName, instructionIndex).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -723,14 +743,16 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         private string _attributeName;
         private BoundExpression _expression;
-        public BoundHtmlAddAttributeStmt(string attributeName, BoundExpression expression)
+        private int _instructionIndex;
+        public BoundHtmlAddAttributeStmt(string attributeName, BoundExpression expression, int instructionIndex)
         {
             _attributeName = attributeName;
             _expression = expression;
-            OnCreateImpl(attributeName, expression);
+            _instructionIndex = instructionIndex;
+            OnCreateImpl(attributeName, expression, instructionIndex);
         }
 
-        partial void OnCreateImpl(string attributeName, BoundExpression expression);
+        partial void OnCreateImpl(string attributeName, BoundExpression expression, int instructionIndex);
         public string AttributeName
         {
             get
@@ -744,6 +766,14 @@ namespace Aquila.CodeAnalysis.Semantics
             get
             {
                 return _expression;
+            }
+        }
+
+        public int InstructionIndex
+        {
+            get
+            {
+                return _instructionIndex;
             }
         }
 
@@ -768,11 +798,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitHtmlAddAttributeStmt(this);
         }
 
-        public BoundHtmlAddAttributeStmt Update(string attributeName, BoundExpression expression)
+        public BoundHtmlAddAttributeStmt Update(string attributeName, BoundExpression expression, int instructionIndex)
         {
-            if (_attributeName == attributeName && _expression == expression)
+            if (_attributeName == attributeName && _expression == expression && _instructionIndex == instructionIndex)
                 return this;
-            return new BoundHtmlAddAttributeStmt(attributeName, expression).WithSyntax(this.AquilaSyntax);
+            return new BoundHtmlAddAttributeStmt(attributeName, expression, instructionIndex).WithSyntax(this.AquilaSyntax);
         }
     }
 }

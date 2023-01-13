@@ -26,7 +26,7 @@
 
     <Syntax Name="MethodDeclStmt" Base="Statement" OperationKind="LocalFunction">
         <Arguments>
-            <Single Name="Method" Type="SourceMethodSymbol" IsUpdatable="true" IsInternal="true"/>
+            <Single Name="Method" Type="SourceMethodSymbolBase" IsUpdatable="true" IsInternal="true"/>
         </Arguments>
     </Syntax>
 
@@ -52,26 +52,30 @@
             <Single Name="BoundInfo" Type="ForeachBindInfo" IsUpdatable="false"/>
         </Arguments>
     </Syntax>
-    
+    <!-- region HtmlStmt -->
     <Syntax Name="HtmlMarkupStmt" Base="Statement" OperationKind="None">
         <Arguments>
             <Single Name="Markup" Type="string" IsUpdatable="true"/>
+            <Single Name="InstructionIndex" Type="int" IsUpdatable="true"/>
         </Arguments>    
     </Syntax>
 
     <Syntax Name="HtmlOpenElementStmt" Base="Statement" OperationKind="None">
         <Arguments>
             <Single Name="ElementName" Type="string" IsUpdatable="true"/>
+            <Single Name="InstructionIndex" Type="int" IsUpdatable="true"/>
         </Arguments>
     </Syntax>
-
+    
     <Syntax Name="HtmlCloseElementStmt" Base="Statement" OperationKind="None" />
     <Syntax Name="HtmlAddAttributeStmt" Base="Statement" OperationKind="None">
         <Arguments>
             <Single Name="AttributeName" Type="string" IsUpdatable="true"/>
             <Single Name="Expression" Type="BoundExpression" IsUpdatable="true"/>
+            <Single Name="InstructionIndex" Type="int" IsUpdatable="true"/>
         </Arguments>
     </Syntax>
+    <!-- endregion -->
     <!-- endregion -->
 
     <!-- region Expression -->
@@ -375,7 +379,7 @@
     <Syntax Name="ClassTypeRef" Base="TypeRef" NS="TypeRef">
         <Arguments>
             <Single Name="QName" Type="QualifiedName"/>
-            <Single Name="Method" Type="SourceMethodSymbol" IsInternal="true"/>
+            <Single Name="Method" Type="SourceMethodSymbolBase" IsInternal="true"/>
             <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
                     IsInternal="true"/>
             <Single Name="Arity" Type="int" Default="-1"/>

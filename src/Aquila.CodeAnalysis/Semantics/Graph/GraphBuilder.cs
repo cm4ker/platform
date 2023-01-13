@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using Aquila.CodeAnalysis.Syntax;
 using Aquila.Syntax.Ast;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
 namespace Aquila.CodeAnalysis.Semantics.Graph
@@ -23,6 +24,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         private Stack<TryCatchEdge> _tryTargets;
         private Stack<LocalScopeInfo> _scopes = new Stack<LocalScopeInfo>(1);
         private int _index = 0;
+        private int _htmlInstructionIndex = 0;
 
         /// <summary>Counts visited "return" statements.</summary>
         private int _returnCounter = 0;
@@ -174,35 +176,9 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #region Construction
 
-        private GraphBuilder(IList<StmtSyntax> statements, Binder binder)
+        private GraphBuilder(IEnumerable<SyntaxNode> nodes, Binder binder)
         {
-            Contract.ThrowIfNull(statements);
-            Contract.ThrowIfNull(binder);
-
-            _binder = binder;
-
-            this.Start = WithNewOrdinal(new StartBlock());
-            this.Exit = new ExitBlock();
-
-            _current = WithOpenScope(this.Start);
-
-            statements.ForEach(this.Visit);
-            FinalizeMethod();
-            _current = Connect(_current, this.Exit);
-
-            //
-            WithNewOrdinal(this.Exit);
-            CloseScope();
-
-            //
-            Debug.Assert(_scopes.Count == 0);
-            Debug.Assert(_tryTargets == null || _tryTargets.Count == 0);
-            Debug.Assert(_breakTargets == null || _breakTargets.Count == 0);
-        }
-
-        private GraphBuilder(IReadOnlyList<HtmlNodeSyntax> nodes, Binder binder)
-        {
-            Contract.ThrowIfNull(nodes);
+            Contract.ThrowIfNull(nodes);            
             Contract.ThrowIfNull(binder);
 
             _binder = binder;
@@ -224,12 +200,12 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             Debug.Assert(_breakTargets == null || _breakTargets.Count == 0);
         }
 
-        public static GraphBuilder Build(IList<StmtSyntax> statements, Binder binder)
+        public static GraphBuilder Build(IEnumerable<StmtSyntax> statements, Binder binder)
         {
             return new GraphBuilder(statements, binder);
         }
 
-        public static GraphBuilder Build(IReadOnlyList<HtmlNodeSyntax> nodes, Binder binder)
+        public static GraphBuilder Build(IEnumerable<HtmlNodeSyntax> nodes, Binder binder)
         {
             return new GraphBuilder(nodes, binder);
         }
@@ -394,6 +370,8 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// Gets new block index.
         /// </summary>
         private int NewOrdinal() => _index++;
+
+        private int NextHtmlIndex() => _htmlInstructionIndex++;
 
         private T WithNewOrdinal<T>(T block) where T : BoundBlock
         {
@@ -828,7 +806,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public override void VisitHtmlEmptyElement(HtmlEmptyElementSyntax node)
         {
-            Add(new BoundHtmlOpenElementStmt(node.Name.TagName.Text));
+            Add(new BoundHtmlOpenElementStmt(node.Name.TagName.Text, NextHtmlIndex()));
             node.Attributes.ForEach(Visit);
             base.VisitHtmlEmptyElement(node);
             Add(new BoundHtmlCloseElementStmt());
@@ -836,7 +814,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public override void VisitHtmlElement(HtmlElementSyntax node)
         {
-            Add(new BoundHtmlOpenElementStmt(node.StartTag.Name.TagName.Text));
+            Add(new BoundHtmlOpenElementStmt(node.StartTag.Name.TagName.Text, NextHtmlIndex()));
             node.StartTag.Attributes.ForEach(Visit);
             node.Content.ForEach(Visit);
             Add(new BoundHtmlCloseElementStmt());
@@ -859,7 +837,12 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 main = main == null ? expression : new BoundBinaryEx(main, expression, Operations.Add, stringType);
             }
 
-            Add(new BoundHtmlAddAttributeStmt(node.Name.TagName.Text, main));
+            Add(new BoundHtmlAddAttributeStmt(node.Name.TagName.Text, main, NextHtmlIndex()));
+        }
+
+        public override void VisitHtmlText(HtmlTextSyntax node)
+        {
+            Add(new BoundHtmlMarkupStmt(node.GetText().ToString(), NextHtmlIndex()));
         }
 
         #endregion

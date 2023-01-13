@@ -64,15 +64,6 @@ namespace Aquila.CodeAnalysis.Semantics
             else
             {
                 cg.EmitConvert(this.Returned, rtype);
-
-                // TODO: check for null, if return type is not nullable
-                if (cg.Method.SyntaxReturnType != null && !cg.Method.ReturnsNull)
-                {
-                    //// Template: Debug.Assert( <STACK> != null )
-                    //cg.Builder.EmitOpCode(ILOpCode.Dup);
-                    //cg.EmitNotNull(rtype, this.Returned.TypeRefMask);
-                    //cg.EmitDebugAssert();
-                }
             }
 
             // .ret
@@ -84,13 +75,10 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         internal override void Emit(CodeGenerator cg)
         {
-            if (cg.Method is not SourceViewTypeSymbol.MethodTreeBuilderSymbol s)
-            {
-                throw new InvalidOperationException(
-                    $"Only {nameof(SourceViewTypeSymbol.MethodTreeBuilderSymbol)} can be a host for this instruction");
-            }
+            var s = cg.Method.GetOrThrowViewMethod();
+            
             s.GetBuilderPlace().EmitLoad(cg.Builder);
-            cg.EmitLoadConstant(1); //TODO: Insert index of operation
+            cg.EmitLoadConstant(this.InstructionIndex); 
             cg.EmitLoadConstant(this.ElementName);
             cg.EmitCall(ILOpCode.Call, cg.CoreMethods.RenderTreeBuilder.OpenElement);
         }
@@ -100,11 +88,7 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         internal override void Emit(CodeGenerator cg)
         {
-            if (cg.Method is not SourceViewTypeSymbol.MethodTreeBuilderSymbol s)
-            {
-                throw new InvalidOperationException(
-                    $"Only {nameof(SourceViewTypeSymbol.MethodTreeBuilderSymbol)} can be a host for this instruction");
-            }
+            var s = cg.Method.GetOrThrowViewMethod();
             s.GetBuilderPlace().EmitLoad(cg.Builder);
             cg.EmitCall(ILOpCode.Call, cg.CoreMethods.RenderTreeBuilder.CloseElement);
         }
@@ -114,14 +98,10 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         internal override void Emit(CodeGenerator cg)
         {
-            if (cg.Method is not SourceViewTypeSymbol.MethodTreeBuilderSymbol s)
-            {
-                throw new InvalidOperationException(
-                    $"Only {nameof(SourceViewTypeSymbol.MethodTreeBuilderSymbol)} can be a host for this instruction");
-            }
-
+            var s = cg.Method.GetOrThrowViewMethod();
             s.GetBuilderPlace().EmitLoad(cg.Builder);
-            cg.EmitLoadConstant(1);
+            cg.EmitLoadConstant(this.InstructionIndex);
+            cg.EmitLoadConstant(this.AttributeName);
             cg.Emit(Expression);
             cg.EmitCall(ILOpCode.Call, cg.CoreMethods.RenderTreeBuilder.AddAttribute);
         }
@@ -131,7 +111,11 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         internal override void Emit(CodeGenerator cg)
         {
-            throw new NotImplementedException();
+            var s = cg.Method.GetOrThrowViewMethod();
+            s.GetBuilderPlace().EmitLoad(cg.Builder);
+            cg.EmitLoadConstant(this.InstructionIndex);
+            cg.EmitLoadConstant(this.Markup);
+            cg.EmitCall(ILOpCode.Call, cg.CoreMethods.RenderTreeBuilder.AddMarkupContent);
         }
     }
 }

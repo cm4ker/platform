@@ -215,7 +215,7 @@ namespace Aquila.Library.Scripting
                 options.IsSubmission ? BuildSubmissionFileName(options.Location.Path, name.Name) : options.Location.Path
             );
             var viewTree = (AquilaSyntaxTree)AquilaSyntaxTree.ParseText(
-                "<div>Hello world</div> @code{fn test_view_func(){}}", new AquilaParseOptions(kind: SourceCodeKind.View));
+                "<div href=\"123\">Hello world\r\n\r\n</div> @code{fn test_view_func(){}}", new AquilaParseOptions(kind: SourceCodeKind.View));
 
             var diagnostics = tree.GetDiagnostics().ToImmutableArray();
             if (!HasErrors(diagnostics))

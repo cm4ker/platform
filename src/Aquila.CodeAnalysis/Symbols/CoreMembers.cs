@@ -383,12 +383,14 @@ namespace Aquila.CodeAnalysis.Symbols
                 OpenElement = ct.Web_RenderTreeBuilder.Method(nameof(OpenElement), ct.Int32, ct.String);
                 CloseElement = ct.Web_RenderTreeBuilder.Method(nameof(CloseElement));
                 AddAttribute = ct.Web_RenderTreeBuilder.Method(nameof(AddAttribute), ct.Int32, ct.String, ct.String);
+                AddMarkupContent = ct.Web_RenderTreeBuilder.Method(nameof(AddMarkupContent), ct.Int32, ct.String);
             }
 
             public readonly CoreMethod
                 OpenElement,
                 CloseElement,
-                AddAttribute
+                AddAttribute,
+                AddMarkupContent
                 ;
 
         }

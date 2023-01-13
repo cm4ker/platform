@@ -1,14 +1,10 @@
 ﻿@page "/JustForInfo"
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor accessor;
 
-<div>
+<div href="123">Hello world
 
-    @{
-        var a = 1;
-    }
-
-    <br testAttr="@a test @a"/>
-
-</div>
+    @{ var a = 1;}</div>
 
 @code
 {
