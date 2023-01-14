@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Semantics.Graph;
-using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.CodeAnalysis.Syntax;
 using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
@@ -22,15 +23,25 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
     private readonly HtmlDecl _htmlDecl;
     private readonly CoreTypes _ct;
     private ImmutableArray<Symbol> _members;
+    private readonly string _name;
 
     public SourceViewTypeSymbol(NamespaceOrTypeSymbol container, HtmlDecl htmlDecl)
     {
         _container = container;
         _ct = container.DeclaringCompilation.CoreTypes;
         _htmlDecl = htmlDecl;
+        if (!string.IsNullOrEmpty(_htmlDecl.SyntaxTree.FilePath))
+            _name = TranslateViewNameFromFileName(Path.GetFileNameWithoutExtension(_htmlDecl.SyntaxTree.FilePath));
+        else
+            _name = $"View_{Guid.NewGuid()}";
     }
 
-    public override string Name => "AquilaView";
+    private static string TranslateViewNameFromFileName(string fileName)
+        => fileName.Split(new[] { "_", "-" }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => char.ToUpperInvariant(s[0]) + s.Substring(1, s.Length - 1))
+            .Aggregate(string.Empty, (s1, s2) => s1 + s2);
+
+    public override string Name => _name;
     internal override ObsoleteAttributeData ObsoleteAttributeData { get; }
     public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences { get; }
     public override Symbol ContainingSymbol => _container;
@@ -77,8 +88,8 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
             var builder = ImmutableArray.CreateBuilder<Symbol>();
             builder.Add(new MethodTreeBuilderSymbol(this, _htmlDecl));
             SourceTypeSymbolHelper.AddDefaultInstanceTypeSymbolMembers(this, builder);
-            
-            if(_htmlDecl.HtmlCode != null)
+
+            if (_htmlDecl.HtmlCode != null)
                 builder.AddRange(_htmlDecl.HtmlCode.Functions.Select(x => new SourceMethodSymbol(this, x)));
 
             _members = builder.ToImmutable();
@@ -127,14 +138,17 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
 
         public override IMethodSymbol OverriddenMethod => _overridenMethod;
         internal override ParameterListSyntax SyntaxSignature => SyntaxFactory.ParameterList();
-        internal override TypeEx SyntaxReturnType => SyntaxFactory.PredefinedTypeEx(SyntaxFactory.Token(SyntaxKind.VoidKeyword));
+
+        internal override TypeEx SyntaxReturnType =>
+            SyntaxFactory.PredefinedTypeEx(SyntaxFactory.Token(SyntaxKind.VoidKeyword));
+
         internal override AquilaSyntaxNode Syntax => _htmlDecl;
         internal override IList<StmtSyntax> Statements => new List<StmtSyntax>();
         public override string Name => _overridenMethod.Name;
         internal override ObsoleteAttributeData ObsoleteAttributeData => _overridenMethod.ObsoleteAttributeData;
+
         public override void GetDiagnostics(DiagnosticBag diagnostic)
         {
-            
         }
 
         public override Symbol ContainingSymbol => this._type;
@@ -180,6 +194,7 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
                 {
                     return null;
                 }
+
                 var state = StateBinder.CreateInitialState(this);
                 var binder = DeclaringCompilation.GetBinder(_htmlDecl.HtmlMarkup);
                 var cfg = new ControlFlowGraph(this._htmlDecl.HtmlMarkup.HtmlNodes, binder);
@@ -189,24 +204,24 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
             }
             internal set => _cfg = value;
         }
-        
+
         protected override ImplicitParametersBuilder PrepareImplicitParams()
         {
-            var builder =  base.PrepareImplicitParams();
-            builder.Add(index => new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.Web_RenderTreeBuilder, SpecialParameterSymbol.BuilderName, index));
+            var builder = base.PrepareImplicitParams();
+            builder.Add(index => new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.Web_RenderTreeBuilder,
+                SpecialParameterSymbol.BuilderName, index));
             return builder;
         }
 
-        
+
         internal IPlace GetBuilderPlace()
         {
             if (_builderPlace != null)
                 return _builderPlace;
-            
+
             var builderParam = this.GetParameters().Single(x => x.Name == SpecialParameterSymbol.BuilderName);
             _builderPlace = new ParamPlace(builderParam);
             return _builderPlace;
         }
-
     }
 }

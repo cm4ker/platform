@@ -157,12 +157,8 @@ namespace Aquila.CodeAnalysis.CommandLine
 
 
             using (Arguments.CompilationOptions.EventSources.StartMetric("parse-view"))
-            {
-                var d = new DeserializerBuilder()
-                    .IgnoreUnmatchedProperties()
-                    .Build();
-
-                var parseOptions = Arguments.ParseOptions;
+            { 
+                var parseOptions = Arguments.ParseOptions.WithKind(SourceCodeKind.View);
 
                 var diagnosticInfos = new List<DiagnosticInfo>();
 
@@ -231,7 +227,7 @@ namespace Aquila.CodeAnalysis.CommandLine
 
             var compilation = AquilaCompilation.Create(
                 Arguments.CompilationName,
-                syntaxTrees: sourceTrees.WhereNotNull(),
+                syntaxTrees: sourceTrees.WhereNotNull().Union(viewTrees.WhereNotNull()),
                 metadata: metadata,
                 resolvedReferences,
                 resources: resources,

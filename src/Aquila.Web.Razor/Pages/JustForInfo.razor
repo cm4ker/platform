@@ -5,9 +5,12 @@
 <div href="123">Hello world
 
     @{ var a = 1;}</div>
-
+    <input type="text" @bind="myText" />
+    <button @onclick="@Test"></button>
 @code
 {
+    string myText;
+    
     public void Test()
     {
     }

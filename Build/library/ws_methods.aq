@@ -1,6 +1,5 @@
 import Entity;
 
-
 [endpoint]
 pub fn get_books_count() int
 {

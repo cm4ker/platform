@@ -55,7 +55,7 @@ namespace ScriptsTest
 
             var expectedFile = Path.Combine(Path.GetDirectoryName(path),
                 Path.GetFileNameWithoutExtension(path) + ".expect");
-            var hasIL = TryGetILExpect(path, out var expectedIL); 
+            var hasIL = TryGetILExpect(path, out var expectedIL);
             Assert.True(File.Exists(expectedFile), "Please create expect file for comparing results");
 
             var expected = File.ReadAllText(expectedFile);
@@ -64,8 +64,10 @@ namespace ScriptsTest
             var (result, il) = CompileAndRun(path, _fixture.Context);
 
             Assert.Equal(expected, result);
-            Assert.Equal(expectedIL, il);
             
+            if (hasIL)
+                Assert.Equal(expectedIL, il);
+
 
             // Skip if platform wants it to
             Skip.If(result == SkippedTestReturn);
@@ -86,7 +88,7 @@ namespace ScriptsTest
             return false;
         }
 
-        (string Result ,string ILResult ) CompileAndRun(string path, AqContext ctx)
+        (string Result, string ILResult ) CompileAndRun(string path, AqContext ctx)
         {
             var outputStream = new MemoryStream();
 
@@ -100,16 +102,16 @@ namespace ScriptsTest
                 EmitDebugInformation = true,
                 Location = new Location(path, 0, 0),
             }, File.ReadAllText(path), TestMetadata.GetTestMetadata());
-            
+
             // run
 
             script.Evaluate(ctx);
-            
+
             //
             outputStream.Position = 0;
             return (new StreamReader(outputStream, Encoding.UTF8).ReadToEnd(), GetIL(script.Image));
         }
-        
+
         static string GetIL(ImmutableArray<byte> immutableArray)
         {
             var output = new ICSharpCode.Decompiler.PlainTextOutput();
@@ -124,13 +126,14 @@ namespace ScriptsTest
                     var typeDef = metadataReader.GetTypeDefinition(typeDefHandle);
                     if (metadataReader.GetString(typeDef.Name) == WellKnownAquilaNames.MainModuleName)
                     {
-                        var disassembler = new ICSharpCode.Decompiler.Disassembler.ReflectionDisassembler(output, default);
+                        var disassembler =
+                            new ICSharpCode.Decompiler.Disassembler.ReflectionDisassembler(output, default);
                         disassembler.DisassembleType(peFile, typeDefHandle);
                         found = true;
                         break;
                     }
                 }
-                
+
                 Assert.True(found, "Could not find type named " + WellKnownAquilaNames.MainModuleName);
             }
 
