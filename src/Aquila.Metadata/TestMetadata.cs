@@ -87,42 +87,22 @@ namespace Aquila.Metadata
             new SecPolicyMetadata
             {
                 Name = TestSecName,
-                Subjects = new()
+                Subjects = new List<SecPolicySubjectMetadata>
                 {
-                    new() { Name = "Store", Permission = SecPermission.Read },
-                    new()
-                    {
-                        Name = "Invoice",
-                        Permission = SecPermission.Read | SecPermission.Create | SecPermission.Update |
-                                     SecPermission.Delete
-                    }
+                    new(name: "Store", permission: SecPermission.Read),
+                    new(name: "Invoice", permission: SecPermission.Read | SecPermission.Create | SecPermission.Update |
+                                                     SecPermission.Delete)
                 },
-                Criteria = new()
+                Criteria = new List<SecPolicyCriterionMetadata>
                 {
-                    new()
-                    {
-                        Permission = SecPermission.Read, Query = "FROM Subject s WHERE Name = 'Test'", Subject = "Store"
-                    },
-                    new()
-                    {
-                        Permission = SecPermission.Read, Query = "FROM Subject s WHERE Name = 'Hello'",
-                        Subject = "Store"
-                    },
-                    new()
-                    {
-                        Permission = SecPermission.Create, Query = "FROM Subject s WHERE Name = 'CreateMe'",
-                        Subject = "Invoice"
-                    },
-                    new()
-                    {
-                        Permission = SecPermission.Update, Query = "FROM Subject s WHERE Name = 'UpdateMe'",
-                        Subject = "Invoice"
-                    },
-                    new()
-                    {
-                        Permission = SecPermission.Delete, Query = "FROM Subject s WHERE Name = 'DeleteMe'",
-                        Subject = "Invoice"
-                    }
+                    new(permission: SecPermission.Read, query: "FROM Subject s WHERE Name = 'Test'", subject: "Store"),
+                    new(permission: SecPermission.Read, query: "FROM Subject s WHERE Name = 'Hello'", subject: "Store"),
+                    new(permission: SecPermission.Create, query: "FROM Subject s WHERE Name = 'CreateMe'",
+                        subject: "Invoice"),
+                    new(permission: SecPermission.Update, query: "FROM Subject s WHERE Name = 'UpdateMe'",
+                        subject: "Invoice"),
+                    new(permission: SecPermission.Delete, query: "FROM Subject s WHERE Name = 'DeleteMe'",
+                        subject: "Invoice")
                 }
             }
         };

@@ -55,7 +55,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// In the case of updating an existing analysis, a map of the currently analysed methods to their previous return types.
         /// Null in the case of a fresh analysis.
         /// </summary>
-        Dictionary<SourceMethodSymbol, bool> _currentMethodsLastReturnTypes;
+        Dictionary<SourceMethodSymbolBase, bool> _currentMethodsLastReturnTypes;
 
         ///// <summary>
         ///// Adds an analysis driver into the list of analyzers to be performed on bound operations.
@@ -209,7 +209,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         internal void Update(IEnumerable<SourceMethodSymbol> updatedMethods, bool concurrent = false)
         {
             // Initialize the currently re-analysed set of methods with the given ones
-            _currentMethodsLastReturnTypes = new Dictionary<SourceMethodSymbol, bool>();
+            _currentMethodsLastReturnTypes = new Dictionary<SourceMethodSymbolBase, bool>();
             foreach (var method in updatedMethods)
             {
                 _currentMethodsLastReturnTypes.Add(method, false);
@@ -227,7 +227,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                 DoAll(concurrent);
 
                 var lastMethods = _currentMethodsLastReturnTypes;
-                _currentMethodsLastReturnTypes = new Dictionary<SourceMethodSymbol, bool>();
+                _currentMethodsLastReturnTypes = new Dictionary<SourceMethodSymbolBase, bool>();
 
                 // Check the changes of the return types and enlist the callers for the next round
                 foreach (var kvp in lastMethods)

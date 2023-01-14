@@ -15,7 +15,7 @@ namespace Aquila.CodeAnalysis
 
         public static void Add(
             this DiagnosticBag diagnostics,
-            SourceMethodSymbol method,
+            SourceMethodSymbolBase method,
             AquilaSyntaxNode syntax,
             ErrorCode code,
             params object[] args)
@@ -26,7 +26,7 @@ namespace Aquila.CodeAnalysis
 
         public static void Add(
             this DiagnosticBag diagnostics,
-            SourceMethodSymbol method,
+            SourceMethodSymbolBase method,
             TextSpan span,
             ErrorCode code,
             params object[] args)

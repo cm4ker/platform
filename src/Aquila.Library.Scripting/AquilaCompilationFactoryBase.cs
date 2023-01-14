@@ -7,14 +7,13 @@ using System.Reflection;
 using System.Threading;
 using Aquila.CodeAnalysis;
 using Aquila.Core;
-using Aquila.Library;
 using Aquila.Metadata;
 using Microsoft.CodeAnalysis;
 using Npgsql;
 
-namespace Aquila.Compiler.Tests;
+namespace Aquila.Library.Scripting;
 
-abstract class AquilaCompilationFactoryBase
+internal abstract class AquilaCompilationFactoryBase
 {
     static MetadataReference CreateMetadataReference(string path) => MetadataReference.CreateFromFile(path);
 

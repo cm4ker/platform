@@ -15,6 +15,16 @@ namespace Aquila.Metadata
 {
     public class SecPolicySubjectMetadata
     {
+        public SecPolicySubjectMetadata()
+        {
+        }
+
+        public SecPolicySubjectMetadata(string name, SecPermission permission)
+        {
+            Name = name;
+            Permission = permission;
+        }
+
         public string Name { get; set; }
         public SecPermission Permission { get; set; }
     }
@@ -62,6 +72,17 @@ namespace Aquila.Metadata
     /// </summary>
     public class SecPolicyCriterionMetadata
     {
+        public SecPolicyCriterionMetadata()
+        {
+        }
+
+        public SecPolicyCriterionMetadata(SecPermission permission, string query, string subject)
+        {
+            Permission = permission;
+            Query = query;
+            Subject = subject;
+        }
+
         public SecPermission Permission { get; set; }
 
         public string Subject { get; set; }

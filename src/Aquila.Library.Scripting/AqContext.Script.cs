@@ -7,8 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Aquila.CodeAnalysis;
-using Aquila.CodeAnalysis.Syntax;
-using Aquila.Compiler.Tests;
+using Aquila.CodeAnalysis.Symbols;
 using Aquila.Core;
 using Aquila.Metadata;
 using Microsoft.CodeAnalysis;
@@ -23,6 +22,9 @@ namespace Aquila.Library.Scripting
     [DebuggerDisplay("Script ({AssemblyName.Name})")]
     sealed class Script : AqContext.IScript
     {
+        private const string MainModuleName = "main";
+        private const string EntryPointMethodName = "main";
+        
         #region Fields & Properties
 
         /// <summary>
@@ -57,8 +59,7 @@ namespace Aquila.Library.Scripting
         /// References to scripts that precedes this one.
         /// Current script requires these to be evaluated first.
         /// </summary>
-        public IReadOnlyList<Script> DependingSubmissions =>
-            _previousSubmissions; // TODO: resolve the compiled code dependencies - referenced types and declared functions. Also, this might cause a huge memory leak.
+        public IReadOnlyList<Script> DependingSubmissions => _previousSubmissions; 
 
         /// <summary>
         /// Gets the assembly content.
@@ -94,12 +95,12 @@ namespace Aquila.Library.Scripting
 
             _image = peStream.ToArray().ToImmutableArray();
 
-            var t = ass.GetType("main");
-
+            var t = ass.GetType(WellKnownAquilaNames.MainModuleName);
+            
             _entryPoint = ctx =>
             {
                 ctx.Instance.UpdateAssembly(ass);
-                return ((MethodInfo)t.GetMember("main").FirstOrDefault()).Invoke(null, new object[] { ctx });
+                return ((MethodInfo)t.GetMember(WellKnownAquilaNames.MainMethodName).FirstOrDefault()).Invoke(null, new object[] { ctx });
             };
 
             if (_entryPoint == null)
@@ -214,6 +215,8 @@ namespace Aquila.Library.Scripting
                     shortOpenTags: shortOpenTags),
                 options.IsSubmission ? BuildSubmissionFileName(options.Location.Path, name.Name) : options.Location.Path
             );
+            var viewTree = (AquilaSyntaxTree)AquilaSyntaxTree.ParseText(
+                "<div href=\"123\">Hello world\r\n\r\n</div> @code{fn test_view_func(){}}", new AquilaParseOptions(kind: SourceCodeKind.View));
 
             var diagnostics = tree.GetDiagnostics().ToImmutableArray();
             if (!HasErrors(diagnostics))
@@ -238,11 +241,10 @@ namespace Aquila.Library.Scripting
                 // create the compilation object
                 // TODO: add conditionally declared types into the compilation tables
                 var compilation = (AquilaCompilation)builder.CoreCompilation
-                    //.WithLangVersion(languageVersion)
+                    
                     .WithAssemblyName(name.Name)
                     .AddMetadata(metadata.EntityMetadata)
-                    .AddViews(new[] { "<h1>HO HO HO</h1>" })
-                    .AddSyntaxTrees(tree)
+                    .AddSyntaxTrees(tree, viewTree)
                     .AddReferences(metadatareferences);
 
                 var emitOptions = new EmitOptions();
@@ -253,7 +255,7 @@ namespace Aquila.Library.Scripting
                     compilation = compilation.WithAquilaOptions(compilation.Options
                         .WithOptimizationLevel(OptimizationLevel.Debug)
                         .WithDebugPlusMode(true)
-                        .WithConcurrentBuild(true)
+                        .WithConcurrentBuild(false)
                     );
 
                     if (options.IsSubmission)

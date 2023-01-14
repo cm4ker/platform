@@ -346,6 +346,9 @@ namespace Aquila.CodeAnalysis
         /// <summary>Called when the visitor visits a XmlCommentSyntax node.</summary>
         public virtual TResult? VisitXmlComment(XmlCommentSyntax node) => this.DefaultVisit(node);
 
+        /// <summary>Called when the visitor visits a HtmlMarkupDecl node.</summary>
+        public virtual TResult? VisitHtmlMarkupDecl(HtmlMarkupDecl node) => this.DefaultVisit(node);
+
         /// <summary>Called when the visitor visits a HtmlElementSyntax node.</summary>
         public virtual TResult? VisitHtmlElement(HtmlElementSyntax node) => this.DefaultVisit(node);
 
@@ -712,6 +715,9 @@ namespace Aquila.CodeAnalysis
         /// <summary>Called when the visitor visits a XmlCommentSyntax node.</summary>
         public virtual void VisitXmlComment(XmlCommentSyntax node) => this.DefaultVisit(node);
 
+        /// <summary>Called when the visitor visits a HtmlMarkupDecl node.</summary>
+        public virtual void VisitHtmlMarkupDecl(HtmlMarkupDecl node) => this.DefaultVisit(node);
+
         /// <summary>Called when the visitor visits a HtmlElementSyntax node.</summary>
         public virtual void VisitHtmlElement(HtmlElementSyntax node) => this.DefaultVisit(node);
 
@@ -752,7 +758,7 @@ namespace Aquila.CodeAnalysis
             => node.Update(VisitToken(node.ModuleKeyword), (NameEx?)Visit(node.Name) ?? throw new ArgumentNullException("name"), VisitToken(node.SemicolonToken));
 
         public override SyntaxNode? VisitHtmlDecl(HtmlDecl node)
-            => node.Update(VisitList(node.HtmlNodes));
+            => node.Update((HtmlMarkupDecl?)Visit(node.HtmlMarkup), (HtmlCodeSyntax?)Visit(node.HtmlCode));
 
         public override SyntaxNode? VisitCompilationUnit(CompilationUnitSyntax node)
             => node.Update((ModuleDecl?)Visit(node.Module), VisitList(node.Imports), (HtmlDecl?)Visit(node.Html), VisitList(node.Members), VisitToken(node.EndOfFileToken));
@@ -1078,6 +1084,9 @@ namespace Aquila.CodeAnalysis
         public override SyntaxNode? VisitXmlComment(XmlCommentSyntax node)
             => node.Update(VisitToken(node.LessThanExclamationMinusMinusToken), VisitList(node.TextTokens), VisitToken(node.MinusMinusGreaterThanToken));
 
+        public override SyntaxNode? VisitHtmlMarkupDecl(HtmlMarkupDecl node)
+            => node.Update(VisitList(node.HtmlNodes));
+
         public override SyntaxNode? VisitHtmlElement(HtmlElementSyntax node)
             => node.Update((HtmlElementStartTagSyntax?)Visit(node.StartTag) ?? throw new ArgumentNullException("startTag"), VisitList(node.Content), (HtmlElementEndTagSyntax?)Visit(node.EndTag) ?? throw new ArgumentNullException("endTag"));
 
@@ -1128,14 +1137,14 @@ namespace Aquila.CodeAnalysis
             => SyntaxFactory.ModuleDecl(SyntaxFactory.Token(SyntaxKind.ModuleKeyword), name, SyntaxFactory.Token(SyntaxKind.SemicolonToken));
 
         /// <summary>Creates a new HtmlDecl instance.</summary>
-        public static HtmlDecl HtmlDecl(SyntaxList<HtmlNodeSyntax> htmlNodes)
+        public static HtmlDecl HtmlDecl(HtmlMarkupDecl? htmlMarkup, HtmlCodeSyntax? htmlCode)
         {
-            return (HtmlDecl)Syntax.InternalSyntax.SyntaxFactory.HtmlDecl(htmlNodes.Node.ToGreenList<Syntax.InternalSyntax.HtmlNodeSyntax>()).CreateRed();
+            return (HtmlDecl)Syntax.InternalSyntax.SyntaxFactory.HtmlDecl(htmlMarkup == null ? null : (Syntax.InternalSyntax.HtmlMarkupDecl)htmlMarkup.Green, htmlCode == null ? null : (Syntax.InternalSyntax.HtmlCodeSyntax)htmlCode.Green).CreateRed();
         }
 
         /// <summary>Creates a new HtmlDecl instance.</summary>
         public static HtmlDecl HtmlDecl()
-            => SyntaxFactory.HtmlDecl(default);
+            => SyntaxFactory.HtmlDecl(default, default);
 
         /// <summary>Creates a new CompilationUnitSyntax instance.</summary>
         public static CompilationUnitSyntax CompilationUnit(ModuleDecl? module, SyntaxList<ImportDecl> imports, HtmlDecl? html, SyntaxList<MemberDecl> members, SyntaxToken endOfFileToken)
@@ -3040,6 +3049,16 @@ namespace Aquila.CodeAnalysis
         /// <summary>Creates a new XmlCommentSyntax instance.</summary>
         public static XmlCommentSyntax XmlComment(SyntaxTokenList textTokens = default)
             => SyntaxFactory.XmlComment(SyntaxFactory.Token(SyntaxKind.XmlCommentStartToken), textTokens, SyntaxFactory.Token(SyntaxKind.XmlCommentEndToken));
+
+        /// <summary>Creates a new HtmlMarkupDecl instance.</summary>
+        public static HtmlMarkupDecl HtmlMarkupDecl(SyntaxList<HtmlNodeSyntax> htmlNodes)
+        {
+            return (HtmlMarkupDecl)Syntax.InternalSyntax.SyntaxFactory.HtmlMarkupDecl(htmlNodes.Node.ToGreenList<Syntax.InternalSyntax.HtmlNodeSyntax>()).CreateRed();
+        }
+
+        /// <summary>Creates a new HtmlMarkupDecl instance.</summary>
+        public static HtmlMarkupDecl HtmlMarkupDecl()
+            => SyntaxFactory.HtmlMarkupDecl(default);
 
         /// <summary>Creates a new HtmlElementSyntax instance.</summary>
         public static HtmlElementSyntax HtmlElement(HtmlElementStartTagSyntax startTag, SyntaxList<HtmlNodeSyntax> content, HtmlElementEndTagSyntax endTag)

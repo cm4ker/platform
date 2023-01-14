@@ -29,7 +29,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         /// </summary>
         public IMethodSymbol DeclaringMethod => _method;
 
-        readonly SourceMethodSymbol _method;
+        readonly SourceMethodSymbolBase _method;
 
         public override NamedTypeSymbol ContainingType => base.ContainingType;
 
@@ -115,7 +115,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         SynthesizedMethodSymbol _initMethod;
 
-        public SynthesizedStaticLocHolder(SourceMethodSymbol method, string locName, TypeSymbol locType = null)
+        public SynthesizedStaticLocHolder(SourceMethodSymbolBase method, string locName, TypeSymbol locType = null)
         {
             Contract.ThrowIfNull(method);
 

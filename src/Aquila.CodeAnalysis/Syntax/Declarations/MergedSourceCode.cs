@@ -1,13 +1,10 @@
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using Aquila.CodeAnalysis;
-using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Syntax;
-using Aquila.Syntax.Ast;
 using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
 
@@ -32,6 +29,7 @@ namespace Aquila.Syntax.Declarations
         private readonly ConcurrentBag<AquilaSyntaxTree> _trees = new ConcurrentBag<AquilaSyntaxTree>();
 
         private List<MergeModuleDecl> _mergedModules;
+        private List<HtmlDecl> _views;
 
         public MergedSourceCode()
         {
@@ -67,6 +65,12 @@ namespace Aquila.Syntax.Declarations
             return _mergedModules;
         }
 
+        public IEnumerable<HtmlDecl> GetViews()
+        {
+            EnsureViews();
+            return _views;
+        }
+
         public MergeModuleDecl GetModule(string name)
         {
             return GetModules().FirstOrDefault(x => x.Name == name);
@@ -79,7 +83,7 @@ namespace Aquila.Syntax.Declarations
 
             var modDic = new Dictionary<string, List<CompilationUnitSyntax>>();
 
-            foreach (var unit in _trees.Select(x => x.GetCompilationUnitRoot()))
+            foreach (var unit in _trees.Where(x=>!x.IsView).Select(x => x.GetCompilationUnitRoot()))
             {
                 if (unit != null)
                     if (modDic.TryGetValue(unit.ModuleName, out var list))
@@ -94,83 +98,18 @@ namespace Aquila.Syntax.Declarations
 
             Interlocked.CompareExchange(ref _mergedModules, modules, null);
         }
-    }
 
-
-    public class MergedTypeDecl
-    {
-        public MergedTypeDecl(TypeDecl type, IEnumerable<FuncDecl> funcs)
+        private void EnsureViews()
         {
-            TypeDecl = type;
-            FuncDecls = funcs;
-        }
+            if (_views != null)
+                return;
 
-        public string Name => TypeDecl.Name.GetUnqualifiedName().Identifier.Text;
-
-        public TypeDecl TypeDecl { get; }
-        public IEnumerable<FuncDecl> FuncDecls { get; }
-    }
-
-    public class MergeModuleDecl
-    {
-        private readonly CompilationUnitSyntax _firstElement;
-        private readonly ImmutableArray<CompilationUnitSyntax> _units;
-        private ImmutableArray<MergedTypeDecl> _types;
-        private ImmutableArray<FuncDecl> _func;
-
-        public MergeModuleDecl(ImmutableArray<CompilationUnitSyntax> units)
-        {
-            _firstElement = units.First();
-            _units = units;
-        }
-
-        ImmutableArray<MergedTypeDecl> EnsureTypesCore()
-        {
-            var builder = ImmutableArray.CreateBuilder<MergedTypeDecl>();
-
-            if (_types == null || _types.IsDefault)
+            _views = new List<HtmlDecl>();
+            foreach (var unit in _trees.Where(x=>x.IsView).Select(x=>x.GetCompilationUnitRoot()))
             {
-                foreach (var unit in _units)
-                {
-                    foreach (var type in unit.Types)
-                    {
-                        //skip partial types (types generated from metadata)
-                        //TODO: rename partial types to metadata types / synthesized ???
-                        if (AstUtils.GetModifiers(type.Modifiers).IsPartial())
-                        {
-                            continue;
-                        }
-
-                        var typeName = type.Name.GetUnqualifiedName().Identifier.Text;
-
-                        var funcs = unit.Functions.Where(x => x.FuncOwner?.OwnerType.GetName() == typeName)
-                            .ToImmutableArray();
-
-                        builder.Add(new MergedTypeDecl(type, funcs));
-                    }
-                }
-
-                _types = builder.ToImmutableArray();
+                if(unit != null && unit.Html != null)
+                    _views.Add(unit.Html);
             }
-
-            return _types;
         }
-
-        ImmutableArray<FuncDecl> EnsureFinctionsCore()
-        {
-            if (_func == null || _func.IsDefaultOrEmpty)
-                _func = _units.SelectMany(x => x.Functions).ToImmutableArray();
-
-            return _func;
-        }
-
-        //TODO: make main is constant value as default module name
-        public string Name => _firstElement.ModuleName;
-
-        public IEnumerable<FuncDecl> ModuleFunctions => EnsureFinctionsCore().Where(x => x.FuncOwner == null);
-
-        public IEnumerable<FuncDecl> OwnedFunctions => EnsureFinctionsCore().Where(x => x.FuncOwner != null);
-
-        public IEnumerable<MergedTypeDecl> Types => EnsureTypesCore();
     }
 }

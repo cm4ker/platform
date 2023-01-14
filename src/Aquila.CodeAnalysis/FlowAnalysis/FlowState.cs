@@ -20,7 +20,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// Source method.
         /// Can be <c>null</c>.
         /// </summary>
-        public SourceMethodSymbol Method => FlowContext.Method;
+        public SourceMethodSymbolBase Method => FlowContext.Method;
 
         /// <summary>
         /// Types of variables in this state.

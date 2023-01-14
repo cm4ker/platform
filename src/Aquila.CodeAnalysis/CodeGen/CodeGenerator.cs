@@ -166,7 +166,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         #region Fields
 
         readonly ILBuilder _il;
-        readonly SourceMethodSymbol _method;
+        readonly SourceMethodSymbolBase _method;
         readonly PEModuleBuilder _moduleBuilder;
         readonly AquilaOptimizationLevel _optimizations;
         readonly bool _emitPdbSequencePoints;
@@ -255,7 +255,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         /// <summary>
         /// Gets the method we are emitting.
         /// </summary>
-        public SourceMethodSymbol Method => _method;
+        public SourceMethodSymbolBase Method => _method;
 
         /// <summary>
         /// For debug purposes.
@@ -365,7 +365,7 @@ namespace Aquila.CodeAnalysis.CodeGen
 
             _emitPdbSequencePoints = emittingPdb;
 
-            _method = method as SourceMethodSymbol;
+            _method = method as SourceMethodSymbolBase;
 
             var syntax = _method?.Syntax;
 
@@ -379,7 +379,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         /// Copy ctor with different method content (and TypeRefContext).
         /// Used for emitting in a context of a different method (parameter initializer).
         /// </summary>
-        public CodeGenerator(CodeGenerator cg, SourceMethodSymbol method)
+        public CodeGenerator(CodeGenerator cg, SourceMethodSymbolBase method)
             : this(cg._il, cg._moduleBuilder, cg._diagnostics, cg._optimizations, cg._emitPdbSequencePoints,
                 method.ContainingType, cg._contextPlace, method)
         {
@@ -388,7 +388,7 @@ namespace Aquila.CodeAnalysis.CodeGen
             ExtraFinallyBlock = cg.ExtraFinallyBlock;
         }
 
-        public CodeGenerator(SourceMethodSymbol method, ILBuilder il, PEModuleBuilder moduleBuilder,
+        public CodeGenerator(SourceMethodSymbolBase method, ILBuilder il, PEModuleBuilder moduleBuilder,
             DiagnosticBag diagnostics, AquilaOptimizationLevel optimizations, bool emittingPdb)
             : this(il, moduleBuilder, diagnostics, optimizations, emittingPdb, method.ContainingType,
                 method.GetContextPlace(moduleBuilder), method)

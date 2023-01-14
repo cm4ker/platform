@@ -289,3 +289,8 @@ netcoreapp[23].[01]/
 
 .antlr/
 /.nugs/*
+
+# binlogs from msbuild
+*.binlog 
+# txt logs from msbuild
+log*.txt 

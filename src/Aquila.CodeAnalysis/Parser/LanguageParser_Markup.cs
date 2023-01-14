@@ -188,6 +188,12 @@ internal partial class LanguageParser
                    || PeekToken(1).Kind == SyntaxKind.IfKeyword);
     }
 
+    private bool IsHtmlCodeDecl()
+    {
+        return CurrentToken.Kind == SyntaxKind.AtToken
+               && PeekToken(1).Kind == SyntaxKind.HtmlCodeKeyword;
+    }
+
     HtmlStatementSyntax ParseHtmlStatement()
     {
         var atToken = EatToken(SyntaxKind.AtToken);
@@ -220,6 +226,28 @@ internal partial class LanguageParser
         return SyntaxFactory.HtmlExpression(atToken, expr);
     }
 
+    HtmlCodeSyntax ParseHtmlCode()
+    {
+        var atToken = EatToken(SyntaxKind.AtToken);
+        var codeKeyword = EatToken(SyntaxKind.HtmlCodeKeyword);
+        MemberDecl memberDecl;
+
+        using (EnterMode(LexerMode.Syntax, true))
+        {
+            var openBrace = EatToken(SyntaxKind.OpenBraceToken);
+
+            var members = _pool.Allocate<MemberDecl>();
+            while ((memberDecl = ParseMemberDeclaration(SyntaxKind.CompilationUnit)) != null)
+            {
+                members.Add(memberDecl);
+            }
+
+            var closeBrace = EatToken(SyntaxKind.CloseBraceToken);
+
+            return SyntaxFactory.HtmlCode(atToken, codeKeyword, openBrace, members.ToList(), closeBrace);
+        }
+    }
+
     private bool IsPrimaryHtmlExpression()
     {
         return PeekToken(1).Kind != SyntaxKind.OpenParenToken;
@@ -231,18 +259,21 @@ internal partial class LanguageParser
         {
             return ParseHtmlStatement();
         }
-        else
-        {
-            //TODO: ParseHtmlCode();
-            return ParseHtmlExpression();
-        }
+
+        return ParseHtmlExpression();
     }
 
     private HtmlDecl ParseHtmlDecl()
     {
         var nodes = _pool.Allocate<HtmlNodeSyntax>();
+        HtmlCodeSyntax htmlCode = null;
+
         ParseHtmlContent(nodes);
-        return _syntaxFactory.HtmlDecl(_pool.ToListAndFree(nodes));
+
+        if (IsHtmlCodeDecl())
+            htmlCode = ParseHtmlCode();
+        
+        return _syntaxFactory.HtmlDecl(_syntaxFactory.HtmlMarkupDecl(_pool.ToListAndFree(nodes)), htmlCode);
     }
 
     private void ParseHtmlContent(SyntaxListBuilder<HtmlNodeSyntax> contentNodes)
@@ -254,6 +285,8 @@ internal partial class LanguageParser
                     var node = ParseHtmlNode();
                     contentNodes.Add(node);
                     break;
+                case var _ when IsHtmlCodeDecl():
+                    return;
                 case SyntaxKind.AtToken:
                     var code = ParseHtmlInterrupt();
                     contentNodes.Add(code);

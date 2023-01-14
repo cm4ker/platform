@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using Aquila.Compiler.Tests;
 using Aquila.Core;
 using Aquila.Metadata;
 
@@ -11,8 +10,7 @@ namespace Aquila.Library.Scripting
 {
     public sealed class ScriptingProvider : AqContext.IScriptingProvider
     {
-        readonly Dictionary<string, List<Script>> _scripts =
-            new Dictionary<string, List<Script>>(StringComparer.Ordinal);
+        readonly Dictionary<string, List<Script>> _scripts = new(StringComparer.Ordinal);
 
         readonly ReaderWriterLockSlim _scriptsLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
         readonly AquilaCompilationFactory _builder = new AquilaCompilationFactory();

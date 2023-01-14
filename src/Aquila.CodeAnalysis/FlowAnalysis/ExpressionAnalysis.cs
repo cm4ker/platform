@@ -34,7 +34,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Reference to corresponding source method.
         /// </summary>
-        protected SourceMethodSymbol Method => State.Method;
+        protected SourceMethodSymbolBase Method => State.Method;
 
         protected AquilaCompilation DeclaringCompilation => _model.Compilation;
 

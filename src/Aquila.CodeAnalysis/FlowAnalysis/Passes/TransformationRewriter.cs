@@ -21,7 +21,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
     internal partial class TransformationRewriter : GraphRewriter
     {
         private readonly DelayedTransformations _delayedTransformations;
-        private readonly SourceMethodSymbol _method;
+        private readonly SourceMethodSymbolBase _method;
         private readonly HashSet<BoundCopyValue> _unnecessaryCopies; // Possibly null if all are necessary
 
         protected AquilaCompilation DeclaringCompilation => _method.DeclaringCompilation;
@@ -29,7 +29,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 
         public int TransformationCount { get; private set; }
 
-        public static bool TryTransform(DelayedTransformations delayedTransformations, SourceMethodSymbol method)
+        public static bool TryTransform(DelayedTransformations delayedTransformations, SourceMethodSymbolBase method)
         {
             if (method.ControlFlowGraph == null)
             {
@@ -61,7 +61,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
         {
         }
 
-        private TransformationRewriter(DelayedTransformations delayedTransformations, SourceMethodSymbol method)
+        private TransformationRewriter(DelayedTransformations delayedTransformations, SourceMethodSymbolBase method)
             : this()
         {
             _delayedTransformations = delayedTransformations;
@@ -94,7 +94,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             Debug.Assert(_method.ControlFlowGraph == x);
         }
 
-        private protected override void OnUnreachableMethodFound(SourceMethodSymbol method)
+        private protected override void OnUnreachableMethodFound(SourceMethodSymbolBase method)
         {
             _delayedTransformations.UnreachableMethods.Add(method);
         }

@@ -49,6 +49,11 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         public const string SelfName = "<self>";
 
+        /// <summary>
+        /// Name of special <c>builder</c> parameter
+        /// </summary>
+        public const string BuilderName = "<builder>";
+
         readonly MethodSymbol _symbol;
         readonly int _index;
         readonly string _name;

@@ -174,13 +174,13 @@ namespace Aquila.CodeAnalysis.DocumentationComments
             }
         }
 
-        public static void WriteMethod(TextWriter output, SourceMethodSymbol method)
+        public static void WriteMethod(TextWriter output, SourceMethodSymbolBase method)
         {
             Contract.ThrowIfNull(output);
             Contract.ThrowIfNull(method);
         }
 
-        void WriteMethod(string id, SourceMethodSymbol method)
+        void WriteMethod(string id, SourceMethodSymbolBase method)
         {
             if (!AddToWritten(id, method))
             {
@@ -195,7 +195,7 @@ namespace Aquila.CodeAnalysis.DocumentationComments
             _writer.WriteLine("</member>");
         }
 
-        void WriteMethod(SourceMethodSymbol method)
+        void WriteMethod(SourceMethodSymbolBase method)
         {
             if (method.IsGlobalScope) return; // global code have no XML annotation
 

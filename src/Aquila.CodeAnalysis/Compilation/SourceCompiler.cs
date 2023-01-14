@@ -19,7 +19,6 @@ using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
-using Aquila.CodeAnalysis.Web;
 using SourceMethodSymbol = Aquila.CodeAnalysis.Symbols.SourceMethodSymbol;
 
 namespace Aquila.CodeAnalysis
@@ -59,21 +58,15 @@ namespace Aquila.CodeAnalysis
 
             // parallel worklist algorithm
             _worklist = new Worklist<BoundBlock>(AnalyzeBlock);
-
-            if (_moduleBuilder != null)
-            {
-                foreach (var compilationView in _compilation.Views)
-                {
-                    ComponentBaseGenerator cb = new ComponentBaseGenerator(_moduleBuilder, compilationView);
-                    cb.Build();
-                }
-            }
         }
 
-        void WalkMethods(Action<SourceMethodSymbol> action, bool allowParallel = false)
+        void WalkSourceMethods(Action<SourceMethodSymbolBase> action, bool allowParallel = false)
         {
             var methods = _compilation.SourceSymbolCollection.GetSourceMethods();
+            var viewMethods = _compilation.SourceSymbolCollection.GetViewTypes().SelectMany(x=>x.GetMembers().OfType<SourceViewTypeSymbol.MethodTreeBuilderSymbol>());
 
+            methods = methods.Union(viewMethods);
+            
             if (ConcurrentBuild && allowParallel)
             {
                 Parallel.ForEach(methods, action);
@@ -95,7 +88,10 @@ namespace Aquila.CodeAnalysis
             var moduleNestedTypesMethods = moduleTypes.SelectMany(x =>
                 x.GetTypeMembers().SelectMany(y => y.GetMembers().OfType<SynthesizedMethodSymbol>()));
 
-            var methods = platformSynth.Union(moduleMethods).Union(moduleNestedTypesMethods);
+            var viewMethods = _compilation.SourceSymbolCollection.GetViewTypes()
+                .SelectMany(x => x.GetMembers().OfType<SynthesizedMethodSymbol>());
+            
+            var methods = platformSynth.Union(moduleMethods).Union(moduleNestedTypesMethods).Union(viewMethods);
 
             if (ConcurrentBuild && allowParallel)
             {
@@ -107,24 +103,10 @@ namespace Aquila.CodeAnalysis
             }
         }
 
-        void WalkSynthesizedTypes(Action<SynthesizedTypeSymbol> action, bool allowParallel = false)
-        {
-            var types = _compilation.PlatformSymbolCollection.SynthesizedTypes;
-
-            if (ConcurrentBuild && allowParallel)
-            {
-                Parallel.ForEach(types, action);
-            }
-            else
-            {
-                types.ForEach(action);
-            }
-        }
-
         void WalkTypes(Action<SourceModuleTypeSymbol> action, bool allowParallel = false)
         {
             var types = _compilation.SourceSymbolCollection.GetModuleTypes();
-
+            
             if (ConcurrentBuild && allowParallel)
             {
                 Parallel.ForEach(types, action);
@@ -138,7 +120,7 @@ namespace Aquila.CodeAnalysis
         /// <summary>
         /// Enqueues method's start block for analysis.
         /// </summary>
-        void EnqueueMethod(SourceMethodSymbol method)
+        void EnqueueMethod(SourceMethodSymbolBase method)
         {
             Contract.ThrowIfNull(method);
             // lazily binds CFG and
@@ -177,7 +159,7 @@ namespace Aquila.CodeAnalysis
 
         internal void ReanalyzeMethods()
         {
-            this.WalkMethods(method => _worklist.Enqueue(method.ControlFlowGraph.Start));
+            this.WalkSourceMethods(method => _worklist.Enqueue(method.ControlFlowGraph.Start));
         }
 
         internal void AnalyzeMethods()
@@ -200,31 +182,6 @@ namespace Aquila.CodeAnalysis
             return new ExpressionAnalysis<VoidStruct>(_worklist, _compilation.GlobalSemantics);
         }
 
-        /// <summary>
-        /// Walks all expressions and resolves their access, operator method, and result CLR type.
-        /// </summary>
-        void BindTypes()
-        {
-            var binder = new ResultTypeBinder(_compilation);
-
-            // method bodies
-            this.WalkMethods(method =>
-            {
-                // body
-                binder.Bind(method);
-
-                // parameter initializers
-                method.SourceParameters.ForEach(binder.Bind);
-            }, allowParallel: ConcurrentBuild);
-
-            // field initializers
-            // WalkTypes(type =>
-            // {
-            //     type.GetDeclaredMembers().OfType<SourceFieldSymbol>().ForEach(binder.Bind);
-            //
-            // }, allowParallel: ConcurrentBuild);
-        }
-
         #region Nested class: LateStaticCallsLookup
 
         /// <summary>
@@ -240,25 +197,6 @@ namespace Aquila.CodeAnalysis
                 visitor.Accept(block);
                 return (IList<MethodSymbol>)visitor._lazyStaticCalls ?? Array.Empty<MethodSymbol>();
             }
-
-            // public override bool VisitStaticFunctionCall(BoundCall x)
-            // {
-            //     if (x.TypeRef.IsSelf() || x.TypeRef.IsParent())
-            //     {
-            //         if (_lazyStaticCalls == null) _lazyStaticCalls = new List<MethodSymbol>();
-            //
-            //         if (x.TargetMethod.IsValidMethod() && x.TargetMethod.IsStatic)
-            //         {
-            //             _lazyStaticCalls.Add(x.TargetMethod);
-            //         }
-            //         else if (x.TargetMethod is AmbiguousMethodSymbol ambiguous)
-            //         {
-            //             _lazyStaticCalls.AddRange(ambiguous.Ambiguities.Where(sm => sm.IsStatic));
-            //         }
-            //     }
-            //
-            //     return base.VisitStaticFunctionCall(x);
-            // }
         }
 
         #endregion
@@ -269,10 +207,10 @@ namespace Aquila.CodeAnalysis
         /// </summary>
         void ForwardLateStaticBindings()
         {
-            var calls = new ConcurrentBag<KeyValuePair<SourceMethodSymbol, MethodSymbol>>();
+            var calls = new ConcurrentBag<KeyValuePair<SourceMethodSymbolBase, MethodSymbol>>();
 
             // collect self:: or parent:: static calls
-            this.WalkMethods(method =>
+            this.WalkSourceMethods(method =>
             {
                 if (method is SourceMethodSymbol caller && caller.IsStatic &&
                     (caller.Flags & MethodFlags.UsesLateStatic) == 0)
@@ -292,7 +230,7 @@ namespace Aquila.CodeAnalysis
 
                     foreach (var callee in selfcalls)
                     {
-                        calls.Add(new KeyValuePair<SourceMethodSymbol, MethodSymbol>(caller, callee));
+                        calls.Add(new KeyValuePair<SourceMethodSymbolBase, MethodSymbol>(caller, callee));
                     }
                 }
             }, allowParallel: ConcurrentBuild);
@@ -315,10 +253,10 @@ namespace Aquila.CodeAnalysis
 
         internal void DiagnoseMethods()
         {
-            this.WalkMethods(DiagnoseMethod, allowParallel: true);
+            this.WalkSourceMethods(DiagnoseMethod, allowParallel: true);
         }
 
-        private void DiagnoseMethod(SourceMethodSymbol method)
+        private void DiagnoseMethod(SourceMethodSymbolBase method)
         {
             Contract.ThrowIfNull(method);
 
@@ -329,7 +267,7 @@ namespace Aquila.CodeAnalysis
         {
             this.WalkTypes(DiagnoseType, allowParallel: true);
         }
-
+       
         private void DiagnoseType(SourceModuleTypeSymbol type)
         {
             type.GetDiagnostics(_diagnostics);
@@ -340,7 +278,7 @@ namespace Aquila.CodeAnalysis
             bool anyTransforms = false;
             var delayedTrn = new DelayedTransformations();
 
-            this.WalkMethods(m =>
+            this.WalkSourceMethods(m =>
                 {
                     // Cannot be simplified due to multithreading ('=' is atomic unlike '|=')
                     if (TransformationRewriter.TryTransform(delayedTrn, m))
@@ -359,12 +297,12 @@ namespace Aquila.CodeAnalysis
             Debug.Assert(_moduleBuilder != null);
 
             // source methods
-            this.WalkMethods(this.EmitMethodBody, allowParallel: true);
+            this.WalkSourceMethods(this.EmitMethodBody, allowParallel: true);
         }
 
         internal void EmitSynthesized()
         {
-            WalkMethods(f => f.SynthesizeStubs(_moduleBuilder, _diagnostics));
+            WalkSourceMethods(f => f.SynthesizeStubs(_moduleBuilder, _diagnostics));
             WalkSynthesizedMethods(m =>
                 _moduleBuilder.SetMethodBody(m, m.CreateMethodBody(_moduleBuilder, _diagnostics)));
         }
@@ -372,7 +310,7 @@ namespace Aquila.CodeAnalysis
         /// <summary>
         /// Generates analyzed method.
         /// </summary>
-        void EmitMethodBody(SourceMethodSymbol method)
+        void EmitMethodBody(SourceMethodSymbolBase method)
         {
             Contract.ThrowIfNull(method);
 
@@ -404,7 +342,7 @@ namespace Aquila.CodeAnalysis
         bool MakeLoweringTransformMethods(bool allowParallel)
         {
             bool anyTransforms = false;
-            this.WalkMethods(m =>
+            this.WalkSourceMethods(m =>
                 {
                     // Cannot be simplified due to multithreading ('=' is atomic unlike '|=')
                     if (LocalRewriter.TryTransform(m))
@@ -420,7 +358,7 @@ namespace Aquila.CodeAnalysis
         {
             if (MakeLoweringTransformMethods(ConcurrentBuild))
             {
-                WalkMethods(m =>
+                WalkSourceMethods(m =>
                     {
                         m.ControlFlowGraph?.FlowContext?.InvalidateAnalysis();
                         EnqueueMethod(m);
@@ -435,7 +373,7 @@ namespace Aquila.CodeAnalysis
             {
                 if (TransformMethods(ConcurrentBuild))
                 {
-                    WalkMethods(m =>
+                    WalkSourceMethods(m =>
                         {
                             m.ControlFlowGraph?.FlowContext?.InvalidateAnalysis();
                             EnqueueMethod(m);
@@ -476,7 +414,7 @@ namespace Aquila.CodeAnalysis
                 //   a. construct CFG, bind AST to Operation
                 //   b. declare table of local variables
                 // compiler.WalkTypes(compiler.EnqueueFieldsInitializer, allowParallel: true);
-                compiler.WalkMethods(compiler.EnqueueMethod, allowParallel: true);
+                compiler.WalkSourceMethods(compiler.EnqueueMethod, allowParallel: true);
             }
 
             if (diagnostics.HasAnyErrors())
@@ -491,14 +429,7 @@ namespace Aquila.CodeAnalysis
                     // Analyze Operations
                     compiler.AnalyzeMethods();
                 }
-
-                using (compilation.StartMetric("bind types"))
-                {
-                    // Resolve operators and types
-                    compiler.BindTypes();
-                }
-
-
+                
                 using (compilation.StartMetric("lowering"))
                 {
                     // Lowering methods
@@ -555,7 +486,7 @@ namespace Aquila.CodeAnalysis
         {
             Debug.Assert(moduleBuilder != null);
 
-            //compilation.TrackMetric("sourceFilesCount", compilation.SourceSymbolCollection.FilesCount);
+            compilation.TrackMetric("sourceFilesCount", compilation.SourceSymbolCollection.FilesCount);
 
             using (compilation.StartMetric("diagnostics"))
             {
@@ -564,8 +495,7 @@ namespace Aquila.CodeAnalysis
                 diagnostics.AddRange(declarationDiagnostics);
 
                 // cancel the operation if there are errors
-                if (hasDeclarationErrors |=
-                    declarationDiagnostics.HasAnyErrors() || cancellationToken.IsCancellationRequested)
+                if (hasDeclarationErrors || declarationDiagnostics.HasAnyErrors() || cancellationToken.IsCancellationRequested)
                 {
                     return;
                 }

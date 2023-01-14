@@ -21,6 +21,10 @@ public enum BoundKind
     StaticVarStmt,
     YieldStmt,
     ForEachStmt,
+    HtmlMarkupStmt,
+    HtmlOpenElementStmt,
+    HtmlCloseElementStmt,
+    HtmlAddAttributeStmt,
     ArrayEx,
     AssignEx,
     CompoundAssignEx,
@@ -289,15 +293,15 @@ namespace Aquila.CodeAnalysis.Semantics
 {
     partial class BoundMethodDeclStmt : BoundStatement
     {
-        private SourceMethodSymbol _method;
-        internal BoundMethodDeclStmt(SourceMethodSymbol method)
+        private SourceMethodSymbolBase _method;
+        internal BoundMethodDeclStmt(SourceMethodSymbolBase method)
         {
             _method = method;
             OnCreateImpl(method);
         }
 
-        partial void OnCreateImpl(SourceMethodSymbol method);
-        internal SourceMethodSymbol Method
+        partial void OnCreateImpl(SourceMethodSymbolBase method);
+        internal SourceMethodSymbolBase Method
         {
             get
             {
@@ -326,7 +330,7 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitMethodDeclStmt(this);
         }
 
-        internal BoundMethodDeclStmt Update(SourceMethodSymbol method)
+        internal BoundMethodDeclStmt Update(SourceMethodSymbolBase method)
         {
             if (_method == method)
                 return this;
@@ -576,6 +580,229 @@ namespace Aquila.CodeAnalysis.Semantics
             if (_item == item && _collection == collection)
                 return this;
             return new BoundForEachStmt(item, collection, this.BoundInfo).WithSyntax(this.AquilaSyntax);
+        }
+    }
+}
+
+namespace Aquila.CodeAnalysis.Semantics
+{
+    partial class BoundHtmlMarkupStmt : BoundStatement
+    {
+        private string _markup;
+        private int _instructionIndex;
+        public BoundHtmlMarkupStmt(string markup, int instructionIndex)
+        {
+            _markup = markup;
+            _instructionIndex = instructionIndex;
+            OnCreateImpl(markup, instructionIndex);
+        }
+
+        partial void OnCreateImpl(string markup, int instructionIndex);
+        public string Markup
+        {
+            get
+            {
+                return _markup;
+            }
+        }
+
+        public int InstructionIndex
+        {
+            get
+            {
+                return _instructionIndex;
+            }
+        }
+
+        public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.HtmlMarkupStmt;
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
+        partial void AcceptImpl(OperationVisitor visitor);
+        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
+        {
+            TRes res = default;
+            AcceptImpl(visitor, argument, ref res);
+            return res;
+        }
+
+        public override void Accept(OperationVisitor visitor)
+        {
+            AcceptImpl(visitor);
+        }
+
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        {
+            return visitor.VisitHtmlMarkupStmt(this);
+        }
+
+        public BoundHtmlMarkupStmt Update(string markup, int instructionIndex)
+        {
+            if (_markup == markup && _instructionIndex == instructionIndex)
+                return this;
+            return new BoundHtmlMarkupStmt(markup, instructionIndex).WithSyntax(this.AquilaSyntax);
+        }
+    }
+}
+
+namespace Aquila.CodeAnalysis.Semantics
+{
+    partial class BoundHtmlOpenElementStmt : BoundStatement
+    {
+        private string _elementName;
+        private int _instructionIndex;
+        public BoundHtmlOpenElementStmt(string elementName, int instructionIndex)
+        {
+            _elementName = elementName;
+            _instructionIndex = instructionIndex;
+            OnCreateImpl(elementName, instructionIndex);
+        }
+
+        partial void OnCreateImpl(string elementName, int instructionIndex);
+        public string ElementName
+        {
+            get
+            {
+                return _elementName;
+            }
+        }
+
+        public int InstructionIndex
+        {
+            get
+            {
+                return _instructionIndex;
+            }
+        }
+
+        public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.HtmlOpenElementStmt;
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
+        partial void AcceptImpl(OperationVisitor visitor);
+        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
+        {
+            TRes res = default;
+            AcceptImpl(visitor, argument, ref res);
+            return res;
+        }
+
+        public override void Accept(OperationVisitor visitor)
+        {
+            AcceptImpl(visitor);
+        }
+
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        {
+            return visitor.VisitHtmlOpenElementStmt(this);
+        }
+
+        public BoundHtmlOpenElementStmt Update(string elementName, int instructionIndex)
+        {
+            if (_elementName == elementName && _instructionIndex == instructionIndex)
+                return this;
+            return new BoundHtmlOpenElementStmt(elementName, instructionIndex).WithSyntax(this.AquilaSyntax);
+        }
+    }
+}
+
+namespace Aquila.CodeAnalysis.Semantics
+{
+    partial class BoundHtmlCloseElementStmt : BoundStatement
+    {
+        public BoundHtmlCloseElementStmt()
+        {
+            OnCreateImpl();
+        }
+
+        partial void OnCreateImpl();
+        public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.HtmlCloseElementStmt;
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
+        partial void AcceptImpl(OperationVisitor visitor);
+        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
+        {
+            TRes res = default;
+            AcceptImpl(visitor, argument, ref res);
+            return res;
+        }
+
+        public override void Accept(OperationVisitor visitor)
+        {
+            AcceptImpl(visitor);
+        }
+
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        {
+            return visitor.VisitHtmlCloseElementStmt(this);
+        }
+    }
+}
+
+namespace Aquila.CodeAnalysis.Semantics
+{
+    partial class BoundHtmlAddAttributeStmt : BoundStatement
+    {
+        private string _attributeName;
+        private BoundExpression _expression;
+        private int _instructionIndex;
+        public BoundHtmlAddAttributeStmt(string attributeName, BoundExpression expression, int instructionIndex)
+        {
+            _attributeName = attributeName;
+            _expression = expression;
+            _instructionIndex = instructionIndex;
+            OnCreateImpl(attributeName, expression, instructionIndex);
+        }
+
+        partial void OnCreateImpl(string attributeName, BoundExpression expression, int instructionIndex);
+        public string AttributeName
+        {
+            get
+            {
+                return _attributeName;
+            }
+        }
+
+        public BoundExpression Expression
+        {
+            get
+            {
+                return _expression;
+            }
+        }
+
+        public int InstructionIndex
+        {
+            get
+            {
+                return _instructionIndex;
+            }
+        }
+
+        public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.HtmlAddAttributeStmt;
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
+        partial void AcceptImpl(OperationVisitor visitor);
+        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
+        {
+            TRes res = default;
+            AcceptImpl(visitor, argument, ref res);
+            return res;
+        }
+
+        public override void Accept(OperationVisitor visitor)
+        {
+            AcceptImpl(visitor);
+        }
+
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        {
+            return visitor.VisitHtmlAddAttributeStmt(this);
+        }
+
+        public BoundHtmlAddAttributeStmt Update(string attributeName, BoundExpression expression, int instructionIndex)
+        {
+            if (_attributeName == attributeName && _expression == expression && _instructionIndex == instructionIndex)
+                return this;
+            return new BoundHtmlAddAttributeStmt(attributeName, expression, instructionIndex).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -2306,9 +2533,9 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
     partial class BoundClassTypeRef : BoundTypeRef
     {
         private QualifiedName _qName;
-        private SourceMethodSymbol _method;
+        private SourceMethodSymbolBase _method;
         private int _arity;
-        internal BoundClassTypeRef(QualifiedName qName, SourceMethodSymbol method, ITypeSymbol resultType, int arity = -1): base(resultType)
+        internal BoundClassTypeRef(QualifiedName qName, SourceMethodSymbolBase method, ITypeSymbol resultType, int arity = -1): base(resultType)
         {
             _qName = qName;
             _method = method;
@@ -2316,7 +2543,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             OnCreateImpl(qName, method, resultType, arity);
         }
 
-        partial void OnCreateImpl(QualifiedName qName, SourceMethodSymbol method, ITypeSymbol resultType, int arity);
+        partial void OnCreateImpl(QualifiedName qName, SourceMethodSymbolBase method, ITypeSymbol resultType, int arity);
         public QualifiedName QName
         {
             get
@@ -2325,7 +2552,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
             }
         }
 
-        internal SourceMethodSymbol Method
+        internal SourceMethodSymbolBase Method
         {
             get
             {
@@ -2806,6 +3033,10 @@ namespace Aquila.CodeAnalysis.Semantics
         public virtual TResult VisitStaticVarStmt(BoundStaticVarStmt x) => VisitDefault(x);
         public virtual TResult VisitYieldStmt(BoundYieldStmt x) => VisitDefault(x);
         public virtual TResult VisitForEachStmt(BoundForEachStmt x) => VisitDefault(x);
+        public virtual TResult VisitHtmlMarkupStmt(BoundHtmlMarkupStmt x) => VisitDefault(x);
+        public virtual TResult VisitHtmlOpenElementStmt(BoundHtmlOpenElementStmt x) => VisitDefault(x);
+        public virtual TResult VisitHtmlCloseElementStmt(BoundHtmlCloseElementStmt x) => VisitDefault(x);
+        public virtual TResult VisitHtmlAddAttributeStmt(BoundHtmlAddAttributeStmt x) => VisitDefault(x);
         public virtual TResult VisitExpression(BoundExpression x) => VisitDefault(x);
         public virtual TResult VisitArrayEx(BoundArrayEx x) => VisitDefault(x);
         public virtual TResult VisitAssignEx(BoundAssignEx x) => VisitDefault(x);

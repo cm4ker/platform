@@ -32,14 +32,14 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Graph
         /// Maps each node to its incident edges, their directions can be found by <see cref="Edge.Caller"/>
         /// and <see cref="Edge.Callee"/>.
         /// </summary>
-        private readonly ConcurrentDictionary<SourceMethodSymbol, ConcurrentBag<Edge>> _incidentEdges;
+        private readonly ConcurrentDictionary<SourceMethodSymbolBase, ConcurrentBag<Edge>> _incidentEdges;
 
         public CallGraph()
         {
-            _incidentEdges = new ConcurrentDictionary<SourceMethodSymbol, ConcurrentBag<Edge>>();
+            _incidentEdges = new ConcurrentDictionary<SourceMethodSymbolBase, ConcurrentBag<Edge>>();
         }
 
-        public Edge AddEdge(SourceMethodSymbol caller, SourceMethodSymbol callee, CallSite callSite)
+        public Edge AddEdge(SourceMethodSymbolBase caller, SourceMethodSymbolBase callee, CallSite callSite)
         {
             var edge = new Edge(caller, callee, callSite);
             AddMethodEdge(caller, edge);
@@ -48,7 +48,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Graph
             return edge;
         }
 
-        public IEnumerable<Edge> GetIncidentEdges(SourceMethodSymbol method)
+        public IEnumerable<Edge> GetIncidentEdges(SourceMethodSymbolBase method)
         {
             if (_incidentEdges.TryGetValue(method, out var edges))
             {
@@ -60,17 +60,17 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Graph
             }
         }
 
-        public IEnumerable<Edge> GetCalleeEdges(SourceMethodSymbol caller)
+        public IEnumerable<Edge> GetCalleeEdges(SourceMethodSymbolBase caller)
         {
             return GetIncidentEdges(caller).Where(edge => edge.Caller == caller);
         }
 
-        public IEnumerable<Edge> GetCallerEdges(SourceMethodSymbol callee)
+        public IEnumerable<Edge> GetCallerEdges(SourceMethodSymbolBase callee)
         {
             return GetIncidentEdges(callee).Where(edge => edge.Callee == callee);
         }
 
-        private void AddMethodEdge(SourceMethodSymbol method, Edge edge)
+        private void AddMethodEdge(SourceMethodSymbolBase method, Edge edge)
         {
             _incidentEdges.AddOrUpdate(
                 method,
@@ -84,16 +84,16 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Graph
 
         public class Edge
         {
-            public Edge(SourceMethodSymbol caller, SourceMethodSymbol callee, CallSite callSite)
+            public Edge(SourceMethodSymbolBase caller, SourceMethodSymbolBase callee, CallSite callSite)
             {
                 Caller = caller;
                 Callee = callee;
                 CallSite = callSite;
             }
 
-            public SourceMethodSymbol Caller { get; }
+            public SourceMethodSymbolBase Caller { get; }
 
-            public SourceMethodSymbol Callee { get; }
+            public SourceMethodSymbolBase Callee { get; }
 
             public CallSite CallSite { get; }
         }

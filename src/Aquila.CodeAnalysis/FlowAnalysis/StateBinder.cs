@@ -11,7 +11,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Creates new type context, flow context and flow state for the method.
         /// </summary>
-        public static FlowState CreateInitialState(SourceMethodSymbol method, FlowContext flowCtx = null)
+        public static FlowState CreateInitialState(SourceMethodSymbolBase method, FlowContext flowCtx = null)
         {
             Contract.ThrowIfNull(method);
 

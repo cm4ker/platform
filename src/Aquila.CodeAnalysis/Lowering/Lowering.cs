@@ -13,7 +13,7 @@ namespace Aquila.CodeAnalysis.Lowering
 {
     internal class LocalRewriter : GraphRewriter
     {
-        private readonly SourceMethodSymbol _method;
+        private readonly SourceMethodSymbolBase _method;
 
         protected AquilaCompilation DeclaringCompilation => _method.DeclaringCompilation;
         protected PrimitiveBoundTypeRefs PrimitiveBoundTypeRefs => DeclaringCompilation.TypeRefs;
@@ -28,7 +28,7 @@ namespace Aquila.CodeAnalysis.Lowering
         {
         }
 
-        private LocalRewriter(SourceMethodSymbol method)
+        private LocalRewriter(SourceMethodSymbolBase method)
             : this()
         {
             _method = method;
@@ -36,7 +36,7 @@ namespace Aquila.CodeAnalysis.Lowering
             _cm = DeclaringCompilation.CoreMethods;
         }
 
-        public static bool TryTransform(SourceMethodSymbol method)
+        public static bool TryTransform(SourceMethodSymbolBase method)
         {
             if (method.ControlFlowGraph == null)
             {

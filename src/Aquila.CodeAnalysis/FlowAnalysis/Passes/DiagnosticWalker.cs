@@ -17,7 +17,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
     internal partial class DiagnosticWalker<T> : GraphExplorer<T>
     {
         private readonly DiagnosticBag _diagnostics;
-        private SourceMethodSymbol _method;
+        private SourceMethodSymbolBase _method;
 
         private bool CallsParentCtor { get; set; }
 
@@ -37,7 +37,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             _diagnostics.Add(_method, op.AquilaSyntax, ErrorCode.ERR_CannotInstantiateType, kind, t.Type);
         }
 
-        public static void Analyse(DiagnosticBag diagnostics, SourceMethodSymbol method)
+        public static void Analyse(DiagnosticBag diagnostics, SourceMethodSymbolBase method)
         {
             //
             method.GetDiagnostics(diagnostics);
@@ -54,7 +54,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             visitor.CheckParams();
         }
 
-        private DiagnosticWalker(DiagnosticBag diagnostics, SourceMethodSymbol method)
+        private DiagnosticWalker(DiagnosticBag diagnostics, SourceMethodSymbolBase method)
         {
             _diagnostics = diagnostics;
             _method = method;

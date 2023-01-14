@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection.Emit;
 using System.Reflection.Metadata;
 using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Emit;
@@ -10,7 +9,6 @@ using Aquila.CodeAnalysis.Symbols.Attributes;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
-using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Web;
 
@@ -77,10 +75,11 @@ internal class ComponentBaseGenerator
 
     public void AddMarkupContent()
     {
+        
     }
 }
 
-internal class Visitor
+internal class Visitor : AquilaSyntaxVisitor
 {
     private readonly TypeSymbol _componentType;
     private readonly CoreTypes _ct;
@@ -100,23 +99,7 @@ internal class Visitor
         this.d = d;
         this.il = il;
     }
-
-    // public override VoidResult VisitTag(AqViewParser.TagContext context)
-    // {
-    //     var tagName = context.attrName.Text;
-    //     OpenElement(tagName);
-    //     base.VisitTag(context);
-    //     CloseElement();
-    //
-    //     return DefaultResult;
-    // }
-    //
-    // public override VoidResult VisitAttribute(AqViewParser.AttributeContext context)
-    // {
-    //     AddAttribute(context.name.Text, context.value.Text);
-    //     return DefaultResult;
-    // }
-
+    
     public void OpenElement(string elementName)
     {
         _builder.EmitLoad(il);

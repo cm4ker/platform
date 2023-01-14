@@ -34,11 +34,11 @@ namespace Aquila.Syntax.Metadata
         {
             return tSymbol switch
             {
-                { } x when x.SpecialType == SpecialType.System_Int32 => new SMType(SMType.Int),
-                { } x when x.SpecialType == SpecialType.System_String => new SMType(SMType.String),
-                { } x when x.SpecialType == SpecialType.System_DateTime => new SMType(SMType.DateTime),
-                { } x when x.SpecialType == SpecialType.System_Boolean => new SMType(SMType.Boolean),
-                { } x when x.SpecialType == SpecialType.System_Decimal => new SMType(SMType.Numeric),
+                { SpecialType: SpecialType.System_Int32 } => new SMType(SMType.Int),
+                { SpecialType: SpecialType.System_String } => new SMType(SMType.String),
+                { SpecialType: SpecialType.System_DateTime } => new SMType(SMType.DateTime),
+                { SpecialType: SpecialType.System_Boolean } => new SMType(SMType.Boolean),
+                { SpecialType: SpecialType.System_Decimal } => new SMType(SMType.Numeric),
                 _ => throw new NotImplementedException($"Can't translate type {tSymbol} to database type")
             };
         }

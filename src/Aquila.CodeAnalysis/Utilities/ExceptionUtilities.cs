@@ -32,7 +32,7 @@ namespace Aquila.CodeAnalysis.Utilities
         /// Gets <see cref="System.NotImplementedException"/> with aproximate location of the error.
         /// </summary>
         public static NotImplementedException NotImplementedException(ILBuilder il, string message = null,
-            IAquilaOperation op = null, SourceMethodSymbol method = null, MethodSymbol debugmethod = null)
+            IAquilaOperation op = null, SourceMethodSymbolBase method = null, MethodSymbol debugmethod = null)
         {
             string location = null;
 

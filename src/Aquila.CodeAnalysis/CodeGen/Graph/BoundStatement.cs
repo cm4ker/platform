@@ -1,6 +1,10 @@
 ﻿using Aquila.CodeAnalysis.Symbols;
 using System;
+using System.Linq;
+using System.Reflection.Metadata;
 using Aquila.CodeAnalysis.CodeGen;
+using Aquila.CodeAnalysis.Symbols.Source;
+using Microsoft.CodeAnalysis.Emit.NoPia;
 
 namespace Aquila.CodeAnalysis.Semantics
 {
@@ -60,19 +64,59 @@ namespace Aquila.CodeAnalysis.Semantics
             else
             {
                 cg.EmitConvert(this.Returned, rtype);
-
-                // TODO: check for null, if return type is not nullable
-                if (cg.Method.SyntaxReturnType != null && !cg.Method.ReturnsNull)
-                {
-                    //// Template: Debug.Assert( <STACK> != null )
-                    //cg.Builder.EmitOpCode(ILOpCode.Dup);
-                    //cg.EmitNotNull(rtype, this.Returned.TypeRefMask);
-                    //cg.EmitDebugAssert();
-                }
             }
 
             // .ret
             cg.EmitRet(rtype);
         }
     }
+
+    partial class BoundHtmlOpenElementStmt
+    {
+        internal override void Emit(CodeGenerator cg)
+        {
+            var s = cg.Method.GetOrThrowViewMethod();
+            
+            s.GetBuilderPlace().EmitLoad(cg.Builder);
+            cg.EmitLoadConstant(this.InstructionIndex); 
+            cg.EmitLoadConstant(this.ElementName);
+            cg.EmitCall(ILOpCode.Call, cg.CoreMethods.RenderTreeBuilder.OpenElement);
+        }
+    }
+    
+    partial class BoundHtmlCloseElementStmt
+    {
+        internal override void Emit(CodeGenerator cg)
+        {
+            var s = cg.Method.GetOrThrowViewMethod();
+            s.GetBuilderPlace().EmitLoad(cg.Builder);
+            cg.EmitCall(ILOpCode.Call, cg.CoreMethods.RenderTreeBuilder.CloseElement);
+        }
+    }
+
+    partial class BoundHtmlAddAttributeStmt
+    {
+        internal override void Emit(CodeGenerator cg)
+        {
+            var s = cg.Method.GetOrThrowViewMethod();
+            s.GetBuilderPlace().EmitLoad(cg.Builder);
+            cg.EmitLoadConstant(this.InstructionIndex);
+            cg.EmitLoadConstant(this.AttributeName);
+            cg.Emit(Expression);
+            cg.EmitCall(ILOpCode.Call, cg.CoreMethods.RenderTreeBuilder.AddAttribute);
+        }
+    }
+    
+    partial class BoundHtmlMarkupStmt
+    {
+        internal override void Emit(CodeGenerator cg)
+        {
+            var s = cg.Method.GetOrThrowViewMethod();
+            s.GetBuilderPlace().EmitLoad(cg.Builder);
+            cg.EmitLoadConstant(this.InstructionIndex);
+            cg.EmitLoadConstant(this.Markup);
+            cg.EmitCall(ILOpCode.Call, cg.CoreMethods.RenderTreeBuilder.AddMarkupContent);
+        }
+    }
 }
+

@@ -7,7 +7,9 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Syntax;
+using Aquila.Compiler.Utilities;
 using Aquila.Syntax.Declarations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -19,7 +21,6 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         internal class BinderFactoryVisitor : AquilaSyntaxVisitor<Binder>
         {
-            private readonly ConcurrentDictionary<AquilaSyntaxNode, Binder> _resolvedBinders;
             private Stack<Binder> _binderHierarcy;
 
             private Binder TopStack
@@ -51,7 +52,6 @@ namespace Aquila.CodeAnalysis.Semantics
                 _compilation = factory._compilation;
                 _merged = _compilation.SourceSymbolCollection.GetMergedSourceCode();
 
-                _resolvedBinders = new ConcurrentDictionary<AquilaSyntaxNode, Binder>();
                 _binderHierarcy = new Stack<Binder>();
 
                 _global = new GlobalBinder(_compilation.SourceModule.GlobalNamespace, buckStopsHereBinder);
@@ -90,77 +90,86 @@ namespace Aquila.CodeAnalysis.Semantics
             {
                 var next = Visit(element.Parent);
 
-                if (element is ComponentDecl comDecl)
+                switch (element)
                 {
-                    var ns = _compilation.PlatformSymbolCollection.GetNamespace(comDecl.Name.GetUnqualifiedName()
-                        .Identifier
-                        .Text);
-
-                    var icBinder = new InContainerBinder(ns, next);
-                    _resolvedBinders.TryAdd(element, icBinder);
-
-                    return icBinder;
-                }
-                else if (element is ExtendDecl ext)
-                {
-                    var types = next.Container.GetTypeMembers(ext.Name.GetUnqualifiedName().Identifier.Text);
-
-                    if (Roslyn.Utilities.EnumerableExtensions.IsSingle(types))
+                    case ComponentDecl comDecl:
                     {
-                        var icBinder = new InContainerBinder(types[0], next);
-                        _resolvedBinders.TryAdd(element, icBinder);
+                        var ns = _compilation.PlatformSymbolCollection.GetNamespace(comDecl.Name.GetUnqualifiedName()
+                            .Identifier
+                            .Text);
 
-                        return icBinder;
+                        return new InContainerBinder(ns, next);
+                        ;
                     }
-                }
-                else if (element is ImportDecl import)
-                {
-                }
-                else if (element is FuncDecl fd)
-                {
-                    NamespaceOrTypeSymbol container;
-
-                    //TODO: visibility
-
-                    if (fd.FuncOwner != null)
+                    case ExtendDecl ext:
                     {
-                        //check we need describe above the part type of this type
+                        var types = next.Container.GetTypeMembers(ext.Name.GetUnqualifiedName().Identifier.Text);
 
-                        var hasDeclaredType = ((CompilationUnitSyntax)fd.Parent).Types.Any(x =>
-                            x.Name.GetUnqualifiedName().Identifier.Text == fd.FuncOwner.OwnerType.ToString());
+                        if (Roslyn.Utilities.EnumerableExtensions.IsSingle(types))
+                        {
+                            return new InContainerBinder(types[0], next);
+                            ;
+                        }
 
-                        container = next.BindType(fd.FuncOwner.OwnerType);
+                        break;
                     }
-                    else if (fd.IsGlobal)
-                        container = next.Container;
-                    else
-                        container = next.Container;
-
-                    var methods = container.GetMembers(fd.Identifier.Text).OfType<SourceMethodSymbol>();
-
-                    SourceMethodSymbol candidate = null;
-
-                    if (methods.Count() == 0)
+                    case HtmlMarkupDecl:
                     {
-                        //candidate = new MissingMethodSymbol(fd.Identifier.Text);
-                        //return next;
+                        var container = next.Container as SourceViewTypeSymbol;
+                        if (container == null)
+                            throw new InvalidOperationException("Can't resolve ViewComponent symbol");
+
+                        var builder = container.GetMembers().OfType<SourceViewTypeSymbol.MethodTreeBuilderSymbol>()
+                            .Single();
+                        return new InMethodBinder(builder, next);
                     }
-                    else
-                        //TODO: resolution overloads
-                        candidate = methods.First();
+                    case HtmlDecl:
+                    {
+                        var type = _compilation.SourceSymbolCollection.GetViewTypes().Single();
+                        return new InContainerBinder(type, next);
+                    }
+                    case ImportDecl import:
+                        break;
+                    case FuncDecl fd:
+                    {
+                        NamespaceOrTypeSymbol container;
 
+                        //TODO: visibility
 
-                    var ib = new InMethodBinder(candidate, next);
-                    _resolvedBinders.TryAdd(element, ib);
+                        if (fd.FuncOwner != null)
+                        {
+                            //check we need describe above the part type of this type
 
-                    return ib;
-                }
-                else if (element is BlockStmt blc)
-                {
-                    var b = new InMethodBinder(next.Method, next);
-                    _resolvedBinders.TryAdd(element, b);
+                            var hasDeclaredType = ((CompilationUnitSyntax)fd.Parent).Types.Any(x =>
+                                x.Name.GetUnqualifiedName().Identifier.Text == fd.FuncOwner.OwnerType.ToString());
 
-                    return b;
+                            container = next.BindType(fd.FuncOwner.OwnerType);
+                        }
+                        else if (fd.IsGlobal)
+                            container = next.Container;
+                        else
+                            container = next.Container;
+
+                        var methods = container.GetMembers(fd.Identifier.Text).OfType<SourceMethodSymbol>();
+
+                        MethodSymbol candidate = null;
+
+                        if (!methods.Any())
+                        {
+                            candidate = new MissingMethodSymbol(name: fd.Identifier.Text);
+                            return next;
+                        }
+                        else
+                            //TODO: resolution overloads
+                            candidate = methods.First();
+
+                        return new InMethodBinder(candidate, next);
+                        ;
+                    }
+                    case BlockStmt blc:
+                    {
+                        return new InMethodBinder(next.Method, next);
+                    }
                 }
 
                 return next;
@@ -192,20 +201,12 @@ namespace Aquila.CodeAnalysis.Semantics
 
                 if (ns.Count() == 1)
                 {
-                    Binder b;
-
                     if (arg.ClrKeyword != default)
                     {
-                        b = new InClrImportBinder(ns.First(), next);
+                        return new InClrImportBinder(ns.First(), next);
                     }
-                    else
-                    {
-                        b = new InContainerBinder(ns.First(), next);
-                    }
-
-                    _resolvedBinders.TryAdd((AquilaSyntaxNode)arg, b);
-
-                    return b;
+                    
+                    return new InContainerBinder(ns.First(), next);
                 }
 
                 return new InContainerBinder(new MissingNamespaceSymbol(_compilation.GlobalNamespace, nsName),
@@ -228,7 +229,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
                     var module = node.Module;
                     if (module == null)
-                        module = SyntaxFactory.ModuleDecl(SyntaxFactory.IdentifierName("main"));
+                        module = SyntaxFactory.ModuleDecl(SyntaxFactory.IdentifierName(WellKnownAquilaNames.MainModuleName));
 
                     result = VisitModuleDecl(module, result);
                     binderCache.TryAdd(key, result);
@@ -249,14 +250,23 @@ namespace Aquila.CodeAnalysis.Semantics
 
                 if (ns.Count() == 1)
                 {
-                    var b = new InContainerBinder(ns.First(), nextBinder);
-                    _resolvedBinders.TryAdd((AquilaSyntaxNode)node, b);
-
-                    return b;
+                    return new InContainerBinder(ns.First(), nextBinder);
                 }
 
                 throw new Exception(
-                    $"Internal semantic graph corrupted, can't. Can't find module symbol '{node.Name.GetUnqualifiedName().Identifier.Text}'");
+                    $"Internal semantic graph corrupted. Can't find module symbol '{node.Name.GetUnqualifiedName().Identifier.Text}'");
+            }
+
+            public override Binder VisitHtmlDecl(HtmlDecl arg)
+            {
+                GetBinder(arg, out var binder);
+                return binder;
+            }
+
+            public override Binder VisitHtmlMarkupDecl(HtmlMarkupDecl arg)
+            {
+                GetBinder(arg, out var binder);
+                return binder;
             }
 
             public override Binder VisitMethodDecl(MethodDecl arg)

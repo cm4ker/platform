@@ -50,12 +50,12 @@ namespace Aquila.CodeAnalysis.Symbols
 
     internal class SourceLocalSymbol : Symbol, ILocalSymbol, ILocalSymbolInternal
     {
-        readonly protected SourceMethodSymbol _method;
+        readonly protected SourceMethodSymbolBase _method;
         readonly protected VariableDecl _decl;
 
         readonly string _name;
 
-        public SourceLocalSymbol(SourceMethodSymbol method, VariableInit declarator)
+        public SourceLocalSymbol(SourceMethodSymbolBase method, VariableInit declarator)
         {
             Debug.Assert(method != null);
             Debug.Assert(!string.IsNullOrWhiteSpace(declarator.Identifier.Text));
@@ -163,14 +163,14 @@ namespace Aquila.CodeAnalysis.Symbols
 
     internal class InPlaceSourceLocalSymbol : Symbol, ILocalSymbol, ILocalSymbolInternal
     {
-        readonly protected SourceMethodSymbol _method;
+        readonly protected SourceMethodSymbolBase _method;
         
 
         readonly string _name;
         private readonly TextSpan _span;
         private readonly TypeSymbol _type;
 
-        public InPlaceSourceLocalSymbol(SourceMethodSymbol method, VariableName varName, TextSpan span, TypeSymbol type)
+        public InPlaceSourceLocalSymbol(SourceMethodSymbolBase method, VariableName varName, TextSpan span, TypeSymbol type)
         {
             Debug.Assert(method != null);
             Debug.Assert(!string.IsNullOrWhiteSpace(varName.Value));

@@ -25,6 +25,8 @@ namespace Aquila.CodeAnalysis
                 _node = this.CloneNodeAsRoot(SyntaxFactory.ParseCompilationUnit(string.Empty));
             }
 
+            public override bool IsView => false;
+
             public override string ToString()
             {
                 return string.Empty;

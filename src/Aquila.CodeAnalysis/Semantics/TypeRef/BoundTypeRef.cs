@@ -147,7 +147,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         public QualifiedName ClassName { get; }
 
 
-        partial void OnCreateImpl(QualifiedName qName, SourceMethodSymbol method, ITypeSymbol symbol, int arity)
+        partial void OnCreateImpl(QualifiedName qName, SourceMethodSymbolBase method, ITypeSymbol symbol, int arity)
         {
             if (qName.IsReservedClassName)
             {

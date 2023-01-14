@@ -24,7 +24,7 @@ using InternalSyntax = Aquila.CodeAnalysis.Syntax.InternalSyntax;
 namespace Aquila.CodeAnalysis
 {
     /// <summary>
-    /// The parsed representation of a C# source document.
+    /// The parsed representation of a Aquila source document.
     /// </summary>
     public abstract partial class AquilaSyntaxTree : SyntaxTree
     {
@@ -35,6 +35,11 @@ namespace Aquila.CodeAnalysis
         /// </summary>
         public new abstract AquilaParseOptions Options { get; }
 
+        /// <summary>
+        /// Mark that syntax tree is view
+        /// </summary>
+        public abstract bool IsView { get; }
+        
         // REVIEW: I would prefer to not expose CloneAsRoot and make the functionality
         // internal to CaaS layer, to ensure that for a given SyntaxTree there can not
         // be multiple trees claiming to be its children.

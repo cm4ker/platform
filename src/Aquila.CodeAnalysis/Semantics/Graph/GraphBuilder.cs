@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Syntax;
+using Aquila.Syntax.Ast;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
@@ -13,7 +13,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
     /// <summary>
     /// Visitor implementation that constructs the graph.
     /// </summary>
-    internal sealed class BuilderVisitor : AquilaSyntaxWalker
+    internal sealed class GraphBuilder : AquilaSyntaxWalker
     {
         readonly Binder _binder;
 
@@ -24,6 +24,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         private Stack<TryCatchEdge> _tryTargets;
         private Stack<LocalScopeInfo> _scopes = new Stack<LocalScopeInfo>(1);
         private int _index = 0;
+        private int _htmlInstructionIndex = 0;
 
         /// <summary>Counts visited "return" statements.</summary>
         private int _returnCounter = 0;
@@ -36,9 +37,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         public List<BoundStatement> _declarations;
 
         public BoundBlock Start { get; private set; }
-
         public BoundBlock Exit { get; private set; }
-        //public BoundBlock Exception { get; private set; }
 
         /// <summary>
         /// Gets labels defined within the method.
@@ -56,13 +55,9 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <summary>
         /// Blocks we know nothing is pointing to (right after jump, throw, etc.).
         /// </summary>
-        public ImmutableArray<BoundBlock> DeadBlocks
-        {
-            get { return _deadBlocks.ToImmutableArray(); }
-        }
+        public ImmutableArray<BoundBlock> DeadBlocks => _deadBlocks.ToImmutableArray();
 
-        private readonly List<BoundBlock>
-            _deadBlocks = new List<BoundBlock>();
+        private readonly List<BoundBlock> _deadBlocks = new();
 
         #region LocalScope
 
@@ -181,35 +176,9 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #region Construction
 
-        private BuilderVisitor(IList<StmtSyntax> statements, Binder binder)
+        private GraphBuilder(IEnumerable<SyntaxNode> nodes, Binder binder)
         {
-            Contract.ThrowIfNull(statements);
-            Contract.ThrowIfNull(binder);
-
-            _binder = binder;
-
-            this.Start = WithNewOrdinal(new StartBlock());
-            this.Exit = new ExitBlock();
-
-            _current = WithOpenScope(this.Start);
-
-            statements.ForEach(this.Visit);
-            FinalizeMethod();
-            _current = Connect(_current, this.Exit);
-
-            //
-            WithNewOrdinal(this.Exit);
-            CloseScope();
-
-            //
-            Debug.Assert(_scopes.Count == 0);
-            Debug.Assert(_tryTargets == null || _tryTargets.Count == 0);
-            Debug.Assert(_breakTargets == null || _breakTargets.Count == 0);
-        }
-
-        private BuilderVisitor(IReadOnlyList<HtmlNodeSyntax> nodes, Binder binder)
-        {
-            Contract.ThrowIfNull(nodes);
+            Contract.ThrowIfNull(nodes);            
             Contract.ThrowIfNull(binder);
 
             _binder = binder;
@@ -231,14 +200,14 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             Debug.Assert(_breakTargets == null || _breakTargets.Count == 0);
         }
 
-        public static BuilderVisitor Build(IList<StmtSyntax> statements, Binder binder)
+        public static GraphBuilder Build(IEnumerable<StmtSyntax> statements, Binder binder)
         {
-            return new BuilderVisitor(statements, binder);
+            return new GraphBuilder(statements, binder);
         }
 
-        public static BuilderVisitor Build(IReadOnlyList<HtmlNodeSyntax> nodes, Binder binder)
+        public static GraphBuilder Build(IEnumerable<HtmlNodeSyntax> nodes, Binder binder)
         {
-            return new BuilderVisitor(nodes, binder);
+            return new GraphBuilder(nodes, binder);
         }
 
         #endregion
@@ -401,6 +370,8 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// Gets new block index.
         /// </summary>
         private int NewOrdinal() => _index++;
+
+        private int NextHtmlIndex() => _htmlInstructionIndex++;
 
         private T WithNewOrdinal<T>(T block) where T : BoundBlock
         {
@@ -833,28 +804,47 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #region Html
 
-        /*
-         We need transform html 
-         */
-
         public override void VisitHtmlEmptyElement(HtmlEmptyElementSyntax node)
         {
+            Add(new BoundHtmlOpenElementStmt(node.Name.TagName.Text, NextHtmlIndex()));
+            node.Attributes.ForEach(Visit);
             base.VisitHtmlEmptyElement(node);
+            Add(new BoundHtmlCloseElementStmt());
+        }
+
+        public override void VisitHtmlElement(HtmlElementSyntax node)
+        {
+            Add(new BoundHtmlOpenElementStmt(node.StartTag.Name.TagName.Text, NextHtmlIndex()));
+            node.StartTag.Attributes.ForEach(Visit);
+            node.Content.ForEach(Visit);
+            Add(new BoundHtmlCloseElementStmt());
+        }
+
+        public override void VisitHtmlAttribute(HtmlAttributeSyntax node)
+        {
+            BoundExpression main = null;
+            var stringType = _binder.Compilation.CoreTypes.String.Symbol;
+
+            foreach (var attributeItem in node.Nodes)
+            {
+                BoundExpression expression = attributeItem switch
+                {
+                    HtmlTextSyntax t => new BoundLiteral(t.Text.Text, stringType),
+                    HtmlExpressionSyntax ex => _binder.BindExpression(ex.Expression, BoundAccess.Read),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
+                main = main == null ? expression : new BoundBinaryEx(main, expression, Operations.Add, stringType);
+            }
+
+            Add(new BoundHtmlAddAttributeStmt(node.Name.TagName.Text, main, NextHtmlIndex()));
+        }
+
+        public override void VisitHtmlText(HtmlTextSyntax node)
+        {
+            Add(new BoundHtmlMarkupStmt(node.GetText().ToString(), NextHtmlIndex()));
         }
 
         #endregion
-    }
-
-
-    internal class HtmlBoundStatementsBuilder
-    {
-        public HtmlBoundStatementsBuilder()
-        {
-        }
-
-        BoundStatement CreateStatement()
-        {
-            return null;
-        }
     }
 }

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.Syntax.Ast;
 using Microsoft.CodeAnalysis;
@@ -277,14 +278,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             {
                 AddTrailingSkippedSyntax(body.Members, skippedSyntax);
             }
-            // else if (body.Components.Count > 0)
-            // {
-            //     AddTrailingSkippedSyntax(body.Components, skippedSyntax);
-            // }
-            // else if (body.Extends.Count > 0)
-            // {
-            //     AddTrailingSkippedSyntax(body.Extends, skippedSyntax);
-            // }
             else if (openBraceOrSemicolon != null)
             {
                 openBraceOrSemicolon = AddTrailingSkippedSyntax(openBraceOrSemicolon, skippedSyntax);
@@ -361,7 +354,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                             seen = FileParts.Imports;
                             break;
 
-                        case SyntaxKind.LessThanToken:
+                        case SyntaxKind.LessThanToken when this.Options.Kind == SourceCodeKind.View:
                             //Possible start web view
                             using (EnterMode(LexerMode.SyntaxView))
                                 body.HtmlDecl = ParseHtmlDecl();

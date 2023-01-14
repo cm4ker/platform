@@ -987,6 +987,9 @@ namespace Aquila.CodeAnalysis
                     return SyntaxKind.TypeKeyword;
                 case "fn":
                     return SyntaxKind.FnKeyword;
+                case "code":
+                    return SyntaxKind.HtmlCodeKeyword;
+                    
                 default:
                     return SyntaxKind.None;
             }
@@ -1713,6 +1716,8 @@ namespace Aquila.CodeAnalysis
                     return "datetime";
                 case SyntaxKind.FnKeyword:
                     return "fn";
+                case SyntaxKind.HtmlCodeKeyword:
+                    return "code";
                 default:
                     return string.Empty;
             }

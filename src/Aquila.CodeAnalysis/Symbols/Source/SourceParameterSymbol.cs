@@ -16,7 +16,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
     /// </summary>
     internal sealed class SourceParameterSymbol : ParameterSymbol
     {
-        readonly SourceMethodSymbol _method;
+        readonly SourceMethodSymbolBase _method;
         readonly ParameterSyntax _syntax;
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         FieldSymbol _lazyDefaultValueField;
 
-        public SourceParameterSymbol(SourceMethodSymbol method, ParameterSyntax syntax, int relindex)
+        public SourceParameterSymbol(SourceMethodSymbolBase method, ParameterSyntax syntax, int relindex)
         {
             Contract.ThrowIfNull(method);
             Contract.ThrowIfNull(syntax);
@@ -127,7 +127,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         /// <summary>
         /// Containing method.
         /// </summary>
-        internal SourceMethodSymbol Method => _method;
+        internal SourceMethodSymbolBase Method => _method;
 
         public override Symbol ContainingSymbol => _method;
 

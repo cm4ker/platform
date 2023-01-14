@@ -2,7 +2,7 @@
 
 namespace Aquila.CodeAnalysis.Symbols
 {
-    internal static class WellKnownAquilaNames
+    public static class WellKnownAquilaNames
     {
         /// <summary>
         /// Name of function representing a script global code.
@@ -11,6 +11,16 @@ namespace Aquila.CodeAnalysis.Symbols
             GlobalMethodName =
                 "<" + WellKnownMemberNames.EntryPointMethodName + ">";
 
+        /// <summary>
+        /// Main module name, root of the modules
+        /// </summary>
+        public const string MainModuleName = "main";
+
+        /// <summary>
+        /// Entry point method name
+        /// </summary>
+        public const string MainMethodName = "main";
+        
         /// <summary>
         /// Name of special script type.
         /// </summary>
