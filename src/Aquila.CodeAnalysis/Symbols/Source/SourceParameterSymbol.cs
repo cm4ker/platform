@@ -49,19 +49,8 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
                     if (Initializer is BoundArrayEx arr)
                     {
-                        // // special case: empty array
-                        // if (arr.Items.Length == 0 && _syntax.PassMethod != PassMethod.ByReference)
-                        // {
-                        //     return null;
-                        // }
-
-                        //   
                         fldtype = null;
                     }
-                    // else if (Initializer is BoundPseudoClassConst)
-                    // {
-                    //     fldtype = DeclaringCompilation.GetSpecialType(SpecialType.System_String);
-                    // }
                     else
                     {
                         fldtype = null;
@@ -82,13 +71,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                     NamedTypeSymbol fieldcontainer = ContainingType; // by default in the containing class/trait/file
                     string fieldname = $"<{ContainingSymbol.Name}.{Name}>_DefaultValue";
 
-                    //if (fieldcontainer.IsInterface)
-                    //{
-                    //    fieldcontainer = _method.ContainingFile;
-                    //    fieldname = ContainingType.Name + "." + fieldname;
-                    //}
-
-                    // public static readonly T ..;
+    
                     var field = new SynthesizedFieldSymbol(fieldcontainer)
                         .SetType(fldtype)
                         .SetName(fieldname)
@@ -115,13 +98,6 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             _method = method;
             _syntax = syntax;
             _relindex = relindex;
-            // _ptagOpt = ptagOpt;
-            // _initializer = (syntax.InitValue != null)
-            //     ? new SemanticsBinder(DeclaringCompilation, method.ContainingFile.SyntaxTree, locals: null,
-            //             method: null, self: method.ContainingType as SourceTypeSymbol)
-            //         .BindWholeExpression(syntax.InitValue, BoundAccess.Read)
-            //         .SingleBoundElement()
-            //     : null;
         }
 
         /// <summary>
@@ -143,11 +119,6 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public ParameterSyntax Syntax => _syntax;
 
-        /// <summary>
-        /// The parameter is a constructor property.
-        /// </summary>
-        //public bool IsConstructorProperty => _syntax.IsConstructorProperty;
-
         internal sealed override TypeSymbol Type
         {
             get
@@ -160,26 +131,6 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 return _lazyType;
             }
         }
-
-        // /// <summary>
-        // /// Gets value indicating that if the parameters type is a reference type,
-        // /// it is not allowed to pass a null value.
-        // /// </summary>
-        // public override bool HasNotNull
-        // {
-        //     get
-        //     {
-        //         // when providing type hint, only allow null if explicitly specified:
-        //         if (_syntax.TypeHint == null || _syntax.TypeHint is NullableTypeRef || DefaultsToNull)
-        //         {
-        //             return false;
-        //         }
-        //
-        //         //
-        //         return true;
-        //     }
-        // }
-
         internal bool DefaultsToNull => _initializer != null && _initializer.ConstantValue.IsNull();
 
         /// <summary>
@@ -198,19 +149,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             return DeclaringCompilation.GetBinder(_syntax).BindType(_syntax.Type);
         }
 
-        public override RefKind RefKind
-        {
-            get
-            {
-                //if (_syntax.IsOut)
-                //    return RefKind.Out;
-
-                return RefKind.None;
-            }
-        }
-
-        // public override bool IsParams => _syntax.IsVariadic;
-
+        public override RefKind RefKind =>RefKind.None;
         public override int Ordinal => _relindex + _method.ImplicitParameters.Length;
 
         /// <summary>
@@ -252,12 +191,9 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             {
                 yield return DeclaringCompilation.CreateDefaultValueAttribute(ContainingType, DefaultValueField);
             }
-
-            //
-            yield break;
         }
 
-        // public override bool IsOptional => this.HasExplicitDefaultValue;
+        
 
         internal override ConstantValue ExplicitDefaultConstantValue
         {

@@ -153,12 +153,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         public TypeSymbol EmitLoadDefaultOfValueType(TypeSymbol valuetype)
         {
             Debug.Assert(valuetype != null && valuetype.IsValueType);
-
-            //TODO: Implement;
-
             throw new NotImplementedException();
-
-            return valuetype;
         }
 
         /// <summary>

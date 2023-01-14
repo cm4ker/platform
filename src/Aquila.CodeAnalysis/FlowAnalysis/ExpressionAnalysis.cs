@@ -105,8 +105,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         protected override FlowState CloneState(FlowState state) => state.Clone();
 
         protected override FlowState MergeStates(FlowState a, FlowState b) => a.Merge(b);
-
-        protected override void SetStateUnknown(ref FlowState state) => state.SetAllUnknown(true);
+        
 
         protected override void EnqueueBlock(BoundBlock block) => Worklist.Enqueue(block);
 
@@ -134,8 +133,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         {
             var v = x.Declaration;
             var local = State.GetLocalHandle(new VariableName(v.Name));
-
-            State.SetVarKind(local, VariableKind.StaticVariable);
 
             var oldtype = State.GetLocalType(local);
 

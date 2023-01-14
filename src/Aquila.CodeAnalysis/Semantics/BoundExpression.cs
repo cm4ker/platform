@@ -2079,7 +2079,4 @@ namespace Aquila.CodeAnalysis.Semantics
     {
     }
 
-    public partial class BoundNegEx
-    {
-    }
 }

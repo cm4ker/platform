@@ -177,12 +177,7 @@ namespace Aquila.CodeAnalysis.CommandLine
 
                     case "sourcelink":
                         value = RemoveQuotesAndSlashes(value);
-                        if (string.IsNullOrEmpty(value))
-                        {
-                            //diagnostics.Add(Errors.MessageProvider.Instance.CreateDiagnostic(Errors.ErrorCode.no
-                            //AddDiagnostic(diagnostics, ErrorCode.ERR_NoFileSpec, arg);
-                        }
-                        else
+                        if (!string.IsNullOrEmpty(value))
                         {
                             sourceLink = ParseGenericPathToFile(value, diagnostics, baseDirectory);
                         }
@@ -236,9 +231,6 @@ namespace Aquila.CodeAnalysis.CommandLine
                                     break;
                                 case "embedded":
                                     debugInformationFormat = DebugInformationFormat.Embedded;
-                                    break;
-                                default:
-                                    //AddDiagnostic(diagnostics, ErrorCode.ERR_BadDebugType, value);
                                     break;
                             }
                         }
@@ -355,7 +347,6 @@ namespace Aquila.CodeAnalysis.CommandLine
                         else if (!Version.TryParse(value, out languageVersion))
                         {
                             throw new ArgumentException("langversion");
-                            //AddDiagnostic(diagnostics, ErrorCode.ERR_BadCompatMode, value);
                         }
 
                         continue;
@@ -406,7 +397,6 @@ namespace Aquila.CodeAnalysis.CommandLine
                                 Errors.MessageProvider.Instance.CreateDiagnostic(
                                     Errors.ErrorCode.ERR_SwitchNeedsValue,
                                     Location.None, name));
-                            // TODO: AddDiagnostic(diagnostics, ErrorCode.ERR_NoFileSpec, "keyfile");
                         }
                         else
                         {
@@ -808,11 +798,6 @@ namespace Aquila.CodeAnalysis.CommandLine
                 keyFileSetting = ParseGenericPathToFile(keyFileSetting, diagnostics, baseDirectory);
             }
 
-            if (sourceLink != null && !emitPdb)
-            {
-                //AddDiagnostic(diagnostics, ErrorCode.ERR_SourceLinkRequiresPdb);
-            }
-
             if (embedAllSourceFiles)
             {
                 embeddedFiles.AddRange(sourceFiles);
@@ -837,10 +822,6 @@ namespace Aquila.CodeAnalysis.CommandLine
 
             var scriptParseOptions = parseOptions.WithKind(SourceCodeKind.Script);
 
-            //// We want to report diagnostics with source suppression in the error log file.
-            //// However, these diagnostics won't be reported on the command line.
-            //var reportSuppressedDiagnostics = errorLogPath != null;
-
             var options = new AquilaCompilationOptions
             (
                 outputKind: outputKind,
@@ -864,10 +845,6 @@ namespace Aquila.CodeAnalysis.CommandLine
                 cryptoKeyFile: keyFileSetting,
                 delaySign: delaySignSetting,
                 platform: Platform.AnyCpu,
-                //generalDiagnosticOption: generalDiagnosticOption,
-                //warningLevel: warningLevel,
-                //specificDiagnosticOptions: diagnosticOptions,
-                //reportSuppressedDiagnostics: reportSuppressedDiagnostics,
                 publicSign: publicSign
             )
             {
@@ -1006,8 +983,6 @@ namespace Aquila.CodeAnalysis.CommandLine
                     return OutputKind.WindowsRuntimeMetadata;
 
                 default:
-                    //AddDiagnostic(diagnostics, ErrorCode.FTL_InvalidTarget);
-                    //return OutputKind.ConsoleApplication;
                     throw new ArgumentException("value");
             }
         }
@@ -1033,28 +1008,12 @@ namespace Aquila.CodeAnalysis.CommandLine
         {
             // nothing
         }
-
-        //private static void AddDiagnostic(IList<Diagnostic> diagnostics, ErrorCode errorCode, params object[] arguments)
-        //{
-        //    diagnostics.Add(Diagnostic.Create(Errors.MessageProvider.Instance, (int)errorCode, arguments));
-        //}
-
+        
         private IEnumerable<CommandLineReference> ParseAssemblyReferences(string arg, string value,
             IList<Diagnostic> diagnostics, bool embedInteropTypes)
         {
             if (string.IsNullOrWhiteSpace(value))
                 throw new ArgumentException("value"); // TODO: ErrorCode
-
-            //if (value == null)
-            //{
-            //    AddDiagnostic(diagnostics, ErrorCode.ERR_SwitchNeedsString, MessageID.IDS_Text.Localize(), arg);
-            //    yield break;
-            //}
-            //else if (value.Length == 0)
-            //{
-            //    AddDiagnostic(diagnostics, ErrorCode.ERR_NoFileSpec, arg);
-            //    yield break;
-            //}
 
             int eqlOrQuote = value.IndexOfAny(new[] { '"', '=' });
 
@@ -1063,12 +1022,6 @@ namespace Aquila.CodeAnalysis.CommandLine
             {
                 alias = value.Substring(0, eqlOrQuote);
                 value = value.Substring(eqlOrQuote + 1);
-
-                //if (!SyntaxFacts.IsValidIdentifier(alias))
-                //{
-                //    AddDiagnostic(diagnostics, ErrorCode.ERR_BadExternIdentifier, alias);
-                //    yield break;
-                //}
             }
             else
             {
@@ -1078,17 +1031,6 @@ namespace Aquila.CodeAnalysis.CommandLine
             List<string> paths = ParseSeparatedPaths(value).Where((path) => !string.IsNullOrWhiteSpace(path)).ToList();
             if (alias != null)
             {
-                //if (paths.Count > 1)
-                //{
-                //    AddDiagnostic(diagnostics, ErrorCode.ERR_OneAliasPerReference, value);
-                //    yield break;
-                //}
-
-                //if (paths.Count == 0)
-                //{
-                //    AddDiagnostic(diagnostics, ErrorCode.ERR_AliasMissingFile, alias);
-                //    yield break;
-                //}
                 throw new NotSupportedException(); // TODO: ErrorCode
             }
 
@@ -1136,20 +1078,17 @@ namespace Aquila.CodeAnalysis.CommandLine
             }
             else
             {
-                //diagnostics.Add(Errors.MessageProvider.Instance.CreateDiagnostic(Errors.ErrorCode.ERR_BadResourceVis, accessibility);
                 return null;
             }
 
             if (string.IsNullOrEmpty(filePath))
             {
-                //AddDiagnostic(diagnostics, Errors.ErrorCode.ERR_NoFileSpec, arg);
                 return null;
             }
 
             if (fullPath == null || string.IsNullOrWhiteSpace(fileName) ||
                 fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
             {
-                //AddDiagnostic(diagnostics, Errors.ErrorCode.FTL_InputFileNameTooLong, filePath);
                 return null;
             }
 

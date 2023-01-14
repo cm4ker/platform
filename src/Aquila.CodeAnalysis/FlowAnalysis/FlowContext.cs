@@ -2,10 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using Aquila.CodeAnalysis.Semantics;
-using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.Compiler.Utilities;
 
 namespace Aquila.CodeAnalysis.FlowAnalysis

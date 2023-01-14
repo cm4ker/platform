@@ -91,7 +91,7 @@ namespace Aquila.CodeAnalysis.CodeGen
             {
                 if (_codegen.IsGenerated(block))
                 {
-                    // backward edge;
+                    // backward edge
                     // or the block was already emitted, branch there:
                     IL.EmitBranch(ILOpCode.Br, block);
                     return;
@@ -110,8 +110,6 @@ namespace Aquila.CodeAnalysis.CodeGen
 
                 if (IsIn(block))
                 {
-                    // TODO: avoid branching to a guarded scope // e.g. goto x; try { x: }
-
                     if (_blocks == null || _blocks.Count == 0 || _blocks.Comparer.Compare(block, _blocks.First()) < 0)
                     {
                         if (_blocks != null)
@@ -327,15 +325,7 @@ namespace Aquila.CodeAnalysis.CodeGen
         TypeSymbol _callerType;
 
         static TypeSymbol GetSelfType(TypeSymbol scope) =>
-            throw new NotImplementedException(); //scope is SourceTraitTypeSymbol t) ? t.TSelfParameter : scope;
-
-        // public SourceFileSymbol ContainingFile
-        // {
-        //     get => _containingFile;
-        //     internal set => _containingFile = value;
-        // }
-        //
-        // SourceFileSymbol _containingFile;
+            throw new NotImplementedException();
 
         internal ExitBlock ExitBlock => ((ExitBlock)this.Method.ControlFlowGraph.Exit);
 
@@ -406,7 +396,7 @@ namespace Aquila.CodeAnalysis.CodeGen
             //   user code that can be stepped through, or changed during EnC.
             // 
             // This setting only affects generating PDB sequence points, it shall not affect generated IL in any way.
-            _emitPdbSequencePoints = emittingPdb && true; // method.GenerateDebugInfo;
+            _emitPdbSequencePoints = emittingPdb;
         }
 
         #endregion

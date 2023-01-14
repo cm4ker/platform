@@ -1,65 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using Aquila.CodeAnalysis.Semantics;
-using Aquila.CodeAnalysis.Symbols;
 
 namespace Aquila.CodeAnalysis.FlowAnalysis
 {
-    internal interface IFlowState<T> : IEquatable<IFlowState<T>>
-    {
-        /// <summary>
-        /// Creates copy of this state.
-        /// </summary>
-        T Clone();
-
-        /// <summary>
-        /// Creates new state as a merge of this one and the other.
-        /// </summary>
-        T Merge(T other);
-
-        #region Local Variable Handling
-
-        /// <summary>
-        /// Gets variable handle use for other variable operations.
-        /// </summary>
-        VariableHandle GetLocalHandle(VariableName varname);
-
-        /// <summary>
-        /// Sets variable type in this state.
-        /// </summary>
-        /// <param name="handle">Variable handle.</param>
-        /// <param name="tmask">Variable type. If <c>void</c> or <c>uninitialized</c>, the variable is set as not initialized in this state.</param>
-        void SetLocalType(VariableHandle handle, TypeSymbol tmask);
-
-        /// <summary>
-        /// Gets type of variable at this state.
-        /// </summary>
-        TypeSymbol GetLocalType(VariableHandle handle);
-
-        /// <summary>
-        /// Marks variable as being referenced.
-        /// </summary>
-        void MarkLocalByRef(VariableHandle handle);
-
-        /// <summary>
-        /// Handles use of a local variable.
-        /// </summary>
-        void VisitLocal(VariableHandle handle);
-
-        /// <summary>
-        /// Sets all variables as initialized at this state and with a <c>mixed</c> type.
-        /// </summary>
-        void SetAllUnknown(bool maybeRef);
-
-        /// <summary>
-        /// Gets value indicating the variable is set in all code paths.
-        /// Gets also <c>true</c> if we don't known.
-        /// </summary>
-        bool IsLocalSet(VariableHandle handle);
-
-        #endregion
-    }
-
     /// <summary>
     /// Represents a variable in the method context.
     /// </summary>

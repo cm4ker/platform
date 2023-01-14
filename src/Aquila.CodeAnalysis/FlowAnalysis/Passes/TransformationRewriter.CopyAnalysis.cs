@@ -202,7 +202,7 @@ using System.Text;
 
             protected override CopyAnalysisState MergeStates(CopyAnalysisState a, CopyAnalysisState b) => a.WithMerge(b);
 
-            protected override void SetStateUnknown(ref CopyAnalysisState state)
+            protected virtual void SetStateUnknown(ref CopyAnalysisState state)
             {
                 // TODO: Make more precise after the precision of try block analysis is improved in AnalysisWalker
 

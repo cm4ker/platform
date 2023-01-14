@@ -107,7 +107,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             protected override ParameterAnalysisState MergeStates(ParameterAnalysisState a, ParameterAnalysisState b) =>
                 a > b ? a : b;
 
-            protected override void SetStateUnknown(ref ParameterAnalysisState state) =>
+            protected virtual void SetStateUnknown(ref ParameterAnalysisState state) =>
                 state = ParameterAnalysisState.Dirty;
 
             protected override void EnqueueBlock(BoundBlock block) => _worklist.Enqueue(block);

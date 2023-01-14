@@ -46,20 +46,6 @@ namespace Aquila.CodeAnalysis
                     throw new ArgumentNullException(nameof(node));
                 case ExprSyntax expression:
                     return this.GetSymbolInfo(expression, cancellationToken);
-                // case ConstructorInitializerSyntax initializer:
-                //     return this.GetSymbolInfo(initializer, cancellationToken);
-                // case PrimaryConstructorBaseTypeSyntax initializer:
-                //     return this.GetSymbolInfo(initializer, cancellationToken);
-                // case AttributeSyntax attribute:
-                //     return this.GetSymbolInfo(attribute, cancellationToken);
-                // case CrefSyntax cref:
-                //     return this.GetSymbolInfo(cref, cancellationToken);
-                // case SelectOrGroupClauseSyntax selectOrGroupClause:
-                //     return this.GetSymbolInfo(selectOrGroupClause, cancellationToken);
-                // case OrderingSyntax orderingSyntax:
-                //     return this.GetSymbolInfo(orderingSyntax, cancellationToken);
-                // case PositionalPatternClauseSyntax ppcSyntax:
-                //     return this.GetSymbolInfo(ppcSyntax, cancellationToken);
             }
 
             return SymbolInfo.None;
@@ -241,7 +227,7 @@ namespace Aquila.CodeAnalysis
             //TODO: separate the Bound nodes and Operations
             //bound nodes need to result ISymbol type because
             //bounding between the SyntaxNode and Symbol
-            //return SymbolInfo.None;
+
 
             var binder = _binderFactory.GetBinder(expression);
             var type = binder.BindExpression(expression, BoundAccess.None);

@@ -5,10 +5,18 @@
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <NoWarn>,NU5048,CS8632,CS1591</NoWarn>
     </PropertyGroup>
+    
+    <PropertyGroup>
+<!--        <WarningsAsErrors>S125</WarningsAsErrors>-->
+    </PropertyGroup>
 
     <Import Project="..\Props\target.props" />
 
     <ItemGroup>
+        <PackageReference Include="SonarAnalyzer.CSharp" Version="8.51.0.59060">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="xunit.assert" Version="2.4.1" />
         <ProjectReference Include="..\Aquila.SyntaxGenerator2\Aquila.SyntaxGenerator2.csproj">
             <OutputItemType>Analyzer</OutputItemType>

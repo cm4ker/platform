@@ -359,10 +359,7 @@ namespace Aquila.CodeAnalysis
                 if ((object)result == null)
                 {
                     // TODO: should GetTypeByMetadataName rather return a missing symbol?
-                    //MetadataTypeName emittedName = MetadataTypeName.FromFullName(mdName, useCLSCompliantNameArityEncoding: true);
-                    //result = new MissingMetadataTypeSymbol.TopLevel(this.Assembly.Modules[0], ref emittedName, type);
                     Debug.Assert(false);
-                    result = new MissingMetadataTypeSymbol(mdName, 0, false);
                 }
 
                 if ((object)Interlocked.CompareExchange(ref _lazyWellKnownTypes[index], result, null) != null)
@@ -371,10 +368,6 @@ namespace Aquila.CodeAnalysis
                         result == _lazyWellKnownTypes[index] ||
                         (_lazyWellKnownTypes[index].IsErrorType() && result.IsErrorType())
                     );
-                }
-                else
-                {
-                    // TODO //AdditionalCodegenWarnings.AddRange(warnings);
                 }
 
                 warnings.Free();
@@ -595,35 +588,6 @@ namespace Aquila.CodeAnalysis
         internal override IConvertibleConversion ClassifyConvertibleConversion(IOperation source,
             ITypeSymbol destination, out ConstantValue constantValue)
         {
-            //constantValue = default;
-
-            //if (destination is null)
-            //{
-            //    return Conversions.NoConversion;
-            //}
-
-            //ITypeSymbol sourceType = source.Type;
-
-            //if (sourceType is null)
-            //{
-            //    if (source.ConstantValue.HasValue && source.ConstantValue.Value is null && destination.IsReferenceType)
-            //    {
-            //        constantValue = source.ConstantValue;
-            //        return Conversions.DefaultOrNullLiteral;
-            //    }
-
-            //    return Conversion.NoConversion;
-            //}
-
-            //var result = Conversions.ClassifyConversion(this, sourceType, destination);
-
-            //if (result.IsReference && source.ConstantValue.HasValue && source.ConstantValue.Value is null)
-            //{
-            //    constantValue = source.ConstantValue;
-            //}
-
-            //return result;
-
             throw new NotImplementedException();
         }
 
@@ -691,21 +655,9 @@ namespace Aquila.CodeAnalysis
                             break;
 
                         case TypeKind.Pointer:
-                            //HandleCustomModifiers(((PointerTypeSymbol)type).CustomModifiers.Length, transformFlagsBuilder);
-                            //transformFlagsBuilder.Add(false);
-                            //break;
                             throw new NotImplementedException();
 
                         default:
-                            // Encode transforms flag for this type.
-                            // For nested named types, a single flag (false) is encoded for the entire type name, followed by flags for all of the type arguments.
-                            // For example, for type "A<T>.B<dynamic>", encoded transform flags are:
-                            //      {
-                            //          false,  // Type "A.B"
-                            //          false,  // Type parameter "T"
-                            //          true,   // Type parameter "dynamic"
-                            //      }
-
                             if (!isNestedNamedType)
                             {
                                 transformFlagsBuilder.Add(false);
@@ -784,8 +736,7 @@ namespace Aquila.CodeAnalysis
                     return null;
                 }
 
-                return named.TypeArguments
-                    [argumentIndex]; //return named.TypeArgumentsNoUseSiteDiagnostics[argumentIndex];
+                return named.TypeArguments[argumentIndex]; 
             }
 
             protected override TypeSymbol GetGenericTypeDefinition(TypeSymbol type)

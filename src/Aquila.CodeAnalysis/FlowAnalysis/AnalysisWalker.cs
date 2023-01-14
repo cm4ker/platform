@@ -55,8 +55,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         protected abstract TState MergeStates(TState a, TState b);
 
-        protected abstract void SetStateUnknown(ref TState state);
-
         protected abstract void EnqueueBlock(BoundBlock block);
 
         #endregion
@@ -389,12 +387,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
             foreach (var c in x.MatchBlocks)
             {
-                // if (!c.MatchValue.IsOnlyBoundElement)
-                // {
-                //     TraverseToBlock(x, state, c.MatchValue.PreBoundBlockFirst);
-                // }
-
-                //
                 TraverseToBlock(x, state, c);
             }
 
@@ -404,15 +396,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         public override TResult VisitCFGTryCatchEdge(TryCatchEdge x)
         {
             var state = State;
-
-            // TODO: any expression inside try{} block can traverse to catch{} or finally{}.
-
-            //
+            
             TraverseToBlock(x, state, x.BodyBlock);
-
-            //
-            SetStateUnknown(
-                ref state); // TODO: traverse from all states in try{} instead of setting variables unknown here
 
             foreach (var c in x.CatchBlocks)
             {

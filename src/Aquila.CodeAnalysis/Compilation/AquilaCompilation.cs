@@ -303,13 +303,7 @@ namespace Aquila.CodeAnalysis
             get { throw new NotImplementedException(); }
         }
 
-        internal override ScriptCompilationInfo CommonScriptCompilationInfo
-        {
-            get
-            {
-                return null; // throw new NotImplementedException();
-            }
-        }
+        internal override ScriptCompilationInfo CommonScriptCompilationInfo => null;
 
         internal override bool IsDelaySigned
         {
@@ -366,7 +360,7 @@ namespace Aquila.CodeAnalysis
         {
             get
             {
-                return ImmutableArray<ReferenceDirective>.Empty; // throw new NotImplementedException();
+                return ImmutableArray<ReferenceDirective>.Empty;
             }
         }
 
@@ -378,13 +372,6 @@ namespace Aquila.CodeAnalysis
             {
                 throw CodeAnalysis.Utilities.ExceptionUtilities.ArgumentNull(nameof(predicate));
             }
-
-            if (filter == SymbolFilter.None)
-            {
-                //throw new ArgumentException(CSharpResources.NoNoneSearchCriteria, nameof(filter));
-            }
-
-            //return this.Declarations.ContainsName(predicate, filter, cancellationToken);
 
             throw new NotImplementedException();
         }
@@ -508,7 +495,6 @@ namespace Aquila.CodeAnalysis
             // Declare
             if (stage == CompilationStage.Declare || stage > CompilationStage.Declare && includeEarlierStages)
             {
-                // CheckAssemblyName(builder);
                 builder.AddRange(Options.Errors);
                 builder.AddRange(Options.Diagnostics);
 
@@ -517,7 +503,7 @@ namespace Aquila.CodeAnalysis
                 // the set of diagnostics related to establishing references.
                 builder.AddRange(GetBoundReferenceManager().Diagnostics);
 
-                //cancellationToken.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfCancellationRequested();
 
                 try
                 {
@@ -545,7 +531,6 @@ namespace Aquila.CodeAnalysis
             {
                 var methodBodyDiagnostics = DiagnosticBag.GetInstance();
                 // TODO: perform compilation and report diagnostics
-                // GetDiagnosticsForAllMethodBodies(methodBodyDiagnostics, cancellationToken); 
                 builder.AddRangeAndFree(methodBodyDiagnostics);
             }
 
@@ -568,13 +553,6 @@ namespace Aquila.CodeAnalysis
             {
                 throw CodeAnalysis.Utilities.ExceptionUtilities.ArgumentNull(nameof(predicate));
             }
-
-            if (filter == SymbolFilter.None)
-            {
-                //throw new ArgumentException(CSharpResources.NoNoneSearchCriteria, nameof(filter));
-            }
-
-            //return new SymbolSearcher(this).GetSymbolsWithName(predicate, filter, cancellationToken);
 
             throw new NotImplementedException();
         }
@@ -709,9 +687,6 @@ namespace Aquila.CodeAnalysis
             {
                 Debug.Assert(reference.Properties.Kind == MetadataImageKind.Module);
                 throw new NotImplementedException();
-
-                //int index = GetBoundReferenceManager().GetReferencedModuleIndex(reference);
-                //return index < 0 ? null : this.Assembly.Modules[index];
             }
         }
 
@@ -909,17 +884,6 @@ namespace Aquila.CodeAnalysis
                 WriteValue(CompilationOptionNames.Nullable, Options.NullableContextOptions.ToString());
             }
 
-            //if (Options.AllowUnsafe)
-            //{
-            //    WriteValue(CompilationOptionNames.Unsafe, Options.AllowUnsafe.ToString());
-            //}
-
-            //var preprocessorSymbols = GetPreprocessorSymbols();
-            //if (preprocessorSymbols.Any())
-            //{
-            //    WriteValue(CompilationOptionNames.Define, string.Join(",", preprocessorSymbols));
-            //}
-
             void WriteValue(string key, string value)
             {
                 builder.WriteUTF8(key);
@@ -1012,9 +976,8 @@ namespace Aquila.CodeAnalysis
         {
             // The diagnostics should include syntax and declaration errors. We insert these before calling Emitter.Emit, so that the emitter
             // does not attempt to emit if there are declaration errors (but we do insert all errors from method body binding...)
-            bool
-                hasDeclarationErrors =
-                    false; // !FilterAndAppendDiagnostics(diagnostics, GetDiagnostics(CompilationStage.Declare, true, cancellationToken));
+            bool hasDeclarationErrors = !FilterAndAppendDiagnostics(diagnostics, 
+                GetDiagnostics(CompilationStage.Declare, true, cancellationToken), null, cancellationToken);
 
             var moduleBeingBuilt = (PEModuleBuilder)moduleBuilder;
 
@@ -1072,22 +1035,7 @@ namespace Aquila.CodeAnalysis
             // TODO: if (EmbedPharContentIntoPdb):
 
             yield break;
-
-            // foreach (var f in this.SourceSymbolCollection.GetFiles())
-            // {
-            //     var tree = f.SyntaxTree;
-            //     if (tree.IsPharEntry || tree.IsPharStub)
-            //     {
-            //         yield return EmbeddedText.FromSource(tree.GetDebugSourceDocumentPath(), tree.GetText());
-            //     }
-            // }
         }
-
-        IEnumerable<ResourceDescription> CollectAdditionalManifestResources()
-        {
-            yield break;
-        }
-
 
         internal override bool GenerateResourcesAndDocumentationComments(CommonPEModuleBuilder moduleBuilder,
             Stream? xmlDocumentationStream,
@@ -1107,7 +1055,7 @@ namespace Aquila.CodeAnalysis
                 ReportManifestResourceDuplicates(
                     moduleBeingBuilt.ManifestResources,
                     SourceAssembly.Modules.Skip(1).Select((m) => m.Name), //all modules except the first one
-                    AddedModulesResourceNames(methodBodyDiagnosticBag),
+                    AddedModulesResourceNames(),
                     methodBodyDiagnosticBag);
 
                 if (!FilterAndAppendAndFreeDiagnostics(diagnostics, ref methodBodyDiagnosticBag, cancellationToken))
@@ -1140,31 +1088,8 @@ namespace Aquila.CodeAnalysis
             return true;
         }
 
-        private IEnumerable<string> AddedModulesResourceNames(DiagnosticBag diagnostics)
+        private IEnumerable<string> AddedModulesResourceNames()
         {
-            //ImmutableArray<ModuleSymbol> modules = SourceAssembly.Modules;
-
-            //for (int i = 1; i < modules.Length; i++)
-            //{
-            //    var m = (Symbols.Metadata.PE.PEModuleSymbol)modules[i];
-            //    ImmutableArray<EmbeddedResource> resources;
-
-            //    try
-            //    {
-            //        resources = m.Module.GetEmbeddedResourcesOrThrow();
-            //    }
-            //    catch (BadImageFormatException)
-            //    {
-            //        diagnostics.Add(new CSDiagnosticInfo(ErrorCode.ERR_BindToBogus, m), NoLocation.Singleton);
-            //        continue;
-            //    }
-
-            //    foreach (var resource in resources)
-            //    {
-            //        yield return resource.Name;
-            //    }
-            //}
-
             yield break;
         }
 
@@ -1175,14 +1100,6 @@ namespace Aquila.CodeAnalysis
             {
                 return runtimeMDVersion;
             }
-
-            //DiagnosticBag runtimeMDVersionDiagnostics = DiagnosticBag.GetInstance();
-            //runtimeMDVersionDiagnostics.Add(ErrorCode.WRN_NoRuntimeMetadataVersion, NoLocation.Singleton);
-            //if (!FilterAndAppendAndFreeDiagnostics(diagnostics, ref runtimeMDVersionDiagnostics))
-            //{
-            //    return null;
-            //}
-
             return string.Empty; //prevent emitter from crashing.
         }
 
@@ -1207,13 +1124,8 @@ namespace Aquila.CodeAnalysis
             switch (DetectWin32ResourceForm(win32Resources))
             {
                 case Win32ResourceForm.COFF:
-                    //moduleBeingBuilt.Win32ResourceSection = MakeWin32ResourcesFromCOFF(win32Resources, diagnostics);
                     break;
                 case Win32ResourceForm.RES:
-                    //moduleBeingBuilt.Win32Resources = MakeWin32ResourceList(win32Resources, diagnostics);
-                    break;
-                default:
-                    //diagnostics.Add(ErrorCode.ERR_BadWin32Res, NoLocation.Singleton, "Unrecognized file format.");
                     break;
             }
         }
@@ -1310,8 +1222,6 @@ namespace Aquila.CodeAnalysis
             // testData is only passed when running tests.
             if (testData != null)
             {
-                //moduleBeingBuilt.SetMethodTestData(testData.Methods);
-                //testData.Module = moduleBeingBuilt;
                 throw new NotImplementedException();
             }
 
@@ -1357,7 +1267,7 @@ namespace Aquila.CodeAnalysis
 
         internal override bool HasCodeToEmit()
         {
-            return false; //SourceSymbolCollection.GetFiles().Any();
+            return false;
         }
 
         internal override bool HasSubmissionResult()
@@ -1368,13 +1278,6 @@ namespace Aquila.CodeAnalysis
         internal override void ValidateDebugEntryPoint(IMethodSymbol debugEntryPoint, DiagnosticBag diagnostics)
         {
             Debug.Assert(debugEntryPoint != null);
-
-            // Debug entry point has to be a method definition from this compilation.
-            var methodSymbol = debugEntryPoint as MethodSymbol;
-            if (methodSymbol?.DeclaringCompilation != this || !methodSymbol.IsDefinition)
-            {
-                //diagnostics.Add(ErrorCode.ERR_DebugEntryPointNotSourceMethodDefinition, Location.None);
-            }
         }
 
         internal override Compilation WithEventQueue(AsyncQueue<CompilationEvent> eventQueue)
@@ -1406,12 +1309,10 @@ namespace Aquila.CodeAnalysis
 
         internal override void ReportUnusedImports(DiagnosticBag diagnostics, CancellationToken cancellationToken)
         {
-            //throw new NotImplementedException();
         }
 
         internal override void CompleteTrees(SyntaxTree filterTree)
         {
-            //throw new NotImplementedException();
         }
 
         internal override bool IsUnreferencedAssemblyIdentityDiagnosticCode(int code)

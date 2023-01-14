@@ -62,12 +62,6 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             Debug.Assert(this.IsDefinitionOrDistinct());
 
-            //var synthesizedGlobalMethod = this as SynthesizedGlobalMethodSymbol;
-            //if ((object)synthesizedGlobalMethod != null)
-            //{
-            //    return synthesizedGlobalMethod.ContainingPrivateImplementationDetailsType;
-            //}
-
             if (!this.IsDefinition)
             {
                 PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
@@ -216,12 +210,9 @@ namespace Aquila.CodeAnalysis.Symbols
 
         Cci.ITypeReference Cci.ISignature.GetType(EmitContext context)
         {
-            //ByRefReturnErrorTypeSymbol byRefType = this.ReturnType as ByRefReturnErrorTypeSymbol;
             return ((PEModuleBuilder)context.Module).Translate(
                 this.ReturnType ??
-                (TypeSymbol)context.Module.CommonCompilation
-                    .GetSpecialType(SpecialType
-                        .System_Void), // (object)byRefType == null ? this.ReturnType : byRefType.ReferencedType,
+                (TypeSymbol)context.Module.CommonCompilation.GetSpecialType(SpecialType.System_Void),
                 syntaxNodeOpt: context.SyntaxNode,
                 diagnostics: context.Diagnostics);
         }
@@ -270,12 +261,6 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 CheckDefinitionInvariant();
-
-                //var synthesizedGlobalMethod = this as SynthesizedGlobalMethodSymbol;
-                //if ((object)synthesizedGlobalMethod != null)
-                //{
-                //    return synthesizedGlobalMethod.ContainingPrivateImplementationDetailsType;
-                //}
 
                 return (Cci.ITypeDefinition)this.ContainingType;
             }
@@ -565,20 +550,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             CheckDefinitionInvariant();
 
-            //ArrayBuilder<SynthesizedAttributeData> synthesized = null;
-
             var userDefined = this.GetReturnTypeAttributes();
-            //this.AddSynthesizedReturnTypeAttributes(ref synthesized);
-
-            //if (userDefined.IsEmpty && synthesized == null)
-            //{
-            //    return SpecializedCollections.EmptyEnumerable<CSharpAttributeData>();
-            //}
-
-            //// Note that callers of this method (CCI and ReflectionEmitter) have to enumerate 
-            //// all items of the returned iterator, otherwise the synthesized ArrayBuilder may leak.
-            //return GetCustomAttributesToEmit(userDefined, synthesized, isReturnType: true, emittingAssemblyAttributesInNetModule: false);
-
             return userDefined;
         }
 
@@ -591,15 +563,7 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        internal virtual bool ReturnValueIsMarshalledExplicitly
-        {
-            get
-            {
-                //CheckDefinitionInvariant();
-                //return this.ReturnValueMarshallingInformation != null;
-                return false;
-            }
-        }
+        internal virtual bool ReturnValueIsMarshalledExplicitly => false;
 
         Cci.IMarshallingInformation Cci.IMethodDefinition.ReturnValueMarshallingInformation
         {

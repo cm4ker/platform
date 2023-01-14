@@ -413,7 +413,6 @@ namespace Aquila.CodeAnalysis
                 // 1. Bind Syntax & Symbols to Operations (CFG)
                 //   a. construct CFG, bind AST to Operation
                 //   b. declare table of local variables
-                // compiler.WalkTypes(compiler.EnqueueFieldsInitializer, allowParallel: true);
                 compiler.WalkSourceMethods(compiler.EnqueueMethod, allowParallel: true);
             }
 
@@ -456,7 +455,6 @@ namespace Aquila.CodeAnalysis
                 // Collect diagnostics
                 compiler.DiagnoseMethods();
                 compiler.DiagnoseTypes();
-                //compiler.DiagnoseFiles();
             }
 
             //

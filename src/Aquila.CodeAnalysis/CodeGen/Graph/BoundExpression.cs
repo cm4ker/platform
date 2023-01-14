@@ -79,16 +79,6 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    // partial class BoundNegEx
-    // {
-    //     internal override TypeSymbol Emit(CodeGenerator cg)
-    //     {
-    //         var result = Expression.Emit(cg);
-    //         cg.EmitOpCode(ILOpCode.Neg);
-    //         return result;
-    //     }
-    // }
-
     partial class BoundReferenceEx
     {
         /// <summary>

@@ -312,9 +312,6 @@ namespace Aquila.CodeAnalysis.CodeGen
 
         public TypeSymbol EmitLoad(ILBuilder il)
         {
-            //if (_property.Getter == null)
-            //    throw new InvalidOperationException();
-
             var stack = +1;
             var getter = _property.GetMethod;
 
@@ -348,9 +345,6 @@ namespace Aquila.CodeAnalysis.CodeGen
 
         public void EmitStore(ILBuilder il)
         {
-            //if (_property.Setter == null)
-            //    throw new InvalidOperationException();
-
             var stack = 0;
             var setter = _property.SetMethod;
 
