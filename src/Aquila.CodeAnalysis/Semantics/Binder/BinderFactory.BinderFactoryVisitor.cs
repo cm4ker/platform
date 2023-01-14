@@ -9,6 +9,7 @@ using System.Linq;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Syntax;
+using Aquila.Compiler.Utilities;
 using Aquila.Syntax.Declarations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -228,7 +229,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
                     var module = node.Module;
                     if (module == null)
-                        module = SyntaxFactory.ModuleDecl(SyntaxFactory.IdentifierName("main"));
+                        module = SyntaxFactory.ModuleDecl(SyntaxFactory.IdentifierName(WellKnownAquilaNames.MainModuleName));
 
                     result = VisitModuleDecl(module, result);
                     binderCache.TryAdd(key, result);

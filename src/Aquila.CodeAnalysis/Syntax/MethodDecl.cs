@@ -2,6 +2,8 @@
 using System.Data;
 using System.Linq;
 using Aquila.CodeAnalysis.CodeGen;
+using Aquila.CodeAnalysis.Symbols;
+using Aquila.Compiler.Utilities;
 using Microsoft.CodeAnalysis;
 
 namespace Aquila.CodeAnalysis.Syntax
@@ -26,7 +28,8 @@ namespace Aquila.CodeAnalysis.Syntax
 
     public partial class CompilationUnitSyntax
     {
-        public string ModuleName => this.Module?.Name.GetUnqualifiedName().Identifier.Text ?? "main";
+        public string ModuleName => this.Module?.Name.GetUnqualifiedName().Identifier.Text ??
+                                    WellKnownAquilaNames.MainModuleName;
 
         private ImmutableArray<FuncDecl> _funcs;
         private ImmutableArray<TypeDecl> _types;

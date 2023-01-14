@@ -7,8 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Aquila.CodeAnalysis;
-using Aquila.CodeAnalysis.Syntax;
-using Aquila.Compiler.Tests;
+using Aquila.CodeAnalysis.Symbols;
 using Aquila.Core;
 using Aquila.Metadata;
 using Microsoft.CodeAnalysis;
@@ -23,6 +22,9 @@ namespace Aquila.Library.Scripting
     [DebuggerDisplay("Script ({AssemblyName.Name})")]
     sealed class Script : AqContext.IScript
     {
+        private const string MainModuleName = "main";
+        private const string EntryPointMethodName = "main";
+        
         #region Fields & Properties
 
         /// <summary>
@@ -57,8 +59,7 @@ namespace Aquila.Library.Scripting
         /// References to scripts that precedes this one.
         /// Current script requires these to be evaluated first.
         /// </summary>
-        public IReadOnlyList<Script> DependingSubmissions =>
-            _previousSubmissions; // TODO: resolve the compiled code dependencies - referenced types and declared functions. Also, this might cause a huge memory leak.
+        public IReadOnlyList<Script> DependingSubmissions => _previousSubmissions; 
 
         /// <summary>
         /// Gets the assembly content.
@@ -94,12 +95,12 @@ namespace Aquila.Library.Scripting
 
             _image = peStream.ToArray().ToImmutableArray();
 
-            var t = ass.GetType("main");
-
+            var t = ass.GetType(WellKnownAquilaNames.MainModuleName);
+            
             _entryPoint = ctx =>
             {
                 ctx.Instance.UpdateAssembly(ass);
-                return ((MethodInfo)t.GetMember("main").FirstOrDefault()).Invoke(null, new object[] { ctx });
+                return ((MethodInfo)t.GetMember(WellKnownAquilaNames.MainMethodName).FirstOrDefault()).Invoke(null, new object[] { ctx });
             };
 
             if (_entryPoint == null)

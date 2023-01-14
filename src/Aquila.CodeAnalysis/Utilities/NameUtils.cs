@@ -10,36 +10,6 @@ namespace Aquila.Compiler.Utilities
 {
     internal static class NameUtils
     {
-        // /// <summary>
-        // /// Combines name and its namespace.
-        // /// </summary>
-        // /// <param name="name">Name.</param>
-        // /// <param name="ns">Can be <c>null</c>.</param>
-        // /// <returns></returns>
-        // public static QualifiedName MakeQualifiedName(Name name, NamespaceDecl ns)
-        // {
-        //     return (ns != null && ns.QualifiedName.HasValue)
-        //         ? new QualifiedName(name, ns.QualifiedName.QualifiedName.Namespaces)
-        //         : new QualifiedName(name);
-        // }
-
-        // /// <summary>
-        // /// Gets full qualified name of the type declaration.
-        // /// </summary>
-        // /// <param name="type">Type, cannot be <c>null</c>.</param>
-        // /// <returns>Qualified name of the type.</returns>
-        // public static QualifiedName MakeQualifiedName(this TypeDecl type)
-        // {
-        //     if (type is AnonymousTypeDecl)
-        //     {
-        //         return ((AnonymousTypeDecl)type).GetAnonymousTypeQualifiedName();
-        //     }
-        //     else
-        //     {
-        //         return type.QualifiedName;
-        //     }
-        // }
-
         public static QualifiedName MakeQualifiedName(string name, string clrnamespace, bool fullyQualified)
         {
             if (string.IsNullOrEmpty(clrnamespace))

@@ -24,6 +24,7 @@ using Aquila.CodeAnalysis.Symbols.Anonymous;
 using Aquila.CodeAnalysis.Symbols.PE;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Utilities;
+using Aquila.Compiler.Utilities;
 using Aquila.Metadata;
 using Microsoft.Cci;
 using Roslyn.Utilities;
@@ -113,7 +114,7 @@ namespace Aquila.CodeAnalysis
         internal new AssemblySymbol Assembly => SourceAssembly;
 
         public new AquilaCompilationOptions Options => _options;
-
+        
         public IEnumerable<string> ConditionalOptions
         {
             get
@@ -762,7 +763,7 @@ namespace Aquila.CodeAnalysis
                 if (method == null)
                 {
                     DeclarationDiagnostics.Add(Location.None, ErrorCode.ERR_StartupObjectNotFound,
-                        Options.MainTypeName);
+                        WellKnownAquilaNames.MainModuleName);
                     method = new MissingMethodSymbol(); // dummy symbol
                 }
 
@@ -774,8 +775,8 @@ namespace Aquila.CodeAnalysis
 
         MethodSymbol FindEntryPoint(CancellationToken cancellationToken)
         {
-            return SourceSymbolCollection.GetModuleType("main")
-                ?.GetMembers("main").OfType<MethodSymbol>().FirstOrDefault();
+            return SourceSymbolCollection.GetModuleType(WellKnownAquilaNames.MainModuleName)
+                ?.GetMembers(WellKnownAquilaNames.MainMethodName).OfType<MethodSymbol>().FirstOrDefault();
         }
 
         protected override ImmutableArray<SyntaxTree> CommonSyntaxTrees =>
