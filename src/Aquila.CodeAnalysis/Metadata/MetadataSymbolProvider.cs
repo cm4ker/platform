@@ -341,11 +341,6 @@ internal partial class MetadataSymbolProvider
             var objectTableRowType = _ps.GetSynthesizedType(
                 QualifiedName.Parse($"{Namespace}.{md.Name}{mdTable.Name}{TableRowDtoPostfix}", true));
 
-            //var a = ((NamedTypeSymbol)_ct.ImmutableArray_arg1.Symbol).Construct();
-            // var tableParam =
-            //     new SynthesizedParameterSymbol(ctor, collectionType, index++, RefKind.None, $"{mdTable.Name}");
-            // var tableParamPlace = new ParamPlace(tableParam);
-
             var tableField = _ps.SynthesizeField(objectType);
             tableField
                 .SetName(mdTable.Name + "_table")
@@ -702,7 +697,6 @@ internal partial class MetadataSymbolProvider
                 ctxFieldPlace.EmitLoad(il);
 
                 thisPlace.EmitLoad(il);
-                //dtoFieldPlace.EmitLoad(il);
 
                 dtoPropPlace.EmitLoad(il);
 

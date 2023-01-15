@@ -276,12 +276,6 @@ namespace Aquila.CodeAnalysis.Semantics
         /// </summary>
         public CommonConversion BoundConversion { get; internal set; } // TODO: make it nullable
 
-        // /// <summary>
-        // /// Lazily resolved type of the expression,
-        // /// after applying the <see cref="Access"/>.
-        // /// </summary>
-        // internal TypeSymbol ResultType { get; set; }
-
         public AquilaSyntaxNode AquilaSyntax
         {
             get => _aquilaSyntax ?? SyntaxFactory.EmptyStmt();
@@ -313,8 +307,6 @@ namespace Aquila.CodeAnalysis.Semantics
         public Optional<object> ConstantValue { get; set; }
 
         protected sealed override Optional<object> ConstantValueHlp => ConstantValue;
-
-        //public abstract TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor);
     }
 
     #endregion
@@ -497,218 +489,6 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    // public partial class BoundGlobalFunctionCall : BoundCallEx
-    // {
-    //     public BoundMethodName Name => _name;
-    //     readonly BoundMethodName _name;
-    //
-    //     public QualifiedName? NameOpt => _nameOpt;
-    //     readonly QualifiedName? _nameOpt;
-    //
-    //     public BoundGlobalFunctionCall(BoundExpression nameExpression, ImmutableArray<BoundArgument> arguments)
-    //         : this(new BoundMethodName(nameExpression), null, arguments)
-    //     {
-    //     }
-    //
-    //     public BoundGlobalFunctionCall(QualifiedName name, QualifiedName? nameOpt,
-    //         ImmutableArray<BoundArgument> arguments)
-    //         : this(new BoundMethodName(name), nameOpt, arguments)
-    //     {
-    //     }
-    //
-    //     private BoundGlobalFunctionCall(BoundMethodName name, QualifiedName? nameOpt,
-    //         ImmutableArray<BoundArgument> arguments)
-    //         : base(arguments)
-    //     {
-    //         Debug.Assert(nameOpt == null || name.IsDirect);
-    //         _name = name;
-    //         _nameOpt = nameOpt;
-    //     }
-    //
-    //     public BoundGlobalFunctionCall Update(BoundMethodName name, QualifiedName? nameOpt,
-    //         ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments)
-    //     {
-    //         if (name == _name && nameOpt == _nameOpt && arguments == ArgumentsInSourceOrder &&
-    //             typeArguments == _typeargs)
-    //         {
-    //             return this;
-    //         }
-    //         else
-    //         {
-    //             return new BoundGlobalFunctionCall(name, nameOpt, arguments)
-    //                 {TypeArguments = typeArguments}.WithContext(this);
-    //         }
-    //     }
-    //
-    //     /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-    //     /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-    //     /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-    //     public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
-    //         throw new NotImplementedException("Function call");
-    // }
-
-    // public partial class BoundInstanceFunctionCall : BoundCallEx
-    // {
-    //     public override BoundExpression Instance => _instance;
-    //     private BoundExpression _instance;
-    //
-    //     public BoundMethodName Name => _name;
-    //     readonly BoundMethodName _name;
-    //
-    //     public override bool IsVirtual => this.TargetMethod.IsErrorMethodOrNull() || this.TargetMethod.IsVirtual;
-    //
-    //     internal void SetInstance(BoundExpression instance) => _instance = instance;
-    //
-    //     public BoundInstanceFunctionCall(BoundExpression instance, QualifiedName name,
-    //         ImmutableArray<BoundArgument> arguments)
-    //         : this(instance, new BoundMethodName(name), arguments)
-    //     {
-    //     }
-    //
-    //     public BoundInstanceFunctionCall(BoundExpression instance, BoundExpression nameExpr,
-    //         ImmutableArray<BoundArgument> arguments)
-    //         : this(instance, new BoundMethodName(nameExpr), arguments)
-    //     {
-    //     }
-    //
-    //     public BoundInstanceFunctionCall(BoundExpression instance, BoundMethodName name,
-    //         ImmutableArray<BoundArgument> arguments)
-    //         : base(arguments)
-    //     {
-    //         Debug.Assert(instance != null);
-    //         Debug.Assert(name != null);
-    //
-    //         _instance = instance;
-    //         _name = name;
-    //     }
-    //
-    //     public BoundInstanceFunctionCall Update(BoundExpression instance, BoundMethodName name,
-    //         ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments)
-    //     {
-    //         if (instance == _instance && name == _name && arguments == ArgumentsInSourceOrder &&
-    //             typeArguments == _typeargs)
-    //         {
-    //             return this;
-    //         }
-    //         else
-    //         {
-    //             return new BoundInstanceFunctionCall(instance, name, arguments) {TypeArguments = typeArguments}
-    //                 .WithContext(this);
-    //         }
-    //     }
-    //
-    //     // /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-    //     // /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-    //     // /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-    //     // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
-    //     //     visitor.VisitInstanceFunctionCall(this);
-    // }
-
-    // public partial class BoundCall : BoundCallEx
-    // {
-    //     public IBoundTypeRef TypeRef => _typeRef;
-    //     readonly BoundTypeRef _typeRef;
-    //
-    //     public override BoundExpression Instance => _instance;
-    //     readonly BoundExpression _instance;
-    //
-    //     public BoundMethodName Name => _name;
-    //     readonly BoundMethodName _name;
-    //
-    //     public BoundCall(IBoundTypeRef typeRef, BoundMethodName name, BoundExpression instance,
-    //         ImmutableArray<BoundArgument> arguments)
-    //         : base(arguments)
-    //     {
-    //         _typeRef = (BoundTypeRef) typeRef;
-    //         _name = name;
-    //         instance = instance;
-    //     }
-    //
-    //     public BoundCall Update(IBoundTypeRef typeRef, BoundMethodName name, BoundExpression instance,
-    //         ImmutableArray<BoundArgument> arguments, ImmutableArray<IBoundTypeRef> typeArguments)
-    //     {
-    //         if (typeRef == _typeRef && name == _name && arguments == ArgumentsInSourceOrder &&
-    //             typeArguments == _typeargs)
-    //         {
-    //             return this;
-    //         }
-    //         else
-    //         {
-    //             return new BoundCall(typeRef, name, instance, arguments)
-    //                 {TypeArguments = typeArguments}.WithContext(this);
-    //         }
-    //     }
-    //
-    //     // /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-    //     // /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-    //     // /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-    //     // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
-    //     //     visitor.VisitStaticFunctionCall(this);
-    // }
-
-    // /// <summary>
-    // /// Specialized <c>echo</c> function call.
-    // /// To be replaced with <c>Context.Echo</c> once overload resolution is implemented.
-    // /// </summary>
-    // public sealed partial class BoundEcho : BoundCallEx
-    // {
-    //     public override BoundExpression Instance => null;
-    //
-    //     public BoundEcho(ImmutableArray<BoundArgument> arguments)
-    //         : base(arguments)
-    //     {
-    //     }
-    //
-    //     public BoundEcho Update(ImmutableArray<BoundArgument> arguments)
-    //     {
-    //         if (arguments == ArgumentsInSourceOrder)
-    //         {
-    //             return this;
-    //         }
-    //         else
-    //         {
-    //             return new BoundEcho(arguments).WithContext(this);
-    //         }
-    //     }
-    //
-    //     // /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-    //     // /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-    //     // /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-    //     // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitEcho(this);
-    // }
-
-    // /// <summary>
-    // /// Represents a string concatenation.
-    // /// </summary>
-    // public partial class BoundConcatEx : BoundCallEx
-    // {
-    //     public override BoundExpression Instance => null;
-    //
-    //     public override bool IsDeeplyCopied => false;
-    //
-    //     public BoundConcatEx(ImmutableArray<BoundArgument> arguments)
-    //         : base(arguments)
-    //     {
-    //     }
-    //
-    //     public BoundConcatEx Update(ImmutableArray<BoundArgument> arguments)
-    //     {
-    //         if (arguments == ArgumentsInSourceOrder)
-    //         {
-    //             return this;
-    //         }
-    //         else
-    //         {
-    //             return new BoundConcatEx(arguments).WithContext(this);
-    //         }
-    //     }
-    //
-    //     // /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-    //     // /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-    //     // /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-    //     // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitConcat(this);
-    // }
-
     /// <summary>
     /// Direct new expression with a constructor call.
     /// </summary>
@@ -716,119 +496,6 @@ namespace Aquila.CodeAnalysis.Semantics
     {
         public override bool IsDeeplyCopied => false;
     }
-
-    // /// <summary>
-    // /// A script inclusion.
-    // /// </summary>
-    // public partial class BoundIncludeEx : BoundCallEx
-    // {
-    //     public override BoundExpression Instance => null;
-    //
-    //     /// <summary>
-    //     /// Gets value indicating the target is resolved at compile time,
-    //     /// so it will be called statically.
-    //     /// </summary>
-    //     public bool IsResolved => !TargetMethod.IsErrorMethodOrNull();
-    //
-    //     /// <summary>
-    //     /// In case the inclusion target is resolved, gets reference to the <c>Main</c> method of the included script.
-    //     /// </summary>
-    //     internal new MethodSymbol TargetMethod
-    //     {
-    //         get { return base.TargetMethod; }
-    //         set { base.TargetMethod = value; }
-    //     }
-    //
-    //     /// <summary>
-    //     /// Type of inclusion, <c>include</c>, <c>require</c>, <c>include_once</c>, <c>require_once</c>.
-    //     /// </summary>
-    //     public InclusionTypes InclusionType { get; private set; }
-    //
-    //     public BoundIncludeEx(BoundExpression target, InclusionTypes type)
-    //         : base(ImmutableArray.Create(BoundArgument.Create(target)))
-    //     {
-    //         Debug.Assert(target.Access.IsRead);
-    //
-    //         this.InclusionType = type;
-    //     }
-    //
-    //     public BoundIncludeEx Update(BoundExpression target, InclusionTypes type)
-    //     {
-    //         if (target == ArgumentsInSourceOrder[0].Value && type == InclusionType)
-    //         {
-    //             return this;
-    //         }
-    //         else
-    //         {
-    //             return new BoundIncludeEx(target, type).WithContext(this);
-    //         }
-    //     }
-    //
-    //     // /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-    //     // /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-    //     // /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-    //     // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitInclude(this);
-    // }
-
-    // /// <summary>
-    // /// <c>exit</c> construct.
-    // /// </summary>
-    // public sealed partial class BoundExitEx : BoundCallEx
-    // {
-    //     public override BoundExpression Instance => null;
-    //
-    //     public BoundExitEx(BoundExpression value = null)
-    //         : base(value != null
-    //             ? ImmutableArray.Create(BoundArgument.Create(value))
-    //             : ImmutableArray<BoundArgument>.Empty)
-    //     {
-    //         Debug.Assert(value == null || value.Access.IsRead);
-    //     }
-    //
-    //     public BoundExitEx Update(ImmutableArray<BoundArgument> args)
-    //     {
-    //         if (args == ArgumentsInSourceOrder)
-    //         {
-    //             return this;
-    //         }
-    //         else
-    //         {
-    //             return new BoundExitEx(args.Length == 0 ? null : args[0].Value).WithContext(this);
-    //         }
-    //     }
-    //
-    //     // /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-    //     // /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-    //     // /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-    //     // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitExit(this);
-    // }
-    //
-    // public sealed partial class BoundAssertEx : BoundCallEx
-    // {
-    //     public override BoundExpression Instance => null;
-    //
-    //     public BoundAssertEx(ImmutableArray<BoundArgument> arguments)
-    //         : base(arguments)
-    //     {
-    //     }
-    //
-    //     public BoundAssertEx Update(ImmutableArray<BoundArgument> arguments)
-    //     {
-    //         if (arguments == ArgumentsInSourceOrder)
-    //         {
-    //             return this;
-    //         }
-    //         else
-    //         {
-    //             return new BoundAssertEx(arguments).WithContext(this);
-    //         }
-    //     }
-    //
-    //     // /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-    //     // /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-    //     // /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-    //     // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitAssert(this);
-    // }
 
     #endregion
 
@@ -868,18 +535,9 @@ namespace Aquila.CodeAnalysis.Semantics
 
         ImmutableArray<BoundArgument> _usevars;
 
-        public IBlockOperation Body =>
-            null; //(BoundLambdaMethod != null) ? BoundLambdaMethod.ControlFlowGraph.Start : null;
-
-        public IMethodSymbol Signature => null; // BoundLambdaMethod;
-
-        /// <summary>
-        /// Reference to associated lambda method symbol.
-        /// Bound during analysis.
-        /// </summary>
-        //internal SourceLambdaSymbol BoundLambdaMethod { get; set; }
-
-        IMethodSymbol IAnonymousFunctionOperation.Symbol => null; // BoundLambdaMethod;
+        public IBlockOperation Body => null; 
+        public IMethodSymbol Signature => null;
+        IMethodSymbol IAnonymousFunctionOperation.Symbol => null;
 
         public override bool IsDeeplyCopied => false;
 
@@ -902,12 +560,6 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public override OperationKind Kind => OperationKind.AnonymousFunction;
         public override BoundKind BoundKind { get; }
-
-        // /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        // /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-        // /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitLambda(this);
-
         public override void Accept(OperationVisitor visitor) => visitor.VisitAnonymousFunction(this);
 
         public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
@@ -942,12 +594,6 @@ namespace Aquila.CodeAnalysis.Semantics
                 return new BoundEvalEx(code).WithContext(this);
             }
         }
-
-        // /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        // /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-        // /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitEval(this);
-
         public override void Accept(OperationVisitor visitor) => visitor.DefaultVisit(this);
 
         public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
@@ -1011,10 +657,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
             TArgument argument) => visitor.DefaultVisit(this, argument);
-
-        // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
-        //     visitor.VisitCopyValue(this);
-
+        
         internal BoundCopyValue Update(BoundExpression expression)
         {
             return expression == Expression ? this : new BoundCopyValue(expression).WithAccess(this.Access);
@@ -1231,22 +874,6 @@ namespace Aquila.CodeAnalysis.Semantics
             result = visitor.VisitConversion(this, argument);
         }
     }
-
-    // internal partial class BoundCallableConvert : BoundConversionEx
-    // {
-    //     /// <summary>
-    //     /// Resolved method to be converted to callable.
-    //     /// </summary>
-    //     public IMethodSymbol TargetCallable { get; internal set; }
-    //
-    //     /// <summary>In case of an instance method, this is its receiver instance.</summary>
-    //     internal BoundExpression Receiver { get; set; }
-    //
-    //     internal BoundCallableConvert(BoundExpression operand, AquilaCompilation compilation)
-    //         : base(operand, compilation.TypeRefFactory.Create((NamedTypeSymbol)null), null)
-    //     {
-    //     }
-    // }
 
     #endregion
 
@@ -1507,7 +1134,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         partial void OnCreateImpl(BoundVariableName name, ITypeSymbol typeSymbol)
         {
-            //_name = name.NameValue.Value;
+            
         }
     }
 
@@ -1791,12 +1418,6 @@ namespace Aquila.CodeAnalysis.Semantics
         public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
             TArgument argument)
             => visitor.VisitIsType(this, argument);
-
-        /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-        /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
-        //     visitor.VisitInstanceOf(this);
     }
 
     #endregion
@@ -1844,12 +1465,6 @@ namespace Aquila.CodeAnalysis.Semantics
         public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
             TArgument argument)
             => visitor.DefaultVisit(this, argument);
-
-        /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-        /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
-        //     visitor.VisitGlobalConstUse(this);
     }
 
     #endregion
@@ -1897,11 +1512,6 @@ namespace Aquila.CodeAnalysis.Semantics
         public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
             TArgument argument)
             => visitor.DefaultVisit(this, argument);
-
-        /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-        /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitIsEmpty(this);
     }
 
     public partial class BoundIsSetEx : BoundExpression
@@ -1941,11 +1551,6 @@ namespace Aquila.CodeAnalysis.Semantics
         public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
             TArgument argument)
             => visitor.DefaultVisit(this, argument);
-
-        /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-        /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-        /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-        // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) => visitor.VisitIsSet(this);
     }
 
     public partial class BoundOffsetExists : BoundExpression
@@ -1984,10 +1589,6 @@ namespace Aquila.CodeAnalysis.Semantics
                 return new BoundOffsetExists(receiver, index).WithContext(this);
             }
         }
-
-        // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
-        //     => visitor.VisitOffsetExists(this);
-
         public override void Accept(OperationVisitor visitor)
             => visitor.DefaultVisit(this);
 
@@ -2033,9 +1634,6 @@ namespace Aquila.CodeAnalysis.Semantics
                 return new BoundTryGetItem(array, index, fallback);
             }
         }
-
-        // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
-        //     => visitor.VisitTryGetItem(this);
 
         public override void Accept(OperationVisitor visitor)
             => visitor.DefaultVisit(this);

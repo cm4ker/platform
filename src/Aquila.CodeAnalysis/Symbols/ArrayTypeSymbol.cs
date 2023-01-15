@@ -201,14 +201,6 @@ namespace Aquila.CodeAnalysis.Symbols
             get { return _elementType; }
         }
 
-        //internal override NamedTypeSymbol BaseTypeNoUseSiteDiagnostics
-        //{
-        //    get
-        //    {
-        //        return _baseType;
-        //    }
-        //}
-
         public override bool IsReferenceType
         {
             get { return true; }
@@ -218,14 +210,6 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get { return false; }
         }
-
-        //internal sealed override bool IsManagedType
-        //{
-        //    get
-        //    {
-        //        return true;
-        //    }
-        //}
 
         internal sealed override ObsoleteAttributeData ObsoleteAttributeData
         {
@@ -370,37 +354,6 @@ namespace Aquila.CodeAnalysis.Symbols
             get { return false; }
         }
 
-        //#region Use-Site Diagnostics
-
-        //internal override DiagnosticInfo GetUseSiteDiagnostic()
-        //{
-        //    DiagnosticInfo result = null;
-
-        //    // check element type
-        //    if (DeriveUseSiteDiagnosticFromType(ref result, this.ElementType))
-        //    {
-        //        return result;
-        //    }
-
-        //    // check custom modifiers
-        //    if (DeriveUseSiteDiagnosticFromCustomModifiers(ref result, this.CustomModifiers))
-        //    {
-        //        return result;
-        //    }
-
-        //    return result;
-        //}
-
-        //internal override bool GetUnificationUseSiteDiagnosticRecursive(ref DiagnosticInfo result, Symbol owner, ref HashSet<TypeSymbol> checkedTypes)
-        //{
-        //    return _elementType.GetUnificationUseSiteDiagnosticRecursive(ref result, owner, ref checkedTypes) ||
-        //           ((object)_baseType != null && _baseType.GetUnificationUseSiteDiagnosticRecursive(ref result, owner, ref checkedTypes)) ||
-        //           GetUnificationUseSiteDiagnosticRecursive(ref result, this.InterfacesNoUseSiteDiagnostics(), owner, ref checkedTypes) ||
-        //           GetUnificationUseSiteDiagnosticRecursive(ref result, this.CustomModifiers, owner, ref checkedTypes);
-        //}
-
-        //#endregion
-
         #region IArrayTypeSymbol Members
 
         ITypeSymbol IArrayTypeSymbol.ElementType
@@ -469,12 +422,7 @@ namespace Aquila.CodeAnalysis.Symbols
             {
                 get { return true; }
             }
-
-            //internal override ImmutableArray<NamedTypeSymbol> InterfacesNoUseSiteDiagnostics(ConsList<Symbol> basesBeingResolved = null)
-            //{
-            //    return _interfaces;
-            //}
-
+            
             internal override bool HasDefaultSizesAndLowerBounds
             {
                 get { return true; }
@@ -508,11 +456,6 @@ namespace Aquila.CodeAnalysis.Symbols
             {
                 get { return false; }
             }
-
-            //internal sealed override ImmutableArray<NamedTypeSymbol> InterfacesNoUseSiteDiagnostics(ConsList<Symbol> basesBeingResolved = null)
-            //{
-            //    return ImmutableArray<NamedTypeSymbol>.Empty;
-            //}
 
             internal override bool HasDefaultSizesAndLowerBounds
             {

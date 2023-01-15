@@ -1,12 +1,4 @@
-﻿using Microsoft.CodeAnalysis.Operations;
-using Aquila.CodeAnalysis.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Aquila.CodeAnalysis.Semantics.TypeRef;
+﻿using System.Diagnostics;
 
 namespace Aquila.CodeAnalysis.Semantics.Graph
 {
@@ -80,11 +72,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public override T VisitCFGCaseBlock(MatchArmBlock x)
         {
-            if (x.MatchValue == null)
-            {
-                //VisitCFGBlock(x.);
-            }
-
             if (x.MatchValue != null)
             {
                 Accept(x.MatchValue);
@@ -170,8 +157,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public override T VisitLiteral(BoundLiteral x)
         {
-            //VisitLiteralExpression(x);
-
             return default;
         }
 
@@ -181,31 +166,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             return default;
         }
-        //
-        // internal override T VisitTypeRef(BoundTypeRef x)
-        // {
-        //     return base.VisitTypeRef(x);
-        // }
-        //
-        // internal override T VisitIndirectTypeRef(BoundIndirectTypeRef x)
-        // {
-        //     Accept(x.TypeExpression);
-        //     return base.VisitIndirectTypeRef(x);
-        // }
-        //
-        // internal override T VisitMultipleTypeRef(BoundMultipleTypeRef x)
-        // {
-        //     Debug.Assert(x != null);
-        //     Debug.Assert(x.TypeRefs.Length > 1);
-        //
-        //     for (int i = 0; i < x.TypeRefs.Length; i++)
-        //     {
-        //         x.TypeRefs[i].Accept(this);
-        //     }
-        //
-        //     return default;
-        // }
-
         public override T VisitMethodName(BoundMethodName x)
         {
             Accept(x.NameExpression);
@@ -336,99 +296,12 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             return default;
         }
 
-        // public override T VisitInstanceOfEx(BoundInstanceOfEx x)
-        // {
-        //     Accept(x.Operand);
-        //     Accept(x.AsType);
-        //
-        //     return default;
-        // }
-
-        // public override T VisitGlobalConstUse(BoundGlobalConst x)
-        // {
-        //     return default;
-        // }
-
-        // public override T VisitGlobalConstDecl(BoundGlobalConstDeclStmt x)
-        // {
-        //     Accept(x.Value);
-        //
-        //     return default;
-        // }
-
-        // public override T VisitPseudoConstUse(BoundPseudoConst x)
-        // {
-        //     return default;
-        // }
-        //
-        // public override T VisitPseudoClassConstUse(BoundPseudoClassConst x)
-        // {
-        //     Accept(x.TargetType);
-        //
-        //     return default;
-        // }
-
-        // public override T VisitIsEmpty(BoundIsEmptyEx x)
-        // {
-        //     Accept(x.Operand);
-        //
-        //     return default;
-        // }
-        //
-        // public override T VisitIsSet(BoundIsSetEx x)
-        // {
-        //     Accept(x.VarReference);
-        //
-        //     return default;
-        // }
-
-        // public override T VisitOffsetExists(BoundOffsetExists x)
-        // {
-        //     Accept(x.Receiver);
-        //     Accept(x.Index);
-        //
-        //     return default;
-        // }
-        //
-        // public override T VisitTryGetItem(BoundTryGetItem x)
-        // {
-        //     Accept(x.Array);
-        //     Accept(x.Index);
-        //     Accept(x.Fallback);
-        //
-        //     return default;
-        // }
-        //
-        // public override T VisitLambda(BoundLambda x)
-        // {
-        //     return default;
-        // }
-        //
-        // public override T VisitEval(BoundEvalEx x)
-        // {
-        //     Accept(x.CodeExpression);
-        //
-        //     return default;
-        // }
-
         public override T VisitThrowEx(BoundThrowEx x)
         {
             Accept(x.Thrown);
 
             return default;
         }
-
-        // public override T VisitYieldEx(BoundYieldEx boundYieldEx)
-        // {
-        //     return default;
-        // }
-        //
-        // public override T VisitYieldFromEx(BoundYieldFromEx x)
-        // {
-        //     Accept(x.Operand);
-        //
-        //     return default;
-        // }
 
         #endregion
 
@@ -469,31 +342,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         {
             return default;
         }
-
-        // public override T VisitTypeDeclaration(BoundTypeDeclStatement x)
-        // {
-        //     return default;
-        // }
-
-        // public override T VisitGlobalStatement(BoundGlobalVariableStatement x)
-        // {
-        //     Accept(x.Variable);
-        //
-        //     return default;
-        // }
-        //
-        // public override T VisitStaticStatement(BoundStaticVarStmt x)
-        // {
-        //     return default;
-        // }
-        //
-        // public override T VisitYieldStatement(BoundYieldStmt boundYieldStmt)
-        // {
-        //     Accept(boundYieldStmt.YieldedValue);
-        //     Accept(boundYieldStmt.YieldedKey);
-        //
-        //     return default;
-        // }
 
         public override T VisitDeclareStmt(BoundDeclareStmt x)
         {

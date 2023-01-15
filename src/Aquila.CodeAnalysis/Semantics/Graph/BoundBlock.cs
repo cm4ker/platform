@@ -292,18 +292,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         }
 
         public override TResult Accept<TResult>(GraphVisitor<TResult> visitor) => visitor.VisitCFGCatchBlock(this);
-
-        //#region ICatch
-
-        //IBlockStatement ICatch.Handler => this.NextEdge.Targets.Single();
-
-        //ITypeSymbol ICatch.CaughtType => this.ResolvedType;
-
-        //IExpression ICatch.Filter => null;
-
-        //ILocalSymbol ICatch.ExceptionLocal => _variable.Variable?.Symbol as ILocalSymbol;
-
-        //#endregion
     }
 
     /// <summary>

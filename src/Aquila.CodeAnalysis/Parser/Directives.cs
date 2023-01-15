@@ -72,15 +72,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         internal string GetIdentifier()
         {
             throw new NotImplementedException();
-            // switch (_node.Kind)
-            // {
-            //     case SyntaxKind.DefineDirectiveTrivia:
-            //         return ((DefineDirectiveTriviaSyntax)_node).Name.ValueText;
-            //     case SyntaxKind.UndefDirectiveTrivia:
-            //         return ((UndefDirectiveTriviaSyntax)_node).Name.ValueText;
-            //     default:
-            //         return null;
-            // }
         }
 
         internal bool IsActive
@@ -88,7 +79,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             get
             {
                 throw new NotImplementedException();
-                //return _node.IsActive;
             }
         }
 
@@ -97,13 +87,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             get
             {
                 throw new NotImplementedException();
-                // var branching = _node as BranchingDirectiveTriviaSyntax;
-                // if (branching != null)
-                // {
-                //     return branching.BranchTaken;
-                // }
-                //
-                // return false;
             }
         }
     }

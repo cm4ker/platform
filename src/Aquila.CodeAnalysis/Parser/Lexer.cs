@@ -2390,14 +2390,9 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                         if (_allowPreprocessorDirectives)
                         {
                             throw new NotImplementedException();
-                            // this.LexDirectiveAndExcludedTrivia(afterFirstToken, isTrailing || !onlyWhitespaceOnLine,
-                            //     ref triviaList);
-                            break;
                         }
-                        else
-                        {
-                            return;
-                        }
+
+                        return;
 
                     // Note: we specifically do not look for the >>>>>>> pattern as the start of
                     // a conflict marker trivia.  That's because *technically* (albeit unlikely)
@@ -2719,51 +2714,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         {
             return SyntaxFactory.Whitespace(TextWindow.GetText(intern: true));
         }
-
-        // private void LexDirectiveAndExcludedTrivia(
-        //     bool afterFirstToken,
-        //     bool afterNonWhitespaceOnLine,
-        //     ref SyntaxListBuilder triviaList)
-        // {
-        //     var directive =
-        //         this.LexSingleDirective(true, true, afterFirstToken, afterNonWhitespaceOnLine, ref triviaList);
-        //
-        //     // also lex excluded stuff            
-        //     var branching = directive as BranchingDirectiveTriviaSyntax;
-        //     if (branching != null && !branching.BranchTaken)
-        //     {
-        //         this.LexExcludedDirectivesAndTrivia(true, ref triviaList);
-        //     }
-        // }
-
-        // private void LexExcludedDirectivesAndTrivia(bool endIsActive, ref SyntaxListBuilder triviaList)
-        // {
-        //     while (true)
-        //     {
-        //         bool hasFollowingDirective;
-        //         var text = this.LexDisabledText(out hasFollowingDirective);
-        //         if (text != null)
-        //         {
-        //             this.AddTrivia(text, ref triviaList);
-        //         }
-        //
-        //         if (!hasFollowingDirective)
-        //         {
-        //             break;
-        //         }
-        //
-        //         var directive = this.LexSingleDirective(false, endIsActive, false, false, ref triviaList);
-        //         var branching = directive as BranchingDirectiveTriviaSyntax;
-        //         if (directive.Kind == SyntaxKind.EndIfDirectiveTrivia || (branching != null && branching.BranchTaken))
-        //         {
-        //             break;
-        //         }
-        //         else if (directive.Kind == SyntaxKind.IfDirectiveTrivia)
-        //         {
-        //             this.LexExcludedDirectivesAndTrivia(false, ref triviaList);
-        //         }
-        //     }
-        // }
 
         private AquilaSyntaxNode LexSingleDirective(
             bool isActive,
@@ -3886,7 +3836,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         {
             // TODO: which is the right one?
             return XmlCharType.IsStartNCNameCharXml4e(ch);
-            // return XmlCharType.IsStartNameSingleChar(ch);
         }
 
         /// <summary>
@@ -3897,7 +3846,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         {
             // TODO: which is the right one?
             return XmlCharType.IsNCNameCharXml4e(ch);
-            //return XmlCharType.IsNameSingleChar(ch);
         }
 
         // TODO: There is a lot of duplication between attribute text, CDATA text, and comment text.
@@ -4320,7 +4268,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 case '>':
                     if (AdvanceIfMatches('=')) info.Kind = SyntaxKind.GreaterThanEqualsToken;
                     // GreaterThanGreaterThanToken is synthesized in the parser since it is ambiguous (with closing nested type parameter lists)
-                    // else if (AdvanceIfMatches('>')) info.Kind = SyntaxKind.GreaterThanGreaterThanToken;
                     else info.Kind = SyntaxKind.GreaterThanToken;
                     break;
                 case '<':

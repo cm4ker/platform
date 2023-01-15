@@ -145,24 +145,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             out bool isNoPiaLocalType)
         {
             throw new NotImplementedException();
-            //foreach (ModuleSymbol m in moduleSymbol.ContainingAssembly.Modules)
-            //{
-            //    if (string.Equals(m.Name, moduleName, StringComparison.OrdinalIgnoreCase))
-            //    {
-            //        if ((object)m == (object)moduleSymbol)
-            //        {
-            //            return moduleSymbol.LookupTopLevelMetadataType(ref emittedName, out isNoPiaLocalType);
-            //        }
-            //        else
-            //        {
-            //            isNoPiaLocalType = false;
-            //            return m.LookupTopLevelMetadataType(ref emittedName);
-            //        }
-            //    }
-            //}
-
-            //isNoPiaLocalType = false;
-            //return new MissingMetadataTypeSymbol.TopLevel(new MissingModuleSymbolWithName(moduleSymbol.ContainingAssembly, moduleName), ref emittedName, SpecialType.None);
         }
 
         /// <summary>
@@ -176,7 +158,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             out bool isNoPiaLocalType)
         {
             isNoPiaLocalType = false;
-            return moduleSymbol.LookupTopLevelMetadataType(ref emittedName); //, out isNoPiaLocalType);
+            return moduleSymbol.LookupTopLevelMetadataType(ref emittedName);
         }
 
         protected override int GetIndexOfReferencedAssembly(AssemblyIdentity identity)
@@ -195,69 +177,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
 
             return -1;
         }
-
-        ///// <summary>
-        ///// Perform a check whether the type or at least one of its generic arguments 
-        ///// is defined in the specified assemblies. The check is performed recursively. 
-        ///// </summary>
-        //public static bool IsOrClosedOverATypeFromAssemblies(TypeSymbol symbol, ImmutableArray<AssemblySymbol> assemblies)
-        //{
-        //    switch (symbol.Kind)
-        //    {
-        //        case SymbolKind.TypeParameter:
-        //            return false;
-
-        //        case SymbolKind.ArrayType:
-        //            return IsOrClosedOverATypeFromAssemblies(((ArrayTypeSymbol)symbol).ElementType, assemblies);
-
-        //        case SymbolKind.PointerType:
-        //            return IsOrClosedOverATypeFromAssemblies(((PointerTypeSymbol)symbol).PointedAtType, assemblies);
-
-        //        case SymbolKind.DynamicType:
-        //            return false;
-
-        //        case SymbolKind.ErrorType:
-        //            goto case SymbolKind.NamedType;
-        //        case SymbolKind.NamedType:
-
-        //            var namedType = (NamedTypeSymbol)symbol;
-        //            AssemblySymbol containingAssembly = symbol.OriginalDefinition.ContainingAssembly;
-        //            int i;
-
-        //            if ((object)containingAssembly != null)
-        //            {
-        //                for (i = 0; i < assemblies.Length; i++)
-        //                {
-        //                    if (ReferenceEquals(containingAssembly, assemblies[i]))
-        //                    {
-        //                        return true;
-        //                    }
-        //                }
-        //            }
-
-        //            do
-        //            {
-        //                var arguments = namedType.TypeArgumentsNoUseSiteDiagnostics;
-        //                int count = arguments.Length;
-
-        //                for (i = 0; i < count; i++)
-        //                {
-        //                    if (IsOrClosedOverATypeFromAssemblies(arguments[i], assemblies))
-        //                    {
-        //                        return true;
-        //                    }
-        //                }
-
-        //                namedType = (NamedTypeSymbol)namedType.ContainingType;
-        //            }
-        //            while ((object)namedType != null);
-
-        //            return false;
-
-        //        default:
-        //            throw ExceptionUtilities.UnexpectedValue(symbol.Kind);
-        //    }
-        //}
 
         protected override TypeSymbol SubstituteNoPiaLocalType(
             TypeDefinitionHandle typeDef,
@@ -284,14 +203,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 }
 
                 throw new NotImplementedException();
-                //result = SubstituteNoPiaLocalType(
-                //    ref name,
-                //    isInterface,
-                //    baseType,
-                //    interfaceGuid,
-                //    scope,
-                //    identifier,
-                //    (AssemblySymbol)moduleSymbol.ContainingAssembly);
             }
             catch (BadImageFormatException mrEx)
             {
@@ -374,12 +285,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             Queue<TypeSymbol> typeSymbolsToSearch, TypeSymbol typeSymbol)
         {
             throw new NotImplementedException();
-            //foreach (NamedTypeSymbol @interface in typeSymbol.InterfacesNoUseSiteDiagnostics())
-            //{
-            //    EnqueueTypeSymbol(typeDefsToSearch, typeSymbolsToSearch, @interface);
-            //}
-
-            //EnqueueTypeSymbol(typeDefsToSearch, typeSymbolsToSearch, typeSymbol.BaseTypeNoUseSiteDiagnostics);
         }
 
         protected override void EnqueueTypeSymbol(Queue<TypeDefinitionHandle> typeDefsToSearch,

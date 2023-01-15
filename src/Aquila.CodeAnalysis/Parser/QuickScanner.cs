@@ -313,7 +313,9 @@ exitWhile:
             (byte)CharFlags.Digit,    // 8
             (byte)CharFlags.Digit,    // 9
             (byte)CharFlags.CompoundPunctStart,  // :
+#pragma warning disable S125
             (byte)CharFlags.Punct,    // ;
+#pragma warning restore S125
             (byte)CharFlags.CompoundPunctStart,  // <
             (byte)CharFlags.CompoundPunctStart,  // =
             (byte)CharFlags.CompoundPunctStart,  // >
@@ -381,12 +383,14 @@ exitWhile:
             (byte)CharFlags.Letter,   // x
             (byte)CharFlags.Letter,   // y
             (byte)CharFlags.Letter,   // z
+#pragma warning disable S125
             (byte)CharFlags.Punct,    // {
+
             (byte)CharFlags.CompoundPunctStart,  // |
             (byte)CharFlags.Punct,    // }
             (byte)CharFlags.CompoundPunctStart,    // ~
             (byte)CharFlags.Complex,
-
+#pragma warning restore S125
             // 128 .. 159
             (byte)CharFlags.Complex, (byte)CharFlags.Complex, (byte)CharFlags.Complex, (byte)CharFlags.Complex, (byte)CharFlags.Complex, (byte)CharFlags.Complex, (byte)CharFlags.Complex, (byte)CharFlags.Complex,
             (byte)CharFlags.Complex, (byte)CharFlags.Complex, (byte)CharFlags.Complex, (byte)CharFlags.Complex, (byte)CharFlags.Complex, (byte)CharFlags.Complex, (byte)CharFlags.Complex, (byte)CharFlags.Complex,

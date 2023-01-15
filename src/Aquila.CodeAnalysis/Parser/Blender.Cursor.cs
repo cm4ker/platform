@@ -125,10 +125,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 if (node.Kind() == SyntaxKind.InterpolatedStringExpression)
                 {
                     throw new NotImplementedException();
-
-                    // var greenToken = Lexer.RescanInterpolatedString((InterpolatedStringExpressionSyntax)node.Green);
-                    // var redToken = new CodeAnalysis.SyntaxToken(node.Parent, greenToken, node.Position, _indexInParent);
-                    // return new Cursor(redToken, _indexInParent);
                 }
 
                 if (node.SlotCount > 0)

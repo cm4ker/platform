@@ -255,35 +255,12 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 (BoundExpression)Accept(x.Enumeree),
                 x.AreValuesAliased);
 
-            // if (updated != x)
-            // {
-            //     // Fix reference from the following ForEachMoveNextEdge
-            //     var moveNext = (Graph.ForeachMoveNextEdge)updated.NextBlock.NextEdge;
-            //     Debug.Assert(moveNext.EnumereeEdge == x);
-            //     updated.NextBlock.SetNextEdge(moveNext.Update(
-            //         moveNext.BodyBlock,
-            //         moveNext.NextBlock,
-            //         updated,
-            //         moveNext.KeyVariable,
-            //         moveNext.ValueVariable,
-            //         moveNext.MoveNextSpan));
-            // }
-
             return updated;
         }
 
         public override object VisitCFGForeachMoveNextEdge(Graph.ForeachMoveNextEdge x)
         {
             throw new NotImplementedException();
-            // IsConditional = true;
-            //
-            // return x.Update(
-            //     (BoundBlock)Accept(x.BodyBlock),
-            //     (BoundBlock)Accept(x.NextBlock),
-            //     x.EnumereeEdge, // It updates this reference in its visit instead
-            //     (BoundReferenceEx)Accept(x.KeyVariable),
-            //     (BoundReferenceEx)Accept(x.ValueVariable),
-            //     x.MoveNextSpan);
         }
 
         public override object VisitCFGSwitchEdge(Graph.MatchEdge x)

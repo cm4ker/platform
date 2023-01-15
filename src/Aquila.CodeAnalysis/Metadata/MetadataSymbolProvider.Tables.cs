@@ -620,7 +620,6 @@ partial class MetadataSymbolProvider
         var rowDtoType =
             _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{table.Name}{TableRowDtoPostfix}",
                 false));
-        //var linkType = _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{LinkPostfix}", false));
 
         #region Fields
 
@@ -1186,35 +1185,6 @@ partial class MetadataSymbolProvider
             rowLinkType.AddMember(getter);
             rowLinkType.AddMember(property);
         }
-
-        // var linkGetMethod = _ps.SynthesizeMethod(linkType)
-        //     .SetName($"get_link")
-        //     .SetReturn(linkType)
-        //     .SetMethodBuilder((m, d) => il =>
-        //     {
-        //         var dtoIdProp = dtoType.GetMembers("Id").OfType<PropertySymbol>().First();
-        //         var dtoPropPlace = new PropertyPlace(dtoFieldPlace, dtoIdProp);
-        //
-        //
-        //         thisPlace.EmitLoad(il);
-        //         ctxFieldPlace.EmitLoad(il);
-        //
-        //         thisPlace.EmitLoad(il);
-        //         //dtoFieldPlace.EmitLoad(il);
-        //
-        //         dtoPropPlace.EmitLoad(il);
-        //
-        //         il.EmitCall(m, d, ILOpCode.Newobj, linkType.Ctor(_ct.AqContext, _ct.Guid));
-        //
-        //         il.EmitRet(false);
-        //     });
-        //
-        // var linkProperty = _ps.SynthesizeProperty(objectType);
-        // linkProperty
-        //     .SetName("link")
-        //     .SetType(linkType)
-        //     .SetGetMethod(linkGetMethod);
-
         #endregion
 
 

@@ -119,12 +119,6 @@ public sealed partial class BoundGlobalVariableStatement : BoundStatement, IVari
     public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
         TArgument argument)
         => visitor.VisitVariableDeclaration(this, argument);
-
-    // /// <summary>Invokes corresponding <c>Visit</c> method on given <paramref name="visitor"/>.</summary>
-    // /// <param name="visitor">A reference to a <see cref="AquilaOperationVisitor{TResult}"/> instance. Cannot be <c>null</c>.</param>
-    // /// <returns>The value returned by the <paramref name="visitor"/>.</returns>
-    // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
-    //     visitor.VisitGlobalStatement(this);
 }
 
 public sealed partial class BoundGlobalConstDeclStmt

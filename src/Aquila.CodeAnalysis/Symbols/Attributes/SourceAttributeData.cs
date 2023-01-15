@@ -96,43 +96,7 @@ namespace Aquila.CodeAnalysis.Symbols.Attributes
                 return _constructorArgumentsSourceIndices;
             }
         }
-
-        //internal CSharpSyntaxNode GetAttributeArgumentSyntax(int parameterIndex, AttributeSyntax attributeSyntax)
-        //{
-        //    // This method is only called when decoding (non-erroneous) well-known attributes.
-        //    Debug.Assert(!this.HasErrors);
-        //    Debug.Assert((object)this.AttributeConstructor != null);
-        //    Debug.Assert(parameterIndex >= 0);
-        //    Debug.Assert(parameterIndex < this.AttributeConstructor.ParameterCount);
-        //    Debug.Assert(attributeSyntax != null);
-
-        //    if (_constructorArgumentsSourceIndices.IsDefault)
-        //    {
-        //        // We have no named ctor arguments AND no default arguments.
-        //        Debug.Assert(attributeSyntax.ArgumentList != null);
-        //        Debug.Assert(this.AttributeConstructor.ParameterCount <= attributeSyntax.ArgumentList.Arguments.Count);
-
-        //        return attributeSyntax.ArgumentList.Arguments[parameterIndex];
-        //    }
-        //    else
-        //    {
-        //        int sourceArgIndex = _constructorArgumentsSourceIndices[parameterIndex];
-
-        //        if (sourceArgIndex == -1)
-        //        {
-        //            // -1 signifies optional parameter whose default argument is used.
-        //            Debug.Assert(this.AttributeConstructor.Parameters[parameterIndex].IsOptional);
-        //            return attributeSyntax.Name;
-        //        }
-        //        else
-        //        {
-        //            Debug.Assert(sourceArgIndex >= 0);
-        //            Debug.Assert(sourceArgIndex < attributeSyntax.ArgumentList.Arguments.Count);
-        //            return attributeSyntax.ArgumentList.Arguments[sourceArgIndex];
-        //        }
-        //    }
-        //}
-
+        
         internal override bool IsConditionallyOmitted
         {
             get
@@ -260,7 +224,6 @@ namespace Aquila.CodeAnalysis.Symbols.Attributes
                         if (parameterType.IsEnumType())
                         {
                             throw new System.NotImplementedException();
-                            //specType = parameterType.GetEnumUnderlyingType().SpecialType;
                         }
                     }
                     else if (parameterType.IsArray())

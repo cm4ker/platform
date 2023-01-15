@@ -142,22 +142,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// Returns an implicit type symbol for this namespace or null if there is none. This type
         /// wraps misplaced global code.
         /// </summary>
-        internal NamedTypeSymbol ImplicitType
-        {
-            get
-            {
-                throw new NotImplementedException();
-
-                //var types = this.GetTypeMembers(TypeSymbol.ImplicitTypeName);
-                //if (types.Length == 0)
-                //{
-                //    return null;
-                //}
-
-                //Debug.Assert(types.Length == 1);
-                //return types[0];
-            }
-        }
+        internal NamedTypeSymbol ImplicitType => throw new NotImplementedException();
 
         /// <summary>
         /// Lookup a nested namespace.

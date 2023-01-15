@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Aquila.CodeAnalysis;
-using Aquila.CodeAnalysis.FlowAnalysis;
+﻿using Aquila.CodeAnalysis.FlowAnalysis;
 
 namespace Aquila.CodeAnalysis.Symbols
 {
@@ -11,7 +7,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// <summary>
         /// Field's <see cref="TypeRefContext"/> instance.
         /// </summary>
-        internal TypeRefContext EnsureTypeRefContext() => _typeCtx; // ?? (_typeCtx = TypeRefFactory.CreateTypeRefContext(_containingType));
+        internal TypeRefContext EnsureTypeRefContext() => _typeCtx;
 
         TypeRefContext _typeCtx;
     }

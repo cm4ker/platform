@@ -77,13 +77,6 @@ internal partial class MetadataSymbolProvider
                 .SetParameters(ctxParameter, saveDtoPerameter)
                 .SetMethodBuilder((m, d) => il =>
                 {
-                    //TODO: need rework and introduce the SerializedObject (with embedded tables)
-                    // ctx.EmitLoad(il);
-                    // sdpp.EmitLoad(il);
-                    //
-                    // il.EmitCall(m, d, ILOpCode.Newobj, objectType.Constructors.First());
-                    // il.EmitCall(m, d, ILOpCode.Call, objSaveMethod);
-
                     il.EmitRet(true);
                 });
         }
@@ -98,7 +91,7 @@ internal partial class MetadataSymbolProvider
             .SetIsStatic(true);
         {
             var saveDtoPerameter = new SynthesizedParameterSymbol(saveMethod, dtoType, 1, RefKind.None);
-            var ctxParameter = //new SynthesizedParameterSymbol(saveMethod, _ct.AqContext, 0, RefKind.None);
+            var ctxParameter = 
                 new SpecialParameterSymbol(saveMethod, _ct.AqContext, SpecialParameterSymbol.ContextName, 0);
             var sdpp = new ParamPlace(saveDtoPerameter);
             var ctx = new ParamPlace(ctxParameter);
@@ -142,9 +135,6 @@ internal partial class MetadataSymbolProvider
                         (TypeSymbol)_ct.Guid, null);
                     tmpLoc.EmitLoad(il);
                     il.EmitCall(m, d, ILOpCode.Call, _cm.Operators.op_Equality_Guid_Guid);
-
-                    // var tmpLocIfRes = new LocalPlace(il.DefineSynthLocal(saveMethod, "", _ct.Boolean));
-                    // tmpLocIfRes.EmitStore(il);
 
                     var elseLabel = new NamedLabel("<e_o1>");
                     var endLabel = new NamedLabel("<end>");
@@ -198,7 +188,6 @@ internal partial class MetadataSymbolProvider
                                 il.EmitIntConstant(elemIndex++);
 
                                 //emit object
-                                //dbLoc.EmitLoad(il);
                                 il.EmitStringConstant(clrProp.Name);
 
                                 sdpp.EmitLoad(il);
@@ -322,29 +311,7 @@ internal partial class MetadataSymbolProvider
                     ctxPS.EmitLoad(il);
                     dtoLoc.EmitLoad(il);
 
-                    // foreach (var table in md.Tables)
-                    // {
-                    //     var objectCollectionType =
-                    //         GetFromMetadata(table, GeneratedTypeKind.Collection | GeneratedTypeKind.Object);
-                    //     var rowDtoType = GetFromMetadata(table, GeneratedTypeKind.Dto);
-                    //
-                    //     var colCtor = objectCollectionType.Ctor(_ct.AqContext,
-                    //         _ct.IEnumerable_arg1.Construct(rowDtoType),
-                    //         dtoType);
-                    //     ctxPS.EmitLoad(il);
-                    //
-                    //     il.EmitIntConstant(0);
-                    //     il.EmitOpCode(ILOpCode.Newarr);
-                    //     il.EmitSymbolToken(m, d, rowDtoType, null);
-                    //
-                    //
-                    //     dtoLoc.EmitLoad(il);
-                    //
-                    //     il.EmitCall(m, d, ILOpCode.Newobj, colCtor);
-                    // }
-
                     il.EmitCall(m, d, ILOpCode.Newobj, objectType.InstanceConstructors.First());
-
                     il.EmitRet(true);
                 });
         }
@@ -465,8 +432,6 @@ internal partial class MetadataSymbolProvider
                     }
 
                     dtoLoc.EmitLoad(il);
-                    // il.EmitOpCode(ILOpCode.Box);
-                    // il.EmitSymbolToken(m, d, dtoType, null);
                     il.EmitRet(false);
                 });
 
@@ -696,9 +661,6 @@ internal partial class MetadataSymbolProvider
                 .SetParameters(ctxParam, idParam)
                 .SetMethodBuilder((m, d) => il =>
                 {
-                    //var dtoPlace = new LocalPlace(il.DefineSynthLocal(loadObjectMethod, "dto", dtoType));
-
-                    
                     ctxPS.EmitLoad(il);
                     ctxPS.EmitLoad(il);
                     idPl.EmitLoad(il);
@@ -716,7 +678,6 @@ internal partial class MetadataSymbolProvider
         managerType.AddMember(saveMethod);
         managerType.AddMember(deleteMethod);
         managerType.AddMember(loadObjectMethod);
-        //managerType.AddMember(readerVoid);
 
         foreach (var r in readers)
         {

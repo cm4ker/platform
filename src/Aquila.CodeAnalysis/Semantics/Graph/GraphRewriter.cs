@@ -126,13 +126,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
                 return base.VisitMethodDeclStmt(x);
             }
-
-            // public override VoidStruct VisitTypeDeclaration(BoundTypeDeclStatement x)
-            // {
-            //     _rewriter.OnUnreachableTypeFound(x.DeclaredType);
-            //
-            //     return base.VisitTypeDeclaration(x);
-            // }
         }
 
         #endregion
@@ -345,9 +338,5 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         protected private virtual void OnUnreachableMethodFound(SourceMethodSymbolBase method)
         {
         }
-
-        // protected private virtual void OnUnreachableTypeFound(SourceTypeSymbol type)
-        // {
-        // }
     }
 }

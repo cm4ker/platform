@@ -54,7 +54,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// Register declaration of predefined CorLib type in this Assembly.
         /// </summary>
         /// <param name="corType"></param>
-        internal sealed override void RegisterDeclaredSpecialType(NamedTypeSymbol corType)
+        internal void RegisterDeclaredSpecialType(NamedTypeSymbol corType)
         {
             SpecialType typeId = corType.SpecialType;
             Debug.Assert(typeId != SpecialType.None);

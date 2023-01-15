@@ -126,7 +126,6 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         public override ITypeSymbol ResolveTypeSymbol(AquilaCompilation compilation)
         {
             throw new NotImplementedException();
-            //return compilation.CoreTypes.Closure.Symbol;
         }
 
         public override string ToString() => NameUtils.SpecialNames.Closure.ToString();
@@ -218,8 +217,6 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         }
 
         public override string ToString() => ClassName.ToString();
-
-        // public override TypeRefMask GetTypeRefMask(TypeRefContext ctx) => ctx.GetTypeMask(this, true);
 
         public override bool Equals(IBoundTypeRef other) => base.Equals(other) || (other is BoundClassTypeRef ct &&
             ct.ClassName == this.ClassName && ct.TypeArguments.IsDefaultOrEmpty);
