@@ -160,7 +160,6 @@ namespace Aquila.CodeAnalysis
 
                     if (ass == null)
                     {
-                        //_diagnostics.Add(Location.None, Errors.ErrorCode.ERR_MetadataFileNotFound, identity);
                         return new MissingAssemblySymbol(identity);
                     }
                 }

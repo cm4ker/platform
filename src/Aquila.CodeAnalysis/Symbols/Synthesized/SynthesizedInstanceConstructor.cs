@@ -19,11 +19,6 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         // Consider overriding when implementing a synthesized subclass.
         //
 
-        //internal override bool GenerateDebugInfo
-        //{
-        //    get { return true; }
-        //}
-
         public override ImmutableArray<ParameterSymbol> Parameters
         {
             get { return ImmutableArray<ParameterSymbol>.Empty; }
@@ -71,12 +66,6 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         {
             get
             {
-                //if (_containingType.IsComImport)
-                //{
-                //    Debug.Assert(_containingType.TypeKind == TypeKind.Class);
-                //    return System.Reflection.MethodImplAttributes.Runtime | System.Reflection.MethodImplAttributes.InternalCall;
-                //}
-
                 if (_containingType.TypeKind == TypeKind.Delegate)
                 {
                     return System.Reflection.MethodImplAttributes.Runtime;
@@ -96,26 +85,6 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             return null;
         }
 
-        //internal sealed override MarshalPseudoCustomAttributeData ReturnValueMarshallingInformation
-        //{
-        //    get { return null; }
-        //}
-
-        //internal sealed override bool HasDeclarativeSecurity
-        //{
-        //    get { return false; }
-        //}
-
-        //internal sealed override IEnumerable<Cci.SecurityAttribute> GetSecurityInformation()
-        //{
-        //    throw ExceptionUtilities.Unreachable;
-        //}
-
-        //internal sealed override ImmutableArray<string> GetAppliedConditionalSymbols()
-        //{
-        //    return ImmutableArray<string>.Empty;
-        //}
-
         public sealed override bool IsVararg
         {
             get { return false; }
@@ -125,13 +94,6 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         {
             get { return ImmutableArray<TypeParameterSymbol>.Empty; }
         }
-
-        //internal sealed override LexicalSortKey GetLexicalSortKey()
-        //{
-        //    //For the sake of matching the metadata output of the native compiler, make synthesized constructors appear last in the metadata.
-        //    //This is not critical, but it makes it easier on tools that are comparing metadata.
-        //    return LexicalSortKey.SynthesizedCtor;
-        //}
 
         public sealed override ImmutableArray<Location> Locations
         {
@@ -249,12 +211,6 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         {
             get { return ImmutableArray<MethodSymbol>.Empty; }
         }
-
-        //internal sealed override int CalculateLocalSyntaxOffset(int localPosition, SyntaxTree localTree)
-        //{
-        //    var containingType = (SourceMemberContainerTypeSymbol)this.ContainingType;
-        //    return containingType.CalculateSyntaxOffsetInSynthesizedConstructor(localPosition, localTree, isStatic: false);
-        //}
 
         #endregion
     }

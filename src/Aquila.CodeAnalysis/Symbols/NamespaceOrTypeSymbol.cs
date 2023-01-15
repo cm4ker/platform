@@ -152,12 +152,6 @@ namespace Aquila.CodeAnalysis.Symbols
                 if (symbols != null)
                 {
                     throw new NotImplementedException();
-                    //// there might be multiple types of different arity, prefer a non-generic type:
-                    //namespaceOrType = symbols.OfMinimalArity();
-                    //if ((object)namespaceOrType == null)
-                    //{
-                    //    return SpecializedCollections.EmptyEnumerable<NamespaceOrTypeSymbol>();
-                    //}
                 }
 
                 symbols = namespaceOrType.GetMembers(name).OfType<NamespaceOrTypeSymbol>();
@@ -191,8 +185,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
             ImmutableArray<NamedTypeSymbol> namespaceOrTypeMembers;
             bool isTopLevel = scope.IsNamespace;
-
-            //Debug.Assert(!isTopLevel || scope.ToDisplayString(SymbolDisplayFormat.QualifiedNameOnlyFormat) == emittedTypeName.NamespaceName);
 
             if (emittedTypeName.IsMangled)
             {

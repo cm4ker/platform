@@ -79,25 +79,6 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             get { return this.TypeKind == TypeKind.Interface; }
         }
 
-        //internal override void AddSynthesizedAttributes(ModuleCompilationState compilationState, ref ArrayBuilder<SynthesizedAttributeData> attributes)
-        //{
-        //    base.AddSynthesizedAttributes(compilationState, ref attributes);
-
-        //    if (ContainingSymbol.Kind == SymbolKind.NamedType && ContainingSymbol.IsImplicitlyDeclared)
-        //    {
-        //        return;
-        //    }
-
-        //    var compilation = ContainingSymbol.DeclaringCompilation;
-
-        //    // this can only happen if frame is not nested in a source type/namespace (so far we do not do this)
-        //    // if this happens for whatever reason, we do not need "CompilerGenerated" anyways
-        //    Debug.Assert(compilation != null, "SynthesizedClass is not contained in a source module?");
-
-        //    AddSynthesizedAttribute(ref attributes, compilation.TrySynthesizeAttribute(
-        //        WellKnownMember.System_Runtime_CompilerServices_CompilerGeneratedAttribute__ctor));
-        //}
-
         public sealed override ImmutableArray<TypeParameterSymbol> TypeParameters
         {
             get { return _typeParameters; }
@@ -173,16 +154,6 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             }
         }
 
-        //internal override ImmutableArray<Symbol> GetEarlyAttributeDecodingMembers()
-        //{
-        //    return this.GetMembersUnordered();
-        //}
-
-        //internal override ImmutableArray<Symbol> GetEarlyAttributeDecodingMembers(string name)
-        //{
-        //    return this.GetMembers(name);
-        //}
-
         public override ImmutableArray<NamedTypeSymbol> GetTypeMembers()
         {
             return ImmutableArray<NamedTypeSymbol>.Empty;
@@ -213,11 +184,6 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             get { return ImmutableArray<NamedTypeSymbol>.Empty; }
         }
 
-        //internal override ImmutableArray<NamedTypeSymbol> InterfacesNoUseSiteDiagnostics(ConsList<Symbol> basesBeingResolved)
-        //{
-        //    return ImmutableArray<NamedTypeSymbol>.Empty;
-        //}
-
         internal override ImmutableArray<NamedTypeSymbol> GetInterfacesToEmit()
         {
             return CalculateInterfacesToEmit();
@@ -233,14 +199,9 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             }
         }
 
-        //internal override NamedTypeSymbol GetDeclaredBaseType(ConsList<Symbol> basesBeingResolved)
-        //{
-        //    return BaseTypeNoUseSiteDiagnostics;
-        //}
-
         internal override ImmutableArray<NamedTypeSymbol> GetDeclaredInterfaces(ConsList<Symbol> basesBeingResolved)
         {
-            return Interfaces; // NoUseSiteDiagnostics(basesBeingResolved);
+            return Interfaces;
         }
 
         public override bool MightContainExtensionMethods
@@ -273,54 +234,15 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             get { return false; }
         }
 
-        //internal override bool IsComImport
-        //{
-        //    get { return false; }
-        //}
-
         internal sealed override ObsoleteAttributeData ObsoleteAttributeData
         {
             get { return null; }
         }
-
-        //internal sealed override ImmutableArray<string> GetAppliedConditionalSymbols()
-        //{
-        //    return ImmutableArray<string>.Empty;
-        //}
-
-        //internal override bool HasDeclarativeSecurity
-        //{
-        //    get { return false; }
-        //}
-
-        //internal override CharSet MarshallingCharSet
-        //{
-        //    get { return DefaultMarshallingCharSet; }
-        //}
-
-        //internal override bool IsSerializable
-        //{
-        //    get { return false; }
-        //}
-
-        //internal override IEnumerable<Cci.SecurityAttribute> GetSecurityInformation()
-        //{
-        //    throw ExceptionUtilities.Unreachable;
-        //}
-
-        //internal override AttributeUsageInfo GetAttributeUsageInfo()
-        //{
-        //    return default(AttributeUsageInfo);
-        //}
 
         internal override TypeLayout Layout
         {
             get { return default(TypeLayout); }
         }
 
-        //internal override bool HasSpecialName
-        //{
-        //    get { return false; }
-        //}
     }
 }

@@ -225,7 +225,7 @@ namespace Aquila.CodeAnalysis.Symbols
             PEModuleBuilder moduleBeingBuilt = (PEModuleBuilder)context.Module;
 
             Debug.Assert(((Cci.ITypeReference)this).AsTypeDefinition(context) != null);
-            NamedTypeSymbol baseType = this.BaseType; // .BaseTypeNoUseSiteDiagnostics;
+            NamedTypeSymbol baseType = this.BaseType;
 
             if (this.TypeKind == TypeKind.Submission)
             {
@@ -254,8 +254,7 @@ namespace Aquila.CodeAnalysis.Symbols
             {
                 if (m.Kind == SymbolKind.Event)
                 {
-                    //yield return (EventSymbol)m;
-                    throw new System.NotImplementedException();
+                      throw new System.NotImplementedException();
                 }
             }
 
@@ -289,33 +288,6 @@ namespace Aquila.CodeAnalysis.Symbols
                                 context.Diagnostics));
                     }
                 }
-
-                //if (method.RequiresExplicitOverride())
-                //{
-                //    // If C# and the runtime don't agree on the overridden method, then 
-                //    // we will mark the method as newslot (see MethodSymbolAdapter) and
-                //    // specify the override explicitly.
-                //    // This mostly affects accessors - C# ignores method interactions
-                //    // between accessors and non-accessors, whereas the runtime does not.
-                //    yield return new Microsoft.Cci.MethodImplementation(method, moduleBeingBuilt.TranslateOverriddenMethodReference((MethodSymbol)method.OverriddenMethod, context.SyntaxNode, context.Diagnostics));
-                //}
-                //else if (method.MethodKind == MethodKind.Destructor && this.SpecialType != SpecialType.System_Object)
-                //{
-                //    // New in Roslyn: all destructors explicitly override (or are) System.Object.Finalize so that
-                //    // they are guaranteed to be runtime finalizers.  As a result, it is no longer possible to create
-                //    // a destructor that will never be invoked by the runtime.
-                //    // NOTE: If System.Object doesn't contain a destructor, you're on your own - this destructor may
-                //    // or not be called by the runtime.
-                //    TypeSymbol objectType = this.DeclaringCompilation.GetSpecialType(SpecialType.System_Object);
-                //    foreach (Symbol objectMember in objectType.GetMembers(WellKnownMemberNames.DestructorName))
-                //    {
-                //        MethodSymbol objectMethod = objectMember as MethodSymbol;
-                //        if ((object)objectMethod != null && objectMethod.MethodKind == MethodKind.Destructor)
-                //        {
-                //            yield return new Microsoft.Cci.MethodImplementation(method, moduleBeingBuilt.TranslateOverriddenMethodReference(objectMethod, context.SyntaxNode, context.Diagnostics));
-                //        }
-                //    }
-                //}
             }
         }
 
@@ -506,7 +478,7 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 CheckDefinitionInvariant();
-                return false; // this.IsSerializable;
+                return false;
             }
         }
 
@@ -515,7 +487,7 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 CheckDefinitionInvariant();
-                return false; // this.HasSpecialName;
+                return false;
             }
         }
 
@@ -640,7 +612,7 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 CheckDefinitionInvariant();
-                return false; // this.HasDeclarativeSecurity;
+                return false;
             }
         }
 
@@ -688,7 +660,7 @@ namespace Aquila.CodeAnalysis.Symbols
             {
                 CheckDefinitionInvariant();
 
-                return CharSet.Ansi; // this.MarshallingCharSet; //throw new System.NotImplementedException();
+                return CharSet.Ansi;
             }
         }
 
@@ -808,12 +780,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
             var modifiers = default(ImmutableArray<ImmutableArray<CustomModifier>>);
 
-            //if (this.HasTypeArgumentsCustomModifiers)
-            //{
-            //    modifiers = this.TypeArgumentsCustomModifiers;
-            //}
-
-            var arguments = this.TypeArguments; // .TypeArgumentsNoUseSiteDiagnostics;
+            var arguments = this.TypeArguments;
 
             for (int i = 0; i < arguments.Length; i++)
             {

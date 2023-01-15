@@ -162,7 +162,6 @@ namespace Aquila.CodeAnalysis.CodeGen
         internal IPlace PlaceOrNull(BoundExpression expr)
         {
             throw new NotImplementedException();
-            //return expr is BoundReferenceExpression bref ? bref.Place() : null;
         }
     }
 }

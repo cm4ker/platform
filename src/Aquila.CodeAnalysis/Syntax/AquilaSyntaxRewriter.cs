@@ -126,7 +126,6 @@ namespace Aquila.CodeAnalysis
                     if (newStructure != null)
                     {
                         throw new NotImplementedException();
-                        //return SyntaxFactory.Trivia(newStructure);
                     }
                     else
                     {

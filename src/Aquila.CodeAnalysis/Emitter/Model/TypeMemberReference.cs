@@ -21,14 +21,6 @@ namespace Aquila.CodeAnalysis.Emit
             get { return UnderlyingSymbol.MetadataName; }
         }
 
-        ///// <remarks>
-        ///// Used only for testing.
-        ///// </remarks>
-        //public override string ToString()
-        //{
-        //    return UnderlyingSymbol.ToDisplayString(SymbolDisplayFormat.ILVisualizationFormat);
-        //}
-
         IEnumerable<Cci.ICustomAttribute> Cci.IReference.GetAttributes(EmitContext context)
         {
             return SpecializedCollections.EmptyEnumerable<Cci.ICustomAttribute>();

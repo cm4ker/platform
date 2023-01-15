@@ -139,7 +139,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             get
             {
                 throw
-                    new NotImplementedException(); //return ContainingPEModule.MetadataLocation.Cast<MetadataLocation, Location>();
+                    new NotImplementedException();
             }
         }
 

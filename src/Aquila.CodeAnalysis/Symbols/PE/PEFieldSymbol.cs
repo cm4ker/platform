@@ -28,17 +28,12 @@ namespace Aquila.CodeAnalysis.Symbols.PE
 
         private ConstantValue
             _lazyConstantValue = Microsoft.CodeAnalysis.ConstantValue.Unset; // Indicates an uninitialized ConstantValue
-        //private Tuple<CultureInfo, string> _lazyDocComment;
-        //private DiagnosticInfo _lazyUseSiteDiagnostic = CSDiagnosticInfo.EmptyErrorInfo; // Indicates unknown state. 
-
-        //private ObsoleteAttributeData _lazyObsoleteAttributeData = ObsoleteAttributeData.Uninitialized;
 
         private TypeSymbol _lazyType;
         private int _lazyFixedSize;
 
         private NamedTypeSymbol _lazyFixedImplementationType;
-        //private PEEventSymbol _associatedEventOpt;
-
+        
         internal PEFieldSymbol(
             PEModuleSymbol moduleSymbol,
             PENamedTypeSymbol containingType,
@@ -63,7 +58,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 }
 
                 throw new NotImplementedException();
-                //_lazyUseSiteDiagnostic = new CSDiagnosticInfo(ErrorCode.ERR_BindToBogus, this);
             }
         }
 
@@ -146,27 +140,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             get { return _handle; }
         }
 
-        ///// <summary>
-        ///// Mark this field as the backing field of a field-like event.
-        ///// The caller will also ensure that it is excluded from the member list of
-        ///// the containing type (as it would be in source).
-        ///// </summary>
-        //internal void SetAssociatedEvent(PEEventSymbol eventSymbol)
-        //{
-        //    Debug.Assert((object)eventSymbol != null);
-        //    Debug.Assert(eventSymbol.ContainingType == _containingType);
-
-        //    // This should always be true in valid metadata - there should only
-        //    // be one event with a given name in a given type.
-        //    if ((object)_associatedEventOpt == null)
-        //    {
-        //        // No locking required since this method will only be called by the thread that created
-        //        // the field symbol (and will be called before the field symbol is added to the containing 
-        //        // type members and available to other threads).
-        //        _associatedEventOpt = eventSymbol;
-        //    }
-        //}
-
         private void EnsureSignatureIsLoaded()
         {
             if ((object)_lazyType == null)
@@ -178,7 +151,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                     (new MetadataDecoder(moduleSymbol, _containingType)).DecodeFieldSignature(_handle,
                         out customModifiers);
                 ImmutableArray<CustomModifier> customModifiersArray = CSharpCustomModifier.Convert(customModifiers);
-                //type = DynamicTypeDecoder.TransformType(type, customModifiersArray.Length, _handle, moduleSymbol);
                 _lazyIsVolatile = customModifiersArray.Any(m =>
                     !m.IsOptional && m.Modifier.SpecialType == SpecialType.System_Runtime_CompilerServices_IsVolatile);
 
@@ -188,7 +160,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 {
                     _lazyFixedSize = fixedSize;
                     _lazyFixedImplementationType = type as NamedTypeSymbol;
-                    //type = new PointerTypeSymbol(fixedElementType);
                     throw new NotImplementedException();
                 }
 
@@ -269,7 +240,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
         {
             get
             {
-                return null; // _associatedEventOpt;
+                return null;
             }
         }
 
@@ -329,14 +300,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             return _lazyConstantValue;
         }
 
-        public override ImmutableArray<Location> Locations
-        {
-            get
-            {
-                //return _containingType.ContainingPEModule.MetadataLocation.Cast<MetadataLocation, Location>();
-                throw new NotImplementedException();
-            }
-        }
+        public override ImmutableArray<Location> Locations => throw new NotImplementedException();
 
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
         {
@@ -434,42 +398,9 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             {
                 yield return attribute;
             }
-
-            //// Yield hidden attributes last, order might be important.
-            //if (FilterOutDecimalConstantAttribute())
-            //{
-            //    var containingPEModuleSymbol = _containingType.ContainingPEModule;
-            //    yield return new PEAttributeData(containingPEModuleSymbol,
-            //                              containingPEModuleSymbol.Module.FindLastTargetAttribute(_handle, AttributeDescription.DecimalConstantAttribute).Handle);
-            //}
         }
 
-        //public override string GetDocumentationCommentXml(CultureInfo preferredCulture = null, bool expandIncludes = false, CancellationToken cancellationToken = default(CancellationToken))
-        //{
-        //    return PEDocumentationCommentUtils.GetDocumentationComment(this, _containingType.ContainingPEModule, preferredCulture, cancellationToken, ref _lazyDocComment);
-        //}
-
-        //internal override DiagnosticInfo GetUseSiteDiagnostic()
-        //{
-        //    if (ReferenceEquals(_lazyUseSiteDiagnostic, CSDiagnosticInfo.EmptyErrorInfo))
-        //    {
-        //        DiagnosticInfo result = null;
-        //        CalculateUseSiteDiagnostic(ref result);
-        //        _lazyUseSiteDiagnostic = result;
-        //    }
-
-        //    return _lazyUseSiteDiagnostic;
-        //}
-
-        internal override ObsoleteAttributeData ObsoleteAttributeData
-        {
-            get
-            {
-                //ObsoleteAttributeHelpers.InitializeObsoleteDataFromMetadata(ref _lazyObsoleteAttributeData, _handle, (PEModuleSymbol)(this.ContainingModule));
-                //return _lazyObsoleteAttributeData;
-                return null;
-            }
-        }
+        internal override ObsoleteAttributeData ObsoleteAttributeData => null;
 
         internal override AquilaCompilation DeclaringCompilation => null;
     }

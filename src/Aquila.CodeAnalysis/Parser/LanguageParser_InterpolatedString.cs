@@ -256,20 +256,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         private void ParseInterpolationStart(out SyntaxToken openBraceToken, out ExprSyntax expr,
             out SyntaxToken commaToken, out ExprSyntax alignmentExpression)
         {
-            // openBraceToken = this.EatToken(SyntaxKind.OpenBraceToken);
-            // expr = this.ParseExpressionCore();
-            // if (this.CurrentToken.Kind == SyntaxKind.CommaToken)
-            // {
-            //     commaToken = this.EatToken(SyntaxKind.CommaToken);
-            //     alignmentExpression = ConsumeUnexpectedTokens(this.ParseExpressionCore());
-            // }
-            // else
-            // {
-            //     commaToken = null;
-            //     alignmentExpression = null;
-            //     expr = ConsumeUnexpectedTokens(expr);
-            // }
-
             throw new NotImplementedException();
         }
     }

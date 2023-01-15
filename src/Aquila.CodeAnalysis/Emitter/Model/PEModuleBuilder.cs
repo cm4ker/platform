@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using Aquila.CodeAnalysis.Emitter;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Symbols.Attributes;
@@ -31,7 +30,6 @@ namespace Aquila.CodeAnalysis.Emit
         private readonly AquilaCompilation _compilation;
 
         private readonly EmitOptions _emitOptions;
-        //private readonly Cci.ModulePropertiesForSerialization _serializationProperties;
 
         /// <summary>
         /// Gets script type containing entry point and additional assembly level symbols.
@@ -202,7 +200,7 @@ namespace Aquila.CodeAnalysis.Emit
                 _aquilaTargetPlatformAttribute = new SynthesizedAttributeData(targetAttributeCtor,
                     ImmutableArray.Create(new TypedConstant(Compilation.CoreTypes.String.Symbol,
                         TypedConstantKind.Primitive,
-                        targetAttributeCtor.ContainingAssembly.Identity.Version.ToString())), // string[] { }
+                        targetAttributeCtor.ContainingAssembly.Identity.Version.ToString())), 
                     ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty);
             }
 
@@ -249,27 +247,6 @@ namespace Aquila.CodeAnalysis.Emit
         internal sealed override Cci.ICustomAttribute SynthesizeAttribute(WellKnownMember attributeConstructor)
         {
             throw new NotImplementedException();
-        }
-
-        private string NormalizeDebugDocumentPath(string path, string basePath)
-        {
-            //var resolver = _compilation.Options.SourceReferenceResolver;
-            //if (resolver == null)
-            //{
-            //    return path;
-            //}
-
-            //var key = ValueTuple.Create(path, basePath);
-            //string normalizedPath;
-            //if (!_normalizedPathsCache.TryGetValue(key, out normalizedPath))
-            //{
-            //    normalizedPath = resolver.NormalizePath(path, basePath) ?? path;
-            //    _normalizedPathsCache.TryAdd(key, normalizedPath);
-            //}
-
-            //return normalizedPath;
-
-            return path;
         }
 
         public override string DefaultNamespace
@@ -358,7 +335,7 @@ namespace Aquila.CodeAnalysis.Emit
 
         public override ImmutableArray<Cci.ExportedType> GetExportedTypes(DiagnosticBag diagnostics)
         {
-            return ImmutableArray<Cci.ExportedType>.Empty; // throw new NotImplementedException();
+            return ImmutableArray<Cci.ExportedType>.Empty;
         }
 
         public Cci.IFieldReference GetFieldForData(ImmutableArray<byte> data, SyntaxNode syntaxNode,
@@ -369,7 +346,7 @@ namespace Aquila.CodeAnalysis.Emit
 
         public override ImmutableArray<Cci.UsedNamespaceOrType> GetImports()
         {
-            return ImmutableArray<Cci.UsedNamespaceOrType>.Empty; // throw new NotImplementedException();
+            return ImmutableArray<Cci.UsedNamespaceOrType>.Empty;
         }
 
         public Cci.IMethodReference GetInitArrayHelper()
@@ -382,8 +359,6 @@ namespace Aquila.CodeAnalysis.Emit
             throw new NotImplementedException();
         }
 
-        //IEnumerable<Cci.ManagedResource> _lazyManagedResources;
-
         protected override void AddEmbeddedResourcesFromAddedModules(ArrayBuilder<Cci.ManagedResource> builder,
             DiagnosticBag diagnostics)
         {
@@ -393,97 +368,6 @@ namespace Aquila.CodeAnalysis.Emit
         public override MultiDictionary<Cci.DebugSourceDocument, Cci.DefinitionWithLocation> GetSymbolToLocationMap()
         {
             var result = new MultiDictionary<Cci.DebugSourceDocument, Cci.DefinitionWithLocation>();
-
-            //var namespacesAndTypesToProcess = new Stack<NamespaceOrTypeSymbol>();
-            //namespacesAndTypesToProcess.Push(SourceModule.GlobalNamespace);
-
-            //Location location = null;
-
-            //while (namespacesAndTypesToProcess.Count > 0)
-            //{
-            //    NamespaceOrTypeSymbol symbol = namespacesAndTypesToProcess.Pop();
-            //    switch (symbol.Kind)
-            //    {
-            //        case SymbolKind.Namespace:
-            //            location = GetSmallestSourceLocationOrNull(symbol);
-
-            //            // filtering out synthesized symbols not having real source 
-            //            // locations such as anonymous types, etc...
-            //            if (location != null)
-            //            {
-            //                foreach (var member in symbol.GetMembers())
-            //                {
-            //                    switch (member.Kind)
-            //                    {
-            //                        case SymbolKind.Namespace:
-            //                        case SymbolKind.NamedType:
-            //                            namespacesAndTypesToProcess.Push((NamespaceOrTypeSymbol)member);
-            //                            break;
-
-            //                        default:
-            //                            throw ExceptionUtilities.UnexpectedValue(member.Kind);
-            //                    }
-            //                }
-            //            }
-            //            break;
-
-            //        case SymbolKind.NamedType:
-            //            location = GetSmallestSourceLocationOrNull(symbol);
-            //            if (location != null)
-            //            {
-            //                //  add this named type location
-            //                AddSymbolLocation(result, location, (Cci.IDefinition)symbol);
-
-            //                foreach (var member in symbol.GetMembers())
-            //                {
-            //                    switch (member.Kind)
-            //                    {
-            //                        case SymbolKind.NamedType:
-            //                            namespacesAndTypesToProcess.Push((NamespaceOrTypeSymbol)member);
-            //                            break;
-
-            //                        case SymbolKind.Method:
-            //                            // NOTE: Dev11 does not add synthesized static constructors to this map,
-            //                            //       but adds synthesized instance constructors, Roslyn adds both
-            //                            var method = (MethodSymbol)member;
-            //                            if (method.IsDefaultValueTypeConstructor() ||
-            //                                method.IsPartialMethod() && (object)method.PartialImplementationPart == null)
-            //                            {
-            //                                break;
-            //                            }
-
-            //                            AddSymbolLocation(result, member);
-            //                            break;
-
-            //                        case SymbolKind.Property:
-            //                        case SymbolKind.Field:
-            //                            // NOTE: Dev11 does not add synthesized backing fields for properties,
-            //                            //       but adds backing fields for events, Roslyn adds both
-            //                            AddSymbolLocation(result, member);
-            //                            break;
-
-            //                        case SymbolKind.Event:
-            //                            AddSymbolLocation(result, member);
-            //                            //  event backing fields do not show up in GetMembers
-            //                            FieldSymbol field = ((EventSymbol)member).AssociatedField;
-            //                            if ((object)field != null)
-            //                            {
-            //                                AddSymbolLocation(result, field);
-            //                            }
-            //                            break;
-
-            //                        default:
-            //                            throw ExceptionUtilities.UnexpectedValue(member.Kind);
-            //                    }
-            //                }
-            //            }
-            //            break;
-
-            //        default:
-            //            throw ExceptionUtilities.UnexpectedValue(symbol.Kind);
-            //    }
-            //}
-
             return result;
         }
 
@@ -493,15 +377,6 @@ namespace Aquila.CodeAnalysis.Emit
 
             // First time through, we need to collect emitted names of all top level types.
             HashSet<string> names = (_namesOfTopLevelTypes == null) ? new HashSet<string>() : null;
-
-            //// First time through, we need to push things through NoPiaReferenceIndexer
-            //// to make sure we collect all to be embedded NoPia types and members.
-            //if (EmbeddedTypesManagerOpt != null && !EmbeddedTypesManagerOpt.IsFrozen)
-            //{
-            //    noPiaIndexer = new Cci.NoPiaReferenceIndexer(context);
-            //    Debug.Assert(names != null);
-            //    this.Dispatch(noPiaIndexer);
-            //}
 
             AddTopLevelType(names, _rootModuleType);
             VisitTopLevelType(typeReferenceIndexer, _rootModuleType);
@@ -529,15 +404,6 @@ namespace Aquila.CodeAnalysis.Emit
                 yield return privateImpl;
             }
 
-            //if (EmbeddedTypesManagerOpt != null)
-            //{
-            //    foreach (var embedded in EmbeddedTypesManagerOpt.GetTypes(context.Diagnostics, names))
-            //    {
-            //        AddTopLevelType(names, embedded);
-            //        yield return embedded;
-            //    }
-            //}
-
             if (names != null)
             {
                 Debug.Assert(_namesOfTopLevelTypes == null);
@@ -548,22 +414,13 @@ namespace Aquila.CodeAnalysis.Emit
         public override IEnumerable<Cci.INamespaceTypeDefinition> GetTopLevelSourceTypeDefinitions(EmitContext context)
         {
             // <script> type containing assembly level symbols
-            yield return this.EntryPointType; // TODO: move to anonymous type manager
+            yield return this.EntryPointType;
 
             foreach (var t in this.Compilation.AnonymousTypeManager.GetAllCreatedTemplates())
                 yield return t;
 
             foreach (var t in this.Compilation.PlatformSymbolCollection.GetAllCreatedTypes())
                 yield return t;
-
-
-            //foreach (var type in GetAdditionalTopLevelTypes())
-            //{
-            //    yield return type;
-            //}
-
-            // foreach (var f in _sourceModule.SymbolCollection.GetFiles())
-            //     yield return f;
 
             foreach (var t in _sourceModule.SymbolCollection.GetModuleTypes())
                 yield return t;
@@ -666,33 +523,6 @@ namespace Aquila.CodeAnalysis.Emit
 
         #region Private Implementation Details Type
 
-        internal PrivateImplementationDetails GetPrivateImplClass(SyntaxNode syntaxNodeOpt, DiagnosticBag diagnostics)
-        {
-            var result = _privateImplementationDetails;
-
-            if ((result == null) && this.SupportsPrivateImplClass)
-            {
-                //result = new PrivateImplementationDetails(
-                //        this,
-                //        _sourceModule.Name,
-                //        _compilation.GetSubmissionSlotIndex(),
-                //        this.GetSpecialType(SpecialType.System_Object, syntaxNodeOpt, diagnostics),
-                //        this.GetSpecialType(SpecialType.System_ValueType, syntaxNodeOpt, diagnostics),
-                //        this.GetSpecialType(SpecialType.System_Byte, syntaxNodeOpt, diagnostics),
-                //        this.GetSpecialType(SpecialType.System_Int16, syntaxNodeOpt, diagnostics),
-                //        this.GetSpecialType(SpecialType.System_Int32, syntaxNodeOpt, diagnostics),
-                //        this.GetSpecialType(SpecialType.System_Int64, syntaxNodeOpt, diagnostics),
-                //        SynthesizeAttribute(WellKnownMember.System_Runtime_CompilerServices_CompilerGeneratedAttribute__ctor));
-
-                if (Interlocked.CompareExchange(ref _privateImplementationDetails, result, null) != null)
-                {
-                    result = _privateImplementationDetails;
-                }
-            }
-
-            return result;
-        }
-
         internal PrivateImplementationDetails PrivateImplClass
         {
             get { return _privateImplementationDetails; }
@@ -747,7 +577,7 @@ namespace Aquila.CodeAnalysis.Emit
 
         public override IEnumerable<Cci.INamespaceTypeDefinition> GetAnonymousTypeDefinitions(EmitContext context)
         {
-            return ImmutableArray<Cci.INamespaceTypeDefinition>.Empty; // throw new NotImplementedException();
+            return ImmutableArray<Cci.INamespaceTypeDefinition>.Empty;
         }
 
 
@@ -757,15 +587,6 @@ namespace Aquila.CodeAnalysis.Emit
             Debug.Assert(diagnostics != null);
 
             var typeSymbol = SourceModule.ContainingAssembly.GetSpecialType(specialType);
-
-            //DiagnosticInfo info = typeSymbol.GetUseSiteDiagnostic();
-            //if (info != null)
-            //{
-            //    Symbol.ReportUseSiteDiagnostic(info,
-            //                                   diagnostics,
-            //                                   syntaxNodeOpt != null ? syntaxNodeOpt.Location : NoLocation.Singleton);
-            //}
-
             return (Cci.INamedTypeReference)Translate(typeSymbol, syntaxNodeOpt, diagnostics, needDeclaration: true);
         }
 
@@ -790,62 +611,10 @@ namespace Aquila.CodeAnalysis.Emit
             AssemblyReference cachedAsmRef =
                 (AssemblyReference)AssemblyOrModuleSymbolToModuleRefMap.GetOrAdd(assembly, asmRef);
 
-            if (cachedAsmRef == asmRef)
-            {
-                ValidateReferencedAssembly(assembly, cachedAsmRef, diagnostics);
-            }
-
             // TryAdd because whatever is associated with assembly should be associated with Modules[0]
-            AssemblyOrModuleSymbolToModuleRefMap.TryAdd((ModuleSymbol)assembly.Modules[0], cachedAsmRef);
+            AssemblyOrModuleSymbolToModuleRefMap.TryAdd(assembly.Modules[0], cachedAsmRef);
 
             return cachedAsmRef;
-        }
-
-        private void ValidateReferencedAssembly(AssemblySymbol assembly, AssemblyReference asmRef,
-            DiagnosticBag diagnostics)
-        {
-            //AssemblyIdentity asmIdentity = SourceModule.ContainingAssembly.Identity;
-            //AssemblyIdentity refIdentity = asmRef.MetadataIdentity;
-
-            //if (asmIdentity.IsStrongName && !refIdentity.IsStrongName &&
-            //    ((Cci.IAssemblyReference)asmRef).ContentType != System.Reflection.AssemblyContentType.WindowsRuntime)
-            //{
-            //    // Dev12 reported error, we have changed it to a warning to allow referencing libraries 
-            //    // built for platforms that don't support strong names.
-            //    diagnostics.Add(new CSDiagnosticInfo(ErrorCode.WRN_ReferencedAssemblyDoesNotHaveStrongName, assembly), NoLocation.Singleton);
-            //}
-
-            //if (OutputKind != OutputKind.NetModule &&
-            //   !string.IsNullOrEmpty(refIdentity.CultureName) &&
-            //   !string.Equals(refIdentity.CultureName, asmIdentity.CultureName, StringComparison.OrdinalIgnoreCase))
-            //{
-            //    diagnostics.Add(new CSDiagnosticInfo(ErrorCode.WRN_RefCultureMismatch, assembly, refIdentity.CultureName), NoLocation.Singleton);
-            //}
-
-            //var refMachine = assembly.Machine;
-            //// If other assembly is agnostic this is always safe
-            //// Also, if no mscorlib was specified for back compat we add a reference to mscorlib
-            //// that resolves to the current framework directory. If the compiler is 64-bit
-            //// this is a 64-bit mscorlib, which will produce a warning if /platform:x86 is
-            //// specified. A reference to the default mscorlib should always succeed without
-            //// warning so we ignore it here.
-            //if ((object)assembly != (object)assembly.CorLibrary &&
-            //    !(refMachine == Machine.I386 && !assembly.Bit32Required))
-            //{
-            //    var machine = SourceModule.Machine;
-
-            //    if (!(machine == Machine.I386 && !SourceModule.Bit32Required) &&
-            //        machine != refMachine)
-            //    {
-            //        // Different machine types, and neither is agnostic
-            //        diagnostics.Add(new CSDiagnosticInfo(ErrorCode.WRN_ConflictingMachineAssembly, assembly), NoLocation.Singleton);
-            //    }
-            //}
-
-            //if (_embeddedTypesManagerOpt != null && _embeddedTypesManagerOpt.IsFrozen)
-            //{
-            //    _embeddedTypesManagerOpt.ReportIndirectReferencesToLinkedAssemblies(assembly, diagnostics);
-            //}
         }
 
         internal override Cci.IMethodReference Translate(IMethodSymbolInternal symbol, DiagnosticBag diagnostics,
@@ -853,38 +622,6 @@ namespace Aquila.CodeAnalysis.Emit
         {
             return Translate((MethodSymbol)symbol, null, diagnostics, /*null,*/ needDeclaration);
         }
-
-        //internal Cci.IMethodReference Translate(
-        //    MethodSymbol methodSymbol,
-        //    SyntaxNode syntaxNodeOpt,
-        //    DiagnosticBag diagnostics,
-        //    BoundArgListOperator optArgList = null,
-        //    bool needDeclaration = false)
-        //{
-        //    Debug.Assert(optArgList == null || (methodSymbol.IsVararg && !needDeclaration));
-
-        //    Cci.IMethodReference unexpandedMethodRef = Translate(methodSymbol, syntaxNodeOpt, diagnostics, needDeclaration);
-
-        //    if (optArgList != null && optArgList.Arguments.Length > 0)
-        //    {
-        //        Cci.IParameterTypeInformation[] @params = new Cci.IParameterTypeInformation[optArgList.Arguments.Length];
-        //        int ordinal = methodSymbol.ParameterCount;
-
-        //        for (int i = 0; i < @params.Length; i++)
-        //        {
-        //            @params[i] = new ArgListParameterTypeInformation(ordinal,
-        //                                                            !optArgList.ArgumentRefKindsOpt.IsDefaultOrEmpty && optArgList.ArgumentRefKindsOpt[i] != RefKind.None,
-        //                                                            Translate(optArgList.Arguments[i].Type, syntaxNodeOpt, diagnostics));
-        //            ordinal++;
-        //        }
-
-        //        return new ExpandedVarargsMethodReference(unexpandedMethodRef, @params.AsImmutableOrNull());
-        //    }
-        //    else
-        //    {
-        //        return unexpandedMethodRef;
-        //    }
-        //}
 
         internal Cci.IMethodReference Translate(
             MethodSymbol methodSymbol,
@@ -897,13 +634,6 @@ namespace Aquila.CodeAnalysis.Emit
             NamedTypeSymbol container = methodSymbol.ContainingType;
 
             Debug.Assert(methodSymbol.IsDefinitionOrDistinct());
-
-            //// Method of anonymous type being translated
-            //if (container.IsAnonymousType)
-            //{
-            //    //methodSymbol = AnonymousTypeManager.TranslateAnonymousTypeMethodSymbol(methodSymbol);
-            //    throw new NotImplementedException();
-            //}
 
             if (!methodSymbol.IsDefinition)
             {
@@ -947,11 +677,6 @@ namespace Aquila.CodeAnalysis.Emit
                 }
             }
 
-            //if (_embeddedTypesManagerOpt != null)
-            //{
-            //    return _embeddedTypesManagerOpt.EmbedMethodIfNeedTo(methodSymbol, syntaxNodeOpt, diagnostics);
-            //}
-
             return methodSymbol;
         }
 
@@ -987,15 +712,7 @@ namespace Aquila.CodeAnalysis.Emit
             else
             {
                 Debug.Assert(methodSymbol.IsDefinition);
-
-                //if (_embeddedTypesManagerOpt != null)
-                //{
-                //    methodRef = _embeddedTypesManagerOpt.EmbedMethodIfNeedTo(methodSymbol, syntaxNodeOpt, diagnostics);
-                //}
-                //else
-                {
-                    methodRef = methodSymbol;
-                }
+                methodRef = methodSymbol;
             }
 
             return methodRef;
@@ -1017,9 +734,6 @@ namespace Aquila.CodeAnalysis.Emit
 
             switch (typeSymbol.Kind)
             {
-                //case SymbolKind.DynamicType:
-                //    return Translate((DynamicTypeSymbol)typeSymbol, syntaxNodeOpt, diagnostics);
-
                 case SymbolKind.ArrayType:
                     return Translate((ArrayTypeSymbol)typeSymbol);
 
@@ -1044,8 +758,7 @@ namespace Aquila.CodeAnalysis.Emit
             bool needDeclaration = false)
         {
             Debug.Assert(fieldSymbol.IsDefinitionOrDistinct());
-            // Debug.Assert(!fieldSymbol.IsTupleField, "tuple fields should be rewritten to underlying by now");
-
+            
             if (!fieldSymbol.IsDefinition)
             {
                 Debug.Assert(!needDeclaration);
@@ -1068,11 +781,6 @@ namespace Aquila.CodeAnalysis.Emit
                 return fieldRef;
             }
 
-            //if (_embeddedTypesManagerOpt != null)
-            //{
-            //    return _embeddedTypesManagerOpt.EmbedFieldIfNeedTo(fieldSymbol, syntaxNodeOpt, diagnostics);
-            //}
-
             return fieldSymbol;
         }
 
@@ -1084,34 +792,10 @@ namespace Aquila.CodeAnalysis.Emit
             Debug.Assert(namedTypeSymbol.IsDefinitionOrDistinct());
             Debug.Assert(diagnostics != null);
 
-            //// Anonymous type being translated
-            //if (namedTypeSymbol.IsAnonymousType)
-            //{
-            //    //namedTypeSymbol = AnonymousTypeManager.TranslateAnonymousTypeSymbol(namedTypeSymbol);
-            //    throw new NotImplementedException();
-            //}
-
             // Substitute error types with a special singleton object.
             // Unreported bad types can come through NoPia embedding, for example.
             if (namedTypeSymbol.OriginalDefinition.Kind == SymbolKind.ErrorType)
             {
-                //ErrorTypeSymbol errorType = (ErrorTypeSymbol)namedTypeSymbol.OriginalDefinition;
-                //DiagnosticInfo diagInfo = errorType.GetUseSiteDiagnostic() ?? errorType.ErrorInfo;
-
-                //if (diagInfo == null && namedTypeSymbol.Kind == SymbolKind.ErrorType)
-                //{
-                //    errorType = (ErrorTypeSymbol)namedTypeSymbol;
-                //    diagInfo = errorType.GetUseSiteDiagnostic() ?? errorType.ErrorInfo;
-                //}
-
-                //// Try to decrease noise by not complaining about the same type over and over again.
-                //if (_reportedErrorTypesMap.Add(errorType))
-                //{
-                //    diagnostics.Add(new CSDiagnostic(diagInfo ?? new CSDiagnosticInfo(ErrorCode.ERR_BogusType, string.Empty), syntaxNodeOpt == null ? NoLocation.Singleton : syntaxNodeOpt.Location));
-                //}
-
-                //return CodeAnalysis.Emit.ErrorType.Singleton;
-
                 throw new NotImplementedException($"Translate(ErrorType {namedTypeSymbol.Name})");
             }
 
@@ -1183,12 +867,7 @@ namespace Aquila.CodeAnalysis.Emit
             // NoPia: See if this is a type, which definition we should copy into our assembly.
             Debug.Assert(namedTypeSymbol.IsDefinition);
 
-            //if (_embeddedTypesManagerOpt != null)
-            //{
-            //    return _embeddedTypesManagerOpt.EmbedTypeIfNeedTo(namedTypeSymbol, fromImplements, syntaxNodeOpt, diagnostics);
-            //}
-
-            return (Cci.ITypeReference)namedTypeSymbol;
+            return namedTypeSymbol;
         }
 
         internal static Cci.IArrayTypeReference Translate(ArrayTypeSymbol symbol)

@@ -146,8 +146,6 @@ namespace Aquila.CodeAnalysis.Semantics
                 case SpecialType.System_UInt32: return (false, false, 32);
                 case SpecialType.System_Int64: return (false, true, 64);
                 case SpecialType.System_UInt64: return (false, false, 64);
-                //case SpecialType.System_IntPtr: return (false, true, 64);
-                //case SpecialType.System_UIntPtr: return (false, false, 64);
                 case SpecialType.System_Single: return (true, true, 32);
                 case SpecialType.System_Double: return (true, true, 64);
                 case SpecialType.System_Decimal: return (true, true, 128);
@@ -241,7 +239,6 @@ namespace Aquila.CodeAnalysis.Semantics
                                     if (ps.Length <= pconsumed) continue;
                                     bool isbyref = ps[pconsumed].RefKind != RefKind.None;
                                     if (isbyref && hasref == false) continue;
-                                    // if (container != receiver && ps[pconsumed].HasThisAttribute == false) continue; // [ThisAttribute] // proper extension method
                                     var pstype = ps[pconsumed].Type;
                                     if (pstype != receiver)
                                     {
@@ -302,7 +299,6 @@ namespace Aquila.CodeAnalysis.Semantics
                                 if (container.SpecialType == SpecialType.System_Object ||
                                     container.IsValueType)
                                 {
-                                    //cost++; // should be enabled
                                     cost_minor++; // implicit conversion
                                 }
 

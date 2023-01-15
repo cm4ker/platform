@@ -31,11 +31,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override ImmutableArray<CustomModifier> GetTypeArgumentCustomModifiers(int ordinal) => GetEmptyTypeArgumentCustomModifiers(ordinal);
 
-        //internal override ImmutableArray<TypeSymbol> TypeArgumentsNoUseSiteDiagnostics
-        //{
-        //    get { return TypeParameters.Cast<TypeParameterSymbol, TypeSymbol>(); }
-        //}
-
         public override NamedTypeSymbol ConstructedFrom
         {
             get { return this; }
@@ -102,35 +97,6 @@ namespace Aquila.CodeAnalysis.Symbols
             return GetEmptyTypeArgumentCustomModifiers(ordinal);
         }
 
-        //internal override ImmutableArray<TypeSymbol> TypeArgumentsNoUseSiteDiagnostics
-        //{
-        //    get
-        //    {
-        //        return _typeArguments;
-        //    }
-        //}
-
-        //internal override bool HasTypeArgumentsCustomModifiers
-        //{
-        //    get
-        //    {
-        //        return _hasTypeArgumentsCustomModifiers;
-        //    }
-        //}
-
-        //internal override ImmutableArray<ImmutableArray<CustomModifier>> TypeArgumentsCustomModifiers
-        //{
-        //    get
-        //    {
-        //        if (_hasTypeArgumentsCustomModifiers)
-        //        {
-        //            return TypeSubstitution.GetTypeArgumentsCustomModifiersFor(_constructedFrom.OriginalDefinition);
-        //        }
-
-        //        return CreateEmptyTypeArgumentsCustomModifiers();
-        //    }
-        //}
-
         internal static bool TypeParametersMatchTypeArguments(ImmutableArray<TypeParameterSymbol> typeParameters, ImmutableArray<TypeWithModifiers> typeArguments)
         {
             int n = typeParameters.Length;
@@ -147,27 +113,5 @@ namespace Aquila.CodeAnalysis.Symbols
 
             return true;
         }
-
-        //internal sealed override bool GetUnificationUseSiteDiagnosticRecursive(ref DiagnosticInfo result, Symbol owner, ref HashSet<TypeSymbol> checkedTypes)
-        //{
-        //    if (ConstructedFrom.GetUnificationUseSiteDiagnosticRecursive(ref result, owner, ref checkedTypes) ||
-        //        GetUnificationUseSiteDiagnosticRecursive(ref result, _typeArguments, owner, ref checkedTypes))
-        //    {
-        //        return true;
-        //    }
-
-        //    if (_hasTypeArgumentsCustomModifiers)
-        //    {
-        //        foreach (var modifiers in this.TypeArgumentsCustomModifiers)
-        //        {
-        //            if (GetUnificationUseSiteDiagnosticRecursive(ref result, modifiers, owner, ref checkedTypes))
-        //            {
-        //                return true;
-        //            }
-        //        }
-        //    }
-
-        //    return false;
-        //}
     }
 }

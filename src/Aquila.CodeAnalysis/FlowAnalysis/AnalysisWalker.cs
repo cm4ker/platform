@@ -55,8 +55,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         protected abstract TState MergeStates(TState a, TState b);
 
-        protected abstract void SetStateUnknown(ref TState state);
-
         protected abstract void EnqueueBlock(BoundBlock block);
 
         #endregion
@@ -169,30 +167,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                     Visit(unaryEx, branch);
                     return true;
                 }
-
-                // if (condition is BoundGlobalFunctionCall)
-                // {
-                //     //VisitGlobalFunctionCall((BoundGlobalFunctionCall) condition, branch);
-                //     return true;
-                // }
-
-                if (condition is BoundInstanceOfEx)
-                {
-                    //Visit((BoundInstanceOfEx) condition, branch);
-                    return true;
-                }
-
-                if (condition is BoundIsSetEx)
-                {
-                    //Visit((BoundIsSetEx) condition, branch);
-                    return true;
-                }
-
-                //if (condition is EmptyEx)
-                //{
-                //    VisitEmptyEx((EmptyEx)condition, branch);
-                //    return false;
-                //}
             }
 
             // no effect
@@ -212,18 +186,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             base.VisitBinaryEx(x);
         }
 
-        // public sealed override TResult VisitGlobalFunctionCall(BoundGlobalFunctionCall x)
-        // {
-        //     VisitGlobalFunctionCall(x, ConditionBranch.Default);
-        //
-        //     return default;
-        // }
-
-        // public virtual void VisitGlobalFunctionCall(BoundGlobalFunctionCall x, ConditionBranch branch)
-        // {
-        //     base.VisitGlobalFunctionCall(x);
-        // }
-
         public sealed override TResult VisitUnaryEx(BoundUnaryEx x)
         {
             Visit(x, ConditionBranch.Default);
@@ -235,30 +197,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         {
             base.VisitUnaryEx(x);
         }
-
-        // public sealed override TResult VisitInstanceOf(BoundInstanceOfEx x)
-        // {
-        //     Visit(x, ConditionBranch.Default);
-        //
-        //     return default;
-        // }
-        //
-        // protected virtual void Visit(BoundInstanceOfEx x, ConditionBranch branch)
-        // {
-        //     base.VisitInstanceOf(x);
-        // }
-        //
-        // public sealed override TResult VisitIsSet(BoundIsSetEx x)
-        // {
-        //     Visit(x, ConditionBranch.Default);
-        //
-        //     return default;
-        // }
-        //
-        // protected virtual void Visit(BoundIsSetEx x, ConditionBranch branch)
-        // {
-        //     base.VisitIsSet(x);
-        // }
 
         #endregion
 
@@ -389,12 +327,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
             foreach (var c in x.MatchBlocks)
             {
-                // if (!c.MatchValue.IsOnlyBoundElement)
-                // {
-                //     TraverseToBlock(x, state, c.MatchValue.PreBoundBlockFirst);
-                // }
-
-                //
                 TraverseToBlock(x, state, c);
             }
 
@@ -404,15 +336,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         public override TResult VisitCFGTryCatchEdge(TryCatchEdge x)
         {
             var state = State;
-
-            // TODO: any expression inside try{} block can traverse to catch{} or finally{}.
-
-            //
+            
             TraverseToBlock(x, state, x.BodyBlock);
-
-            //
-            SetStateUnknown(
-                ref state); // TODO: traverse from all states in try{} instead of setting variables unknown here
 
             foreach (var c in x.CatchBlocks)
             {

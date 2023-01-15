@@ -28,8 +28,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         //we want to compute these lazily since it may be expensive for the underlying symbol
         private ImmutableArray<MethodSymbol> _lazyExplicitInterfaceImplementations;
-        //private OverriddenOrHiddenMembersResult _lazyOverriddenOrHiddenMembers;
-
+        
         private int _hashCode; // computed on demand
 
         internal SubstitutedMethodSymbol(SubstitutedNamedTypeSymbol containingSymbol, MethodSymbol originalDefinition)
@@ -64,12 +63,7 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        //public override string GetDocumentationCommentXml(CultureInfo preferredCulture = null, bool expandIncludes = false, CancellationToken cancellationToken = default(CancellationToken))
-        //{
-        //    return originalDefinition.GetDocumentationCommentXml(preferredCulture, expandIncludes, cancellationToken);
-        //}
-
-        private TypeMap Map
+       private TypeMap Map
         {
             get
             {
@@ -164,27 +158,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             return originalDefinition.GetDllImportData();
         }
-
-        //internal sealed override MarshalPseudoCustomAttributeData ReturnValueMarshallingInformation
-        //{
-        //    get { return originalDefinition.ReturnValueMarshallingInformation; }
-        //}
-
-        //internal sealed override bool HasDeclarativeSecurity
-        //{
-        //    get { return originalDefinition.HasDeclarativeSecurity; }
-        //}
-
-        //internal sealed override IEnumerable<Microsoft.Cci.SecurityAttribute> GetSecurityInformation()
-        //{
-        //    return originalDefinition.GetSecurityInformation();
-        //}
-
-        //internal sealed override ImmutableArray<string> GetAppliedConditionalSymbols()
-        //{
-        //    return originalDefinition.GetAppliedConditionalSymbols();
-        //}
-
+      
         public sealed override AssemblySymbol ContainingAssembly
         {
             get
@@ -425,21 +399,7 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        public sealed override bool IsImplicitlyDeclared
-        {
-            get
-            {
-                return this.originalDefinition.IsImplicitlyDeclared;
-            }
-        }
-
-        //internal sealed override bool GenerateDebugInfo
-        //{
-        //    get
-        //    {
-        //        return this.originalDefinition.GenerateDebugInfo;
-        //    }
-        //}
+        public sealed override bool IsImplicitlyDeclared => this.originalDefinition.IsImplicitlyDeclared;
 
         public sealed override bool IsVararg
         {
@@ -526,50 +486,10 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        //internal sealed override OverriddenOrHiddenMembersResult OverriddenOrHiddenMembers
-        //{
-        //    get
-        //    {
-        //        if (_lazyOverriddenOrHiddenMembers == null)
-        //        {
-        //            // We need to compute the overridden or hidden members for this type, rather than applying
-        //            // our type map to those of the underlying type, because the substitution may have introduced
-        //            // ambiguities.
-        //            Interlocked.CompareExchange(ref _lazyOverriddenOrHiddenMembers, this.MakeOverriddenOrHiddenMembers(), null);
-        //        }
-        //        return _lazyOverriddenOrHiddenMembers;
-        //    }
-        //}
-
-        //internal sealed override bool CallsAreOmitted(SyntaxTree syntaxTree)
-        //{
-        //    return originalDefinition.CallsAreOmitted(syntaxTree);
-        //}
-
         internal sealed override TypeMap TypeSubstitution
         {
             get { return this.Map; }
         }
-
-        //internal sealed override bool TryGetThisParameter(out ParameterSymbol thisParameter)
-        //{
-        //    // Required in EE scenarios.  Specifically, the EE binds in the context of a 
-        //    // substituted method, whereas the core compiler always binds within the
-        //    // context of an original definition.  
-        //    // There should never be any reason to call this in normal compilation
-        //    // scenarios, but the behavior should be sensible if it does occur.
-        //    ParameterSymbol originalThisParameter;
-        //    if (!originalDefinition.TryGetThisParameter(out originalThisParameter))
-        //    {
-        //        thisParameter = null;
-        //        return false;
-        //    }
-
-        //    thisParameter = (object)originalThisParameter != null
-        //        ? new ThisParameterSymbol(this)
-        //        : null;
-        //    return true;
-        //}
 
         private ImmutableArray<ParameterSymbol> SubstituteParameters()
         {
@@ -593,11 +513,6 @@ namespace Aquila.CodeAnalysis.Symbols
             }
 
         }
-
-        //internal override int CalculateLocalSyntaxOffset(int localPosition, SyntaxTree localTree)
-        //{
-        //    throw ExceptionUtilities.Unreachable;
-        //}
 
         private int ComputeHashCode()
         {

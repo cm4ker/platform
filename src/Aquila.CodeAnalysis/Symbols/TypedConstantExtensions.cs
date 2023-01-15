@@ -35,7 +35,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 return DisplayEnumConstant(constant);
             }
 
-            return constant.Value.ToString(); // SymbolDisplay.FormatPrimitive(constant.Value, quoteStrings: true, useHexadecimalNumbers: false);
+            return constant.Value.ToString();
         }
 
         // Decode the value of enum constant

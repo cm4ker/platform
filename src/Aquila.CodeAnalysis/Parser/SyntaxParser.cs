@@ -654,17 +654,12 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
                 case SyntaxKind.SemicolonToken:
                     return ErrorCode.ERR_SemicolonExpected;
-
-                // case TokenKind::Colon:         iError = ERR_ColonExpected;          break;
-                // case TokenKind::OpenParen:     iError = ERR_LparenExpected;         break;
                 case SyntaxKind.CloseParenToken:
                     return ErrorCode.ERR_CloseParenExpected;
                 case SyntaxKind.OpenBraceToken:
                     return ErrorCode.ERR_LbraceExpected;
                 case SyntaxKind.CloseBraceToken:
                     return ErrorCode.ERR_RbraceExpected;
-
-                // case TokenKind::CloseSquare:   iError = ERR_CloseSquareExpected;    break;
                 default:
                     return ErrorCode.ERR_SyntaxError;
             }
@@ -1100,29 +1095,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         protected TNode CheckFeatureAvailability<TNode>(TNode node, MessageID feature, bool forceWarning = false)
             where TNode : GreenNode
         {
-            // LanguageVersion availableVersion = this.Options.LanguageVersion;
-            // LanguageVersion requiredVersion = feature.RequiredVersion();
-            //
-            // // There are special error codes for some features, so handle those separately.
-            // switch (feature)
-            // {
-            //     case MessageID.IDS_FeatureModuleAttrLoc:
-            //         return availableVersion >= LanguageVersion.CSharp2
-            //             ? node
-            //             : this.AddError(node, ErrorCode.WRN_NonECMAFeature, feature.Localize());
-            // }
-            //
-            // var info = feature.GetFeatureAvailabilityDiagnosticInfo(this.Options);
-            // if (info != null)
-            // {
-            //     if (forceWarning)
-            //     {
-            //         return AddError(node, ErrorCode.WRN_ErrorOverride, info, (int)info.Code);
-            //     }
-            //
-            //     return AddError(node, info.Code, info.Arguments);
-            // }
-            //throw new NotImplementedException();
             return node;
         }
 #nullable disable

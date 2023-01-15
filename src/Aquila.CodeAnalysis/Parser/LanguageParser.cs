@@ -564,23 +564,14 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
             var openBracket = this.EatToken(SyntaxKind.OpenBracketToken);
 
-            // // Check for optional location :
-            // AttributeTargetSpecifierSyntax attrLocation = null;
             if (IsSomeWord(this.CurrentToken.Kind) && this.PeekToken(1).Kind == SyntaxKind.ColonToken)
             {
-                // var id = ConvertToKeyword(this.EatToken());
-                // var colon = this.EatToken(SyntaxKind.ColonToken);
-                // attrLocation = _syntaxFactory.AttributeTargetSpecifier(id, colon);
+
             }
 
             var attributes = _pool.AllocateSeparated<AttributeSyntax>();
             try
-            {
-                // if (attrLocation != null && attrLocation.Identifier.ToAttributeLocation() == AttributeLocation.Module)
-                // {
-                //     attrLocation = CheckFeatureAvailability(attrLocation, MessageID.IDS_FeatureModuleAttrLoc);
-                // }
-
+            { 
                 this.ParseAttributes(attributes);
                 var closeBracket = this.EatToken(SyntaxKind.CloseBracketToken);
                 var declaration = _syntaxFactory.AttributeList(openBracket, attributes, closeBracket);
@@ -652,7 +643,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
             var name = this.ParseQualifiedName();
 
-            //var argList = this.ParseAttributeArgumentList();
             return _syntaxFactory.Attribute(name, null);
         }
 
@@ -995,23 +985,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         private bool IsPartialMember()
         {
-            // note(cyrusn): this could have been written like so:
-            //
-            //  return
-            //    this.CurrentToken.ContextualKind == SyntaxKind.PartialKeyword &&
-            //    this.PeekToken(1).Kind == SyntaxKind.VoidKeyword;
-            //
-            // However, we want to be lenient and allow the user to write 
-            // 'partial' in most modifier lists.  We will then provide them with
-            // a more specific message later in binding that they are doing 
-            // something wrong.
-            //
-            // Some might argue that the simple check would suffice.
-            // However, we'd like to maintain behavior with 
-            // previously shipped versions, and so we're keeping this code.
-
-            // Here we check for:
-            //   partial ReturnType MemberName
             Debug.Assert(this.CurrentToken.ContextualKind == SyntaxKind.PartialKeyword);
             var point = this.GetResetPoint();
             try
@@ -1406,8 +1379,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         {
             // "top-level" expressions and statements should never occur inside an asynchronous context
             Debug.Assert(!IsInAsync);
-            // Debug.Assert(parentKind != SyntaxKind.CompilationUnit);
-
+            
             cancellationToken.ThrowIfCancellationRequested();
 
             // don't reuse members if they were previously declared under a different type keyword kind
@@ -1614,13 +1586,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             if (this.CurrentToken.Kind == SyntaxKind.EqualsGreaterThanToken)
             {
                 throw new NotSupportedException("");
-
-                // Debug.Assert(requestedExpressionBodyFeature == MessageID.IDS_FeatureExpressionBodiedMethod
-                //              || requestedExpressionBodyFeature == MessageID.IDS_FeatureExpressionBodiedAccessor
-                //              || requestedExpressionBodyFeature == MessageID.IDS_FeatureExpressionBodiedDeOrConstructor,
-                //     "Only IDS_FeatureExpressionBodiedMethod, IDS_FeatureExpressionBodiedAccessor or IDS_FeatureExpressionBodiedDeOrConstructor can be requested");
-                // expressionBody = this.ParseArrowExpressionClause();
-                // expressionBody = CheckFeatureAvailability(expressionBody, requestedExpressionBodyFeature);
             }
 
             semicolon = null;
@@ -1653,7 +1618,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
             if (this.CurrentToken.Kind == SyntaxKind.OpenBraceToken)
             {
-                // class C<T {
                 return true;
             }
 
@@ -1765,21 +1729,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         private ExprSyntax ParsePossibleRefExpression()
         {
-            // var refKeyword = (SyntaxToken)null;
-            // if (this.CurrentToken.Kind == SyntaxKind.RefKeyword &&
-            //     // check for lambda expression with explicit ref return type: `ref int () => { ... }`
-            //     !this.IsPossibleLambdaExpression(Precedence.Expression))
-            // {
-            //     refKeyword = this.EatToken();
-            //     refKeyword = CheckFeatureAvailability(refKeyword, MessageID.IDS_FeatureRefLocalsReturns);
-            // }
-
             var expression = this.ParseExpressionCore();
-            // if (refKeyword != null)
-            // {
-            //     expression = _syntaxFactory.RefExpression(refKeyword, expression);
-            // }
-
             return expression;
         }
 
@@ -1795,22 +1745,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         private bool IsPossibleAccessorModifier()
         {
-            // We only want to accept a modifier as the start of an accessor if the modifiers are
-            // actually followed by "get/set/add/remove".  Otherwise, we might thing think we're 
-            // starting an accessor when we're actually starting a normal class member.  For example:
-            //
-            //      class C {
-            //          public int Prop { get { this.
-            //          private DateTime x;
-            //
-            // We don't want to think of the "private" in "private DateTime x" as starting an accessor
-            // here.  If we do, we'll get totally thrown off in parsing the remainder and that will
-            // throw off the rest of the features that depend on a good syntax tree.
-            // 
-            // Note: we allow all modifiers here.  That's because we want to parse things like
-            // "abstract get" as an accessor.  This way we can provide a good error message
-            // to the user that this is not allowed.
-
             if (GetModifier(this.CurrentToken) == DeclarationModifiers.None)
             {
                 return false;
@@ -2147,17 +2081,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 {
                     name = this.ParseIdentifierToken();
                     type = this.ParseType(mode: ParseTypeMode.Parameter);
-
-
-                    // // When the user type "int goo[]", give them a useful error
-                    // if (this.CurrentToken.Kind == SyntaxKind.OpenBracketToken &&
-                    //     this.PeekToken(1).Kind == SyntaxKind.CloseBracketToken)
-                    // {
-                    //     var open = this.EatToken();
-                    //     var close = this.EatToken();
-                    //     open = this.AddError(open, ErrorCode.ERR_BadArraySyntax);
-                    //     name = AddTrailingSkippedSyntax(name, SyntaxList.List(open, close));
-                    // }
                 }
                 else
                 {
@@ -2458,32 +2381,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             {
                 switch (decl.Kind())
                 {
-                    // case SyntaxKind.FieldDeclaration:
-                    //     return ((Aquila.CodeAnalysis.Syntax.FieldDeclarationSyntax)decl).Modifiers;
                     case SyntaxKind.MethodDeclaration:
                         return ((Aquila.CodeAnalysis.Syntax.MethodDecl)decl).Modifiers;
-                    // case SyntaxKind.ConstructorDeclaration:
-                    //     return ((Aquila.CodeAnalysis.Syntax.ConstructorDeclarationSyntax)decl).Modifiers;
-                    // case SyntaxKind.DestructorDeclaration:
-                    //     return ((Aquila.CodeAnalysis.Syntax.DestructorDeclarationSyntax)decl).Modifiers;
-                    // case SyntaxKind.PropertyDeclaration:
-                    //     return ((Aquila.CodeAnalysis.Syntax.PropertyDeclarationSyntax)decl).Modifiers;
-                    // case SyntaxKind.EventFieldDeclaration:
-                    //     return ((Aquila.CodeAnalysis.Syntax.EventFieldDeclarationSyntax)decl).Modifiers;
-                    // case SyntaxKind.AddAccessorDeclaration:
-                    // case SyntaxKind.RemoveAccessorDeclaration:
-                    // case SyntaxKind.GetAccessorDeclaration:
-                    // case SyntaxKind.SetAccessorDeclaration:
-                    // case SyntaxKind.InitAccessorDeclaration:
-                    //     return ((Aquila.CodeAnalysis.Syntax.AccessorDeclarationSyntax)decl).Modifiers;
-                    // case SyntaxKind.ClassDeclaration:
-                    // case SyntaxKind.StructDeclaration:
-                    // case SyntaxKind.InterfaceDeclaration:
-                    // case SyntaxKind.RecordDeclaration:
-                    // case SyntaxKind.RecordStructDeclaration:
-                    //     return ((Aquila.CodeAnalysis.Syntax.TypeDeclarationSyntax)decl).Modifiers;
-                    // case SyntaxKind.DelegateDeclaration:
-                    //     return ((Aquila.CodeAnalysis.Syntax.DelegateDeclarationSyntax)decl).Modifiers;
                 }
             }
 
@@ -2559,39 +2458,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
             if (!isExpressionContext)
             {
-                // Check for the common pattern of:
-                //
-                // C                    //<-- here
-                // Console.WriteLine();
-                //
-                // Standard greedy parsing will assume that this should be parsed as a variable
-                // declaration: "C Console".  We want to avoid that as it can confused parts of the
-                // system further up.  So, if we see certain things following the identifier, then we can
-                // assume it's not the actual name.  
-                // 
-                // So, if we're after a newline and we see a name followed by the list below, then we
-                // assume that we're accidentally consuming too far into the next statement.
-                //
-                // <dot>, <arrow>, any binary operator (except =), <question>.  None of these characters
-                // are allowed in a normal variable declaration.  This also provides a more useful error
-                // message to the user.  Instead of telling them that a semicolon is expected after the
-                // following token, then instead get a useful message about an identifier being missing.
-                // The above list prevents:
-                //
-                // C                    //<-- here
-                // Console.WriteLine();
-                //
-                // C                    //<-- here 
-                // Console->WriteLine();
-                //
-                // C 
-                // A + B;
-                //
-                // C 
-                // A ? B : D;
-                //
-                // C 
-                // A()
                 var resetPoint = this.GetResetPoint();
                 try
                 {
@@ -2656,12 +2522,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             bool isConst = (flags & VariableFlags.Const) != 0;
             bool isLocal = (flags & VariableFlags.Local) != 0;
 
-            // Give better error message in the case where the user did something like:
-            //
-            // X x = 1, Y y = 2; 
-            // using (X x = expr1, Y y = expr2) ...
-            //
-            // The superfluous type name is treated as variable (it is an identifier) and a missing ',' is injected after it.
             if (!isFirst && this.IsTrueIdentifier())
             {
                 name = this.AddError(name, ErrorCode.ERR_MultiTypeInDeclaration);
@@ -2687,43 +2547,9 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     }
 
                     var init = this.ParseVariableInitializer();
-                    // if (refKeyword != null)
-                    // {
-                    //     init = _syntaxFactory.RefExpression(refKeyword, init);
-                    // }
-
+                    
                     initializer = _syntaxFactory.EqualsValueClause(equals, init);
                     break;
-
-                // case SyntaxKind.LessThanToken:
-                //     if (allowLocalFunctions && isFirst)
-                //     {
-                //         localFunction = TryParseLocalFunctionStatementBody(attributes, mods, parentType, name);
-                //         if (localFunction != null)
-                //         {
-                //             return null;
-                //         }
-                //     }
-                //
-                //     goto default;
-                //
-                // case SyntaxKind.OpenParenToken:
-                //     if (allowLocalFunctions && isFirst)
-                //     {
-                //         localFunction = TryParseLocalFunctionStatementBody(attributes, mods, parentType, name);
-                //         if (localFunction != null)
-                //         {
-                //             return null;
-                //         }
-                //     }
-                //
-                //     // Special case for accidental use of C-style constructors
-                //     // Fake up something to hold the arguments.
-                //     _termState |= TerminatorState.IsPossibleEndOfVariableDeclaration;
-                //     argumentList = this.ParseBracketedArgumentList();
-                //     _termState = saveTerm;
-                //     argumentList = this.AddError(argumentList, ErrorCode.ERR_BadVarDecl);
-                //     break;
 
                 case SyntaxKind.OpenBracketToken:
                     bool sawNonOmittedSize;
@@ -2962,12 +2788,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             var ctk = this.CurrentToken.Kind;
             if (ctk == SyntaxKind.IdentifierToken)
             {
-                // Error tolerance for IntelliSense. Consider the following case: [EditorBrowsable( partial class Goo {
-                // } Because we're parsing an attribute argument we'll end up consuming the "partial" identifier and
-                // we'll eventually end up in a pretty confused state.  Because of that it becomes very difficult to
-                // show the correct parameter help in this case.  So, when we see "partial" we check if it's being used
-                // as an identifier or as a contextual keyword.  If it's the latter then we bail out.  See
-                // Bug: vswhidbey/542125
                 if (IsCurrentTokenPartialKeywordOfPartialMethodOrType() || IsCurrentTokenQueryKeywordInQuery())
                 {
                     var result = CreateMissingIdentifierToken();
@@ -3336,28 +3156,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                                 DetermineIfDefinitelyTypeArgumentList(isDefinitelyTypeArgumentList);
                             result = ScanTypeFlags.GenericTypeOrMethod;
                             break;
-
-                        // case ScanTypeFlags.TupleType:
-                        // It would be nice if we saw a tuple to state that we definitely had a 
-                        // type argument list.  However, there are cases where this would not be
-                        // true.  For example:
-                        //
-                        // public class C
-                        // {
-                        //     public static void Main()
-                        //     {
-                        //         XX X = default;
-                        //         int a = 1, b = 2;
-                        //         bool z = X < (a, b), w = false;
-                        //     }
-                        // }
-                        //
-                        // struct XX
-                        // {
-                        //     public static bool operator <(XX x, (int a, int b) arg) => true;
-                        //     public static bool operator >(XX x, (int a, int b) arg) => false;
-                        // }
-
                         case ScanTypeFlags.NullableType:
                             // See above.  If we have X<Y?,  or X<Y?>, then this is definitely a type argument list.
                             isDefinitelyTypeArgumentList =
@@ -3429,16 +3227,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
             if (this.IsOpenName())
             {
-                // NOTE: trivia will be attached to comma, not omitted type argument
-                // var omittedTypeArgumentInstance =
-                //     _syntaxFactory.OmittedTypeArgument(SyntaxFactory.Token(SyntaxKind.OmittedTypeArgumentToken));
-                // types.Add(omittedTypeArgumentInstance);
-                // while (this.CurrentToken.Kind == SyntaxKind.CommaToken)
-                // {
-                //     types.AddSeparator(this.EatToken(SyntaxKind.CommaToken));
-                //     types.Add(omittedTypeArgumentInstance);
-                // }
-
                 close = this.EatToken(SyntaxKind.GreaterThanToken);
 
                 return;
@@ -3494,25 +3282,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
             var result = this.ParseType();
 
-            // Consider the case where someone supplies an invalid type argument
-            // Such as Action<0> or Action<static>.  In this case we generate a missing 
-            // identifier in ParseType, but if we continue as is we'll immediately start to 
-            // interpret 0 as the start of a new expression when we can tell it's most likely
-            // meant to be part of the type list.  
-            //
-            // To solve this we check if the current token is not comma or greater than and 
-            // the next token is a comma or greater than. If so we assume that the found 
-            // token is part of this expression and we attempt to recover. This does open 
-            // the door for cases where we have an  incomplete line to be interpretted as 
-            // a single expression.  For example:
-            //
-            // Action< // Incomplete line
-            // a>b;
-            //
-            // However, this only happens when the following expression is of the form a>... 
-            // or a,... which  means this case should happen less frequently than what we're 
-            // trying to solve here so we err on the side of better error messages
-            // for the majority of cases.
             SyntaxKind nextTokenKind = SyntaxKind.None;
 
             if (result.IsMissing &&
@@ -3710,18 +3479,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     else
                     {
                         throw new NotImplementedException("What is AliasQualifiedName?");
-
-                        // if (identifierLeft.Identifier.ContextualKind == SyntaxKind.GlobalKeyword)
-                        // {
-                        //     identifierLeft = _syntaxFactory.IdentifierEx(ConvertToKeyword(identifierLeft.Identifier));
-                        // }
-                        //
-                        // identifierLeft = CheckFeatureAvailability(identifierLeft, MessageID.IDS_FeatureGlobalNamespace);
-                        //
-                        // // If the name on the right had errors or warnings then we need to preserve
-                        // // them in the tree.
-                        // return WithAdditionalDiagnostics(
-                        //     _syntaxFactory.AliasQualifiedName(identifierLeft, separator, right), left.GetDiagnostics());
                     }
 
                 default:
@@ -4619,8 +4376,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 // Main switch to handle processing almost any statement.
                 switch (this.CurrentToken.Kind)
                 {
-                    // case SyntaxKind.FixedKeyword:
-                    //     return this.ParseFixedStatement(attributes);
                     case SyntaxKind.BreakKeyword:
                         return this.ParseBreakStatement(attributes);
                     case SyntaxKind.ContinueKeyword:
@@ -4629,39 +4384,15 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     case SyntaxKind.CatchKeyword:
                     case SyntaxKind.FinallyKeyword:
                         return this.ParseTryStatement(attributes);
-                    // case SyntaxKind.CheckedKeyword:
-                    // case SyntaxKind.UncheckedKeyword:
-                    //     return this.ParseCheckedStatement(attributes);
-                    // case SyntaxKind.DoKeyword:
-                    //     return this.ParseDoStatement(attributes);
                     case SyntaxKind.ForKeyword:
                         return this.ParseForOrForEachStatement(attributes);
-                    // case SyntaxKind.ForEachKeyword:
-                    //     return this.ParseForEachStatement(attributes, awaitTokenOpt: null);
-                    // case SyntaxKind.GotoKeyword:
-                    //     return this.ParseGotoStatement(attributes);
                     case SyntaxKind.IfKeyword:
                         return this.ParseIfStatement(attributes);
                     case SyntaxKind.ElseKeyword:
                         // Including 'else' keyword to handle 'else without if' error cases 
                         return this.ParseMisplacedElse(attributes);
-                    // case SyntaxKind.LockKeyword:
-                    //     return this.ParseLockStatement(attributes);
                     case SyntaxKind.ReturnKeyword:
                         return this.ParseReturnStatement(attributes);
-                    // case SyntaxKind.SwitchKeyword:
-                    //     return this.ParseSwitchStatement(attributes);
-                    // case SyntaxKind.ThrowKeyword:
-                    //     return this.ParseThrowStatement(attributes);
-                    // case SyntaxKind.UnsafeKeyword:
-                    //     result = TryParseStatementStartingWithUnsafe(attributes);
-                    //     if (result != null)
-                    //         return result;
-                    //     break;
-                    // case SyntaxKind.UsingKeyword:
-                    //     return ParseStatementStartingWithUsing(attributes);
-                    // case SyntaxKind.WhileKeyword:
-                    //     return this.ParseWhileStatement(attributes);
                     case SyntaxKind.OpenBraceToken:
                         return this.ParseBlock(attributes);
                     case SyntaxKind.SemicolonToken:
@@ -4671,12 +4402,10 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                         if (result != null)
                             return result;
                         break;
-                    // default:
-                    //     throw new Exception();
                 }
 
-
-                return ParseStatementCoreRest(attributes, isGlobal, ref resetPointBeforeStatement);
+                return ParseStatementCoreRest(attributes, isGlobal, ref resetPointBeforeStatement);        
+                
             }
             finally
             {
@@ -4752,32 +4481,12 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             if (this.CurrentToken.ContextualKind == SyntaxKind.AwaitKeyword &&
                 this.PeekToken(1).Kind == SyntaxKind.ForEachKeyword)
             {
-                //  return this.ParseForEachStatement(attributes, ParseAwaitKeyword(MessageID.IDS_FeatureAsyncStreams));
+                
             }
-            else if (IsPossibleAwaitUsing())
-            {
-                // if (PeekToken(2).Kind == SyntaxKind.OpenParenToken)
-                // {
-                //     // `await using Type ...` is handled below in ParseLocalDeclarationStatement
-                //     return this.ParseUsingStatement(attributes, ParseAwaitKeyword(MessageID.IDS_FeatureAsyncUsing));
-                // }
-            }
-            // else if (this.IsPossibleLabeledStatement())
-            // {
-            //     return this.ParseLabeledStatement(attributes);
-            // }
-            // else if (this.IsPossibleYieldStatement())
-            // {
-            //     return this.ParseYieldStatement(attributes);
-            // }
             else if (this.IsPossibleAwaitExpressionStatement())
             {
                 return this.ParseExpressionStatement(attributes);
             }
-            // else if (this.IsQueryExpression(mayBeVariableDeclaration: true, mayBeMemberDeclaration: isGlobal && IsScript))
-            // {
-            //     return this.ParseExpressionStatement(attributes, this.ParseQueryExpression(0));
-            // }
 
             return null;
         }
@@ -4870,19 +4579,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     if (PeekToken(2).Kind == SyntaxKind.IdentifierToken &&
                         PeekToken(3).Kind == SyntaxKind.IdentifierToken)
                     {
-                        // We have something like:
-                        //
-                        //      X.
-                        //      Y z
-                        //
-                        // This is only a local declaration if we have:
-                        //
-                        //      X.Y z;
-                        //      X.Y z = ...
-                        //      X.Y z, ...  
-                        //      X.Y z( ...      (local function) 
-                        //      X.Y z<W...      (local function)
-                        //
                         var token4Kind = PeekToken(4).Kind;
                         if (token4Kind != SyntaxKind.SemicolonToken &&
                             token4Kind != SyntaxKind.EqualsToken &&
@@ -4931,35 +4627,13 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             // skip new
             SyntaxToken nextToken = PeekToken(1);
 
-            // new { }
-            // new [ ]
             switch (nextToken.Kind)
             {
                 case SyntaxKind.OpenBraceToken:
                 case SyntaxKind.OpenBracketToken:
                     return true;
             }
-
-            //
-            // Declaration with new modifier vs. new expression
-            // Parse it as an expression if the type is not followed by an identifier or this keyword.
-            //
-            // Member declarations:
-            //   new T Idf ...
-            //   new T this ...
-            //   new partial Idf    ("partial" as a type name)
-            //   new partial this   ("partial" as a type name)
-            //   new partial T Idf
-            //   new partial T this
-            //   new <modifier>
-            //   new <class|interface|struct|enum>
-            //   new partial <class|interface|struct|enum>
-            //
-            // New expressions:
-            //   new T []
-            //   new T { }
-            //   new <non-type>
-            //
+           
             if (SyntaxFacts.GetBaseTypeDeclarationKind(nextToken.Kind) != SyntaxKind.None)
             {
                 return false;
@@ -6478,7 +6152,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
             else if (this.IsQueryExpression(mayBeVariableDeclaration: false, mayBeMemberDeclaration: false))
             {
-                leftOperand = null; //this.ParseQueryExpression(precedence);
+                leftOperand = null;
             }
             else if (this.CurrentToken.ContextualKind == SyntaxKind.FromKeyword && IsInQuery)
             {
@@ -6500,7 +6174,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             else if (this.IsPossibleDeconstructionLeft(precedence))
             {
                 throw new NotImplementedException();
-                // leftOperand = ParseDeclarationExpression(ParseTypeMode.Normal, MessageID.IDS_FeatureTuples);
             }
             else
             {
@@ -6696,18 +6369,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return leftOperand;
         }
 
-        // private ExprSyntax ParseDeclarationExpression(ParseTypeMode mode, MessageID feature)
-        // {
-        //     TypeEx type = this.ParseType(mode);
-        //     var designation = ParseDesignation(forPattern: false);
-        //     if (feature != MessageID.None)
-        //     {
-        //         designation = CheckFeatureAvailability(designation, feature);
-        //     }
-        //
-        //     return _syntaxFactory.DeclarationExpression(type, designation);
-        // }
-
         private ExprSyntax ParseThrowExpression()
         {
             var throwToken = this.EatToken(SyntaxKind.ThrowKeyword);
@@ -6724,76 +6385,21 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             var tk = this.CurrentToken.Kind;
             switch (tk)
             {
-                // case SyntaxKind.TypeOfKeyword:
-                //     return this.ParseTypeOfExpression();
-                // case SyntaxKind.DefaultKeyword:
-                //     return this.ParseDefaultExpression();
-                // case SyntaxKind.SizeOfKeyword:
-                //     return this.ParseSizeOfExpression();
-                // case SyntaxKind.MakeRefKeyword:
-                //     return this.ParseMakeRefExpression();
-                // case SyntaxKind.RefTypeKeyword:
-                //     return this.ParseRefTypeExpression();
-                // case SyntaxKind.CheckedKeyword:
-                // case SyntaxKind.UncheckedKeyword:
-                //     return this.ParseCheckedOrUncheckedExpression();
-                // case SyntaxKind.RefValueKeyword:
-                //     return this.ParseRefValueExpression();
                 case SyntaxKind.ColonColonToken:
                     // misplaced ::
                     // Calling ParseAliasQualifiedName will cause us to create a missing identifier node that then
                     // properly consumes the :: and the reset of the alias name afterwards.
                     return this.ParseAliasQualifiedName(NameOptions.InExpression);
-                // case SyntaxKind.EqualsGreaterThanToken:
-                //     return this.ParseLambdaExpression();
-                // case SyntaxKind.StaticKeyword:
-                //     if (this.IsPossibleAnonymousMethodExpression())
-                //     {
-                //         return this.ParseAnonymousMethodExpression();
-                //     }
-                //     else if (this.IsPossibleLambdaExpression(precedence))
-                //     {
-                //         return this.ParseLambdaExpression();
-                //     }
-                //     else
-                //     {
-                //         return this.AddError(this.CreateMissingIdentifierName(), ErrorCode.ERR_InvalidExprTerm,
-                //             this.CurrentToken.Text);
-                //     }
-                case SyntaxKind.MatchKeyword:
+               case SyntaxKind.MatchKeyword:
                     return this.ParseMatch();
                 case SyntaxKind.IdentifierToken:
                     if (this.IsTrueIdentifier())
                     {
-                        // if (this.IsPossibleAnonymousMethodExpression())
-                        // {
-                        //     return this.ParseAnonymousMethodExpression();
-                        // }
-                        // else if (this.IsPossibleLambdaExpression(precedence) &&
-                        //          this.TryParseLambdaExpression() is { } lambda)
-                        // {
-                        //     return lambda;
-                        // }
-                        // else if (this.IsPossibleDeconstructionLeft(precedence))
-                        // {
-                        //     return ParseDeclarationExpression(ParseTypeMode.Normal, MessageID.IDS_FeatureTuples);
-                        // }
-                        // else
-                        // {
                         return this.ParseAliasQualifiedName(NameOptions.InExpression);
-                        // }
                     }
-                    else
-                    {
-                        return this.AddError(this.CreateMissingIdentifierName(), ErrorCode.ERR_InvalidExprTerm,
-                            this.CurrentToken.Text);
-                    }
-                // case SyntaxKind.OpenBracketToken:
-                //     return this.ParseRange();
-                // case SyntaxKind.ThisKeyword:
-                //     return _syntaxFactory.ThisExpression(this.EatToken());
-                // case SyntaxKind.BaseKeyword:
-                //     return ParseBaseExpression();
+
+                    return this.AddError(this.CreateMissingIdentifierName(), ErrorCode.ERR_InvalidExprTerm,
+                        this.CurrentToken.Text);
 
                 case SyntaxKind.ArgListKeyword:
                 case SyntaxKind.FalseKeyword:
@@ -6810,30 +6416,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     return this.ParseInterpolatedStringToken();
                 case SyntaxKind.OpenParenToken:
                     return this.ParseCastOrParenExpression();
-                // case SyntaxKind.NewKeyword:
-                //     return this.ParseNewExpression();
-                // case SyntaxKind.StackAllocKeyword:
-                //     return this.ParseStackAllocExpression();
-                // case SyntaxKind.DelegateKeyword:
-                //     // check for lambda expression with explicit function pointer return type
-                //     if (this.IsPossibleLambdaExpression(precedence))
-                //     {
-                //         return this.ParseLambdaExpression();
-                //     }
-                //
-                //     return this.ParseAnonymousMethodExpression();
-                // case SyntaxKind.RefKeyword:
-                //     // check for lambda expression with explicit ref return type: `ref int () => { ... }`
-                //     if (this.IsPossibleLambdaExpression(precedence))
-                //     {
-                //         return this.ParseLambdaExpression();
-                //     }
-                //
-                //     // ref is not expected to appear in this position.
-                //     var refKeyword = this.EatToken();
-                //     return this.AddError(_syntaxFactory.RefExpression(refKeyword, this.ParseExpressionCore()),
-                //         ErrorCode.ERR_InvalidExprTerm, SyntaxFacts.GetText(tk));
-                default:
+                                default:
                     if (IsPredefinedType(tk))
                     {
                         // check for intrinsic type followed by '.'
@@ -7017,18 +6600,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                         expr = _syntaxFactory.MemberAccessEx(SyntaxKind.SimpleMemberAccessExpression, expr,
                             this.EatToken(), this.ParseSimpleName(NameOptions.InExpression));
                         break;
-
-                    // case SyntaxKind.QuestionToken:
-                    //     if (CanStartConsequenceExpression(this.PeekToken(1).Kind))
-                    //     {
-                    //         var qToken = this.EatToken();
-                    //         var consequence = ParseConsequenceSyntax();
-                    //         expr = _syntaxFactory.ConditionalAccessExpression(expr, qToken, consequence);
-                    //         expr = CheckFeatureAvailability(expr, MessageID.IDS_FeatureNullPropagatingOperator);
-                    //         break;
-                    //     }
-                    //
-                    //     goto default;
 
                     case SyntaxKind.ExclamationToken:
                         expr = _syntaxFactory.PostfixUnaryEx(SyntaxFacts.GetPostfixUnaryExpression(tk), expr,
@@ -7368,8 +6939,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             switch (type)
             {
                 // If we have any of the following, we know it must be a cast:
-                // 1) (Goo*)bar;
-                // 2) (Goo?)bar;
+                // 1) (Goo*)bar
+                // 2) (Goo?)bar
                 // 3) "(int)bar" or "(int[])bar"
                 // 4) (G::Goo)bar
                 case ScanTypeFlags.PointerOrMultiplication:
@@ -7701,15 +7272,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         private ExprSyntax ParseDictionaryInitializer()
         {
             throw new NotImplementedException();
-            // var arguments = this.ParseBracketedArgumentList();
-            // var equal = this.EatToken(SyntaxKind.EqualsToken);
-            // var expression = this.CurrentToken.Kind == SyntaxKind.OpenBraceToken
-            //     ? this.ParseObjectOrCollectionInitializer()
-            //     : this.ParseExpressionCore();
-            //
-            // var elementAccess = _syntaxFactory.ImplicitElementAccess(arguments);
-            // return _syntaxFactory.AssignEx(
-            //     SyntaxKind.SimpleAssignmentExpression, elementAccess, equal, expression);
         }
 
         private InitializerEx ParseComplexElementInitializer()
@@ -7984,12 +7546,14 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
             if (this.IsTrueIdentifier(this.CurrentToken))
             {
+#pragma warning disable S125
                 // Don't parse out a type if we see:
                 //
                 //      (a,
                 //      (a)
                 //      (a =>
                 //      (a {
+#pragma warning restore S125
                 //
                 // In all other cases, parse out a type.
                 var peek1 = this.PeekToken(1);
@@ -8078,9 +7642,9 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
                 if (mayBeVariableDeclaration)
                 {
-                    if (pk2 == SyntaxKind.SemicolonToken || // from x;
-                        pk2 == SyntaxKind.CommaToken || // from x, y;
-                        pk2 == SyntaxKind.EqualsToken) // from x = null;
+                    if (pk2 == SyntaxKind.SemicolonToken || 
+                        pk2 == SyntaxKind.CommaToken || 
+                        pk2 == SyntaxKind.EqualsToken)
                     {
                         return false;
                     }

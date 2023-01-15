@@ -340,12 +340,6 @@ namespace Aquila.CodeAnalysis.Semantics
                     var callDispose = new BoundCallEx(disposeMember, ImmutableArray<BoundArgument>.Empty,
                         ImmutableArray<ITypeSymbol>.Empty, assign.Target, Compilation.CoreTypes.Void.Symbol);
 
-                    // //var current = enumerator.Current;
-                    // var itemAssign = new BoundExpressionStmt(new BoundAssignEx(forEach.Item.WithAccess(BoundAccess.ReadAndWrite),
-                    //         new BoundPropertyRef(bi.CurrentMember, assign.Target).WithAccess(BoundAccess.ReadAndWrite))
-                    //     .WithAccess(BoundAccess.ReadAndWrite));
-
-
                     var bindInfo = new ForeachBindInfo()
                     {
                         CurrentMember = currentMember,
@@ -622,8 +616,6 @@ namespace Aquila.CodeAnalysis.Semantics
 
         private BoundLiteral BindLiteralEx(LiteralEx node)
         {
-            // bug.Assert(node.Kind == SyntaxKind.LiteralExpression);
-
             var value = node.Token.Value;
 
             ConstantValue cv;

@@ -192,8 +192,6 @@ namespace Aquila.CodeAnalysis.Symbols
         //we want to compute this lazily since it may be expensive for the underlying symbol
         private ImmutableArray<PropertySymbol> _lazyExplicitInterfaceImplementations;
 
-        //private OverriddenOrHiddenMembersResult _lazyOverriddenOrHiddenMembers;
-
         public override ImmutableArray<PropertySymbol> ExplicitInterfaceImplementations
         {
             get
@@ -219,25 +217,7 @@ namespace Aquila.CodeAnalysis.Symbols
             get { return _originalDefinition.MustCallMethodsDirectly; }
         }
 
-        public override Accessibility DeclaredAccessibility
-        {
-            get
-            {
-                return _originalDefinition.DeclaredAccessibility;
-            }
-        }
-
-        //internal override OverriddenOrHiddenMembersResult OverriddenOrHiddenMembers
-        //{
-        //    get
-        //    {
-        //        if (_lazyOverriddenOrHiddenMembers == null)
-        //        {
-        //            Interlocked.CompareExchange(ref _lazyOverriddenOrHiddenMembers, this.MakeOverriddenOrHiddenMembers(), null);
-        //        }
-        //        return _lazyOverriddenOrHiddenMembers;
-        //    }
-        //}
+        public override Accessibility DeclaredAccessibility => _originalDefinition.DeclaredAccessibility;
 
         private ImmutableArray<ParameterSymbol> SubstituteParameters()
         {

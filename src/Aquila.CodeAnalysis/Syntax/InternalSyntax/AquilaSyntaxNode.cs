@@ -84,7 +84,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         public override bool IsDirective
         {
-            get { return false; } //this is DirectiveTriviaSyntax; }
+            get { return false; }
         }
 
         public override bool IsSkippedTokensTrivia => this.Kind == SyntaxKind.SkippedTokensTrivia;

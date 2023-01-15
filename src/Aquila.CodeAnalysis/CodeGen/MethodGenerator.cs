@@ -44,14 +44,8 @@ namespace Aquila.CodeAnalysis.CodeGen
         internal static MethodBody GenerateMethodBody(
             PEModuleBuilder moduleBuilder,
             SourceMethodSymbolBase method,
-            int methodOrdinal,
-            //ImmutableArray<LambdaDebugInfo> lambdaDebugInfo,
-            //ImmutableArray<ClosureDebugInfo> closureDebugInfo,
-            //StateMachineTypeSymbol stateMachineTypeOpt,
-            VariableSlotAllocator variableSlotAllocatorOpt,
-            DiagnosticBag diagnostics,
-            //ImportChain importChainOpt,
-            bool emittingPdb)
+            int methodOrdinal, VariableSlotAllocator variableSlotAllocatorOpt,
+            DiagnosticBag diagnostics, bool emittingPdb)
         {
             return GenerateMethodBody(moduleBuilder, method, (builder) =>
             {
@@ -59,30 +53,7 @@ namespace Aquila.CodeAnalysis.CodeGen
                 var codeGen = new CodeGenerator(method, builder, moduleBuilder, diagnostics, optimization,
                     emittingPdb);
 
-                // We need to save additional debugging information for MoveNext of an async state machine.
-                //var stateMachineMethod = method as SynthesizedStateMachineMethod;
-                //bool isStateMachineMoveNextMethod = stateMachineMethod != null && method.Name == WellKnownMemberNames.MoveNextMethodName;
-
-                //if (isStateMachineMoveNextMethod && stateMachineMethod.StateMachineType.KickoffMethod.IsAsync)
-                //{
-                //    int asyncCatchHandlerOffset;
-                //    ImmutableArray<int> asyncYieldPoints;
-                //    ImmutableArray<int> asyncResumePoints;
-                //    codeGen.Generate(out asyncCatchHandlerOffset, out asyncYieldPoints, out asyncResumePoints);
-
-                //    var kickoffMethod = stateMachineMethod.StateMachineType.KickoffMethod;
-
-                //    // The exception handler IL offset is used by the debugger to treat exceptions caught by the marked catch block as "user unhandled".
-                //    // This is important for async void because async void exceptions generally result in the process being terminated,
-                //    // but without anything useful on the call stack. Async Task methods on the other hand return exceptions as the result of the Task.
-                //    // So it is undesirable to consider these exceptions "user unhandled" since there may well be user code that is awaiting the task.
-                //    // This is a heuristic since it's possible that there is no user code awaiting the task.
-                //    asyncDebugInfo = new Cci.AsyncMethodBodyDebugInfo(kickoffMethod, kickoffMethod.ReturnsVoid ? asyncCatchHandlerOffset : -1, asyncYieldPoints, asyncResumePoints);
-                //}
-                //else
-                {
-                    codeGen.Generate();
-                }
+                codeGen.Generate();
             }, variableSlotAllocatorOpt, diagnostics, emittingPdb);
         }
 
@@ -125,45 +96,15 @@ namespace Aquila.CodeAnalysis.CodeGen
                 StateMachineMoveNextBodyDebugInfo stateMachineMoveNextDebugInfo = null;
 
                 builder(il);
-
-                //
                 il.Realize();
-
-                //
                 var localVariables = il.LocalSlotManager.LocalsInOrder();
-
-                if (localVariables.Length > 0xFFFE)
-                {
-                    //diagnosticsForThisMethod.Add(ErrorCode.ERR_TooManyLocals, method.Locations.First());
-                }
-
-                //if (diagnosticsForThisMethod.HasAnyErrors())
-                //{
-                //    // we are done here. Since there were errors we should not emit anything.
-                //    return null;
-                //}
-
-                //// We will only save the IL builders when running tests.
-                //if (moduleBuilder.SaveTestData)
-                //{
-                //    moduleBuilder.SetMethodTestData(method, builder.GetSnapshot());
-                //}
-
+                
                 // Only compiler-generated MoveNext methods have iterator scopes.  See if this is one.
                 var stateMachineHoistedLocalScopes = default(ImmutableArray<StateMachineHoistedLocalScope>);
-                //if (isStateMachineMoveNextMethod)
-                //{
-                //    stateMachineHoistedLocalScopes = builder.GetHoistedLocalScopes();
-                //}
-
+                
                 var stateMachineHoistedLocalSlots = default(ImmutableArray<EncHoistedLocalInfo>);
                 var stateMachineAwaiterSlots = default(ImmutableArray<Cci.ITypeReference>);
-                //if (optimizations == OptimizationLevel.Debug && stateMachineTypeOpt != null)
-                //{
-                //    Debug.Assert(method.IsAsync || method.IsIterator);
-                //    GetStateMachineSlotDebugInfo(moduleBuilder, moduleBuilder.GetSynthesizedFields(stateMachineTypeOpt), variableSlotAllocatorOpt, diagnosticsForThisMethod, out stateMachineHoistedLocalSlots, out stateMachineAwaiterSlots);
-                //    Debug.Assert(!diagnostics.HasAnyErrors());
-                //}
+                
 
                 return new MethodBody(
                     il.RealizedIL,
@@ -178,35 +119,27 @@ namespace Aquila.CodeAnalysis.CodeGen
                     hasStackalloc: false,
                     il.GetAllScopes(),
                     il.HasDynamicLocal,
-                    null, // importScopeOpt,
-                    ImmutableArray<LambdaDebugInfo>.Empty, // lambdaDebugInfo,
-                    ImmutableArray<ClosureDebugInfo>.Empty, // closureDebugInfo,
-                    null, //stateMachineTypeOpt?.Name,
+                    importScopeOpt: null, 
+                    ImmutableArray<LambdaDebugInfo>.Empty,
+                    ImmutableArray<ClosureDebugInfo>.Empty,
+                    stateMachineTypeNameOpt: null,
                     stateMachineHoistedLocalScopes,
                     stateMachineHoistedLocalSlots,
                     stateMachineAwaiterSlots,
                     stateMachineMoveNextDebugInfo,
-                    null); // dynamicAnalysisDataOpt
+                    dynamicAnalysisDataOpt: null);
             }
             finally
             {
                 // Basic blocks contain poolable builders for IL and sequence points. Free those back
                 // to their pools.
                 il.FreeBasicBlocks();
-
-                //// Remember diagnostics.
-                //diagnostics.AddRange(diagnosticsForThisMethod);
-                //diagnosticsForThisMethod.Free();
             }
         }
 
         internal static MethodBody CreateSynthesizedBody(PEModuleBuilder moduleBuilder, IMethodSymbol method,
             ILBuilder il)
         {
-            var compilation = moduleBuilder.Compilation;
-            var localSlotManager = il.LocalSlotManager;
-            var optimizations = compilation.Options.OptimizationLevel;
-
             try
             {
                 il.Realize();
@@ -214,38 +147,10 @@ namespace Aquila.CodeAnalysis.CodeGen
                 //
                 var localVariables = il.LocalSlotManager.LocalsInOrder();
 
-                if (localVariables.Length > 0xFFFE)
-                {
-                    //diagnosticsForThisMethod.Add(ErrorCode.ERR_TooManyLocals, method.Locations.First());
-                }
-
-                //if (diagnosticsForThisMethod.HasAnyErrors())
-                //{
-                //    // we are done here. Since there were errors we should not emit anything.
-                //    return null;
-                //}
-
-                //// We will only save the IL builders when running tests.
-                //if (moduleBuilder.SaveTestData)
-                //{
-                //    moduleBuilder.SetMethodTestData(method, builder.GetSnapshot());
-                //}
-
                 // Only compiler-generated MoveNext methods have iterator scopes.  See if this is one.
                 var stateMachineHoistedLocalScopes = default(ImmutableArray<StateMachineHoistedLocalScope>);
-                //if (isStateMachineMoveNextMethod)
-                //{
-                //    stateMachineHoistedLocalScopes = builder.GetHoistedLocalScopes();
-                //}
-
                 var stateMachineHoistedLocalSlots = default(ImmutableArray<EncHoistedLocalInfo>);
                 var stateMachineAwaiterSlots = default(ImmutableArray<Cci.ITypeReference>);
-                //if (optimizations == OptimizationLevel.Debug && stateMachineTypeOpt != null)
-                //{
-                //    Debug.Assert(method.IsAsync || method.IsIterator);
-                //    GetStateMachineSlotDebugInfo(moduleBuilder, moduleBuilder.GetSynthesizedFields(stateMachineTypeOpt), variableSlotAllocatorOpt, diagnosticsForThisMethod, out stateMachineHoistedLocalSlots, out stateMachineAwaiterSlots);
-                //    Debug.Assert(!diagnostics.HasAnyErrors());
-                //}
 
                 return new MethodBody(
                     il.RealizedIL,
@@ -254,31 +159,27 @@ namespace Aquila.CodeAnalysis.CodeGen
                     new DebugId(0, moduleBuilder.CurrentGenerationOrdinal),
                     localVariables,
                     il.RealizedSequencePoints,
-                    null,
+                    debugDocumentProvider: null,
                     il.RealizedExceptionHandlers,
                     il.AreLocalsZeroed,
-                    hasStackalloc: false, // No support for stackalloc
+                    hasStackalloc: false,
                     il.GetAllScopes(),
                     il.HasDynamicLocal,
-                    null, // importScopeOpt,
+                    importScopeOpt: null, 
                     ImmutableArray<LambdaDebugInfo>.Empty, // lambdaDebugInfo,
                     ImmutableArray<ClosureDebugInfo>.Empty, // closureDebugInfo,
-                    null, //stateMachineTypeOpt?.Name,
+                    stateMachineTypeNameOpt: null,
                     stateMachineHoistedLocalScopes,
                     stateMachineHoistedLocalSlots,
                     stateMachineAwaiterSlots,
-                    null, // stateMachineMoveNextDebugInfoOpt
-                    null); // dynamicAnalysisDataOpt
+                    stateMachineMoveNextDebugInfoOpt:null,
+                    dynamicAnalysisDataOpt:null);
             }
             finally
             {
                 // Basic blocks contain poolable builders for IL and sequence points. Free those back
                 // to their pools.
                 il.FreeBasicBlocks();
-
-                //// Remember diagnostics.
-                //diagnostics.AddRange(diagnosticsForThisMethod);
-                //diagnosticsForThisMethod.Free();
             }
         }
     }

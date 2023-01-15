@@ -21,23 +21,5 @@ namespace Aquila.CodeAnalysis.Symbols.Attributes
             : base(applicationNode, attributeClass, attributeConstructor, constructorArguments, constructorArgumentsSourceIndices, namedArguments, hasErrors, isConditionallyOmitted)
         {
         }
-
-        ///// <summary>
-        ///// Gets the retargeted System.Type type symbol.
-        ///// </summary>
-        ///// <param name="targetSymbol">Target symbol on which this attribute is applied.</param>
-        ///// <returns>Retargeted System.Type type symbol.</returns>
-        //internal override TypeSymbol GetSystemType(Symbol targetSymbol)
-        //{
-        //    var retargetingAssembly = (RetargetingAssemblySymbol)(targetSymbol.Kind == SymbolKind.Assembly ? targetSymbol : targetSymbol.ContainingAssembly);
-        //    var underlyingAssembly = (SourceAssemblySymbol)retargetingAssembly.UnderlyingAssembly;
-
-        //    // Get the System.Type from the underlying assembly's Compilation
-        //    TypeSymbol systemType = underlyingAssembly.DeclaringCompilation.GetWellKnownType(WellKnownType.System_Type);
-
-        //    // Retarget the type
-        //    var retargetingModule = (RetargetingModuleSymbol)retargetingAssembly.Modules[0];
-        //    return retargetingModule.RetargetingTranslator.Retarget(systemType, RetargetOptions.RetargetPrimitiveTypesByTypeCode);
-        //}
     }
 }

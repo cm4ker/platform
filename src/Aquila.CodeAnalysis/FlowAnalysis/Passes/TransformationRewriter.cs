@@ -51,12 +51,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return updatedCFG != currentCFG;
         }
 
-        // /// <summary>
-        // /// Map of well-known methods and corresponding rewrite rule that can return a new expression as a replacement for the method call.
-        // /// Return <c>null</c> if the method was not rewritten.
-        // /// </summary>
-        // readonly Dictionary<QualifiedName, Func<BoundGlobalFunctionCall, BoundExpression>> _special_functions;
-
         private TransformationRewriter()
         {
         }
@@ -98,11 +92,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
         {
             _delayedTransformations.UnreachableMethods.Add(method);
         }
-
-        // private protected override void OnUnreachableTypeFound(SourceTypeSymbol type)
-        // {
-        //     _delayedTransformations.UnreachableTypes.Add(type);
-        // }
 
         public override object VisitConditionalEx(BoundConditionalEx x)
         {
@@ -211,26 +200,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return base.VisitUnaryEx(x);
         }
 
-        // public override object VisitCopyValue(BoundCopyValue x)
-        // {
-        //     var valueEx = (BoundExpression) Accept(x.Expression);
-        //     if (valueEx.IsDeeplyCopied && _unnecessaryCopies?.Contains(x) != true)
-        //     {
-        //         return x.Update(valueEx);
-        //     }
-        //     else
-        //     {
-        //         // deep copy is unnecessary:
-        //         TransformationCount++;
-        //         return valueEx;
-        //     }
-        // }
-
-        public override object VisitAssignEx(BoundAssignEx x)
-        {
-            return base.VisitAssignEx(x);
-        }
-
         public override object VisitCFGConditionalEdge(ConditionalEdge x)
         {
             if (x.Condition.ConstantValue.TryConvertToBool(out bool condValue))
@@ -247,8 +216,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 if (bex.Operation == Operations.And && bex.Right.ConstantValue.TryConvertToBool(out var bright) &&
                     bright == false)
                 {
-                    // if (Left && FALSE) {Unreachable} else {F} -> if (Left) {F} else {F}
-                    // result is always FALSE but we have to evaluate Left
                     TransformationCount++;
                     NotePossiblyUnreachable(x.TrueTarget);
 
@@ -260,8 +227,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 if (bex.Operation == Operations.Or && bex.Right.ConstantValue.TryConvertToBool(out bright) &&
                     bright == true)
                 {
-                    // if (Left || TRUE) {T} else {Unreachable} -> if (Left) {T} else {T}
-                    // result is always FALSE but we have to evaluate Left
                     TransformationCount++;
                     NotePossiblyUnreachable(x.FalseTarget);
 
@@ -274,103 +239,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return base.VisitCFGConditionalEdge(x);
         }
 
-        // public override object VisitGlobalFunctionCall(BoundGlobalFunctionCall x)
-        // {
-        //     // first rewrite function arguments if possible
-        //     var result = base.VisitGlobalFunctionCall(x);
-        //
-        //     // use rewrite rule for this method:
-        //     if ((x = result as BoundGlobalFunctionCall) != null && x.TargetMethod != null &&
-        //         _special_functions.TryGetValue(new QualifiedName(new Name(x.TargetMethod.MethodName)),
-        //             out var rewrite_func))
-        //     {
-        //         var newnode = rewrite_func(x);
-        //         if (newnode != null)
-        //         {
-        //             TransformationCount++;
-        //             return newnode;
-        //         }
-        //     }
-        //
-        //     //
-        //     return result;
-        // }
-        //
-        // public override object VisitConcat(BoundConcatEx x)
-        // {
-        //     // transform arguments first:
-        //     x = (BoundConcatEx) base.VisitConcat(x);
-        //
-        //     //
-        //     var args = x.ArgumentsInSourceOrder;
-        //     if (args.Length == 0 || args.All(IsEmptyString))
-        //     {
-        //         // empty string:
-        //         TransformationCount++;
-        //         return new BoundLiteral(string.Empty)
-        //             {ConstantValue = new Optional<object>(string.Empty)}.WithContext(x);
-        //     }
-        //
-        //     // visit & concat in compile time if we can:
-        //     var newargs = args;
-        //     int i = 0;
-        //     do
-        //     {
-        //         // accumulate evaluated string value if possible:
-        //         if (newargs[i].Value.ConstantValue.TryConvertToString(out var value))
-        //         {
-        //             string result = value;
-        //             int end = i + 1;
-        //             while (end < newargs.Length && newargs[end].Value.ConstantValue.TryConvertToString(out var tmp))
-        //             {
-        //                 result += tmp;
-        //                 end++;
-        //             }
-        //
-        //             if (end > i + 1) // we concat'ed something!
-        //             {
-        //                 newargs = newargs.RemoveRange(i, end - i);
-        //
-        //                 if (!string.IsNullOrEmpty(result))
-        //                 {
-        //                     newargs = newargs.Insert(i, BoundArgument.Create(new BoundLiteral(result)
-        //                     {
-        //                         ConstantValue = new Optional<object>(result),
-        //                         TypeRefMask = _method.TypeRefContext.GetStringTypeMask(),
-        //                         ResultType = DeclaringCompilation.CoreTypes.String,
-        //                     }.WithAccess(BoundAccess.Read)));
-        //                 }
-        //             }
-        //         }
-        //
-        //         //
-        //         i++;
-        //     } while (i < newargs.Length);
-        //
-        //     //
-        //     if (newargs != args)
-        //     {
-        //         TransformationCount++;
-        //
-        //         if (newargs.Length == 0)
-        //         {
-        //             return new BoundLiteral(string.Empty) {ConstantValue = new Optional<object>(string.Empty)}
-        //                 .WithContext(x);
-        //         }
-        //         else if (newargs.Length == 1 && newargs[0].Value.ConstantValue.TryConvertToString(out var value))
-        //         {
-        //             // "value"
-        //             return new BoundLiteral(value) {ConstantValue = new Optional<object>(value)}.WithContext(x);
-        //         }
-        //
-        //         //
-        //         return x.Update(newargs);
-        //     }
-        //
-        //     //
-        //     return x;
-        // }
-
         public override object VisitLiteral(BoundLiteral x)
         {
             // implicit conversion: string -> callable
@@ -382,21 +250,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 
                 MethodSymbol symbol = null;
                 var dc = fnName.IndexOf(Name.ClassMemberSeparator, StringComparison.Ordinal);
-                if (dc < 0)
-                {
-                    var fnQName = NameUtils.MakeQualifiedName(fnName, true);
-                    //symbol = (MethodSymbol) DeclaringCompilation.ResolveFunction(fnQName, _method);
-                }
-                else
-                {
-                    //var tname = fnName.Remove(dc);
-                    //var mname = fnName.Substring(dc + Name.ClassMemberSeparator.Length);
-
-                    // type::method
-                    // self::method
-                    // parent::method
-                }
-
+                
                 if (symbol.IsValidMethod() ||
                     (symbol is AmbiguousMethodSymbol a && a.IsOverloadable && a.Ambiguities.Length != 0)
                    ) // valid or ambiguous
@@ -408,37 +262,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             //
             return base.VisitLiteral(x);
         }
-
-        public override object VisitMethodDeclStmt(BoundMethodDeclStmt x)
-        {
-            if (false && !IsConditional && _method.IsGlobalScope)
-            {
-                //_delayedTransformations.FunctionsMarkedAsUnconditional.Add(x.Method);
-            }
-
-            // no transformation
-            return base.VisitMethodDeclStmt(x);
-        }
-
-        // public override object VisitIsEmpty(BoundIsEmptyEx x)
-        // {
-        //     if (x.Operand is BoundVariableRef varRef && varRef.Name.IsDirect && !varRef.Name.NameValue.IsAutoGlobal)
-        //     {
-        //         var flowContext = _method.ControlFlowGraph.FlowContext;
-        //
-        //         var varType = flowContext.GetVarType(varRef.Name.NameValue);
-        //         if (!varType.IsRef && (varType.IsVoid || flowContext.TypeRefContext.WithoutNull(varType).IsVoid)
-        //                            && !_method.IsGlobalScope &&
-        //                            (_method.Flags & MethodFlags.RequiresLocalsArray) == 0)
-        //         {
-        //             // empty($x) where $x is undefined or null -> TRUE
-        //             TransformationCount++;
-        //             return new BoundLiteral(true.AsObject()).WithAccess(x.Access);
-        //         }
-        //     }
-        //
-        //     return base.VisitIsEmpty(x);
-        // }
 
         public override object VisitExpressionStmt(BoundExpressionStmt x)
         {

@@ -37,20 +37,12 @@ namespace Aquila.CodeAnalysis.Utilities
             string location = null;
 
             var syntax = op?.AquilaSyntax;
-            if (syntax != null)
-            {
-                // get location from AST
-                // var unit = syntax.SyntaxTree.Source;
-                // unit.GetLineColumnFromPosition(syntax.Span.Start, out int line, out int col);
-                // location = $"{unit.FilePath}({line + 1}, {col + 1})";
-            }
-            else if (il.SeqPointsOpt != null && il.SeqPointsOpt.Count != 0)
+            if (syntax != null) return new NotImplementedException($"{message} not implemented at {location}");
+            
+            if (il.SeqPointsOpt != null && il.SeqPointsOpt.Count != 0)
             {
                 // get location from last sequence point
                 var pt = il.SeqPointsOpt.Last();
-                // ((AquilaSyntaxTree)pt.SyntaxTree).Source.GetLineColumnFromPosition(pt.Span.Start, out int line,
-                //     out int col);
-                // location = $"{pt.SyntaxTree.FilePath}({line + 1}, {col + 1})";
             }
             else if (method != null)
             {
@@ -59,18 +51,12 @@ namespace Aquila.CodeAnalysis.Utilities
             else if (debugmethod != null)
             {
                 location = $"{debugmethod.ContainingType.GetFullName()}::{debugmethod.MethodName}";
-
-                // if (debugmethod.ContainingType is SourceTypeSymbol srctype)
-                // {
-                //     // location = $"{srctype.ContainingFile.SyntaxTree.FilePath} in {location}";
-                // }
             }
             else
             {
                 location = "<unknown>";
             }
 
-            //
             return new NotImplementedException($"{message} not implemented at {location}");
         }
 

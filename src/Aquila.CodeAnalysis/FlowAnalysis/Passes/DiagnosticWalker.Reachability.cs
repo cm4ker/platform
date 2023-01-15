@@ -65,7 +65,9 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 else
                 {
                     // If there is no statement to report the diagnostic for, search further
+#pragma warning disable S125
                     // - needed for while, do while and scenarios such as if (...) { return; } else { return; } ...
+#pragma warning restore S125
                     block.NextEdge?.Targets.ForEach(_unreachables.Enqueue);
                 }
             }

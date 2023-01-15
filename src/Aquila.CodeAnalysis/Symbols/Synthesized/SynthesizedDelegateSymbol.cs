@@ -167,25 +167,10 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
                 get { return System.Reflection.MethodImplAttributes.Runtime; }
             }
 
-            //internal override bool HasDeclarativeSecurity
-            //{
-            //    get { return false; }
-            //}
-
             public override DllImportData GetDllImportData()
             {
                 return null;
             }
-
-            //internal override IEnumerable<Microsoft.Cci.SecurityAttribute> GetSecurityInformation()
-            //{
-            //    throw ExceptionUtilities.Unreachable;
-            //}
-
-            //internal override MarshalPseudoCustomAttributeData ReturnValueMarshallingInformation
-            //{
-            //    get { return null; }
-            //}
 
             internal override bool RequiresSecurityObject
             {
@@ -252,20 +237,10 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
                 get { return null; }
             }
 
-            //internal override ImmutableArray<string> GetAppliedConditionalSymbols()
-            //{
-            //    return ImmutableArray<string>.Empty;
-            //}
-
             public override Microsoft.Cci.CallingConvention CallingConvention
             {
                 get { return Microsoft.Cci.CallingConvention.HasThis; }
             }
-
-            //internal override bool GenerateDebugInfo
-            //{
-            //    get { return false; }
-            //}
 
             public override Symbol ContainingSymbol
             {

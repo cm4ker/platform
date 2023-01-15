@@ -37,6 +37,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         public abstract int Ordinal
         {
+#pragma warning disable S125
             // This is needed to determine hiding in C#: 
             //
             // interface IB { void M<T>(C<T> x); }
@@ -45,6 +46,7 @@ namespace Aquila.CodeAnalysis.Symbols
             // ID.M<U> hides IB.M<T> even though their formal parameters have different
             // types. When comparing formal parameter types for hiding purposes we must
             // compare method type parameters by ordinal, not by identity.
+#pragma warning restore S125
             get;
         }
 
@@ -74,30 +76,8 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             var result = ConstraintTypesNoUseSiteDiagnostics;
 
-            //AppendConstraintsUseSiteErrorInfo(ref useSiteDiagnostics);
-
-            //foreach (var constraint in result)
-            //{
-            //    ((TypeSymbol)constraint.OriginalDefinition).AddUseSiteDiagnostics(ref useSiteDiagnostics);
-            //}
-
             return result;
         }
-
-        //private void AppendConstraintsUseSiteErrorInfo(ref HashSet<DiagnosticInfo> useSiteDiagnostics)
-        //{
-        //    DiagnosticInfo errorInfo = this.GetConstraintsUseSiteErrorInfo();
-
-        //    if ((object)errorInfo != null)
-        //    {
-        //        if (useSiteDiagnostics == null)
-        //        {
-        //            useSiteDiagnostics = new HashSet<DiagnosticInfo>();
-        //        }
-
-        //        useSiteDiagnostics.Add(errorInfo);
-        //    }
-        //}
 
         /// <summary>
         /// True if the parameterless constructor constraint was specified for the type parameter.
@@ -212,13 +192,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         internal NamedTypeSymbol EffectiveBaseClass(ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
-            //AppendConstraintsUseSiteErrorInfo(ref useSiteDiagnostics);
             var result = EffectiveBaseClassNoUseSiteDiagnostics;
-
-            //if ((object)result != null)
-            //{
-            //    result.OriginalDefinition.AddUseSiteDiagnostics(ref useSiteDiagnostics);
-            //}
 
             return result;
         }
@@ -249,14 +223,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         internal TypeSymbol DeducedBaseType(ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
-            //AppendConstraintsUseSiteErrorInfo(ref useSiteDiagnostics);
             var result = DeducedBaseTypeNoUseSiteDiagnostics;
-
-            //if ((object)result != null)
-            //{
-            //    ((TypeSymbol)result.OriginalDefinition).AddUseSiteDiagnostics(ref useSiteDiagnostics);
-            //}
-
             return result;
         }
 
@@ -270,20 +237,6 @@ namespace Aquila.CodeAnalysis.Symbols
         internal ImmutableArray<NamedTypeSymbol> AllEffectiveInterfacesWithDefinitionUseSiteDiagnostics(ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
             var result = AllEffectiveInterfacesNoUseSiteDiagnostics;
-
-            //// Since bases affect content of AllInterfaces set, we need to make sure they all are good.
-            //var current = DeducedBaseType(ref useSiteDiagnostics);
-
-            //while ((object)current != null)
-            //{
-            //    current = current.BaseTypeWithDefinitionUseSiteDiagnostics(ref useSiteDiagnostics);
-            //}
-
-            //foreach (var iface in result)
-            //{
-            //    iface.OriginalDefinition.AddUseSiteDiagnostics(ref useSiteDiagnostics);
-            //}
-
             return result;
         }
 
@@ -393,11 +346,6 @@ namespace Aquila.CodeAnalysis.Symbols
         public abstract bool HasValueTypeConstraint { get; }
 
         public abstract VarianceKind Variance { get; }
-
-        //internal sealed override bool GetUnificationUseSiteDiagnosticRecursive(ref DiagnosticInfo result, Symbol owner, ref HashSet<TypeSymbol> checkedTypes)
-        //{
-        //    return false;
-        //}
 
         internal override bool Equals(TypeSymbol t2, bool ignoreCustomModifiersAndArraySizesAndLowerBounds, bool ignoreDynamic)
         {

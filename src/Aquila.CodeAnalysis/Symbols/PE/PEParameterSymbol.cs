@@ -224,7 +224,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 }
 
                 // CONSIDER: Can we make parameter type computation lazy?
-                _type = type; // DynamicTypeDecoder.TransformType(type, countOfCustomModifiers, handle, moduleSymbol, refKind);
+                _type = type; 
             }
 
             bool hasNameInMetadata = !string.IsNullOrEmpty(_name);
@@ -437,38 +437,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             }
         }
 
-        //internal override bool IsIDispatchConstant
-        //{
-        //    get
-        //    {
-        //        const WellKnownAttributeFlags flag = WellKnownAttributeFlags.HasIDispatchConstantAttribute;
-
-        //        bool value;
-        //        if (!_packedFlags.TryGetWellKnownAttribute(flag, out value))
-        //        {
-        //            value = _packedFlags.SetWellKnownAttribute(flag, _moduleSymbol.Module.HasAttribute(_handle,
-        //                AttributeDescription.IDispatchConstantAttribute));
-        //        }
-        //        return value;
-        //    }
-        //}
-
-        //internal override bool IsIUnknownConstant
-        //{
-        //    get
-        //    {
-        //        const WellKnownAttributeFlags flag = WellKnownAttributeFlags.HasIUnknownConstantAttribute;
-
-        //        bool value;
-        //        if (!_packedFlags.TryGetWellKnownAttribute(flag, out value))
-        //        {
-        //            value = _packedFlags.SetWellKnownAttribute(flag, _moduleSymbol.Module.HasAttribute(_handle,
-        //                AttributeDescription.IUnknownConstantAttribute));
-        //        }
-        //        return value;
-        //    }
-        //}
-
         private bool HasCallerLineNumberAttribute
         {
             get
@@ -519,108 +487,12 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 return value;
             }
         }
-
-        //internal override bool IsCallerLineNumber
-        //{
-        //    get
-        //    {
-        //        const WellKnownAttributeFlags flag = WellKnownAttributeFlags.IsCallerLineNumber;
-
-        //        bool value;
-        //        if (!_packedFlags.TryGetWellKnownAttribute(flag, out value))
-        //        {
-        //            HashSet<DiagnosticInfo> useSiteDiagnostics = null;
-        //            bool isCallerLineNumber = HasCallerLineNumberAttribute
-        //                && new TypeConversions(ContainingAssembly).HasCallerLineNumberConversion(this.Type, ref useSiteDiagnostics);
-
-        //            value = _packedFlags.SetWellKnownAttribute(flag, isCallerLineNumber);
-        //        }
-        //        return value;
-        //    }
-        //}
-
-        //internal override bool IsCallerFilePath
-        //{
-        //    get
-        //    {
-        //        const WellKnownAttributeFlags flag = WellKnownAttributeFlags.IsCallerFilePath;
-
-        //        bool value;
-        //        if (!_packedFlags.TryGetWellKnownAttribute(flag, out value))
-        //        {
-        //            HashSet<DiagnosticInfo> useSiteDiagnostics = null;
-        //            bool isCallerFilePath = !HasCallerLineNumberAttribute
-        //                && HasCallerFilePathAttribute
-        //                && new TypeConversions(ContainingAssembly).HasCallerInfoStringConversion(this.Type, ref useSiteDiagnostics);
-
-        //            value = _packedFlags.SetWellKnownAttribute(flag, isCallerFilePath);
-        //        }
-        //        return value;
-        //    }
-        //}
-
-        //internal override bool IsCallerMemberName
-        //{
-        //    get
-        //    {
-        //        const WellKnownAttributeFlags flag = WellKnownAttributeFlags.IsCallerMemberName;
-
-        //        bool value;
-        //        if (!_packedFlags.TryGetWellKnownAttribute(flag, out value))
-        //        {
-        //            HashSet<DiagnosticInfo> useSiteDiagnostics = null;
-        //            bool isCallerMemberName = !HasCallerLineNumberAttribute
-        //                && !HasCallerFilePathAttribute
-        //                && HasCallerMemberNameAttribute
-        //                && new TypeConversions(ContainingAssembly).HasCallerInfoStringConversion(this.Type, ref useSiteDiagnostics);
-
-        //            value = _packedFlags.SetWellKnownAttribute(flag, isCallerMemberName);
-        //        }
-        //        return value;
-        //    }
-        //}
-
         internal override TypeSymbol Type => _type;
-
-        //public override ImmutableArray<CustomModifier> CustomModifiers
-        //{
-        //    get
-        //    {
-        //        return ImmutableArray<CustomModifier>.Empty;
-        //    }
-        //}
-
-        //internal override ushort CountOfCustomModifiersPrecedingByRef
-        //{
-        //    get
-        //    {
-        //        return 0;
-        //    }
-        //}
-
-        //internal override bool IsMetadataIn
-        //{
-        //    get { return (_flags & ParameterAttributes.In) != 0; }
-        //}
-
-        //internal override bool IsMetadataOut
-        //{
-        //    get { return (_flags & ParameterAttributes.Out) != 0; }
-        //}
 
         internal override bool IsMarshalledExplicitly
         {
             get { return (_flags & ParameterAttributes.HasFieldMarshal) != 0; }
         }
-
-        //internal override MarshalPseudoCustomAttributeData MarshallingInformation
-        //{
-        //    get
-        //    {
-        //        // the compiler doesn't need full marshalling information, just the unmanaged type or descriptor
-        //        return null;
-        //    }
-        //}
 
         internal override ImmutableArray<byte> MarshallingDescriptor
         {
@@ -635,20 +507,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 return _moduleSymbol.Module.GetMarshallingDescriptor(_handle);
             }
         }
-
-        //internal override UnmanagedType MarshallingType
-        //{
-        //    get
-        //    {
-        //        if ((_flags & ParameterAttributes.HasFieldMarshal) == 0)
-        //        {
-        //            return 0;
-        //        }
-
-        //        Debug.Assert(!_handle.IsNil);
-        //        return _moduleSymbol.Module.GetMarshallingType(_handle);
-        //    }
-        //}
 
         public override bool IsParams
         {

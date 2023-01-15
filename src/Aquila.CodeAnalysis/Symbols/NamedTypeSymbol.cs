@@ -106,7 +106,6 @@ namespace Aquila.CodeAnalysis.Symbols
                 //I've removed it, as the Dev10 compiler makes no check, and we don't
                 //stand to gain anything by having it.
 
-                //return method != null && method.IsVirtual ? method : null;
                 return method;
             }
         }
@@ -177,22 +176,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// <summary>
         /// Returns a flag indicating whether this symbol is declared conditionally.
         /// </summary>
-        internal virtual bool IsConditional
-        {
-            get
-            {
-                //if (this.GetAppliedConditionalSymbols().Any())    // TODO
-                //{
-                //    return true;
-                //}
-
-                //// Conditional attributes are inherited by derived types.
-                //var baseType = this.BaseType;// NoUseSiteDiagnostics;
-                //return (object)baseType != null ? baseType.IsConditional : false;
-
-                return false;
-            }
-        }
+        internal virtual bool IsConditional => false;
 
         /// <summary>
         /// Type layout information (ClassLayout metadata and layout kind flags).
@@ -207,8 +191,6 @@ namespace Aquila.CodeAnalysis.Symbols
         internal override bool Equals(TypeSymbol t2, bool ignoreCustomModifiersAndArraySizesAndLowerBounds = false,
             bool ignoreDynamic = false)
         {
-            //Debug.Assert(!this.IsTupleType);
-
             if ((object)t2 == this) return true;
             if ((object)t2 == null) return false;
 
@@ -223,16 +205,6 @@ namespace Aquila.CodeAnalysis.Symbols
                     }
                 }
             }
-
-            //if ((comparison & TypeCompareKind.IgnoreTupleNames) != 0)
-            //{
-            //    // If ignoring tuple element names, compare underlying tuple types
-            //    if (t2.IsTupleType)
-            //    {
-            //        t2 = t2.TupleUnderlyingType;
-            //        if (this.Equals(t2, ignoreCustomModifiersAndArraySizesAndLowerBounds, ignoreDynamic)) return true;
-            //    }
-            //}
 
             NamedTypeSymbol other = t2 as NamedTypeSymbol;
             if ((object)other == null) return false;
@@ -373,17 +345,10 @@ namespace Aquila.CodeAnalysis.Symbols
                 throw new ArgumentNullException(nameof(arguments));
             }
 
-            //if (arguments.Any(TypeSymbolIsNullFunction))
-            //{
-            //    throw new ArgumentException(CSharpResources.TypeArgumentCannotBeNull, "typeArguments");
-            //}
-
             if (arguments.Length != this.Arity)
             {
-                throw new ArgumentException(); // (CSharpResources.WrongNumberOfTypeArguments, "typeArguments");
+                throw new ArgumentException();
             }
-
-            //Debug.Assert(!unbound || arguments.All(TypeSymbolIsErrorType));
 
             if (ConstructedNamedTypeSymbol.TypeParametersMatchTypeArguments(this.TypeParameters, arguments))
             {
@@ -482,10 +447,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
         INamedTypeSymbol INamedTypeSymbol.Construct(params ITypeSymbol[] arguments)
         {
-            //foreach (var arg in arguments)
-            //{
-            //    arg.EnsureCSharpSymbolOrNull<ITypeSymbol, TypeSymbol>("typeArguments");
-            //}
             Debug.Assert(arguments.All(t => t is TypeSymbol));
 
             return this.Construct(arguments.Cast<TypeSymbol>().ToArray());

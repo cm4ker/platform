@@ -25,7 +25,6 @@ namespace Aquila.CodeAnalysis.DocumentationComments
             if (xmlDocStream != null)
             {
                 new DocumentationCommentCompiler(xmlDocStream, xmlDiagnostics, cancellationToken)
-                    .WriteCompilation(compilation, assemblyName)
                     .Dispose();
             }
         }
@@ -84,24 +83,6 @@ namespace Aquila.CodeAnalysis.DocumentationComments
             }
 
             return encodedText.ToString();
-        }
-
-        DocumentationCommentCompiler WriteCompilation(AquilaCompilation compilation, string assemblyName)
-        {
-            // //Aquila uses document writer for the manifest
-            //
-            // var manifest = new AquilaProjectManifest()
-            // {
-            //     ProjectName = assemblyName,
-            //     RuntimeVersion = compilation.AquilaCorLibrary.Identity.Version.ToString()
-            // };
-            //
-            // XmlSerializer s = new XmlSerializer(typeof(AquilaProjectManifest));
-            //
-            // s.Serialize(_writer, manifest);
-            //
-            // //
-            return this;
         }
 
         void Dispose()

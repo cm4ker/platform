@@ -11,12 +11,6 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         readonly SourceModuleSymbol _sourceModule;
         readonly string _name;
 
-        // public SourceNamespaceSymbol(SourceModuleSymbol module, NamespaceDecl ns)
-        // {
-        //     _sourceModule = module;
-        //     _name = ns.QualifiedName.QualifiedName.ClrName();
-        // }
-
         internal override AquilaCompilation DeclaringCompilation => _sourceModule.DeclaringCompilation;
 
         public override AquilaCompilation ContainingCompilation => _sourceModule.DeclaringCompilation;

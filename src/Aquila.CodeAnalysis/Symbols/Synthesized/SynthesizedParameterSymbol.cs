@@ -100,21 +100,6 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             get { return _refKind; }
         }
 
-        //internal override bool IsMetadataIn
-        //{
-        //    get { return false; }
-        //}
-
-        //internal override bool IsMetadataOut
-        //{
-        //    get { return _refKind == RefKind.Out; }
-        //}
-
-        //internal override MarshalPseudoCustomAttributeData MarshallingInformation
-        //{
-        //    get { return null; }
-        //}
-
         public override string Name
         {
             get { return _name; }
@@ -154,12 +139,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         }
 
         public override bool IsParams => _isParams;
-
-        //internal override bool IsMetadataOptional
-        //{
-        //    get { return false; }
-        //}
-
+        
         public override bool IsImplicitlyDeclared
         {
             get
@@ -179,31 +159,6 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         public override bool IsOptional => _explicitDefaultConstantValue != null;
 
-        //internal override bool IsIDispatchConstant
-        //{
-        //    get { return false; }
-        //}
-
-        //internal override bool IsIUnknownConstant
-        //{
-        //    get { return false; }
-        //}
-
-        //internal override bool IsCallerLineNumber
-        //{
-        //    get { return false; }
-        //}
-
-        //internal override bool IsCallerFilePath
-        //{
-        //    get { return false; }
-        //}
-
-        //internal override bool IsCallerMemberName
-        //{
-        //    get { return false; }
-        //}
-
         public sealed override ushort CountOfCustomModifiersPrecedingByRef
         {
             get { return _countOfCustomModifiersPrecedingByRef; }
@@ -218,24 +173,6 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         {
             get { return ImmutableArray<SyntaxReference>.Empty; }
         }
-
-        //internal override void AddSynthesizedAttributes(ModuleCompilationState compilationState, ref ArrayBuilder<SynthesizedAttributeData> attributes)
-        //{
-        //    // Emit [Dynamic] on synthesized parameter symbols when the original parameter was dynamic 
-        //    // in order to facilitate debugging.  In the case the necessary attributes are missing 
-        //    // this is a no-op.  Emitting an error here, or when the original parameter was bound, would
-        //    // adversely effect the compilation or potentially change overload resolution.  
-        //    var compilation = this.DeclaringCompilation;
-        //    if (Type.ContainsDynamic() && compilation.HasDynamicEmitAttributes())
-        //    {
-        //        var boolType = compilation.GetSpecialType(SpecialType.System_Boolean);
-        //        var diagnostic = boolType.GetUseSiteDiagnostic();
-        //        if ((diagnostic == null) || (diagnostic.Severity != DiagnosticSeverity.Error))
-        //        {
-        //            AddSynthesizedAttribute(ref attributes, compilation.SynthesizeDynamicAttribute(this.Type, this.CustomModifiers.Length, this.RefKind));
-        //        }
-        //    }
-        //}
 
         /// <summary>
         /// For each parameter of a source method, construct a corresponding synthesized parameter

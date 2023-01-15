@@ -71,10 +71,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 diagnostics: context.Diagnostics);
         }
 
-        bool Cci.ICustomAttribute.AllowMultiple
-        {
-            get { return false; } //get { return this.AttributeClass.GetAttributeUsageInfo().AllowMultiple; }
-        }
+        bool Cci.ICustomAttribute.AllowMultiple => false;
 
         private Cci.IMetadataExpression CreateMetadataExpression(TypedConstant argument, EmitContext context)
         {
@@ -173,7 +170,7 @@ namespace Aquila.CodeAnalysis.Symbols
                     }
                 }
 
-                type = type.BaseType; // BaseTypeNoUseSiteDiagnostics;
+                type = type.BaseType;
             }
 
             Debug.Assert(false, "Name does not match an attribute field or a property.  How can that be?");

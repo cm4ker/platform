@@ -184,15 +184,6 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        //internal override NamedTypeSymbol FixedImplementationType(PEModuleBuilder emitModule)
-        //{
-        //    // This occurs rarely, if ever.  The scenario would be a generic struct
-        //    // containing a fixed-size buffer.  Given the rarity there would be little
-        //    // benefit to "optimizing" the performance of this by caching the
-        //    // translated implementation type.
-        //    return (NamedTypeSymbol)_containingType.TypeSubstitution.SubstituteType(_originalDefinition.FixedImplementationType(emitModule)).Type;
-        //}
-
         public override bool Equals(ISymbol other, SymbolEqualityComparer equalityComparer)
         {
             if ((object)this == other)

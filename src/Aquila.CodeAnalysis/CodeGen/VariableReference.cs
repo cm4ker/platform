@@ -72,7 +72,6 @@ namespace Aquila.CodeAnalysis.Semantics
                 {
                     Debug.Assert(CodeGenerator != null);
 
-                    // (<loc> = <instance>);
                     _receiverTemp = cg.GetTemporaryLocal(receiver.ResultType);
                     cg.EmitOpCode(ILOpCode.Dup);
                     cg.Builder.EmitLocalStore(_receiverTemp);
@@ -525,63 +524,6 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
-        /// <summary>
-        /// Parameter is fake and is stored in {varargs} array.
-        /// </summary>
-        sealed class IndirectParameterSource : IParameterSource
-        {
-            readonly IPlace _varargsplace;
-            readonly int _index;
-            bool _isparams => _p.IsParams;
-            //bool _byref => _p.Syntax.PassMethod == PassMethod.ByReference;
-
-            readonly SourceParameterSymbol _p;
-
-            public IndirectParameterSource(SourceParameterSymbol p, ParameterSymbol varargparam)
-            {
-                Debug.Assert(p.IsFake);
-                Debug.Assert(varargparam.Type.IsSZArray());
-
-                _p = p;
-                _varargsplace = new ParamPlace(varargparam);
-                _index = p.Ordinal - varargparam.Ordinal;
-                Debug.Assert(_index >= 0);
-            }
-
-            public TypeSymbol EmitLoad(CodeGenerator cg)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void EmitPass(CodeGenerator cg) => throw ExceptionUtilities.Unreachable;
-
-            public void EmitTypeCheck(CodeGenerator cg, SourceParameterSymbol srcp)
-            {
-                // throw new NotImplementedException();
-            }
-        }
-
-        /// <summary>
-        /// Local variables are unoptimized, parameter must be stored in {locals} array.
-        /// </summary>
-        sealed class IndirectLocalTarget : IParameterTarget
-        {
-            readonly string _localname;
-
-            public IndirectLocalTarget(string localname)
-            {
-                _localname = localname;
-            }
-
-            public void StorePrepare(CodeGenerator cg)
-            {
-            }
-
-            public void Store(CodeGenerator cg, TypeSymbol valuetype)
-            {
-            }
-        }
-
         #endregion
 
         public ParameterSymbol Parameter => (ParameterSymbol)Symbol;
@@ -674,7 +616,7 @@ namespace Aquila.CodeAnalysis.Semantics
                     // _statics holder ?
                     if (!Field.IsStatic)
                     {
-                        return null; // new FieldPlace ( Receiver: Context.GetStatics<Holder>(), Field );
+                        return null;
                     }
 
                     return new FieldPlace(Field);
@@ -684,7 +626,6 @@ namespace Aquila.CodeAnalysis.Semantics
                     receiver_place.Type.IsOfType(Field.ContainingType))
                 {
                     return receiver_place;
-                    //return new FieldPlace(receiver_place, Field);
                 }
 
                 return null;

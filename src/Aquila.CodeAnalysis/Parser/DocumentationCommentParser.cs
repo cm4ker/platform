@@ -1284,7 +1284,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
                 open = CheckFeatureAvailability(open, MessageID.IDS_FeatureGenerics, forceWarning: true);
                 throw new NotImplementedException();
-                //return SyntaxFactory.GenericName(identifierToken, SyntaxFactory.TypeArgumentList(open, list, close));
             }
             finally
             {
@@ -1352,7 +1351,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 NameEx name = ParseCrefName(typeArgumentsMustBeIdentifiers);
 
                 throw new NotImplementedException();
-                //leftName = SyntaxFactory.AliasQualifiedName(SyntaxFactory.IdentifierName(alias), colonColon, name);
             }
             else
             {
@@ -1403,16 +1401,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         /// </summary>
         private TypeEx ParseCrefTypeSuffix(TypeEx type)
         {
-            // if (CurrentToken.Kind == SyntaxKind.QuestionToken)
-            // {
-            //     type = SyntaxFactory.NullableType(type, EatToken());
-            // }
-
-            // while (CurrentToken.Kind == SyntaxKind.AsteriskToken)
-            // {
-            //     type = SyntaxFactory.PointerType(type, EatToken());
-            // }
-
             if (CurrentToken.Kind == SyntaxKind.OpenBracketToken)
             {
                 var omittedArraySizeExpressionInstance =

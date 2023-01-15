@@ -107,7 +107,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             protected override ParameterAnalysisState MergeStates(ParameterAnalysisState a, ParameterAnalysisState b) =>
                 a > b ? a : b;
 
-            protected override void SetStateUnknown(ref ParameterAnalysisState state) =>
+            protected virtual void SetStateUnknown(ref ParameterAnalysisState state) =>
                 state = ParameterAnalysisState.Dirty;
 
             protected override void EnqueueBlock(BoundBlock block) => _worklist.Enqueue(block);
@@ -162,22 +162,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 return base.VisitVariableRef(x);
             }
 
-            // protected override VoidStruct VisitMethodCall(BoundMethodCall x)
-            // {
-            //     // An external alias can be modified when the method is actually called, after processing the arguments
-            //     base.VisitMethodCall(x);
-            //     State = ParameterAnalysisState.Dirty;
-            //
-            //     return default;
-            // }
-
-            // // Assert cannot modify any external alias, so just visit the arguments
-            // public override VoidStruct VisitAssert(BoundAssertEx x) => base.VisitMethodCall(x);
-            //
-            // public override VoidStruct VisitConcat(BoundConcatEx x) => VisitStringConvertingArgs(x.ArgumentsInSourceOrder);
-            //
-            // public override VoidStruct VisitEcho(BoundEcho x) => VisitStringConvertingArgs(x.ArgumentsInSourceOrder);
-
             private VoidStruct VisitStringConvertingArgs(ImmutableArray<BoundArgument> args)
             {
                 // Converting any object argument to string can cause a __toString call
@@ -223,24 +207,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 
                 return default;
             }
-
-            // public override VoidStruct VisitOffsetExists(BoundOffsetExists x)
-            // {
-            //     base.VisitOffsetExists(x);
-            //     State = ParameterAnalysisState.Dirty;
-            //
-            //     return default;
-            // }
-
-            // public override VoidStruct VisitEval(BoundEvalEx x)
-            // {
-            //     // As anything can happen in eval, force value passing of all parameters
-            //     base.VisitEval(x);
-            //     State = ParameterAnalysisState.Dirty;
-            //     _needPassValueParams.SetAll();
-            //
-            //     return default;
-            // }
 
             #endregion
         }

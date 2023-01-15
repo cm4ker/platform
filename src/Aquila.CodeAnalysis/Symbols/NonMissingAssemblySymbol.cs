@@ -109,7 +109,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
                 // According to the cache, the type wasn't found, or isn't declared in this assembly (forwarded).
                 throw new NotImplementedException();
-                //return new MissingMetadataTypeSymbol.TopLevel(this.Modules[0], ref emittedName);
             }
             else
             {

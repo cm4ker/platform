@@ -104,7 +104,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 }
             }
 
-            // <rettmp> = <stack>;
             if (_rettmp != null)
             {
                 cg.EmitConvert(stack, (TypeSymbol)_rettmp.Type);
@@ -118,9 +117,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             //
             if (cg.ExtraFinallyBlock != null && !yielding)
             {
-                // state = 1;
-                // goto _finally;
-                cg.Builder.EmitIntConstant((int)CodeGenerator.ExtraFinallyState.Return); // 1: return
+                cg.Builder.EmitIntConstant((int)CodeGenerator.ExtraFinallyState.Return);
                 cg.ExtraFinallyStateVariable.EmitStore();
                 cg.Builder.EmitBranch(ILOpCode.Br, cg.ExtraFinallyBlock);
                 return;

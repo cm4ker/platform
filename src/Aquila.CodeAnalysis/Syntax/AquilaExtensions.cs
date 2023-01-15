@@ -272,7 +272,6 @@ namespace Aquila.CodeAnalysis
             if (list.Count == 0)
             {
                 throw new NotImplementedException("Not implemented");
-                //return SyntaxFactory.TokenList(items);
             }
             else
             {
@@ -400,12 +399,6 @@ namespace Aquila.CodeAnalysis
             var csharpTree = tree as AquilaSyntaxTree;
             return csharpTree != null && csharpTree.IsPreprocessorSymbolDefined(symbolName, position);
         }
-
-        // // Given the error code and the source location, get the warning state based on pragma warning directives.
-        // internal static PragmaWarningState GetPragmaDirectiveWarningState(this SyntaxTree tree, string id, int position)
-        // {
-        //     return ((CSharpSyntaxTree)tree).GetPragmaDirectiveWarningState(id, position);
-        // }
 
          #endregion
     }

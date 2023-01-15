@@ -18,8 +18,6 @@ namespace Aquila.CodeAnalysis.Emit
             : base(underlyingNamedType)
         {
             Debug.Assert(underlyingNamedType.IsDefinition);
-            // Definition doesn't have custom modifiers on type arguments
-            //Debug.Assert(!underlyingNamedType.HasTypeArgumentsCustomModifiers);
         }
 
         public sealed override void Dispatch(Cci.MetadataVisitor visitor)

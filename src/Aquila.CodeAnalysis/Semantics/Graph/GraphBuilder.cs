@@ -91,7 +91,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             if (_scopes.Count == 0)
                 throw new InvalidOperationException();
 
-            _scopes.Pop(); // .FirstBlock.ScopeTo = _index;
+            _scopes.Pop(); 
         }
 
         #endregion
@@ -216,9 +216,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         private BoundBlock GetExceptionBlock()
         {
-            //if (this.Exception == null)
-            //    this.Exception = new ExitBlock();
-            //return this.Exception;
             return this.Exit;
         }
 
@@ -275,7 +272,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 expression = null; // void
             }
 
-            // return <expression>;
             _current.Add(new BoundReturnStmt(expression));
         }
 
@@ -283,11 +279,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         {
             return WithNewOrdinal(new BoundBlock());
         }
-
-        // private CatchBlock/*!*/NewBlock(CatchClauseSyntax item)
-        // {
-        //     //return WithNewOrdinal(new CatchBlock(_binder.BindTypeRef(item.TargetType), _binder.BindCatchVariable(item)));
-        // }
 
         /// <summary>
         /// Creates block we know nothing is pointing to.
@@ -416,11 +407,11 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public override void VisitBlockStmt(BlockStmt x)
         {
-            Add(_binder.BindEmptyStmt(new TextSpan(x.Span.Start, 1))); // {
+            Add(_binder.BindEmptyStmt(new TextSpan(x.Span.Start, 1))); 
 
             base.VisitBlockStmt(x); // visit nested statements
 
-            Add(_binder.BindEmptyStmt(new TextSpan(x.Span.End - 1, 1))); // } // TODO: endif; etc.
+            Add(_binder.BindEmptyStmt(new TextSpan(x.Span.End - 1, 1)));
         }
 
         public override void VisitExpressionStmt(ExpressionStmt x)
@@ -456,7 +447,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             var action = hasIncrementors ? NewBlock() : cond;
             OpenBreakScope(end, action);
 
-            // while (x.Codition) {
+            // while (x.Codition) 
             _current = WithNewOrdinal(Connect(_current, cond));
             if (hasConditions)
             {
@@ -483,7 +474,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             CloseScope();
 
-            // }
             Connect(_current, cond);
 
             //
@@ -696,14 +686,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public override void VisitTryStmt(TryStmt x)
         {
-            // try {
-            //   x.Body
-            // }
-            // catch (E1) { body }
-            // catch (E2) { body }
-            // finally { body }
-            // end
-
             var end = NewBlock();
             var body = NewBlock();
 
@@ -726,9 +708,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             var edge = new TryCatchEdge(body, catchBlocks, finallyBlock, end);
             _current.SetNextEdge(edge);
-
-            //var oldstates0 = _binder.StatesCount;
-
+            
             // build try body
             OpenTryScope(edge);
             OpenScope(body, LocalScope.Try);
@@ -737,8 +717,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             CloseScope();
             CloseTryScope();
             _current = Leave(_current, finallyBlock ?? end);
-
-            //var oldstates1 = _binder.StatesCount;
 
             // built catches
             for (int i = 0; i < catchBlocks.Length; i++)

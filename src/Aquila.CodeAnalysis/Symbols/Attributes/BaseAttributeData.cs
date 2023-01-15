@@ -162,99 +162,6 @@ namespace Aquila.CodeAnalysis.Symbols
         #region Attribute Decoding
 
         // This method checks if the given PermissionSetAttribute type has a property member with the given propName which is writable, non-generic, public and of string type.
-        private static bool PermissionSetAttributeTypeHasRequiredProperty(NamedTypeSymbol permissionSetType,
-            string propName)
-        {
-            var members = permissionSetType.GetMembers(propName);
-            if (members.Length == 1 && members[0].Kind == SymbolKind.Property)
-            {
-                var property = (PropertySymbol)members[0];
-                if ((object)property.Type != null && property.Type.SpecialType == SpecialType.System_String &&
-                    property.DeclaredAccessibility == Accessibility.Public && property.GetMemberArity() == 0 &&
-                    (object)property.SetMethod != null &&
-                    property.SetMethod.DeclaredAccessibility == Accessibility.Public)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        internal void DecodeClassInterfaceAttribute(SyntaxNode nodeOpt, DiagnosticBag diagnostics)
-        {
-            Debug.Assert(!this.HasErrors);
-
-            //TypedConstant ctorArgument = this.CommonConstructorArguments[0];
-            //Debug.Assert(ctorArgument.Kind == TypedConstantKind.Enum || ctorArgument.Kind == TypedConstantKind.Primitive);
-
-            //ClassInterfaceType interfaceType = ctorArgument.Kind == TypedConstantKind.Enum ?
-            //    ctorArgument.DecodeValue<ClassInterfaceType>(SpecialType.System_Enum) :
-            //    (ClassInterfaceType)ctorArgument.DecodeValue<short>(SpecialType.System_Int16);
-
-            //switch (interfaceType)
-            //{
-            //    case ClassInterfaceType.None:
-            //    case ClassInterfaceType.AutoDispatch:
-            //    case ClassInterfaceType.AutoDual:
-            //        break;
-
-            //    default:
-            //        throw new NotImplementedException();
-            //        //// CS0591: Invalid value for argument to '{0}' attribute
-            //        //Location attributeArgumentSyntaxLocation = this.GetAttributeArgumentSyntaxLocation(0, nodeOpt);
-            //        //diagnostics.Add(ErrorCode.ERR_InvalidAttributeArgument, attributeArgumentSyntaxLocation, nodeOpt != null ? nodeOpt.GetErrorDisplayName() : "");
-            //        //break;
-            //}
-        }
-
-        internal void DecodeInterfaceTypeAttribute(SyntaxNode node, DiagnosticBag diagnostics)
-        {
-            Debug.Assert(!this.HasErrors);
-
-            //TypedConstant ctorArgument = this.CommonConstructorArguments[0];
-            //Debug.Assert(ctorArgument.Kind == TypedConstantKind.Enum || ctorArgument.Kind == TypedConstantKind.Primitive);
-
-            //ComInterfaceType interfaceType = ctorArgument.Kind == TypedConstantKind.Enum ?
-            //    ctorArgument.DecodeValue<ComInterfaceType>(SpecialType.System_Enum) :
-            //    (ComInterfaceType)ctorArgument.DecodeValue<short>(SpecialType.System_Int16);
-
-            //switch (interfaceType)
-            //{
-            //    case ComInterfaceType.InterfaceIsDual:
-            //    case ComInterfaceType.InterfaceIsIDispatch:
-            //    case ComInterfaceType.InterfaceIsIInspectable:
-            //    case ComInterfaceType.InterfaceIsIUnknown:
-            //        break;
-
-            //    default:
-            //        throw new NotImplementedException();
-            //        //// CS0591: Invalid value for argument to '{0}' attribute
-            //        //CSharpSyntaxNode attributeArgumentSyntax = this.GetAttributeArgumentSyntax(0, node);
-            //        //diagnostics.Add(ErrorCode.ERR_InvalidAttributeArgument, attributeArgumentSyntax.Location, node.GetErrorDisplayName());
-            //        //break;
-            //}
-        }
-
-        internal string DecodeGuidAttribute(SyntaxNode nodeOpt, DiagnosticBag diagnostics)
-        {
-            Debug.Assert(!this.HasErrors);
-
-            var guidString = (string)this.CommonConstructorArguments[0].Value;
-
-            // Native compiler allows only a specific GUID format: "D" format (32 digits separated by hyphens)
-            Guid guid;
-            if (!Guid.TryParseExact(guidString, "D", out guid))
-            {
-                throw new NotImplementedException();
-                //// CS0591: Invalid value for argument to '{0}' attribute
-                //Location attributeArgumentSyntaxLocation = this.GetAttributeArgumentSyntaxLocation(0, nodeOpt);
-                //diagnostics.Add(ErrorCode.ERR_InvalidAttributeArgument, attributeArgumentSyntaxLocation, nodeOpt != null ? nodeOpt.GetErrorDisplayName() : "");
-                //guidString = String.Empty;
-            }
-
-            return guidString;
-        }
 
         #endregion
 
@@ -402,19 +309,6 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             Debug.Assert(attribute is SourceAttributeData);
             return ((SourceAttributeData)attribute).GetAttributeArgumentSyntax(parameterIndex, attributeSyntax);
-        }
-
-        internal static Location GetAttributeArgumentSyntaxLocation(this AttributeData attribute, int parameterIndex,
-            SyntaxNode attributeSyntaxOpt)
-        {
-            if (attributeSyntaxOpt == null)
-            {
-                return NoLocation.Singleton;
-            }
-
-            throw new NotImplementedException();
-            //Debug.Assert(attribute is SourceAttributeData);
-            //return ((SourceAttributeData)attribute).GetAttributeArgumentSyntax(parameterIndex, attributeSyntaxOpt).Location;
         }
     }
 }

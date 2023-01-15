@@ -57,17 +57,7 @@ namespace Aquila.CodeAnalysis.Symbols
         internal override TypeSymbol Type => underlyingParameter.Type;
 
         public sealed override RefKind RefKind => underlyingParameter.RefKind;
-
-        //internal sealed override bool IsMetadataIn
-        //{
-        //    get { return underlyingParameter.IsMetadataIn; }
-        //}
-
-        //internal sealed override bool IsMetadataOut
-        //{
-        //    get { return underlyingParameter.IsMetadataOut; }
-        //}
-
+        
         public sealed override ImmutableArray<Location> Locations
         {
             get { return underlyingParameter.Locations; }
@@ -83,11 +73,6 @@ namespace Aquila.CodeAnalysis.Symbols
             return underlyingParameter.GetAttributes();
         }
 
-        //internal override void AddSynthesizedAttributes(ModuleCompilationState compilationState, ref ArrayBuilder<SynthesizedAttributeData> attributes)
-        //{
-        //    underlyingParameter.AddSynthesizedAttributes(compilationState, ref attributes);
-        //}
-
         internal sealed override ConstantValue ExplicitDefaultConstantValue
         {
             get { return underlyingParameter.ExplicitDefaultConstantValue; }
@@ -102,11 +87,6 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get { return underlyingParameter.IsParams; }
         }
-
-        //internal override bool IsMetadataOptional
-        //{
-        //    get { return underlyingParameter.IsMetadataOptional; }
-        //}
 
         public override bool IsImplicitlyDeclared
         {
@@ -131,47 +111,6 @@ namespace Aquila.CodeAnalysis.Symbols
         internal override ImportValueAttributeData ImportValueAttributeData => underlyingParameter.ImportValueAttributeData;
 
         public override bool HasNotNull => underlyingParameter.HasNotNull;
-
-        
-        //internal override MarshalPseudoCustomAttributeData MarshallingInformation
-        //{
-        //    get { return underlyingParameter.MarshallingInformation; }
-        //}
-
-        //internal override UnmanagedType MarshallingType
-        //{
-        //    get { return underlyingParameter.MarshallingType; }
-        //}
-
-        //internal override bool IsIDispatchConstant
-        //{
-        //    get { return underlyingParameter.IsIDispatchConstant; }
-        //}
-
-        //internal override bool IsIUnknownConstant
-        //{
-        //    get { return underlyingParameter.IsIUnknownConstant; }
-        //}
-
-        //internal override bool IsCallerLineNumber
-        //{
-        //    get { return underlyingParameter.IsCallerLineNumber; }
-        //}
-
-        //internal override bool IsCallerFilePath
-        //{
-        //    get { return underlyingParameter.IsCallerFilePath; }
-        //}
-
-        //internal override bool IsCallerMemberName
-        //{
-        //    get { return underlyingParameter.IsCallerMemberName; }
-        //}
-
-        //internal sealed override ushort CountOfCustomModifiersPrecedingByRef
-        //{
-        //    get { return underlyingParameter.CountOfCustomModifiersPrecedingByRef; }
-        //}
 
         #endregion
     }

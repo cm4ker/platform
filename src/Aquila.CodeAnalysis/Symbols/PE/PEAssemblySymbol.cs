@@ -162,11 +162,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             {
                 _specialAssembly = SpecialAssembly.AsnetcoreComponents;
             }
-            else
-            {
-                // extension assembly ?
-                //var attrs = this.GetAttributes();
-            }
         }
 
         internal static bool IsAquilaCoreLib(PEAssembly ass) => ass.Identity.Name == "Aquila.Runtime";
@@ -243,16 +238,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
         {
             if (_lazyCustomAttributes.IsDefault)
             {
-                //if (this.MightContainExtensionMethods)
-                //{
-                //    this.PrimaryModule.LoadCustomAttributesFilterExtensions(_assembly.Handle,
-                //        ref _lazyCustomAttributes);
-                //}
-                //else
-                {
-                    this.PrimaryModule.LoadCustomAttributes(_assembly.Handle,
-                        ref _lazyCustomAttributes);
-                }
+                this.PrimaryModule.LoadCustomAttributes(_assembly.Handle,
+                    ref _lazyCustomAttributes);
             }
 
             return _lazyCustomAttributes;

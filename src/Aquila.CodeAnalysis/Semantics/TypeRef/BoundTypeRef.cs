@@ -126,7 +126,6 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         public override ITypeSymbol ResolveTypeSymbol(AquilaCompilation compilation)
         {
             throw new NotImplementedException();
-            //return compilation.CoreTypes.Closure.Symbol;
         }
 
         public override string ToString() => NameUtils.SpecialNames.Closure.ToString();
@@ -181,7 +180,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
                         MetadataHelpers.ComposeAritySuffixedMetadataName(ClassName.ClrName(), _arity));
             }
 
-            var containingFile = _method?.Syntax.SyntaxTree; //?? _self?.ContainingFile;
+            var containingFile = _method?.Syntax.SyntaxTree;
 
             if (type is AmbiguousErrorTypeSymbol ambiguous && containingFile != null)
             {
@@ -218,8 +217,6 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         }
 
         public override string ToString() => ClassName.ToString();
-
-        // public override TypeRefMask GetTypeRefMask(TypeRefContext ctx) => ctx.GetTypeMask(this, true);
 
         public override bool Equals(IBoundTypeRef other) => base.Equals(other) || (other is BoundClassTypeRef ct &&
             ct.ClassName == this.ClassName && ct.TypeArguments.IsDefaultOrEmpty);
@@ -272,8 +269,6 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
         }
 
         public override string ToString() => _targetType.ToString() + "`" + _typeArguments.Length;
-
-        //public override TypeRefMask GetTypeRefMask(TypeRefContext ctx) => ctx.GetTypeMask(this, true);
 
         public override bool Equals(IBoundTypeRef other)
         {
@@ -361,54 +356,11 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
 
         public override ITypeSymbol ResolveTypeSymbol(AquilaCompilation compilation)
         {
-            // MOVED TO GRAPH REWRITER:
-
-            //// string:
-            //if (_typeExpression.ConstantValue.TryConvertToString(out var tname))
-            //{
-            //    return (TypeSymbol)_model.ResolveType(NameUtils.MakeQualifiedName(tname, true));
-            //}
-            //else if (IsThisVariable)
-            //{
-            //    // $this:
-            //    if (_typeExpression is BoundVariableRef varref && varref.Name.NameValue.IsThisVariableName)
-            //    {
-            //        if (TypeCtx.ThisType != null && TypeCtx.ThisType.IsSealed)
-            //        {
-            //            return TypeCtx.ThisType; // $this, self
-            //        }
-            //    }
-            //    //else if (IsClassOnly(tref.TypeExpression.TypeRefMask))
-            //    //{
-            //    //    // ...
-            //    //}
-            //}
-
-            return null; // type cannot be resolved
+            return null;
         }
-
-        // public override IBoundTypeRef Transfer(TypeRefContext source, TypeRefContext target)
-        // {
-        //     if (source == target) return this;
-        //
-        //     // it is "an" object within another method:
-        //     return new BoundPrimitiveTypeRef(AquilaTypeCode.Object) {IsNullable = false};
-        // }
-
-        // public override TypeRefMask GetTypeRefMask(TypeRefContext ctx)
-        // {
-        //     if (IsThisVariable)
-        //     {
-        //         return ctx.GetThisTypeMask();
-        //     }
-        //
-        //     return ctx.GetSystemObjectTypeMask();
-        // }
 
         public override string ToString() => "{?}";
 
-        // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
-        //     visitor.VisitIndirectTypeRef(this);
         public override BoundKind BoundKind { get; }
     }
 
@@ -449,46 +401,14 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
                 result = compilation.Merge(result, (TypeSymbol)tref.ResolveTypeSymbol(compilation));
             }
 
-            //if (IsNullable)
-            //{
-            //    result = compilation.MergeNull(result);
-            //}
-
             return result;
         }
 
         public override string ToString() => string.Join("|", TypeRefs);
 
-        // public override TypeRefMask GetTypeRefMask(TypeRefContext ctx)
-        // {
-        //     TypeRefMask result = 0;
-        //
-        //     foreach (var t in TypeRefs)
-        //     {
-        //         result |= t.GetTypeRefMask(ctx);
-        //     }
-        //
-        //     if (IsNullable)
-        //     {
-        //         result |= ctx.GetNullTypeMask();
-        //     }
-        //
-        //     return result;
-        // }
-
-        // public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor) =>
-        //     visitor.VisitMultipleTypeRef(this);
-
         public BoundMultipleTypeRef Update(ImmutableArray<BoundTypeRef> trefs)
         {
-            if (trefs == this.TypeRefs)
-            {
-                return this;
-            }
-            else
-            {
-                return new BoundMultipleTypeRef(trefs).WithSyntax(AquilaSyntax);
-            }
+            return trefs == this.TypeRefs ? this : new BoundMultipleTypeRef(trefs).WithSyntax(AquilaSyntax);
         }
 
         public override BoundKind BoundKind { get; }

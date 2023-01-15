@@ -140,8 +140,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 {
                     tsymbol = binder.BindType(langElem);
                 }
-
-                //Debug.Assert(tsymbol.IsValidType());
+                
                 return tsymbol;
             }
         }

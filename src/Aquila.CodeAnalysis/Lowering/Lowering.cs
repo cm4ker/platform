@@ -75,30 +75,6 @@ namespace Aquila.CodeAnalysis.Lowering
 
         public override object VisitAllocEx(BoundAllocEx x)
         {
-            /*
-             unfold the AllocEx like 
-             
-             (Type) 
-             {
-                Field1 = (BoundEx)
-                Field2 = (BoundEx)
-                ...
-                etc
-             }
-             
-             into >>> 
-             
-             BoundGroupedEx
-             {
-                 var tmp = new Type();
-                 (AssignEx) tmp.Field1 = (BoundEx)
-                 (AssignEx) tmp.Field2 = (BoundEx)
-                 ...
-                 etc
-                 
-                 return tmp; // finally resulting expression is tmp
-             }             
-             */
             var type = (NamedTypeSymbol)x.TypeRef;
             var ctor = type.InstanceConstructors.FirstOrDefault(x => x.ParameterCount == 1);
 

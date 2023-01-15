@@ -53,7 +53,6 @@ internal class ComponentBaseGenerator
             {
                 var builderArg = new ParamPlace(renderMethod.Parameters.First());
                 var v = new Visitor(type, _ct, builderArg, m, d, il);
-                //v.AddMarkupContent(_syntaxTree);
                 il.EmitRet(true);
             });
 

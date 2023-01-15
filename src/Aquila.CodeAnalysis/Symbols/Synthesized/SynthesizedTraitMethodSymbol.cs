@@ -17,8 +17,6 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             this.ForwardedCall = traitmethod;
         }
 
-        //protected override Symbol OriginalSymbolDefinition => ForwardedCall;
-
         public override ImmutableArray<ParameterSymbol> Parameters
         {
             get

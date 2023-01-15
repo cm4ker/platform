@@ -32,7 +32,6 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         private string _name;
 
-        // private string _namespace = string.Empty;
         private NamedTypeSymbol _baseType;
         private Accessibility _declaredAccessibility = Accessibility.Public;
         private ImmutableArray<AttributeData>.Builder _attributes;
@@ -74,11 +73,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         public override string Name => _name ??
                                        throw new NullReferenceException(
                                            "For this type the name was not set. Please invoke SetName before get it");
-
-        // public override string NamespaceName => _namespace ??
-        //                                         throw new NullReferenceException(
-        //                                             "For this type the NamespaceName was not set. Please invoke SetNamespaceName before get it");
-
+        
         public override NamedTypeSymbol BaseType => _baseType ?? _compilation.CoreTypes.Object;
 
         public override TypeKind TypeKind => TypeKind.Class;
@@ -161,12 +156,6 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             _name = value;
             return this;
         }
-
-        // public SynthesizedTypeSymbol SetNamespace(string value)
-        // {
-        //     _namespace = value;
-        //     return this;
-        // }
 
         public SynthesizedTypeSymbol SetBaseType(INamedTypeSymbol value)
         {

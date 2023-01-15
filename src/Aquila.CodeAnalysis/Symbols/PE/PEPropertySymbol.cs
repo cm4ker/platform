@@ -26,10 +26,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
         private readonly ImmutableArray<CustomModifier> _typeCustomModifiers;
 
         private ImmutableArray<AttributeData> _lazyCustomAttributes;
-        //private Tuple<CultureInfo, string> _lazyDocComment;
-
-        //private ObsoleteAttributeData _lazyObsoleteAttributeData = ObsoleteAttributeData.Uninitialized;
-
+        
         // Distinct accessibility value to represent unset.
         private const int UnsetAccessibility = -1;
         private int _declaredAccessibility = UnsetAccessibility;
@@ -101,20 +98,11 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             _parameters = GetParameters(moduleSymbol, this, propertyParams, setMethodParams ?? getMethodParams,
                 out isBad);
 
-            //if (propEx != null || getEx != null || setEx != null || mrEx != null || isBad)
-            //{
-            //    _lazyUseSiteDiagnostic = new CSDiagnosticInfo(ErrorCode.ERR_BindToBogus, this);
-            //}
-
             _typeCustomModifiers = CSharpCustomModifier.Convert(propertyParams[0].CustomModifiers);
 
             // CONSIDER: Can we make parameter type computation lazy?
             TypeSymbol originalPropertyType = propertyParams[0].Type;
-            _propertyType =
-                originalPropertyType; // DynamicTypeDecoder.TransformType(originalPropertyType, _typeCustomModifiers.Length, handle, moduleSymbol);
-
-            //// Dynamify object type if necessary
-            //_propertyType = _propertyType.AsDynamicIfNoPia(_containingType);
+            _propertyType = originalPropertyType;
 
             // A property is bogus and must be accessed by calling its accessors directly if the
             // accessor signatures do not agree, both with each other and with the property,
@@ -283,11 +271,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                                 break;
                             }
 
-                            //if (!crossedAssemblyBoundaryWithoutInternalsVisibleTo && !curr.ContainingAssembly.HasInternalAccessTo(next.ContainingAssembly))
-                            //{
-                            //    crossedAssemblyBoundaryWithoutInternalsVisibleTo = true;
-                            //}
-
                             curr = next;
                         }
 
@@ -406,10 +389,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 if (this.ParameterCount > 0)
                 {
                     return false;
-                    //string defaultMemberName = _containingType.DefaultMemberName;
-                    //return _name == defaultMemberName || //NB: not Name property (break mutual recursion)
-                    //    ((object)this.GetMethod != null && this.GetMethod.Name == defaultMemberName) ||
-                    //    ((object)this.SetMethod != null && this.SetMethod.Name == defaultMemberName);
                 }
 
                 return false;
@@ -423,7 +402,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 // Indexed property support is limited to types marked [ComImport],
                 // to match the native compiler where the feature was scoped to
                 // avoid supporting property groups.
-                return false; //(this.ParameterCount > 0) && _containingType.IsComImport;
+                return false;
             }
         }
 
@@ -505,28 +484,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                     return ImmutableArray<PropertySymbol>.Empty;
                 }
 
-                //var propertiesWithImplementedGetters = PEPropertyOrEventHelpers.GetPropertiesForExplicitlyImplementedAccessor(_getMethod);
-                //var propertiesWithImplementedSetters = PEPropertyOrEventHelpers.GetPropertiesForExplicitlyImplementedAccessor(_setMethod);
-
                 var builder = ArrayBuilder<PropertySymbol>.GetInstance();
-
-                //foreach (var prop in propertiesWithImplementedGetters)
-                //{
-                //    if ((object)prop.SetMethod == null || propertiesWithImplementedSetters.Contains(prop))
-                //    {
-                //        builder.Add(prop);
-                //    }
-                //}
-
-                //foreach (var prop in propertiesWithImplementedSetters)
-                //{
-                //    // No need to worry about duplicates.  If prop was added by the previous loop,
-                //    // then it must have a GetMethod.
-                //    if ((object)prop.GetMethod == null)
-                //    {
-                //        builder.Add(prop);
-                //    }
-                //}
 
                 return builder.ToImmutableAndFree();
             }
@@ -627,20 +585,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             return parameters.AsImmutableOrNull();
         }
 
-        //public override string GetDocumentationCommentXml(CultureInfo preferredCulture = null, bool expandIncludes = false, CancellationToken cancellationToken = default(CancellationToken))
-        //{
-        //    return PEDocumentationCommentUtils.GetDocumentationComment(this, _containingType.ContainingPEModule, preferredCulture, cancellationToken, ref _lazyDocComment);
-        //}
-
-        internal override ObsoleteAttributeData ObsoleteAttributeData
-        {
-            get
-            {
-                //ObsoleteAttributeHelpers.InitializeObsoleteDataFromMetadata(ref _lazyObsoleteAttributeData, _handle, (PEModuleSymbol)(this.ContainingModule));
-                //return _lazyObsoleteAttributeData;
-                return null;
-            }
-        }
+        internal override ObsoleteAttributeData ObsoleteAttributeData => null;
 
         internal override bool HasRuntimeSpecialName
         {
@@ -660,42 +605,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
     /// </summary>
     internal static class PEPropertyOrEventHelpers
     {
-        //internal static ISet<PropertySymbol> GetPropertiesForExplicitlyImplementedAccessor(MethodSymbol accessor)
-        //{
-        //    return GetSymbolsForExplicitlyImplementedAccessor<PropertySymbol>(accessor);
-        //}
-
-        //internal static ISet<EventSymbol> GetEventsForExplicitlyImplementedAccessor(MethodSymbol accessor)
-        //{
-        //    return GetSymbolsForExplicitlyImplementedAccessor<EventSymbol>(accessor);
-        //}
-
-        //// CONSIDER: the 99% case is a very small set.  A list might be more efficient in such cases.
-        //private static ISet<T> GetSymbolsForExplicitlyImplementedAccessor<T>(MethodSymbol accessor) where T : Symbol
-        //{
-        //    if ((object)accessor == null)
-        //    {
-        //        return SpecializedCollections.EmptySet<T>();
-        //    }
-
-        //    ImmutableArray<MethodSymbol> implementedAccessors = accessor.ExplicitInterfaceImplementations;
-        //    if (implementedAccessors.Length == 0)
-        //    {
-        //        return SpecializedCollections.EmptySet<T>();
-        //    }
-
-        //    var symbolsForExplicitlyImplementedAccessors = new HashSet<T>();
-        //    foreach (var implementedAccessor in implementedAccessors)
-        //    {
-        //        var associatedProperty = implementedAccessor.AssociatedSymbol as T;
-        //        if ((object)associatedProperty != null)
-        //        {
-        //            symbolsForExplicitlyImplementedAccessors.Add(associatedProperty);
-        //        }
-        //    }
-        //    return symbolsForExplicitlyImplementedAccessors;
-        //}
-
         // Properties and events from metadata do not have explicit accessibility. Instead,
         // the accessibility reported for the PEPropertySymbol or PEEventSymbol is the most
         // restrictive level that is no more restrictive than the getter/adder and setter/remover.

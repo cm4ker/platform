@@ -1,8 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeGen;
-using Microsoft.CodeAnalysis.PooledObjects;
 using Aquila.CodeAnalysis.Symbols;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -67,9 +65,9 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 cg.EmitHiddenSequencePoint();
                 cg.Builder.EmitBranch(ILOpCode.Br, condition);
 
-                // {
+                // <
                 cg.GenerateScope(TrueTarget, NextBlock.Ordinal);
-                // }
+                // >
 
                 // if (Condition)
                 cg.EmitHiddenSequencePoint();
@@ -88,9 +86,9 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
                 cg.Builder.EmitBranch(isnegation ? ILOpCode.Brtrue : ILOpCode.Brfalse, FalseTarget);
 
-                // {
+                // <
                 cg.GenerateScope(TrueTarget, NextBlock.Ordinal);
-                // }
+                // >
             }
 
             cg.EmitHiddenSequencePoint();
@@ -200,7 +198,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 // jump to next nested "try" or inside "yield" itself
                 var target = (object)node.Next?.Value /*next try block*/ ?? yield /*inside yield*/;
 
-                // case YieldIndex: goto target;
                 yieldExLabels.Add(
                     new KeyValuePair<ConstantValue, object>(ConstantValue.Create(yield.YieldIndex), target));
             }
@@ -231,8 +228,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             cg.Builder.AssertStackEmpty();
 
             var bi = ForEachStmt.BoundInfo;
-            // bi.EnumeratorAssignmentEx.Emit(cg);
-
 
             cg.Builder.OpenLocalScope(ScopeType.TryCatchFinally);
             //try
@@ -261,46 +256,8 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
     partial class MatchEdge
     {
-        static bool IsInt32(object value) => value is int ||
-                                             (value is long && (long)value <= int.MaxValue &&
-                                              (long)value >= int.MinValue);
-
-        static bool IsString(object value) => value is string;
-
         internal override void Generate(CodeGenerator cg)
         {
-        }
-
-        /// <summary>
-        /// Gets case labels.
-        /// </summary>
-        static KeyValuePair<ConstantValue, object>[] GetSwitchCaseLabels(IEnumerable<MatchArmBlock> sections)
-        {
-            var labelsBuilder = ArrayBuilder<KeyValuePair<ConstantValue, object>>.GetInstance();
-            foreach (var section in sections)
-            {
-                if (section.IsDefault)
-                {
-                    // fallThroughLabel = section
-                }
-                else
-                {
-                    // labelsBuilder.Add(new KeyValuePair<ConstantValue, object>(
-                    //     Int32Constant(section.MatchValue.BoundElement.ConstantValue.Value), section));
-                }
-            }
-
-            return labelsBuilder.ToArrayAndFree();
-        }
-
-        // TODO: move to helpers
-        static ConstantValue Int32Constant(object value)
-        {
-            if (value is int) return ConstantValue.Create((int)value);
-            if (value is long) return ConstantValue.Create((int)(long)value);
-            if (value is double) return ConstantValue.Create((int)(double)value);
-
-            throw new ArgumentException();
         }
     }
 }

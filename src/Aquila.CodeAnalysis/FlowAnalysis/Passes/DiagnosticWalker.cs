@@ -8,7 +8,6 @@ using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Semantics.TypeRef;
 using Aquila.Syntax.Ast;
 using Aquila.CodeAnalysis.Symbols;
-using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Syntax;
 using Aquila.CodeAnalysis.Utilities;
 
@@ -49,9 +48,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             {
                 visitor.VisitCFG(method.ControlFlowGraph);
             }
-
-            //
-            visitor.CheckParams();
         }
 
         private DiagnosticWalker(DiagnosticBag diagnostics, SourceMethodSymbolBase method)
@@ -106,80 +102,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return str1 != str2 && string.Equals(str1, str2, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private void CheckParams()
-        {
-            // check source parameters
-            var srcparams = _method.SourceParameters;
-            foreach (var p in srcparams)
-            {
-                if (!CheckParameterDefaultValue(p))
-                {
-                    // var expectedtype =
-                    //     (p.Syntax.TypeHint is NullableTypeRef nullable ? nullable.TargetType : p.Syntax.TypeHint)
-                    //     .ToString(); // do not show "?" in nullable types
-                    // var valuetype = TypeCtx.ToString(p.Initializer.TypeRefMask);
-                    //
-                    // _diagnostics.Add(_method, p.Syntax.InitValue, ErrorCode.ERR_DefaultParameterValueTypeMismatch,
-                    //     p.Name, expectedtype, valuetype);
-                }
-            }
-        }
-
-        bool CheckParameterDefaultValue(SourceParameterSymbol p)
-        {
-            // var thint = p.Syntax.TypeHint;
-            // if (thint != null)
-            // {
-            //     // check type hint and default value
-            //     var defaultvalue = p.Initializer;
-            //     if (defaultvalue != null && !defaultvalue.TypeRefMask.IsAnyType && !defaultvalue.TypeRefMask.IsDefault)
-            //     {
-            //         var valuetype = defaultvalue.TypeRefMask;
-            //
-            //         if (TypeCtx.IsNull(valuetype))
-            //         {
-            //             // allow NULL anytime
-            //             return true;
-            //         }
-            //
-            //         if (thint is NullableTypeRef nullable)
-            //         {
-            //             // unwrap nullable type hint
-            //             thint = nullable.TargetType;
-            //         }
-            //
-            //         if (thint is PrimitiveTypeRef primitive)
-            //         {
-            //             switch (primitive.PrimitiveTypeName)
-            //             {
-            //                 case PrimitiveTypeRef.PrimitiveType.@bool:
-            //                     return TypeCtx.IsBoolean(valuetype);
-            //
-            //                 case PrimitiveTypeRef.PrimitiveType.array:
-            //                     return TypeCtx.IsArray(valuetype);
-            //
-            //                 case PrimitiveTypeRef.PrimitiveType.@string:
-            //                     return TypeCtx.IsAString(valuetype);
-            //
-            //                 case PrimitiveTypeRef.PrimitiveType.@object:
-            //                     return false;
-            //
-            //                 case PrimitiveTypeRef.PrimitiveType.@float:
-            //                 case PrimitiveTypeRef.PrimitiveType.@int:
-            //                     return TypeCtx.IsNumber(valuetype);
-            //             }
-            //         }
-            //         else if (thint is ClassTypeRef classtref)
-            //         {
-            //             return false; // cannot have default value other than NULL
-            //         }
-            //     }
-            // }
-
-            // ok
-            return true;
-        }
-
         void CheckLabels(ImmutableArray<ControlFlowGraph.LabelBlockState> labels)
         {
             if (labels == null || labels.Length == 0)
@@ -208,25 +130,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 }
             }
         }
-        //
-        // public override T VisitEval(BoundEvalEx x)
-        // {
-        //     _diagnostics.Add(_method, null /*'eval'*/,
-        //         ErrorCode.INF_EvalDiscouraged);
-        //
-        //     return base.VisitEval(x);
-        // }
-
-        public override T VisitArrayEx(BoundArrayEx x)
-        {
-            return base.VisitArrayEx(x);
-        }
-
-        // internal override T VisitIndirectTypeRef(BoundIndirectTypeRef x)
-        // {
-        //     return base.VisitIndirectTypeRef(x);
-        // }
-
+        
         public override T VisitTypeRef(BoundTypeRef typeRef)
         {
             CheckUndefinedType(typeRef);
@@ -268,13 +172,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 
         public override T VisitFieldRef(BoundFieldRef x)
         {
-            if (x.Field != null)
-            {
-                // class const
-                // static field
-                //CheckMissusedPrimitiveType(x.ContainingType);
-            }
-
             if (x.Access.IsWrite &&
                 ((Microsoft.CodeAnalysis.Operations.IMemberReferenceOperation)x).Member is PropertySymbol prop &&
                 prop.SetMethod == null)
@@ -290,20 +187,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return base.VisitFieldRef(x);
         }
 
-        public override T VisitCFGCatchBlock(CatchBlock x)
-        {
-            // TODO: x.TypeRefs -> CheckMissusedPrimitiveType
-
-            return base.VisitCFGCatchBlock(x);
-        }
-
-        // public override T VisitInstanceOf(BoundInstanceOfEx x)
-        // {
-        //     CheckMissusedPrimitiveType(x.AsType);
-        //
-        //     return base.VisitInstanceOf(x);
-        // }
-
         public override T VisitVariableRef(BoundVariableRef x)
         {
             CheckUninitializedVariableUse(x);
@@ -317,54 +200,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return default;
         }
 
-        public override T VisitDeclareStmt(BoundDeclareStmt x)
-        {
-            // _diagnostics.Add(
-            //     _method,
-            //     ((Stmt) x.AquilaSyntax).GetDeclareClauseSpan(),
-            //     ErrorCode.WRN_NotYetImplementedIgnored,
-            //     "Declare construct");
-
-            return base.VisitDeclareStmt(x);
-        }
-
-        // public override T VisitAssertEx(BoundAssertEx x)
-        // {
-        //     base.VisitAssertEx(x);
-        //
-        //     var args = x.ArgumentsInSourceOrder;
-        //
-        //     // check number of parameters
-        //     // check whether it is not always false or always true
-        //     if (args.Length >= 1)
-        //     {
-        //         if (args[0].Value.ConstantValue.EqualsOptional(false.AsOptional()))
-        //         {
-        //             // always failing
-        //             _diagnostics.Add(_method, x.AquilaSyntax, ErrorCode.WRN_AssertAlwaysFail);
-        //         }
-        //
-        //         if (TypeCtx.IsAString(args[0].Value.TypeRefMask))
-        //         {
-        //             // deprecated and not supported
-        //             _diagnostics.Add(_method, args[0].Value.AquilaSyntax, ErrorCode.WRN_StringAssertionDeprecated);
-        //         }
-        //
-        //         if (args.Length > 2)
-        //         {
-        //             // too many args
-        //             _diagnostics.Add(_method, x.AquilaSyntax, ErrorCode.WRN_TooManyArguments, "assert", 2,
-        //                 args.Length);
-        //         }
-        //     }
-        //     else
-        //     {
-        //         // assert() expects at least 1 parameter, 0 given
-        //         _diagnostics.Add(_method, x.AquilaSyntax, ErrorCode.WRN_MissingArguments, "assert", 1, 0);
-        //     }
-        //
-        //     return default;
-        // }
+        
 
         public override T VisitUnaryEx(BoundUnaryEx x)
         {
@@ -373,17 +209,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             switch (x.Operation)
             {
                 case Operations.Clone:
-                    // check we only pass object instances to the "clone" operation
-                    // anything else causes a runtime warning!
-                    // var operandTypeMask = x.Operand.TypeRefMask;
-                    // if (!operandTypeMask.IsAnyType &&
-                    //     !operandTypeMask.IsRef &&
-                    //     !TypeCtx.IsObjectOnly(operandTypeMask))
-                    // {
-                    //     _diagnostics.Add(_method, x.AquilaSyntax, ErrorCode.WRN_CloneNonObject,
-                    //         TypeCtx.ToString(operandTypeMask));
-                    // }
-
                     break;
             }
 
@@ -417,101 +242,13 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
         public override T VisitConversionEx(BoundConversionEx x)
         {
             base.VisitConversionEx(x);
-
-            // if (!x.IsImplicit && x.AquilaSyntax != null &&
-            //     x.Operand.TypeRefMask.IsSingleType &&
-            //     x.TargetType == TypeCtx.GetTypes(x.Operand.TypeRefMask).FirstOrDefault())
-            // {
-            //     _diagnostics.Add(_method, x.AquilaSyntax, ErrorCode.INF_RedundantCast);
-            // }
-
             return default;
-        }
-
-        void CheckMethodCallTargetInstance(BoundExpression target, string methodName)
-        {
-            if (target == null)
-            {
-                // syntax error (?)
-                return;
-            }
-
-            string nonobjtype = null;
-
-            if (target.ResultType != null)
-            {
-                switch (target.ResultType.SpecialType)
-                {
-                    case SpecialType.System_Void:
-                    case SpecialType.System_Int32:
-                    case SpecialType.System_Int64:
-                    case SpecialType.System_String:
-                    case SpecialType.System_Boolean:
-                        nonobjtype = null;
-                        break;
-                    default:
-
-                        break;
-                }
-            }
-            else
-            {
-                // var tmask = target.TypeRefMask;
-                // if (!tmask.IsAnyType && !tmask.IsRef && !TypeCtx.IsObject(tmask))
-                // {
-                //     nonobjtype = TypeCtx.ToString(tmask);
-                // }
-            }
-
-            //
-            if (nonobjtype != null)
-            {
-                _diagnostics.Add(_method, target.AquilaSyntax, ErrorCode.ERR_MethodCalledOnNonObject,
-                    methodName ?? "{}",
-                    nonobjtype);
-            }
-        }
-
-        static string GetMemberNameForDiagnostic(Aquila.CodeAnalysis.Symbols.Symbol target, bool isMemberName)
-        {
-            string name = target.AquilaName();
-
-            if (isMemberName)
-            {
-                var qname = target.ContainingType.AquilaQualifiedName(); // TOOD: _statics
-                name = qname.ToString(new Name(name), false);
-            }
-
-            return name;
         }
 
 
         static Microsoft.CodeAnalysis.Text.TextSpan GetMemberNameSpanForDiagnostic(AquilaSyntaxNode node)
         {
             return node.Span;
-        }
-
-        void CheckObsoleteSymbol(AquilaSyntaxNode syntax, Aquila.CodeAnalysis.Symbols.Symbol target, bool isMemberCall)
-        {
-            var obsolete = target?.ObsoleteAttributeData;
-            if (obsolete != null)
-            {
-                // _diagnostics.Add(_method, GetMemberNameSpanForDiagnostic(syntax), ErrorCode.WRN_SymbolDeprecated,
-                //     target.Kind.ToString(), GetMemberNameForDiagnostic(target, isMemberCall), obsolete.Message);
-            }
-        }
-
-        private void CheckUndefinedMethodCall(BoundCallEx x, TypeSymbol type, BoundMethodName name)
-        {
-            if (x.TargetMethod is MissingMethodSymbol)
-            {
-                if (x.AquilaSyntax == null)
-                    throw new Exception("Internal compiler error");
-
-                var span = x.AquilaSyntax is InvocationEx fnc ? fnc.Span : x.AquilaSyntax.Span;
-                _diagnostics.Add(_method, span, ErrorCode.WRN_UndefinedMethodCall, type.Name,
-                    name.NameValue.ToString());
-            }
         }
 
         private void CheckUninitializedVariableUse(BoundVariableRef x)
@@ -539,35 +276,9 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
                 }
             }
         }
-
-        public override T VisitCFGTryCatchEdge(TryCatchEdge x)
-        {
-            return base.VisitCFGTryCatchEdge(x);
-        }
-
-        public override T VisitStaticVarStmt(BoundStaticVarStmt x)
-        {
-            return base.VisitStaticVarStmt(x);
-        }
-
         public override T VisitCFGForeachEnumereeEdge(ForeachEnumereeEdge x)
         {
             base.VisitCFGForeachEnumereeEdge(x);
-
-            // var enumereeTypeMask = x.Enumeree.TypeRefMask;
-            // if (!enumereeTypeMask.IsAnyType && !enumereeTypeMask.IsRef)
-            // {
-            //     // Apart from array, any object can possibly implement Traversable, hence no warning for them
-            //     var types = TypeCtx.GetTypes(enumereeTypeMask);
-            //     if (!types.Any(t => t.IsArray || t.IsObject)
-            //     ) // Using !All causes too many false positives (due to explode(..) etc.)
-            //     {
-            //         // Using non-iterable type for enumeree
-            //         _diagnostics.Add(_method, x.Enumeree.AquilaSyntax, ErrorCode.WRN_ForeachNonIterable,
-            //             TypeCtx.ToString(enumereeTypeMask));
-            //     }
-            // }
-
             return default;
         }
     }

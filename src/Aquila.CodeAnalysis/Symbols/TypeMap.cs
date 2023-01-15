@@ -85,11 +85,6 @@ namespace Aquila.CodeAnalysis.Symbols
                 return this;
             }
 
-            // Note: the below assertion doesn't hold while rewriting async lambdas defined inside generic methods.
-            // The async rewriter adds a synthesized struct inside the lambda frame and construct a typemap from
-            // the lambda frame's substituted type parameters.
-            // Debug.Assert(!oldTypeParameters.Any(tp => tp is SubstitutedTypeParameterSymbol));
-
             // warning: we expose result to the SubstitutedTypeParameterSymbol constructor, below, even before it's all filled in.
             TypeMap result = new TypeMap(this.Mapping);
             ArrayBuilder<TypeParameterSymbol> newTypeParametersBuilder = ArrayBuilder<TypeParameterSymbol>.GetInstance();

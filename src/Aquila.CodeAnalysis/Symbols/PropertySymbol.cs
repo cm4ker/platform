@@ -156,7 +156,6 @@ namespace Aquila.CodeAnalysis.Symbols
                 {
                     if (IsDefinition)
                     {
-                        //return (PropertySymbol)OverriddenOrHiddenMembers.GetOverriddenMember();
                         return this.ResolveOverridenMember();
                     }
 
@@ -167,15 +166,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 return null;
             }
         }
-
-        //internal virtual OverriddenOrHiddenMembersResult OverriddenOrHiddenMembers
-        //{
-        //    get
-        //    {
-        //        return this.MakeOverriddenOrHiddenMembers();
-        //    }
-        //}
-
+        
         internal bool HidesBasePropertiesByName
         {
             get
@@ -196,30 +187,9 @@ namespace Aquila.CodeAnalysis.Symbols
             PropertySymbol p = this;
             while (p.IsOverride && !p.HidesBasePropertiesByName)
             {
-                // We might not be able to access the overridden method. For example,
-                // 
-                //   .assembly A
-                //   {
-                //      InternalsVisibleTo("B")
-                //      public class A { internal virtual int P { get; } }
-                //   }
-                // 
-                //   .assembly B
-                //   {
-                //      InternalsVisibleTo("C")
-                //      public class B : A { internal override int P { get; } }
-                //   }
-                // 
-                //   .assembly C
-                //   {
-                //      public class C : B { ... new B().P ... }       // A.P is not accessible from here
-                //   }
-                //
                 // See InternalsVisibleToAndStrongNameTests: IvtVirtualCall1, IvtVirtualCall2, IvtVirtual_ParamsAndDynamic.
                 PropertySymbol overridden = p.OverriddenProperty;
-                //HashSet<DiagnosticInfo> useSiteDiagnostics = null;
-                if ((object)overridden ==
-                    null) // || !AccessCheck.IsSymbolAccessible(overridden, accessingType, ref useSiteDiagnostics))
+                if ((object)overridden == null) 
                 {
                     break;
                 }

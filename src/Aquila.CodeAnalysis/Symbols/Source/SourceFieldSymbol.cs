@@ -82,16 +82,14 @@ namespace Aquila.CodeAnalysis.Symbols
                     // declare property accessing the field from outside:
                     var type = OverridenDefinition.Type;
 
-                    // TYPE get_NAME()
                     var getter = new SynthesizedMethodSymbol(this.ContainingType, "get_" + this.Name, false, false,
                         type, this.DeclaredAccessibility);
 
-                    // void set_NAME(TYPE `value`)
                     var setter = new SynthesizedMethodSymbol(this.ContainingType, "set_" + this.Name, false, false,
                         DeclaringCompilation.CoreTypes.Void, this.DeclaredAccessibility);
                     setter.SetParameters(new SynthesizedParameterSymbol(setter, type, 0, RefKind.None, "value"));
 
-                    // TYPE NAME { get; set; }
+                    
                     var fieldAccessorProperty =
                         new SynthesizedPropertySymbol(this.ContainingType)
                             .SetName(this.Name)
@@ -153,13 +151,6 @@ namespace Aquila.CodeAnalysis.Symbols
             if (attrs.IsDefaultOrEmpty)
             {
                 attrs = ImmutableArray<AttributeData>.Empty;
-            }
-            else
-            {
-                // // initialize attribute data if necessary:
-                // attrs
-                //     .OfType<SourceCustomAttribute>()
-                //     .ForEach(x => x.Bind(this, _containingType.ContainingFile));
             }
 
             return attrs;

@@ -81,12 +81,7 @@ namespace Aquila.CodeAnalysis.Symbols
         internal NamedTypeSymbol BaseTypeWithDefinitionUseSiteDiagnostics(
             ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
-            var result = this.BaseType; // this.BaseTypeNoUseSiteDiagnostics;
-
-            //if ((object)result != null)
-            //{
-            //    result.OriginalDefinition.AddUseSiteDiagnostics(ref useSiteDiagnostics);
-            //}
+            var result = this.BaseType; 
 
             return result;
         }

@@ -294,52 +294,6 @@ namespace Aquila.CodeAnalysis
             return base.FindToken(position, findInsideTrivia);
         }
 
-        /// <summary>
-        /// Finds a token according to the following rules:
-        /// 1) If position matches the End of the node/s FullSpan and the node is CompilationUnit,
-        ///    then EoF is returned. 
-        /// 
-        ///  2) If node.FullSpan.Contains(position) then the token that contains given position is
-        ///     returned.
-        /// 
-        ///  3) Otherwise an ArgumentOutOfRangeException is thrown
-        /// </summary>
-        internal SyntaxToken FindTokenIncludingCrefAndNameAttributes(int position)
-        {
-            throw new NotImplementedException();
-
-            // SyntaxToken nonTriviaToken = this.FindToken(position, findInsideTrivia: false);
-            //
-            // SyntaxTrivia trivia = GetTriviaFromSyntaxToken(position, nonTriviaToken);
-            //
-            // if (!SyntaxFacts.IsDocumentationCommentTrivia(trivia.Kind()))
-            // {
-            //     return nonTriviaToken;
-            // }
-            //
-            // Debug.Assert(trivia.HasStructure);
-            // SyntaxToken triviaToken = ((CSharpSyntaxNode)trivia.GetStructure()!).FindTokenInternal(position);
-            //
-            // // CONSIDER: We might want to use the trivia token anywhere within a doc comment.
-            // // Otherwise, we'll fall back on the enclosing scope outside of name and cref
-            // // attribute values.
-            // CSharpSyntaxNode? curr = (CSharpSyntaxNode?)triviaToken.Parent;
-            // while (curr != null)
-            // {
-            //     // Don't return a trivia token unless we're in the scope of a cref or name attribute.
-            //     if (curr.Kind() == SyntaxKind.XmlCrefAttribute || curr.Kind() == SyntaxKind.XmlNameAttribute)
-            //     {
-            //         return LookupPosition.IsInXmlAttributeValue(position, (XmlAttributeSyntax)curr)
-            //             ? triviaToken
-            //             : nonTriviaToken;
-            //     }
-            //
-            //     curr = curr.Parent;
-            // }
-            //
-            // return nonTriviaToken;
-        }
-
         #endregion
 
         #region Trivia Lookup
@@ -460,7 +414,6 @@ namespace Aquila.CodeAnalysis
         protected override bool IsEquivalentToCore(SyntaxNode node, bool topLevel = false)
         {
             throw new NotImplementedException();
-            //return SyntaxFactory.AreEquivalent(this, (CSharpSyntaxNode)node, topLevel);
         }
 
         internal override bool ShouldCreateWeakList()

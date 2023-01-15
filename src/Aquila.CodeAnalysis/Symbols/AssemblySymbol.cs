@@ -104,11 +104,7 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         /// <returns>The symbol for the pre-defined type or an error type if the type is not defined in the core library.</returns>
         internal abstract NamedTypeSymbol GetDeclaredSpecialType(SpecialType type);
-        // {
-        //     // TODO: cache SpecialType
-        //     return CorLibrary.GetTypeByMetadataName(type.GetMetadataName());
-        // }
-
+        
         /// <summary>
         /// Gets the symbol for the pre-defined type from core library associated with this assembly.
         /// </summary>
@@ -201,19 +197,17 @@ namespace Aquila.CodeAnalysis.Symbols
                 Debug.Assert(parts.Length > 0);
                 mdName = MetadataTypeName.FromFullName(parts[0], useCLSCompliantNameArityEncoding);
                 type = GetTypeByMetadataName(mdName.FullName, includeReferences, isWellKnownType);
-                //type = GetTopLevelTypeByMetadataName(ref mdName, assemblyOpt: null, includeReferences: includeReferences, isWellKnownType: isWellKnownType, warnings: warnings);
+                
                 for (int i = 1; (object)type != null && !type.IsErrorType() && i < parts.Length; i++)
                 {
                     mdName = MetadataTypeName.FromTypeName(parts[i]);
                     NamedTypeSymbol temp = type.LookupMetadataType(ref mdName);
-                    type = temp; //(!isWellKnownType || IsValidWellKnownType(temp)) ? temp : null;
+                    type = temp;
                 }
-                //throw new NotImplementedException();
             }
             else
             {
                 mdName = MetadataTypeName.FromFullName(metadataName, useCLSCompliantNameArityEncoding);
-                //type = GetTopLevelTypeByMetadataName(ref mdName, assemblyOpt: null, includeReferences: includeReferences, isWellKnownType: isWellKnownType, warnings: warnings);
                 type = LookupTopLevelMetadataType(ref mdName, true);
                 if (includeReferences && (type == null || type.IsErrorType()))
                 {
@@ -346,8 +340,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
         internal ErrorTypeSymbol CreateCycleInTypeForwarderErrorTypeSymbol(ref MetadataTypeName emittedName)
         {
-            //DiagnosticInfo diagnosticInfo = new CSDiagnosticInfo(ErrorCode.ERR_CycleInTypeForwarder, emittedName.FullName, this.Name);
-            //return new MissingMetadataTypeSymbol.TopLevelWithCustomErrorInfo(this.Modules[0], ref emittedName, diagnosticInfo);
             return new MissingMetadataTypeSymbol(emittedName.FullName, emittedName.ForcedArity, emittedName.IsMangled);
         }
 
@@ -363,15 +355,6 @@ namespace Aquila.CodeAnalysis.Symbols
         ImmutableArray<INamedTypeSymbol> IAssemblySymbol.GetForwardedTypes()
         {
             throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Register declaration of predefined CorLib type in this Assembly.
-        /// </summary>
-        /// <param name="corType"></param>
-        internal virtual void RegisterDeclaredSpecialType(NamedTypeSymbol corType)
-        {
-            // throw ExceptionUtilities.Unreachable;
         }
 
         /// <summary>

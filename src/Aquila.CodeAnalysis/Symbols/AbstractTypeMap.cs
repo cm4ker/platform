@@ -40,25 +40,17 @@ namespace Aquila.CodeAnalysis.Symbols
             if (previous.IsUnboundGenericType)
                 return previous;
 
-            //if (previous.IsAnonymousType)
-            //{
-            //    //ImmutableArray<TypeSymbol> oldFieldTypes = AnonymousTypeManager.GetAnonymousTypePropertyTypes(previous);
-            //    //ImmutableArray<TypeSymbol> newFieldTypes = SubstituteTypesWithoutModifiers(oldFieldTypes);
-            //    //return (oldFieldTypes == newFieldTypes) ? previous : AnonymousTypeManager.ConstructAnonymousTypeSymbol(previous, newFieldTypes);
-            //    throw new NotImplementedException();
-            //}
-
+         
             // TODO: we could construct the result's ConstructedFrom lazily by using a "deep"
             // construct operation here (as VB does), thereby avoiding alpha renaming in most cases.
             // Aleksey has shown that would reduce GC pressure if substitutions of deeply nested generics are common.
             NamedTypeSymbol oldConstructedFrom = previous.ConstructedFrom;
             NamedTypeSymbol newConstructedFrom = SubstituteMemberType(oldConstructedFrom);
 
-            ImmutableArray<TypeSymbol> oldTypeArguments = previous.TypeArguments; //.TypeArgumentsNoUseSiteDiagnostics;
+            ImmutableArray<TypeSymbol> oldTypeArguments = previous.TypeArguments; 
             bool changed = !ReferenceEquals(oldConstructedFrom, newConstructedFrom);
-
-            //ImmutableArray<ImmutableArray<CustomModifier>> modifiers = previous.HasTypeArgumentsCustomModifiers ? previous.TypeArgumentsCustomModifiers : default(ImmutableArray<ImmutableArray<CustomModifier>>);
-            ImmutableArray<ImmutableArray<CustomModifier>> modifiers = /*previous.HasTypeArgumentsCustomModifiers ? previous.TypeArgumentsCustomModifiers : */default(ImmutableArray<ImmutableArray<CustomModifier>>);
+            
+            ImmutableArray<ImmutableArray<CustomModifier>> modifiers = default(ImmutableArray<ImmutableArray<CustomModifier>>);
 
             var newTypeArguments = ArrayBuilder<TypeWithModifiers>.GetInstance(oldTypeArguments.Length);
 
@@ -108,8 +100,6 @@ namespace Aquila.CodeAnalysis.Symbols
                     result = SubstituteArrayType((ArrayTypeSymbol)previous);
                     break;
                 case SymbolKind.PointerType:
-                    //result = SubstitutePointerType((PointerTypeSymbol)previous);
-                    //break;
                     throw new NotImplementedException();
                 case SymbolKind.DynamicType:
                     result = SubstituteDynamicType();
@@ -133,10 +123,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
             if (type.IsErrorType())
             {
-                //var byRefReturnType = type as ByRefReturnErrorTypeSymbol;
-
-                //return ((object)byRefReturnType != null) && byRefReturnType.ReferencedType.IsTypeParameter();
-
                 throw new NotImplementedException();
             }
 
@@ -167,28 +153,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
                 if (modifier != substituted)
                 {
-                    //var builder = ArrayBuilder<CustomModifier>.GetInstance(customModifiers.Length);
-                    //builder.AddRange(customModifiers, i);
-
-                    //builder.Add(customModifiers[i].IsOptional ? CSharpCustomModifier.CreateOptional(substituted) : CSharpCustomModifier.CreateRequired(substituted));
-                    //for (i++; i < customModifiers.Length; i++)
-                    //{
-                    //    modifier = (NamedTypeSymbol)customModifiers[i].Modifier;
-                    //    substituted = SubstituteNamedType(modifier);
-
-                    //    if (modifier != substituted)
-                    //    {
-                    //        builder.Add(customModifiers[i].IsOptional ? CSharpCustomModifier.CreateOptional(substituted) : CSharpCustomModifier.CreateRequired(substituted));
-                    //    }
-                    //    else
-                    //    {
-                    //        builder.Add(customModifiers[i]);
-                    //    }
-                    //}
-
-                    //Debug.Assert(builder.Count == customModifiers.Length);
-                    //return builder.ToImmutableAndFree();
-
                     throw new NotImplementedException();
                 }
             }
@@ -198,7 +162,6 @@ namespace Aquila.CodeAnalysis.Symbols
         
         protected virtual TypeSymbol SubstituteDynamicType()
         {
-            //return DynamicTypeSymbol.Instance;
             throw new NotImplementedException();
         }
 
@@ -218,7 +181,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
             if (t.IsSZArray)
             {
-                ImmutableArray<NamedTypeSymbol> interfaces = t.Interfaces; //.InterfacesNoUseSiteDiagnostics();
+                ImmutableArray<NamedTypeSymbol> interfaces = t.Interfaces;
                 Debug.Assert(0 <= interfaces.Length && interfaces.Length <= 2);
 
                 if (interfaces.Length == 1)
@@ -251,18 +214,6 @@ namespace Aquila.CodeAnalysis.Symbols
                 t.BaseType, //.BaseTypeNoUseSiteDiagnostics,
                 element.CustomModifiers);
         }
-
-        //private PointerTypeSymbol SubstitutePointerType(PointerTypeSymbol t)
-        //{
-        //    var oldPointedAtType = new TypeWithModifiers(t.PointedAtType, t.CustomModifiers);
-        //    TypeWithModifiers pointedAtType = oldPointedAtType.SubstituteType(this);
-        //    if (pointedAtType == oldPointedAtType)
-        //    {
-        //        return t;
-        //    }
-
-        //    return new PointerTypeSymbol(pointedAtType.Type, pointedAtType.CustomModifiers);
-        //}
 
         internal ImmutableArray<TypeSymbol> SubstituteTypesWithoutModifiers(ImmutableArray<TypeSymbol> original)
         {

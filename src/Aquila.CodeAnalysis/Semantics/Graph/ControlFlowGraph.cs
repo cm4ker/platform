@@ -92,14 +92,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         readonly BoundBlock
             _exit;
 
-        ///// <summary>
-        ///// Exception block. Can be <c>null</c>.
-        ///// If set, code can throw an exception or be terminated by call to <c>exit</c>, before reaching exit block.
-        ///// This block is connected with blocks ending with <c>throw</c> statement.
-        ///// </summary>
-        //public BoundBlock Throws { get { return _exception; } }
-        //readonly BoundBlock _exception;
-
         /// <summary>
         /// Array of labels within method. Can be <c>null</c>.
         /// </summary>
@@ -166,8 +158,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             _start = start;
             _exit = exit;
             _start.Statements.InsertRange(0, declarations);
-
-            //_exception = exception;
             _labels = labels;
             _unreachable = unreachable;
         }

@@ -326,11 +326,6 @@ namespace Aquila.CodeAnalysis.CommandLine
         public override void PrintLangVersions(TextWriter consoleOutput)
         {
             consoleOutput.WriteLine(AquilaResources.IDS_LangVersions);
-            // foreach (var version in AquilaSyntaxTree.SupportedLanguageVersions)
-            // {
-            //     consoleOutput.WriteLine(version.ToString(2));
-            // }
-
             consoleOutput.WriteLine();
         }
 

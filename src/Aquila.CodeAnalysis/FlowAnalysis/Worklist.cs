@@ -30,15 +30,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// Action performed on bound operations.
         /// </summary>
         readonly List<AnalyzeBlockDelegate> _analyzers = new List<AnalyzeBlockDelegate>();
-
-        //public event EventHandler MethodDone;
-
-        ///// <summary>
-        ///// Set of blocks being analyzed.
-        ///// Used for recursion prevention.
-        ///// </summary>
-        //readonly HashSet<T> _pending;
-
+        
         /// <summary>
         /// List of blocks to be processed.
         /// </summary>
@@ -56,14 +48,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// Null in the case of a fresh analysis.
         /// </summary>
         Dictionary<SourceMethodSymbolBase, bool> _currentMethodsLastReturnTypes;
-
-        ///// <summary>
-        ///// Adds an analysis driver into the list of analyzers to be performed on bound operations.
-        ///// </summary>
-        //internal void AddAnalysis(AnalyzeBlockDelegate analyzer)
-        //{
-        //    _analyzers.Add(analyzer);
-        //}
 
         public Worklist(params AnalyzeBlockDelegate[] analyzers)
         {
@@ -151,8 +135,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             {
                 list[i](block);
             }
-
-            //CompilerLogSource.Log.Count("BoundBlockProcessings");
         }
 
         /// <summary>
@@ -229,23 +211,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                 var lastMethods = _currentMethodsLastReturnTypes;
                 _currentMethodsLastReturnTypes = new Dictionary<SourceMethodSymbolBase, bool>();
 
-                // Check the changes of the return types and enlist the callers for the next round
-                foreach (var kvp in lastMethods)
-                {
-                    // if (kvp.Key.ResultTypeMask != kvp.Value)
-                    // {
-                    //     var callers = _callGraph.GetCallerEdges(kvp.Key)
-                    //         .Select(e => e.Caller)
-                    //         .Where(c => !_currentMethodsLastReturnTypes
-                    //             .ContainsKey(c)); // These were already reanalysed in this phase
-                    //
-                    //     foreach (var caller in callers)
-                    //     {
-                    //         _currentMethodsLastReturnTypes.Add(caller, caller.ResultTypeMask);
-                    //     }
-
-                    // }
-                }
             } while (_currentMethodsLastReturnTypes.Count > 0);
 
             _currentMethodsLastReturnTypes = null;

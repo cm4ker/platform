@@ -393,11 +393,6 @@ namespace Aquila.CodeAnalysis.Symbols
                 return ConversionCost.Error;
             }
 
-            //if (method.ReturnType != basemethod.ReturnType)   // the return type is not important for the override cost
-            //{
-            //    return ConversionCost.ImplicitCast;
-            //}
-
             return OverrideCost(method.Parameters, basemethod.Parameters);
         }
 

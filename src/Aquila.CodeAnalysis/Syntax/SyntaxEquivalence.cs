@@ -99,7 +99,6 @@ namespace Aquila.CodeAnalysis.Syntax
             }
 
             return true;
-            //return AreNullableDirectivesEquivalent(before, after, ignoreChildNode);
         }
 
         private static bool AreEquivalentRecursive(GreenNode? before, GreenNode? after,
@@ -135,7 +134,6 @@ namespace Aquila.CodeAnalysis.Syntax
                     case SyntaxKind.Block:
                     case SyntaxKind.ArrowExpressionClause:
                         return true;
-                    //return AreNullableDirectivesEquivalent(before, after, ignoreChildNode);
                 }
 
                 // If we're only checking top level equivalence, then we don't have to go down into
@@ -145,17 +143,6 @@ namespace Aquila.CodeAnalysis.Syntax
                 if ((SyntaxKind)before.RawKind == SyntaxKind.FieldDeclaration)
                 {
                     throw new NotImplementedException();
-                    
-                    // var fieldBefore = (Green.FieldDeclarationSyntax)before;
-                    // var fieldAfter = (Green.FieldDeclarationSyntax)after;
-                    //
-                    // var isConstBefore = fieldBefore.Modifiers.Any((int)SyntaxKind.ConstKeyword);
-                    // var isConstAfter = fieldAfter.Modifiers.Any((int)SyntaxKind.ConstKeyword);
-                    //
-                    // if (!isConstBefore && !isConstAfter)
-                    // {
-                    //     ignoreChildNode = childKind => childKind == SyntaxKind.EqualsValueClause;
-                    // }
                 }
 
                 // NOTE(cyrusn): Do we want to avoid going down into attribute expressions?  I don't

@@ -76,12 +76,12 @@ namespace Aquila.CodeAnalysis.Symbols
         }
 
 
-        public override bool IsAbstract => false; //!IsStatic && (_syntax.Modifiers.IsAbstract() || _type.IsInterface);
+        public override bool IsAbstract => false; 
 
         public override bool IsOverride => IsVirtual && this.OverriddenMethod != null &&
                                            this.SignaturesMatch((MethodSymbol)this.OverriddenMethod);
 
-        public override bool IsSealed => false; //_syntax.Modifiers.IsSealed() && IsVirtual;
+        public override bool IsSealed => false; 
 
         public override bool IsVirtual
         {

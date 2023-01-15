@@ -400,15 +400,6 @@ namespace Aquila.CodeAnalysis
             AquilaParseOptions? options = null)
         {
             throw new NotImplementedException();
-
-            // // note that we do not need a "consumeFullText" parameter, because parsing a compilation unit always must
-            // // consume input until the end-of-file
-            // using (var lexer = MakeLexer(text, offset, options))
-            // using (var parser = MakeParser(lexer))
-            // {
-            //     var node = parser.ParseCompilationUnit();
-            //     return (CompilationUnitSyntax)node.CreateRed();
-            // }
         }
 
 

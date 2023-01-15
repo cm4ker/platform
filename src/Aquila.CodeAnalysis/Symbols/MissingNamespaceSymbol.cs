@@ -14,14 +14,6 @@ namespace Aquila.CodeAnalysis.Symbols
         private readonly string _name;
         private readonly Symbol _containingSymbol;
 
-        //public MissingNamespaceSymbol(MissingModuleSymbol containingModule)
-        //{
-        //    Debug.Assert((object)containingModule != null);
-
-        //    _containingSymbol = containingModule;
-        //    _name = string.Empty;
-        //}
-
         public MissingNamespaceSymbol(NamespaceSymbol containingNamespace, string name)
         {
             Debug.Assert((object)containingNamespace != null);

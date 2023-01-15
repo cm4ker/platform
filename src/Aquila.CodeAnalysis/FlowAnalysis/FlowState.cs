@@ -7,7 +7,7 @@ using Aquila.CodeAnalysis.Semantics;
 
 namespace Aquila.CodeAnalysis.FlowAnalysis
 {
-    internal class FlowState : IFlowState<FlowState>
+    internal class FlowState : IEquatable<FlowState>
     {
         #region Fields & Properties
 
@@ -56,10 +56,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             Debug.Assert(state1.FlowContext == state2.FlowContext);
             Debug.Assert(state1.Version == state2.Version);
 
-            //
             FlowContext = state1.FlowContext;
-            // _varsType = EnumeratorExtension.MergeArrays(state1._varsType, state2._varsType,
-            //     (symbol, typeSymbol) => { });
             _initializedMask = state1._initializedMask | state2._initializedMask;
 
             // intersection of other variable flags
@@ -70,15 +67,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             }
 
             Version = state1.Version;
-
-            //// merge variables kind,
-            //// conflicting kinds are not allowed currently!
-            //if (state1._varKindMap != null || state1._varKindMap != null)
-            //{
-            //    _varKindMap = new Dictionary<VariableName, VariableKind>();
-            //    if (state1._varKindMap != null) state1._varKindMap.Foreach(k => SetVarKind(k.Key, k.Value));
-            //    if (state2._varKindMap != null) state2._varKindMap.Foreach(k => SetVarKind(k.Key, k.Value));
-            //}
         }
 
         /// <summary>
@@ -116,11 +104,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             }
 
             Version = other.Version;
-
-            //if (other._varKindMap != null)
-            //{
-            //    _varKindMap = new Dictionary<VariableName, VariableKind>(other._varKindMap);
-            //}
         }
 
         /// <summary>
@@ -167,11 +150,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         public override bool Equals(object obj)
         {
             return Equals(obj as FlowState);
-        }
-
-        public bool Equals(IFlowState<FlowState> other)
-        {
-            return Equals(other as FlowState);
         }
 
         #endregion
@@ -251,22 +229,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         {
             handle.ThrowIfInvalid();
             FlowContext.SetUsed(handle);
-        }
-
-        /// <summary>
-        /// Sets all variables as initialized at this state and with a <c>mixed</c> type.
-        /// </summary>
-        public void SetAllUnknown(bool maybeRef)
-        {
-            // var tmask = maybeRef;
-            //
-            // foreach (var v in FlowContext.EnumerateVariables())
-            // {
-            //     SetLocalType(v, tmask);
-            // }
-            //
-            // // all initialized
-            // _initializedMask = ~0u;
         }
 
         /// <summary>
@@ -395,26 +357,5 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         public bool IsGreaterThanLongMin(VariableHandle handle) => HasConstrain(handle, NoteKind.GreaterThanLongMin);
 
         #endregion
-
-        /// <summary>
-        /// Declares variable with a specific kind (static or global).
-        /// </summary>
-        public void SetVarKind(VariableHandle handle, VariableKind kind)
-        {
-            //if (_varKindMap == null)
-            //{
-            //    _varKindMap = new Dictionary<VariableName, VariableKind>();
-            //}
-            //else
-            //{
-            //    VariableKind old;
-            //    if (_varKindMap.TryGetValue(varname, out old))
-            //    {
-            //        if (old != kind) throw new ArgumentException("redeclaration with a different kind not supported", nameof(kind));
-            //    }
-            //}
-
-            //_varKindMap[varname] = kind;
-        }
     }
 }

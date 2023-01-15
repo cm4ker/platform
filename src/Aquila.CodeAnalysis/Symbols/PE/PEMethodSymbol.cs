@@ -184,14 +184,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
         /// </summary>
         private sealed class UncommonFields
         {
-            //public ParameterSymbol _lazyThisParameter;
-            //public OverriddenOrHiddenMembersResult _lazyOverriddenOrHiddenMembersResult;
             public ImmutableArray<AttributeData> _lazyCustomAttributes;
-
-            //public ImmutableArray<string> _lazyConditionalAttributeSymbols;
             public ObsoleteAttributeData _lazyObsoleteAttributeData = ObsoleteAttributeData.Uninitialized;
-
-            //public DiagnosticInfo _lazyUseSiteDiagnostic;
             public KeyValuePair<CultureInfo, string> _lazyDocComment;
         }
 
@@ -258,8 +252,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             {
                 if (_name == null)
                     _name = string.Empty;
-
-                //InitializeUseSiteDiagnostic(new CSDiagnosticInfo(ErrorCode.ERR_BindToBogus, this));
             }
 
             Debug.Assert((uint)localflags <= ushort.MaxValue);
@@ -273,10 +265,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences =>
             ImmutableArray<SyntaxReference>.Empty;
 
-        public override ImmutableArray<Location> Locations
-        {
-            get { throw new NotImplementedException(); }
-        } // _containingType.ContainingPEModule.MetadataLocation.Cast<MetadataLocation, Location>();
+        public override ImmutableArray<Location> Locations => throw new NotImplementedException();
 
         internal override AquilaCompilation DeclaringCompilation => null;
 
@@ -709,10 +698,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                         case WellKnownMemberNames.ImplicitConversionName:
                         case WellKnownMemberNames.ExplicitConversionName:
                             return IsValidUserDefinedOperatorSignature(1) ? MethodKind.Conversion : MethodKind.Ordinary;
-                        // UNDONE: Non-C#-supported overloaded operator case WellKnownMemberNames.ConcatenateOperatorName:
-                        // UNDONE: Non-C#-supported overloaded operator case WellKnownMemberNames.ExponentOperatorName:
-                        // UNDONE: Non-C#-supported overloaded operator case WellKnownMemberNames.IntegerDivisionOperatorName:
-                        // UNDONE: Non-C#-supported overloaded operator case WellKnownMemberNames.LikeOperatorName:
                     }
 
                     return MethodKind.Ordinary;
@@ -738,15 +723,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                             return MethodKind.DelegateInvoke;
                         }
 
-                        break;
-                    default:
-                        //// Note: this is expensive, so check it last
-                        //// Note: method being processed may have an explicit method .override but still be 
-                        ////       publicly accessible, the decision here is being made based on the method's name
-                        //if (!SyntaxFacts.IsValidIdentifier(this.Name) && !this.ExplicitInterfaceImplementations.IsEmpty)
-                        //{
-                        //    return MethodKind.ExplicitInterfaceImplementation;
-                        //}
                         break;
                 }
             }
@@ -856,14 +832,10 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 @params = ImmutableArray<ParameterSymbol>.Empty;
             }
 
-            //// Dynamify object type if necessary
-            //paramInfo[0].Type = paramInfo[0].Type.AsDynamicIfNoPia(_containingType);
-
             var returnParam = PEParameterSymbol.Create(moduleSymbol, this, 0, paramInfo[0], out isBadParameter);
 
             if (makeBad || isBadParameter)
             {
-                //InitializeUseSiteDiagnostic(new CSDiagnosticInfo(ErrorCode.ERR_BindToBogus, this));
             }
 
             var signature = new SignatureData(signatureHeader, @params, returnParam);
@@ -919,7 +891,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 var typeParams = EnsureTypeParametersAreLoaded(ref diagnosticInfo);
                 if (diagnosticInfo != null)
                 {
-                    //InitializeUseSiteDiagnostic(diagnosticInfo);
                 }
 
                 return typeParams;

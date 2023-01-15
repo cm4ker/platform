@@ -44,7 +44,6 @@ namespace Aquila.CodeAnalysis.Emit
 
                         args_place.EmitLoad(il); // args
 
-                        //il.EmitCall(this, diagnostic, ILOpCode.Call, create_method);
                         il.EmitOpCode(ILOpCode.Call, +1);
                         il.EmitToken(create_method, null, diagnostic);
 

@@ -180,8 +180,6 @@ namespace Aquila.CodeAnalysis.Errors
 
         public override string GetCategory(int code)
         {
-            //throw new NotImplementedException();
-
             return Diagnostic.CompilerDiagnosticCategory;
         }
 
@@ -202,7 +200,6 @@ namespace Aquila.CodeAnalysis.Errors
 
         public override LocalizableString GetMessageFormat(int code)
         {
-            //return new LocalizableResourceString(code.ToString(), ErrorStrings.ResourceManager, typeof(ErrorFacts));
             throw new NotImplementedException();
         }
 

@@ -707,7 +707,9 @@ namespace Aquila.CodeAnalysis
         NumericLiteralToken = 8509,
         CharacterLiteralToken = 8510,
         StringLiteralToken = 8511,
+        #pragma warning disable S125
         XmlEntityLiteralToken = 8512, // &lt; &gt; &quot; &amp; &apos; or &name; or &#nnnn; or &#xhhhh;
+        #pragma warning restore S125
         XmlTextLiteralToken = 8513, // xml text node text
         XmlTextLiteralNewLineToken = 8514,
 
