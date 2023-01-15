@@ -114,32 +114,13 @@ namespace Aquila.CodeAnalysis
             return SyntaxFactory.AreEquivalent(this, tree, topLevel);
         }
 
-        internal bool HasReferenceDirectives
-        {
-            get
-            {
-                return true;
-
-                // Debug.Assert(HasCompilationUnitRoot);
-                //
-                // return Options.Kind == SourceCodeKind.Script &&
-                //        GetCompilationUnitRoot().GetReferenceDirectives().Count > 0;
-            }
-        }
+        internal bool HasReferenceDirectives => true;
 
         internal bool HasReferenceOrLoadDirectives
         {
             get
             {
-                Debug.Assert(HasCompilationUnitRoot);
-
-                if (Options.Kind == SourceCodeKind.Script)
-                {
-                    // var compilationUnitRoot = GetCompilationUnitRoot();
-                    // return compilationUnitRoot.GetReferenceDirectives().Count > 0 ||
-                    //        compilationUnitRoot.GetLoadDirectives().Count > 0;
-                }
-
+                Debug.Assert(HasCompilationUnitRoot); 
                 return false;
             }
         }
@@ -186,10 +167,6 @@ namespace Aquila.CodeAnalysis
             {
                 throw new ArgumentNullException(nameof(root));
             }
-            //
-            // var directives = root.Kind() == SyntaxKind.CompilationUnit
-            //     ? ((CompilationUnitSyntax)root).GetConditionalDirectivesStack()
-            //     : InternalSyntax.DirectiveStack.Empty;
 
             return new ParsedSyntaxTree(
                 textOpt: null,
@@ -407,25 +384,6 @@ namespace Aquila.CodeAnalysis
             }
 
             throw new NotImplementedException();
-            
-//             using var lexer = new InternalSyntax.Lexer(newText, this.Options);
-//             using var parser = new InternalSyntax.LanguageParser(lexer, oldTree?.GetRoot(), workingChanges);
-//
-//             var compilationUnit = (CompilationUnitSyntax)parser.ParseCompilationUnit().CreateRed();
-//             var tree = new ParsedSyntaxTree(
-//                 newText,
-//                 newText.Encoding,
-//                 newText.ChecksumAlgorithm,
-//                 FilePath,
-//                 Options,
-//                 compilationUnit,
-//                 parser.Directives,
-// #pragma warning disable CS0618
-//                 DiagnosticOptions,
-// #pragma warning restore CS0618
-//                 cloneRoot: true);
-//             tree.VerifySource(changes);
-//             return tree;
         }
 
         /// <summary>
@@ -518,26 +476,6 @@ namespace Aquila.CodeAnalysis
             throw new NotImplementedException();
         }
 
-        // private NullableContextStateMap GetNullableContextStateMap()
-        // {
-        //     if (_lazyNullableContextStateMap == null)
-        //     {
-        //         // Create the #nullable directive map on demand.
-        //         Interlocked.CompareExchange(
-        //             ref _lazyNullableContextStateMap,
-        //             new StrongBox<NullableContextStateMap>(NullableContextStateMap.Create(this)),
-        //             null);
-        //     }
-        //
-        //     return _lazyNullableContextStateMap.Value;
-        // }
-
-        // internal NullableContextState GetNullableContextState(int position)
-        //     => GetNullableContextStateMap().GetContextState(position);
-        //
-        // internal bool? IsNullableAnalysisEnabled(TextSpan span) =>
-        //     GetNullableContextStateMap().IsNullableAnalysisEnabled(span);
-
         internal bool IsGeneratedCode(SyntaxTreeOptionsProvider? provider, CancellationToken cancellationToken)
         {
             return provider?.IsGenerated(this, cancellationToken) switch
@@ -563,8 +501,6 @@ namespace Aquila.CodeAnalysis
                 return _lazyIsGeneratedCode == GeneratedKind.MarkedGenerated;
             }
         }
-
-        // private StrongBox<NullableContextStateMap>? _lazyNullableContextStateMap;
 
         private GeneratedKind _lazyIsGeneratedCode = GeneratedKind.Unknown;
 

@@ -61,7 +61,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public static bool CanBeAssignedNull(this TypeSymbol type)
         {
-            return type.IsReferenceType || type.IsNullableType(); // || type.IsPointerType();
+            return type.IsReferenceType || type.IsNullableType();
         }
 
         public static bool CanBeConst(this TypeSymbol typeSymbol)
@@ -108,34 +108,6 @@ namespace Aquila.CodeAnalysis.Symbols
             return fromtype.IsOfType(t) || (fromtype.IsInterfaceType() && t.IsObjectType());
         }
 
-        //public static bool IsNonNullableValueType(this TypeSymbol typeArgument)
-        //{
-        //    if (!typeArgument.IsValueType)
-        //    {
-        //        return false;
-        //    }
-
-        //    return !IsNullableTypeOrTypeParameter(typeArgument);
-        //}
-
-        //public static bool IsNullableTypeOrTypeParameter(this TypeSymbol type)
-        //{
-        //    if (type.TypeKind == TypeKind.TypeParameter)
-        //    {
-        //        var constraintTypes = ((TypeParameterSymbol)type).ConstraintTypesNoUseSiteDiagnostics;
-        //        foreach (var constraintType in constraintTypes)
-        //        {
-        //            if (IsNullableTypeOrTypeParameter(constraintType))
-        //            {
-        //                return true;
-        //            }
-        //        }
-        //        return false;
-        //    }
-
-        //    return type.IsNullableType();
-        //}
-
         public static bool IsNullableType(this TypeSymbol type)
         {
             var original = (TypeSymbol)type.OriginalDefinition;
@@ -164,16 +136,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
             return ((NamedTypeSymbol)type).TypeArgumentsNoUseSiteDiagnostics[0];
         }
-
-        //public static TypeSymbol StrippedType(this TypeSymbol type)
-        //{
-        //    return type.IsNullableType() ? type.GetNullableUnderlyingType() : type;
-        //}
-
-        //public static TypeSymbol EnumUnderlyingType(this TypeSymbol type)
-        //{
-        //    return type.IsEnumType() ? type.GetEnumUnderlyingType() : type;
-        //}
 
         public static bool IsObjectType(this TypeSymbol type)
         {
@@ -279,7 +241,7 @@ namespace Aquila.CodeAnalysis.Symbols
             if ((object)type == null) return null;
             if (type.IsExpressionTree())
             {
-                type = ((NamedTypeSymbol)type).TypeArguments[0]; //TypeArgumentsNoUseSiteDiagnostics[0];
+                type = ((NamedTypeSymbol)type).TypeArguments[0];
             }
 
             return type.IsDelegateType() ? (NamedTypeSymbol)type : null;
@@ -391,7 +353,6 @@ namespace Aquila.CodeAnalysis.Symbols
                 if (type.IsEnumType())
                 {
                     throw new NotImplementedException();
-                    //type = type.GetEnumUnderlyingType();
                 }
 
                 switch (type.SpecialType)
@@ -420,31 +381,6 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             return (object)type != null ? type.SpecialType : SpecialType.None;
         }
-
-        //public static bool IsAtLeastAsVisibleAs(this TypeSymbol type, Symbol sym, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
-        //{
-        //    HashSet<DiagnosticInfo> localUseSiteDiagnostics = useSiteDiagnostics;
-        //    var result = type.VisitType((type1, symbol, unused) => IsTypeLessVisibleThan(type1, symbol, ref localUseSiteDiagnostics), sym);
-        //    useSiteDiagnostics = localUseSiteDiagnostics;
-        //    return (object)result == null;
-        //}
-
-        //private static bool IsTypeLessVisibleThan(TypeSymbol type, Symbol sym, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
-        //{
-        //    switch (type.TypeKind)
-        //    {
-        //        case TypeKind.Class:
-        //        case TypeKind.Struct:
-        //        case TypeKind.Interface:
-        //        case TypeKind.Enum:
-        //        case TypeKind.Delegate:
-        //        case TypeKind.Submission:
-        //            return !IsAsRestrictive((NamedTypeSymbol)type, sym, ref useSiteDiagnostics);
-
-        //        default:
-        //            return false;
-        //    }
-        //}
 
         /// <summary>
         /// Visit the given type and, in the case of compound types, visit all "sub type"
@@ -510,15 +446,6 @@ namespace Aquila.CodeAnalysis.Symbols
                     case TypeKind.Interface:
                     case TypeKind.Enum:
                     case TypeKind.Delegate:
-                        //foreach (var typeArg in ((NamedTypeSymbol)current).TypeArgumentsNoUseSiteDiagnostics)
-                        //{
-                        //    var result = typeArg.VisitType(predicate, arg);
-                        //    if ((object)result != null)
-                        //    {
-                        //        return result;
-                        //    }
-                        //}
-                        //return null;
                         throw new NotImplementedException();
 
                     case TypeKind.Array:
@@ -527,170 +454,11 @@ namespace Aquila.CodeAnalysis.Symbols
 
                     case TypeKind.Pointer:
                         throw new NotImplementedException();
-                    //current = ((PointerTypeSymbol)current).PointedAtType;
-                    //continue;
-
                     default:
                         throw ExceptionUtilities.UnexpectedValue(current.TypeKind);
                 }
             }
         }
-
-        //private static bool IsAsRestrictive(NamedTypeSymbol s1, Symbol sym2, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
-        //{
-        //    Accessibility acc1 = s1.DeclaredAccessibility;
-
-        //    if (acc1 == Accessibility.Public)
-        //    {
-        //        return true;
-        //    }
-
-        //    for (Symbol s2 = sym2; s2.Kind != SymbolKind.Namespace; s2 = s2.ContainingSymbol)
-        //    {
-        //        Accessibility acc2 = s2.DeclaredAccessibility;
-
-        //        switch (acc1)
-        //        {
-        //            case Accessibility.Internal:
-        //                {
-        //                    // If s2 is private or internal, and within the same assembly as s1,
-        //                    // then this is at least as restrictive as s1's internal.
-        //                    if ((acc2 == Accessibility.Private || acc2 == Accessibility.Internal) && s2.ContainingAssembly.HasInternalAccessTo(s1.ContainingAssembly))
-        //                    {
-        //                        return true;
-        //                    }
-
-        //                    break;
-        //                }
-
-        //            case Accessibility.Protected:
-        //                {
-        //                    var parent1 = s1.ContainingType;
-
-        //                    if ((object)parent1 == null)
-        //                    {
-        //                        // not helpful
-        //                    }
-        //                    else if (acc2 == Accessibility.Private)
-        //                    {
-        //                        // if s2 is private and within s1's parent or within a subclass of s1's parent,
-        //                        // then this is at least as restrictive as s1's protected.
-        //                        for (var parent2 = s2.ContainingType; (object)parent2 != null; parent2 = parent2.ContainingType)
-        //                        {
-        //                            if (parent1.IsAccessibleViaInheritance(parent2, ref useSiteDiagnostics))
-        //                            {
-        //                                return true;
-        //                            }
-        //                        }
-        //                    }
-        //                    else if (acc2 == Accessibility.Protected)
-        //                    {
-        //                        // if s2 is protected, and it's parent is a subclass (or the same as) s1's parent
-        //                        // then this is at least as restrictive as s1's protected
-        //                        var parent2 = s2.ContainingType;
-        //                        if ((object)parent2 != null && parent1.IsAccessibleViaInheritance(parent2, ref useSiteDiagnostics))
-        //                        {
-        //                            return true;
-        //                        }
-        //                    }
-
-        //                    break;
-        //                }
-
-        //            case Accessibility.ProtectedOrInternal:
-        //                {
-        //                    var parent1 = s1.ContainingType;
-
-        //                    if ((object)parent1 == null)
-        //                    {
-        //                        break;
-        //                    }
-
-        //                    switch (acc2)
-        //                    {
-        //                        case Accessibility.Private:
-        //                            // if s2 is private and within a subclass of s1's parent,
-        //                            // or within the same assembly as s1
-        //                            // then this is at least as restrictive as s1's internal protected.
-        //                            if (s2.ContainingAssembly.HasInternalAccessTo(s1.ContainingAssembly))
-        //                            {
-        //                                return true;
-        //                            }
-
-        //                            for (var parent2 = s2.ContainingType; (object)parent2 != null; parent2 = parent2.ContainingType)
-        //                            {
-        //                                if (parent1.IsAccessibleViaInheritance(parent2, ref useSiteDiagnostics))
-        //                                {
-        //                                    return true;
-        //                                }
-        //                            }
-
-        //                            break;
-
-        //                        case Accessibility.Internal:
-        //                            // If s2 is in the same assembly as s1, then this is more restrictive
-        //                            // than s1's internal protected.
-        //                            if (s2.ContainingAssembly.HasInternalAccessTo(s1.ContainingAssembly))
-        //                            {
-        //                                return true;
-        //                            }
-
-        //                            break;
-
-        //                        case Accessibility.Protected:
-        //                            // if s2 is protected, and it's parent is a subclass (or the same as) s1's parent
-        //                            // then this is at least as restrictive as s1's internal protected
-        //                            if (parent1.IsAccessibleViaInheritance(s2.ContainingType, ref useSiteDiagnostics))
-        //                            {
-        //                                return true;
-        //                            }
-
-        //                            break;
-
-        //                        case Accessibility.ProtectedOrInternal:
-        //                            // if s2 is internal protected, and it's parent is a subclass (or the same as) s1's parent
-        //                            // and its in the same assembly as s1, then this is at least as restrictive as s1's protected
-        //                            if (s2.ContainingAssembly.HasInternalAccessTo(s1.ContainingAssembly) &&
-        //                                parent1.IsAccessibleViaInheritance(s2.ContainingType, ref useSiteDiagnostics))
-        //                            {
-        //                                return true;
-        //                            }
-
-        //                            break;
-        //                    }
-        //                    break;
-        //                }
-
-        //            case Accessibility.Private:
-        //                if (acc2 == Accessibility.Private)
-        //                {
-        //                    // if s2 is private, and it is within s1's parent, then this is at
-        //                    // least as restrictive as s1's private.                           
-        //                    NamedTypeSymbol parent1 = s1.ContainingType;
-
-        //                    if ((object)parent1 == null)
-        //                    {
-        //                        break;
-        //                    }
-
-        //                    var parent1OriginalDefinition = parent1.OriginalDefinition;
-        //                    for (var parent2 = s2.ContainingType; (object)parent2 != null; parent2 = parent2.ContainingType)
-        //                    {
-        //                        if (ReferenceEquals(parent2.OriginalDefinition, parent1OriginalDefinition) || parent1OriginalDefinition.TypeKind == TypeKind.Submission && parent2.TypeKind == TypeKind.Submission)
-        //                        {
-        //                            return true;
-        //                        }
-        //                    }
-        //                }
-
-        //                break;
-
-        //            default:
-        //                throw ExceptionUtilities.UnexpectedValue(acc1);
-        //        }
-        //    }
-        //    return false;
-        //}
 
         public static bool IsUnboundGenericType(this TypeSymbol type)
         {
@@ -702,21 +470,6 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             return (object)type.ContainingType == null;
         }
-
-        ///// <summary>
-        ///// (null TypeParameterSymbol "parameter"): Checks if the given type is a type parameter 
-        ///// or its referent type is a type parameter (array/pointer) or contains a type parameter (aggregate type)
-        ///// (non-null TypeParameterSymbol "parameter"): above + also checks if the type parameter
-        ///// is the same as "parameter"
-        ///// </summary>
-        //public static bool ContainsTypeParameter(this TypeSymbol type, TypeParameterSymbol parameter = null)
-        //{
-        //    var result = type.VisitType(s_containsTypeParameterPredicate, parameter);
-        //    return (object)result != null;
-        //}
-
-        //private static readonly Func<TypeSymbol, TypeParameterSymbol, bool, bool> s_containsTypeParameterPredicate =
-        //    (type, parameter, unused) => type.TypeKind == TypeKind.TypeParameter && ((object)parameter == null || type == parameter);
 
         public static bool ContainsTypeParameter(this TypeSymbol type, MethodSymbol parameterContainer)
         {
@@ -741,85 +494,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
         private static readonly Func<TypeSymbol, object, bool, bool> s_containsDynamicPredicate =
             (type, unused1, unused2) => type.TypeKind == TypeKind.Dynamic;
-
-        ///// <summary>
-        ///// Guess the non-error type that the given type was intended to represent.
-        ///// If the type itself is not an error type, then it will be returned.
-        ///// Otherwise, the underlying type (if any) of the error type will be
-        ///// returned.
-        ///// </summary>
-        ///// <remarks>
-        ///// Any non-null type symbol returned is guaranteed not to be an error type.
-        ///// 
-        ///// It is possible to pass in a constructed type and received back an 
-        ///// unconstructed type.  This can occur when the type passed in was
-        ///// constructed from an error type - the underlying definition will be
-        ///// available, but there won't be a good way to "re-substitute" back up
-        ///// to the level of the specified type.
-        ///// </remarks>
-        //internal static TypeSymbol GetNonErrorGuess(this TypeSymbol type)
-        //{
-        //    var result = ExtendedErrorTypeSymbol.ExtractNonErrorType(type);
-        //    Debug.Assert((object)result == null || !result.IsErrorType());
-        //    return result;
-        //}
-
-        ///// <summary>
-        ///// Guess the non-error type kind that the given type was intended to represent,
-        ///// if possible. If not, return TypeKind.Error.
-        ///// </summary>
-        //internal static TypeKind GetNonErrorTypeKindGuess(this TypeSymbol type)
-        //{
-        //    return ExtendedErrorTypeSymbol.ExtractNonErrorTypeKind(type);
-        //}
-
-        ///// <summary>
-        ///// Returns true if the type is a valid switch expression type.
-        ///// </summary>
-        //internal static bool IsValidSwitchGoverningType(this TypeSymbol type, bool isTargetTypeOfUserDefinedOp = false)
-        //{
-        //    // SPEC:    The governing type of a switch statement is established by the switch expression.
-        //    // SPEC:    1) If the type of the switch expression is sbyte, byte, short, ushort, int, uint,
-        //    // SPEC:       long, ulong, bool, char, string, or an enum-type, or if it is the nullable type
-        //    // SPEC:       corresponding to one of these types, then that is the governing type of the switch statement. 
-        //    // SPEC:    2) Otherwise, exactly one user-defined implicit conversion (Â§6.4) must exist from the
-        //    // SPEC:       type of the switch expression to one of the following possible governing types:
-        //    // SPEC:       sbyte, byte, short, ushort, int, uint, long, ulong, char, string, or, a nullable type
-        //    // SPEC:       corresponding to one of those types
-
-        //    Debug.Assert((object)type != null);
-        //    if (type.IsNullableType())
-        //    {
-        //        type = type.GetNullableUnderlyingType();
-        //    }
-
-        //    // User-defined implicit conversion with target type as Enum type is not valid.
-        //    if (!isTargetTypeOfUserDefinedOp && type.IsEnumType())
-        //    {
-        //        type = type.GetEnumUnderlyingType();
-        //    }
-
-        //    switch (type.SpecialType)
-        //    {
-        //        case SpecialType.System_SByte:
-        //        case SpecialType.System_Byte:
-        //        case SpecialType.System_Int16:
-        //        case SpecialType.System_UInt16:
-        //        case SpecialType.System_Int32:
-        //        case SpecialType.System_UInt32:
-        //        case SpecialType.System_Int64:
-        //        case SpecialType.System_UInt64:
-        //        case SpecialType.System_Char:
-        //        case SpecialType.System_String:
-        //            return true;
-
-        //        case SpecialType.System_Boolean:
-        //            // User-defined implicit conversion with target type as bool type is not valid.
-        //            return !isTargetTypeOfUserDefinedOp;
-        //    }
-
-        //    return false;
-        //}
 
 #pragma warning disable RS0010
         /// <summary>
@@ -846,17 +520,6 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             return type.SpecialType.IsIntrinsicType();
         }
-
-        //public static bool IsPartial(this TypeSymbol type)
-        //{
-        //    var nt = type as SourceNamedTypeSymbol;
-        //    return (object)nt != null && nt.IsPartial;
-        //}
-
-        //public static bool IsPointerType(this TypeSymbol type)
-        //{
-        //    return type is PointerTypeSymbol;
-        //}
 
         internal static int FixedBufferElementSizeInBytes(this TypeSymbol type)
         {
@@ -907,35 +570,10 @@ namespace Aquila.CodeAnalysis.Symbols
             return checkedTypes.Add(type);
         }
 
-        //internal static bool IsUnsafe(this TypeSymbol type)
-        //{
-        //    while (true)
-        //    {
-        //        switch (type.TypeKind)
-        //        {
-        //            case TypeKind.Pointer:
-        //                return true;
-        //            case TypeKind.Array:
-        //                type = ((ArrayTypeSymbol)type).ElementType;
-        //                break;
-        //            default:
-        //                // NOTE: we could consider a generic type with unsafe type arguments to be unsafe,
-        //                // but that's already an error, so there's no reason to report it.  Also, this
-        //                // matches Type::isUnsafe in Dev10.
-        //                return false;
-        //        }
-        //    }
-        //}
-
         /// <summary>
         /// Gets value indicating the type is <see cref="System.Void"/>.
         /// </summary>
         internal static bool IsVoid(this TypeSymbol type) => type.SpecialType == SpecialType.System_Void;
-
-        //internal static bool IsVoidPointer(this TypeSymbol type)
-        //{
-        //    return type.IsPointerType() && ((PointerTypeSymbol)type).PointedAtType.SpecialType == SpecialType.System_Void;
-        //}
 
         /// <summary>
         /// These special types are structs that contain fields of the same type
@@ -984,29 +622,6 @@ namespace Aquila.CodeAnalysis.Symbols
             return code;
         }
 
-        ///// <summary>
-        ///// If we are in a COM PIA with embedInteropTypes enabled we should turn properties and methods 
-        ///// that have the type and return type of object, respectively, into type dynamic. If the requisite conditions 
-        ///// are fulfilled, this method returns a dynamic type. If not, it returns the original type.
-        ///// </summary>
-        ///// <param name="type">A property type or method return type to be checked for dynamification.</param>
-        ///// <param name="containingType">Containing type.</param>
-        ///// <returns></returns>
-        //public static TypeSymbol AsDynamicIfNoPia(this TypeSymbol type, NamedTypeSymbol containingType)
-        //{
-        //    if (type.SpecialType == SpecialType.System_Object)
-        //    {
-        //        AssemblySymbol assembly = containingType.ContainingAssembly;
-        //        if ((object)assembly != null &&
-        //            assembly.IsLinked &&
-        //            containingType.IsComImport)
-        //        {
-        //            return DynamicTypeSymbol.Instance;
-        //        }
-        //    }
-        //    return type;
-        //}
-
         /// <summary>
         /// Type variables are never considered reference types by the verifier.
         /// </summary>
@@ -1022,23 +637,6 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             return type.IsValueType && type.TypeKind != TypeKind.TypeParameter;
         }
-
-        //internal static void AddUseSiteDiagnostics(
-        //    this TypeSymbol type,
-        //    ref HashSet<DiagnosticInfo> useSiteDiagnostics)
-        //{
-        //    DiagnosticInfo errorInfo = type.GetUseSiteDiagnostic();
-
-        //    if ((object)errorInfo != null)
-        //    {
-        //        if (useSiteDiagnostics == null)
-        //        {
-        //            useSiteDiagnostics = new HashSet<DiagnosticInfo>();
-        //        }
-
-        //        useSiteDiagnostics.Add(errorInfo);
-        //    }
-        //}
 
         /// <summary>
         /// Return all of the type parameters in this type and enclosing types,
@@ -1071,30 +669,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
             result.AddRange(type.TypeParameters);
         }
-
-        ///// <summary>
-        ///// Return the nearest type parameter with the given name in
-        ///// this type or any enclosing type.
-        ///// </summary>
-        //internal static TypeParameterSymbol FindEnclosingTypeParameter(this NamedTypeSymbol type, string name)
-        //{
-        //    var allTypeParameters = ArrayBuilder<TypeParameterSymbol>.GetInstance();
-        //    type.GetAllTypeParameters(allTypeParameters);
-
-        //    TypeParameterSymbol result = null;
-
-        //    foreach (TypeParameterSymbol tpEnclosing in allTypeParameters)
-        //    {
-        //        if (name == tpEnclosing.Name)
-        //        {
-        //            result = tpEnclosing;
-        //            break;
-        //        }
-        //    }
-
-        //    allTypeParameters.Free();
-        //    return result;
-        //}
 
         /// <summary>
         /// Return true if the fully qualified name of the type's containing symbol

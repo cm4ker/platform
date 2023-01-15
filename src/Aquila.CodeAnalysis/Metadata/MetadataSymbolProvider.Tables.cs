@@ -389,7 +389,6 @@ partial class MetadataSymbolProvider
                                 il.EmitIntConstant(elemIndex++);
 
                                 //emit object
-                                //dbLoc.EmitLoad(il);
                                 il.EmitStringConstant(propName);
 
                                 if (prop == table.ParentProperty)

@@ -35,9 +35,6 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         public override bool IsStatic => false;
 
-        //public override TypeKind TypeKind => TypeKind.Dynamic;
-
-
         private ConcurrentBag<Symbol> _lazyMembers;
 
 

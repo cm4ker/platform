@@ -196,12 +196,12 @@ namespace Aquila.CodeAnalysis.Symbols
 
             if (typeArguments.Any(TypeSymbolIsNullFunction))
             {
-                throw new ArgumentException(); // (CSharpResources.TypeArgumentCannotBeNull, nameof(typeArguments));
+                throw new ArgumentException(); 
             }
 
             if (typeArguments.Length != this.Arity)
             {
-                throw new ArgumentException(); // (CSharpResources.WrongNumberOfTypeArguments, nameof(typeArguments));
+                throw new ArgumentException();
             }
 
             if (TypeParametersMatchTypeArguments(this.TypeParameters, typeArguments))

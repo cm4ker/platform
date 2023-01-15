@@ -401,7 +401,9 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                             // ensure any } characters are doubled up
                             if (_lexer.TextWindow.PeekChar() == '}')
                             {
+#pragma warning disable S125
                                 _lexer.TextWindow.AdvanceChar(); // }
+#pragma warning restore S125
                             }
                             else
                             {

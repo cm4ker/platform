@@ -112,31 +112,9 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 get { return _genericParameterHandles.Count; }
             }
 
-            public override ImmutableArray<TypeSymbol> TypeArguments
-                //internal override ImmutableArray<TypeSymbol> TypeArgumentsNoUseSiteDiagnostics
-            {
-                get
-                {
-                    // This is always the instance type, so the type arguments are the same as the type parameters.
-                    return StaticCast<TypeSymbol>.From(this.TypeParameters);
-                }
-            }
-
-            //internal override bool HasTypeArgumentsCustomModifiers
-            //{
-            //    get
-            //    {
-            //        return false;
-            //    }
-            //}
-
-            //internal override ImmutableArray<ImmutableArray<CustomModifier>> TypeArgumentsCustomModifiers
-            //{
-            //    get
-            //    {
-            //        return CreateEmptyTypeArgumentsCustomModifiers();
-            //    }
-            //}
+            public override ImmutableArray<TypeSymbol> TypeArguments =>
+                // This is always the instance type, so the type arguments are the same as the type parameters.
+                StaticCast<TypeSymbol>.From(this.TypeParameters);
 
             public override ImmutableArray<TypeParameterSymbol> TypeParameters
             {
@@ -167,67 +145,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                         ImmutableArray.Create(ownedParams));
                 }
             }
-
-            //protected override DiagnosticInfo GetUseSiteDiagnosticImpl()
-            //{
-            //    DiagnosticInfo diagnostic = null;
-
-            //    if (!MergeUseSiteDiagnostics(ref diagnostic, base.GetUseSiteDiagnosticImpl()))
-            //    {
-            //        // Verify type parameters for containing types
-            //        // match those on the containing types.
-            //        if (!MatchesContainingTypeParameters())
-            //        {
-            //            diagnostic = new CSDiagnosticInfo(ErrorCode.ERR_BogusType, this);
-            //        }
-            //    }
-
-            //    return diagnostic;
-            //}
-
-            ///// <summary>
-            ///// Return true if the type parameters specified on the nested type (this),
-            ///// that represent the corresponding type parameters on the containing
-            ///// types, in fact match the actual type parameters on the containing types.
-            ///// </summary>
-            //private bool MatchesContainingTypeParameters()
-            //{
-            //    var container = this.ContainingType;
-            //    if ((object)container == null)
-            //    {
-            //        return true;
-            //    }
-
-            //    var containingTypeParameters = container.GetAllTypeParameters();
-            //    int n = containingTypeParameters.Length;
-
-            //    if (n == 0)
-            //    {
-            //        return true;
-            //    }
-
-            //    // Create an instance of PENamedTypeSymbol for the nested type, but
-            //    // with all type parameters, from the nested type and all containing
-            //    // types. The type parameters on this temporary type instance are used
-            //    // for comparison with those on the actual containing types. The
-            //    // containing symbol for the temporary type is the namespace directly.
-            //    var nestedType = Create(this.ContainingPEModule, (PENamespaceSymbol)this.ContainingNamespace, _handle, null);
-            //    var nestedTypeParameters = nestedType.TypeParameters;
-            //    var containingTypeMap = new TypeMap(containingTypeParameters, IndexedTypeParameterSymbol.Take(n), allowAlpha: false);
-            //    var nestedTypeMap = new TypeMap(nestedTypeParameters, IndexedTypeParameterSymbol.Take(nestedTypeParameters.Length), allowAlpha: false);
-
-            //    for (int i = 0; i < n; i++)
-            //    {
-            //        var containingTypeParameter = containingTypeParameters[i];
-            //        var nestedTypeParameter = nestedTypeParameters[i];
-            //        if (!MemberSignatureComparer.HaveSameConstraints(containingTypeParameter, containingTypeMap, nestedTypeParameter, nestedTypeMap))
-            //        {
-            //            return false;
-            //        }
-            //    }
-
-            //    return true;
-            //}
         }
 
         #endregion
@@ -263,7 +180,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
 
             if (mrEx != null)
             {
-                //result._lazyUseSiteDiagnostic = new CSDiagnosticInfo(ErrorCode.ERR_BogusType, result);
+                
             }
 
             return result;
@@ -309,7 +226,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
 
             if (mrEx != null || metadataArity < containerMetadataArity)
             {
-                //result._lazyUseSiteDiagnostic = new CSDiagnosticInfo(ErrorCode.ERR_BogusType, result);
             }
 
             return result;
@@ -394,7 +310,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             Debug.Assert(arity == 0 || this is PENamedTypeSymbolGeneric);
 
             string metadataName;
-            //bool makeBad = false;
 
             metadataName = moduleSymbol.Module.GetTypeDefNameOrThrow(handle);
 
@@ -402,14 +317,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             _container = container;
             _ns = emittedNamespaceName;
 
-            try
-            {
-                _flags = moduleSymbol.Module.GetTypeDefFlagsOrThrow(handle);
-            }
-            catch (BadImageFormatException)
-            {
-                throw; // makeBad = true;
-            }
+            _flags = moduleSymbol.Module.GetTypeDefFlagsOrThrow(handle);
 
             if (arity == 0)
             {
@@ -438,11 +346,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             {
                 _corTypeId = SpecialType.None;
             }
-
-            //if (makeBad)
-            //{
-            //    _lazyUseSiteDiagnostic = new CSDiagnosticInfo(ErrorCode.ERR_BogusType, this);
-            //}
         }
 
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
@@ -697,14 +600,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
 
         internal abstract int MetadataArity { get; }
 
-        //internal override bool HasSpecialName
-        //{
-        //    get
-        //    {
-        //        return (_flags & TypeAttributes.SpecialName) != 0;
-        //    }
-        //}
-
         internal sealed override bool IsInterface => _flags.IsInterface();
 
         ImmutableArray<NamedTypeSymbol> MakeAcyclicInterfaces()
@@ -716,8 +611,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 return declaredInterfaces;
             }
 
-            return declaredInterfaces
-                ; //.SelectAsArray(t => BaseTypeAnalysis.InterfaceDependsOn(t, this) ? CyclicInheritanceError(this, t) : t);
+            return declaredInterfaces;
         }
 
         internal override ImmutableArray<NamedTypeSymbol> GetDeclaredInterfaces(ConsList<Symbol> basesBeingResolved)
@@ -818,15 +712,8 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 types.AddRange(this.CreateNestedTypes());
                 var typesDict = GroupByName(types);
 
-                var exchangeResult = Interlocked.CompareExchange(ref _lazyNestedTypes, typesDict, null);
-                if (exchangeResult == null)
-                {
-                    //// Build cache of TypeDef Tokens
-                    //// Potentially this can be done in the background.
-                    //var moduleSymbol = this.ContainingPEModule;
-                    //moduleSymbol.OnNewTypeDeclarationsLoaded(typesDict);
-                }
-
+                Interlocked.CompareExchange(ref _lazyNestedTypes, typesDict, null);
+                
                 types.Free();
             }
         }
@@ -879,8 +766,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
 
                 if (this.TypeKind == TypeKind.Enum)
                 {
-                    //EnsureEnumUnderlyingTypeIsLoaded(this.GetUncommonProperties());
-
                     var moduleSymbol = this.ContainingPEModule;
                     var module = moduleSymbol.Module;
 
@@ -938,28 +823,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                     // (to allow efficient lookup when matching property accessors).
                     var methodHandleToSymbol = this.CreateMethods(nonFieldMembers);
 
-                    //if (this.TypeKind == TypeKind.Struct)
-                    //{
-                    //    bool haveParameterlessConstructor = false;
-                    //    foreach (MethodSymbol method in nonFieldMembers)
-                    //    {
-                    //        if (method.IsParameterlessConstructor())
-                    //        {
-                    //            haveParameterlessConstructor = true;
-                    //            break;
-                    //        }
-                    //    }
-
-                    //    // Structs have an implicit parameterless constructor, even if it
-                    //    // does not appear in metadata (11.3.8)
-                    //    if (!haveParameterlessConstructor)
-                    //    {
-                    //        nonFieldMembers.Insert(0, new SynthesizedInstanceConstructor(this));
-                    //    }
-                    //}
-
                     this.CreateProperties(methodHandleToSymbol, nonFieldMembers);
-                    //this.CreateEvents(privateFieldNameToSymbols, methodHandleToSymbol, nonFieldMembers);
 
                     foreach (PEFieldSymbol field in fieldMembers)
                     {
@@ -1102,7 +966,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 if (this.SpecialType == SpecialType.None)
                 {
                     isOrdinaryStruct = true;
-                    isOrdinaryEmbeddableStruct = false; // this.ContainingAssembly.IsLinked;
+                    isOrdinaryEmbeddableStruct = false;
                 }
                 else
                 {
@@ -1156,8 +1020,7 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             var map = PooledDictionary<MethodDefinitionHandle, PEMethodSymbol>.GetInstance();
 
             // for ordinary embeddable struct types we import private members so that we can report appropriate errors if the structure is used 
-            var isOrdinaryEmbeddableStruct =
-                false; //(this.TypeKind == TypeKind.Struct) && (this.SpecialType == SpecialType.None) && ((AssemblySymbol)this.ContainingAssembly).IsLinked;
+            var isOrdinaryEmbeddableStruct = false; 
 
             try
             {
@@ -1216,34 +1079,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             Dictionary<MethodDefinitionHandle, IMethodSymbol> methodHandleToSymbol,
             ArrayBuilder<Symbol> members)
         {
-            //var moduleSymbol = this.ContainingPEModule;
-            //var module = moduleSymbol.Module;
-
-            //try
-            //{
-            //    foreach (var eventRid in module.GetEventsOfTypeOrThrow(_handle))
-            //    {
-            //        try
-            //        {
-            //            var methods = module.GetEventMethodsOrThrow(eventRid);
-
-            //            // NOTE: C# ignores all other accessors (most notably, raise/fire).
-            //            PEMethodSymbol addMethod = GetAccessorMethod(module, methodHandleToSymbol, methods.Adder);
-            //            PEMethodSymbol removeMethod = GetAccessorMethod(module, methodHandleToSymbol, methods.Remover);
-
-            //            // NOTE: both accessors are required, but that will be reported separately.
-            //            // Create the symbol unless both accessors are missing.
-            //            if (((object)addMethod != null) || ((object)removeMethod != null))
-            //            {
-            //                members.Add(new PEEventSymbol(moduleSymbol, this, eventRid, addMethod, removeMethod, privateFieldNameToSymbols));
-            //            }
-            //        }
-            //        catch (BadImageFormatException)
-            //        { }
-            //    }
-            //}
-            //catch (BadImageFormatException)
-            //{ }
             throw new NotImplementedException();
         }
 
@@ -1260,32 +1095,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             Debug.Assert(found ||
                          !module.ShouldImportMethod(_handle, methodDef, this.ContainingPEModule.ImportOptions));
             return method;
-        }
-
-        internal string DefaultMemberName
-        {
-            get
-            {
-                //var uncommon = GetUncommonProperties();
-                //if (uncommon == s_noUncommonProperties)
-                //{
-                //    return string.Empty;
-                //}
-
-                //if (uncommon.lazyDefaultMemberName == null)
-                //{
-                //    string defaultMemberName;
-                //    this.ContainingPEModule.Module.HasDefaultMemberAttribute(_handle, out defaultMemberName);
-
-                //    // NOTE: the default member name is frequently null (e.g. if there is not indexer in the type).
-                //    // Make sure we set a non-null value so that we don't recompute it repeatedly.
-                //    // CONSIDER: this makes it impossible to distinguish between not having the attribute and
-                //    // having the attribute with a value of "".
-                //    Interlocked.CompareExchange(ref uncommon.lazyDefaultMemberName, defaultMemberName ?? "", null);
-                //}
-                //return uncommon.lazyDefaultMemberName;
-                throw new NotImplementedException();
-            }
         }
 
         internal override bool ShouldAddWinRTMembers
@@ -1366,7 +1175,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                     if (!token.IsNil)
                     {
                         TypeSymbol decodedType = new MetadataDecoder(moduleSymbol, this).GetTypeOfToken(token);
-                        //return (NamedTypeSymbol)DynamicTypeDecoder.TransformType(decodedType, 0, _handle, moduleSymbol);
                         return (NamedTypeSymbol)decodedType;
                     }
                 }

@@ -84,11 +84,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
         #region IEquatable
 
-        //public override bool Equals(object obj)
-        //{
-        //    return base.Equals(obj);
-        //}
-
         bool IEquatable<CoreType>.Equals(CoreType other)
         {
             return object.ReferenceEquals(this, other);
@@ -342,7 +337,7 @@ namespace Aquila.CodeAnalysis.Symbols
         readonly Dictionary<string, CoreType> _table;
 
         readonly Dictionary<TypeSymbol, CoreType> _typetable = new Dictionary<TypeSymbol, CoreType>();
-        //readonly Dictionary<SpecialType, CoreType> _specialTypes = new Dictionary<SpecialType, CoreType>();
+
 
         CoreType CreateFromRuntimeName(string name) => CreateFromFullName(AquilaRuntimeNamespace + "." + name);
 
@@ -376,16 +371,6 @@ namespace Aquila.CodeAnalysis.Symbols
             _typetable.TryGetValue(symbol, out t);
             return t;
         }
-
-        ///// <summary>
-        ///// Gets special core type.
-        ///// </summary>
-        //public CoreType GetSpecialType(SpecialType type)
-        //{
-        //    CoreType t;
-        //    _specialTypes.TryGetValue(type, out t);
-        //    return t;
-        //}
 
         internal void Update(AssemblySymbol coreass)
         {
@@ -425,8 +410,6 @@ namespace Aquila.CodeAnalysis.Symbols
                         _typetable[symbol] = t;
                         t.Update(symbol);
 
-                        //if (symbol.SpecialType != SpecialType.None)
-                        //    _specialTypes[symbol.SpecialType] = t;
                     }
                 }
             }

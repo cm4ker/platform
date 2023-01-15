@@ -158,8 +158,7 @@ internal class SourceGlobalNamespaceSymbol : NamespaceSymbol
     {
         EnsureExtensionMethods();
         EnsureUserVisibleTypes();
-        //EnsureReferencedMembers();
-
+        
         var arr = new ArrayBuilder<Symbol>();
 
         var platformSymbols = DeclaringCompilation.PlatformSymbolCollection.GetNamespaces().OfType<Symbol>();
@@ -171,8 +170,6 @@ internal class SourceGlobalNamespaceSymbol : NamespaceSymbol
 
         var result = _exntensionMethods;
         arr.AddRange(result);
-
-        //arr.AddRange(_referencedMembers);
 
         return arr.ToImmutableAndFree();
     }

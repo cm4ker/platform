@@ -55,16 +55,6 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
             moduleBuilder.Add(new SourceModuleSymbol(this, moduleName));
 
-            //var importOptions = (compilation.Options.MetadataImportOptions == MetadataImportOptions.All) ?
-            //    MetadataImportOptions.All : MetadataImportOptions.Internal;
-
-            //foreach (PEModule netModule in netModules)
-            //{
-            //    moduleBuilder.Add(new PEModuleSymbol(this, netModule, importOptions, moduleBuilder.Count));
-            //    // SetReferences will be called later by the ReferenceManager (in CreateSourceAssemblyFullBind for 
-            //    // a fresh manager, in CreateSourceAssemblyReuseData for a reused one).
-            //}
-
             _modules = moduleBuilder.ToImmutableAndFree();
 
             if (!compilation.Options.CryptoPublicKey.IsEmpty)
@@ -129,7 +119,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                     return false;
                 }
 
-                return false; // (this.AssemblyDelaySignAttributeSetting == ThreeState.True);
+                return false; 
             }
         }
 
@@ -156,7 +146,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             get
             {
                 string
-                    key = null; // GetWellKnownAttributeDataStringField(data => data.AssemblySignatureKeyAttributeSetting);
+                    key = null; 
                 return key;
             }
         }
@@ -171,30 +161,12 @@ namespace Aquila.CodeAnalysis.Symbols.Source
             {
                 var fieldValue = default(AssemblyNameFlags);
 
-                //var data = GetSourceDecodedWellKnownAttributeData();
-                //if (data != null)
-                //{
-                //    fieldValue = data.AssemblyFlagsAttributeSetting;
-                //}
-
-                //data = GetNetModuleDecodedWellKnownAttributeData();
-                //if (data != null)
-                //{
-                //    fieldValue |= data.AssemblyFlagsAttributeSetting;
-                //}
-
                 return fieldValue;
             }
         }
 
         private StrongNameKeys ComputeStrongNameKeys()
         {
-            //// TODO:
-            //// In order to allow users to escape problems that we create with our provisional granting of IVT access,
-            //// consider not binding the attributes if the command line options were specified, then later bind them
-            //// and report warnings if both were used.
-            //EnsureAttributesAreBound();
-
             // when both attributes and command-line options specified, cmd line wins.
             string keyFile = _compilation.Options.CryptoKeyFile;
 
@@ -218,27 +190,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 return StrongNameKeys.Create(keyFile, Errors.MessageProvider.Instance);
             }
 
-            if (string.IsNullOrEmpty(keyFile))
-            {
-                //keyFile = this.AssemblyKeyFileAttributeSetting;
-
-                //if ((object)keyFile == (object)WellKnownAttributeData.StringMissingValue)
-                //{
-                //    keyFile = null;
-                //}
-            }
-
             string keyContainer = _compilation.Options.CryptoKeyContainer;
-
-            if (string.IsNullOrEmpty(keyContainer))
-            {
-                //keyContainer = this.AssemblyKeyContainerAttributeSetting;
-
-                //if ((object)keyContainer == (object)WellKnownAttributeData.StringMissingValue)
-                //{
-                //    keyContainer = null;
-                //}
-            }
 
             bool hasCounterSignature = !string.IsNullOrEmpty(this.SignatureKey);
             return StrongNameKeys.Create(DeclaringCompilation.Options.StrongNameProvider, keyFile, keyContainer,
@@ -338,71 +290,6 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
                 Debug.Assert(forcedArity == emittedName.InferredArity);
             }
-
-            //if (_lazyForwardedTypesFromSource == null)
-            //{
-            //    IDictionary<string, NamedTypeSymbol> forwardedTypesFromSource;
-            //    CommonAssemblyWellKnownAttributeData<NamedTypeSymbol> wellKnownAttributeData = GetSourceDecodedWellKnownAttributeData();
-
-            //    if (wellKnownAttributeData != null && wellKnownAttributeData.ForwardedTypes != null)
-            //    {
-            //        forwardedTypesFromSource = new Dictionary<string, NamedTypeSymbol>();
-
-            //        foreach (NamedTypeSymbol forwardedType in wellKnownAttributeData.ForwardedTypes)
-            //        {
-            //            NamedTypeSymbol originalDefinition = forwardedType.OriginalDefinition;
-            //            Debug.Assert((object)originalDefinition.ContainingType == null, "How did a nested type get forwarded?");
-
-            //            string fullEmittedName = MetadataHelpers.BuildQualifiedName(originalDefinition.ContainingSymbol.ToDisplayString(SymbolDisplayFormat.QualifiedNameOnlyFormat),
-            //                                                                        originalDefinition.MetadataName);
-            //            // Since we need to allow multiple constructions of the same generic type at the source
-            //            // level, we need to de-dup the original definitions.
-            //            forwardedTypesFromSource[fullEmittedName] = originalDefinition;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        forwardedTypesFromSource = SpecializedCollections.EmptyDictionary<string, NamedTypeSymbol>();
-            //    }
-
-            //    _lazyForwardedTypesFromSource = forwardedTypesFromSource;
-            //}
-
-            //NamedTypeSymbol result;
-
-            //if (_lazyForwardedTypesFromSource.TryGetValue(emittedName.FullName, out result))
-            //{
-            //    if ((forcedArity == -1 || result.Arity == forcedArity) &&
-            //        (!emittedName.UseCLSCompliantNameArityEncoding || result.Arity == 0 || result.MangleName))
-            //    {
-            //        return result;
-            //    }
-            //}
-            //else if (!_compilation.Options.OutputKind.IsNetModule())
-            //{
-            //    // See if any of added modules forward the type.
-
-            //    // Similar to attributes, type forwarders from the second added module should override type forwarders from the first added module, etc. 
-            //    for (int i = _modules.Length - 1; i > 0; i--)
-            //    {
-            //        var peModuleSymbol = (Metadata.PE.PEModuleSymbol)_modules[i];
-
-            //        var forwardedToAssembly = peModuleSymbol.GetAssemblyForForwardedType(ref emittedName);
-            //        if ((object)forwardedToAssembly != null)
-            //        {
-            //            // Don't bother to check the forwarded-to assembly if we've already seen it.
-            //            if (visitedAssemblies != null && visitedAssemblies.Contains(forwardedToAssembly))
-            //            {
-            //                return CreateCycleInTypeForwarderErrorTypeSymbol(ref emittedName);
-            //            }
-            //            else
-            //            {
-            //                visitedAssemblies = new ConsList<AssemblySymbol>(this, visitedAssemblies ?? ConsList<AssemblySymbol>.Empty);
-            //                return forwardedToAssembly.LookupTopLevelMetadataTypeWithCycleDetection(ref emittedName, visitedAssemblies, digThroughForwardedTypes: true);
-            //            }
-            //        }
-            //    }
-            //}
 
             return null;
         }

@@ -86,32 +86,9 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        //internal override NamedTypeSymbol BaseTypeNoUseSiteDiagnostics
-        //{
-        //    get
-        //    {
-        //        // Pointers do not support boxing, so they really have no base type.
-        //        return null;
-        //    }
-        //}
-
-        //internal override ImmutableArray<NamedTypeSymbol> InterfacesNoUseSiteDiagnostics(ConsList<Symbol> basesBeingResolved)
-        //{
-        //    // Pointers do not support boxing, so they really have no interfaces
-        //    return ImmutableArray<NamedTypeSymbol>.Empty;
-        //}
-
         public override bool IsReferenceType => false;
 
         public override bool IsValueType => true;
-
-        //internal sealed override bool IsManagedType
-        //{
-        //    get
-        //    {
-        //        return false;
-        //    }
-        //}
 
         internal sealed override ObsoleteAttributeData ObsoleteAttributeData
         {
@@ -209,25 +186,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
             return true;
         }
-
-        //internal override DiagnosticInfo GetUseSiteDiagnostic()
-        //{
-        //    DiagnosticInfo result = null;
-
-        //    // Check type, custom modifiers
-        //    if (DeriveUseSiteDiagnosticFromType(ref result, this.PointedAtType) ||
-        //        DeriveUseSiteDiagnosticFromCustomModifiers(ref result, this.CustomModifiers))
-        //    {
-        //    }
-
-        //    return result;
-        //}
-
-        //internal override bool GetUnificationUseSiteDiagnosticRecursive(ref DiagnosticInfo result, Symbol owner, ref HashSet<TypeSymbol> checkedTypes)
-        //{
-        //    return this.PointedAtType.GetUnificationUseSiteDiagnosticRecursive(ref result, owner, ref checkedTypes) ||
-        //           GetUnificationUseSiteDiagnosticRecursive(ref result, this.CustomModifiers, owner, ref checkedTypes);
-        //}
 
         #region IPointerTypeSymbol Members
 

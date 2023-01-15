@@ -68,10 +68,5 @@ namespace Aquila.CodeAnalysis.Symbols
                 return map != null ? map.SubstituteCustomModifiers(this.underlyingParameter.Type, this.underlyingParameter.CustomModifiers) : this.underlyingParameter.CustomModifiers;
             }
         }
-
-        //public override string GetDocumentationCommentXml(CultureInfo preferredCulture = null, bool expandIncludes = false, CancellationToken cancellationToken = default(CancellationToken))
-        //{
-        //    return underlyingParameter.GetDocumentationCommentXml(preferredCulture, expandIncludes, cancellationToken);
-        //}
     }
 }

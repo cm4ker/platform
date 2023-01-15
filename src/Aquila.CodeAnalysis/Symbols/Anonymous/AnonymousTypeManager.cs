@@ -34,11 +34,6 @@ namespace Aquila.CodeAnalysis.Symbols.Anonymous
 
             var builder = ArrayBuilder<NamedTypeSymbol>.GetInstance();
 
-            //var anonymousTypes = ArrayBuilder<AnonymousTypeTemplateSymbol>.GetInstance();
-            //GetCreatedAnonymousTypeTemplates(anonymousTypes);
-            //builder.AddRange(anonymousTypes);
-            //anonymousTypes.Free();
-
             var synthesizedDelegates = ArrayBuilder<SynthesizedDelegateSymbol>.GetInstance();
             GetCreatedSynthesizedDelegates(synthesizedDelegates);
             builder.AddRange(synthesizedDelegates);

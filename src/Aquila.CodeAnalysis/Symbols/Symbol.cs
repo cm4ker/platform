@@ -22,9 +22,8 @@ namespace Aquila.CodeAnalysis.Symbols
     [DebuggerDisplay("{GetDebuggerDisplay(), nq}")]
     internal abstract partial class Symbol : ISymbol, ISymbolInternal
     {
-        
         private ISymbol _lazyISymbol;
-        
+
         /// <summary>
         /// Gets the name of this symbol. Symbols without a name return the empty string; null is
         /// never returned.
@@ -94,8 +93,8 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 for (var container = this.ContainingSymbol;
-                    (object)container != null;
-                    container = container.ContainingSymbol)
+                     (object)container != null;
+                     container = container.ContainingSymbol)
                 {
                     var ns = container as NamespaceSymbol;
                     if ((object)ns != null)
@@ -326,18 +325,9 @@ namespace Aquila.CodeAnalysis.Symbols
                         break;
 
                     case SymbolKind.NamedType:
-                        //if (((NamedTypeSymbol)this).IsSubmissionClass)
-                        //{
-                        //    return false;
-                        //}
                         break;
 
                     case SymbolKind.Property:
-                        //var property = (PropertySymbol)this;
-                        //if (property.IsIndexer || property.MustCallMethodsDirectly)
-                        //{
-                        //    return false;
-                        //}
                         break;
 
                     case SymbolKind.Method:
@@ -356,10 +346,6 @@ namespace Aquila.CodeAnalysis.Symbols
                                 return true;
                             case MethodKind.PropertyGet:
                             case MethodKind.PropertySet:
-                                //if (!((PropertySymbol)method.AssociatedSymbol).CanCallMethodsDirectly())
-                                //{
-                                //    return false;
-                                //}
                                 break;
                             default:
                                 return false;
@@ -383,48 +369,9 @@ namespace Aquila.CodeAnalysis.Symbols
                 // See the comment on ContainsDroppedIdentifierCharacters for an explanation of why
                 // such names are not referenceable (or see DevDiv #14432).
                 return
-                    true; // SyntaxFacts.IsValidIdentifier(this.Name) && !SyntaxFacts.ContainsDroppedIdentifierCharacters(this.Name);
+                    true;
             }
         }
-
-        ///// <summary>
-        ///// As an optimization, viability checking in the lookup code should use this property instead
-        ///// of <see cref="CanBeReferencedByName"/>. The full name check will then be performed in the <see cref="CSharpSemanticModel"/>.
-        ///// </summary>
-        ///// <remarks>
-        ///// This property exists purely for performance reasons.
-        ///// </remarks>
-        //internal bool CanBeReferencedByNameIgnoringIllegalCharacters
-        //{
-        //    get
-        //    {
-        //        if (this.Kind == SymbolKind.Method)
-        //        {
-        //            var method = (MethodSymbol)this;
-        //            switch (method.MethodKind)
-        //            {
-        //                case MethodKind.Ordinary:
-        //                case MethodKind.DelegateInvoke:
-        //                case MethodKind.Destructor: // See comment in CanBeReferencedByName.
-        //                    return true;
-        //                case MethodKind.PropertyGet:
-        //                case MethodKind.PropertySet:
-        //                    return ((PropertySymbol)method.AssociatedSymbol).CanCallMethodsDirectly();
-        //                default:
-        //                    return false;
-        //            }
-        //        }
-        //        return true;
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Perform additional checks after the member has been
-        ///// added to the member list of the containing type.
-        ///// </summary>
-        //internal virtual void AfterAddingTypeMembersChecks(ConversionsBase conversions, DiagnosticBag diagnostics)
-        //{
-        //}
 
         // Note: This is no public "IsNew". This is intentional, because new has no syntactic meaning.
         // It serves only to remove a warning. Furthermore, it can not be inferred from 
@@ -524,19 +471,6 @@ namespace Aquila.CodeAnalysis.Symbols
         {
         }
 
-        ///// <summary>
-        ///// <see cref="CharSet"/> effective for this symbol (type or DllImport method).
-        ///// Nothing if <see cref="DefaultCharSetAttribute"/> isn't applied on the containing module or it doesn't apply on this symbol.
-        ///// </summary>
-        ///// <remarks>
-        ///// Determined based upon value specified via <see cref="DefaultCharSetAttribute"/> applied on the containing module.
-        ///// </remarks>
-        //internal CharSet? GetEffectiveDefaultMarshallingCharSet()
-        //{
-        //    Debug.Assert(this.Kind == SymbolKind.NamedType || this.Kind == SymbolKind.Method);
-        //    return this.ContainingModule.DefaultMarshallingCharSet;
-        //}
-
         internal bool IsFromCompilation(AquilaCompilation compilation)
         {
             Debug.Assert(compilation != null);
@@ -627,38 +561,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
         #region Use-Site Diagnostics
 
-        ///// <summary>
-        ///// True if the symbol has a use-site diagnostic with error severity.
-        ///// </summary>
-        //internal bool HasUseSiteError
-        //{
-        //    get
-        //    {
-        //        var diagnostic = GetUseSiteDiagnostic();
-        //        return diagnostic != null && diagnostic.Severity == DiagnosticSeverity.Error;
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Returns diagnostic info that should be reported at the use site of the symbol, or null if there is none.
-        ///// </summary>
-        //internal virtual DiagnosticInfo GetUseSiteDiagnostic()
-        //{
-        //    return null;
-        //}
-
-        ///// <summary>
-        ///// Return error code that has highest priority while calculating use site error for this symbol. 
-        ///// Supposed to be ErrorCode, but it causes inconsistent accessibility error.
-        ///// </summary>
-        //protected virtual int HighestPriorityUseSiteError
-        //{
-        //    get
-        //    {
-        //        return int.MaxValue;
-        //    }
-        //}
-
         /// <summary>
         /// Indicates that this symbol uses metadata that cannot be supported by the language.
         /// 
@@ -682,188 +584,6 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get { return false; }
         }
-
-        //internal DiagnosticInfo GetUseSiteDiagnosticForSymbolOrContainingType()
-        //{
-        //    var info = this.GetUseSiteDiagnostic();
-        //    if (info != null && info.Severity == DiagnosticSeverity.Error)
-        //    {
-        //        return info;
-        //    }
-
-        //    return this.ContainingType.GetUseSiteDiagnostic() ?? info;
-        //}
-
-        ///// <summary>
-        ///// Merges given diagnostic to the existing result diagnostic.
-        ///// </summary>
-        //internal bool MergeUseSiteDiagnostics(ref DiagnosticInfo result, DiagnosticInfo info)
-        //{
-        //    if (info == null)
-        //    {
-        //        return false;
-        //    }
-
-        //    if (info.Severity == DiagnosticSeverity.Error && (info.Code == HighestPriorityUseSiteError || HighestPriorityUseSiteError == Int32.MaxValue))
-        //    {
-        //        // this error is final, no other error can override it:
-        //        result = info;
-        //        return true;
-        //    }
-
-        //    if (result == null || result.Severity == DiagnosticSeverity.Warning && info.Severity == DiagnosticSeverity.Error)
-        //    {
-        //        // there could be an error of higher-priority
-        //        result = info;
-        //        return false;
-        //    }
-
-        //    // we have a second low-pri error, continue looking for a higher priority one
-        //    return false;
-        //}
-
-        ///// <summary>
-        ///// Reports specified use-site diagnostic to given diagnostic bag. 
-        ///// </summary>
-        ///// <remarks>
-        ///// This method should be the only method adding use-site diagnostics to a diagnostic bag. 
-        ///// It performs additional adjustments of the location for unification related diagnostics and 
-        ///// may be the place where to add more use-site location post-processing.
-        ///// </remarks>
-        ///// <returns>True if the diagnostic has error severity.</returns>
-        //internal static bool ReportUseSiteDiagnostic(DiagnosticInfo info, DiagnosticBag diagnostics, Location location)
-        //{
-        //    // Unlike VB the C# Dev11 compiler reports only a single unification error/warning.
-        //    // By dropping the location we effectively merge all unification use-site errors that have the same error code into a single error.
-        //    // The error message clearly explains how to fix the problem and reporting the error for each location wouldn't add much value. 
-        //    if (info.Code == (int)ErrorCode.WRN_UnifyReferenceBldRev ||
-        //        info.Code == (int)ErrorCode.WRN_UnifyReferenceMajMin ||
-        //        info.Code == (int)ErrorCode.ERR_AssemblyMatchBadVersion)
-        //    {
-        //        location = NoLocation.Singleton;
-        //    }
-
-        //    diagnostics.Add(info, location);
-        //    return info.Severity == DiagnosticSeverity.Error;
-        //}
-
-        ///// <summary>
-        ///// Derive error info from a type symbol.
-        ///// </summary>
-        //internal bool DeriveUseSiteDiagnosticFromType(ref DiagnosticInfo result, TypeSymbol type)
-        //{
-        //    DiagnosticInfo info = type.GetUseSiteDiagnostic();
-        //    if (info != null)
-        //    {
-        //        if (info.Code == (int)ErrorCode.ERR_BogusType)
-        //        {
-        //            switch (this.Kind)
-        //            {
-        //                case SymbolKind.Field:
-        //                case SymbolKind.Method:
-        //                case SymbolKind.Property:
-        //                case SymbolKind.Event:
-        //                    info = new CSDiagnosticInfo(ErrorCode.ERR_BindToBogus, this);
-        //                    break;
-        //            }
-        //        }
-        //    }
-
-        //    return MergeUseSiteDiagnostics(ref result, info);
-        //}
-
-        //internal bool DeriveUseSiteDiagnosticFromParameter(ref DiagnosticInfo result, ParameterSymbol param)
-        //{
-        //    return DeriveUseSiteDiagnosticFromType(ref result, param.Type) ||
-        //           DeriveUseSiteDiagnosticFromCustomModifiers(ref result, param.CustomModifiers);
-        //}
-
-        //internal bool DeriveUseSiteDiagnosticFromParameters(ref DiagnosticInfo result, ImmutableArray<ParameterSymbol> parameters)
-        //{
-        //    foreach (ParameterSymbol param in parameters)
-        //    {
-        //        if (DeriveUseSiteDiagnosticFromParameter(ref result, param))
-        //        {
-        //            return true;
-        //        }
-        //    }
-
-        //    return false;
-        //}
-
-        //internal bool DeriveUseSiteDiagnosticFromCustomModifiers(ref DiagnosticInfo result, ImmutableArray<CustomModifier> customModifiers)
-        //{
-        //    foreach (CustomModifier modifier in customModifiers)
-        //    {
-        //        var modifierType = (NamedTypeSymbol)modifier.Modifier;
-
-        //        // Unbound generic type is valid as a modifier, let's not report any use site diagnostics because of that.
-        //        if (modifierType.IsUnboundGenericType )
-        //        {
-        //            modifierType = modifierType.OriginalDefinition;
-        //        }
-
-        //        if (DeriveUseSiteDiagnosticFromType(ref result, modifierType))
-        //        {
-        //            return true;
-        //        }
-        //    }
-
-        //    return false;
-        //}
-
-        //internal static bool GetUnificationUseSiteDiagnosticRecursive<T>(ref DiagnosticInfo result, ImmutableArray<T> types, Symbol owner, ref HashSet<TypeSymbol> checkedTypes) where T : TypeSymbol
-        //{
-        //    foreach (var t in types)
-        //    {
-        //        if (t.GetUnificationUseSiteDiagnosticRecursive(ref result, owner, ref checkedTypes))
-        //        {
-        //            return true;
-        //        }
-        //    }
-
-        //    return false;
-        //}
-
-        //internal static bool GetUnificationUseSiteDiagnosticRecursive(ref DiagnosticInfo result, ImmutableArray<CustomModifier> modifiers, Symbol owner, ref HashSet<TypeSymbol> checkedTypes)
-        //{
-        //    foreach (var modifier in modifiers)
-        //    {
-        //        if (((TypeSymbol)modifier.Modifier).GetUnificationUseSiteDiagnosticRecursive(ref result, owner, ref checkedTypes))
-        //        {
-        //            return true;
-        //        }
-        //    }
-
-        //    return false;
-        //}
-
-        //internal static bool GetUnificationUseSiteDiagnosticRecursive(ref DiagnosticInfo result, ImmutableArray<ParameterSymbol> parameters, Symbol owner, ref HashSet<TypeSymbol> checkedTypes)
-        //{
-        //    foreach (var parameter in parameters)
-        //    {
-        //        if (parameter.Type.GetUnificationUseSiteDiagnosticRecursive(ref result, owner, ref checkedTypes) ||
-        //            GetUnificationUseSiteDiagnosticRecursive(ref result, parameter.CustomModifiers, owner, ref checkedTypes))
-        //        {
-        //            return true;
-        //        }
-        //    }
-
-        //    return false;
-        //}
-
-        //internal static bool GetUnificationUseSiteDiagnosticRecursive(ref DiagnosticInfo result, ImmutableArray<TypeParameterSymbol> typeParameters, Symbol owner, ref HashSet<TypeSymbol> checkedTypes)
-        //{
-        //    foreach (var typeParameter in typeParameters)
-        //    {
-        //        if (GetUnificationUseSiteDiagnosticRecursive(ref result, typeParameter.ConstraintTypesNoUseSiteDiagnostics, owner, ref checkedTypes))
-        //        {
-        //            return true;
-        //        }
-        //    }
-
-        //    return false;
-        //}
 
         #endregion
 
@@ -904,17 +624,6 @@ namespace Aquila.CodeAnalysis.Symbols
         /// </summary>
         internal bool GetGuidStringDefaultImplementation(out string guidString)
         {
-            //foreach (var attrData in this.GetAttributes())
-            //{
-            //    if (attrData.IsTargetAttribute(this, AttributeDescription.GuidAttribute))
-            //    {
-            //        if (attrData.TryGetGuidAttributeValue(out guidString))
-            //        {
-            //            return true;
-            //        }
-            //    }
-            //}
-
             guidString = null;
             return false;
         }
@@ -922,14 +631,11 @@ namespace Aquila.CodeAnalysis.Symbols
         public string ToDisplayString(SymbolDisplayFormat format = null)
         {
             return this.Name;
-            //throw new NotImplementedException();
-            //return SymbolDisplay.ToDisplayString(this, format);
         }
 
         public ImmutableArray<SymbolDisplayPart> ToDisplayParts(SymbolDisplayFormat format = null)
         {
             throw new NotImplementedException();
-            //return SymbolDisplay.ToDisplayParts(this, format);
         }
 
         public string ToMinimalDisplayString(
@@ -938,7 +644,6 @@ namespace Aquila.CodeAnalysis.Symbols
             SymbolDisplayFormat format = null)
         {
             throw new NotImplementedException();
-            //return SymbolDisplay.ToMinimalDisplayString(this, semanticModel, position, format);
         }
 
         public ImmutableArray<SymbolDisplayPart> ToMinimalDisplayParts(
@@ -947,7 +652,6 @@ namespace Aquila.CodeAnalysis.Symbols
             SymbolDisplayFormat format = null)
         {
             throw new NotImplementedException();
-            //return SymbolDisplay.ToMinimalDisplayParts(this, semanticModel, position, format);
         }
 
         #region ISymbol Members
@@ -1011,15 +715,12 @@ namespace Aquila.CodeAnalysis.Symbols
 
         string ISymbol.ToDisplayString(SymbolDisplayFormat format)
         {
-            //throw new NotImplementedException();
-            //return SymbolDisplay.ToDisplayString(this, format);
             return this.Name;
         }
 
         ImmutableArray<SymbolDisplayPart> ISymbol.ToDisplayParts(SymbolDisplayFormat format)
         {
             throw new NotImplementedException();
-            //return SymbolDisplay.ToDisplayParts(this, format);
         }
 
         string ISymbol.ToMinimalDisplayString(
@@ -1028,13 +729,6 @@ namespace Aquila.CodeAnalysis.Symbols
             SymbolDisplayFormat format)
         {
             throw new NotImplementedException();
-            //var csharpModel = semanticModel as CSharpSemanticModel;
-            //if (csharpModel == null)
-            //{
-            //    throw new ArgumentException(CSharpResources.WrongSemanticModelType, this.Language);
-            //}
-
-            //return SymbolDisplay.ToMinimalDisplayString(this, csharpModel, position, format);
         }
 
         ImmutableArray<SymbolDisplayPart> ISymbol.ToMinimalDisplayParts(
@@ -1043,13 +737,6 @@ namespace Aquila.CodeAnalysis.Symbols
             SymbolDisplayFormat format)
         {
             throw new NotImplementedException();
-            //var csharpModel = semanticModel as CSharpSemanticModel;
-            //if (csharpModel == null)
-            //{
-            //    throw new ArgumentException(CSharpResources.WrongSemanticModelType, this.Language);
-            //}
-
-            //return SymbolDisplay.ToMinimalDisplayParts(this, csharpModel, position, format);
         }
 
         bool ISymbol.IsImplicitlyDeclared
@@ -1124,7 +811,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public virtual ImmutableArray<AttributeData> GetAttributes()
         {
-            return ImmutableArray<AttributeData>.Empty; // StaticCast<AttributeData>.From(this.GetAttributes());
+            return ImmutableArray<AttributeData>.Empty;
         }
 
         public virtual void Accept(SymbolVisitor visitor)
@@ -1168,20 +855,5 @@ namespace Aquila.CodeAnalysis.Symbols
         INamespaceSymbolInternal ISymbolInternal.ContainingNamespace => this.ContainingNamespace;
 
         #endregion
-        
-        // protected abstract ISymbol CreateISymbol();
-        //
-        // internal ISymbol ISymbol
-        // {
-        //     get
-        //     {
-        //         if (_lazyISymbol is null)
-        //         {
-        //             Interlocked.CompareExchange(ref _lazyISymbol, CreateISymbol(), null);
-        //         }
-        //
-        //         return _lazyISymbol;
-        //     }
-        // }
     }
 }

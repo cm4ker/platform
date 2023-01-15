@@ -106,7 +106,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
         internal NamespaceSymbol GetConstituentForCompilation(AquilaCompilation compilation)
         {
-            //return namespacesToMerge.FirstOrDefault(n => n.IsFromSource);
             //Replace above code with that below to eliminate allocation of array enumerator.
 
             foreach (var n in _namespacesToMerge)
@@ -117,15 +116,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
             return null;
         }
-
-        // internal override void ForceComplete(SourceLocation locationOpt, CancellationToken cancellationToken)
-        // {
-        //     foreach (var part in _namespacesToMerge)
-        //     {
-        //         cancellationToken.ThrowIfCancellationRequested();
-        //         part.ForceComplete(locationOpt, cancellationToken);
-        //     }
-        // }
 
         /// <summary>
         /// Method that is called from the CachingLookup to lookup the children of a given name.
@@ -271,14 +261,5 @@ namespace Aquila.CodeAnalysis.Symbols
                     .AsImmutable();
             }
         }
-
-        // internal override void GetExtensionMethods(ArrayBuilder<MethodSymbol> methods, string name, int arity,
-        //     LookupOptions options)
-        // {
-        //     foreach (NamespaceSymbol namespaceSymbol in _namespacesToMerge)
-        //     {
-        //         namespaceSymbol.GetExtensionMethods(methods, name, arity, options);
-        //     }
-        // }
     }
 }

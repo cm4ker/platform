@@ -102,43 +102,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
 
             NamedTypeSymbol genericType = (NamedTypeSymbol) genericTypeDef;
 
-            //// See if it is or its enclosing type is a non-interface closed over NoPia local types. 
-            //ImmutableArray<AssemblySymbol> linkedAssemblies = moduleSymbol.ContainingAssembly.GetLinkedReferencedAssemblies();
-
-            //bool noPiaIllegalGenericInstantiation = false;
-
-            //if (!linkedAssemblies.IsDefaultOrEmpty || moduleSymbol.Module.ContainsNoPiaLocalTypes())
-            //{
-            //    NamedTypeSymbol typeToCheck = genericType;
-            //    int argumentIndex = refersToNoPiaLocalType.Length - 1;
-
-            //    do
-            //    {
-            //        if (!typeToCheck.IsInterface)
-            //        {
-            //            break;
-            //        }
-            //        else
-            //        {
-            //            argumentIndex -= typeToCheck.Arity;
-            //        }
-
-            //        typeToCheck = typeToCheck.ContainingType;
-            //    }
-            //    while ((object)typeToCheck != null);
-
-            //    for (int i = argumentIndex; i >= 0; i--)
-            //    {
-            //        if (refersToNoPiaLocalType[i] ||
-            //            (!linkedAssemblies.IsDefaultOrEmpty &&
-            //            MetadataDecoder.IsOrClosedOverATypeFromAssemblies(arguments[i].Key, linkedAssemblies)))
-            //        {
-            //            noPiaIllegalGenericInstantiation = true;
-            //            break;
-            //        }
-            //    }
-            //}
-
             // Collect generic parameters for the type and its containers in the order
             // that matches passed in arguments, i.e. sorted by the nesting.
             ImmutableArray<TypeParameterSymbol> typeParameters = genericType.GetAllTypeParameters();
@@ -154,11 +117,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                     new TypeWithModifiers(arg.Key, CSharpCustomModifier.Convert(arg.Value))));
 
             NamedTypeSymbol constructedType = substitution.SubstituteNamedType(genericType);
-
-            //if (noPiaIllegalGenericInstantiation)
-            //{
-            //    constructedType = new NoPiaIllegalGenericInstantiationSymbol(moduleSymbol, constructedType);
-            //}
 
             return constructedType;
         }

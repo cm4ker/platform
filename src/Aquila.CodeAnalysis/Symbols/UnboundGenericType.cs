@@ -32,7 +32,7 @@ namespace Aquila.CodeAnalysis.Symbols
             var typeArguments = UnboundArgumentErrorTypeSymbol.CreateTypeArguments(
                 constructedFrom.TypeParameters,
                 n,
-                null);// new CSDiagnosticInfo(ErrorCode.ERR_UnexpectedUnboundGenericName));
+                null);
             return constructedFrom.Construct(typeArguments, unbound: true);
         }
     }
@@ -79,14 +79,6 @@ namespace Aquila.CodeAnalysis.Symbols
                 return false;
             }
         }
-
-        //internal override DiagnosticInfo ErrorInfo
-        //{
-        //    get
-        //    {
-        //        return _errorInfo;
-        //    }
-        //}
 
         internal override bool Equals(TypeSymbol t2, bool ignoreCustomModifiersAndArraySizesAndLowerBounds, bool ignoreDynamic)
         {

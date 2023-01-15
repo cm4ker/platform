@@ -78,7 +78,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                     _name = string.Empty;
                 }
 
-                //_lazyBoundsErrorInfo = new CSDiagnosticInfo(ErrorCode.ERR_BindToBogus, this);
             }
 
             // Clear the '.ctor' flag if both '.ctor' and 'valuetype' are
@@ -159,7 +158,6 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             catch (BadImageFormatException)
             {
                 constraints = default(GenericParameterConstraintHandleCollection);
-                //Interlocked.CompareExchange(ref _lazyConstraintsUseSiteErrorInfo, new CSDiagnosticInfo(ErrorCode.ERR_BindToBogus, this), CSDiagnosticInfo.EmptyErrorInfo);
             }
 
             if (constraints.Count > 0)
@@ -308,50 +306,14 @@ namespace Aquila.CodeAnalysis.Symbols.PE
                 var constraintTypes = GetDeclaredConstraintTypes();
                 Debug.Assert(!constraintTypes.IsDefault);
 
-                //var diagnostics = ArrayBuilder<TypeParameterDiagnosticInfo>.GetInstance();
-                //ArrayBuilder<TypeParameterDiagnosticInfo> useSiteDiagnosticsBuilder = null;
                 bool inherited = (_containingSymbol.Kind == SymbolKind.Method) && ((MethodSymbol)_containingSymbol).IsOverride;
-                //var bounds = this.ResolveBounds(this.ContainingAssembly.CorLibrary, inProgress.Prepend(this), constraintTypes, inherited, currentCompilation: null,
-                //                                diagnosticsBuilder: diagnostics, useSiteDiagnosticsBuilder: ref useSiteDiagnosticsBuilder);
                 var bounds = new TypeParameterBounds(ImmutableArray<TypeSymbol>.Empty, ImmutableArray<NamedTypeSymbol>.Empty, null, null);
-                //DiagnosticInfo errorInfo = null;
-
-                //if (diagnostics.Count > 0)
-                //{
-                //    errorInfo = diagnostics[0].DiagnosticInfo;
-                //}
-                //else if (useSiteDiagnosticsBuilder != null && useSiteDiagnosticsBuilder.Count > 0)
-                //{
-                //    foreach (var diag in useSiteDiagnosticsBuilder)
-                //    {
-                //        if (diag.DiagnosticInfo.Severity == DiagnosticSeverity.Error)
-                //        {
-                //            errorInfo = diag.DiagnosticInfo;
-                //            break;
-                //        }
-                //        else if ((object)errorInfo == null)
-                //        {
-                //            errorInfo = diag.DiagnosticInfo;
-                //        }
-                //    }
-                //}
-
-                //diagnostics.Free();
-
-                //Interlocked.CompareExchange(ref _lazyBoundsErrorInfo, errorInfo, CSDiagnosticInfo.EmptyErrorInfo);
+                
                 Interlocked.CompareExchange(ref _lazyBounds, bounds, TypeParameterBounds.Unset);
             }
 
-            //Debug.Assert(!ReferenceEquals(_lazyBoundsErrorInfo, CSDiagnosticInfo.EmptyErrorInfo));
             return _lazyBounds;
         }
-
-        //internal override DiagnosticInfo GetConstraintsUseSiteErrorInfo()
-        //{
-        //    EnsureAllConstraintsAreResolved();
-        //    Debug.Assert(!ReferenceEquals(_lazyBoundsErrorInfo, CSDiagnosticInfo.EmptyErrorInfo));
-        //    return _lazyBoundsErrorInfo;
-        //}
 
         private NamedTypeSymbol GetDefaultBaseType()
         {

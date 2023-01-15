@@ -142,11 +142,6 @@ namespace Aquila.CodeAnalysis.Syntax
                     {
                         return trivia;
                     }
-                    //
-                    // if (trivia.IsDirective && trivia.GetStructure() is DirectiveTriviaSyntax directive)
-                    // {
-                    //     return GetEndOfLine(directive.EndOfDirectiveToken.TrailingTrivia);
-                    // }
                 }
 
                 return null;
@@ -431,62 +426,8 @@ namespace Aquila.CodeAnalysis.Syntax
                     {
                         _directivesToKeep.Clear();
                     }
-
-                    // var directivesInSpan = node.DescendantTrivia(span, n => n.ContainsDirectives, descendIntoTrivia: true)
-                    //                      .Where(tr => tr.IsDirective)
-                    //                      .Select(tr => (DirectiveTriviaSyntax)tr.GetStructure()!);
-                    //
-                    // foreach (var directive in directivesInSpan)
-                    // {
-                    //     if ((_options & SyntaxRemoveOptions.KeepDirectives) != 0)
-                    //     {
-                    //         _directivesToKeep.Add(directive);
-                    //     }
-                    //     else if (directive.Kind() == SyntaxKind.DefineDirectiveTrivia ||
-                    //         directive.Kind() == SyntaxKind.UndefDirectiveTrivia)
-                    //     {
-                    //         // always keep #define and #undef, even if we are only keeping unbalanced directives
-                    //         _directivesToKeep.Add(directive);
-                    //     }
-                    //     else if (HasRelatedDirectives(directive))
-                    //     {
-                    //         // a balanced directive with respect to a given node has all related directives rooted under that node
-                    //         var relatedDirectives = directive.GetRelatedDirectives();
-                    //         var balanced = relatedDirectives.All(rd => rd.FullSpan.OverlapsWith(span));
-                    //
-                    //         if (!balanced)
-                    //         {
-                    //             // if not fully balanced, all related directives under the node are considered unbalanced.
-                    //             foreach (var unbalancedDirective in relatedDirectives.Where(rd => rd.FullSpan.OverlapsWith(span)))
-                    //             {
-                    //                 _directivesToKeep.Add(unbalancedDirective);
-                    //             }
-                    //         }
-                    //     }
-                    //
-                    //     if (_directivesToKeep.Contains(directive))
-                    //     {
-                    //         AddResidualTrivia(SyntaxFactory.TriviaList(directive.ParentTrivia), requiresNewLine: true);
-                    //     }
-                    // }
                 }
             }
-
-            // private static bool HasRelatedDirectives(DirectiveTriviaSyntax directive)
-            // {
-            //     switch (directive.Kind())
-            //     {
-            //         case SyntaxKind.IfDirectiveTrivia:
-            //         case SyntaxKind.ElseDirectiveTrivia:
-            //         case SyntaxKind.ElifDirectiveTrivia:
-            //         case SyntaxKind.EndIfDirectiveTrivia:
-            //         case SyntaxKind.RegionDirectiveTrivia:
-            //         case SyntaxKind.EndRegionDirectiveTrivia:
-            //             return true;
-            //         default:
-            //             return false;
-            //     }
-            // }
         }
     }
 }

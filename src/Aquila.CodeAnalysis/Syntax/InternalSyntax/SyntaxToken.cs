@@ -73,7 +73,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
 
         internal override bool ShouldReuseInSerialization => base.ShouldReuseInSerialization &&
-                                                             FullWidth < 20000; //Lexer.MaxCachedTokenSize;
+                                                             FullWidth < 20000;
 
         //====================
 
