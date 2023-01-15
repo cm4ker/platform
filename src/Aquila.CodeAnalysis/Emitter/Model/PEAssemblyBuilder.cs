@@ -119,15 +119,7 @@ namespace Aquila.CodeAnalysis.Emit
                         }
                     }
 
-                    // Dev12 compilers don't report ERR_CryptoHashFailed if there are no files to be hashed.
-                    if (ImmutableInterlocked.InterlockedInitialize(ref _lazyFiles, builder.ToImmutable()) &&
-                        _lazyFiles.Length > 0)
-                    {
-                        //if (!CryptographicHashProvider.IsSupportedAlgorithm(_sourceAssembly.AssemblyHashAlgorithm))
-                        //{
-                        //    context.Diagnostics.Add(new CSDiagnostic(new CSDiagnosticInfo(ErrorCode.ERR_CryptoHashFailed), NoLocation.Singleton));
-                        //}
-                    }
+                    ImmutableInterlocked.InterlockedInitialize(ref _lazyFiles, builder.ToImmutable());
                 }
                 finally
                 {
@@ -146,24 +138,7 @@ namespace Aquila.CodeAnalysis.Emit
 
             for (int i = 1; i < count; i++)
             {
-                var file = (Cci.IFileReference) Translate(modules[i] as IAssemblySymbolInternal, diagnostics);
-
-                //try
-                //{
-                //    foreach (EmbeddedResource resource in ((Symbols.Metadata.PE.PEModuleSymbol)modules[i]).Module.GetEmbeddedResourcesOrThrow())
-                //    {
-                //        builder.Add(new Cci.ManagedResource(
-                //            resource.Name,
-                //            (resource.Attributes & ManifestResourceAttributes.Public) != 0,
-                //            null,
-                //            file,
-                //            resource.Offset));
-                //    }
-                //}
-                //catch (BadImageFormatException)
-                //{
-                //    diagnostics.Add(new CSDiagnosticInfo(ErrorCode.ERR_BindToBogus, modules[i]), NoLocation.Singleton);
-                //}
+                _ = Translate(modules[i] as IAssemblySymbolInternal, diagnostics);
             }
         }
     }

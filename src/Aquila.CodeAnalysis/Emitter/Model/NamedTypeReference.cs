@@ -92,11 +92,6 @@ namespace Aquila.CodeAnalysis.Emit
             return null;
         }
 
-        //public override string ToString()
-        //{
-        //    return UnderlyingNamedType.ToDisplayString(SymbolDisplayFormat.ILVisualizationFormat);
-        //}
-
         IEnumerable<Cci.ICustomAttribute> Cci.IReference.GetAttributes(EmitContext context)
         {
             return SpecializedCollections.EmptyEnumerable<Cci.ICustomAttribute>();

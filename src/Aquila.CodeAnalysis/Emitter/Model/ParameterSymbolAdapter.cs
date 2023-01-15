@@ -128,7 +128,7 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 CheckDefinitionInvariant();
-                return false; // this.IsMetadataIn;
+                return false;
             }
         }
 
@@ -155,7 +155,7 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 CheckDefinitionInvariant();
-                return false; // IsMetadataOut;
+                return false;
             }
         }
 
@@ -164,7 +164,7 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 CheckDefinitionInvariant();
-                return null; // this.MarshallingInformation;
+                return null;
             }
         }
 

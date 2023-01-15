@@ -31,16 +31,6 @@ namespace Aquila.CodeAnalysis.Symbols
             {
                 yield return setMethod;
             }
-
-            //SourcePropertySymbol sourceProperty = this as SourcePropertySymbol;
-            //if ((object)sourceProperty != null)
-            //{
-            //    SynthesizedSealedPropertyAccessor synthesizedAccessor = sourceProperty.SynthesizedSealedAccessorOpt;
-            //    if ((object)synthesizedAccessor != null)
-            //    {
-            //        yield return synthesizedAccessor;
-            //    }
-            //}
         }
 
         MetadataConstant Cci.IPropertyDefinition.DefaultValue
@@ -169,7 +159,7 @@ namespace Aquila.CodeAnalysis.Symbols
             get
             {
                 CheckDefinitionInvariant();
-                return false; // this.Type is ByRefReturnErrorTypeSymbol;
+                return false; 
             }
         }
 
@@ -249,13 +239,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
         private Cci.IMethodReference GetSynthesizedSealedAccessor(MethodKind targetMethodKind)
         {
-            //SourcePropertySymbol sourceProperty = this as SourcePropertySymbol;
-            //if ((object)sourceProperty != null)
-            //{
-            //    SynthesizedSealedPropertyAccessor synthesized = sourceProperty.SynthesizedSealedAccessorOpt;
-            //    return (object)synthesized != null && synthesized.MethodKind == targetMethodKind ? synthesized : null;
-            //}
-
             return null;
         }
     }

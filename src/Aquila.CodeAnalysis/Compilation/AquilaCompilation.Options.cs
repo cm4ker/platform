@@ -103,12 +103,6 @@ namespace Aquila.CodeAnalysis
         /// </summary>
         public override NullableContextOptions NullableContextOptions { get; protected set; }
 
-        ///// <summary>
-        ///// Flags applied to the top-level binder created for each syntax tree in the compilation 
-        ///// as well as for the binder of global imports.
-        ///// </summary>
-        //internal BinderFlags TopLevelBinderFlags { get; private set; }
-
         // Defaults correspond to the compiler's defaults or indicate that the user did not specify when that is significant.
         // That's significant when one option depends on another's setting. SubsystemVersion depends on Platform and Target.
         public AquilaCompilationOptions(
@@ -268,7 +262,7 @@ namespace Aquila.CodeAnalysis
 
         public override string Language => LanguageConstants.LanguageId;
 
-        internal override ImmutableArray<string> GetImports() => ImmutableArray<string>.Empty; // Usings;
+        internal override ImmutableArray<string> GetImports() => ImmutableArray<string>.Empty;
 
         public new AquilaCompilationOptions WithOutputKind(OutputKind kind)
         {

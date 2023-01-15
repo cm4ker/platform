@@ -158,14 +158,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
             return default;
         }
-
-        // public override T VisitGlobalStatement(BoundGlobalVariableStatement x)
-        // {
-        //     base.VisitGlobalStatement(x); // Accept(x.Variable)
-        //
-        //     return default;
-        // }
-
         #endregion
 
         #region Visit Literals
@@ -507,25 +499,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return false;
         }
 
-        /// <summary>
-        /// Attempts to infer the result of an equality comparison from the types of the operands.
-        /// </summary>
-        private void ResolveEquality(BoundBinaryEx cmpExpr)
-        {
-            Debug.Assert(cmpExpr.Operation >= Operations.Equal && cmpExpr.Operation <= Operations.NotIdentical);
-
-            bool isStrict = (cmpExpr.Operation == Operations.Identical || cmpExpr.Operation == Operations.NotIdentical);
-
-            if (isStrict && !cmpExpr.Left.CanHaveSideEffects() && !cmpExpr.Right.CanHaveSideEffects())
-            {
-                // // Always returns false if checked for strict equality and the operands are of different types (and vice versa for strict non-eq)
-                // bool isPositive = (cmpExpr.Operation == Operations.Equal || cmpExpr.Operation == Operations.Identical);
-                // bool canBeSameType =
-                //     Method.TypeRefContext.CanBeSameType(cmpExpr.Left.TypeRefMask, cmpExpr.Right.TypeRefMask);
-                // cmpExpr.ConstantValue = !canBeSameType ? (!isPositive).AsOptional() : default;
-            }
-        }
-
         #endregion
 
         #region Visit UnaryEx
@@ -597,23 +570,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                         }
 
                         break;
-
-                    // case AquilaTypeCode.Object:
-                    //     if (IsClassOnly(x.Operand.TypeRefMask))
-                    //     {
-                    //         // it is object already, keep its specific type
-                    //         x.TypeRefMask = x.Operand.TypeRefMask; // (object)<object>
-                    //         return default;
-                    //     }
-                    //
-                    //     break;
                 }
             }
-
-            //
-
-            // x.TypeRefMask = x.TargetType.GetTypeRefMask(TypeCtx);
-
             return default;
         }
 
@@ -643,42 +601,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             arg.Arguments.ForEach(x => VisitArgument(x));
 
             return base.VisitCallEx(arg);
-        }
-
-        /// <summary>
-        /// Bind arguments to target method and resolve resulting <see cref="BoundExpression.TypeRefMask"/>.
-        /// Expecting <see cref="BoundCallEx.TargetMethod"/> is resolved.
-        /// If the target method cannot be bound at compile time, <see cref="BoundCallEx.TargetMethod"/> is nulled.
-        /// </summary>
-        void BindMethodCall(BoundCallEx x, bool maybeOverload = false)
-        {
-            if (MethodSymbolExtensions.IsValidMethod(x.MethodSymbol))
-            {
-                //x.TypeRefMask = BindValidMethodCall(x, x.MethodSymbol, x.ArgumentsInSourceOrder, maybeOverload);
-            }
-            else if (x.TargetMethod is MissingMethodSymbol || x.TargetMethod == null)
-            {
-                // we don't know anything about the target callsite,
-                // locals passed as arguments should be marked as possible refs:
-                foreach (var arg in x.ArgumentsInSourceOrder)
-                {
-                    if (arg.Value is BoundVariableRef bvar && bvar.Name.IsDirect && !arg.IsUnpacking)
-                    {
-                        State.SetLocalRef(State.GetLocalHandle(bvar.Name.NameValue));
-                    }
-                }
-            }
-            else if (x.TargetMethod is AmbiguousMethodSymbol ambiguity)
-            {
-                // get the return type from all the ambiguities:
-                if (!maybeOverload && x.Access.IsRead)
-                {
-                }
-            }
-
-            if (x.Access.IsReadRef)
-            {
-            }
         }
 
         #endregion
@@ -714,10 +636,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             Accept(x.Array);
             Accept(x.Index);
 
-            // ord($s[$i]) cannot be used as an l-value
             Debug.Assert(!x.Access.MightChange);
-
-            // x.TypeRefMask = TypeCtx.GetLongTypeMask();
 
             return base.VisitArrayItemOrdEx(x);
         }

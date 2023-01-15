@@ -49,21 +49,7 @@ namespace Aquila.CodeAnalysis
 
         public override string GetMessage(IFormatProvider formatProvider = null)
         {
-            var culture = formatProvider as CultureInfo;
-
-            string messagePrefix = this.MessageProvider.LoadMessage(this.Code, culture);
-            string message = "";
-            throw new NotImplementedException(); //ErrorFacts.GetMessage(_xmlErrorCode, culture);
-
-            System.Diagnostics.Debug.Assert(!string.IsNullOrEmpty(message));
-
-            if (this.Arguments == null || this.Arguments.Length == 0)
-            {
-                return String.Format(formatProvider, messagePrefix, message);
-            }
-
-            return String.Format(formatProvider, String.Format(formatProvider, messagePrefix, message),
-                GetArgumentsToUse(formatProvider));
+            throw new NotImplementedException();
         }
     }
 }

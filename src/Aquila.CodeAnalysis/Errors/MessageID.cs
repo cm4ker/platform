@@ -294,48 +294,11 @@ namespace Aquila.CodeAnalysis
             }
         }
 
-        // internal static bool CheckFeatureAvailability(
-        //     this MessageID feature,
-        //     BindingDiagnosticBag diagnostics,
-        //     SyntaxNode syntax,
-        //     Location? location = null)
-        // {
-        //     var diag = GetFeatureAvailabilityDiagnosticInfo(feature, (AquilaParseOptions)syntax.SyntaxTree.Options);
-        //     if (diag is object)
-        //     {
-        //         diagnostics.Add(diag, location ?? syntax.GetLocation());
-        //         return false;
-        //     }
-        //
-        //     return true;
-        // }
-
-        // internal static bool CheckFeatureAvailability(
-        //     this MessageID feature,
-        //     BindingDiagnosticBag diagnostics,
-        //     Compilation compilation,
-        //     Location location)
-        // {
-        //     if (GetFeatureAvailabilityDiagnosticInfo(feature, (CSharpCompilation)compilation) is { } diagInfo)
-        //     {
-        //         diagnostics.Add(diagInfo, location);
-        //         return false;
-        //     }
-        //
-        //     return true;
-        // }
-
         internal static CSDiagnosticInfo? GetFeatureAvailabilityDiagnosticInfo(this MessageID feature,
             AquilaParseOptions options)
             => options.IsFeatureEnabled(feature)
                 ? null
                 : GetDisabledFeatureDiagnosticInfo(feature, LanguageVersion.Default);
-
-        // internal static CSDiagnosticInfo? GetFeatureAvailabilityDiagnosticInfo(this MessageID feature,
-        //     AquilaCompilation compilation)
-        //     => compilation.IsFeatureEnabled(feature)
-        //         ? null
-        //         : GetDisabledFeatureDiagnosticInfo(feature, LanguageVersion.Default);
 
         private static CSDiagnosticInfo GetDisabledFeatureDiagnosticInfo(MessageID feature,
             LanguageVersion availableVersion)
