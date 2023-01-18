@@ -20,6 +20,7 @@
         <Metadata Include="**/*.aqmd" Exclude="obj/**;bin/**;.*/**"/>
         <View Include="**/*.aqview" Exclude="obj/**;bin/**;.*/**"/>
         <Compile Include="**/*.aq" Exclude="obj/**;bin/**;.*/**"/>
+        <SecPolice Inclide="**/*.aqsec" Exclude="obj/**;bin/**;.*/**" />
     </ItemGroup>
 
     <ItemGroup>
