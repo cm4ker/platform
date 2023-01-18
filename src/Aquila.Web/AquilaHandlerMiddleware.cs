@@ -43,14 +43,14 @@ namespace Aquila.AspNetCore.Web
 
             switch (area)
             {
-                case "any": return InvokeAny(context, next);
-                case "crud": return InvokeCrud(context);
-                case "migrate": return InvokeMigrate(context);
-                case "deploy": return InvokeDeploy(context);
-                case "metadata": return InvokeGetMetadata(context);
-                case "user": return InvokeGetCurrentUser(context);
-                case "endpoints": return InvokeEndpoints(context);
-                case "view": return InvokeView(context, next);
+                case AquilaWellKnowWebNames.AnyArea: return InvokeAny(context, next);
+                case AquilaWellKnowWebNames.CrudArea: return InvokeCrud(context);
+                case AquilaWellKnowWebNames.MigrateArea: return InvokeMigrate(context);
+                case AquilaWellKnowWebNames.DeployArea: return InvokeDeploy(context);
+                case AquilaWellKnowWebNames.MetadataArea: return InvokeGetMetadata(context);
+                case AquilaWellKnowWebNames.UserArea: return InvokeGetCurrentUser(context);
+                case AquilaWellKnowWebNames.EndpointsArea: return InvokeEndpoints(context);
+                case AquilaWellKnowWebNames.ViewArea: return InvokeView(context, next);
 
 
                 //in that case we not handle this and just invoke next delegate
@@ -83,8 +83,7 @@ namespace Aquila.AspNetCore.Web
                         instance.Name);
                 }
 
-                var instanceName = instance.Name.ToLower();
-                _holder.UnregisterInstance(instanceName);
+                _holder.UnregisterInstance(instance.Name);
 
                 var crudMethods = instance.BLAssembly.GetCrudMethods().ToList();
                 var endpointMethods = instance.BLAssembly.GetEndpoints();
@@ -120,12 +119,12 @@ namespace Aquila.AspNetCore.Web
                         _ => throw new ArgumentOutOfRangeException()
                     };
 
-                    _holder.AddCrud(instanceName, item.attr.ObjectName, methodName, operationType, method);
+                    _holder.AddCrud(instance.Name, item.attr.ObjectName, methodName, operationType, method);
                 }
 
                 foreach (var item in endpointMethods)
                 {
-                    _holder.AddEndpoint(instanceName, item.m.Name.ToLower(), item.m);
+                    _holder.AddEndpoint(instance.Name, item.m.Name.ToLower(), item.m);
                 }
             }
         }
@@ -173,10 +172,11 @@ namespace Aquila.AspNetCore.Web
 
         private Task InvokeDeploy(HttpContext context)
         {
-            var instanceName = context.GetRouteValue("instance")?.ToString();
-            var instance = _instanceManager.GetInstance(instanceName);
-
-            if (instance is null) return Task.CompletedTask;
+            if (!context.TryGetInstanceName(out var name)
+                || !_instanceManager.TryGetInstance(name, out var instance))
+            {
+                return Task.CompletedTask;
+            }
 
             try
             {
@@ -194,10 +194,11 @@ namespace Aquila.AspNetCore.Web
 
         private Task InvokeMigrate(HttpContext context)
         {
-            var instanceName = context.GetRouteValue("instance")?.ToString();
-            var instance = _instanceManager.GetInstance(instanceName);
-
-            if (instance is null) return Task.CompletedTask;
+            if (!context.TryGetInstanceName(out var name)
+                || !_instanceManager.TryGetInstance(name, out var instance))
+            {
+                return Task.CompletedTask;
+            }
 
             instance.Migrate();
             InitInstance(instance);
@@ -207,18 +208,20 @@ namespace Aquila.AspNetCore.Web
 
         public async Task InvokeCrud(HttpContext context)
         {
-            var instanceName = (string)context.GetRouteValue("instance");
-            var objectName = (string)context.GetRouteValue("object");
-            var method = (string)context.GetRouteValue("method");
-            var operationType = context.Request.Method;
-
-            var instance = _instanceManager.GetInstance(instanceName);
-
-            var aqctx = new AqHttpContext(context, instance);
-
-            if (_holder.TryGetCrud(instanceName, objectName, method, operationType, out var mi))
+            if (!context.TryGetInstanceName(out var instanceName)
+                || !context.TryGetObjectName(out var objectName)
+                || !context.TryGetMethodName(out var methodName)
+                || !_instanceManager.TryGetInstance(instanceName, out var instance))
             {
-                switch (method)
+                return;
+            }
+
+            var operationType = context.Request.Method;
+            var aqctx = context.CreateContext(instance);
+
+            if (_holder.TryGetCrud(instanceName, objectName, methodName, operationType, out var mi))
+            {
+                switch (methodName)
                 {
                     case "get":
                         await GetHandler(aqctx, context, mi);
@@ -233,30 +236,9 @@ namespace Aquila.AspNetCore.Web
             }
         }
 
-        private async Task InvokeGetSessions(HttpContext context)
-        {
-            var instanceName = context.GetRouteValue("instance")?.ToString();
-            var instance = _instanceManager.GetInstance(instanceName);
-
-            if (instance is null) return;
-
-            //await context.Response.WriteAsJsonAsync(instance.Sessions);
-        }
-
-        private async Task GetInstances(HttpContext context)
-        {
-            var list = _instanceManager.GetInstances().Select(x => new { x.Name });
-
-            await context.Response.WriteAsJsonAsync(list);
-        }
-
         private async Task InvokeGetCurrentUser(HttpContext context)
         {
-            var instanceName = context.GetRouteValue("instance")?.ToString();
-            var instance = _instanceManager.GetInstance(instanceName);
-
-            var aqctx = new AqHttpContext(context, instance);
-
+            var aqctx = context.TryGetOrCreateContext() ?? throw new InvalidOperationException();
             var result = aqctx.User;
 
             foreach (var role in aqctx.Roles)
@@ -269,10 +251,11 @@ namespace Aquila.AspNetCore.Web
 
         private async Task InvokeGetMetadata(HttpContext context)
         {
-            var instanceName = context.GetRouteValue("instance")?.ToString();
-            var instance = _instanceManager.GetInstance(instanceName);
-
-            if (instance is null) return;
+            if (!context.TryGetInstanceName(out var name)
+                || !_instanceManager.TryGetInstance(name, out var instance))
+            {
+                return;
+            }
 
             var aqctx = new AqContext(instance);
 
@@ -285,21 +268,16 @@ namespace Aquila.AspNetCore.Web
 
         private async Task InvokeEndpoints(HttpContext context)
         {
-            var instanceName = context.GetRouteValue("instance")?.ToString();
-            var method = context.GetRouteValue("method")?.ToString();
-
-            var instance = _instanceManager.GetInstance(instanceName);
-
-            if (instance == null)
+            if (!context.TryGetInstanceName(out var instanceName)
+                || !context.TryGetMethodName(out var methodName)
+                || context.TryGetOrCreateContext() is not {} aqctx)
             {
-                throw new ArgumentNullException(nameof(instance));
+                throw new InvalidOperationException();
             }
-
-            var aqctx = new AqHttpContext(context, instance);
 
             var parametersStream = context.Request.Body;
 
-            if (_holder.TryGetEndpoint(instanceName, method, out var m))
+            if (_holder.TryGetEndpoint(instanceName, methodName, out var m))
             {
                 StreamReader sr = new StreamReader(parametersStream);
 
@@ -339,16 +317,12 @@ namespace Aquila.AspNetCore.Web
 
         private async Task InvokeView(HttpContext context, RequestDelegate next)
         {
-            var instanceName = context.GetRouteValue("instance")?.ToString();
-            var instance = _instanceManager.GetInstance(instanceName);
-
-            if (instance is null)
+            if (context.TryGetOrCreateContext() is not {})
             {
                 await next(context);
                 return;
             }
-
-            context.Items["AquilaAssemblies"] = new[] { instance.BLAssembly, typeof(AquilaHandlerMiddleware).Assembly };
+            
             await next(context);
         }
 

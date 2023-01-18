@@ -15,6 +15,7 @@ using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -50,31 +51,31 @@ namespace Aquila.Web
                 });
             }
 
-            builder.MapMiddleware<AquilaHandlerMiddleware>("default", "any", null);
+            builder.MapMiddleware<AquilaHandlerMiddleware>("default", AquilaWellKnowWebNames.AnyArea, null);
 
-            builder.MapMiddleware<AquilaHandlerMiddleware>("default", "metadata",
+            builder.MapMiddleware<AquilaHandlerMiddleware>("default", AquilaWellKnowWebNames.MetadataArea,
                 "api/{instance}/metadata");
 
-            builder.MapMiddleware<AquilaHandlerMiddleware>("default", "migrate",
+            builder.MapMiddleware<AquilaHandlerMiddleware>("default", AquilaWellKnowWebNames.MigrateArea,
                 "api/{instance}/migrate");
 
-            builder.MapMiddleware<AquilaHandlerMiddleware>("default", "user",
+            builder.MapMiddleware<AquilaHandlerMiddleware>("default", AquilaWellKnowWebNames.UserArea,
                 "api/{instance}/user", options => options.AddAuthorizeData(policy: "UserRequired"));
 
-            builder.MapMiddleware<AquilaHandlerMiddleware>("default", "endpoints",
+            builder.MapMiddleware<AquilaHandlerMiddleware>("default", AquilaWellKnowWebNames.EndpointsArea,
                 "api/{instance}/endpoints/{method}", options => options.AddAuthorizeData(policy: "UserRequired"));
 
-            builder.MapMiddleware<AquilaHandlerMiddleware>("default", "deploy",
+            builder.MapMiddleware<AquilaHandlerMiddleware>("default", AquilaWellKnowWebNames.DeployArea,
                 "api/{instance}/deploy");
 
-            builder.MapMiddleware<AquilaHandlerMiddleware>("default", "crud",
+            builder.MapMiddleware<AquilaHandlerMiddleware>("default", AquilaWellKnowWebNames.CrudArea,
                 "api/{instance}/{object}/{method}/{id?}", options => options.AddAuthorizeData(policy: "UserRequired"));
 
             builder.MapMiddleware<AquilaHandlerMiddleware>("default", "resource",
                 "res/{instance}/{resourceId?}", options => options.AddAuthorizeData(policy: "UserRequired"));
 
             //declare view after the mapping blazor            
-            builder.MapMiddleware<AquilaHandlerMiddleware>("default", "view",
+            builder.MapMiddleware<AquilaHandlerMiddleware>("default", AquilaWellKnowWebNames.ViewArea,
                 "view/{instance}/{view}"); // not use auth for views for now, options => options.AddAuthorizeData(policy: "UserRequired"));
 
 
@@ -181,13 +182,9 @@ namespace Aquila.Web
 
             services.AddSingleton<ICacheService, DictionaryCacheService>();
 
-            // services.TryAddEnumerable(
-            //     ServiceDescriptor.Transient<IApiDescriptionProvider, AquilaApplicationModelProvider>());
-
-
             services.AddRazorPages().PartManager.FeatureProviders.Add(new CustomFeatureProvider());
             services.AddServerSideBlazor();
-
+            services.AddScoped<IComponentActivator, AquilaComponentActivator>();
 
             services.AddSingleton<AquilaApiHolder>();
             services.AddSingleton<AquilaHandlerMiddleware>();
@@ -258,9 +255,23 @@ namespace Aquila.Web
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
-            ContextExtensions.CurrentContextProvider = HttpContextExtension.GetOrCreateContext;
-
             return services;
+        }
+    }
+
+    public class AquilaComponentActivator : IComponentActivator
+    {
+        private readonly IHttpContextAccessor _accessor;
+
+        public AquilaComponentActivator(IHttpContextAccessor accessor)
+        {
+            _accessor = accessor;
+        }
+        
+        
+        public IComponent CreateInstance(Type componentType)
+        {
+            _accessor.HttpContext.
         }
     }
 }

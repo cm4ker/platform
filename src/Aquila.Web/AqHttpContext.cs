@@ -30,6 +30,8 @@ namespace Aquila.AspNetCore.Web
             _httpctx = httpContext;
 
             httpContext.Items[HttpContextItemKey] = this;
+            httpContext.Items[AquilaAssembliesItemKey] = new[] { instance.BLAssembly, typeof(AqHttpContext).Assembly };
+            
             var bodyControl = httpContext.Features.Get<IHttpBodyControlFeature>();
             if (bodyControl != null)
             {
@@ -320,6 +322,8 @@ namespace Aquila.AspNetCore.Web
         /// </summary>
         static object HttpContextItemKey => typeof(AqContext);
 
+        public static object AquilaAssembliesItemKey => "AquilaAssemblies";
+        
         /// <summary>
         /// Reference to current <see cref="HttpContext"/>.
         /// Cannot be <c>null</c>.

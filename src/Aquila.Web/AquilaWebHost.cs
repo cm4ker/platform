@@ -84,11 +84,14 @@ namespace Aquila.Web
                         app.UseHsts();
                     }
 
-
                     app.UseAquila(b);
+                    
                     //if we not found endpoints response this                    
                     app.Run(context =>
-                        context.Response.WriteAsync("Path not found! Go away!", cancellationToken: ct));
+                    {
+                        context.Response.StatusCode = StatusCodes.Status404NotFound;
+                        return context.Response.WriteAsync("Path not found! Go away!", cancellationToken: ct);
+                    });
                 })
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory());
