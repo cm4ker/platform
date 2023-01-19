@@ -118,6 +118,11 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         internal SynthesizedMethodSymbol SetReturn(TypeSymbol type)
         {
+            if (_explicitOverride != null)
+            {
+                throw new Exception("Can't set name on the overriden method");  
+            }
+
             _return = type;
             return this;
         }
@@ -248,6 +253,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         public override RefKind RefKind => RefKind.None;
 
         public override TypeSymbol ReturnType =>
+            _explicitOverride?.ReturnType ??
             _return ?? ForwardedCall?.ReturnType ?? throw new InvalidOperationException();
 
         internal override ObsoleteAttributeData ObsoleteAttributeData => null;

@@ -3,6 +3,7 @@
     <Import Project="..\Props\target.props" />
 
     <PropertyGroup>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 

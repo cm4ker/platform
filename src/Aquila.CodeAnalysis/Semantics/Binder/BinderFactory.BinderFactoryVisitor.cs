@@ -123,9 +123,10 @@ namespace Aquila.CodeAnalysis.Semantics
                             .Single();
                         return new InMethodBinder(builder, next);
                     }
-                    case HtmlDecl:
+                    case HtmlDecl htmlDecl:
                     {
-                        var type = _compilation.SourceSymbolCollection.GetViewTypes().Single();
+                        var type = _compilation.SourceSymbolCollection.GetViewTypes()
+                            .Single(x => x.AquilaSyntax.SyntaxTree.FilePath == htmlDecl.SyntaxTree.FilePath);
                         return new InContainerBinder(type, next);
                     }
                     case ImportDecl import:

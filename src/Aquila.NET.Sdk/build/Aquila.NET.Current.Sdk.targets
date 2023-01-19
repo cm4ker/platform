@@ -14,6 +14,7 @@
         <PackageReference Include="Aquila.Runtime" Version="$(AquilaVersion)"/>
         <PackageReference Include="Aquila.Library" Version="$(AquilaVersion)"/>
         <PackageReference Include="Microsoft.AspNetCore.Components" Version="6.0.5"/>
+        <PackageReference Include="Aquila.Web.Razor" Version="$(AquilaVersion)"/>
     </ItemGroup>
 
     <Import Project="$(MSBuildThisFileDirectory)\Aquila.NET.Core.Sdk.targets"/>

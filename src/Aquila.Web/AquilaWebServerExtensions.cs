@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using Aquila.AspNetCore.Web;
+using Aquila.Core;
 using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
 using Aquila.Core.Instance;
@@ -85,7 +86,7 @@ namespace Aquila.Web
                 o.MapDefaultControllerRoute();
 
                 o.MapBlazorHub();
-
+                
                 o.MapFallbackToPage("/_Host");
             });
 
@@ -271,7 +272,20 @@ namespace Aquila.Web
         
         public IComponent CreateInstance(Type componentType)
         {
-            _accessor.HttpContext.
+            var context = _accessor.HttpContext.TryGetOrCreateContext();
+
+            if (componentType.GetConstructor(new[] { typeof(AqContext) }) == null)
+            {
+                return Activator.CreateInstance(componentType) as IComponent ?? 
+                       throw new InvalidOperationException("This is not a component");
+            }
+
+            if (Activator.CreateInstance(componentType, context) is not IComponent com)
+            {
+                throw new InvalidOperationException("Invalid platform component");
+            }
+
+            return com;
         }
     }
 }

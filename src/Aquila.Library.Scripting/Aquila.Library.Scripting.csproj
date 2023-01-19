@@ -6,6 +6,7 @@
         <ProjectReference Include="..\Aquila.CodeAnalysis\Aquila.CodeAnalysis.csproj" />
         <ProjectReference Include="..\Aquila.Library\Aquila.Library.csproj" />
         <ProjectReference Include="..\Aquila.Runtime\Aquila.Runtime.csproj" />
+        <ProjectReference Include="..\Aquila.Web.Razor\Aquila.Web.Razor.csproj" />
     </ItemGroup>
     
     <ItemGroup>

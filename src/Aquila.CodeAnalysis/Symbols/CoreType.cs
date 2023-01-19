@@ -199,6 +199,7 @@ namespace Aquila.CodeAnalysis.Symbols
             ImmutableArray_arg1,
             List_arg1,
             System_linq_enumerable,
+            Task,
 
             //Attributes
             RuntimeInitAttribute,
@@ -234,6 +235,7 @@ namespace Aquila.CodeAnalysis.Symbols
             //WebTypes
             Web_ComponentBase,
             Web_RenderTreeBuilder,
+            Web_ParameterView,
             Web_Route
 
             //End
@@ -243,6 +245,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             Contract.ThrowIfNull(compilation);
             _compilation = compilation;
+            
             _table = new Dictionary<string, CoreType>();
 
             #region BCL
@@ -271,7 +274,7 @@ namespace Aquila.CodeAnalysis.Symbols
             ImmutableArray_arg1 = CreateFromFullName("System.Collections.Immutable.ImmutableArray`1");
             List_arg1 = CreateFromFullName("System.Collections.Generic.List`1");
             System_linq_enumerable = CreateFromFullName("System.Linq.Enumerable");
-
+            Task = CreateFromFullName("System.Threading.Tasks.Task");
             #endregion
 
             #region Linq
@@ -324,9 +327,10 @@ namespace Aquila.CodeAnalysis.Symbols
 
             #region WebTypes
 
-            Web_ComponentBase = CreateFromFullName("Microsoft.AspNetCore.Components.ComponentBase");
+            Web_ComponentBase = CreateFromFullName("Aquila.Web.Razor.AqComponentBase");
             Web_RenderTreeBuilder = CreateFromFullName("Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder");
             Web_Route = CreateFromFullName("Microsoft.AspNetCore.Components.RouteAttribute");
+            Web_ParameterView = CreateFromFullName("Microsoft.AspNetCore.Component.ParameterView");
             #endregion
 
             ;

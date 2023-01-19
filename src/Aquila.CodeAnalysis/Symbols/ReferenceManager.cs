@@ -29,7 +29,8 @@ namespace Aquila.CodeAnalysis
                 _systemCollectionsImmutable,
                 _systemCollections,
                 _systemLinq,
-                _aspnetcoreComponents;
+                _aspnetcoreComponents,
+                _aquilaWebRazor;
 
             public Dictionary<AssemblyIdentity, PEAssemblySymbol> ObservedMetadata => _observedMetadata;
             readonly Dictionary<AssemblyIdentity, PEAssemblySymbol> _observedMetadata;
@@ -52,7 +53,6 @@ namespace Aquila.CodeAnalysis
             private readonly DiagnosticBag _diagnostics = new DiagnosticBag();
 
             private ImmutableArray<AssemblySymbol> _referencedAssemblies;
-
 
             internal ImmutableArray<AssemblySymbol> ReferencedAssemblies
             {
@@ -259,6 +259,11 @@ namespace Aquila.CodeAnalysis
                                 symbol.SpecialAssembly == SpecialAssembly.AsnetcoreComponents)
                                 _aspnetcoreComponents = symbol;
 
+                            if (_aquilaWebRazor == null
+                                && symbol.SpecialAssembly == SpecialAssembly.AquilaWebRazor)
+                                _aquilaWebRazor = symbol;
+                                
+
                             // cache bound assembly symbol
                             _observedMetadata[symbol.Identity] = symbol;
                         }
@@ -322,6 +327,7 @@ namespace Aquila.CodeAnalysis
                 compilation.CoreTypes.Update(_systemLinq);
                 compilation.CoreTypes.Update(_systemCollections);
                 compilation.CoreTypes.Update(_aspnetcoreComponents);
+                compilation.CoreTypes.Update(_aquilaWebRazor);
                 //
                 return assembly;
             }
