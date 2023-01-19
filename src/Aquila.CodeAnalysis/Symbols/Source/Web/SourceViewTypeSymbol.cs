@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading;
 using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Semantics.Graph;
+using Aquila.CodeAnalysis.Symbols.Attributes;
+using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.CodeAnalysis.Syntax;
+using Aquila.Querying;
 using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
+using TypeLayout = Microsoft.CodeAnalysis.TypeLayout;
 
 
 namespace Aquila.CodeAnalysis.Symbols.Source;
@@ -24,9 +29,11 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
     private readonly CoreTypes _ct;
     private ImmutableArray<Symbol> _members;
     private readonly string _name;
+    private ImmutableArray<AttributeData> _attributeData;
 
     public SourceViewTypeSymbol(NamespaceOrTypeSymbol container, HtmlDecl htmlDecl)
     {
+        
         _container = container;
         _ct = container.DeclaringCompilation.CoreTypes;
         _htmlDecl = htmlDecl;
@@ -41,6 +48,8 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
             .Select(s => char.ToUpperInvariant(s[0]) + s.Substring(1, s.Length - 1))
             .Aggregate(string.Empty, (s1, s2) => s1 + s2);
 
+    internal HtmlDecl AquilaSyntax => _htmlDecl;
+    
     public override string Name => _name;
     internal override ObsoleteAttributeData ObsoleteAttributeData { get; }
     public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences { get; }
@@ -85,8 +94,10 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
     {
         if (_members == null)
         {
+
             var builder = ImmutableArray.CreateBuilder<Symbol>();
             builder.Add(new MethodTreeBuilderSymbol(this, _htmlDecl));
+            
             SourceTypeSymbolHelper.AddDefaultInstanceTypeSymbolMembers(this, builder);
 
             if (_htmlDecl.HtmlCode != null)
@@ -112,6 +123,26 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
     public override ImmutableArray<NamedTypeSymbol> GetTypeMembers(string name)
     {
         return ImmutableArray<NamedTypeSymbol>.Empty;
+    }
+
+    private void EnsureAttributes()
+    {
+        if (!_attributeData.IsDefault)
+            return;
+
+        _attributeData = new AttributeData[]
+        {
+            new SynthesizedAttributeData(_ct.Web_Route.Ctor(_ct.String),
+                ImmutableArray.Create(new TypedConstant(_ct.String.Symbol,
+                    TypedConstantKind.Primitive, $"/view/{{instanceName}}/{_name.ToCamelCase()}")),
+                ImmutableArray<KeyValuePair<string, TypedConstant>>.Empty)
+        }.ToImmutableArray();
+    }
+
+    public override ImmutableArray<AttributeData> GetAttributes()
+    {
+        EnsureAttributes();
+        return _attributeData;
     }
 
 
@@ -156,28 +187,26 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences =>
             ImmutableArray<SyntaxReference>.Empty;
 
-        public override Accessibility DeclaredAccessibility => Accessibility.Public;
+        public override Accessibility DeclaredAccessibility => _overridenMethod.DeclaredAccessibility;
         public override bool IsStatic => _overridenMethod.IsStatic;
         public override bool IsVirtual => _overridenMethod.IsVirtual;
 
-        internal override bool IsMetadataVirtual(bool ignoreInterfaceImplementationChanges = false)
-        {
-            return false;
-        }
+        public override bool HidesBaseMethodsByName => true;
 
         public override bool ReturnsVoid => _overridenMethod.ReturnsVoid;
+
         public override RefKind RefKind => _overridenMethod.RefKind;
+
         public override TypeSymbol ReturnType => _overridenMethod.ReturnType;
+
         public override bool IsOverride => true;
+
         public override MethodKind MethodKind => MethodKind.Ordinary;
+
         public override bool IsAbstract => false;
 
-        internal override bool IsMetadataNewSlot(bool ignoreInterfaceImplementationChanges = false)
-        {
-            return false;
-        }
-
         public override bool IsSealed => true;
+
         public override bool IsExtern => false;
 
         ///<inheritdoc />
@@ -203,6 +232,16 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
                 return _cfg;
             }
             internal set => _cfg = value;
+        }
+
+        internal override bool IsMetadataVirtual(bool ignoreInterfaceImplementationChanges = false)
+        {
+            return true;
+        }
+
+        internal override bool IsMetadataNewSlot(bool ignoreInterfaceImplementationChanges = false)
+        {
+            return false;
         }
 
         protected override ImplicitParametersBuilder PrepareImplicitParams()

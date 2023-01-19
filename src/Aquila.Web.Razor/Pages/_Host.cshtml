@@ -1,8 +1,6 @@
 ﻿@page "/"
-@using System.Reflection
 @using Aquila.Web.Razor
 @using Microsoft.AspNetCore.Http
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Microsoft.AspNetCore.Routing
 @namespace Aquila.Web.Razor.Pages
 
@@ -13,4 +11,8 @@
     Layout = "_Layout";
 }
 
-@(await Html.RenderComponentAsync<App>(RenderMode.ServerPrerendered, new { InstanceName = HttpContextAccessor.HttpContext?.GetRouteValue("instance") }))
+@(await Html.RenderComponentAsync<App>(RenderMode.ServerPrerendered,
+    new
+    {
+        InstanceName = HttpContextAccessor.HttpContext?.GetRouteValue("instance")
+    }))

@@ -5,11 +5,9 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Runtime.Loader;
 using System.Xml.Serialization;
 using Aquila.Core.Assemlies;
 using Aquila.Core.Authentication;
-using Aquila.Core.CacheService;
 using Aquila.Data;
 using Aquila.Initializer;
 using Aquila.Core.Contracts.Network;
@@ -23,72 +21,45 @@ using Aquila.Runtime.Querying;
 
 namespace Aquila.Core.Instance
 {
-    public class AquilaAssemblyLoadContext : AssemblyLoadContext
-    {
-        public AquilaAssemblyLoadContext() : base(true)
-        {
-        }
-
-        public bool IsUnloading { get; private set; }
-
-        public new void Unload()
-        {
-            IsUnloading = true;
-            base.Unload();
-        }
-    }
-
-    public static class AssemblyLoadContextExtensions
-    {
-        public static Assembly LoadFromByteArray(this AssemblyLoadContext context, byte[] bytes)
-        {
-            using var ms = new MemoryStream(bytes);
-            return context.LoadFromStream(ms);
-        }
-    }
-
     /// <summary>
-    /// Platfrom instace
+    /// Platform instance
     /// </summary>
     public class AqInstance : IAqInstance
     {
         private object _locking;
         private AquilaAssemblyLoadContext _asmContext;
 
-        public AqInstance(ILogger<AqInstance> logger, IServiceProvider serviceProvider,
-            DataContextManager contextManager, AqUserManager userManager, ICacheService cacheService,
-            AqMigrationManager migrationManager, AqAuthenticationManager authenticationManager)
+        private ILogger _logger;
+
+        private AqUserManager _userManager;
+        private readonly AqAuthenticationManager _authenticationManager;
+
+        public AqInstance(ILogger<AqInstance> logger,
+            DataContextManager contextManager, 
+            AqUserManager userManager,
+            AqMigrationManager migrationManager, 
+            AqAuthenticationManager authenticationManager)
         {
             _locking = new object();
-            _serviceProvider = serviceProvider;
             _logger = logger;
             _userManager = userManager;
-            _cacheService = cacheService;
             _authenticationManager = authenticationManager;
 
             MigrationManager = migrationManager;
 
-            Globals = new Dictionary<string, object>();
             DataContextManager = contextManager;
         }
 
         public DatabaseRuntimeContext DatabaseRuntimeContext { get; private set; }
+        public AqMigrationManager MigrationManager { get; }
 
-        private void UpdateDBRContext()
-        {
-            DatabaseRuntimeContext = DatabaseRuntimeContext.CreateAndLoad(DataContextManager.GetContext());
-        }
+        public string Name => "Library";
 
-        private byte[] GetCurrentAssembly()
-        {
-            return DatabaseRuntimeContext.Files.GetMainAssembly(DataContextManager.GetContext());
-        }
+        public DataContextManager DataContextManager { get; }
 
-        private byte[] GetFile(string name)
-        {
-            return DatabaseRuntimeContext.Files.GetFile(DataContextManager.GetContext(), name);
-        }
+        public Assembly BLAssembly { get; private set; }
 
+        public bool PendingChanges => MigrationManager.CheckMigration();
 
         public void Initialize(StartupConfig config)
         {
@@ -105,35 +76,6 @@ namespace Aquila.Core.Instance
 
             Reload();
         }
-
-        private void Reload()
-        {
-            var currentAssembly = GetCurrentAssembly();
-
-            if (currentAssembly != null)
-            {
-                if (_asmContext == null)
-                    _asmContext = new AquilaAssemblyLoadContext();
-
-                if (_asmContext.IsCollectible && !_asmContext.IsUnloading && _asmContext.Assemblies.Any())
-                    _asmContext.Unload();
-
-                if (_asmContext.IsUnloading)
-                    _asmContext = new AquilaAssemblyLoadContext();
-
-
-                var asm = _asmContext.LoadFromByteArray(currentAssembly);
-                _asmContext.Resolving += (context, name) =>
-                    context.LoadFromByteArray(GetFile(name.Name + ".dll"));
-
-                LoadAssembly(asm);
-                _logger.Info("Project '{0}' was loaded.", Name);
-            }
-            else
-                _logger.Info("Assembly is empty");
-        }
-
-        public bool PendingChanges => MigrationManager.CheckMigration();
 
         public void Migrate()
         {
@@ -231,6 +173,33 @@ namespace Aquila.Core.Instance
             LoadAssembly(asm);
         }
 
+        private void Reload()
+        {
+            var currentAssembly = GetCurrentAssembly();
+
+            if (currentAssembly != null)
+            {
+                if (_asmContext == null)
+                    _asmContext = new AquilaAssemblyLoadContext();
+
+                if (_asmContext.IsCollectible && !_asmContext.IsUnloading && _asmContext.Assemblies.Any())
+                    _asmContext.Unload();
+
+                if (_asmContext.IsUnloading)
+                    _asmContext = new AquilaAssemblyLoadContext();
+
+
+                var asm = _asmContext.LoadFromByteArray(currentAssembly);
+                _asmContext.Resolving += (context, name) =>
+                    context.LoadFromByteArray(GetFile(name.Name + ".dll"));
+
+                LoadAssembly(asm);
+                _logger.Info("Project '{0}' was loaded.", Name);
+            }
+            else
+                _logger.Info("Assembly is empty");
+        }
+
         private void LoadAssembly(Assembly asm)
         {
             _logger.Info("[Assembly] Starting init: {0}", asm.FullName);
@@ -300,27 +269,21 @@ namespace Aquila.Core.Instance
                 }
             }
         }
+        
+        private void UpdateDBRContext()
+        {
+            DatabaseRuntimeContext = DatabaseRuntimeContext.CreateAndLoad(DataContextManager.GetContext());
+        }
 
-        private ILogger _logger;
+        private byte[] GetCurrentAssembly()
+        {
+            return DatabaseRuntimeContext.Files.GetMainAssembly(DataContextManager.GetContext());
+        }
 
-        private IServiceProvider _serviceProvider;
+        private byte[] GetFile(string name)
+        {
+            return DatabaseRuntimeContext.Files.GetFile(DataContextManager.GetContext(), name);
+        }
 
-        private AqUserManager _userManager;
-        private readonly ICacheService _cacheService;
-        private readonly AqAuthenticationManager _authenticationManager;
-
-        public AqMigrationManager MigrationManager { get; }
-
-        public string Name => "Library";
-
-        public DataContextManager DataContextManager { get; }
-
-        public Assembly BLAssembly { get; private set; }
-
-
-        /// <summary>
-        /// Global objects
-        /// </summary>
-        public Dictionary<string, object> Globals { get; set; }
     }
 }

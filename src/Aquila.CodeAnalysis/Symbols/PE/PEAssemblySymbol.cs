@@ -162,6 +162,10 @@ namespace Aquila.CodeAnalysis.Symbols.PE
             {
                 _specialAssembly = SpecialAssembly.AsnetcoreComponents;
             }
+            else if(IsAquilaWebRazor(assembly))
+            {
+                _specialAssembly = SpecialAssembly.AquilaWebRazor;
+            }
         }
 
         internal static bool IsAquilaCoreLib(PEAssembly ass) => ass.Identity.Name == "Aquila.Runtime";
@@ -178,6 +182,9 @@ namespace Aquila.CodeAnalysis.Symbols.PE
         internal static bool IsAspnetcoreComponents(PEAssembly ass) =>
             ass.Identity.Name == "Microsoft.AspNetCore.Components";
 
+        internal static bool IsAquilaWebRazor(PEAssembly ass) =>
+            ass.Identity.Name == "Aquila.Web.Razor";
+        
         internal static PEAssemblySymbol Create(PortableExecutableReference reference, PEAssembly ass = null,
             bool isLinked = true)
         {

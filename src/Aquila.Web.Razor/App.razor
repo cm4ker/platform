@@ -1,6 +1,5 @@
 ﻿@using System.Reflection
 @using Aquila.Core.Instance
-@using Microsoft.AspNetCore.Http
 
 @inject AqInstanceManager InstanceManager
 
@@ -14,8 +13,6 @@
         <LayoutView Layout="@typeof(MainLayout)">
             <p role="alert">Sorry, there's nothing at this address</p>
             <p>@InstanceName</p>
-
-
             <p>Lookup assemblies: </p>
             @foreach (var asm in AdditionalAssemblies)
             {
@@ -37,7 +34,7 @@
     {
         base.OnInitialized();
 
-        if (InstanceManager.ExistsInstance(InstanceName))
-            AdditionalAssemblies = new[] { InstanceManager.GetInstance(InstanceName)?.BLAssembly };
+        if (InstanceManager.TryGetInstance(InstanceName, out var instance))
+            AdditionalAssemblies = new[] { instance?.BLAssembly };
     }
 }

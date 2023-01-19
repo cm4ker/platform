@@ -20,12 +20,6 @@ public interface IAqInstance
     string Name { get; }
     DataContextManager DataContextManager { get; }
     Assembly BLAssembly { get; }
-
-    /// <summary>
-    /// Global objects
-    /// </summary>
-    Dictionary<string, object> Globals { get; set; }
-
     void Initialize(StartupConfig config);
     void Migrate();
     void Deploy(Stream packageStream);

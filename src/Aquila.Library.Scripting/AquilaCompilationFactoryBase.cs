@@ -8,6 +8,7 @@ using System.Threading;
 using Aquila.CodeAnalysis;
 using Aquila.Core;
 using Aquila.Metadata;
+using Aquila.Web.Razor;
 using Microsoft.CodeAnalysis;
 using Npgsql;
 
@@ -30,8 +31,8 @@ internal abstract class AquilaCompilationFactoryBase
             typeof(QueryAttribute).Assembly, // Aquila.Runtime
             typeof(DataExtensions).Assembly, // Aquila.Library
             typeof(NpgsqlConnection).Assembly, // Npgsql
-            //TODO: I don't like this reference here. Need make it more simple and light
-            typeof(Microsoft.AspNetCore.Components.RouteAttribute).Assembly
+            typeof(Microsoft.AspNetCore.Components.RouteAttribute).Assembly, //AspNetCore.Components
+            typeof(AqComponentBase).Assembly // Aquila.Web.Razor
         };
 
         var set = new HashSet<Assembly>();

@@ -21,35 +21,37 @@ public class AquilaApiHolder
     public bool TryGetCrud(string instanceName, string objectName, string methodName, string operationType,
         out MethodInfo method)
     {
-        return Cruds.TryGetValue((instanceName, objectName, methodName, operationType), out method);
+        return Cruds.TryGetValue((instanceName.ToLowerInvariant(), objectName, methodName, operationType), out method);
     }
 
     public bool TryGetEndpoint(string instanceName, string methodName, out MethodInfo method)
     {
-        return Endpoints.TryGetValue((instanceName, methodName), out method);
+        return Endpoints.TryGetValue((instanceName.ToLowerInvariant(), methodName), out method);
     }
 
     public void AddCrud(string instanceName, string objectName, string methodName, string operationType,
         MethodInfo method)
     {
-        Cruds.TryAdd((instanceName, objectName, methodName, operationType), method);
+        Cruds.TryAdd((instanceName.ToLowerInvariant(), objectName, methodName, operationType), method);
     }
 
     public void AddEndpoint(string instanceName, string methodName, MethodInfo method)
     {
-        Endpoints.TryAdd((instanceName, methodName), method);
+        Endpoints.TryAdd((instanceName.ToLowerInvariant(), methodName), method);
     }
 
     public void UnregisterInstance(string instanceName)
     {
-        var crudKey = Cruds.Where(x => x.Key.instanceName == instanceName);
+        var crudKey = Cruds.Where(x =>
+            x.Key.instanceName.Equals(instanceName, StringComparison.InvariantCultureIgnoreCase));
 
         foreach (var value in crudKey)
         {
             Cruds.TryRemove(value);
         }
 
-        var epKey = Endpoints.Where(x => x.Key.instanceName == instanceName);
+        var epKey = Endpoints.Where(x =>
+            x.Key.instanceName.Equals(instanceName, StringComparison.InvariantCultureIgnoreCase));
 
         foreach (var value in epKey)
         {

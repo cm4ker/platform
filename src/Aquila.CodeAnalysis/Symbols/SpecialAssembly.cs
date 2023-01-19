@@ -21,6 +21,11 @@
         AquilaCorLibrary,
 
         /// <summary>
+        /// Corresponds to our Web library (<c>Aquila.Web.Razor</c>).
+        /// </summary>
+        AquilaWebRazor,
+        
+        /// <summary>
         /// Corresponds to System.Common.Data
         /// </summary>
         CommonData,
@@ -43,6 +48,8 @@
         /// <summary>
         /// Corresponds to Microsoft.AspNetCore.Components
         /// </summary>
-        AsnetcoreComponents
+        AsnetcoreComponents,
+        
+        
     }
 }

@@ -1,0 +1,2 @@
+﻿<div> Hello from the component. I was created in the project, compiled and</div>
+<div style="color:red"> this text is red. And it's created dynamically </div>
