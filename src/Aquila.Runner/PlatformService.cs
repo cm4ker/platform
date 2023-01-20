@@ -3,7 +3,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Aquila.Core.Settings;
 using Aquila.Logging;
 using Microsoft.AspNetCore.Hosting;
 

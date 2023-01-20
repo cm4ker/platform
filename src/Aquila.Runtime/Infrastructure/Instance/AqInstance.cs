@@ -26,12 +26,9 @@ namespace Aquila.Core.Instance
     /// </summary>
     public class AqInstance : IAqInstance
     {
-        private object _locking;
         private AquilaAssemblyLoadContext _asmContext;
-
-        private ILogger _logger;
-
-        private AqUserManager _userManager;
+        private readonly ILogger _logger;
+        private readonly AqUserManager _userManager;
         private readonly AqAuthenticationManager _authenticationManager;
 
         public AqInstance(ILogger<AqInstance> logger,
@@ -40,7 +37,6 @@ namespace Aquila.Core.Instance
             AqMigrationManager migrationManager, 
             AqAuthenticationManager authenticationManager)
         {
-            _locking = new object();
             _logger = logger;
             _userManager = userManager;
             _authenticationManager = authenticationManager;
@@ -53,7 +49,7 @@ namespace Aquila.Core.Instance
         public DatabaseRuntimeContext DatabaseRuntimeContext { get; private set; }
         public AqMigrationManager MigrationManager { get; }
 
-        public string Name => "Library";
+        public string Name { get; private set; }
 
         public DataContextManager DataContextManager { get; }
 
@@ -61,8 +57,15 @@ namespace Aquila.Core.Instance
 
         public bool PendingChanges => MigrationManager.CheckMigration();
 
+        /// <summary>
+        /// Initialize instance 
+        /// </summary>
+        /// <param name="config">Configuration</param>
+        /// <exception cref="InvalidOperationException">Instance name not initialized</exception>
         public void Initialize(StartupConfig config)
         {
+            Name = config.InstanceName ?? throw new InvalidOperationException("Can't create instance without name");
+            
             MigrationRunner.Migrate(config.ConnectionString, config.DatabaseType);
 
             DataContextManager.Initialize(config.DatabaseType, config.ConnectionString);
@@ -176,11 +179,9 @@ namespace Aquila.Core.Instance
         private void Reload()
         {
             var currentAssembly = GetCurrentAssembly();
-
             if (currentAssembly != null)
             {
-                if (_asmContext == null)
-                    _asmContext = new AquilaAssemblyLoadContext();
+                _asmContext ??= new AquilaAssemblyLoadContext();
 
                 if (_asmContext.IsCollectible && !_asmContext.IsUnloading && _asmContext.Assemblies.Any())
                     _asmContext.Unload();
@@ -188,11 +189,10 @@ namespace Aquila.Core.Instance
                 if (_asmContext.IsUnloading)
                     _asmContext = new AquilaAssemblyLoadContext();
 
-
+                _asmContext.Resolving += 
+                    (context, name) => context.LoadFromByteArray(GetFile(name.Name + ".dll"));
+                
                 var asm = _asmContext.LoadFromByteArray(currentAssembly);
-                _asmContext.Resolving += (context, name) =>
-                    context.LoadFromByteArray(GetFile(name.Name + ".dll"));
-
                 LoadAssembly(asm);
                 _logger.Info("Project '{0}' was loaded.", Name);
             }

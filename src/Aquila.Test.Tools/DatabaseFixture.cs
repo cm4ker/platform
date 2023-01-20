@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Aquila.Core;
+using Aquila.Core.Infrastructure.Settings;
 using Aquila.Core.Instance;
-using Aquila.Core.Settings;
 using Aquila.Core.Test;
 using Aquila.Data;
 using Aquila.Initializer;
@@ -48,7 +48,7 @@ namespace Aquila.Test.Tools
             var service = TestEnvSetup.GetServerService();
 
             var config = service.GetService<ISettingsStorage>();
-            config.Get<AppConfig>().Environments.Add(new StartupConfig
+            config.Get<AppConfig>().Instances.Add(new StartupConfig
             {
                 ConnectionString = _container.ConnectionString,
                 DatabaseType = SqlDatabaseType.Postgres

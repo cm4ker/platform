@@ -19,8 +19,8 @@ namespace Aquila.Runner
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             var builder = new HostBuilder()
-                .ConfigureAppConfiguration((hostContext, config) => { config.AddXmlFile("App.config", false, true); })
-                .ConfigureServices((hostContext, services) =>
+                .ConfigureAppConfiguration((_, config) => { config.AddXmlFile("App.config", false, true); })
+                .ConfigureServices((_, services) =>
                 {
                     services.AddTransient(typeof(ILogger<>), typeof(SimpleConsoleLogger<>));
                     services.AddSingleton<IHostedService, AquilaHostedService>();

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Aquila.Core.Settings;
+using Aquila.Core.Infrastructure.Settings;
 using Aquila.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,7 +22,7 @@ namespace Aquila.Core.Instance
             _serviceProvider = serviceProvider;
             _logger = logger;
 
-            Initialize(configStorage.Get<AppConfig>().Environments);
+            Initialize(configStorage.Get<AppConfig>().Instances);
         }
 
         private void Initialize(List<StartupConfig> list)

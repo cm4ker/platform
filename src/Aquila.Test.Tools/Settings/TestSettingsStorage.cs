@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Aquila.Core.Settings;
+using Aquila.Core.Infrastructure.Settings;
 using Aquila.Data;
 using Aquila.Metadata;
 
@@ -20,7 +20,7 @@ namespace Aquila.Core.Test
                     }
                 }
             },
-            Environments = new List<StartupConfig>()
+            Instances = new List<StartupConfig>()
             {
                
             }
