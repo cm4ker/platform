@@ -2303,6 +2303,96 @@ namespace Aquila.CodeAnalysis.Syntax
         public CastEx WithExpression(ExprSyntax expression) => Update(this.OpenParenToken, this.Type, this.CloseParenToken, expression);
     }
 
+    /// <remarks>
+    /// <para>This node is associated with the following syntax kinds:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="SyntaxKind.AnonymousFunctionExpression"/></description></item>
+    /// </list>
+    /// </remarks>
+    public sealed partial class FuncEx : ExprSyntax
+    {
+        private ParameterListSyntax? parameterList;
+        private TypeEx? returnType;
+        private BlockStmt? body;
+        private ArrowExClause? expressionBody;
+
+        internal FuncEx(InternalSyntax.AquilaSyntaxNode green, SyntaxNode? parent, int position)
+          : base(green, parent, position)
+        {
+        }
+
+        public SyntaxToken FnKeyword => new SyntaxToken(this, ((Syntax.InternalSyntax.FuncEx)this.Green).fnKeyword, Position, 0);
+
+        /// <summary>Gets the parameter list.</summary>
+        public ParameterListSyntax ParameterList => GetRed(ref this.parameterList, 1)!;
+
+        /// <summary>Gets the return type syntax.</summary>
+        public TypeEx? ReturnType => GetRed(ref this.returnType, 2);
+
+        public BlockStmt? Body => GetRed(ref this.body, 3);
+
+        public ArrowExClause? ExpressionBody => GetRed(ref this.expressionBody, 4);
+
+        /// <summary>Gets the optional semicolon token.</summary>
+        public SyntaxToken SemicolonToken
+        {
+            get
+            {
+                var slot = ((Syntax.InternalSyntax.FuncEx)this.Green).semicolonToken;
+                return slot != null ? new SyntaxToken(this, slot, GetChildPosition(5), GetChildIndex(5)) : default;
+            }
+        }
+
+        internal override SyntaxNode? GetNodeSlot(int index)
+            => index switch
+            {
+                1 => GetRed(ref this.parameterList, 1)!,
+                2 => GetRed(ref this.returnType, 2),
+                3 => GetRed(ref this.body, 3),
+                4 => GetRed(ref this.expressionBody, 4),
+                _ => null,
+            };
+
+        internal override SyntaxNode? GetCachedSlot(int index)
+            => index switch
+            {
+                1 => this.parameterList,
+                2 => this.returnType,
+                3 => this.body,
+                4 => this.expressionBody,
+                _ => null,
+            };
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitFuncEx(this);
+        public override TResult? Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitFuncEx(this);
+
+        public FuncEx Update(SyntaxToken fnKeyword, ParameterListSyntax parameterList, TypeEx? returnType, BlockStmt? body, ArrowExClause? expressionBody, SyntaxToken semicolonToken)
+        {
+            if (fnKeyword != this.FnKeyword || parameterList != this.ParameterList || returnType != this.ReturnType || body != this.Body || expressionBody != this.ExpressionBody || semicolonToken != this.SemicolonToken)
+            {
+                var newNode = SyntaxFactory.FuncEx(fnKeyword, parameterList, returnType, body, expressionBody, semicolonToken);
+                var annotations = GetAnnotations();
+                return annotations?.Length > 0 ? newNode.WithAnnotations(annotations) : newNode;
+            }
+
+            return this;
+        }
+
+        public FuncEx WithFnKeyword(SyntaxToken fnKeyword) => Update(fnKeyword, this.ParameterList, this.ReturnType, this.Body, this.ExpressionBody, this.SemicolonToken);
+        public FuncEx WithParameterList(ParameterListSyntax parameterList) => Update(this.FnKeyword, parameterList, this.ReturnType, this.Body, this.ExpressionBody, this.SemicolonToken);
+        public FuncEx WithReturnType(TypeEx? returnType) => Update(this.FnKeyword, this.ParameterList, returnType, this.Body, this.ExpressionBody, this.SemicolonToken);
+        public FuncEx WithBody(BlockStmt? body) => Update(this.FnKeyword, this.ParameterList, this.ReturnType, body, this.ExpressionBody, this.SemicolonToken);
+        public FuncEx WithExpressionBody(ArrowExClause? expressionBody) => Update(this.FnKeyword, this.ParameterList, this.ReturnType, this.Body, expressionBody, this.SemicolonToken);
+        public FuncEx WithSemicolonToken(SyntaxToken semicolonToken) => Update(this.FnKeyword, this.ParameterList, this.ReturnType, this.Body, this.ExpressionBody, semicolonToken);
+
+        public FuncEx AddParameterListParameters(params ParameterSyntax[] items) => WithParameterList(this.ParameterList.WithParameters(this.ParameterList.Parameters.AddRange(items)));
+        public FuncEx AddBodyStatements(params StmtSyntax[] items)
+        {
+            var body = this.Body ?? SyntaxFactory.BlockStmt();
+            return WithBody(body.WithStatements(body.Statements.AddRange(items)));
+        }
+    }
+
     /// <summary>Represents a match expression syntax.</summary>
     /// <remarks>
     /// <para>This node is associated with the following syntax kinds:</para>

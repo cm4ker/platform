@@ -55,7 +55,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return arms;
         }
 
-
         private ExprSyntax ParseCastOrParenExpression()
         {
             Debug.Assert(this.CurrentToken.Kind == SyntaxKind.OpenParenToken);
@@ -95,6 +94,21 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             {
                 this.Release(ref resetPoint);
             }
+        }
+
+
+        private bool IsPossibleFunctionExpression()
+            => CurrentToken.Kind == SyntaxKind.FnKeyword
+               && this.PeekToken(1).Kind == SyntaxKind.OpenParenToken;
+
+            private FuncEx ParseAnonymousFunction()
+        {
+            var fnToken = EatToken(SyntaxKind.FnKeyword);
+
+            var parameterList = ParseParenthesizedParameterList();
+            var returnType = ParseType();
+            var body = ParseMethodOrAccessorBodyBlock(new SyntaxList<AttributeListSyntax>(), false);
+            return _syntaxFactory.FuncEx(fnToken, parameterList, returnType, body, null, null);
         }
     }
 }

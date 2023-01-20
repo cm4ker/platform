@@ -43,11 +43,6 @@
         <Field Name="Imports" Type="SyntaxList&lt;ImportDecl&gt;"/>
         <Field Name="Html" Type="HtmlDecl" Optional="true" />
         <Field Name="Members" Type="SyntaxList&lt;MemberDecl&gt;"/>
-        
-        <!--        <Field Name="Methods" Type="SyntaxList&lt;MethodDecl&gt;"/>-->
-        <!--        <Field Name="Functions" Type="SyntaxList&lt;FuncDecl&gt;"/>-->
-        <!--        <Field Name="Extends" Type="SyntaxList&lt;ExtendDecl&gt;"/>-->
-        <!--        <Field Name="Components" Type="SyntaxList&lt;ComponentDecl&gt;"/>-->
         <Field Name="EndOfFileToken" Type="SyntaxToken">
             <Kind Name="EndOfFileToken"/>
         </Field>
@@ -890,6 +885,34 @@
         <FactoryComment>
             <summary>Creates a CastExpressionSyntax node.</summary>
         </FactoryComment>
+    </Node>
+    <Node Name="FuncEx" Base="ExprSyntax">
+        <Kind Name="AnonymousFunctionExpression"/>
+        <Field Name="FnKeyword" Type="SyntaxToken">
+            <Kind Name="FnKeyword"/>
+        </Field>
+        <Field Name="ParameterList" Type="ParameterListSyntax">
+            <PropertyComment>
+                <summary>Gets the parameter list.</summary>
+            </PropertyComment>
+        </Field>
+        <Field Name="ReturnType" Type="TypeEx" Optional="true">
+            <PropertyComment>
+                <summary>Gets the return type syntax.</summary>
+            </PropertyComment>
+        </Field>
+        <Choice>
+            <Field Name="Body" Type="BlockStmt"/>
+            <Sequence>
+                <Field Name="ExpressionBody" Type="ArrowExClause"/>
+                <Field Name="SemicolonToken" Type="SyntaxToken">
+                    <PropertyComment>
+                        <summary>Gets the optional semicolon token.</summary>
+                    </PropertyComment>
+                    <Kind Name="SemicolonToken"/>
+                </Field>
+            </Sequence>
+        </Choice>
     </Node>
 
     <!--region Match -->
