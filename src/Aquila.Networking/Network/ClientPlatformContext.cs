@@ -3,7 +3,7 @@ using System.Reflection;
 using Aquila.Core.Assemlies;
 using Aquila.Core.Authentication;
 using Aquila.Core.Contracts.Network;
-using Aquila.Core.Settings;
+using Aquila.Core.Infrastructure.Settings;
 using Aquila.Logging;
 using Microsoft.Extensions.DependencyInjection;
 

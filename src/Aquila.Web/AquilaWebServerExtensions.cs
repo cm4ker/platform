@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using Aquila.AspNetCore.Web;
-using Aquila.Core;
 using Aquila.Core.Authentication;
 using Aquila.Core.CacheService;
+using Aquila.Core.Infrastructure.Settings;
 using Aquila.Core.Instance;
 using Aquila.Core.Migration;
-using Aquila.Core.Settings;
 using Aquila.Core.Utilities;
 using Aquila.Data;
 using Aquila.Logging;
@@ -174,8 +173,7 @@ namespace Aquila.Web
             services.AddScoped<AqInstance>();
             services.AddScoped<AqMigrationManager>();
             services.AddScoped<AqAuthenticationManager>();
-
-            services.AddSingleton<AqInstanceManager, AqInstanceManager>();
+            
             services.AddSingleton<ISettingsStorage, FileSettingsStorage>();
 
 
@@ -257,35 +255,6 @@ namespace Aquila.Web
             services.AddSwaggerGen();
 
             return services;
-        }
-    }
-
-    public class AquilaComponentActivator : IComponentActivator
-    {
-        private readonly IHttpContextAccessor _accessor;
-
-        public AquilaComponentActivator(IHttpContextAccessor accessor)
-        {
-            _accessor = accessor;
-        }
-        
-        
-        public IComponent CreateInstance(Type componentType)
-        {
-            var context = _accessor.HttpContext.TryGetOrCreateContext();
-
-            if (componentType.GetConstructor(new[] { typeof(AqContext) }) == null)
-            {
-                return Activator.CreateInstance(componentType) as IComponent ?? 
-                       throw new InvalidOperationException("This is not a component");
-            }
-
-            if (Activator.CreateInstance(componentType, context) is not IComponent com)
-            {
-                throw new InvalidOperationException("Invalid platform component");
-            }
-
-            return com;
         }
     }
 }

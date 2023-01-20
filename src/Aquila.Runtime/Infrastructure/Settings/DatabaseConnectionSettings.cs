@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Aquila.Core.Settings
+namespace Aquila.Core.Infrastructure.Settings
 {
     public class PlatformClientSettings
     {

@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Aquila.Core.Network
 {
     /// <summary>
-    /// Фабрика создания серверных подключений для полльзователей исключительно к рабочим средам
+    /// Service connection factory
     /// </summary>
     public class UserConnectionFactory : ServerConnectionFactory
     {

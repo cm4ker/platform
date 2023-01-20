@@ -1,21 +1,21 @@
 ﻿{
-    "AccessPoint": {
-        "Listener": [
-            {
-                "Address": "127.0.0.1:12345",
-                "Type": "Test"
-            },
-            {
-            "Address": "127.0.0.1:12346",
-            "Type": "Admin"
-            }
-        ]
-    },
-    "CacheService": {},
-    "Environments": [
-        {
-            "DatabaseType": "SqlServer",
-            "ConnectionString":"Data Source=.;Initial Catalog=Aquila;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
-        }
+  "AccessPoint": {
+    "Listener": [
+      {
+        "Address": "127.0.0.1:12345",
+        "Type": "Test"
+      },
+      {
+        "Address": "127.0.0.1:12346",
+        "Type": "Admin"
+      }
     ]
+  },
+  "Instances": [
+    {
+      "DatabaseType": "SqlServer",
+      "ConnectionString": "Data Source=.;Initial Catalog=Aquila;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
+      "InstanceName": "Library"
+    }
+  ]
 }

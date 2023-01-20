@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Aquila.Core.Settings;
+using Aquila.Core.Infrastructure.Settings;
 
 namespace Aquila.Core
 {
@@ -7,20 +7,13 @@ namespace Aquila.Core
     public class AppConfig
     {
         public AccessPointConfig AccessPoint { get; set; }
-
-        public CacheServiceConfig CacheService { get; set; }
-        public List<StartupConfig> Environments { get; set; }
+        public List<StartupConfig> Instances { get; set; }
 
         public AppConfig()
         {
-            Environments = new List<StartupConfig>();
+            Instances = new List<StartupConfig>();
             AccessPoint = new AccessPointConfig();
         }
-    }
-
-    public class CacheServiceConfig
-    {
-        public string Address { get; set; }
     }
 
     public enum PointType
