@@ -26,6 +26,34 @@ In progress...
 * Types - CamelCase
 * Members - snake_case
 
+### operations
+```
+arithmetic 
++ 
+-
+/
+*
+^
+
+logical
+&&
+||
+==
+!=
+<=
+>=
+>
+<
+is
+
+bitwise
+&
+|
+<<
+>>
+
+```
+
 ### Functions
 
 ```
