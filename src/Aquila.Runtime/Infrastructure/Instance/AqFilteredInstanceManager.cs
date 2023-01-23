@@ -30,9 +30,9 @@ namespace Aquila.Core.Network
             _manager.AddInstance(config);
         }
 
-        public AqInstance GetInstance(string name)
+        public AqInstance TryGetInstance(string name)
         {
-            var env = _manager.GetInstance(name);
+            var env = _manager.TryGetInstance(name);
             if (_filter(env))
                 return env;
             return null;

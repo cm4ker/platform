@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Aquila.Core;
 using Aquila.Core.Infrastructure.Settings;
@@ -51,11 +52,12 @@ namespace Aquila.Test.Tools
             config.Get<AppConfig>().Instances.Add(new StartupConfig
             {
                 ConnectionString = _container.ConnectionString,
-                DatabaseType = SqlDatabaseType.Postgres
+                DatabaseType = SqlDatabaseType.Postgres,
+                InstanceName = "Library"
             });
 
             var manager = service.GetService<IAqInstanceManager>();
-            Instance = manager.GetInstance("Library");
+            Instance = manager.TryGetInstance("Library") ?? throw new InvalidOperationException("Instance not found");
 
             var drContext = Instance.DatabaseRuntimeContext;
             var dcContext = Instance.DataContextManager.GetContext();

@@ -55,10 +55,12 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
 
         public override ImmutableArray<Symbol> GetMembers(string name)
         {
-            return
-                (name.StringsEqual(_constructor.Name, false)) ? ImmutableArray.Create<Symbol>(_constructor) :
-                (name.StringsEqual(_invoke.Name, false)) ? ImmutableArray.Create<Symbol>(_invoke) :
-                ImmutableArray<Symbol>.Empty;
+            if (name.StringsEqual(_constructor.Name, false))
+                return ImmutableArray.Create<Symbol>(_constructor);
+            
+            return name.StringsEqual(_invoke.Name, false)
+                ? ImmutableArray.Create<Symbol>(_invoke)
+                : ImmutableArray<Symbol>.Empty;
         }
 
         public override Accessibility DeclaredAccessibility
@@ -71,7 +73,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
             get { return true; }
         }
 
-        public override NamedTypeSymbol BaseType // NoUseSiteDiagnostics
+        public override NamedTypeSymbol BaseType
         {
             get { return ContainingAssembly.GetSpecialType(SpecialType.System_MulticastDelegate); }
         }

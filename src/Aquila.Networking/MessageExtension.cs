@@ -73,7 +73,7 @@ namespace Aquila.Core.Network
         {
             try
             {
-                var env = manager.GetInstance(request.Name);
+                var env = manager.TryGetInstance(request.Name);
                 useCallBack(env);
                 return new ResponceEnvironmentUseNetworkMessage(request);
             }
