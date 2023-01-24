@@ -60,7 +60,7 @@ namespace Aquila.CodeAnalysis.Symbols
 
         internal abstract AquilaSyntaxNode Syntax { get; }
 
-        internal abstract IList<StmtSyntax> Statements { get; }
+        internal abstract IEnumerable<StmtSyntax> Statements { get; }
 
         public abstract void GetDiagnostics(DiagnosticBag diagnostic);
 
@@ -371,6 +371,11 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
+        public override TypeSymbol ReturnType =>
+            SyntaxReturnType == null
+                ? DeclaringCompilation.GetSpecialType(SpecialType.System_Void)
+                : GetMethodBinder().BindType(SyntaxReturnType);
+
         public override bool ReturnsVoid => ReturnType.SpecialType == SpecialType.System_Void;
 
         /// <summary>
@@ -382,6 +387,46 @@ namespace Aquila.CodeAnalysis.Symbols
         }
 
         public override RefKind RefKind => RefKind.None;
+
+        
+        /// <summary>
+        /// Lazily bound semantic block.
+        /// Entry point of analysis and emitting.
+        /// </summary>
+        public override ControlFlowGraph ControlFlowGraph
+        {
+            get
+            {
+                if (_cfg != null || this.Statements == null)
+                {
+                    return _cfg;
+                }
+                
+                Interlocked.CompareExchange(ref _cfg, CreateControlFlowGraph(), null);
+
+                return _cfg;
+            }
+            internal set { _cfg = value; }
+        }
+
+        protected virtual Binder GetMethodBinder()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual ControlFlowGraph CreateControlFlowGraph()
+        {
+            var binder = GetMethodBinder();
+
+            var cfg = new ControlFlowGraph(this.Statements, binder)
+            {
+                Start =
+                {
+                    FlowState = StateBinder.CreateInitialState(this)
+                }
+            };
+            return cfg;
+        }
 
         public override ImmutableArray<AttributeData> GetReturnTypeAttributes()
         {

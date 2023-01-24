@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.FlowAnalysis;
+using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Symbols.Attributes;
 using Aquila.CodeAnalysis.Syntax;
@@ -171,7 +172,7 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
             SyntaxFactory.PredefinedTypeEx(SyntaxFactory.Token(SyntaxKind.VoidKeyword));
 
         internal override AquilaSyntaxNode Syntax => _htmlDecl;
-        internal override IList<StmtSyntax> Statements => new List<StmtSyntax>();
+        internal override IEnumerable<StmtSyntax> Statements => new List<StmtSyntax>();
         public override string Name => _overridenMethod.Name;
         internal override ObsoleteAttributeData ObsoleteAttributeData => _overridenMethod.ObsoleteAttributeData;
 
@@ -206,6 +207,28 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
 
         public override bool IsExtern => false;
 
+        protected override Binder GetMethodBinder()
+        {
+            return DeclaringCompilation.GetBinder(_htmlDecl.HtmlMarkup);
+        }
+
+        protected override ControlFlowGraph CreateControlFlowGraph()
+        {
+            var markup = _htmlDecl.HtmlMarkup;
+            if (markup == null) return null;
+            
+            var cfg = new ControlFlowGraph(markup.HtmlNodes, GetMethodBinder())
+            {
+                Start =
+                {
+                    FlowState = StateBinder.CreateInitialState(this)
+                }
+            };
+
+            return cfg;
+
+        }
+
         ///<inheritdoc />
         public override ControlFlowGraph ControlFlowGraph
         {
@@ -221,11 +244,11 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
                     return null;
                 }
 
-                var state = StateBinder.CreateInitialState(this);
-                var binder = DeclaringCompilation.GetBinder(_htmlDecl.HtmlMarkup);
-                var cfg = new ControlFlowGraph(this._htmlDecl.HtmlMarkup.HtmlNodes, binder);
+                
+                var binder = 
+                var cfg = 
                 Interlocked.CompareExchange(ref _cfg, cfg, null);
-                cfg.Start.FlowState = state;
+                
                 return _cfg;
             }
             internal set => _cfg = value;

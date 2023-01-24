@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using Aquila.CodeAnalysis.FlowAnalysis;
-using Aquila.CodeAnalysis.Semantics.Graph;
+using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols.Attributes;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Syntax;
@@ -33,7 +33,7 @@ internal sealed class SourceMethodSymbol : SourceMethodSymbolBase
 
     internal override AquilaSyntaxNode Syntax => _syntax;
 
-    internal override IList<StmtSyntax> Statements => _syntax.Body?.Statements.ToList();
+    internal override IEnumerable<StmtSyntax> Statements => _syntax.Body?.Statements;
         
     public override void GetDiagnostics(DiagnosticBag diagnostic)
     {
@@ -42,49 +42,13 @@ internal sealed class SourceMethodSymbol : SourceMethodSymbolBase
 
     public override string Name => _syntax.Identifier.Text;
         
-    public override TypeSymbol ReturnType
-    {
-        get
-        {
-            if (SyntaxReturnType == null)
-                return DeclaringCompilation.GetSpecialType(SpecialType.System_Void);
-
-            return DeclaringCompilation.GetBinder(_syntax).BindType(SyntaxReturnType);
-        }
-    }
-
     public override bool IsStatic =>
         ContainingSymbol is SourceModuleTypeSymbol || _syntax.GetModifiers().IsStatic();
-        
-    /// <summary>
-    /// Lazily bound semantic block.
-    /// Entry point of analysis and emitting.
-    /// </summary>
-    public override ControlFlowGraph ControlFlowGraph
+
+    protected override Binder GetMethodBinder()
     {
-        get
-        {
-            if (_cfg == null && this.Statements != null) // ~ Statements => non abstract method
-            {
-                // create initial flow state
-                var state = StateBinder.CreateInitialState(this);
-
-                var binder = DeclaringCompilation.GetBinder(_syntax);
-
-                // build control flow graph
-                var cfg = new ControlFlowGraph(this.Statements, binder);
-                cfg.Start.FlowState = state;
-
-                //
-                Interlocked.CompareExchange(ref _cfg, cfg, null);
-            }
-
-            //
-            return _cfg;
-        }
-        internal set { _cfg = value; }
+        return DeclaringCompilation.GetBinder(_syntax);
     }
-        
         
     public override Accessibility DeclaredAccessibility
     {
