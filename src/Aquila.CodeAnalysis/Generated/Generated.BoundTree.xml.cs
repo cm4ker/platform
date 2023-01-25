@@ -15,12 +15,12 @@ public enum BoundKind
     Block,
     DeclareStmt,
     ExpressionStmt,
-    MethodDeclStmt,
     GlobalConstDeclStmt,
     ReturnStmt,
     StaticVarStmt,
     YieldStmt,
     ForEachStmt,
+    BadStmt,
     HtmlMarkupStmt,
     HtmlOpenElementStmt,
     HtmlCloseElementStmt,
@@ -38,6 +38,7 @@ public enum BoundKind
     MatchEx,
     MatchArm,
     BadEx,
+    FuncEx,
     CallEx,
     NewEx,
     ThrowEx,
@@ -291,56 +292,6 @@ namespace Aquila.CodeAnalysis.Semantics
 
 namespace Aquila.CodeAnalysis.Semantics
 {
-    partial class BoundMethodDeclStmt : BoundStatement
-    {
-        private SourceMethodSymbolBase _method;
-        internal BoundMethodDeclStmt(SourceMethodSymbolBase method)
-        {
-            _method = method;
-            OnCreateImpl(method);
-        }
-
-        partial void OnCreateImpl(SourceMethodSymbolBase method);
-        internal SourceMethodSymbolBase Method
-        {
-            get
-            {
-                return _method;
-            }
-        }
-
-        public override OperationKind Kind => OperationKind.LocalFunction;
-        public override BoundKind BoundKind => BoundKind.MethodDeclStmt;
-        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
-        partial void AcceptImpl(OperationVisitor visitor);
-        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
-        {
-            TRes res = default;
-            AcceptImpl(visitor, argument, ref res);
-            return res;
-        }
-
-        public override void Accept(OperationVisitor visitor)
-        {
-            AcceptImpl(visitor);
-        }
-
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
-        {
-            return visitor.VisitMethodDeclStmt(this);
-        }
-
-        internal BoundMethodDeclStmt Update(SourceMethodSymbolBase method)
-        {
-            if (_method == method)
-                return this;
-            return new BoundMethodDeclStmt(method).WithSyntax(this.AquilaSyntax);
-        }
-    }
-}
-
-namespace Aquila.CodeAnalysis.Semantics
-{
     partial class BoundGlobalConstDeclStmt : BoundStatement
     {
         private QualifiedName _name;
@@ -580,6 +531,39 @@ namespace Aquila.CodeAnalysis.Semantics
             if (_item == item && _collection == collection)
                 return this;
             return new BoundForEachStmt(item, collection, this.BoundInfo).WithSyntax(this.AquilaSyntax);
+        }
+    }
+}
+
+namespace Aquila.CodeAnalysis.Semantics
+{
+    partial class BoundBadStmt : BoundStatement
+    {
+        public BoundBadStmt()
+        {
+            OnCreateImpl();
+        }
+
+        partial void OnCreateImpl();
+        public override OperationKind Kind => OperationKind.None;
+        public override BoundKind BoundKind => BoundKind.BadStmt;
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
+        partial void AcceptImpl(OperationVisitor visitor);
+        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
+        {
+            TRes res = default;
+            AcceptImpl(visitor, argument, ref res);
+            return res;
+        }
+
+        public override void Accept(OperationVisitor visitor)
+        {
+            AcceptImpl(visitor);
+        }
+
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        {
+            return visitor.VisitBadStmt(this);
         }
     }
 }
@@ -1579,6 +1563,66 @@ namespace Aquila.CodeAnalysis.Semantics
             if (ResultType == resultType)
                 return this;
             return new BoundBadEx(resultType).WithSyntax(this.AquilaSyntax);
+        }
+    }
+}
+
+namespace Aquila.CodeAnalysis.Semantics
+{
+    partial class BoundFuncEx : BoundExpression
+    {
+        private TypeSymbol _holderSymbol;
+        private SourceLambdaSymbol _lambdaSymbol;
+        internal BoundFuncEx(TypeSymbol holderSymbol, SourceLambdaSymbol lambdaSymbol, ITypeSymbol resultType): base(resultType)
+        {
+            _holderSymbol = holderSymbol;
+            _lambdaSymbol = lambdaSymbol;
+            OnCreateImpl(holderSymbol, lambdaSymbol, resultType);
+        }
+
+        partial void OnCreateImpl(TypeSymbol holderSymbol, SourceLambdaSymbol lambdaSymbol, ITypeSymbol resultType);
+        internal TypeSymbol HolderSymbol
+        {
+            get
+            {
+                return _holderSymbol;
+            }
+        }
+
+        internal SourceLambdaSymbol LambdaSymbol
+        {
+            get
+            {
+                return _lambdaSymbol;
+            }
+        }
+
+        public override OperationKind Kind => OperationKind.AnonymousFunction;
+        public override BoundKind BoundKind => BoundKind.FuncEx;
+        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
+        partial void AcceptImpl(OperationVisitor visitor);
+        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
+        {
+            TRes res = default;
+            AcceptImpl(visitor, argument, ref res);
+            return res;
+        }
+
+        public override void Accept(OperationVisitor visitor)
+        {
+            AcceptImpl(visitor);
+        }
+
+        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
+        {
+            return visitor.VisitFuncEx(this);
+        }
+
+        internal BoundFuncEx Update(TypeSymbol holderSymbol, SourceLambdaSymbol lambdaSymbol, ITypeSymbol resultType)
+        {
+            if (_holderSymbol == holderSymbol && _lambdaSymbol == lambdaSymbol && ResultType == resultType)
+                return this;
+            return new BoundFuncEx(holderSymbol, lambdaSymbol, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -3027,12 +3071,12 @@ namespace Aquila.CodeAnalysis.Semantics
         public virtual TResult VisitBlock(BoundBlock x) => VisitDefault(x);
         public virtual TResult VisitDeclareStmt(BoundDeclareStmt x) => VisitDefault(x);
         public virtual TResult VisitExpressionStmt(BoundExpressionStmt x) => VisitDefault(x);
-        public virtual TResult VisitMethodDeclStmt(BoundMethodDeclStmt x) => VisitDefault(x);
         public virtual TResult VisitGlobalConstDeclStmt(BoundGlobalConstDeclStmt x) => VisitDefault(x);
         public virtual TResult VisitReturnStmt(BoundReturnStmt x) => VisitDefault(x);
         public virtual TResult VisitStaticVarStmt(BoundStaticVarStmt x) => VisitDefault(x);
         public virtual TResult VisitYieldStmt(BoundYieldStmt x) => VisitDefault(x);
         public virtual TResult VisitForEachStmt(BoundForEachStmt x) => VisitDefault(x);
+        public virtual TResult VisitBadStmt(BoundBadStmt x) => VisitDefault(x);
         public virtual TResult VisitHtmlMarkupStmt(BoundHtmlMarkupStmt x) => VisitDefault(x);
         public virtual TResult VisitHtmlOpenElementStmt(BoundHtmlOpenElementStmt x) => VisitDefault(x);
         public virtual TResult VisitHtmlCloseElementStmt(BoundHtmlCloseElementStmt x) => VisitDefault(x);
@@ -3051,6 +3095,7 @@ namespace Aquila.CodeAnalysis.Semantics
         public virtual TResult VisitMatchEx(BoundMatchEx x) => VisitDefault(x);
         public virtual TResult VisitMatchArm(BoundMatchArm x) => VisitDefault(x);
         public virtual TResult VisitBadEx(BoundBadEx x) => VisitDefault(x);
+        public virtual TResult VisitFuncEx(BoundFuncEx x) => VisitDefault(x);
         public virtual TResult VisitCallEx(BoundCallEx x) => VisitDefault(x);
         public virtual TResult VisitNewEx(BoundNewEx x) => VisitDefault(x);
         public virtual TResult VisitThrowEx(BoundThrowEx x) => VisitDefault(x);

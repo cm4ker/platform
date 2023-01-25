@@ -24,12 +24,6 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="MethodDeclStmt" Base="Statement" OperationKind="LocalFunction">
-        <Arguments>
-            <Single Name="Method" Type="SourceMethodSymbolBase" IsUpdatable="true" IsInternal="true"/>
-        </Arguments>
-    </Syntax>
-
     <Syntax Name="GlobalConstDeclStmt" Base="Statement" OperationKind="VariableDeclaration">
         <Arguments>
             <Single Name="Name" Type="QualifiedName" IsUpdatable="true"/>
@@ -50,6 +44,11 @@
             <Single Name="Item" Type="BoundReferenceEx" IsUpdatable="true"/>
             <Single Name="Collection" Type="BoundExpression" IsUpdatable="true"/>
             <Single Name="BoundInfo" Type="ForeachBindInfo" IsUpdatable="false"/>
+        </Arguments>
+    </Syntax>
+    <Syntax Name="BadStmt" Base="Statement" OperationKind="None"> 
+        <Arguments>
+            
         </Arguments>
     </Syntax>
     <!-- region HtmlStmt -->
@@ -207,6 +206,14 @@
         </Arguments>
     </Syntax>
 
+    <Syntax Name="FuncEx" Base="Expression" OperationKind="AnonymousFunction">
+        <Arguments>
+            <Single Name="HolderSymbol" Type="TypeSymbol" IsInternal="true" IsUpdatable="true" /> 
+            <Single Name="LambdaSymbol" Type="SourceLambdaSymbol" IsInternal="true" IsUpdatable="true" />
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
+        </Arguments>
+    </Syntax>
     <!-- region MemberAccess -->
 
     <!-- region Call -->

@@ -15,19 +15,17 @@ internal sealed class SourceLambdaSymbol : SourceMethodSymbolBase
         _functionExpr = functionExpr;
     }
 
-    public override Accessibility DeclaredAccessibility { get; }
+    public override Accessibility DeclaredAccessibility => Accessibility.Internal;
     
     public override bool IsStatic => false;
-    
-    internal override ParameterListSyntax SyntaxSignature { get; }
+
+    internal override ParameterListSyntax SyntaxSignature => _functionExpr.ParameterList;
     
     internal override TypeEx SyntaxReturnType => _functionExpr.ReturnType;
     
     internal override AquilaSyntaxNode Syntax => _functionExpr;
     
     internal override IEnumerable<StmtSyntax> Statements => _functionExpr.Body?.Statements;
-
-    public override ControlFlowGraph ControlFlowGraph { get; internal set; }
 
     protected override Binder GetMethodBinder()
     {
@@ -36,6 +34,6 @@ internal sealed class SourceLambdaSymbol : SourceMethodSymbolBase
 
     public override void GetDiagnostics(DiagnosticBag diagnostic)
     {
-        throw new System.NotImplementedException();
+
     }
 }

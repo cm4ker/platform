@@ -202,33 +202,17 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         }
 
         /// <summary>
-        /// Sets variable type with byref flag in this state.
-        /// </summary>
-        /// <param name="handle">Variable handle.</param>
-        public void SetLocalRef(VariableHandle handle)
-        {
-            SetLocalType(handle, GetLocalType(handle));
-        }
-
-        /// <summary>
-        /// Marks variable as being referenced.
-        /// </summary>
-        public void MarkLocalByRef(VariableHandle handle)
-        {
-            handle.ThrowIfInvalid();
-
-            this.FlowContext.SetReference(handle);
-            this.FlowContext.SetUsed(handle);
-            this.SetVarInitialized(handle);
-        }
-
-        /// <summary>
         /// Handles use of a local variable.
         /// </summary>
         public void VisitLocal(VariableHandle handle)
         {
             handle.ThrowIfInvalid();
-            FlowContext.SetUsed(handle);
+        }
+
+
+        public void VisitFuncEx(BoundFuncEx func)
+        {
+            this.FlowContext.AddLambda(func.LambdaSymbol);
         }
 
         /// <summary>

@@ -51,6 +51,8 @@ namespace Aquila.CodeAnalysis
             Contract.ThrowIfNull(diagnostics);
 
             _compilation = compilation;
+            _compilation.EnsureSourceAssembly();
+            
             _moduleBuilder = moduleBuilder;
             _emittingPdb = emittingPdb;
             _diagnostics = diagnostics;
@@ -126,9 +128,8 @@ namespace Aquila.CodeAnalysis
             // lazily binds CFG and
             // adds their entry block to the worklist
 
-            // TODO: reset LocalsTable, FlowContext and CFG
-
             _worklist.Enqueue(method.ControlFlowGraph?.Start);
+            
 
             // enqueue method parameter default values
             method.SourceParameters.ForEach(p =>
@@ -168,16 +169,17 @@ namespace Aquila.CodeAnalysis
             _worklist.DoAll(concurrent: ConcurrentBuild);
         }
 
-        void AnalyzeBlock(BoundBlock block) // TODO: driver
+        void AnalyzeBlock(BoundBlock block)
         {
-            // TODO: pool of CFGAnalysis
-            // TODO: async
-            // TODO: in parallel
+            block.Accept(AnalysisFactory());
 
-            block.Accept(AnalysisFactory(block.FlowState));
+            foreach (var lambda in block.FlowState.FlowContext.Lambdas)
+            {
+                EnqueueMethod(lambda);    
+            }
         }
 
-        GraphVisitor<VoidStruct> AnalysisFactory(FlowState state)
+        GraphVisitor<VoidStruct> AnalysisFactory()
         {
             return new ExpressionAnalysis<VoidStruct>(_worklist, _compilation.GlobalSemantics);
         }
@@ -354,16 +356,17 @@ namespace Aquila.CodeAnalysis
         }
 
 
+        private void InvalidateAndEnque(SourceMethodSymbolBase m)
+        {
+            m.ControlFlowGraph?.FlowContext?.InvalidateAnalysis();
+            EnqueueMethod(m);
+        }
+
         public void LoweringMethods()
         {
             if (MakeLoweringTransformMethods(ConcurrentBuild))
             {
-                WalkSourceMethods(m =>
-                    {
-                        m.ControlFlowGraph?.FlowContext?.InvalidateAnalysis();
-                        EnqueueMethod(m);
-                    },
-                    allowParallel: true);
+                WalkSourceMethods(InvalidateAndEnque, allowParallel: true);
             }
         }
 
@@ -373,12 +376,7 @@ namespace Aquila.CodeAnalysis
             {
                 if (TransformMethods(ConcurrentBuild))
                 {
-                    WalkSourceMethods(m =>
-                        {
-                            m.ControlFlowGraph?.FlowContext?.InvalidateAnalysis();
-                            EnqueueMethod(m);
-                        },
-                        allowParallel: true);
+                    WalkSourceMethods(InvalidateAndEnque, allowParallel: true);
                 }
                 else
                 {
@@ -386,17 +384,13 @@ namespace Aquila.CodeAnalysis
                     return false;
                 }
             }
-
-            //
+            
             return true;
         }
 
         public static IEnumerable<Diagnostic> BindAndAnalyze(AquilaCompilation compilation,
             CancellationToken cancellationToken)
         {
-            var manager =
-                compilation.GetBoundReferenceManager(); // ensure the references are resolved! (binds ReferenceManager)
-
             var diagnostics = new DiagnosticBag();
             var compiler = new SourceCompiler(compilation, null, true, diagnostics, cancellationToken);
 

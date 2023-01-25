@@ -144,12 +144,11 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         {
             // Store the current batch and its count
             var todoBlocks = new T[256];
-            int n;
 
             // Deque a batch of blocks and analyse them in parallel
             while (true)
             {
-                n = Dequeue(todoBlocks);
+                var n = Dequeue(todoBlocks);
 
                 if (n == 0)
                 {
@@ -157,13 +156,10 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                     {
                         break;
                     }
-                    else
-                    {
-                        // Process also the call blocks that weren't analysed due to circular dependencies
-                        // TODO: Consider using something more advanced such as cycle detection
-                        _dirtyCallBlocks.ForEach(kvp => Enqueue(kvp.Key));
-                        continue;
-                    }
+
+                    // Process also the call blocks that weren't analysed due to circular dependencies
+                    _dirtyCallBlocks.ForEach(kvp => Enqueue(kvp.Key));
+                    continue;
                 }
 
                 if (concurrent)
@@ -229,7 +225,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             // from each method, delaying the rest
             int n = 0;
             while (n < todoBlocks.Length && _queue.TryDequeue(out T block))
-                //TODO: TryDequeue() with a predicate so we won't have to maintain {delayedBlocks}
             {
                 var typeCtx = block.FlowState?.Method.ContainingType;
 
@@ -247,14 +242,13 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                     delayedBlocks.Add(block);
                 }
             }
-
+            
+            if (delayedBlocks == null) return n;
+            
             // Return the delayed blocks back to the queue to be deenqueued the next time
-            if (delayedBlocks != null)
+            foreach (var block in delayedBlocks)
             {
-                foreach (var block in delayedBlocks)
-                {
-                    _queue.Enqueue(block);
-                }
+                _queue.Enqueue(block);
             }
 
             return n;

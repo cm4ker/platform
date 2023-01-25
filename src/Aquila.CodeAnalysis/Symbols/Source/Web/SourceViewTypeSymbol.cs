@@ -229,31 +229,6 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
 
         }
 
-        ///<inheritdoc />
-        public override ControlFlowGraph ControlFlowGraph
-        {
-            get
-            {
-                if (_cfg != null)
-                {
-                    return _cfg;
-                }
-
-                if (_htmlDecl.HtmlMarkup == null)
-                {
-                    return null;
-                }
-
-                
-                var binder = 
-                var cfg = 
-                Interlocked.CompareExchange(ref _cfg, cfg, null);
-                
-                return _cfg;
-            }
-            internal set => _cfg = value;
-        }
-
         internal override bool IsMetadataVirtual(bool ignoreInterfaceImplementationChanges = false)
         {
             return true;

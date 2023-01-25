@@ -132,18 +132,18 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         #region Construction
 
-        internal ControlFlowGraph(IList<StmtSyntax> statements, Binder binder)
+        internal ControlFlowGraph(IEnumerable<StmtSyntax> statements, Binder binder)
             : this(GraphBuilder.Build(statements, binder))
         {
         }
 
-        internal ControlFlowGraph(IReadOnlyList<HtmlNodeSyntax> nodes, Binder binder)
+        internal ControlFlowGraph(IEnumerable<HtmlNodeSyntax> nodes, Binder binder)
             : this(GraphBuilder.Build(nodes, binder))
         {
         }
         
         private ControlFlowGraph(GraphBuilder builder)
-            : this(builder.Start, builder.Exit, builder.Declarations, /*builder.Exception*/null, builder.Labels,
+            : this(builder.Start, builder.Exit, builder.Declarations, exception: null, builder.Labels,
                 builder.DeadBlocks)
         {
         }

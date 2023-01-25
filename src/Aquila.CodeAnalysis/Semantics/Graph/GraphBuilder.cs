@@ -22,7 +22,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         private Dictionary<string, ControlFlowGraph.LabelBlockState> _labels;
         private List<BreakTargetScope> _breakTargets;
         private Stack<TryCatchEdge> _tryTargets;
-        private Stack<LocalScopeInfo> _scopes = new Stack<LocalScopeInfo>(1);
+        private Stack<LocalScopeInfo> _scopes = new(1);
         private int _index = 0;
         private int _htmlInstructionIndex = 0;
 
@@ -36,21 +36,16 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public List<BoundStatement> _declarations;
 
-        public BoundBlock Start { get; private set; }
-        public BoundBlock Exit { get; private set; }
+        public BoundBlock Start { get; }
+        public BoundBlock Exit { get; }
 
         /// <summary>
         /// Gets labels defined within the method.
         /// </summary>
-        public ImmutableArray<ControlFlowGraph.LabelBlockState> Labels
-        {
-            get
-            {
-                return (_labels != null)
-                    ? _labels.Values.ToImmutableArray()
-                    : ImmutableArray<ControlFlowGraph.LabelBlockState>.Empty;
-            }
-        }
+        public ImmutableArray<ControlFlowGraph.LabelBlockState> Labels =>
+            _labels != null
+                ? _labels.Values.ToImmutableArray()
+                : ImmutableArray<ControlFlowGraph.LabelBlockState>.Empty;
 
         /// <summary>
         /// Blocks we know nothing is pointing to (right after jump, throw, etc.).
@@ -69,7 +64,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             Finally,
         }
 
-        private class LocalScopeInfo
+        private sealed class LocalScopeInfo
         {
             public BoundBlock FirstBlock { get; }
             public LocalScope Scope { get; }
@@ -91,7 +86,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             if (_scopes.Count == 0)
                 throw new InvalidOperationException();
 
-            _scopes.Pop(); 
+            _scopes.Pop();
         }
 
         #endregion
@@ -178,7 +173,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         private GraphBuilder(IEnumerable<SyntaxNode> nodes, Binder binder)
         {
-            Contract.ThrowIfNull(nodes);            
+            Contract.ThrowIfNull(nodes);
             Contract.ThrowIfNull(binder);
 
             _binder = binder;
@@ -407,7 +402,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public override void VisitBlockStmt(BlockStmt x)
         {
-            Add(_binder.BindEmptyStmt(new TextSpan(x.Span.Start, 1))); 
+            Add(_binder.BindEmptyStmt(new TextSpan(x.Span.Start, 1)));
 
             base.VisitBlockStmt(x); // visit nested statements
 
@@ -591,8 +586,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         public override void VisitReturnStmt(ReturnStmt x)
         {
             _returnCounter++;
-
-            //
+            
             Add(x);
             Connect(_current, this.Exit);
             _current = NewDeadBlock(); // anything after these statements is unreachable
@@ -633,7 +627,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
         public override void VisitMatchEx(MatchEx arg)
         {
-            var items = arg.Arms.OfType<MatchArm>().ToArray();
+            var items = arg.Arms.ToArray();
             if (!items.Any())
                 return;
 
@@ -642,18 +636,14 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             var end = NewBlock();
 
-            bool hasDefault = false;
             var arms = new List<MatchArmBlock>(items.Count());
 
             for (int i = 0; i < items.Count(); i++)
             {
                 var arm = new MatchArmBlock(_binder.BindExpression(items[i].PatternExpression, BoundAccess.Read));
                 arms.Add(arm);
-
-                hasDefault |= arm.IsDefault;
             }
 
-            // SwitchEdge // Connects _current to cases
             var edge = new MatchEdge(matchValue, arms.ToImmutableArray(), end);
             _current = WithNewOrdinal(arms[0]);
 
@@ -691,7 +681,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             // init catch blocks and finally block
             var catchBlocks = ImmutableArray<CatchBlock>.Empty;
-            if (x.Catches != null)
+            if (x.Catches is { Count: > 1 })
             {
                 var catchBuilder = ImmutableArray.CreateBuilder<CatchBlock>(x.Catches.Count);
                 for (int i = 0; i < x.Catches.Count; i++)
@@ -708,7 +698,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             var edge = new TryCatchEdge(body, catchBlocks, finallyBlock, end);
             _current.SetNextEdge(edge);
-            
+
             // build try body
             OpenTryScope(edge);
             OpenScope(body, LocalScope.Try);

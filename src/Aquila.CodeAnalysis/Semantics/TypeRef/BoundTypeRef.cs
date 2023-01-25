@@ -17,7 +17,7 @@ namespace Aquila.CodeAnalysis.Semantics.TypeRef
     #region BoundPrimitiveTypeRef
 
     [DebuggerDisplay("BoundPrimitiveTypeRef ({_type})")]
-    public sealed partial class BoundPrimitiveTypeRef : BoundTypeRef
+    public sealed partial class BoundPrimitiveTypeRef
     {
         public AquilaTypeCode TypeCode => _type;
 

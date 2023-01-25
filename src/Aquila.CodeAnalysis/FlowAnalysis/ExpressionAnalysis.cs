@@ -105,7 +105,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         protected override FlowState CloneState(FlowState state) => state.Clone();
 
         protected override FlowState MergeStates(FlowState a, FlowState b) => a.Merge(b);
-        
+
 
         protected override void EnqueueBlock(BoundBlock block) => Worklist.Enqueue(block);
 
@@ -158,6 +158,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
             return default;
         }
+
         #endregion
 
         #region Visit Literals
@@ -227,7 +228,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
             var previoustype = State.GetLocalType(local); // type of the variable in the previous state
 
-
             // bind variable place
             if (x.Variable == null)
             {
@@ -252,9 +252,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                 {
                     VisitLocalVariableRef(x, State.GetLocalHandle(x.Name.NameValue));
                 }
-            }
-            else
-            {
             }
 
             return default;
@@ -572,6 +569,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                         break;
                 }
             }
+
             return default;
         }
 
@@ -591,8 +589,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         #endregion
 
-        #region Visit Function Call
-
         public override T VisitCallEx(BoundCallEx arg)
         {
             if (arg.Instance != null)
@@ -603,7 +599,11 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return base.VisitCallEx(arg);
         }
 
-        #endregion
+        public override T VisitFuncEx(BoundFuncEx x)
+        {
+            State.VisitFuncEx(x);
+            return default;
+        }
 
         #region Visit FieldRef
 
@@ -640,10 +640,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
             return base.VisitArrayItemOrdEx(x);
         }
-
-        #endregion
-
-        #region VisitLambda
 
         #endregion
 
@@ -702,14 +698,10 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             {
                 Accept(x.Returned);
             }
-            else
-            {
-            }
 
             return default;
         }
 
-     
         #endregion
     }
 }
