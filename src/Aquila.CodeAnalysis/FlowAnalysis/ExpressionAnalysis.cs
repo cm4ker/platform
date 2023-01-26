@@ -601,7 +601,11 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         public override T VisitFuncEx(BoundFuncEx x)
         {
+            Debug.Assert(x.LambdaSymbol.ControlFlowGraph != null);
+            
             State.VisitFuncEx(x);
+            EnqueueBlock(x.LambdaSymbol.ControlFlowGraph.Start);
+            
             return default;
         }
 

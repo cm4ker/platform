@@ -172,11 +172,6 @@ namespace Aquila.CodeAnalysis
         void AnalyzeBlock(BoundBlock block)
         {
             block.Accept(AnalysisFactory());
-
-            foreach (var lambda in block.FlowState.FlowContext.Lambdas)
-            {
-                EnqueueMethod(lambda);    
-            }
         }
 
         GraphVisitor<VoidStruct> AnalysisFactory()
