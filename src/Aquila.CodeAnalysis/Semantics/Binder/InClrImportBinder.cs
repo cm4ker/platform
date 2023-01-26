@@ -42,7 +42,7 @@ internal class InClrImportBinder : Binder
 
     protected override void FindMethodsByName(string name, ArrayBuilder<Symbol> result)
     {
-        var typesCandidate = _container.GetTypeMembers().Where(x => name.StartsWith(StringUtils.ToSnakeCase(x.Name)));
+        var typesCandidate = _container.GetTypeMembers().Where(x => name.StartsWith(x.Name.ToSnakeCase()));
 
         foreach (var type in typesCandidate)
         {

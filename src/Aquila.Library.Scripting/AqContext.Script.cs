@@ -24,7 +24,7 @@ namespace Aquila.Library.Scripting
     {
         private const string MainModuleName = "main";
         private const string EntryPointMethodName = "main";
-        
+
         #region Fields & Properties
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Aquila.Library.Scripting
         /// References to scripts that precedes this one.
         /// Current script requires these to be evaluated first.
         /// </summary>
-        public IReadOnlyList<Script> DependingSubmissions => _previousSubmissions; 
+        public IReadOnlyList<Script> DependingSubmissions => _previousSubmissions;
 
         /// <summary>
         /// Gets the assembly content.
@@ -96,11 +96,12 @@ namespace Aquila.Library.Scripting
             _image = peStream.ToArray().ToImmutableArray();
 
             var t = ass.GetType(WellKnownAquilaNames.MainModuleName);
-            
+
             _entryPoint = ctx =>
             {
                 ctx.Instance.UpdateAssembly(ass);
-                return ((MethodInfo)t.GetMember(WellKnownAquilaNames.MainMethodName).FirstOrDefault()).Invoke(null, new object[] { ctx });
+                return ((MethodInfo)t.GetMember(WellKnownAquilaNames.MainMethodName).FirstOrDefault()).Invoke(null,
+                    new object[] { ctx });
             };
 
             if (_entryPoint == null)
@@ -216,7 +217,8 @@ namespace Aquila.Library.Scripting
                 options.IsSubmission ? BuildSubmissionFileName(options.Location.Path, name.Name) : options.Location.Path
             );
             var viewTree = (AquilaSyntaxTree)AquilaSyntaxTree.ParseText(
-                "<div href=\"123\">Hello world\r\n\r\n</div> @code{fn test_view_func(){}}", new AquilaParseOptions(kind: SourceCodeKind.View));
+                "<div href=\"123\">Hello world\r\n\r\n</div> @code{fn test_view_func(){}}",
+                new AquilaParseOptions(kind: SourceCodeKind.View));
 
             var diagnostics = tree.GetDiagnostics().ToImmutableArray();
             if (!HasErrors(diagnostics))
@@ -241,7 +243,6 @@ namespace Aquila.Library.Scripting
                 // create the compilation object
                 // TODO: add conditionally declared types into the compilation tables
                 var compilation = (AquilaCompilation)builder.CoreCompilation
-                    
                     .WithAssemblyName(name.Name)
                     .AddMetadata(metadata.EntityMetadata)
                     .AddSyntaxTrees(tree, viewTree)
@@ -312,8 +313,7 @@ namespace Aquila.Library.Scripting
             var errors = string.Join(Environment.NewLine,
                 diagnostics.Select(d => $"{d.Severity} {d.Id}: {d.GetMessage()}"));
 
-
-            return new Script((ctx) => { throw new Exception(errors); });
+            return new Script(ctx => throw new InvalidOperationException(errors));
         }
 
         #endregion

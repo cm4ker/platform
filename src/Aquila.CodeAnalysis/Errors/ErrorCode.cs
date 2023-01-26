@@ -25,7 +25,6 @@ namespace Aquila.CodeAnalysis.Errors
 
         FTL_InvalidInputFileName = 3000,
         FTL_BadCodepage = 3016,
-        FTL_InternalCompilerError = 3017,
 
         #endregion
 
@@ -162,132 +161,34 @@ namespace Aquila.CodeAnalysis.Errors
         ERR_ResourceInModule = 4118,
         ERR_ResourceNotUnique = 4119,
         ERR_TooManyUserStrings = 4120,
-        ERR_NotYetImplemented = 4121, // Used for all valid Aquila constructs
-        ERR_CircularBase = 4122,
-        ERR_TypeNameCannotBeResolved = 4123,
-        ERR_PositionalArgAfterUnpacking = 4124, // Cannot use positional argument after argument unpacking
+        ERR_NotYetImplemented = 4121,
+        ERR_TypeNameCannotBeResolved = 4123, // Cannot use positional argument after argument unpacking
 
         ERR_InvalidMetadataConsistance = 4125,
-
-        /// <summary>Call to a member function {0} on {1}</summary>
-        ERR_MethodCalledOnNonObject = 4126,
-
-        /// <summary>Value of type {0} cannot be passed by reference</summary>
-        ERR_ValueOfTypeCannotBeAliased = 4127,
-
-        /// <summary>"Cannot instantiate {0} {1}", e.g. "interface", the type name</summary>
         ERR_CannotInstantiateType = 4128,
-
-        /// <summary>"{0} cannot use {1} - it is not a trait"</summary>
-        ERR_CannotUseNonTrait = 4129,
-
-        /// <summary>"Class {0} cannot extend from {1} {2}", e.g. from trait T</summary>
-        ERR_CannotExtendFrom = 4130,
-
-        /// <summary>"{0} cannot implement {1} - it is not an interface"</summary>
-        ERR_CannotImplementNonInterface = 4131,
-
-        /// <summary>Cannot re-assign $this</summary>
         ERR_CannotAssignToThis = 4132,
-
-        /// <summary>{0}() cannot declare a return type</summary>
-        ERR_CannotDeclareReturnType = 4133,
-
-        /// <summary>A void function must not return a value</summary>
-        ERR_VoidFunctionCannotReturnValue = 4134,
-
-        /// <summary>{0} {1}() must take exactly {2} arguments</summary>
-        ERR_MustTakeArgs = 4135,
-
-        /// <summary>Function name must be a string, {0} given</summary>
-        ERR_InvalidFunctionName = 4136,
-
-        /// <summary>Cannot use the final modifier on an abstract class</summary>
-        ERR_FinalAbstractClassDeclared = 4137,
-
-        /// <summary>Access level to {0}::${1} must be {2} (as in class {3}) or weaker</summary>
-        ERR_PropertyAccessibilityError = 4138,
-
-        /// <summary>Use of primitive type '{0}' is misused</summary>
         ERR_PrimitiveTypeNameMisused = 4139,
-
-        /// <summary>Missing value for '{0}' option</summary>
         ERR_SwitchNeedsValue = 4140,
-
-        /// <summary>'{0}' not in the 'loop' or 'switch' context</summary>
         ERR_NeedsLoopOrSwitch = 4141,
-
-        /// <summary>Provided source code kind is unsupported or invalid: '{0}'</summary>
         ERR_BadSourceCodeKind = 4142,
-
-        /// <summary>Provided documentation mode is unsupported or invalid: '{0}'.</summary>
         ERR_BadDocumentationMode = 4143,
-
-        /// <summary>Compilation options '{0}' and '{1}' can't both be specified at the same time.</summary>
         ERR_MutuallyExclusiveOptions = 4144,
-
-        /// <summary>Invalid instrumentation kind: {0}</summary>
         ERR_InvalidInstrumentationKind = 4145,
-
-        /// <summary>Invalid hash algorithm name: '{0}'</summary>
         ERR_InvalidHashAlgorithmName = 4146,
-
-        /// <summary>Option '{0}' must be an absolute path.</summary>
         ERR_OptionMustBeAbsolutePath = 4147,
-
-        /// <summary>Cannot emit debug information for a source text without encoding.</summary>
         ERR_EncodinglessSyntaxTree = 4148,
-
-        /// <summary>An error occurred while writing the output file: {0}.</summary>
         ERR_PeWritingFailure = 4149,
-
-        /// <summary>Failed to emit module '{0}'.</summary>
         ERR_ModuleEmitFailure = 4150,
-
-        /// <summary>Cannot update '{0}'; attribute '{1}' is missing.</summary>
         ERR_EncUpdateFailedMissingAttribute = 4151,
-
-        /// <summary>Unable to read debug information of method '{0}' (token 0x{1:X8}) from assembly '{2}'</summary>
         ERR_InvalidDebugInfo = 4152,
-
-        /// <summary>Invalid assembly name: {0}</summary>
         ERR_BadAssemblyName = 4153,
-
-        /// <summary>/embed switch is only supported when emitting Portable PDB (/debug:portable or /debug:embedded).</summary>
         ERR_CannotEmbedWithoutPdb = 4154,
-
-        /// <summary>No overload for method {0} can be called.</summary>
-        ERR_NoMatchingOverload = 4155,
-
-        /// <summary>Default value for parameter ${0} with a {1} type can only be {1} or NULL, {2} given</summary>
-        ERR_DefaultParameterValueTypeMismatch = 4156,
-
-        /// <summary>Constant expression contains invalid operations</summary>
         ERR_InvalidConstantExpression = 4157,
-
-        /// <summary>Using $this when not in object context</summary>
-        ERR_ThisOutOfObjectContext = 4158,
-
-        /// <summary>Cannot set read-only property {0}::${1}</summary>
         ERR_ReadOnlyPropertyWritten = 4159,
-
-        /// <summary>Only the last parameter can be variadic</summary>
-        ERR_VariadicParameterNotLast = 4160,
-        ERR_CtorPropertyVariadic = 4161,
-        ERR_CtorPropertyAbstractCtor = 4162,
-        ERR_CtorPropertyNotCtor = 4163,
-        ERR_CtorPropertyStaticCtor = 4164,
-
-        /// <summary>Property {0}::${1} cannot have type {2}</summary>
-        ERR_PropertyTypeNotAllowed = 4165,
-
-        /// <summary>Multiple analyzer config files cannot be in the same directory ('{0}').</summary>
         ERR_MultipleAnalyzerConfigsInSameDir = 4166,
-
-        /// <summary>Method '{0}' not found for type {1}.</summary>
         ERR_MethodNotFound = 4167,
-
         ERR_MissingIdentifierSymbol = 4168,
+        ERR_CantResolveSymbol = 4169,
 
         #endregion
 
@@ -305,102 +206,21 @@ namespace Aquila.CodeAnalysis.Errors
         WRN_PdbLocalNameTooLong = 5004,
         WRN_PdbUsingNameTooLong = 5005,
         WRN_UnableToLoadAnalyzer = 5006,
-        WRN_UndefinedFunctionCall = 5007,
         WRN_UninitializedVariableUse = 5008,
         WRN_UndefinedType = 5009,
-        WRN_UndefinedMethodCall = 5010,
-
-        /// <summary>The declaration of class, interface or trait is ambiguous since its base types cannot be resolved.</summary>
-        WRN_AmbiguousDeclaration = 5011,
         WRN_UnreachableCode = 5012,
-        WRN_NotYetImplementedIgnored = 5013,
         WRN_NoSourceFiles = 5014,
-
-        /// <summary>{0}() expects {1} parameter(s), {2} given</summary>
-        WRN_TooManyArguments = 5015,
-
-        /// <summary>{0}() expects at least {1} parameter(s), {2} given</summary>
-        WRN_MissingArguments = 5016,
-
-        /// <summary>Assertion will always fail</summary>
-        WRN_AssertAlwaysFail = 5017,
-
-        /// <summary>Using string as the assertion is deprecated</summary>
-        WRN_StringAssertionDeprecated = 5018,
-
-        /// <summary>Deprecated: {0} '{1}' has been deprecated. {2}</summary>
-        WRN_SymbolDeprecated = 5019,
-
-        /// <summary>The expression is not being read. Did you mean to assign it somewhere?</summary>
-        WRN_ExpressionNotRead = 5020,
-
-        /// <summary>Assignment made to same variable; did you mean to assign something else?</summary>
-        WRN_AssigningSameVariable = 5021,
-
-        /// <summary>Invalid array key type: {0}.</summary>
-        WRN_InvalidArrayKeyType = 5022,
-
-        /// <summary>Duplicate array key: '{0}'.</summary>
-        WRN_DuplicateArrayKey = 5023,
-
-        /// <summary>Cloning of non-object: {0}.</summary>
-        WRN_CloneNonObject = 5024,
-
-        /// <summary>Using non-iterable type in foreach: {0}.</summary>
-        WRN_ForeachNonIterable = 5025,
-
-        /// <summary>Call to '{0}()' expects {1} argument(s), {2} given.</summary>
         WRN_FormatStringWrongArgCount = 5026,
-
-        /// <summary>Missing the call of parent::__construct from {0}::__construct.</summary>
         WRN_ParentCtorNotCalled = 5027,
-
-        /// <summary>Method {0}::__toString() must return a string value</summary>
-        WRN_ToStringMustReturnString = 5028,
-
-        /// <summary>Argument has no value, parameter will be always NULL</summary>
-        WRN_ArgumentVoid = 5029,
-
-        /// <summary>PCRE pattern parse error: {0} at offset {1}</summary>
-        WRN_PCRE_Pattern_Error = 5030,
-
-        /// <summary>{0} '{1}' is already defined</summary>
-        WRN_TypeNameInUse = 5031,
-
-        /// <summary>Script file '{0}' could not be resolved, the script inclusion is unbound.</summary>
-        WRN_CannotIncludeFile = 5032,
-
-        /// <summary>Called from the global scope</summary>
-        WRN_CalledFromGlobalScope = 5033,
-
-        /// <summary>Generator '{0}' failed to initialize. It will not contribute to the output and compilation errors may occur as a result. Exception was of type '{1}' with message '{2}'</summary>
         WRN_GeneratorFailedDuringInitialization = 5034,
-
-        /// <summary>Generator '{0}' failed to generate source. It will not contribute to the output and compilation errors may occur as a result. Exception was of type '{1}' with message '{2}'</summary>
         WRN_GeneratorFailedDuringGeneration = 5035,
 
         #endregion
 
         #region 6xxx Visible information
 
-        //
-        // Visible information
-        //
         INF_UnableToLoadSomeTypesInAnalyzer = 6000,
-        INF_EvalDiscouraged = 6001,
-        INF_RedundantCast = 6002,
-
-        /// <summary>Name '{0}' does not match the expected name '{1}', letter casing mismatch.</summary>
         INF_TypeNameCaseMismatch = 6003,
-
-        /// <summary></summary>
-        INF_DestructDiscouraged = 6004,
-
-        /// <summary>Overriden function name '{0}' does not match it's parent name '{1}', letter casing mismatch.</summary>
-        INF_OverrideNameCaseMismatch = 6005,
-
-        /// <summary>The symbol can not been resolved </summary>
-        INF_CantResolveSymbol = 6006
 
         #endregion
     }

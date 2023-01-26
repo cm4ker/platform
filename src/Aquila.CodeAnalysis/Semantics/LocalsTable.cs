@@ -98,6 +98,9 @@ namespace Aquila.CodeAnalysis.Semantics
 
         #region Public methods
 
+        public bool TryGetVariable(string name, out LocalVariableReference variable) =>
+            _dict.TryGetValue(new VariableName(name), out variable);
+        
         public bool TryGetVariable(VariableName varname, out LocalVariableReference variable) =>
             _dict.TryGetValue(varname, out variable);
 
