@@ -9,10 +9,9 @@ using Aquila.Data;
 using Aquila.Initializer;
 using Aquila.Metadata;
 using Aquila.Runtime.Querying;
-using DotNet.Testcontainers.Containers.Builders;
-using DotNet.Testcontainers.Containers.Configurations.Databases;
-using DotNet.Testcontainers.Containers.Modules.Abstractions;
-using DotNet.Testcontainers.Containers.Modules.Databases;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Configurations;
+using DotNet.Testcontainers.Containers;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
