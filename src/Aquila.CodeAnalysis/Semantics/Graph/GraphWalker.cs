@@ -338,11 +338,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             return default;
         }
 
-        public override T VisitMethodDeclStmt(BoundMethodDeclStmt x)
-        {
-            return default;
-        }
-
         public override T VisitDeclareStmt(BoundDeclareStmt x)
         {
             return default;

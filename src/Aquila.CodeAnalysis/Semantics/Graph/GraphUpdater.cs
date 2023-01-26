@@ -486,11 +486,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             return x.Update((BoundExpression)Accept(x.Returned));
         }
 
-        public override object VisitMethodDeclStmt(BoundMethodDeclStmt x)
-        {
-            return x;
-        }
-
         #endregion
     }
 }

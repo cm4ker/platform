@@ -119,13 +119,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
                 return base.VisitYieldStmt(boundYieldStmt);
             }
-
-            public override VoidStruct VisitMethodDeclStmt(BoundMethodDeclStmt x)
-            {
-                _rewriter.OnUnreachableMethodFound(x.Method);
-
-                return base.VisitMethodDeclStmt(x);
-            }
         }
 
         #endregion

@@ -341,9 +341,8 @@ namespace Aquila.CodeAnalysis.Semantics
 
         private BoundExpression BindFuncEx(FuncEx funcEx)
         {
-            var nestedType = new SynthesizedTypeSymbol(this.Container, this.Compilation);
+             var nestedType = new SynthesizedTypeSymbol(this.Container, this.Compilation);
             var lambda = new SourceLambdaSymbol(nestedType, funcEx);
-            SourceCompiler.BindAndAnalyze( lambda.ControlFlowGraph.)
             return new BoundFuncEx(nestedType, lambda, lambda.ReturnType);
         }
 
