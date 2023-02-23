@@ -194,14 +194,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             return base.VisitVariableRef(x);
         }
 
-        public override T VisitTemporalVariableRef(BoundTemporalVariableRef x)
-        {
-            // do not make diagnostics on syntesized variables
-            return default;
-        }
-
-        
-
         public override T VisitUnaryEx(BoundUnaryEx x)
         {
             base.VisitUnaryEx(x);

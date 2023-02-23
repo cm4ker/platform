@@ -1,4 +1,5 @@
-﻿using Aquila.CodeAnalysis.Symbols;
+﻿using System.Collections.Immutable;
+using Aquila.CodeAnalysis.Symbols;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
 
@@ -18,5 +19,10 @@ internal class GlobalBinder : InContainerBinder
     protected override void FindMethodsByName(string name, ArrayBuilder<Symbol> result)
     {
         result.AddRange(_ns.GetMembers(name).OfType<MethodSymbol>());
+    }
+
+    protected override void FindSymbolByName(string name, ArrayBuilder<ImmutableArray<Symbol>> result)
+    {
+        result.Add(_ns.GetMembers(name));
     }
 }

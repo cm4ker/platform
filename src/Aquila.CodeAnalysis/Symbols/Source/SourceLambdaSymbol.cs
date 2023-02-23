@@ -27,7 +27,7 @@ internal sealed class SourceLambdaSymbol : SourceMethodSymbolBase
     
     internal override IEnumerable<StmtSyntax> Statements => _functionExpr.Body?.Statements;
 
-    protected override Binder GetMethodBinder()
+    protected override Binder GetMethodBinderCore()
     {
         return DeclaringCompilation.GetBinder(_functionExpr);
     }

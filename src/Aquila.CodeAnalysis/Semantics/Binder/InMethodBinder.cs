@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Immutable;
+using System.Linq;
 using Aquila.CodeAnalysis.Symbols;
+using Microsoft.CodeAnalysis.PooledObjects;
+using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Semantics;
 
@@ -22,4 +26,16 @@ internal class InMethodBinder : Binder
 
 
     public override NamespaceOrTypeSymbol Container => _method.ContainingType;
+
+
+    protected override void FindSymbolByName(string name, ArrayBuilder<ImmutableArray<Symbol>> result)
+    {
+        result.Add(Locals
+            .Variables
+            .Where(x => x.Name == name)
+            .Select(x => x.Symbol)
+            .WhereNotNull().ToImmutableArray());
+        
+        base.FindSymbolByName(name, result);
+    }
 }

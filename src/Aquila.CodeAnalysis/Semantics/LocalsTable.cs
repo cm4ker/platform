@@ -104,12 +104,12 @@ namespace Aquila.CodeAnalysis.Semantics
         public bool TryGetVariable(VariableName varname, out LocalVariableReference variable) =>
             _dict.TryGetValue(varname, out variable);
 
-        IVariableReference BindVariable(VariableName varname, TextSpan span,
-            Func<VariableName, TextSpan, LocalVariableReference> factory)
+        IVariableReference BindVariable(VariableName varname,
+            Func<VariableName, LocalVariableReference> factory)
         {
             if (!_dict.TryGetValue(varname, out var value))
             {
-                _dict[varname] = value = factory(varname, span);
+                _dict[varname] = value = factory(varname);
             }
 
             //
@@ -120,16 +120,15 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// Gets local variable or create local if not yet.
         /// </summary>
-        public IVariableReference BindLocalVariable(VariableName varname, VariableInit decl) => BindVariable(varname,
-            decl.Span, (name, span) => CreateLocal(name, VariableKind.LocalVariable, decl));
+        public IVariableReference BindLocalVariable(VariableName varname, VariableInit decl) => BindVariable(varname, 
+            name => CreateLocal(name, VariableKind.LocalVariable, decl));
 
         public IVariableReference BindTemporalVariable(VariableName varname, TypeSymbol type) =>
-            BindVariable(varname, default, (name, _)
-                => CreateLocal(name, VariableKind.LocalTemporalVariable, type));
+            BindVariable(varname, name => CreateLocal(name, VariableKind.LocalTemporalVariable, type));
         
         public IVariableReference BindLocalVariable(VariableName varName, TextSpan span, TypeSymbol type) =>
-            BindVariable(varName, span, (_, _) => new LocalVariableReference(VariableKind.LocalVariable, _method,
-                new InPlaceSourceLocalSymbol(_method, varName, span, type), new BoundVariableName(varName, type)));
+            BindVariable(varName, name => new LocalVariableReference(VariableKind.LocalVariable, _method,
+                new InPlaceSourceLocalSymbol(_method, name, span, type), new BoundVariableName(name, type)));
 
         #endregion
     }

@@ -129,6 +129,8 @@ namespace Aquila.CodeAnalysis.Semantics
                             .Single(x => x.AquilaSyntax.SyntaxTree.FilePath == htmlDecl.SyntaxTree.FilePath);
                         return new InContainerBinder(type, next);
                     }
+                    case FuncEx funcEx:
+                        
                     case ImportDecl import:
                         break;
                     case FuncDecl fd:

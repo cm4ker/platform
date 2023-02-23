@@ -38,7 +38,7 @@
     <Syntax Name="StaticVarStmt" Base="Statement"/>
 
     <Syntax Name="YieldStmt" Base="Statement" OperationKind="YieldReturn"/>
-    
+
     <Syntax Name="ForEachStmt" Base="Statement" OperationKind="Loop">
         <Arguments>
             <Single Name="Item" Type="BoundReferenceEx" IsUpdatable="true"/>
@@ -46,9 +46,9 @@
             <Single Name="BoundInfo" Type="ForeachBindInfo" IsUpdatable="false"/>
         </Arguments>
     </Syntax>
-    <Syntax Name="BadStmt" Base="Statement" OperationKind="None"> 
+    <Syntax Name="BadStmt" Base="Statement" OperationKind="None">
         <Arguments>
-            
+
         </Arguments>
     </Syntax>
     <!-- region HtmlStmt -->
@@ -56,7 +56,7 @@
         <Arguments>
             <Single Name="Markup" Type="string" IsUpdatable="true"/>
             <Single Name="InstructionIndex" Type="int" IsUpdatable="true"/>
-        </Arguments>    
+        </Arguments>
     </Syntax>
 
     <Syntax Name="HtmlOpenElementStmt" Base="Statement" OperationKind="None">
@@ -65,8 +65,8 @@
             <Single Name="InstructionIndex" Type="int" IsUpdatable="true"/>
         </Arguments>
     </Syntax>
-    
-    <Syntax Name="HtmlCloseElementStmt" Base="Statement" OperationKind="None" />
+
+    <Syntax Name="HtmlCloseElementStmt" Base="Statement" OperationKind="None"/>
     <Syntax Name="HtmlAddAttributeStmt" Base="Statement" OperationKind="None">
         <Arguments>
             <Single Name="AttributeName" Type="string" IsUpdatable="true"/>
@@ -205,11 +205,9 @@
                     IsInternal="true"/>
         </Arguments>
     </Syntax>
-
     <Syntax Name="FuncEx" Base="Expression" OperationKind="AnonymousFunction">
         <Arguments>
-            <Single Name="HolderSymbol" Type="TypeSymbol" IsInternal="true" IsUpdatable="true" /> 
-            <Single Name="LambdaSymbol" Type="SourceLambdaSymbol" IsInternal="true" IsUpdatable="true" />
+            <Single Name="Statements" Type="List&lt;BoundStatement&gt;" IsUpdatable="true"/>
             <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
                     IsInternal="true"/>
         </Arguments>
@@ -229,7 +227,7 @@
     </Syntax>
     <!-- endregion -->
 
-    <Syntax Name="NewEx" Base="Expression"  OperationKind="ObjectCreation">
+    <Syntax Name="NewEx" Base="Expression" OperationKind="ObjectCreation">
         <Arguments>
             <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true"/>
             <Single Name="TypeRef" Type="ITypeSymbol"/>
@@ -325,14 +323,6 @@
     <Syntax Name="VariableRef" Base="ReferenceEx" OperationKind="LocalReference">
         <Arguments>
             <Single Name="Name" Type="BoundVariableName" IsUpdatable="true"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
-                    IsInternal="true"/>
-        </Arguments>
-    </Syntax>
-
-    <Syntax Name="TemporalVariableRef" Base="VariableRef">
-        <Arguments>
-            <Single Name="Name" Type="BoundVariableName" PassBase="true" OnlyArgument="true" IsUpdatable="true"/>
             <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
                     IsInternal="true"/>
         </Arguments>

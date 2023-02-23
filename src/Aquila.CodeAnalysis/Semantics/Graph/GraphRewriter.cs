@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using Aquila.CodeAnalysis.FlowAnalysis;
-using Aquila.CodeAnalysis.Symbols;
-using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Utilities;
 
 namespace Aquila.CodeAnalysis.Semantics.Graph
@@ -43,7 +39,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// Clones unmodified blocks and fixes the edges between them so that no edge targets
         /// a block from the previous version of the graph.
         /// </summary>
-        private class GraphRepairer : GraphUpdater
+        private sealed class GraphRepairer : GraphUpdater
         {
             private readonly GraphRewriter _rewriter;
 
@@ -81,15 +77,15 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
                 return block;
             }
 
-            public sealed override object VisitCFGBlock(BoundBlock x) => Repair(x);
+            public override object VisitCFGBlock(BoundBlock x) => Repair(x);
 
-            public sealed override object VisitCFGStartBlock(StartBlock x) => Repair(x);
+            public override object VisitCFGStartBlock(StartBlock x) => Repair(x);
 
-            public sealed override object VisitCFGExitBlock(ExitBlock x) => Repair(x);
+            public override object VisitCFGExitBlock(ExitBlock x) => Repair(x);
 
-            public sealed override object VisitCFGCatchBlock(CatchBlock x) => Repair(x);
+            public override object VisitCFGCatchBlock(CatchBlock x) => Repair(x);
 
-            public sealed override object VisitCFGCaseBlock(MatchArmBlock x) => Repair(x);
+            public override object VisitCFGCaseBlock(MatchArmBlock x) => Repair(x);
         }
 
         /// <summary>
@@ -97,7 +93,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// of the original graph. Marks all declarations as unreachable. The blocks encountered along the way are
         /// coloured as a side effect.
         /// </summary>
-        private class UnreachableProcessor : GraphExplorer<VoidStruct>
+        private sealed class UnreachableProcessor : GraphExplorer<VoidStruct>
         {
             private readonly GraphRewriter _rewriter;
 
@@ -198,39 +194,46 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             var unreachableBlocks = x.UnreachableBlocks;
 
             // Fix the structure of the graph if any changes were performed
-            if (_updatedBlocks != null)
+            if (_updatedBlocks == null)
+                return x.Update(
+                    updatedStart,
+                    updatedExit,
+                    x.Labels, // Keep all the labels, they are here only for the diagnostic purposes
+                    yields,
+                    unreachableBlocks);
+            
+            Debug.Assert(updatedStart != x.Start);
+
+            // Rescan and repair nodes and edges if any blocks were modified
+            var repairer = new GraphRepairer(this);
+            updatedStart = (StartBlock)updatedStart.Accept(repairer);
+            updatedExit = TryGetNewVersion(x.Exit);
+
+            // Handle newly unreachable blocks
+            var newlyUnreachableBlocks =
+                _possiblyUnreachableBlocks?.Where(b => !IsExplored(b)).ToList() // Confirm that they are unexplored
+                ?? Enumerable.Empty<BoundBlock>();
+            var boundBlocks = newlyUnreachableBlocks.ToList();
+
+            if (boundBlocks.Any())
             {
-                Debug.Assert(updatedStart != x.Start);
+                // Scan all the newly unreachable blocks (for yields, declarations,...)
+                var unreachableProcessor = new UnreachableProcessor(this, ExploredColor);
+                boundBlocks.ForEach(b => b.Accept(unreachableProcessor));
 
-                // Rescan and repair nodes and edges if any blocks were modified
-                var repairer = new GraphRepairer(this);
-                updatedStart = (StartBlock)updatedStart.Accept(repairer);
-                updatedExit = TryGetNewVersion(x.Exit);
-
-                // Handle newly unreachable blocks
-                var newlyUnreachableBlocks =
-                    _possiblyUnreachableBlocks?.Where(b => !IsExplored(b)).ToList() // Confirm that they are unexplored
-                    ?? Enumerable.Empty<BoundBlock>();
-                if (newlyUnreachableBlocks.Any())
+                // Remove the discovered yields from the next CFG version
+                if (unreachableProcessor.Yields != null)
                 {
-                    // Scan all the newly unreachable blocks (for yields, declarations,...)
-                    var unreachableProcessor = new UnreachableProcessor(this, ExploredColor);
-                    newlyUnreachableBlocks.ForEach(b => b.Accept(unreachableProcessor));
-
-                    // Remove the discovered yields from the next CFG version
-                    if (unreachableProcessor.Yields != null)
-                    {
-                        yields = yields.RemoveRange(unreachableProcessor.Yields);
-                    }
+                    yields = yields.RemoveRange(unreachableProcessor.Yields);
                 }
-
-                // Repair all the unreachable blocks so that they reference the updated versions of the blocks
-                // (enables to properly produce reachability diagnostics)
-                unreachableBlocks =
-                    unreachableBlocks.Concat(newlyUnreachableBlocks)
-                        .Select(b => (BoundBlock)b.Accept(repairer))
-                        .ToImmutableArray();
             }
+
+            // Repair all the unreachable blocks so that they reference the updated versions of the blocks
+            // (enables to properly produce reachability diagnostics)
+            unreachableBlocks =
+                unreachableBlocks.Concat(boundBlocks)
+                    .Select(b => (BoundBlock)b.Accept(repairer))
+                    .ToImmutableArray();
 
             // Create a new CFG from the new versions of blocks and edges (expressions and statements are reused where unchanged)
             return x.Update(
@@ -327,9 +330,5 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         public virtual MatchArmBlock OnVisitCFGCaseBlock(MatchArmBlock x) => (MatchArmBlock)base.VisitCFGCaseBlock(x);
 
         #endregion
-
-        protected private virtual void OnUnreachableMethodFound(SourceMethodSymbolBase method)
-        {
-        }
     }
 }

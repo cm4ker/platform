@@ -214,6 +214,25 @@ namespace Aquila.CodeAnalysis.Semantics
             return Place().EmitLoad(cg.Builder);
         }
     }
+    
+    public partial class BoundPropertyRef
+    {
+        internal override IVariableReference BindPlace(CodeGenerator cg)
+        {
+            return new PropertyReference(this._instance, (PropertySymbol)_property);
+        }
+
+        internal override IPlace Place()
+        {
+            return new PropertyPlace(null, (PropertySymbol)_property);
+        }
+
+        internal override TypeSymbol Emit(CodeGenerator cg)
+        {
+            return cg.EmitCall(ILOpCode.Call, (MethodSymbol)Property.GetMethod, this.Instance,
+                ImmutableArray<BoundArgument>.Empty);
+        }
+    }
 
     partial class BoundBinaryEx
     {
@@ -792,25 +811,6 @@ namespace Aquila.CodeAnalysis.Semantics
             locPlace.EmitLoad(cg.Builder);
 
             return (TypeSymbol)ResultType;
-        }
-    }
-
-    public partial class BoundPropertyRef
-    {
-        internal override IVariableReference BindPlace(CodeGenerator cg)
-        {
-            return new PropertyReference(this._instance, (PropertySymbol)_property);
-        }
-
-        internal override IPlace Place()
-        {
-            return new PropertyPlace(null, (PropertySymbol)_property);
-        }
-
-        internal override TypeSymbol Emit(CodeGenerator cg)
-        {
-            return cg.EmitCall(ILOpCode.Call, (MethodSymbol)Property.GetMethod, this.Instance,
-                ImmutableArray<BoundArgument>.Empty);
         }
     }
 

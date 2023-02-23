@@ -20,14 +20,9 @@ namespace Aquila.CodeAnalysis.Emit
     /// </summary>
     internal class SynthesizedManager
     {
-        readonly PEModuleBuilder _module;
-
-        private List<SynthesizedNamespaceSymbol> _namespaces = new List<SynthesizedNamespaceSymbol>();
-
-        public AquilaCompilation DeclaringCompilation => _module.Compilation;
-
-        readonly ConcurrentDictionary<Cci.ITypeDefinition, List<Symbol>> _membersByType =
-            new ConcurrentDictionary<Cci.ITypeDefinition, List<Aquila.CodeAnalysis.Symbols.Symbol>>();
+        private List<SynthesizedNamespaceSymbol> _namespaces = new();
+        private readonly PEModuleBuilder _module;
+        private readonly ConcurrentDictionary<Cci.ITypeDefinition, List<Symbol>> _membersByType = new();
 
         public SynthesizedManager(PEModuleBuilder module)
         {
@@ -35,6 +30,8 @@ namespace Aquila.CodeAnalysis.Emit
 
             _module = module;
         }
+
+        public AquilaCompilation DeclaringCompilation => _module.Compilation;
 
         public ImmutableArray<NamespaceSymbol> Namespaces =>
             _namespaces.ToImmutableArray().CastArray<NamespaceSymbol>();
@@ -46,9 +43,16 @@ namespace Aquila.CodeAnalysis.Emit
             var type = new SynthesizedTypeSymbol(container, DeclaringCompilation);
             type.SetName(name);
 
-            if (container is SynthesizedNamespaceSymbol ns)
+            switch (container)
             {
-                ns.AddType(type);
+                case SynthesizedNamespaceSymbol ns:
+                    ns.AddType(type);
+                    break;
+                case NamedTypeSymbol typeContainer:
+                    AddMemberCore(typeContainer, type);
+                    break;
+                default:
+                    throw new InvalidOperationException();
             }
 
             return type;
@@ -63,14 +67,50 @@ namespace Aquila.CodeAnalysis.Emit
 
         public SynthesizedMethodSymbol SynthesizeMethod(NamedTypeSymbol container)
         {
-            var method = new SynthesizedMethodSymbol(container);
-            return method;
+            return AddMemberCore(container, new SynthesizedMethodSymbol(container));
         }
 
         public SynthesizedCtorSymbol SynthesizeConstructor(NamedTypeSymbol container)
         {
-            var ctor = new SynthesizedCtorSymbol(container);
-            return ctor;
+            return AddMemberCore(container, new SynthesizedCtorSymbol(container));
+            ;
+        }
+
+        public SynthesizedFieldSymbol SynthesizeField(NamedTypeSymbol container)
+        {
+            return AddMemberCore(container, new SynthesizedFieldSymbol(container));
+        }
+
+        public T GetOrCreate<T>(NamedTypeSymbol container, string name) where T: Symbol
+        {
+            Symbol Factory()
+            {
+                return typeof(T) switch
+                {
+                    var t when t == typeof(SynthesizedMethodSymbol) => this.SynthesizeMethod(container).SetName(name),
+                    var t when t == typeof(SynthesizedCtorSymbol) => this.SynthesizeConstructor(container),
+                    var t when t == typeof(SynthesizedFieldSymbol) => this.SynthesizeField(container).SetName(name),
+                    _ => throw new InvalidOperationException()
+                };
+            }
+
+            var list = EnsureList(container);
+            var member = list.OfType<T>().FirstOrDefault(x => x.Name == name);
+            return member ?? (T)Factory();
+        }
+
+
+        private List<Symbol> EnsureList(Cci.ITypeDefinition type)
+        {
+            return _membersByType.GetOrAdd(type, (_) => new List<Symbol>());
+        }
+
+        private T AddMemberCore<T>(Cci.ITypeDefinition container, T member) where T : Symbol
+        {
+            var list = EnsureList(container);
+            list.Add(member);
+
+            return member;
         }
 
         /// <summary>
@@ -85,8 +125,7 @@ namespace Aquila.CodeAnalysis.Emit
         /// <returns>Enumeration of synthesized type members.</returns>
         public IEnumerable<T> GetMembers<T>(Cci.ITypeDefinition container) where T : ISymbol
         {
-            List<Aquila.CodeAnalysis.Symbols.Symbol> list;
-            if (_membersByType.TryGetValue(container, out list) && list.Count != 0)
+            if (_membersByType.TryGetValue(container, out var list) && list.Count != 0)
             {
                 return list.OfType<T>();
             }

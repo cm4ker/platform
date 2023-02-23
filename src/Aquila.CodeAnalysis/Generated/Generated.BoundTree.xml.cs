@@ -50,7 +50,6 @@ public enum BoundKind
     FieldRef,
     ListEx,
     VariableRef,
-    TemporalVariableRef,
     PropertyRef,
     Argument,
     MethodName,
@@ -2294,45 +2293,6 @@ namespace Aquila.CodeAnalysis.Semantics
 
 namespace Aquila.CodeAnalysis.Semantics
 {
-    partial class BoundTemporalVariableRef : BoundVariableRef
-    {
-        internal BoundTemporalVariableRef(BoundVariableName name, ITypeSymbol resultType): base(name, resultType)
-        {
-            OnCreateImpl(name, resultType);
-        }
-
-        partial void OnCreateImpl(BoundVariableName name, ITypeSymbol resultType);
-        public override BoundKind BoundKind => BoundKind.TemporalVariableRef;
-        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
-        partial void AcceptImpl(OperationVisitor visitor);
-        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
-        {
-            TRes res = default;
-            AcceptImpl(visitor, argument, ref res);
-            return res;
-        }
-
-        public override void Accept(OperationVisitor visitor)
-        {
-            AcceptImpl(visitor);
-        }
-
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
-        {
-            return visitor.VisitTemporalVariableRef(this);
-        }
-
-        internal BoundTemporalVariableRef Update(BoundVariableName name, ITypeSymbol resultType)
-        {
-            if (Name == name && ResultType == resultType)
-                return this;
-            return new BoundTemporalVariableRef(name, resultType).WithSyntax(this.AquilaSyntax);
-        }
-    }
-}
-
-namespace Aquila.CodeAnalysis.Semantics
-{
     partial class BoundPropertyRef : BoundReferenceEx
     {
         private IPropertySymbol _property;
@@ -3108,7 +3068,6 @@ namespace Aquila.CodeAnalysis.Semantics
         public virtual TResult VisitFieldRef(BoundFieldRef x) => VisitDefault(x);
         public virtual TResult VisitListEx(BoundListEx x) => VisitDefault(x);
         public virtual TResult VisitVariableRef(BoundVariableRef x) => VisitDefault(x);
-        public virtual TResult VisitTemporalVariableRef(BoundTemporalVariableRef x) => VisitDefault(x);
         public virtual TResult VisitPropertyRef(BoundPropertyRef x) => VisitDefault(x);
         public virtual TResult VisitArgument(BoundArgument x) => VisitDefault(x);
         public virtual TResult VisitMethodName(BoundMethodName x) => VisitDefault(x);

@@ -1,7 +1,9 @@
-﻿using Aquila.CodeAnalysis.Errors;
+﻿using System.Collections.Immutable;
+using Aquila.CodeAnalysis.Errors;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Syntax;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.PooledObjects;
 
 namespace Aquila.CodeAnalysis.Semantics;
 
@@ -48,5 +50,12 @@ internal class InContainerBinder : Binder
             Diagnostics.Add(GetLocation(tref), ErrorCode.ERR_TypeNameCannotBeResolved, qName);
 
         return result;
+    }
+    
+    
+    protected override void FindSymbolByName(string name, ArrayBuilder<ImmutableArray<Symbol>> result)
+    {
+        result.Add(Container.GetMembers(name));
+        base.FindSymbolByName(name, result);
     }
 }

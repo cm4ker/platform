@@ -421,12 +421,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             return x.Update(variable, x.ResultType);
         }
 
-        public override object VisitTemporalVariableRef(BoundTemporalVariableRef x)
-        {
-            Debug.Assert(x.Name.IsDirect);
-            return x;
-        }
-
         public override object VisitListEx(BoundListEx x)
         {
             var items = VisitImmutableArrayPairs(x.Items);

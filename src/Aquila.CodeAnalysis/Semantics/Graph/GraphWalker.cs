@@ -243,14 +243,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             return default;
         }
 
-        public override T VisitTemporalVariableRef(BoundTemporalVariableRef x)
-        {
-            // BoundSynthesizedVariableRef is based solely on BoundVariableRef so far 
-            VisitVariableRef(x);
-
-            return default;
-        }
-
         public override T VisitListEx(BoundListEx x)
         {
             x.Items.ForEach(pair =>

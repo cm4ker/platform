@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Immutable;
+using System.Linq;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Syntax;
@@ -57,5 +58,11 @@ internal class InClrImportBinder : Binder
         }
 
         base.FindMethodsByName(name, result);
+    }
+    
+    protected override void FindSymbolByName(string name, ArrayBuilder<ImmutableArray<Symbol>> result)
+    {
+        result.Add(Container.GetMembers(name));
+        base.FindSymbolByName(name, result);
     }
 }

@@ -175,12 +175,5 @@ namespace Aquila.CodeAnalysis.DocumentationComments
 
             _writer.WriteLine("</member>");
         }
-
-        void WriteMethod(SourceMethodSymbolBase method)
-        {
-            if (method.IsGlobalScope) return; // global code have no XML annotation
-
-            WriteMethod(CommentIdResolver.GetId(method), method);
-        }
     }
 }

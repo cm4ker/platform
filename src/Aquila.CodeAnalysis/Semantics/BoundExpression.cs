@@ -1122,22 +1122,6 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    /// <summary>
-    /// A non-source synthesized variable reference that can be read or written to. 
-    /// </summary>
-    /// <remarks>
-    /// Inheriting from <c>BoundVariableRef</c> is just a temporary measure. Do NOT take dependencies on anything but <c>IReferenceExpression</c>.
-    /// </remarks>
-    public partial class BoundTemporalVariableRef
-    {
-        private string _name;
-
-        partial void OnCreateImpl(BoundVariableName name, ITypeSymbol typeSymbol)
-        {
-            
-        }
-    }
-
     #endregion
 
     #region BoundListEx

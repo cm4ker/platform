@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Semantics;
@@ -12,8 +11,6 @@ using Aquila.CodeAnalysis.Symbols.Attributes;
 using Aquila.CodeAnalysis.Syntax;
 using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
-using TypeLayout = Microsoft.CodeAnalysis.TypeLayout;
-
 
 namespace Aquila.CodeAnalysis.Symbols.Source;
 
@@ -92,7 +89,6 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
     {
         if (_members == null)
         {
-
             var builder = ImmutableArray.CreateBuilder<Symbol>();
             builder.Add(new MethodTreeBuilderSymbol(this, _htmlDecl));
             
@@ -207,17 +203,17 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
 
         public override bool IsExtern => false;
 
-        protected override Binder GetMethodBinder()
+        protected override Binder GetMethodBinderCore()
         {
             return DeclaringCompilation.GetBinder(_htmlDecl.HtmlMarkup);
         }
 
-        protected override ControlFlowGraph CreateControlFlowGraph()
+        protected override ControlFlowGraph CreateControlFlowGraphCore()
         {
             var markup = _htmlDecl.HtmlMarkup;
             if (markup == null) return null;
             
-            var cfg = new ControlFlowGraph(markup.HtmlNodes, GetMethodBinder())
+            var cfg = new ControlFlowGraph(markup.HtmlNodes, GetMethodBinderCore())
             {
                 Start =
                 {

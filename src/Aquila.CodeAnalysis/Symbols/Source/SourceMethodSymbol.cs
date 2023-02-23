@@ -45,7 +45,7 @@ internal sealed class SourceMethodSymbol : SourceMethodSymbolBase
     public override bool IsStatic =>
         ContainingSymbol is SourceModuleTypeSymbol || _syntax.GetModifiers().IsStatic();
 
-    protected override Binder GetMethodBinder()
+    protected override Binder GetMethodBinderCore()
     {
         return DeclaringCompilation.GetBinder(_syntax);
     }
