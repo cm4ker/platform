@@ -36,25 +36,15 @@ namespace Aquila.CodeAnalysis.Semantics
         /// </summary>
         public static bool IsEmptyStringValue(object value)
         {
-            if (value == null)
-                return true;
-
-            if (value is string str && str.Length == 0)
-                return true;
-
-            if (value is bool b && b == false)
-                return true;
-
-            return false;
+            switch (value)
+            {
+                case null:
+                case string { Length: 0 }:
+                case false:
+                    return true;
+                default:
+                    return false;
+            }
         }
-
-        /// <summary>
-        /// Returns whether the expression can possibly have any side effects.
-        /// </summary>
-        public static bool CanHaveSideEffects(this BoundExpression expr) =>  
-            // TODO: Make more precise and less defensive
-            !(expr.ConstantValue.HasValue
-              || expr is BoundVariableRef varExpr && varExpr.Name.IsDirect
-              || expr is BoundLiteral);
     }
 }

@@ -1570,24 +1570,14 @@ namespace Aquila.CodeAnalysis.Semantics
 {
     partial class BoundFuncEx : BoundExpression
     {
-        private TypeSymbol _holderSymbol;
         private SourceLambdaSymbol _lambdaSymbol;
-        internal BoundFuncEx(TypeSymbol holderSymbol, SourceLambdaSymbol lambdaSymbol, ITypeSymbol resultType): base(resultType)
+        internal BoundFuncEx(SourceLambdaSymbol lambdaSymbol, ITypeSymbol resultType): base(resultType)
         {
-            _holderSymbol = holderSymbol;
             _lambdaSymbol = lambdaSymbol;
-            OnCreateImpl(holderSymbol, lambdaSymbol, resultType);
+            OnCreateImpl(lambdaSymbol, resultType);
         }
 
-        partial void OnCreateImpl(TypeSymbol holderSymbol, SourceLambdaSymbol lambdaSymbol, ITypeSymbol resultType);
-        internal TypeSymbol HolderSymbol
-        {
-            get
-            {
-                return _holderSymbol;
-            }
-        }
-
+        partial void OnCreateImpl(SourceLambdaSymbol lambdaSymbol, ITypeSymbol resultType);
         internal SourceLambdaSymbol LambdaSymbol
         {
             get
@@ -1617,11 +1607,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitFuncEx(this);
         }
 
-        internal BoundFuncEx Update(TypeSymbol holderSymbol, SourceLambdaSymbol lambdaSymbol, ITypeSymbol resultType)
+        internal BoundFuncEx Update(SourceLambdaSymbol lambdaSymbol, ITypeSymbol resultType)
         {
-            if (_holderSymbol == holderSymbol && _lambdaSymbol == lambdaSymbol && ResultType == resultType)
+            if (_lambdaSymbol == lambdaSymbol && ResultType == resultType)
                 return this;
-            return new BoundFuncEx(holderSymbol, lambdaSymbol, resultType).WithSyntax(this.AquilaSyntax);
+            return new BoundFuncEx(lambdaSymbol, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }

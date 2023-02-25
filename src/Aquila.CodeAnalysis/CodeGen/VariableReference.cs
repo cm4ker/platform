@@ -267,7 +267,7 @@ namespace Aquila.CodeAnalysis.Semantics
         /// Gets native type of the variable.
         /// </summary>
         TypeSymbol Type { get; }
-
+        
         /// <summary>
         /// Gets value indicating the native value can be accessed by address (<c>ref</c>).
         /// </summary>

@@ -3,9 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Aquila.CodeAnalysis.FlowAnalysis;
-using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Syntax;
-using Aquila.Syntax.Ast;
 using Microsoft.CodeAnalysis.Text;
 
 namespace Aquila.CodeAnalysis.Semantics
@@ -13,12 +11,11 @@ namespace Aquila.CodeAnalysis.Semantics
     /// <summary>
     /// Table of local variables used within method.
     /// </summary>
-    internal sealed partial class LocalsTable
+    internal sealed class LocalsTable
     {
         #region Fields & Properties
 
-        readonly Dictionary<VariableName, LocalVariableReference> /*!*/
-            _dict = new Dictionary<VariableName, LocalVariableReference>();
+        readonly Dictionary<VariableName, LocalVariableReference> _dict = new();
 
         /// <summary>
         /// Enumeration of direct local variables.
@@ -39,8 +36,6 @@ namespace Aquila.CodeAnalysis.Semantics
 
         #endregion
 
-        #region Construction
-
         /// <summary>
         /// Initializes table of locals of given method.
         /// </summary>
@@ -50,15 +45,11 @@ namespace Aquila.CodeAnalysis.Semantics
 
             _method = method;
 
-            //
             PopulateParameters();
         }
 
-        #endregion
-
-        void PopulateParameters()
+        private void PopulateParameters()
         {
-            // parameters
             foreach (var p in _method.SourceParameters)
             {
                 _dict[new VariableName(p.Name)] = new ParameterReference(p, Method);
@@ -70,14 +61,8 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
-        LocalVariableReference CreateAutoGlobal(VariableName name, TextSpan span)
-        {
-            throw new NotImplementedException();
-        }
-
         LocalVariableReference CreateLocal(VariableName name, VariableKind kind, VariableInit decl)
         {
-            Debug.Assert(!name.IsAutoGlobal);
             var locSym = new SourceLocalSymbol(Method, decl);
 
             Method.Flags |= MethodFlags.UsesLocals;
@@ -87,7 +72,6 @@ namespace Aquila.CodeAnalysis.Semantics
 
         LocalVariableReference CreateLocal(VariableName name, VariableKind kind, TypeSymbol type)
         {
-            Debug.Assert(!name.IsAutoGlobal);
             var locSym = new SynthesizedLocalSymbol(Method, name.Value, type);
 
             Method.Flags |= MethodFlags.UsesLocals;
@@ -100,7 +84,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public bool TryGetVariable(string name, out LocalVariableReference variable) =>
             _dict.TryGetValue(new VariableName(name), out variable);
-        
+
         public bool TryGetVariable(VariableName varname, out LocalVariableReference variable) =>
             _dict.TryGetValue(varname, out variable);
 
@@ -120,12 +104,12 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// Gets local variable or create local if not yet.
         /// </summary>
-        public IVariableReference BindLocalVariable(VariableName varname, VariableInit decl) => BindVariable(varname, 
+        public IVariableReference BindLocalVariable(VariableName varname, VariableInit decl) => BindVariable(varname,
             name => CreateLocal(name, VariableKind.LocalVariable, decl));
 
         public IVariableReference BindTemporalVariable(VariableName varname, TypeSymbol type) =>
             BindVariable(varname, name => CreateLocal(name, VariableKind.LocalTemporalVariable, type));
-        
+
         public IVariableReference BindLocalVariable(VariableName varName, TextSpan span, TypeSymbol type) =>
             BindVariable(varName, name => new LocalVariableReference(VariableKind.LocalVariable, _method,
                 new InPlaceSourceLocalSymbol(_method, name, span, type), new BoundVariableName(name, type)));

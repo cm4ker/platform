@@ -406,7 +406,7 @@ namespace Aquila.CodeAnalysis
             {
                 compiler.WalkSourceMethods(m =>
                 {
-                    LambdaRewriter.Transform(m, compiler._moduleBuilder);
+                    LambdaRewriter.Transform(m, moduleBuilder);
                 }, allowParallel: false);
             }
             using (compilation.StartMetric("emit"))

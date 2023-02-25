@@ -9,8 +9,6 @@ namespace Aquila.CodeAnalysis.Symbols
         // initially set to map which is only used to get the type, which is once computed is stored here.
         private object _mapOrType;
 
-        private readonly Symbol _containingSymbol;
-
         internal SubstitutedParameterSymbol(MethodSymbol containingSymbol, TypeMap map, ParameterSymbol originalParameter) :
             this((Symbol)containingSymbol, map, originalParameter)
         {
@@ -25,16 +23,13 @@ namespace Aquila.CodeAnalysis.Symbols
             base(originalParameter)
         {
             Debug.Assert(originalParameter.IsDefinition);
-            _containingSymbol = containingSymbol;
+            ContainingSymbol = containingSymbol;
             _mapOrType = map;
         }
 
         protected override Symbol OriginalSymbolDefinition => underlyingParameter.OriginalDefinition;
 
-        public override Symbol ContainingSymbol
-        {
-            get { return _containingSymbol; }
-        }
+        public override Symbol ContainingSymbol { get; }
 
         internal override TypeSymbol Type
         {
@@ -60,13 +55,10 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
-        public override ImmutableArray<CustomModifier> CustomModifiers
-        {
-            get
-            {
-                var map = _mapOrType as TypeMap;
-                return map != null ? map.SubstituteCustomModifiers(this.underlyingParameter.Type, this.underlyingParameter.CustomModifiers) : this.underlyingParameter.CustomModifiers;
-            }
-        }
+        public override ImmutableArray<CustomModifier> CustomModifiers =>
+            _mapOrType is TypeMap map
+                ? map.SubstituteCustomModifiers(this.underlyingParameter.Type,
+                    this.underlyingParameter.CustomModifiers)
+                : this.underlyingParameter.CustomModifiers;
     }
 }

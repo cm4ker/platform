@@ -142,7 +142,6 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
 
     internal class MethodTreeBuilderSymbol : SourceMethodSymbolBase
     {
-        private readonly NamedTypeSymbol _type;
         private readonly HtmlDecl _htmlDecl;
         private IPlace _builderPlace;
 
@@ -152,10 +151,9 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
         {
             Contract.ThrowIfNull(type);
 
-            _type = type;
             _htmlDecl = htmlDecl;
 
-            var ct = _type.DeclaringCompilation.CoreTypes;
+            var ct = type.DeclaringCompilation.CoreTypes;
             var componentBaseType = ct.Web_ComponentBase;
 
             _overridenMethod = componentBaseType.Method("BuildRenderTree", ct.Web_RenderTreeBuilder).Symbol;
@@ -175,8 +173,6 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
         public override void GetDiagnostics(DiagnosticBag diagnostic)
         {
         }
-
-        public override Symbol ContainingSymbol => this._type;
 
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences =>
             ImmutableArray<SyntaxReference>.Empty;

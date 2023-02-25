@@ -21,10 +21,10 @@ namespace Aquila.CodeAnalysis.Symbols
     /// </summary>
     internal abstract partial class SourceMethodSymbolBase : MethodSymbol
     {
-        private readonly NamedTypeSymbol _type;
+        private readonly Symbol _type;
         private MethodSymbol _lazyOverridenMethod;
 
-        protected SourceMethodSymbolBase(NamedTypeSymbol type)
+        protected SourceMethodSymbolBase(Symbol type)
         {
             Contract.ThrowIfNull(type);
             _type = type;
@@ -39,14 +39,14 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             get
             {
-                if ((_commonFlags & CommonFlags.OverriddenMethodResolved) == 0)
-                {
-                    Interlocked.CompareExchange(ref _lazyOverridenMethod, this.ResolveOverride(), null);
+                if ((_commonFlags & CommonFlags.OverriddenMethodResolved) != 0) 
+                    return _lazyOverridenMethod;
+                
+                Interlocked.CompareExchange(ref _lazyOverridenMethod, this.ResolveOverride(), null);
 
-                    Debug.Assert(_lazyOverridenMethod != this);
+                Debug.Assert(_lazyOverridenMethod != this);
 
-                    _commonFlags |= CommonFlags.OverriddenMethodResolved;
-                }
+                _commonFlags |= CommonFlags.OverriddenMethodResolved;
 
                 return _lazyOverridenMethod;
             }
@@ -95,7 +95,9 @@ namespace Aquila.CodeAnalysis.Symbols
             OverriddenMethodResolved = 1,
         }
 
-        /// <summary>Internal true/false values. Initially all false.</summary>
+        /// <summary>
+        /// Internal true/false values. Initially all false.
+        /// </summary>
         private CommonFlags _commonFlags;
 
         private ControlFlowGraph _cfg;
@@ -120,17 +122,18 @@ namespace Aquila.CodeAnalysis.Symbols
         }
 
         public override ImmutableArray<Location> Locations =>
-            ImmutableArray.Create(
-                Location.Create(null, Syntax is AquilaSyntaxNode element ? element.Span : default
-                ));
+            ImmutableArray.Create(Location.Create(Syntax.SyntaxTree, Syntax is { } element ? element.Span : default));
 
         public override bool IsUnreachable => (Flags & MethodFlags.IsUnreachable) != 0;
 
         protected ImmutableArray<ParameterSymbol> _implicitParameters;
         private SourceParameterSymbol[] _srcParams;
 
-        /// <summary>Implicitly declared [params] parameter if the method allows access to its arguments. This allows more arguments to be passed than declared.</summary>
-        private SynthesizedParameterSymbol _implicitVarArg; // behaves like a stack of optional parameters
+        /// <summary>
+        /// Implicitly declared [params] parameter if the method allows access to its arguments.
+        /// This allows more arguments to be passed than declared.
+        /// </summary>
+        private SynthesizedParameterSymbol _implicitVarArg;
 
         internal class ImplicitParametersBuilder
         {

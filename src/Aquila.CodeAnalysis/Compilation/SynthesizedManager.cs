@@ -20,7 +20,7 @@ namespace Aquila.CodeAnalysis.Emit
     /// </summary>
     internal class SynthesizedManager
     {
-        private List<SynthesizedNamespaceSymbol> _namespaces = new();
+        private readonly List<SynthesizedNamespaceSymbol> _namespaces = new();
         private readonly PEModuleBuilder _module;
         private readonly ConcurrentDictionary<Cci.ITypeDefinition, List<Symbol>> _membersByType = new();
 
@@ -81,7 +81,7 @@ namespace Aquila.CodeAnalysis.Emit
             return AddMemberCore(container, new SynthesizedFieldSymbol(container));
         }
 
-        public T GetOrCreate<T>(NamedTypeSymbol container, string name) where T: Symbol
+        public T GetOrCreate<T>(NamedTypeSymbol container, string name) where T : Symbol
         {
             Symbol Factory()
             {
@@ -90,6 +90,7 @@ namespace Aquila.CodeAnalysis.Emit
                     var t when t == typeof(SynthesizedMethodSymbol) => this.SynthesizeMethod(container).SetName(name),
                     var t when t == typeof(SynthesizedCtorSymbol) => this.SynthesizeConstructor(container),
                     var t when t == typeof(SynthesizedFieldSymbol) => this.SynthesizeField(container).SetName(name),
+                    var t when t == typeof(SynthesizedTypeSymbol) => this.SynthesizeType(container, name),
                     _ => throw new InvalidOperationException()
                 };
             }
@@ -98,7 +99,6 @@ namespace Aquila.CodeAnalysis.Emit
             var member = list.OfType<T>().FirstOrDefault(x => x.Name == name);
             return member ?? (T)Factory();
         }
-
 
         private List<Symbol> EnsureList(Cci.ITypeDefinition type)
         {

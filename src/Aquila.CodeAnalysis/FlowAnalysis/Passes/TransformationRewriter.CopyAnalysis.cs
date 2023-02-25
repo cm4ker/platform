@@ -135,7 +135,7 @@ using System.Text;
 
             private BitMask64 _neededCopies;
 
-            private int VariableCount => _flowContext.VarsType.Length;
+            private int VariableCount => _flowContext.VarsInfo.Length;
 
             private Dictionary<BoundBlock, CopyAnalysisState> _blockToStateMap = new Dictionary<BoundBlock, CopyAnalysisState>();
 

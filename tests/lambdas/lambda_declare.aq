@@ -1,0 +1,4 @@
+﻿fn main() {
+    var lambda = fn() int { return 1 + 1; };
+    print(1);     
+}

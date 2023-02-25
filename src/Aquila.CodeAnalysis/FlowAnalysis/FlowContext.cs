@@ -13,19 +13,12 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
     /// </summary>
     public class FlowContext
     {
-        internal class TypeRefInfo
+        internal class VariableInfo
         {
-            private readonly TypeSymbol _symbol;
-
             /// <summary>
-            /// Type was passed by reference
+            /// Variable passed by reference
             /// </summary>
             private bool _byReference;
-
-            public TypeRefInfo(TypeSymbol symbol)
-            {
-                _symbol = symbol;
-            }
 
             public bool ByRef => _byReference;
 
@@ -34,10 +27,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         private int _version;
         private readonly SourceMethodSymbolBase _method;
-        private TypeRefInfo[] _varsType = Array.Empty<TypeRefInfo>();
-        private List<SourceLambdaSymbol> _lambdas = new List<SourceLambdaSymbol>(); 
-
-
+        private VariableInfo[] _varsInfo = Array.Empty<VariableInfo>();
+        
         internal FlowContext(SourceMethodSymbolBase method)
         {
             _method = method;
@@ -62,10 +53,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Merged local variables type.
         /// </summary>
-        internal TypeRefInfo[] VarsType => _varsType;
-
-
-        internal ImmutableArray<SourceLambdaSymbol> Lambdas => _lambdas.ToImmutableArray();
+        internal VariableInfo[] VarsInfo => _varsInfo;
 
         /// <summary>
         /// Version of the analysis, incremented whenever a set of semantic tree transformations happen.
@@ -74,15 +62,12 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         internal void AddVarType(int varIndex, TypeSymbol type)
         {
-            if (varIndex >= 0 && varIndex < _varsType.Length)
+            if (varIndex >= 0 && varIndex < _varsInfo.Length)
             {
-                _varsType[varIndex] = new TypeRefInfo(type);
+                _varsInfo[varIndex] = new VariableInfo();
             }
         }
 
-        internal void AddLambda(SourceLambdaSymbol lambda) 
-            => _lambdas.Add(lambda);
-        
         /// <summary>
         /// Gets index of variable within the context.
         /// </summary>
@@ -95,8 +80,8 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             
             lock (_varsIndex)
             {
-                index = _varsType.Length;
-                Array.Resize(ref _varsType, index + 1);
+                index = _varsInfo.Length;
+                Array.Resize(ref _varsInfo, index + 1);
 
                 _varsIndex[name] = index;
             }
@@ -106,9 +91,9 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         public void SetReference(int varIndex)
         {
-            if (varIndex >= 0 && varIndex < _varsType.Length)
+            if (varIndex >= 0 && varIndex < _varsInfo.Length)
             {
-                _varsType[varIndex].SetByRef(true);
+                _varsInfo[varIndex].SetByRef(true);
             }
         }
 
@@ -118,7 +103,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         public bool IsReference(int varIndex)
         {
             // anything >= 64 is reported as a possible reference
-            return varIndex < 0 || varIndex >= _varsType.Length || _varsType[varIndex].ByRef;
+            return varIndex < 0 || varIndex >= _varsInfo.Length || _varsInfo[varIndex].ByRef;
         }
         
         /// <summary>
@@ -137,8 +122,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
             // Reset internal structures to prevent possible bugs in re-analysis
             _varsIndex.Clear();
-            _varsType = Array.Empty<TypeRefInfo>();
-            _lambdas = new List<SourceLambdaSymbol>();
+            _varsInfo = Array.Empty<VariableInfo>();
 
             if (_method == null) return;
             

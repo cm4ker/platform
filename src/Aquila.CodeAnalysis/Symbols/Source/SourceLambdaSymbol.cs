@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Aquila.CodeAnalysis.Semantics;
-using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Syntax;
 using Microsoft.CodeAnalysis;
 
@@ -10,21 +9,21 @@ internal sealed class SourceLambdaSymbol : SourceMethodSymbolBase
 {
     private readonly FuncEx _functionExpr;
 
-    public SourceLambdaSymbol(NamedTypeSymbol type, FuncEx functionExpr) : base(type)
+    public SourceLambdaSymbol(Symbol containingSymbol, FuncEx functionExpr) : base(containingSymbol)
     {
         _functionExpr = functionExpr;
     }
 
     public override Accessibility DeclaredAccessibility => Accessibility.Internal;
-    
+
     public override bool IsStatic => false;
 
     internal override ParameterListSyntax SyntaxSignature => _functionExpr.ParameterList;
-    
+
     internal override TypeEx SyntaxReturnType => _functionExpr.ReturnType;
-    
+
     internal override AquilaSyntaxNode Syntax => _functionExpr;
-    
+
     internal override IEnumerable<StmtSyntax> Statements => _functionExpr.Body?.Statements;
 
     protected override Binder GetMethodBinderCore()
@@ -34,6 +33,5 @@ internal sealed class SourceLambdaSymbol : SourceMethodSymbolBase
 
     public override void GetDiagnostics(DiagnosticBag diagnostic)
     {
-
     }
 }

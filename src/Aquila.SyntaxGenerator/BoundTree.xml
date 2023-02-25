@@ -207,7 +207,7 @@
     </Syntax>
     <Syntax Name="FuncEx" Base="Expression" OperationKind="AnonymousFunction">
         <Arguments>
-            <Single Name="Statements" Type="List&lt;BoundStatement&gt;" IsUpdatable="true"/>
+            <Single Name="LambdaSymbol" Type="SourceLambdaSymbol" IsInternal="true" IsUpdatable="true"/>
             <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
                     IsInternal="true"/>
         </Arguments>

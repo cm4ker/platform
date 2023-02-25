@@ -256,48 +256,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         #endregion
 
-        public bool IsThisVariableName
-        {
-            get { return this == ThisVariableName; }
-        }
-
-        #region IsAutoGlobal
-
-        /// <summary>
-        /// Gets value indicting whether the name represents an auto-global variable.
-        /// </summary>
-        public bool IsAutoGlobal
-        {
-            get { return IsAutoGlobalVariableName(this.Value); }
-        }
-
-        /// <summary>
-        /// Checks whether a specified name is the name of an auto-global variable.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns>Whether <paramref name="name"/> is auto-global.</returns>
-        public static bool IsAutoGlobalVariableName(string name)
-        {
-            switch (name)
-            {
-                case GlobalsName:
-                case ServerName:
-                case EnvName:
-                case CookieName:
-                case HttpRawPostDataName:
-                case FilesName:
-                case RequestName:
-                case GetName:
-                case PostName:
-                case SessionName:
-                    return true;
-
-                default:
-                    return false;
-            }
-        }
-
-        #endregion
+        public bool IsThisVariableName => this == ThisVariableName;
 
         #endregion
 

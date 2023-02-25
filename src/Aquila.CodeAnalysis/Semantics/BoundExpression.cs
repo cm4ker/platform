@@ -535,7 +535,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         ImmutableArray<BoundArgument> _usevars;
 
-        public IBlockOperation Body => null; 
+        public IBlockOperation Body => null;
         public IMethodSymbol Signature => null;
         IMethodSymbol IAnonymousFunctionOperation.Symbol => null;
 
@@ -594,6 +594,7 @@ namespace Aquila.CodeAnalysis.Semantics
                 return new BoundEvalEx(code).WithContext(this);
             }
         }
+
         public override void Accept(OperationVisitor visitor) => visitor.DefaultVisit(this);
 
         public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
@@ -657,7 +658,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
             TArgument argument) => visitor.DefaultVisit(this, argument);
-        
+
         internal BoundCopyValue Update(BoundExpression expression)
         {
             return expression == Expression ? this : new BoundCopyValue(expression).WithAccess(this.Access);
@@ -1042,12 +1043,7 @@ namespace Aquila.CodeAnalysis.Semantics
         public override int GetHashCode() =>
             NameValue.GetHashCode() ^ (NameExpression != null ? NameExpression.GetHashCode() : 0);
 
-        string DebugView
-        {
-            get { return IsDirect ? NameValue.ToString() : "{indirect}"; }
-        }
-
-        public bool IsDirect => NameExpression == null;
+        string DebugView => NameValue.ToString();
 
         public AquilaSyntaxNode AquilaSyntax { get; set; }
 
@@ -1058,11 +1054,6 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public BoundVariableName(string name, ITypeSymbol type)
             : this(new VariableName(name), type)
-        {
-        }
-
-        public BoundVariableName(BoundExpression nameExpr, ITypeSymbol type)
-            : this(default, nameExpr, type)
         {
         }
 
@@ -1104,6 +1095,11 @@ namespace Aquila.CodeAnalysis.Semantics
         /// </summary>
         internal IVariableReference Variable { get; set; }
 
+        /// <summary>
+        /// Indicates the variable is captured in a closure.
+        /// </summary>
+        internal bool IsCaptured { get; set; }
+        
         /// <summary>
         /// Local in case of the variable is resolved local variable.
         /// </summary>
@@ -1573,6 +1569,7 @@ namespace Aquila.CodeAnalysis.Semantics
                 return new BoundOffsetExists(receiver, index).WithContext(this);
             }
         }
+
         public override void Accept(OperationVisitor visitor)
             => visitor.DefaultVisit(this);
 
@@ -1660,5 +1657,4 @@ namespace Aquila.CodeAnalysis.Semantics
     public partial class BoundBadEx
     {
     }
-
 }

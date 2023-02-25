@@ -25,7 +25,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Types of variables in this state.
         /// </summary>
-        TypeSymbol[] _varsType = new TypeSymbol[0];
+        private TypeSymbol[] _varsType = Array.Empty<TypeSymbol>();
 
         /// <summary>
         /// Mask of initialized variables in this state.
@@ -81,7 +81,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
             // initial size of the array
             var countHint = (flowCtx.Method != null)
-                ? flowCtx.VarsType.Length
+                ? flowCtx.VarsInfo.Length
                 : 0;
             _varsType = new TypeSymbol[countHint];
 
@@ -176,15 +176,14 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         public TypeSymbol GetLocalType(VariableHandle handle)
         {
-            return null;
+            return _varsType[handle];
         }
 
         /// <summary>
         /// Sets variable type in this state.
         /// </summary>
         /// <param name="handle">Variable handle.</param>
-        /// <param name="tmask">Variable type. If <c>uninitialized</c>, the variable is set as not initialized in this state.</param>
-        public void SetLocalType(VariableHandle handle, TypeSymbol tmask)
+        public void SetLocalType(VariableHandle handle, TypeSymbol type)
         {
             handle.ThrowIfInvalid();
 
@@ -193,9 +192,9 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                 Array.Resize(ref _varsType, handle + 1);
             }
 
-            _varsType[handle] = tmask;
+            _varsType[handle] = type;
 
-            this.FlowContext.AddVarType(handle, tmask); // TODO: collect merged type information at the end of analysis
+            this.FlowContext.AddVarType(handle, type);
 
             // update the _initializedMask
             SetVarInitialized(handle);
@@ -204,25 +203,9 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         /// <summary>
         /// Handles use of a local variable.
         /// </summary>
-        public void VisitLocal(VariableHandle handle)
+        public static void VisitLocal(VariableHandle handle)
         {
             handle.ThrowIfInvalid();
-        }
-
-
-        public void VisitFuncEx(BoundFuncEx func)
-        {
-            this.FlowContext.AddLambda(func.LambdaSymbol);
-        }
-
-        /// <summary>
-        /// Gets value indicating the variable may be set in some code paths.
-        /// Gets also <c>true</c> if we don't known.
-        /// </summary>
-        public bool IsLocalSet(VariableHandle handle)
-        {
-            handle.ThrowIfInvalid();
-            return handle.Slot >= FlowContext.BitsCount || (_initializedMask & (1ul << handle)) != 0;
         }
 
         public void SetVarInitialized(VariableHandle handle)

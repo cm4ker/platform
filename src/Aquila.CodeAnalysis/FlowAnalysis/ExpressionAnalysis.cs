@@ -40,42 +40,6 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
 
         #endregion
 
-        #region Helpers
-
-        /// <summary>
-        /// In case of a local variable or parameter, gets its name.
-        /// </summary>
-        VariableName AsVariableName(BoundReferenceEx r)
-        {
-            if (r is BoundVariableRef vr)
-            {
-                return vr.Name.NameValue;
-            }
-
-            return default;
-        }
-
-        /// <summary>
-        /// Gets current visibility scope.
-        /// </summary>
-        protected OverloadsList.VisibilityScope VisibilityScope => new(Method.ContainingType, Method);
-
-        protected void PingSubscribers(ExitBlock exit)
-        {
-            if (exit != null)
-            {
-                var wasNotAnalysed = false;
-
-                if (Method != null && !Method.IsReturnAnalysed)
-                {
-                    Method.IsReturnAnalysed = true;
-                    wasNotAnalysed = true;
-                }
-            }
-        }
-
-        #endregion
-
         #region Construction
 
         /// <summary>
@@ -134,7 +98,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             var v = x.Declaration;
             var local = State.GetLocalHandle(new VariableName(v.Name));
 
-            var oldtype = State.GetLocalType(local);
+            var oldType = State.GetLocalType(local);
 
             // set var
             if (v.InitialValue != null)
@@ -146,14 +110,13 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
                 State.SetLessThanLongMax(local, isInt && intVal < long.MaxValue);
                 State.SetGreaterThanLongMin(local, isInt && intVal > long.MinValue);
 
-                State.SetLocalType(local, oldtype);
+                State.SetLocalType(local, oldType);
             }
             else
             {
                 State.SetLessThanLongMax(local, false);
                 State.SetGreaterThanLongMin(local, false);
-                State.SetLocalType(local, oldtype);
-                // TODO: explicitly State.SetLocalUninitialized() ?
+                State.SetLocalType(local, oldType);
             }
 
             return default;
@@ -212,48 +175,28 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             return default;
         }
 
-        protected virtual void VisitSuperglobalVariableRef(BoundVariableRef x)
-        {
-        }
-
         protected virtual void VisitLocalVariableRef(BoundVariableRef x, VariableHandle local)
         {
             Debug.Assert(local.IsValid);
 
             if (Method == null)
             {
-                // invalid use of variable:
                 return;
             }
 
-            var previoustype = State.GetLocalType(local); // type of the variable in the previous state
-
-            // bind variable place
-            if (x.Variable == null)
+            if (!Method.LocalsTable.TryGetVariable(local.Name, out var localVar))
             {
-                if (Method.LocalsTable.TryGetVariable(local.Name, out var localVar))
-                    x.Variable = localVar;
+                return;
             }
+            
+            FlowState.VisitLocal(local);
 
-            //
-            State.VisitLocal(local);
+            x.Variable ??= localVar;
         }
 
         public override T VisitVariableRef(BoundVariableRef x)
         {
-            if (x.Name.IsDirect)
-            {
-                // direct variable access:
-                if (x.Name.NameValue.IsAutoGlobal)
-                {
-                    VisitSuperglobalVariableRef(x);
-                }
-                else
-                {
-                    VisitLocalVariableRef(x, State.GetLocalHandle(x.Name.NameValue));
-                }
-            }
-
+            VisitLocalVariableRef(x, State.GetLocalHandle(x.Name.NameValue));
             return default;
         }
 
@@ -602,10 +545,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
         public override T VisitFuncEx(BoundFuncEx x)
         {
             Debug.Assert(x.LambdaSymbol.ControlFlowGraph != null);
-            
-            State.VisitFuncEx(x);
             EnqueueBlock(x.LambdaSymbol.ControlFlowGraph.Start);
-            
             return default;
         }
 

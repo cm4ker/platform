@@ -8,40 +8,33 @@ using Aquila.CodeAnalysis.Symbols.Attributes;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Syntax;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
 
 namespace Aquila.CodeAnalysis.Symbols;
 
 internal sealed class SourceMethodSymbol : SourceMethodSymbolBase
 {
-     
     readonly FuncDecl _syntax;
 
-    public SourceMethodSymbol(NamedTypeSymbol type, FuncDecl syntax): base(type)
+    public SourceMethodSymbol(Symbol containingSymbol, FuncDecl syntax) : base(containingSymbol)
     {
-
         Contract.ThrowIfNull(syntax);
-
         _syntax = syntax;
     }
-        
-    TextSpan NameSpan => _syntax.Identifier.Span;
-        
+
     internal override ParameterListSyntax SyntaxSignature => _syntax.ParameterList;
 
-    internal override  TypeEx SyntaxReturnType => _syntax.ReturnType;
+    internal override TypeEx SyntaxReturnType => _syntax.ReturnType;
 
     internal override AquilaSyntaxNode Syntax => _syntax;
 
     internal override IEnumerable<StmtSyntax> Statements => _syntax.Body?.Statements;
-        
+
     public override void GetDiagnostics(DiagnosticBag diagnostic)
     {
-            
     }
 
     public override string Name => _syntax.Identifier.Text;
-        
+
     public override bool IsStatic =>
         ContainingSymbol is SourceModuleTypeSymbol || _syntax.GetModifiers().IsStatic();
 
@@ -49,7 +42,7 @@ internal sealed class SourceMethodSymbol : SourceMethodSymbolBase
     {
         return DeclaringCompilation.GetBinder(_syntax);
     }
-        
+
     public override Accessibility DeclaredAccessibility
     {
         get
