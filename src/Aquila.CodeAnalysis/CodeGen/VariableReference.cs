@@ -253,7 +253,6 @@ namespace Aquila.CodeAnalysis.Semantics
 
     /// <summary>
     /// An object specifying a reference to a variable, a field, a property, an array item (a value in general).
-    /// Used by <see cref="BoundReferenceExpression"/>.
     /// </summary>
     interface IVariableReference
     {
@@ -778,6 +777,6 @@ namespace Aquila.CodeAnalysis.Semantics
             throw ExceptionUtilities.Unreachable;
         }
     }
-
+    
     #endregion
 }

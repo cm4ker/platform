@@ -212,6 +212,14 @@
                     IsInternal="true"/>
         </Arguments>
     </Syntax>
+
+    <Syntax Name="CapturedSymbol" Base="Expression" OperationKind="None">
+        <Arguments>
+            <Single Name="Symbol" Type="ISymbol"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true" />
+        </Arguments>
+    </Syntax>
     <!-- region MemberAccess -->
 
     <!-- region Call -->
@@ -328,6 +336,15 @@
         </Arguments>
     </Syntax>
 
+    <Syntax Name="MethodRef" Base="ReferenceEx" OperationKind="None">
+        <Arguments>
+            <Single Name="Method" Type="IMethodSymbol"/>
+            <Single Name="Instance" Type="BoundExpression"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
+        </Arguments>
+    </Syntax>
+    
     <Syntax Name="PropertyRef" Base="ReferenceEx" OperationKind="Invocation">
         <Arguments>
             <Single Name="Property" Type="IPropertySymbol"/>
@@ -336,7 +353,6 @@
                     IsInternal="true" PassBaseConst="property.Type"/>
         </Arguments>
     </Syntax>
-
     <!-- endregion -->
 
     <!-- endregion -->

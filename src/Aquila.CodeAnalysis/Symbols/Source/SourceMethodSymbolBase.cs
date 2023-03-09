@@ -301,7 +301,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override bool IsExtern => false;
 
-
         public override bool CastToFalse => false; // source methods never cast special values to FALSE
 
         public override bool HasNotNull => !ReturnsNull;
@@ -376,13 +375,9 @@ namespace Aquila.CodeAnalysis.Symbols
         /// <summary>
         /// Gets value indicating the method can return <c>null</c>.
         /// </summary>
-        public bool ReturnsNull
-        {
-            get { return true; }
-        }
+        public bool ReturnsNull => true;
 
         public override RefKind RefKind => RefKind.None;
-
 
         /// <summary>
         /// Lazily bound semantic block.

@@ -8,13 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Errors;
-using Aquila.Syntax.Ast;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
-using YamlDotNet.Serialization.NodeTypeResolvers;
 
 namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {

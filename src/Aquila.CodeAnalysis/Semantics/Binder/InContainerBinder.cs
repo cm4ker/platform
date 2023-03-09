@@ -16,7 +16,7 @@ internal class InContainerBinder : Binder
         _container = container;
     }
 
-    public override NamespaceOrTypeSymbol Container => (NamespaceOrTypeSymbol)_container;
+    public override NamespaceOrTypeSymbol ContainingType => (NamespaceOrTypeSymbol)_container;
 
 
     protected override ITypeSymbol FindTypeByName(NameEx tref)
@@ -25,7 +25,7 @@ internal class InContainerBinder : Binder
 
         var qName = tref.GetUnqualifiedName().Identifier.Text;
 
-        var typeMembers = Container.GetTypeMembers(qName, -1);
+        var typeMembers = ContainingType.GetTypeMembers(qName, -1);
 
         if (typeMembers.Length == 1)
             result = typeMembers[0];
@@ -52,10 +52,10 @@ internal class InContainerBinder : Binder
         return result;
     }
     
-    
-    protected override void FindSymbolByName(string name, ArrayBuilder<ImmutableArray<Symbol>> result)
+    protected override void FindSymbolByName(string name, ArrayBuilder<ImmutableArray<Symbol>> result,
+        FilterCriteria filterCriteria)
     {
-        result.Add(Container.GetMembers(name));
-        base.FindSymbolByName(name, result);
+        FindSymbolByNameHandler(ContainingType.GetMembers(name), result, filterCriteria);
+        base.FindSymbolByName(name, result, filterCriteria);
     }
 }

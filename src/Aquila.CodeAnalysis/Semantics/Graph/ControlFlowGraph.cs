@@ -11,8 +11,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
     /// </summary>
     public sealed partial class ControlFlowGraph
     {
-        #region LabelBlockFlags, LabelBlockInfo
-
         /// <summary>
         /// Found label reference (definition or target) information.
         /// </summary>
@@ -66,71 +64,44 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             public LabelBlockFlags Flags;
         }
 
-        #endregion
-
-        #region Fields & Properties
-
-        /// <summary>
-        /// Gets the control flow start block. Cannot be <c>null</c>.
-        /// </summary>
-        public BoundBlock Start
-        {
-            get { return _start; }
-        }
-
-        readonly BoundBlock
-            _start;
-
-        /// <summary>
-        /// Gets the control flow exit block. Cannot be <c>null</c>.
-        /// </summary>
-        public BoundBlock Exit
-        {
-            get { return _exit; }
-        }
-
-        readonly BoundBlock
-            _exit;
-
-        /// <summary>
-        /// Array of labels within method. Can be <c>null</c>.
-        /// </summary>
-        public ImmutableArray<LabelBlockState> Labels
-        {
-            get { return _labels; }
-        }
-
-        readonly ImmutableArray<LabelBlockState> _labels;
-
-        /// <summary>
-        /// Array of yield statements within method. Can be <c>null</c>.
-        /// </summary>
-        public ImmutableArray<BoundYieldStmt> Yields
-        {
-            get => _yields;
-        }
-
-        readonly ImmutableArray<BoundYieldStmt> _yields;
-
-        /// <summary>
-        /// List of blocks that are unreachable syntactically (statements after JumpStmt etc.).
-        /// </summary>
-        public ImmutableArray<BoundBlock> UnreachableBlocks
-        {
-            get { return _unreachable; }
-        }
-
-        readonly ImmutableArray<BoundBlock>
-            _unreachable;
+        private readonly BoundBlock _start;
+        private readonly ImmutableArray<BoundBlock> _unreachable;
+        private readonly ImmutableArray<BoundYieldStmt> _yields;
+        private readonly ImmutableArray<LabelBlockState> _labels;
+        private readonly BoundBlock _exit;
 
         /// <summary>
         /// Last "tag" color used. Used internally for graph algorithms.
         /// </summary>
-        int _lastcolor = 0;
+        private int _lastColor = 0;
 
-        #endregion
+        /// <summary>
+        /// Gets the control flow start block. Cannot be <c>null</c>.
+        /// </summary>
+        public BoundBlock Start => _start;
 
-        #region Construction
+        /// <summary>
+        /// Gets the control flow exit block. Cannot be <c>null</c>.
+        /// </summary>
+        public BoundBlock Exit => _exit;
+
+        /// <summary>
+        /// Array of labels within method. Can be <c>null</c>.
+        /// </summary>
+        public ImmutableArray<LabelBlockState> Labels => _labels;
+
+
+        /// <summary>
+        /// Array of yield statements within method. Can be <c>null</c>.
+        /// </summary>
+        public ImmutableArray<BoundYieldStmt> Yields => _yields;
+
+
+        /// <summary>
+        /// List of blocks that are unreachable syntactically (statements after JumpStmt etc.).
+        /// </summary>
+        public ImmutableArray<BoundBlock> UnreachableBlocks => _unreachable;
+
 
         internal ControlFlowGraph(IEnumerable<StmtSyntax> statements, Binder binder)
             : this(GraphBuilder.Build(statements, binder))
@@ -141,7 +112,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             : this(GraphBuilder.Build(nodes, binder))
         {
         }
-        
+
         private ControlFlowGraph(GraphBuilder builder)
             : this(builder.Start, builder.Exit, builder.Declarations, exception: null, builder.Labels,
                 builder.DeadBlocks)
@@ -170,17 +141,13 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
             {
                 return this;
             }
-            else
-            {
-                return new ControlFlowGraph(start, exit, ImmutableArray<BoundStatement>.Empty, null, labels,
-                    unreachable)
-                {
-                    _lastcolor = this._lastcolor
-                };
-            }
-        }
 
-        #endregion
+            return new ControlFlowGraph(start, exit, ImmutableArray<BoundStatement>.Empty, null, labels,
+                unreachable)
+            {
+                _lastColor = this._lastColor
+            };
+        }
 
         /// <summary>
         /// Gets new (unique) color for use by graph algorithms.
@@ -188,7 +155,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// <returns>New color index.</returns>
         public int NewColor()
         {
-            return unchecked(++_lastcolor);
+            return unchecked(++_lastColor);
         }
 
         /// <summary>

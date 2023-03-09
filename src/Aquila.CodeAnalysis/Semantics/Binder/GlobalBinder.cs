@@ -14,15 +14,16 @@ internal class GlobalBinder : InContainerBinder
         _ns = (NamespaceOrTypeSymbol)ns;
     }
 
-    public override NamespaceOrTypeSymbol Container => _ns;
+    public override NamespaceOrTypeSymbol ContainingType => _ns;
 
     protected override void FindMethodsByName(string name, ArrayBuilder<Symbol> result)
     {
         result.AddRange(_ns.GetMembers(name).OfType<MethodSymbol>());
     }
 
-    protected override void FindSymbolByName(string name, ArrayBuilder<ImmutableArray<Symbol>> result)
-    {
-        result.Add(_ns.GetMembers(name));
+    protected override void FindSymbolByName(string name, ArrayBuilder<ImmutableArray<Symbol>> result,
+        FilterCriteria filterCriteria)
+    {   
+        FindSymbolByNameHandler(_ns.GetMembers(name), result, filterCriteria);
     }
 }

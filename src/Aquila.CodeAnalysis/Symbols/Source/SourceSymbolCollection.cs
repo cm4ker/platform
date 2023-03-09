@@ -142,7 +142,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         /// <summary>
         /// Gets enumeration of all methods (global code, functions, lambdas and class methods) in source code.
         /// </summary>
-        public IEnumerable<SourceMethodSymbolBase> GetSourceMethods() => GetMethods().OfType<SourceMethodSymbol>();
+        public IEnumerable<SourceMethodSymbolBase> GetSourceMethods() => GetMethods().OfType<SourceMethodSymbolBase>();
 
         public IEnumerable<SourceModuleTypeSymbol> GetModuleTypes() => _types.OfType<SourceModuleTypeSymbol>();
 

@@ -65,7 +65,6 @@ namespace Aquila.CodeAnalysis.Public
             return type;
         }
 
-
         public SynthesizedUnionTypeSymbol SynthesizeUnionType(NamespaceOrTypeSymbol container,
             IEnumerable<TypeSymbol> types)
         {
@@ -73,8 +72,13 @@ namespace Aquila.CodeAnalysis.Public
 
             var symbol = _lazySynthesizedTypes.OfType<SynthesizedUnionTypeSymbol>()
                 .FirstOrDefault(x =>
-                    x.ContainingTypes.OrderBy(x => x.Name).ThenBy(x => x.SpecialType)
-                        .SequenceEqual(types.OrderBy(x => x.Name).ThenBy(x => x.SpecialType)));
+                    x.ContainingTypes
+                        .OrderBy(x => x.Name)
+                        .ThenBy(x => x.SpecialType)
+                        .SequenceEqual(
+                            types.OrderBy(x => x.Name)
+                                .ThenBy(x => x.SpecialType), (typeSymbol, symbol1) =>
+                                typeSymbol.Equals(symbol1)));
 
             if (symbol != null) return symbol;
 

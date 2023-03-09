@@ -228,16 +228,13 @@ using System.Text;
             {
                 bool CheckVariable(BoundVariableRef varRef, out VariableHandle handle)
                 {
-                    if (varRef.Name.IsDirect && !varRef.Name.NameValue.IsAutoGlobal
-                        && !_flowContext.IsReference(handle = _flowContext.GetVarIndex(varRef.Name.NameValue)))
+                    if (!_flowContext.IsReference(handle = _flowContext.GetVarIndex(varRef.Name.NameValue)))
                     {
                         return true;
                     }
-                    else
-                    {
-                        handle = default;
-                        return false;
-                    }
+
+                    handle = default;
+                    return false;
                 }
 
                 bool MatchSourceVarOrNestedAssignment(BoundExpression expr, out VariableHandle handle, out bool isCopied)
@@ -295,56 +292,6 @@ using System.Text;
 
                 base.VisitAssignEx(assign);
                 return default;
-            }
-
-            public override VoidStruct VisitVariableRef(BoundVariableRef x)
-            {
-                void MarkAllKnownAssignments()
-                {
-                    for (int i = 0; i < State.VariableCount; i++)
-                    {
-                        _neededCopies |= State.GetValue(i);
-                    }
-                }
-
-                base.VisitVariableRef(x);
-
-                // If a variable is modified, disable the deletion of all its current assignments
-                if (x.Access.MightChange)
-                {
-                    if (!x.Name.IsDirect)
-                    {
-                        MarkAllKnownAssignments();
-                    }
-                    else if (!x.Name.NameValue.IsAutoGlobal)
-                    {
-                        var varindex = _flowContext.GetVarIndex(x.Name.NameValue);
-                        if (!_flowContext.IsReference(varindex))
-                        {
-                            _neededCopies |= State.GetValue(varindex);
-                        }
-                        else
-                        {
-                            // TODO: Mark only those that can be referenced
-                            MarkAllKnownAssignments();
-                        }
-                    }
-                }
-
-                return default;
-            }
-
-            public override VoidStruct VisitReturnStmt(BoundReturnStmt x)
-            {
-                if (x.Returned is BoundCopyValue copy && copy.Expression is BoundVariableRef varRef &&
-                    
-                    !varRef.Name.NameValue.IsAutoGlobal &&
-                    varRef.Name.IsDirect)
-                {
-                    Add(ref _lazyReturnCopies, copy);
-                }
-
-                return base.VisitReturnStmt(x);
             }
 
             public override VoidStruct VisitCFGExitBlock(ExitBlock x)

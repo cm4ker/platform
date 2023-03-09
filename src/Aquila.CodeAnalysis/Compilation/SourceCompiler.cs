@@ -21,6 +21,19 @@ using Aquila.CodeAnalysis.Symbols.Synthesized;
 
 namespace Aquila.CodeAnalysis
 {
+    internal sealed class CompilationState
+    {
+        private List<SourceMethodSymbolBase> _methodsToEmit = new();
+
+        public IEnumerable<SourceMethodSymbolBase> MethodsToEmit => _methodsToEmit;
+
+        public void RegisterMethodToEmit(SourceMethodSymbolBase method)
+        {
+            _methodsToEmit.Add(method);
+        }
+    }
+
+
     /// <summary>
     /// Performs compilation of all source methods.
     /// </summary>
@@ -31,7 +44,8 @@ namespace Aquila.CodeAnalysis
         readonly bool _emittingPdb;
         readonly DiagnosticBag _diagnostics;
         readonly CancellationToken _cancellationToken;
-
+        readonly CompilationState _compilationState = new();
+        
         private readonly Worklist<BoundBlock> _worklist;
 
         /// <summary>
@@ -50,7 +64,7 @@ namespace Aquila.CodeAnalysis
 
             _compilation = compilation;
             _compilation.EnsureSourceAssembly();
-            
+
             _moduleBuilder = moduleBuilder;
             _emittingPdb = emittingPdb;
             _diagnostics = diagnostics;
@@ -63,10 +77,11 @@ namespace Aquila.CodeAnalysis
         void WalkSourceMethods(Action<SourceMethodSymbolBase> action, bool allowParallel = false)
         {
             var methods = _compilation.SourceSymbolCollection.GetSourceMethods();
-            var viewMethods = _compilation.SourceSymbolCollection.GetViewTypes().SelectMany(x=>x.GetMembers().OfType<SourceViewTypeSymbol.MethodTreeBuilderSymbol>());
+            var viewMethods = _compilation.SourceSymbolCollection.GetViewTypes().SelectMany(x =>
+                x.GetMembers().OfType<SourceViewTypeSymbol.MethodTreeBuilderSymbol>());
 
-            methods = methods.Union(viewMethods);
-            
+            methods = methods.Union(viewMethods).Union(_compilationState.MethodsToEmit);
+
             if (ConcurrentBuild && allowParallel)
             {
                 Parallel.ForEach(methods, action);
@@ -90,7 +105,7 @@ namespace Aquila.CodeAnalysis
 
             var viewMethods = _compilation.SourceSymbolCollection.GetViewTypes()
                 .SelectMany(x => x.GetMembers().OfType<SynthesizedMethodSymbol>());
-            
+
             var methods = platformSynth.Union(moduleMethods).Union(moduleNestedTypesMethods).Union(viewMethods);
 
             if (ConcurrentBuild && allowParallel)
@@ -106,7 +121,7 @@ namespace Aquila.CodeAnalysis
         void WalkTypes(Action<SourceModuleTypeSymbol> action, bool allowParallel = false)
         {
             var types = _compilation.SourceSymbolCollection.GetModuleTypes();
-            
+
             if (ConcurrentBuild && allowParallel)
             {
                 Parallel.ForEach(types, action);
@@ -127,7 +142,7 @@ namespace Aquila.CodeAnalysis
             // adds their entry block to the worklist
 
             _worklist.Enqueue(method.ControlFlowGraph?.Start);
-            
+
 
             // enqueue method parameter default values
             method.SourceParameters.ForEach(p =>
@@ -145,7 +160,7 @@ namespace Aquila.CodeAnalysis
         void EnqueueExpression(BoundExpression expression)
         {
             Contract.ThrowIfNull(expression);
-            
+
             var dummy = new BoundBlock()
             {
                 FlowState = new FlowState(new FlowContext(null)),
@@ -188,7 +203,7 @@ namespace Aquila.CodeAnalysis
         {
             this.WalkTypes(DiagnoseType, allowParallel: true);
         }
-       
+
         private void DiagnoseType(SourceModuleTypeSymbol type)
         {
             type.GetDiagnostics(_diagnostics);
@@ -237,7 +252,7 @@ namespace Aquila.CodeAnalysis
 
             var cfg = method.ControlFlowGraph;
             if (cfg == null) return;
-            
+
             Debug.Assert(cfg.Start.FlowState != null);
 
             var body = MethodGenerator.GenerateMethodBody(_moduleBuilder, method, 0, null, _diagnostics,
@@ -296,10 +311,10 @@ namespace Aquila.CodeAnalysis
                 {
                     return false;
                 }
-                
+
                 WalkSourceMethods(InvalidateAndEnqueue, allowParallel: true);
             }
-            
+
             return true;
         }
 
@@ -337,7 +352,7 @@ namespace Aquila.CodeAnalysis
                     // Analyze Operations
                     compiler.AnalyzeMethods();
                 }
-                
+
                 using (compilation.StartMetric("lowering"))
                 {
                     // Lowering methods
@@ -394,30 +409,25 @@ namespace Aquila.CodeAnalysis
                 diagnostics.AddRange(declarationDiagnostics);
 
                 // cancel the operation if there are errors
-                if (hasDeclarationErrors || declarationDiagnostics.HasAnyErrors() || cancellationToken.IsCancellationRequested)
+                if (hasDeclarationErrors || declarationDiagnostics.HasAnyErrors() ||
+                    cancellationToken.IsCancellationRequested)
                 {
                     return;
                 }
             }
 
-            //
             var compiler = new SourceCompiler(compilation, moduleBuilder, emittingPdb, diagnostics, cancellationToken);
+
             using (compilation.StartMetric("lowering-rewrite"))
             {
-                compiler.WalkSourceMethods(m =>
-                {
-                    LambdaRewriter.Transform(m, moduleBuilder);
-                }, allowParallel: false);
+                compiler.WalkSourceMethods(m => { LambdaRewriter.Transform(m, moduleBuilder, compiler._compilationState); }, allowParallel: false);
             }
+
             using (compilation.StartMetric("emit"))
             {
-                // Emit method bodies
-                //   a. declared methods
-                //   b. synthesized symbols
                 compiler.EmitMethodBodies();
                 compiler.EmitSynthesized();
 
-                // Entry Point (.exe)
                 compiler.CompileEntryPoint();
             }
         }

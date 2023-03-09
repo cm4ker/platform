@@ -13,6 +13,8 @@ internal class InClrImportBinder : Binder
 {
     private readonly INamespaceOrTypeSymbol _container;
 
+    public override Symbol ContainingSymbol => (Symbol)_container;
+
     public InClrImportBinder(INamespaceOrTypeSymbol container, Binder next) : base(next)
     {
         _container = container;
@@ -22,7 +24,7 @@ internal class InClrImportBinder : Binder
     {
         var qName = tref.GetUnqualifiedName().Identifier.Text;
 
-        var typeMembers = Container.GetTypeMembers(qName, -1);
+        var typeMembers = ContainingType.GetTypeMembers(qName, -1);
 
         if (typeMembers.Length == 1)
             return typeMembers[0];
@@ -59,10 +61,11 @@ internal class InClrImportBinder : Binder
 
         base.FindMethodsByName(name, result);
     }
-    
-    protected override void FindSymbolByName(string name, ArrayBuilder<ImmutableArray<Symbol>> result)
+
+    protected override void FindSymbolByName(string name, ArrayBuilder<ImmutableArray<Symbol>> result,
+        FilterCriteria filterCriteria)
     {
-        result.Add(Container.GetMembers(name));
-        base.FindSymbolByName(name, result);
+        FindSymbolByNameHandler(ContainingType.GetMembers(name), result, filterCriteria);
+        base.FindSymbolByName(name, result, filterCriteria);
     }
 }

@@ -58,8 +58,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         {
             _containing = containingType as Cci.ITypeDefinition ??
                           throw new ArgumentNullException(nameof(containingType));
-            _module = (ModuleSymbol)containingType.ContainingModule ??
-                      throw new NullReferenceException("Module is null");
+            _module = containingType.ContainingModule ?? throw new NullReferenceException("Module is null");
 
             _return = DeclaringCompilation.CoreTypes.Void;
             _parameters = ImmutableArray<ParameterSymbol>.Empty;
@@ -120,7 +119,7 @@ namespace Aquila.CodeAnalysis.Symbols.Synthesized
         {
             if (_explicitOverride != null)
             {
-                throw new Exception("Can't set name on the overriden method");  
+                throw new Exception("Can't set name on the overriden method");
             }
 
             _return = type;

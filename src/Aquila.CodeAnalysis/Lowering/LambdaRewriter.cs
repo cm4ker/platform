@@ -14,15 +14,18 @@ internal class LambdaRewriter : GraphRewriter
 {
     private readonly SourceMethodSymbolBase _method;
     private readonly PEModuleBuilder _moduleBuilder;
+    private readonly CompilationState _compilationState;
 
     private readonly List<BoundVariable> _variablesAbove = new();
     private readonly NamedTypeSymbol _containingType;
     private readonly CoreTypes _ct;
 
-    private LambdaRewriter(SourceMethodSymbolBase method, PEModuleBuilder moduleBuilder)
+    private LambdaRewriter(SourceMethodSymbolBase method, PEModuleBuilder moduleBuilder,
+        CompilationState compilationState)
     {
         _method = method;
         _moduleBuilder = moduleBuilder;
+        _compilationState = compilationState;
         _containingType = _method.ContainingType;
         _ct = moduleBuilder.Compilation.CoreTypes;
     }
@@ -37,24 +40,27 @@ internal class LambdaRewriter : GraphRewriter
     {
         /*
             1. Create a new type-container for the lambda
+               Remark: For container we need decide we need Context as a argument of method or we need context
+               as a field of the type-container and pass it to the constructor of the type-container 
             2. Create required fields in type-container
             3. Create a constructor for the type-container
             4. Create a method for the lambda and transform it (replace all variables with fields)
             5. Return a new BoundCallEx represents the constructor of the type-container
-         */
-        var container = _moduleBuilder.SynthesizedManager.
-            GetOrCreate<SynthesizedTypeSymbol>(_containingType, "LambdaContainer");
-
+        */
+        var container =
+            _moduleBuilder.SynthesizedManager.GetOrCreate<SynthesizedTypeSymbol>(_containingType, "LambdaContainer");
+        
         var translatedSymbol = new TranslatedLambdaMethodSymbol(container, _method, x.LambdaSymbol);
-
-
+        container.AddMember(translatedSymbol);
+        _compilationState.RegisterMethodToEmit(translatedSymbol);
 
         return new BoundLiteral(1, _ct.Int32.Symbol);
     }
 
-    public static void Transform(SourceMethodSymbolBase sourceMethodSymbolBase, PEModuleBuilder moduleBuilder)
+    public static void Transform(SourceMethodSymbolBase sourceMethodSymbolBase, PEModuleBuilder moduleBuilder,
+        CompilationState state)
     {
-        var rewriter = new LambdaRewriter(sourceMethodSymbolBase, moduleBuilder);
+        var rewriter = new LambdaRewriter(sourceMethodSymbolBase, moduleBuilder, state);
         var currentCFG = sourceMethodSymbolBase.ControlFlowGraph;
         var updatedCFG = (ControlFlowGraph)rewriter.VisitCFG(currentCFG);
 
@@ -64,31 +70,29 @@ internal class LambdaRewriter : GraphRewriter
 
 internal class TranslatedLambdaMethodSymbol : SourceMethodSymbolBase
 {
-    private readonly SourceMethodSymbolBase _originalMethod;
+    private readonly SourceMethodSymbolBase _lambda;
 
     public TranslatedLambdaMethodSymbol(Symbol containingSymbol, SourceMethodSymbolBase topLevelMethod,
-        SourceMethodSymbolBase originalMethod) : base(containingSymbol)
+        SourceMethodSymbolBase lambda) : base(containingSymbol)
     {
-        _originalMethod = originalMethod;
+        _lambda = lambda;
     }
 
     public override Accessibility DeclaredAccessibility => Accessibility.Internal;
 
-    public override bool IsStatic => false;
+    public override bool IsStatic => true; // TODO: get answer from the context flow graph: IsHasCapturedVariables?
 
-    internal override ParameterListSyntax SyntaxSignature => _originalMethod.SyntaxSignature;
+    internal override ParameterListSyntax SyntaxSignature => _lambda.SyntaxSignature;
 
-    internal override TypeEx SyntaxReturnType => _originalMethod.SyntaxReturnType;
+    internal override TypeEx SyntaxReturnType => _lambda.SyntaxReturnType;
 
-    internal override AquilaSyntaxNode Syntax => _originalMethod.Syntax;
+    internal override AquilaSyntaxNode Syntax => _lambda.Syntax;
 
-    internal override IEnumerable<StmtSyntax> Statements => _originalMethod.Statements;
+    internal override IEnumerable<StmtSyntax> Statements => _lambda.Statements;
 
+    public override ControlFlowGraph ControlFlowGraph => _lambda.ControlFlowGraph;
 
-    protected override Binder GetMethodBinderCore()
-    {
-        return base.GetMethodBinderCore();
-    }
+    public override TypeSymbol ReturnType => this.DeclaringCompilation.CoreTypes.Int32.Symbol;
 
     public override void GetDiagnostics(DiagnosticBag diagnostic)
     {

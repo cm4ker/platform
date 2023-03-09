@@ -189,7 +189,10 @@ namespace Aquila.CodeAnalysis.Errors
         ERR_MethodNotFound = 4167,
         ERR_MissingIdentifierSymbol = 4168,
         ERR_CantResolveSymbol = 4169,
-
+        ERR_AmbiguousName = 4170,
+        ERR_UndefinedLocal = 4171,
+        ERR_UndefinedIdentifier = 4172,
+        ERR_BadArity = 4173,
         #endregion
 
         #endregion

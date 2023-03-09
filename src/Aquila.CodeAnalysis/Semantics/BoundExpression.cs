@@ -31,13 +31,15 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// The expression access kind - read, write, ensured.
         /// </summary>
-        AccessMask _flags;
+        readonly AccessMask _flags;
 
         /// <summary>
         /// Optional. Type the expression will be converted to.
         /// </summary>
-        TypeSymbol _targetType;
+        readonly TypeSymbol _targetType;
 
+        ImmutableArray<BoundArgument> _arguments = ImmutableArray<BoundArgument>.Empty;
+        
         #region Properties
 
         /// <summary>
@@ -78,6 +80,11 @@ namespace Aquila.CodeAnalysis.Semantics
         /// </summary>
         public AccessMask Flags => _flags;
 
+        /// <summary>
+        /// Arguments of Access context
+        /// </summary>
+        public ImmutableArray<BoundArgument> Arguments => _arguments;
+        
         /// <summary>
         /// The variable will be aliased and read.
         /// </summary>
@@ -209,6 +216,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return new BoundAccess(newflags, _targetType);
         }
 
+        public BoundAccess WithArguments(ImmutableArray<BoundArgument> arguments)
+        {
+            return new BoundAccess(_flags, _targetType) { _arguments = arguments };
+        }
+        
         /// <summary>
         /// Simple read access.
         /// </summary>
