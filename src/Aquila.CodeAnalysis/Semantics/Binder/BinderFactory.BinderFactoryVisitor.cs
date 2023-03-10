@@ -103,7 +103,7 @@ namespace Aquila.CodeAnalysis.Semantics
                     }
                     case ExtendDecl ext:
                     {
-                        var types = next.ContainingType.GetTypeMembers(ext.Name.GetUnqualifiedName().Identifier.Text);
+                        var types = next.Container.GetTypeMembers(ext.Name.GetUnqualifiedName().Identifier.Text);
 
                         if (Roslyn.Utilities.EnumerableExtensions.IsSingle(types))
                         {
@@ -115,7 +115,7 @@ namespace Aquila.CodeAnalysis.Semantics
                     }
                     case HtmlMarkupDecl:
                     {
-                        var container = next.ContainingType as SourceViewTypeSymbol;
+                        var container = next.Container as SourceViewTypeSymbol;
                         if (container == null)
                             throw new InvalidOperationException("Can't resolve ViewComponent symbol");
 
@@ -141,12 +141,12 @@ namespace Aquila.CodeAnalysis.Semantics
 
                         if (fd.FuncOwner != null)
                         {
-                            container = next.BindType(fd.FuncOwner.OwnerType);
+                            container = next.TryResolveTypeSymbol(fd.FuncOwner.OwnerType);
                         }
                         else if (fd.IsGlobal)
-                            container = next.ContainingType;
+                            container = next.Container;
                         else
-                            container = next.ContainingType;
+                            container = next.Container;
 
                         var methods = container.GetMembers(fd.Identifier.Text).OfType<SourceMethodSymbol>().ToArray();
 

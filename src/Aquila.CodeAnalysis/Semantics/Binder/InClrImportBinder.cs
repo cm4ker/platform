@@ -11,27 +11,28 @@ namespace Aquila.CodeAnalysis.Semantics;
 
 internal class InClrImportBinder : Binder
 {
-    private readonly INamespaceOrTypeSymbol _container;
+    private readonly NamespaceOrTypeSymbol _container;
 
-    public override Symbol ContainingSymbol => (Symbol)_container;
+    public override Symbol ContainingSymbol => _container.ContainingSymbol;
 
     public InClrImportBinder(INamespaceOrTypeSymbol container, Binder next) : base(next)
     {
-        _container = container;
+        Contract.ThrowIfNull(container);
+        _container = (NamespaceOrTypeSymbol)container;
     }
 
     protected override ITypeSymbol FindTypeByName(NameEx tref)
     {
         var qName = tref.GetUnqualifiedName().Identifier.Text;
 
-        var typeMembers = ContainingType.GetTypeMembers(qName, -1);
+        var typeMembers = Container.GetTypeMembers(qName, -1);
 
         if (typeMembers.Length == 1)
             return typeMembers[0];
 
         if (typeMembers.Length == 0)
         {
-            return Next.BindType(tref);
+            return Next.TryResolveTypeSymbol(tref);
         }
 
         if (typeMembers.Length > 1)
@@ -65,7 +66,13 @@ internal class InClrImportBinder : Binder
     protected override void FindSymbolByName(string name, ArrayBuilder<ImmutableArray<Symbol>> result,
         FilterCriteria filterCriteria)
     {
-        FindSymbolByNameHandler(ContainingType.GetMembers(name), result, filterCriteria);
+        ArrayBuilder<Symbol> methods = new ArrayBuilder<Symbol>();
+        FindMethodsByName(name, methods);
+        FindSymbolByNameHandler(
+            _container.GetMembers(name)
+                .Union(_container.GetTypeMembers(name, -1), SymbolEqualityComparer.Default)
+                .Union(methods, SymbolEqualityComparer.Default).Cast<Symbol>(), result,
+            filterCriteria);
         base.FindSymbolByName(name, result, filterCriteria);
     }
 }

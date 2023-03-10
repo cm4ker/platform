@@ -14,7 +14,7 @@ internal class GlobalBinder : InContainerBinder
         _ns = (NamespaceOrTypeSymbol)ns;
     }
 
-    public override NamespaceOrTypeSymbol ContainingType => _ns;
+    public override NamespaceOrTypeSymbol Container => _ns;
 
     protected override void FindMethodsByName(string name, ArrayBuilder<Symbol> result)
     {

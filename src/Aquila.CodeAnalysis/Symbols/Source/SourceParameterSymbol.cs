@@ -146,7 +146,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 return ContainingType;
             }
 
-            return DeclaringCompilation.GetBinder(_syntax).BindType(_syntax.Type);
+            return DeclaringCompilation.GetBinder(_syntax).TryResolveTypeSymbol(_syntax.Type);
         }
 
         public override RefKind RefKind =>RefKind.None;

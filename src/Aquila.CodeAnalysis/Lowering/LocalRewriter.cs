@@ -58,9 +58,8 @@ namespace Aquila.CodeAnalysis.Lowering
                 var transRight = BoundArgument.Create((BoundExpression)VisitExpression(x.Right));
 
                 var args = new[] { transLeft, transRight }.ToImmutableArray();
-                var typeArgs = ImmutableArray<ITypeSymbol>.Empty;
 
-                return new BoundCallEx(_cm.Operators.Concat_String_String, args, typeArgs, null, _ct.String.Symbol)
+                return new BoundCallEx(_cm.Operators.Concat_String_String, args, null, _ct.String.Symbol)
                     .WithAccess(x);
             }
 

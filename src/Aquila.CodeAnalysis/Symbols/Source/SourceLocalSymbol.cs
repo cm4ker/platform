@@ -138,7 +138,7 @@ namespace Aquila.CodeAnalysis.Symbols
                 else
 
                 {
-                    tsymbol = binder.BindType(langElem);
+                    tsymbol = binder.TryResolveTypeSymbol(langElem);
                 }
                 
                 return tsymbol;

@@ -212,14 +212,6 @@
                     IsInternal="true"/>
         </Arguments>
     </Syntax>
-
-    <Syntax Name="CapturedSymbol" Base="Expression" OperationKind="None">
-        <Arguments>
-            <Single Name="Symbol" Type="ISymbol"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
-                    IsInternal="true" />
-        </Arguments>
-    </Syntax>
     <!-- region MemberAccess -->
 
     <!-- region Call -->
@@ -227,7 +219,6 @@
         <Arguments>
             <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true" IsUpdatable="true"/>
             <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;" IsUpdatable="true"/>
-            <Single Name="TypeArguments" Type="ImmutableArray&lt;ITypeSymbol&gt;" IsUpdatable="true"/>
             <Single Name="Instance" Type="BoundExpression" IsUpdatable="true"/>
             <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
                     IsInternal="true"/>

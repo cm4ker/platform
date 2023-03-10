@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Linq;
 using Aquila.CodeAnalysis.Errors;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Syntax;
@@ -9,14 +10,15 @@ namespace Aquila.CodeAnalysis.Semantics;
 
 internal class InContainerBinder : Binder
 {
-    private readonly INamespaceOrTypeSymbol _container;
+    private readonly NamespaceOrTypeSymbol _container;
 
     public InContainerBinder(INamespaceOrTypeSymbol container, Binder next) : base(next)
     {
-        _container = container;
+        _container = (NamespaceOrTypeSymbol)container;
     }
 
-    public override NamespaceOrTypeSymbol ContainingType => (NamespaceOrTypeSymbol)_container;
+    public override NamespaceOrTypeSymbol Container => _container;
+    public override Symbol ContainingSymbol => _container.ContainingSymbol;
 
 
     protected override ITypeSymbol FindTypeByName(NameEx tref)
@@ -25,14 +27,14 @@ internal class InContainerBinder : Binder
 
         var qName = tref.GetUnqualifiedName().Identifier.Text;
 
-        var typeMembers = ContainingType.GetTypeMembers(qName, -1);
+        var typeMembers = Container.GetTypeMembers(qName, -1);
 
         if (typeMembers.Length == 1)
             result = typeMembers[0];
 
         if (typeMembers.Length == 0)
         {
-            result = Next?.BindType(tref);
+            result = Next?.TryResolveTypeSymbol(tref);
         }
 
         if (typeMembers.Length > 1)
@@ -55,7 +57,10 @@ internal class InContainerBinder : Binder
     protected override void FindSymbolByName(string name, ArrayBuilder<ImmutableArray<Symbol>> result,
         FilterCriteria filterCriteria)
     {
-        FindSymbolByNameHandler(ContainingType.GetMembers(name), result, filterCriteria);
+        FindSymbolByNameHandler(
+            _container.GetMembers(name)
+                .Union(_container.GetTypeMembers(name, -1), SymbolEqualityComparer.Default).Cast<Symbol>(),
+            result, filterCriteria);
         base.FindSymbolByName(name, result, filterCriteria);
     }
 }

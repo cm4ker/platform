@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -8,6 +9,8 @@ using Aquila.CodeAnalysis.Symbols.Attributes;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Syntax;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Collections.Internal;
+using Roslyn.Utilities;
 
 namespace Aquila.CodeAnalysis.Symbols;
 
@@ -65,7 +68,11 @@ internal sealed class SourceMethodSymbol : SourceMethodSymbolBase
         {
             foreach (var attr in attrList.Attributes)
             {
-                var type = (NamedTypeSymbol)DeclaringCompilation.GetBinder(_syntax).BindType(attr.Name);
+                var type = (NamedTypeSymbol)DeclaringCompilation.GetBinder(_syntax).TryResolveTypeSymbol(attr.Name);
+                
+                if (type is null)
+                    throw new InvalidOperationException($"Type '{attr.Name}' not found");
+                
                 builder.Add(new SourceAttributeData(null, type, type.Ctor(), false));
             }
         }

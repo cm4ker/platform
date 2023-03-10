@@ -54,7 +54,9 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public virtual SourceMethodSymbolBase Method { get; }
 
-        public virtual NamespaceOrTypeSymbol ContainingType { get; }
+        public virtual NamespaceOrTypeSymbol Container { get; }
+
+        public virtual Symbol ContainingSymbol { get; }
 
         public LocalsTable Locals => Method.LocalsTable;
 
@@ -62,7 +64,6 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public virtual bool IsInLambda => false;
 
-        public abstract Symbol ContainingSymbol { get; }
 
         #region Bind statements
 
@@ -72,31 +73,35 @@ namespace Aquila.CodeAnalysis.Semantics
         {
             Debug.Assert(stmt != null);
 
-            if (stmt is ExpressionStmt exprStm)
-                return new BoundExpressionStmt(BindExpression(exprStm.Expression, BoundAccess.None));
-            if (stmt is ReturnStmt jmpStm)
-                return BindReturnStmt(jmpStm);
-            if (stmt is LocalDeclStmt varDecl)
-                return BindVarDeclStmt(varDecl);
-            if (stmt is ForEachStmt frch)
-                return BindForeachStmt(frch);
-            if (stmt is TryStmt tryStmt)
-                return BindTryStmt(tryStmt);
-
-            Diagnostics.Add(GetLocation(stmt), ErrorCode.ERR_NotYetImplemented,
-                $"Statement of type '{stmt.GetType().Name}'");
-            return new BoundEmptyStmt(stmt.Span);
+            switch (stmt)
+            {
+                case ExpressionStmt exprStm:
+                    return new BoundExpressionStmt(BindExpression(exprStm.Expression, BoundAccess.None));
+                case ReturnStmt jmpStm:
+                    return BindReturnStmt(jmpStm);
+                case LocalDeclStmt varDecl:
+                    return BindVarDeclStmt(varDecl);
+                case ForEachStmt foreachStmt:
+                    return BindForeachStmt(foreachStmt);
+                case TryStmt tryStmt:
+                    return BindTryStmt(tryStmt);
+                default:
+                    Diagnostics.Add(GetLocation(stmt), ErrorCode.ERR_NotYetImplemented,
+                        $"Statement of type '{stmt.GetType().Name}'");
+                    return new BoundEmptyStmt(stmt.Span);
+            }
         }
 
         private BoundStatement BindTryStmt(TryStmt tryStmt)
         {
-            foreach (var c in tryStmt.Catches)
+            foreach (var catchStmt in tryStmt.Catches)
             {
-                if (c.Declaration != null)
-                {
-                    var type = BindType(c.Declaration.Type);
-                    var v = BindVar(c.Declaration.Identifier, type);
-                }
+                var decl = catchStmt.Declaration;
+
+                if (decl == null) continue;
+
+                var type = TryResolveTypeSymbol(decl.Type);
+                BindVar(decl.Identifier, type);
             }
 
             throw new NotImplementedException();
@@ -165,17 +170,15 @@ namespace Aquila.CodeAnalysis.Semantics
                 stmt.Identifier.Span, variableType);
 
             var assign = CreateTmpAndAssign(enumeratorSymbol,
-                new BoundCallEx(getEnumMethod, ImmutableArray<BoundArgument>.Empty,
-                    ImmutableArray<ITypeSymbol>.Empty, collection, enumeratorSymbol
+                new BoundCallEx(getEnumMethod, ImmutableArray<BoundArgument>.Empty, collection, enumeratorSymbol
                 ).WithAccess(BoundAccess.Read));
 
             //enumerator.MoveNext() expr
             var moveNextCondition = new BoundCallEx(moveNextMember,
-                ImmutableArray<BoundArgument>.Empty,
-                ImmutableArray<ITypeSymbol>.Empty, assign.Target, moveNextMember.ReturnType);
+                ImmutableArray<BoundArgument>.Empty, assign.Target, moveNextMember.ReturnType);
 
-            var callDispose = new BoundCallEx(disposeMember, ImmutableArray<BoundArgument>.Empty,
-                ImmutableArray<ITypeSymbol>.Empty, assign.Target, Compilation.CoreTypes.Void.Symbol);
+            var callDispose = new BoundCallEx(disposeMember, ImmutableArray<BoundArgument>.Empty, assign.Target,
+                Compilation.CoreTypes.Void.Symbol);
 
             var bindInfo = new ForeachBindInfo()
             {
@@ -207,7 +210,7 @@ namespace Aquila.CodeAnalysis.Semantics
             return new BoundAssignEx(boundVar, expr).WithAccess(BoundAccess.ReadAndWrite);
         }
 
-        public TypeSymbol BindType(TypeEx typeEx)
+        public TypeSymbol? TryResolveTypeSymbol(TypeEx typeEx)
         {
             var trf = Compilation.CoreTypes;
 
@@ -227,12 +230,12 @@ namespace Aquila.CodeAnalysis.Semantics
                     };
                 case NameEx named:
                 {
-                    var typeSymbol = FindTypeByName(named);
-                    return (TypeSymbol)typeSymbol;
+                    TryResolveSymbol(named, BoundAccess.None, new[] { SymbolKind.NamedType }, out var result);
+                    return result.Symbol as TypeSymbol;
                 }
                 case UnionTypeEx union:
                 {
-                    var listSym = union.Types.Select(BindType).ToList();
+                    var listSym = union.Types.Select(TryResolveTypeSymbol).ToList();
                     var tsym = Compilation.PlatformSymbolCollection.SynthesizeUnionType(
                         Compilation.SourceModule.GlobalNamespace, listSym);
 
@@ -327,7 +330,7 @@ namespace Aquila.CodeAnalysis.Semantics
                 case MatchEx me:
                     return BindMatchEx(me).WithAccess(access);
                 case MemberAccessEx mae:
-                    return BindMemberAccessEx(mae).WithAccess(access);
+                    return BindMemberAccessEx(mae, access);
                 case ElementAccessEx eae:
                     return BindIndexerEx(eae).WithAccess(access);
                 case PostfixUnaryEx pue:
@@ -358,7 +361,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         private BoundExpression BindAllocEx(AllocEx ex)
         {
-            var type = (NamedTypeSymbol)BindType(ex.Name);
+            var type = (NamedTypeSymbol)TryResolveTypeSymbol(ex.Name);
             var inits = new List<BoundAllocExAssign>();
 
             if (!ex.Initializer.Expressions.Any()) return new BoundAllocEx(type, inits, type);
@@ -457,20 +460,17 @@ namespace Aquila.CodeAnalysis.Semantics
 
         private BoundExpression BindIndexerEx(ElementAccessEx ie)
         {
-            var array = BindExpression(ie.Expression);
+            var array = BindExpression(ie.Expression).WithAccess(BoundAccess.Read);
 
-            //TODO: make arity for element accsessex
             var indexer = BindExpression(ie.ArgumentList.Arguments.First().Expression);
 
-
             var accessIndexMethod = array.Type.GetMembers("get_Item").OfType<MethodSymbol>()
-                .FirstOrDefault(x => x.ParameterCount == 1 && x.Parameters[0].Type == indexer.Type);
+                .FirstOrDefault(x => x.ParameterCount == 1 && x.Parameters[0].Type == (TypeSymbol)indexer.Type);
 
             if (accessIndexMethod != null)
                 return new BoundArrayItemEx(Compilation, array, indexer, accessIndexMethod.ReturnType);
 
-
-            throw new NotImplementedException();
+            throw ExceptionUtilities.Unreachable;
         }
 
 
@@ -533,12 +533,11 @@ namespace Aquila.CodeAnalysis.Semantics
                 return new BoundWildcardEx(Compilation.CoreTypes.Void.Symbol).WithSyntax(expr);
             }
 
-            if(!TryResolveSymbol(expr, access, out var result))
+            if (!TryResolveSymbol(expr, access, out var result))
             {
                 return BadEx;
             }
-            
-            var boundThis = new BoundVariableRef("this", ContainingType as ITypeSymbol).WithAccess(BoundAccess.Read);
+
             var resultSymbol = result.Symbol;
             switch (resultSymbol.Kind)
             {
@@ -546,26 +545,43 @@ namespace Aquila.CodeAnalysis.Semantics
                 case SymbolKind.Parameter:
                     return new BoundVariableRef(resultSymbol.Name, resultSymbol.GetTypeOrReturnType());
                 case SymbolKind.Field:
-                    return new BoundFieldRef(resultSymbol as IFieldSymbol, boundThis);
+                    return new BoundFieldRef(resultSymbol as IFieldSymbol, ThisEx);
                 case SymbolKind.Property:
-                    return new BoundPropertyRef(resultSymbol as IPropertySymbol, boundThis);
+                    return new BoundPropertyRef(resultSymbol as IPropertySymbol, ThisEx);
                 case SymbolKind.NamedType:
                     return new BoundClassTypeRef(QualifiedName.Object, Method, resultSymbol as ITypeSymbol);
                 case SymbolKind.Method:
-                    return new BoundMethodRef(resultSymbol as MethodSymbol, boundThis,
-                        resultSymbol.GetTypeOrReturnType());
+                    return BindMethodSymbol(resultSymbol as MethodSymbol, ThisEx, access);
             }
 
             return BadEx;
         }
 
+        private BoundExpression BindMethodSymbol(MethodSymbol methodSymbol, BoundExpression instanceEx,
+            BoundAccess access)
+        {
+            if (!access.IsInvoke)
+                return new BoundMethodRef(methodSymbol, instanceEx, methodSymbol.GetTypeOrReturnType());
+            return new BoundCallEx(methodSymbol, access.Arguments, methodSymbol.IsStatic ? null : instanceEx,
+                methodSymbol.GetTypeOrReturnType());
+        }
+
         private BoundExpression BadEx => new BoundBadEx(Compilation.CoreTypes.Void.Symbol);
+
+        private BoundVariableRef ThisEx =>
+            new BoundVariableRef("this", Container as ITypeSymbol).WithAccess(BoundAccess.Read);
 
         private bool TryResolveSymbol(NameEx nameEx, BoundAccess access, out (Symbol Symbol, bool IsCaptured) result)
         {
+            return TryResolveSymbol(nameEx, access, Array.Empty<SymbolKind>(), out result);
+        }
+
+        private bool TryResolveSymbol(NameEx nameEx, BoundAccess access, SymbolKind[] kinds,
+            out (Symbol Symbol, bool IsCaptured) result)
+        {
             var name = nameEx.GetUnqualifiedName().Identifier.Text;
 
-            var foundSymbolsByBinders = FindSymbolByName(name);
+            var foundSymbolsByBinders = FindSymbolByName(name, kinds);
 
             if (!foundSymbolsByBinders.Any())
             {
@@ -592,9 +608,9 @@ namespace Aquila.CodeAnalysis.Semantics
                         result = (resolvedSymbol, isCaptured);
                         return true;
                     case { Length: > 1 } when binderSymbols.All(x => x is MethodSymbol) && access.IsInvoke:
-                        var resolved1 = (MethodSymbol)ResolveOverload(
-                            binderSymbols.Cast<MethodSymbol>().ToImmutableArray(), 
-                            access.Arguments);
+                        var methods = binderSymbols.Cast<MethodSymbol>().ToImmutableArray();
+                        var constructedMethods = Construct(methods, BindTypeArguments(nameEx));
+                        var resolved1 = (MethodSymbol)ResolveOverload(constructedMethods, access.Arguments);
                         result = (resolved1, isCaptured);
                         return true;
                     case { Length: > 1 }:
@@ -826,7 +842,7 @@ namespace Aquila.CodeAnalysis.Semantics
             {
                 SyntaxKind.IdentifierEx => BindNameEx((NameEx)method, access),
                 SyntaxKind.SimpleMemberAccessExpression => BindMemberAccessEx((MemberAccessEx)method, access),
-                SyntaxKind.GenericName => BindNameEx((GenericEx)method, BoundAccess.Invoke),
+                SyntaxKind.GenericName => BindNameEx((GenericEx)method, access),
                 _ => throw new NotImplementedException()
             };
         }
@@ -871,90 +887,6 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
-        protected abstract class BindingContext
-        {
-            private readonly Binder _binder;
-            private BoundExpression _instance;
-
-            protected BindingContext(Binder binder)
-            {
-                _binder = binder;
-            }
-
-            public abstract bool IsInvocation { get; }
-
-            public BoundExpression Instance => _instance;
-        }
-
-        protected sealed class SimpleBindingContext : BindingContext
-        {
-            public SimpleBindingContext(Binder binder) : base(binder)
-            {
-            }
-
-            public override bool IsInvocation => false;
-        }
-
-
-        protected sealed class CallBindingContext : BindingContext
-        {
-            private readonly ExprSyntax _expression;
-            private readonly Binder _binder;
-            private ImmutableArray<BoundArgument> _boundedArguments;
-            private ImmutableArray<ITypeSymbol> _boundTypeArguments;
-
-            public CallBindingContext(Binder binder) : base(binder)
-            {
-                _binder = binder;
-            }
-
-            public CallBindingContext(Binder binder, ExprSyntax expression, ArgumentListSyntax argumentList) :
-                this(binder)
-            {
-                _expression = expression;
-                Arguments = argumentList.Arguments;
-            }
-
-            public override bool IsInvocation => true;
-
-            public SeparatedSyntaxList<ArgumentSyntax> Arguments { get; }
-
-            public BoundVariableRef BindThis(MethodSymbol symbol)
-            {
-                return symbol.HasThis && symbol.ContainingType == _binder.ContainingType
-                    ? new BoundVariableRef(QualifiedName.This.Name.Value, _binder.ContainingType as ITypeSymbol)
-                    : null;
-            }
-
-            public ImmutableArray<BoundArgument> BindArguments()
-            {
-                if (!IsInvocation)
-                    return ImmutableArray<BoundArgument>.Empty;
-
-                if (!_boundedArguments.IsDefault) return _boundedArguments;
-                return _boundedArguments =
-                    Arguments
-                        .Select(x => BoundArgument.Create(_binder.BindExpression(x.Expression)))
-                        .ToImmutableArray();
-            }
-
-            public ImmutableArray<ITypeSymbol> BindTypeArguments()
-            {
-                if (_expression is not GenericEx genEx)
-                    return ImmutableArray<ITypeSymbol>.Empty;
-
-                if (_boundTypeArguments.IsDefault)
-                    _boundTypeArguments = genEx
-                        .TypeArgumentList
-                        .Arguments
-                        .Select(x => _binder.BindType(x))
-                        .OfType<ITypeSymbol>()
-                        .ToImmutableArray();
-
-                return _boundTypeArguments;
-            }
-        }
-
         public ImmutableArray<ITypeSymbol> BindTypeArguments(NameEx nameExpr)
         {
             if (nameExpr is not GenericEx genEx)
@@ -962,7 +894,7 @@ namespace Aquila.CodeAnalysis.Semantics
             return genEx
                 .TypeArgumentList
                 .Arguments
-                .Select(BindType)
+                .Select(TryResolveTypeSymbol)
                 .OfType<ITypeSymbol>()
                 .ToImmutableArray();
         }
@@ -972,106 +904,6 @@ namespace Aquila.CodeAnalysis.Semantics
             return argumentListSyntax.Arguments
                 .Select(x => BoundArgument.Create(BindExpression(x.Expression)))
                 .ToImmutableArray();
-        }
-
-        protected virtual BoundExpression BindName(SimpleNameEx expr, BindingContext context)
-        {
-            Debug.Assert(Method != null);
-            Debug.Assert(!string.IsNullOrEmpty(expr.Identifier.Text));
-
-            var name = expr.Identifier.Text;
-
-            if (!context.IsInvocation || context is not CallBindingContext cbc)
-                return new BoundBadEx(this.Compilation.GetSpecialType(SpecialType.System_Void));
-
-            foreach (var binderSymbols in FindSymbolByName(name))
-            {
-                switch (binderSymbols)
-                {
-                    case { Length: 0 }: continue;
-                    case { Length: 1 }:
-
-                        switch (binderSymbols[0])
-                        {
-                            case { Kind: SymbolKind.Parameter } c when c.GetTypeOrReturnType().IsDelegateType():
-                            {
-                                if (!Locals.TryGetVariable(c.Name, out var v))
-                                {
-                                    throw new NotImplementedException();
-                                }
-
-                                var delegateType = c.GetTypeOrReturnType().DelegateInvokeMethod();
-                                return new BoundCallEx(delegateType,
-                                    cbc.BindArguments(), cbc.BindTypeArguments(),
-                                    new BoundVariableRef(v.BoundName, c.GetTypeOrReturnType()),
-                                    delegateType.ReturnType);
-                            }
-                            case { Kind: SymbolKind.Local } l: throw new NotImplementedException();
-                        }
-
-                        break;
-                    case { Length: > 1 } when binderSymbols.All(x => x is MethodSymbol):
-                        var resolved1 = (MethodSymbol)ResolveOverload(
-                            binderSymbols.Cast<MethodSymbol>().ToImmutableArray(),
-                            cbc.BindArguments());
-
-                        if (resolved1 is null)
-                            throw new NotImplementedException("TODO: add diagnostics error message");
-
-                        return new BoundCallEx(resolved1,
-                            cbc.BindArguments(), cbc.BindTypeArguments(), cbc.BindThis(resolved1),
-                            resolved1.ReturnType);
-                    case { Length: > 1 }:
-                        throw new NotImplementedException(
-                            "Ambiguous symbol. Can't declare different type of symbols with the same name in scope");
-                }
-            }
-
-            var containerMembers = ContainingType.GetMembers(name);
-            if (containerMembers.Any())
-            {
-                var args = cbc.BindArguments();
-                var methods = containerMembers.OfType<MethodSymbol>().ToImmutableArray();
-                var resolved = methods switch
-                {
-                    { Length: 1 } => methods[0],
-                    { Length: > 1 } => (MethodSymbol)ResolveOverload(
-                        containerMembers.OfType<MethodSymbol>().ToImmutableArray(), args),
-                    _ => null
-                };
-
-                if (resolved is null)
-                {
-                    return CantResolve();
-                }
-
-                resolved = ConstructSingle(resolved, cbc.BindTypeArguments());
-
-                return new BoundCallEx(resolved,
-                    cbc.BindArguments(),
-                    cbc.BindTypeArguments(),
-                    cbc.BindThis(resolved),
-                    resolved.ReturnType);
-            }
-
-            var argList = cbc.BindArguments();
-
-            var foundMethods = new ArrayBuilder<Symbol>();
-            FindMethodsByName(name, foundMethods);
-
-            var globalMembers = foundMethods.OfType<MethodSymbol>()
-                .Where(x => x.Arity == cbc.BindTypeArguments().Count())
-                .ToImmutableArray();
-
-            globalMembers = Construct(globalMembers, cbc.BindTypeArguments());
-
-            var overload = (MethodSymbol)ResolveOverload(globalMembers, argList);
-            if (overload == null || overload.HasThis)
-            {
-                return CantResolve();
-            }
-
-            return new BoundCallEx(overload, argList, cbc.BindTypeArguments(), null, overload.ReturnType);
         }
 
         private static IMethodSymbol ResolveOverload(ImmutableArray<MethodSymbol> overloads,
@@ -1130,9 +962,8 @@ namespace Aquila.CodeAnalysis.Semantics
             var leftType = boundLeft.Type;
 
             var binder = new InContainerBinder(leftType, new BuckStopsHereBinder(Compilation));
-            ;
 
-            if (!binder.TryResolveSymbol(expr.Name, new SimpleBindingContext(binder), out var result))
+            if (!binder.TryResolveSymbol(expr.Name, access, out var result))
                 return BadEx;
 
             var (symbol, _) = result;
@@ -1140,28 +971,13 @@ namespace Aquila.CodeAnalysis.Semantics
             if (!SymbolEqualityComparer.Default.Equals(leftType, symbol.ContainingType))
                 return BadEx;
 
-            switch (symbol)
+            return symbol switch
             {
-                case PropertySymbol ps:
-                    return new BoundPropertyRef(ps, boundLeft);
-                case FieldSymbol fs:
-                    return new BoundFieldRef(fs, boundLeft);
-            }
-
-            return BadEx;
-        }
-
-        protected BoundExpression BindCopyValue(BoundExpression expr)
-        {
-            if (expr.IsDeeplyCopied)
-            {
-                return new BoundCopyValue(expr).WithAccess(BoundAccess.Read);
-            }
-            else
-            {
-                // value does not have to be copied
-                return expr;
-            }
+                PropertySymbol ps => new BoundPropertyRef(ps, boundLeft).WithAccess(access),
+                FieldSymbol fs => new BoundFieldRef(fs, boundLeft).WithAccess(access),
+                MethodSymbol ms => BindMethodSymbol(ms, boundLeft, access).WithAccess(access),
+                _ => BadEx
+            };
         }
 
         #endregion

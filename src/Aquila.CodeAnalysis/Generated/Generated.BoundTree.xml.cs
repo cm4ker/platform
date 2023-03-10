@@ -39,7 +39,6 @@ public enum BoundKind
     MatchArm,
     BadEx,
     FuncEx,
-    CapturedSymbol,
     CallEx,
     NewEx,
     ThrowEx,
@@ -1620,72 +1619,20 @@ namespace Aquila.CodeAnalysis.Semantics
 
 namespace Aquila.CodeAnalysis.Semantics
 {
-    partial class BoundCapturedSymbol : BoundExpression
-    {
-        private ISymbol _symbol;
-        internal BoundCapturedSymbol(ISymbol symbol, ITypeSymbol resultType): base(resultType)
-        {
-            _symbol = symbol;
-            OnCreateImpl(symbol, resultType);
-        }
-
-        partial void OnCreateImpl(ISymbol symbol, ITypeSymbol resultType);
-        public ISymbol Symbol
-        {
-            get
-            {
-                return _symbol;
-            }
-        }
-
-        public override OperationKind Kind => OperationKind.None;
-        public override BoundKind BoundKind => BoundKind.CapturedSymbol;
-        partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
-        partial void AcceptImpl(OperationVisitor visitor);
-        public override TRes Accept<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument)
-        {
-            TRes res = default;
-            AcceptImpl(visitor, argument, ref res);
-            return res;
-        }
-
-        public override void Accept(OperationVisitor visitor)
-        {
-            AcceptImpl(visitor);
-        }
-
-        public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
-        {
-            return visitor.VisitCapturedSymbol(this);
-        }
-
-        internal BoundCapturedSymbol Update(ITypeSymbol resultType)
-        {
-            if (ResultType == resultType)
-                return this;
-            return new BoundCapturedSymbol(this.Symbol, resultType).WithSyntax(this.AquilaSyntax);
-        }
-    }
-}
-
-namespace Aquila.CodeAnalysis.Semantics
-{
     partial class BoundCallEx : BoundExpression
     {
         private MethodSymbol _methodSymbol;
         private ImmutableArray<BoundArgument> _arguments;
-        private ImmutableArray<ITypeSymbol> _typeArguments;
         private BoundExpression _instance;
-        internal BoundCallEx(MethodSymbol methodSymbol, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, BoundExpression instance, ITypeSymbol resultType): base(resultType)
+        internal BoundCallEx(MethodSymbol methodSymbol, ImmutableArray<BoundArgument> arguments, BoundExpression instance, ITypeSymbol resultType): base(resultType)
         {
             _methodSymbol = methodSymbol;
             _arguments = arguments;
-            _typeArguments = typeArguments;
             _instance = instance;
-            OnCreateImpl(methodSymbol, arguments, typeArguments, instance, resultType);
+            OnCreateImpl(methodSymbol, arguments, instance, resultType);
         }
 
-        partial void OnCreateImpl(MethodSymbol methodSymbol, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, BoundExpression instance, ITypeSymbol resultType);
+        partial void OnCreateImpl(MethodSymbol methodSymbol, ImmutableArray<BoundArgument> arguments, BoundExpression instance, ITypeSymbol resultType);
         internal MethodSymbol MethodSymbol
         {
             get
@@ -1699,14 +1646,6 @@ namespace Aquila.CodeAnalysis.Semantics
             get
             {
                 return _arguments;
-            }
-        }
-
-        public ImmutableArray<ITypeSymbol> TypeArguments
-        {
-            get
-            {
-                return _typeArguments;
             }
         }
 
@@ -1739,11 +1678,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return visitor.VisitCallEx(this);
         }
 
-        internal BoundCallEx Update(MethodSymbol methodSymbol, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, BoundExpression instance, ITypeSymbol resultType)
+        internal BoundCallEx Update(MethodSymbol methodSymbol, ImmutableArray<BoundArgument> arguments, BoundExpression instance, ITypeSymbol resultType)
         {
-            if (_methodSymbol == methodSymbol && _arguments == arguments && _typeArguments == typeArguments && _instance == instance && ResultType == resultType)
+            if (_methodSymbol == methodSymbol && _arguments == arguments && _instance == instance && ResultType == resultType)
                 return this;
-            return new BoundCallEx(methodSymbol, arguments, typeArguments, instance, resultType).WithSyntax(this.AquilaSyntax);
+            return new BoundCallEx(methodSymbol, arguments, instance, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }
@@ -3158,7 +3097,6 @@ namespace Aquila.CodeAnalysis.Semantics
         public virtual TResult VisitMatchArm(BoundMatchArm x) => VisitDefault(x);
         public virtual TResult VisitBadEx(BoundBadEx x) => VisitDefault(x);
         public virtual TResult VisitFuncEx(BoundFuncEx x) => VisitDefault(x);
-        public virtual TResult VisitCapturedSymbol(BoundCapturedSymbol x) => VisitDefault(x);
         public virtual TResult VisitCallEx(BoundCallEx x) => VisitDefault(x);
         public virtual TResult VisitNewEx(BoundNewEx x) => VisitDefault(x);
         public virtual TResult VisitThrowEx(BoundThrowEx x) => VisitDefault(x);

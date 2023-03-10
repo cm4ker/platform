@@ -368,7 +368,7 @@ namespace Aquila.CodeAnalysis.Symbols
         public override TypeSymbol ReturnType =>
             SyntaxReturnType == null
                 ? DeclaringCompilation.GetSpecialType(SpecialType.System_Void)
-                : GetMethodBinderCore().BindType(SyntaxReturnType);
+                : GetMethodBinderCore().TryResolveTypeSymbol(SyntaxReturnType);
 
         public override bool ReturnsVoid => ReturnType.SpecialType == SpecialType.System_Void;
 

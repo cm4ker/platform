@@ -86,7 +86,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                         Assert.NotNull(function.FuncOwner);
 
                         var binder = _compilation.GetBinder(function.Parent);
-                        var type = binder.BindType(function.FuncOwner.OwnerType);
+                        var type = binder.TryResolveTypeSymbol(function.FuncOwner.OwnerType);
 
                         if (type is SynthesizedTypeSymbol sts)
                         {

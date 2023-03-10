@@ -34,7 +34,7 @@ internal class InMethodBinder : Binder
     public override SourceMethodSymbolBase Method => _method;
 
 
-    public override NamespaceOrTypeSymbol ContainingType => _method.ContainingType;
+    public override NamespaceOrTypeSymbol Container => _method.ContainingType;
 
     public override Symbol ContainingSymbol => _method.ContainingSymbol;
 

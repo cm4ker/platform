@@ -8,6 +8,7 @@ using System.Collections.Immutable;
 using System.Data;
 using System.Diagnostics;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.Compiler.Utilities;
 using Aquila.Syntax;
@@ -1129,6 +1130,19 @@ namespace Aquila.CodeAnalysis.Semantics
             result = visitor.VisitLocalReference(this, argument);
         }
     }
+
+    public partial class BoundMethodRef
+    {
+        internal override IVariableReference BindPlace(CodeGenerator cg)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal override IPlace Place()
+        {
+            throw new NotImplementedException();
+        }
+    } 
 
     #endregion
 
