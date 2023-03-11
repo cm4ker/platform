@@ -53,14 +53,13 @@ internal class InContainerBinder : Binder
 
         return result;
     }
-    
+
     protected override void FindSymbolByName(string name, ArrayBuilder<ImmutableArray<Symbol>> result,
         FilterCriteria filterCriteria)
     {
         FindSymbolByNameHandler(
             _container.GetMembers(name)
                 .Union(_container.GetTypeMembers(name, -1), SymbolEqualityComparer.Default).Cast<Symbol>(),
-            result, filterCriteria);
-        base.FindSymbolByName(name, result, filterCriteria);
+            result, filterCriteria, () => base.FindSymbolByName(name, result, filterCriteria));
     }
 }

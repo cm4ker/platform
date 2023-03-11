@@ -73,12 +73,25 @@ namespace Aquila.CodeAnalysis.Emit
         public SynthesizedCtorSymbol SynthesizeConstructor(NamedTypeSymbol container)
         {
             return AddMemberCore(container, new SynthesizedCtorSymbol(container));
-            ;
         }
 
         public SynthesizedFieldSymbol SynthesizeField(NamedTypeSymbol container)
         {
             return AddMemberCore(container, new SynthesizedFieldSymbol(container));
+        }
+
+        public void AddMembers(NamedTypeSymbol container, IEnumerable<Symbol> members)
+        {
+            foreach (var member in members)
+            {
+                if (member is not (SynthesizedMethodSymbol or SynthesizedCtorSymbol or SynthesizedFieldSymbol
+                    or SynthesizedTypeSymbol))
+                {
+                    throw new InvalidOperationException();
+                }
+
+                AddMemberCore(container, member);
+            }
         }
 
         public T GetOrCreate<T>(NamedTypeSymbol container, string name) where T : Symbol

@@ -152,7 +152,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public MergedSourceCode GetMergedSourceCode() => _sourceCode;
 
-        public NamedTypeSymbol GetType(QualifiedName name, Dictionary<QualifiedName, INamedTypeSymbol> resolved = null)
+        public NamedTypeSymbol? TryGetType(QualifiedName name, Dictionary<QualifiedName, INamedTypeSymbol> resolved = null)
         {
             var resolvedTypes = _types.Where(x => x.MakeQualifiedName() == name).ToImmutableArray();
 
@@ -165,7 +165,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 return new AmbiguousErrorTypeSymbol(resolvedTypes);
             }
 
-            return new MissingMetadataTypeSymbol(name.ClrName(), 0, false);
+            return null;
         }
 
 

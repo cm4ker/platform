@@ -190,7 +190,7 @@ internal class SourceGlobalNamespaceSymbol : NamespaceSymbol
     {
         EnsureUserVisibleTypes();
 
-        var x = _sourceModule.SymbolCollection.GetType(NameUtils.MakeQualifiedName(name, true));
+        var x = _sourceModule.SymbolCollection.TryGetType(NameUtils.MakeQualifiedName(name, true));
         if (x != null)
         {
             if (x.IsErrorType())
@@ -218,7 +218,7 @@ internal class SourceGlobalNamespaceSymbol : NamespaceSymbol
         }
 
         var type = _sourceModule.DeclaringCompilation.PlatformSymbolCollection
-            .GetType(QualifiedName.Parse(name, false));
+            .TryGetType(QualifiedName.Parse(name, false));
 
         if (type != null)
             builder.Add(type);

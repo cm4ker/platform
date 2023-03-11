@@ -752,7 +752,7 @@ partial class MetadataSymbolProvider
                             else
                             {
                                 var managerType =
-                                    _ps.GetType(QualifiedName.Parse(
+                                    _ps.TryGetType(QualifiedName.Parse(
                                         $"{Namespace}.{type.type.GetSemantic().Name}{ManagerPostfix}",
                                         true));
                                 var typeIDField = managerType.GetMembers("TypeId").OfType<FieldSymbol>()
@@ -766,7 +766,7 @@ partial class MetadataSymbolProvider
 
                             if (type.type.IsReference)
                             {
-                                var linkType = _ps.GetType(QualifiedName.Parse(
+                                var linkType = _ps.TryGetType(QualifiedName.Parse(
                                     $"{Namespace}.{type.type.GetSemantic().Name}{LinkPostfix}", true));
 
                                 var linkCtor = linkType.Ctor(_ct.AqContext, _ct.Guid);
@@ -866,7 +866,7 @@ partial class MetadataSymbolProvider
                         else
                         {
                             var managerType =
-                                _ps.GetType(QualifiedName.Parse(
+                                _ps.TryGetType(QualifiedName.Parse(
                                     $"{Namespace}.{typeInfo.type.GetSemantic().Name}{ManagerPostfix}",
                                     true));
                             var typeIDField = managerType.GetMembers("TypeId").OfType<FieldSymbol>()
@@ -991,7 +991,7 @@ partial class MetadataSymbolProvider
             _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{table.Name}{TableRowLinkPostfix}",
                 false));
         var rowDtoType =
-            _ps.GetType(QualifiedName.Parse($"{Namespace}.{md.Name}{table.Name}{TableRowDtoPostfix}", true));
+            _ps.TryGetType(QualifiedName.Parse($"{Namespace}.{md.Name}{table.Name}{TableRowDtoPostfix}", true));
 
 
         var idField = _ps.SynthesizeField(rowLinkType)
@@ -1111,7 +1111,7 @@ partial class MetadataSymbolProvider
                             else
                             {
                                 var managerType =
-                                    _ps.GetType(QualifiedName.Parse(
+                                    _ps.TryGetType(QualifiedName.Parse(
                                         $"{Namespace}.{type.type.GetSemantic().Name}{ManagerPostfix}",
                                         true));
                                 var typeIDField = managerType.GetMembers("TypeId").OfType<FieldSymbol>()
@@ -1125,7 +1125,7 @@ partial class MetadataSymbolProvider
 
                             if (type.type.IsReference)
                             {
-                                var linkType = _ps.GetType(QualifiedName.Parse(
+                                var linkType = _ps.TryGetType(QualifiedName.Parse(
                                     $"{Namespace}.{type.type.GetSemantic().Name}{LinkPostfix}", true));
 
                                 var linkCtor = linkType.Ctor(_ct.AqContext, _ct.Guid);

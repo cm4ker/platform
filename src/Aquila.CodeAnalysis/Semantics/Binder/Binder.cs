@@ -262,14 +262,21 @@ namespace Aquila.CodeAnalysis.Semantics
         }
 
         protected void FindSymbolByNameHandler(IEnumerable<Symbol> symbols, ArrayBuilder<ImmutableArray<Symbol>> result,
-            FilterCriteria criteria)
+            FilterCriteria criteria, Action continueSearch)
         {
             if (criteria.SymbolKinds.Any())
             {
                 symbols = symbols.Where(s => criteria.SymbolKinds.Contains(s.Kind));
             }
 
-            result.Add(symbols.ToImmutableArray());
+            var symbolsArray = symbols.ToImmutableArray();
+
+            result.Add(symbolsArray);
+
+            if (!symbolsArray.Any())
+            {
+                continueSearch();
+            }
         }
 
 
@@ -543,15 +550,15 @@ namespace Aquila.CodeAnalysis.Semantics
             {
                 case SymbolKind.Local:
                 case SymbolKind.Parameter:
-                    return new BoundVariableRef(resultSymbol.Name, resultSymbol.GetTypeOrReturnType());
+                    return new BoundVariableRef(resultSymbol.Name, resultSymbol.GetTypeOrReturnType()).WithAccess(access);
                 case SymbolKind.Field:
-                    return new BoundFieldRef(resultSymbol as IFieldSymbol, ThisEx);
+                    return new BoundFieldRef(resultSymbol as IFieldSymbol, ThisEx).WithAccess(access);
                 case SymbolKind.Property:
-                    return new BoundPropertyRef(resultSymbol as IPropertySymbol, ThisEx);
+                    return new BoundPropertyRef(resultSymbol as IPropertySymbol, ThisEx).WithAccess(access);
                 case SymbolKind.NamedType:
-                    return new BoundClassTypeRef(QualifiedName.Object, Method, resultSymbol as ITypeSymbol);
+                    return new BoundClassTypeRef(QualifiedName.Object, Method, resultSymbol as ITypeSymbol).WithAccess(access);
                 case SymbolKind.Method:
-                    return BindMethodSymbol(resultSymbol as MethodSymbol, ThisEx, access);
+                    return BindMethodSymbol(resultSymbol as MethodSymbol, ThisEx, access).WithAccess(access);
             }
 
             return BadEx;

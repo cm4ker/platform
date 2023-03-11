@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Reflection.Metadata;
 using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Emit;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Symbols;
+using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.CodeAnalysis.Syntax;
 using Microsoft.CodeAnalysis;
@@ -16,7 +20,6 @@ internal class LambdaRewriter : GraphRewriter
     private readonly PEModuleBuilder _moduleBuilder;
     private readonly CompilationState _compilationState;
 
-    private readonly List<BoundVariable> _variablesAbove = new();
     private readonly NamedTypeSymbol _containingType;
     private readonly CoreTypes _ct;
 
@@ -30,11 +33,7 @@ internal class LambdaRewriter : GraphRewriter
         _ct = moduleBuilder.Compilation.CoreTypes;
     }
 
-    public override object VisitVariable(BoundVariable x)
-    {
-        _variablesAbove.Add(x);
-        return base.VisitVariable(x);
-    }
+    private (TypeSymbol, MethodSymbol) callInfo;
 
     public override object VisitFuncEx(BoundFuncEx x)
     {
@@ -49,12 +48,24 @@ internal class LambdaRewriter : GraphRewriter
         */
         var container =
             _moduleBuilder.SynthesizedManager.GetOrCreate<SynthesizedTypeSymbol>(_containingType, "LambdaContainer");
-        
+
+        ImmutableArray<Symbol>.Builder builder = ImmutableArray.CreateBuilder<Symbol>();
+        SourceTypeSymbolHelper.AddDefaultInstanceTypeSymbolMembers(container, builder);
+        var members = builder.ToImmutable();
+        members.ForEach(container.AddMember);
+        var ctor = members.OfType<SynthesizedCtorSymbol>().First();
         var translatedSymbol = new TranslatedLambdaMethodSymbol(container, _method, x.LambdaSymbol);
         container.AddMember(translatedSymbol);
         _compilationState.RegisterMethodToEmit(translatedSymbol);
 
-        return new BoundLiteral(1, _ct.Int32.Symbol);
+        _moduleBuilder.SetMethodBody(ctor, ctor.CreateMethodBody(_moduleBuilder, DiagnosticBag.GetInstance()));
+
+        var instance = new BoundNewEx(ctor, container,
+            ImmutableArray<BoundArgument>.Empty,
+            ImmutableArray<ITypeSymbol>.Empty, container);
+
+        return new BoundCallEx(translatedSymbol, ImmutableArray<BoundArgument>.Empty, instance,
+            translatedSymbol.ReturnType);
     }
 
     public static void Transform(SourceMethodSymbolBase sourceMethodSymbolBase, PEModuleBuilder moduleBuilder,
@@ -80,7 +91,7 @@ internal class TranslatedLambdaMethodSymbol : SourceMethodSymbolBase
 
     public override Accessibility DeclaredAccessibility => Accessibility.Internal;
 
-    public override bool IsStatic => true; // TODO: get answer from the context flow graph: IsHasCapturedVariables?
+    public override bool IsStatic => false;
 
     internal override ParameterListSyntax SyntaxSignature => _lambda.SyntaxSignature;
 

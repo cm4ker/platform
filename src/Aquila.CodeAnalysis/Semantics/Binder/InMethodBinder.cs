@@ -42,10 +42,11 @@ internal class InMethodBinder : Binder
         FilterCriteria filterCriteria)
     {
         FindSymbolByNameHandler(Locals
-            .Variables
-            .Where(x => x.Name == name)
-            .Select(x => x.Symbol)
-            .WhereNotNull(), result, filterCriteria);
-        base.FindSymbolByName(name, result, filterCriteria);
+                .Variables
+                .Where(x => x.Name == name)
+                .Select(x => x.Symbol)
+                .WhereNotNull(), result, filterCriteria,
+            () => base.FindSymbolByName(name, result, filterCriteria));
+        ;
     }
 }

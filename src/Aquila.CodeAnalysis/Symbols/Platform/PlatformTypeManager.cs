@@ -143,7 +143,7 @@ namespace Aquila.CodeAnalysis.Public
 
         #endregion
 
-        internal NamedTypeSymbol GetType(QualifiedName name,
+        internal NamedTypeSymbol TryGetType(QualifiedName name,
             Dictionary<QualifiedName, INamedTypeSymbol> resolved = null)
         {
             EnsureMetadataPopulated();
@@ -157,23 +157,15 @@ namespace Aquila.CodeAnalysis.Public
                 if (first == null)
                 {
                     first = t;
+                    alternatives = new List<NamedTypeSymbol>() { first };
                 }
                 else
                 {
-                    // ambiguity
-                    if (alternatives == null)
-                    {
-                        alternatives = new List<NamedTypeSymbol>() { first };
-                    }
-
                     alternatives.Add(t);
                 }
             }
 
-            var result =
-                (alternatives != null)
-                    ? new AmbiguousErrorTypeSymbol(alternatives.AsImmutable()) // ambiguity
-                    : first ?? new MissingMetadataTypeSymbol(name.ClrName(), 0, false);
+            var result = alternatives?.Count == 1 ? first : null;
 
             if (resolved != null)
             {
@@ -203,7 +195,7 @@ namespace Aquila.CodeAnalysis.Public
         internal SynthesizedTypeSymbol GetSynthesizedType(QualifiedName name,
             Dictionary<QualifiedName, INamedTypeSymbol> resolved = null)
         {
-            var type = GetType(name, resolved);
+            var type = TryGetType(name, resolved);
 
             if (type is SynthesizedTypeSymbol st) return st;
 

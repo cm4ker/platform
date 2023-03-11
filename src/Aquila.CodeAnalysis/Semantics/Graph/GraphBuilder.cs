@@ -681,7 +681,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
 
             // init catch blocks and finally block
             var catchBlocks = ImmutableArray<CatchBlock>.Empty;
-            if (x.Catches is { Count: > 1 })
+            if (x.Catches is { Count: >= 1 })
             {
                 var catchBuilder = ImmutableArray.CreateBuilder<CatchBlock>(x.Catches.Count);
                 for (int i = 0; i < x.Catches.Count; i++)

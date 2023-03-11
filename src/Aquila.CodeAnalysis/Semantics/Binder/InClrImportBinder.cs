@@ -72,7 +72,6 @@ internal class InClrImportBinder : Binder
             _container.GetMembers(name)
                 .Union(_container.GetTypeMembers(name, -1), SymbolEqualityComparer.Default)
                 .Union(methods, SymbolEqualityComparer.Default).Cast<Symbol>(), result,
-            filterCriteria);
-        base.FindSymbolByName(name, result, filterCriteria);
+            filterCriteria, () => base.FindSymbolByName(name, result, filterCriteria));
     }
 }

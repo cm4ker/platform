@@ -18,6 +18,6 @@ namespace Aquila.CodeAnalysis.Semantics.Model
 
 
         public INamedTypeSymbol ResolveType(QualifiedName name, Dictionary<QualifiedName, INamedTypeSymbol> resolved) =>
-            _table.GetType(name, resolved);
+            _table.TryGetType(name, resolved);
     }
 }
