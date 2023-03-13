@@ -4823,6 +4823,209 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         }
     }
 
+    internal sealed partial class FuncEx : ExprSyntax
+    {
+        internal readonly SyntaxToken fnKeyword;
+        internal readonly ParameterListSyntax parameterList;
+        internal readonly TypeEx? returnType;
+        internal readonly BlockStmt? body;
+        internal readonly ArrowExClause? expressionBody;
+        internal readonly SyntaxToken? semicolonToken;
+
+        internal FuncEx(SyntaxKind kind, SyntaxToken fnKeyword, ParameterListSyntax parameterList, TypeEx? returnType, BlockStmt? body, ArrowExClause? expressionBody, SyntaxToken? semicolonToken, DiagnosticInfo[]? diagnostics, SyntaxAnnotation[]? annotations)
+          : base(kind, diagnostics, annotations)
+        {
+            this.SlotCount = 6;
+            this.AdjustFlagsAndWidth(fnKeyword);
+            this.fnKeyword = fnKeyword;
+            this.AdjustFlagsAndWidth(parameterList);
+            this.parameterList = parameterList;
+            if (returnType != null)
+            {
+                this.AdjustFlagsAndWidth(returnType);
+                this.returnType = returnType;
+            }
+            if (body != null)
+            {
+                this.AdjustFlagsAndWidth(body);
+                this.body = body;
+            }
+            if (expressionBody != null)
+            {
+                this.AdjustFlagsAndWidth(expressionBody);
+                this.expressionBody = expressionBody;
+            }
+            if (semicolonToken != null)
+            {
+                this.AdjustFlagsAndWidth(semicolonToken);
+                this.semicolonToken = semicolonToken;
+            }
+        }
+
+        internal FuncEx(SyntaxKind kind, SyntaxToken fnKeyword, ParameterListSyntax parameterList, TypeEx? returnType, BlockStmt? body, ArrowExClause? expressionBody, SyntaxToken? semicolonToken, SyntaxFactoryContext context)
+          : base(kind)
+        {
+            this.SetFactoryContext(context);
+            this.SlotCount = 6;
+            this.AdjustFlagsAndWidth(fnKeyword);
+            this.fnKeyword = fnKeyword;
+            this.AdjustFlagsAndWidth(parameterList);
+            this.parameterList = parameterList;
+            if (returnType != null)
+            {
+                this.AdjustFlagsAndWidth(returnType);
+                this.returnType = returnType;
+            }
+            if (body != null)
+            {
+                this.AdjustFlagsAndWidth(body);
+                this.body = body;
+            }
+            if (expressionBody != null)
+            {
+                this.AdjustFlagsAndWidth(expressionBody);
+                this.expressionBody = expressionBody;
+            }
+            if (semicolonToken != null)
+            {
+                this.AdjustFlagsAndWidth(semicolonToken);
+                this.semicolonToken = semicolonToken;
+            }
+        }
+
+        internal FuncEx(SyntaxKind kind, SyntaxToken fnKeyword, ParameterListSyntax parameterList, TypeEx? returnType, BlockStmt? body, ArrowExClause? expressionBody, SyntaxToken? semicolonToken)
+          : base(kind)
+        {
+            this.SlotCount = 6;
+            this.AdjustFlagsAndWidth(fnKeyword);
+            this.fnKeyword = fnKeyword;
+            this.AdjustFlagsAndWidth(parameterList);
+            this.parameterList = parameterList;
+            if (returnType != null)
+            {
+                this.AdjustFlagsAndWidth(returnType);
+                this.returnType = returnType;
+            }
+            if (body != null)
+            {
+                this.AdjustFlagsAndWidth(body);
+                this.body = body;
+            }
+            if (expressionBody != null)
+            {
+                this.AdjustFlagsAndWidth(expressionBody);
+                this.expressionBody = expressionBody;
+            }
+            if (semicolonToken != null)
+            {
+                this.AdjustFlagsAndWidth(semicolonToken);
+                this.semicolonToken = semicolonToken;
+            }
+        }
+
+        public SyntaxToken FnKeyword => this.fnKeyword;
+        /// <summary>Gets the parameter list.</summary>
+        public ParameterListSyntax ParameterList => this.parameterList;
+        /// <summary>Gets the return type syntax.</summary>
+        public TypeEx? ReturnType => this.returnType;
+        public BlockStmt? Body => this.body;
+        public ArrowExClause? ExpressionBody => this.expressionBody;
+        /// <summary>Gets the optional semicolon token.</summary>
+        public SyntaxToken? SemicolonToken => this.semicolonToken;
+
+        internal override GreenNode? GetSlot(int index)
+            => index switch
+            {
+                0 => this.fnKeyword,
+                1 => this.parameterList,
+                2 => this.returnType,
+                3 => this.body,
+                4 => this.expressionBody,
+                5 => this.semicolonToken,
+                _ => null,
+            };
+
+        internal override SyntaxNode CreateRed(SyntaxNode? parent, int position) => new Aquila.CodeAnalysis.Syntax.FuncEx(this, parent, position);
+
+        public override void Accept(AquilaSyntaxVisitor visitor) => visitor.VisitFuncEx(this);
+        public override TResult Accept<TResult>(AquilaSyntaxVisitor<TResult> visitor) => visitor.VisitFuncEx(this);
+
+        public FuncEx Update(SyntaxToken fnKeyword, ParameterListSyntax parameterList, TypeEx returnType, BlockStmt body, ArrowExClause expressionBody, SyntaxToken semicolonToken)
+        {
+            if (fnKeyword != this.FnKeyword || parameterList != this.ParameterList || returnType != this.ReturnType || body != this.Body || expressionBody != this.ExpressionBody || semicolonToken != this.SemicolonToken)
+            {
+                var newNode = SyntaxFactory.FuncEx(fnKeyword, parameterList, returnType, body, expressionBody, semicolonToken);
+                var diags = GetDiagnostics();
+                if (diags?.Length > 0)
+                    newNode = newNode.WithDiagnosticsGreen(diags);
+                var annotations = GetAnnotations();
+                if (annotations?.Length > 0)
+                    newNode = newNode.WithAnnotationsGreen(annotations);
+                return newNode;
+            }
+
+            return this;
+        }
+
+        internal override GreenNode SetDiagnostics(DiagnosticInfo[]? diagnostics)
+            => new FuncEx(this.Kind, this.fnKeyword, this.parameterList, this.returnType, this.body, this.expressionBody, this.semicolonToken, diagnostics, GetAnnotations());
+
+        internal override GreenNode SetAnnotations(SyntaxAnnotation[]? annotations)
+            => new FuncEx(this.Kind, this.fnKeyword, this.parameterList, this.returnType, this.body, this.expressionBody, this.semicolonToken, GetDiagnostics(), annotations);
+
+        internal FuncEx(ObjectReader reader)
+          : base(reader)
+        {
+            this.SlotCount = 6;
+            var fnKeyword = (SyntaxToken)reader.ReadValue();
+            AdjustFlagsAndWidth(fnKeyword);
+            this.fnKeyword = fnKeyword;
+            var parameterList = (ParameterListSyntax)reader.ReadValue();
+            AdjustFlagsAndWidth(parameterList);
+            this.parameterList = parameterList;
+            var returnType = (TypeEx?)reader.ReadValue();
+            if (returnType != null)
+            {
+                AdjustFlagsAndWidth(returnType);
+                this.returnType = returnType;
+            }
+            var body = (BlockStmt?)reader.ReadValue();
+            if (body != null)
+            {
+                AdjustFlagsAndWidth(body);
+                this.body = body;
+            }
+            var expressionBody = (ArrowExClause?)reader.ReadValue();
+            if (expressionBody != null)
+            {
+                AdjustFlagsAndWidth(expressionBody);
+                this.expressionBody = expressionBody;
+            }
+            var semicolonToken = (SyntaxToken?)reader.ReadValue();
+            if (semicolonToken != null)
+            {
+                AdjustFlagsAndWidth(semicolonToken);
+                this.semicolonToken = semicolonToken;
+            }
+        }
+
+        internal override void WriteTo(ObjectWriter writer)
+        {
+            base.WriteTo(writer);
+            writer.WriteValue(this.fnKeyword);
+            writer.WriteValue(this.parameterList);
+            writer.WriteValue(this.returnType);
+            writer.WriteValue(this.body);
+            writer.WriteValue(this.expressionBody);
+            writer.WriteValue(this.semicolonToken);
+        }
+
+        static FuncEx()
+        {
+            ObjectBinder.RegisterTypeReader(typeof(FuncEx), r => new FuncEx(r));
+        }
+    }
+
     /// <summary>Represents a match expression syntax.</summary>
     internal sealed partial class MatchEx : ExprSyntax
     {
@@ -16159,6 +16362,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         public virtual TResult VisitInitializerEx(InitializerEx node) => this.DefaultVisit(node);
         public virtual TResult VisitAllocEx(AllocEx node) => this.DefaultVisit(node);
         public virtual TResult VisitCastEx(CastEx node) => this.DefaultVisit(node);
+        public virtual TResult VisitFuncEx(FuncEx node) => this.DefaultVisit(node);
         public virtual TResult VisitMatchEx(MatchEx node) => this.DefaultVisit(node);
         public virtual TResult VisitMatchArm(MatchArm node) => this.DefaultVisit(node);
         public virtual TResult VisitInterpolatedStringText(InterpolatedStringTextSyntax node) => this.DefaultVisit(node);
@@ -16285,6 +16489,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
         public virtual void VisitInitializerEx(InitializerEx node) => this.DefaultVisit(node);
         public virtual void VisitAllocEx(AllocEx node) => this.DefaultVisit(node);
         public virtual void VisitCastEx(CastEx node) => this.DefaultVisit(node);
+        public virtual void VisitFuncEx(FuncEx node) => this.DefaultVisit(node);
         public virtual void VisitMatchEx(MatchEx node) => this.DefaultVisit(node);
         public virtual void VisitMatchArm(MatchArm node) => this.DefaultVisit(node);
         public virtual void VisitInterpolatedStringText(InterpolatedStringTextSyntax node) => this.DefaultVisit(node);
@@ -16480,6 +16685,9 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
         public override AquilaSyntaxNode VisitCastEx(CastEx node)
             => node.Update((SyntaxToken)Visit(node.OpenParenToken), (TypeEx)Visit(node.Type), (SyntaxToken)Visit(node.CloseParenToken), (ExprSyntax)Visit(node.Expression));
+
+        public override AquilaSyntaxNode VisitFuncEx(FuncEx node)
+            => node.Update((SyntaxToken)Visit(node.FnKeyword), (ParameterListSyntax)Visit(node.ParameterList), (TypeEx)Visit(node.ReturnType), (BlockStmt)Visit(node.Body), (ArrowExClause)Visit(node.ExpressionBody), (SyntaxToken)Visit(node.SemicolonToken));
 
         public override AquilaSyntaxNode VisitMatchEx(MatchEx node)
             => node.Update((SyntaxToken)Visit(node.MatchKeyword), (SyntaxToken)Visit(node.OpenParenToken), (ExprSyntax)Visit(node.Expression), (SyntaxToken)Visit(node.CloseParenToken), (SyntaxToken)Visit(node.OpenBraceToken), VisitList(node.Arms), (SyntaxToken)Visit(node.CloseBraceToken));
@@ -17617,6 +17825,26 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 #endif
 
             return new CastEx(SyntaxKind.CastExpression, openParenToken, type, closeParenToken, expression, this.context);
+        }
+
+        public FuncEx FuncEx(SyntaxToken fnKeyword, ParameterListSyntax parameterList, TypeEx? returnType, BlockStmt? body, ArrowExClause? expressionBody, SyntaxToken? semicolonToken)
+        {
+#if DEBUG
+            if (fnKeyword == null) throw new ArgumentNullException(nameof(fnKeyword));
+            if (fnKeyword.Kind != SyntaxKind.FnKeyword) throw new ArgumentException(nameof(fnKeyword));
+            if (parameterList == null) throw new ArgumentNullException(nameof(parameterList));
+            if (semicolonToken != null)
+            {
+                switch (semicolonToken.Kind)
+                {
+                    case SyntaxKind.SemicolonToken:
+                    case SyntaxKind.None: break;
+                    default: throw new ArgumentException(nameof(semicolonToken));
+                }
+            }
+#endif
+
+            return new FuncEx(SyntaxKind.AnonymousFunctionExpression, fnKeyword, parameterList, returnType, body, expressionBody, semicolonToken, this.context);
         }
 
         public MatchEx MatchEx(SyntaxToken matchKeyword, SyntaxToken? openParenToken, ExprSyntax expression, SyntaxToken? closeParenToken, SyntaxToken openBraceToken, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SeparatedSyntaxList<MatchArm> arms, SyntaxToken closeBraceToken)
@@ -20296,6 +20524,26 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
             return new CastEx(SyntaxKind.CastExpression, openParenToken, type, closeParenToken, expression);
         }
 
+        public static FuncEx FuncEx(SyntaxToken fnKeyword, ParameterListSyntax parameterList, TypeEx? returnType, BlockStmt? body, ArrowExClause? expressionBody, SyntaxToken? semicolonToken)
+        {
+#if DEBUG
+            if (fnKeyword == null) throw new ArgumentNullException(nameof(fnKeyword));
+            if (fnKeyword.Kind != SyntaxKind.FnKeyword) throw new ArgumentException(nameof(fnKeyword));
+            if (parameterList == null) throw new ArgumentNullException(nameof(parameterList));
+            if (semicolonToken != null)
+            {
+                switch (semicolonToken.Kind)
+                {
+                    case SyntaxKind.SemicolonToken:
+                    case SyntaxKind.None: break;
+                    default: throw new ArgumentException(nameof(semicolonToken));
+                }
+            }
+#endif
+
+            return new FuncEx(SyntaxKind.AnonymousFunctionExpression, fnKeyword, parameterList, returnType, body, expressionBody, semicolonToken);
+        }
+
         public static MatchEx MatchEx(SyntaxToken matchKeyword, SyntaxToken? openParenToken, ExprSyntax expression, SyntaxToken? closeParenToken, SyntaxToken openBraceToken, Microsoft.CodeAnalysis.Syntax.InternalSyntax.SeparatedSyntaxList<MatchArm> arms, SyntaxToken closeBraceToken)
         {
 #if DEBUG
@@ -22139,6 +22387,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                 typeof(InitializerEx),
                 typeof(AllocEx),
                 typeof(CastEx),
+                typeof(FuncEx),
                 typeof(MatchEx),
                 typeof(MatchArm),
                 typeof(InterpolatedStringTextSyntax),

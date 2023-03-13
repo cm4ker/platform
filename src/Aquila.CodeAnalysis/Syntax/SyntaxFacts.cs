@@ -136,7 +136,7 @@ namespace Aquila.CodeAnalysis
             switch (child.Kind())
             {
                 case SyntaxKind.LocalFunctionStatement:
-                case SyntaxKind.AnonymousMethodExpression:
+                case SyntaxKind.AnonymousFunctionExpression:
                 case SyntaxKind.SimpleLambdaExpression:
                 case SyntaxKind.ParenthesizedLambdaExpression:
                     return true;

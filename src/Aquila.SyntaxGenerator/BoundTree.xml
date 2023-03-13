@@ -24,12 +24,6 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="MethodDeclStmt" Base="Statement" OperationKind="LocalFunction">
-        <Arguments>
-            <Single Name="Method" Type="SourceMethodSymbolBase" IsUpdatable="true" IsInternal="true"/>
-        </Arguments>
-    </Syntax>
-
     <Syntax Name="GlobalConstDeclStmt" Base="Statement" OperationKind="VariableDeclaration">
         <Arguments>
             <Single Name="Name" Type="QualifiedName" IsUpdatable="true"/>
@@ -44,7 +38,7 @@
     <Syntax Name="StaticVarStmt" Base="Statement"/>
 
     <Syntax Name="YieldStmt" Base="Statement" OperationKind="YieldReturn"/>
-    
+
     <Syntax Name="ForEachStmt" Base="Statement" OperationKind="Loop">
         <Arguments>
             <Single Name="Item" Type="BoundReferenceEx" IsUpdatable="true"/>
@@ -52,12 +46,17 @@
             <Single Name="BoundInfo" Type="ForeachBindInfo" IsUpdatable="false"/>
         </Arguments>
     </Syntax>
+    <Syntax Name="BadStmt" Base="Statement" OperationKind="None">
+        <Arguments>
+
+        </Arguments>
+    </Syntax>
     <!-- region HtmlStmt -->
     <Syntax Name="HtmlMarkupStmt" Base="Statement" OperationKind="None">
         <Arguments>
             <Single Name="Markup" Type="string" IsUpdatable="true"/>
             <Single Name="InstructionIndex" Type="int" IsUpdatable="true"/>
-        </Arguments>    
+        </Arguments>
     </Syntax>
 
     <Syntax Name="HtmlOpenElementStmt" Base="Statement" OperationKind="None">
@@ -66,8 +65,8 @@
             <Single Name="InstructionIndex" Type="int" IsUpdatable="true"/>
         </Arguments>
     </Syntax>
-    
-    <Syntax Name="HtmlCloseElementStmt" Base="Statement" OperationKind="None" />
+
+    <Syntax Name="HtmlCloseElementStmt" Base="Statement" OperationKind="None"/>
     <Syntax Name="HtmlAddAttributeStmt" Base="Statement" OperationKind="None">
         <Arguments>
             <Single Name="AttributeName" Type="string" IsUpdatable="true"/>
@@ -206,7 +205,13 @@
                     IsInternal="true"/>
         </Arguments>
     </Syntax>
-
+    <Syntax Name="FuncEx" Base="Expression" OperationKind="AnonymousFunction">
+        <Arguments>
+            <Single Name="LambdaSymbol" Type="SourceLambdaSymbol" IsInternal="true" IsUpdatable="true"/>
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+                    IsInternal="true"/>
+        </Arguments>
+    </Syntax>
     <!-- region MemberAccess -->
 
     <!-- region Call -->
@@ -214,7 +219,6 @@
         <Arguments>
             <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true" IsUpdatable="true"/>
             <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;" IsUpdatable="true"/>
-            <Single Name="TypeArguments" Type="ImmutableArray&lt;ITypeSymbol&gt;" IsUpdatable="true"/>
             <Single Name="Instance" Type="BoundExpression" IsUpdatable="true"/>
             <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
                     IsInternal="true"/>
@@ -222,7 +226,7 @@
     </Syntax>
     <!-- endregion -->
 
-    <Syntax Name="NewEx" Base="Expression"  OperationKind="ObjectCreation">
+    <Syntax Name="NewEx" Base="Expression" OperationKind="ObjectCreation">
         <Arguments>
             <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true"/>
             <Single Name="TypeRef" Type="ITypeSymbol"/>
@@ -323,14 +327,15 @@
         </Arguments>
     </Syntax>
 
-    <Syntax Name="TemporalVariableRef" Base="VariableRef">
+    <Syntax Name="MethodRef" Base="ReferenceEx" OperationKind="None">
         <Arguments>
-            <Single Name="Name" Type="BoundVariableName" PassBase="true" OnlyArgument="true" IsUpdatable="true"/>
+            <Single Name="Method" Type="IMethodSymbol"/>
+            <Single Name="Instance" Type="BoundExpression"/>
             <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
                     IsInternal="true"/>
         </Arguments>
     </Syntax>
-
+    
     <Syntax Name="PropertyRef" Base="ReferenceEx" OperationKind="Invocation">
         <Arguments>
             <Single Name="Property" Type="IPropertySymbol"/>
@@ -339,7 +344,6 @@
                     IsInternal="true" PassBaseConst="property.Type"/>
         </Arguments>
     </Syntax>
-
     <!-- endregion -->
 
     <!-- endregion -->

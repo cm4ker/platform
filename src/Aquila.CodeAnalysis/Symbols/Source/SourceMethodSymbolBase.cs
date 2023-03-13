@@ -19,36 +19,34 @@ namespace Aquila.CodeAnalysis.Symbols
     /// <summary>
     /// Represents a Aquila class method.
     /// </summary>
-    internal abstract partial  class SourceMethodSymbolBase : MethodSymbol
+    internal abstract partial class SourceMethodSymbolBase : MethodSymbol
     {
-        private readonly NamedTypeSymbol _type;
+        private readonly Symbol _type;
         private MethodSymbol _lazyOverridenMethod;
 
-        public SourceMethodSymbolBase(NamedTypeSymbol type)
+        protected SourceMethodSymbolBase(Symbol type)
         {
             Contract.ThrowIfNull(type);
             _type = type;
         }
-        
+
         internal bool RequiresLateStaticBoundParam =>
-            IsStatic && // `static` in instance method == typeof($this)
-            ControlFlowGraph != null && // cfg sets {Flags}
-            (this.Flags & MethodFlags.UsesLateStatic) != 0
-        //&& (!_type.IsSealed || _type.IsTrait)
-        ; // `static` == `self` <=> self is sealed
+            IsStatic &&
+            ControlFlowGraph != null &&
+            (this.Flags & MethodFlags.UsesLateStatic) != 0;
 
         public override IMethodSymbol OverriddenMethod
         {
             get
             {
-                if ((_commonflags & CommonFlags.OverriddenMethodResolved) == 0)
-                {
-                    Interlocked.CompareExchange(ref _lazyOverridenMethod, this.ResolveOverride(), null);
+                if ((_commonFlags & CommonFlags.OverriddenMethodResolved) != 0) 
+                    return _lazyOverridenMethod;
+                
+                Interlocked.CompareExchange(ref _lazyOverridenMethod, this.ResolveOverride(), null);
 
-                    Debug.Assert(_lazyOverridenMethod != this);
+                Debug.Assert(_lazyOverridenMethod != this);
 
-                    _commonflags |= CommonFlags.OverriddenMethodResolved;
-                }
+                _commonFlags |= CommonFlags.OverriddenMethodResolved;
 
                 return _lazyOverridenMethod;
             }
@@ -56,32 +54,27 @@ namespace Aquila.CodeAnalysis.Symbols
 
         internal abstract ParameterListSyntax SyntaxSignature { get; }
 
-        internal abstract  TypeEx SyntaxReturnType { get; }
+        internal abstract TypeEx SyntaxReturnType { get; }
 
         internal abstract AquilaSyntaxNode Syntax { get; }
 
-        internal abstract IList<StmtSyntax> Statements { get; }
+        internal abstract IEnumerable<StmtSyntax> Statements { get; }
 
         public abstract void GetDiagnostics(DiagnosticBag diagnostic);
 
-        
-
         public override Symbol ContainingSymbol => _type;
-
-
 
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences
         {
             get { throw new NotImplementedException(); }
         }
 
-
-        public override bool IsAbstract => false; 
+        public override bool IsAbstract => false;
 
         public override bool IsOverride => IsVirtual && this.OverriddenMethod != null &&
                                            this.SignaturesMatch((MethodSymbol)this.OverriddenMethod);
 
-        public override bool IsSealed => false; 
+        public override bool IsSealed => false;
 
         public override bool IsVirtual
         {
@@ -102,12 +95,14 @@ namespace Aquila.CodeAnalysis.Symbols
             OverriddenMethodResolved = 1,
         }
 
-        /// <summary>Internal true/false values. Initially all false.</summary>
-        protected CommonFlags _commonflags;
-        protected ControlFlowGraph _cfg;
-        LocalsTable _locals;
+        /// <summary>
+        /// Internal true/false values. Initially all false.
+        /// </summary>
+        private CommonFlags _commonFlags;
 
-       
+        private ControlFlowGraph _cfg;
+        private LocalsTable _locals;
+
 
         /// <summary>
         /// Gets table of local variables.
@@ -127,17 +122,18 @@ namespace Aquila.CodeAnalysis.Symbols
         }
 
         public override ImmutableArray<Location> Locations =>
-            ImmutableArray.Create(
-                Location.Create(null, Syntax is AquilaSyntaxNode element ? element.Span : default
-                ));
+            ImmutableArray.Create(Location.Create(Syntax.SyntaxTree, Syntax is { } element ? element.Span : default));
 
         public override bool IsUnreachable => (Flags & MethodFlags.IsUnreachable) != 0;
 
         protected ImmutableArray<ParameterSymbol> _implicitParameters;
         private SourceParameterSymbol[] _srcParams;
 
-        /// <summary>Implicitly declared [params] parameter if the method allows access to its arguments. This allows more arguments to be passed than declared.</summary>
-        private SynthesizedParameterSymbol _implicitVarArg; // behaves like a stack of optional parameters
+        /// <summary>
+        /// Implicitly declared [params] parameter if the method allows access to its arguments.
+        /// This allows more arguments to be passed than declared.
+        /// </summary>
+        private SynthesizedParameterSymbol _implicitVarArg;
 
         internal class ImplicitParametersBuilder
         {
@@ -150,7 +146,6 @@ namespace Aquila.CodeAnalysis.Symbols
             }
 
             public ImmutableArray<ParameterSymbol> Build() => _builder.ToImmutableAndFree();
-
         }
 
         /// <summary>
@@ -164,8 +159,8 @@ namespace Aquila.CodeAnalysis.Symbols
             if (IsStatic)
             {
                 // Context <ctx>
-                 builder.Add(index => new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.AqContext,
-                     SpecialParameterSymbol.ContextName, index++));
+                builder.Add(index => new SpecialParameterSymbol(this, DeclaringCompilation.CoreTypes.AqContext,
+                    SpecialParameterSymbol.ContextName, index++));
             }
 
             return builder;
@@ -306,7 +301,6 @@ namespace Aquila.CodeAnalysis.Symbols
 
         public override bool IsExtern => false;
 
-
         public override bool CastToFalse => false; // source methods never cast special values to FALSE
 
         public override bool HasNotNull => !ReturnsNull;
@@ -371,39 +365,75 @@ namespace Aquila.CodeAnalysis.Symbols
             }
         }
 
+        public override TypeSymbol ReturnType =>
+            SyntaxReturnType == null
+                ? DeclaringCompilation.GetSpecialType(SpecialType.System_Void)
+                : GetMethodBinderCore().TryResolveTypeSymbol(SyntaxReturnType);
+
         public override bool ReturnsVoid => ReturnType.SpecialType == SpecialType.System_Void;
 
         /// <summary>
         /// Gets value indicating the method can return <c>null</c>.
         /// </summary>
-        public bool ReturnsNull
-        {
-            get { return true; }
-        }
+        public bool ReturnsNull => true;
 
         public override RefKind RefKind => RefKind.None;
+
+        /// <summary>
+        /// Lazily bound semantic block.
+        /// Entry point of analysis and emitting.
+        /// </summary>
+        public override ControlFlowGraph ControlFlowGraph
+        {
+            get
+            {
+                if (_cfg != null || this.Statements == null)
+                {
+                    return _cfg;
+                }
+
+                Interlocked.CompareExchange(ref _cfg, CreateControlFlowGraphCore(), null);
+
+                return _cfg;
+            }
+            internal set => _cfg = value;
+        }
+
+        protected virtual Binder GetMethodBinderCore()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual ControlFlowGraph CreateControlFlowGraphCore()
+        {
+            var binder = GetMethodBinderCore();
+
+            var cfg = new ControlFlowGraph(this.Statements, binder)
+            {
+                Start =
+                {
+                    FlowState = StateBinder.CreateInitialState(this)
+                }
+            };
+            return cfg;
+        }
 
         public override ImmutableArray<AttributeData> GetReturnTypeAttributes()
         {
             if (!ReturnsNull)
             {
-                // [return: NotNull]
                 var returnType = this.ReturnType;
                 if (returnType != null && (returnType.IsReferenceType)
                    ) // only if it makes sense to check for NULL
                 {
-                    return ImmutableArray.Create<AttributeData>(DeclaringCompilation.CreateNotNullAttribute());
+                    return ImmutableArray.Create(DeclaringCompilation.CreateNotNullAttribute());
                 }
             }
 
-            //
             return ImmutableArray<AttributeData>.Empty;
         }
 
-        internal override ObsoleteAttributeData ObsoleteAttributeData
-        {
-            get { return null; }
-        }
+        internal override ObsoleteAttributeData ObsoleteAttributeData => null;
 
         internal override bool IsMetadataNewSlot(bool ignoreInterfaceImplementationChanges = false) =>
             !IsOverride && IsMetadataVirtual(ignoreInterfaceImplementationChanges);

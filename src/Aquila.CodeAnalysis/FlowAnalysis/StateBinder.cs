@@ -36,15 +36,5 @@ namespace Aquila.CodeAnalysis.FlowAnalysis
             //
             return state;
         }
-
-        /// <summary>
-        /// Initializes <c>$this</c> variable, its type and initialized state.
-        /// </summary>
-        private static void InitThisVar(FlowContext ctx, FlowState initialState)
-        {
-            var thisHandle = ctx.GetVarIndex(VariableName.ThisVariableName);
-            initialState.SetLocalType(thisHandle, null); // set $this type
-            initialState.VisitLocal(thisHandle); // mark as visited (used) to not report as unused
-        }
     }
 }

@@ -5,7 +5,6 @@ using System.Linq;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Semantics.Graph;
-using Aquila.CodeAnalysis.Syntax;
 using Aquila.Syntax.Ast;
 using Microsoft.CodeAnalysis;
 
@@ -18,18 +17,13 @@ namespace Aquila.CodeAnalysis.Lowering
         protected AquilaCompilation DeclaringCompilation => _method.DeclaringCompilation;
         protected PrimitiveBoundTypeRefs PrimitiveBoundTypeRefs => DeclaringCompilation.TypeRefs;
 
-        private CoreTypes _ct;
-        private CoreMethods _cm;
+        private readonly CoreTypes _ct;
+        private readonly CoreMethods _cm;
 
         private int _tmpVariableIndex = 0;
         protected string NextTmpVariableName() => "<tmp>'" + _tmpVariableIndex++;
 
-        private LocalRewriter()
-        {
-        }
-
         private LocalRewriter(SourceMethodSymbolBase method)
-            : this()
         {
             _method = method;
             _ct = DeclaringCompilation.CoreTypes;
@@ -64,9 +58,8 @@ namespace Aquila.CodeAnalysis.Lowering
                 var transRight = BoundArgument.Create((BoundExpression)VisitExpression(x.Right));
 
                 var args = new[] { transLeft, transRight }.ToImmutableArray();
-                var typeArgs = ImmutableArray<ITypeSymbol>.Empty;
 
-                return new BoundCallEx(_cm.Operators.Concat_String_String, args, typeArgs, null, _ct.String.Symbol)
+                return new BoundCallEx(_cm.Operators.Concat_String_String, args, null, _ct.String.Symbol)
                     .WithAccess(x);
             }
 
@@ -120,7 +113,6 @@ namespace Aquila.CodeAnalysis.Lowering
 
         public override object VisitMatchEx(BoundMatchEx x)
         {
-            //TODO: maybe transform it into the more simple operations?
             var updated = (BoundMatchEx)base.VisitMatchEx(x);
 
             var updatedArms = new List<BoundMatchArm>();

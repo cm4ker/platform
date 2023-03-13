@@ -8,6 +8,7 @@ using System.Collections.Immutable;
 using System.Data;
 using System.Diagnostics;
 using Aquila.CodeAnalysis;
+using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.Compiler.Utilities;
 using Aquila.Syntax;
@@ -31,13 +32,15 @@ namespace Aquila.CodeAnalysis.Semantics
         /// <summary>
         /// The expression access kind - read, write, ensured.
         /// </summary>
-        AccessMask _flags;
+        readonly AccessMask _flags;
 
         /// <summary>
         /// Optional. Type the expression will be converted to.
         /// </summary>
-        TypeSymbol _targetType;
+        readonly TypeSymbol _targetType;
 
+        ImmutableArray<BoundArgument> _arguments = ImmutableArray<BoundArgument>.Empty;
+        
         #region Properties
 
         /// <summary>
@@ -78,6 +81,11 @@ namespace Aquila.CodeAnalysis.Semantics
         /// </summary>
         public AccessMask Flags => _flags;
 
+        /// <summary>
+        /// Arguments of Access context
+        /// </summary>
+        public ImmutableArray<BoundArgument> Arguments => _arguments;
+        
         /// <summary>
         /// The variable will be aliased and read.
         /// </summary>
@@ -209,6 +217,11 @@ namespace Aquila.CodeAnalysis.Semantics
             return new BoundAccess(newflags, _targetType);
         }
 
+        public BoundAccess WithArguments(ImmutableArray<BoundArgument> arguments)
+        {
+            return new BoundAccess(_flags, _targetType) { _arguments = arguments };
+        }
+        
         /// <summary>
         /// Simple read access.
         /// </summary>
@@ -535,7 +548,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         ImmutableArray<BoundArgument> _usevars;
 
-        public IBlockOperation Body => null; 
+        public IBlockOperation Body => null;
         public IMethodSymbol Signature => null;
         IMethodSymbol IAnonymousFunctionOperation.Symbol => null;
 
@@ -594,6 +607,7 @@ namespace Aquila.CodeAnalysis.Semantics
                 return new BoundEvalEx(code).WithContext(this);
             }
         }
+
         public override void Accept(OperationVisitor visitor) => visitor.DefaultVisit(this);
 
         public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
@@ -657,7 +671,7 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public override TResult Accept<TArgument, TResult>(OperationVisitor<TArgument, TResult> visitor,
             TArgument argument) => visitor.DefaultVisit(this, argument);
-        
+
         internal BoundCopyValue Update(BoundExpression expression)
         {
             return expression == Expression ? this : new BoundCopyValue(expression).WithAccess(this.Access);
@@ -1042,12 +1056,7 @@ namespace Aquila.CodeAnalysis.Semantics
         public override int GetHashCode() =>
             NameValue.GetHashCode() ^ (NameExpression != null ? NameExpression.GetHashCode() : 0);
 
-        string DebugView
-        {
-            get { return IsDirect ? NameValue.ToString() : "{indirect}"; }
-        }
-
-        public bool IsDirect => NameExpression == null;
+        string DebugView => NameValue.ToString();
 
         public AquilaSyntaxNode AquilaSyntax { get; set; }
 
@@ -1058,11 +1067,6 @@ namespace Aquila.CodeAnalysis.Semantics
 
         public BoundVariableName(string name, ITypeSymbol type)
             : this(new VariableName(name), type)
-        {
-        }
-
-        public BoundVariableName(BoundExpression nameExpr, ITypeSymbol type)
-            : this(default, nameExpr, type)
         {
         }
 
@@ -1105,6 +1109,11 @@ namespace Aquila.CodeAnalysis.Semantics
         internal IVariableReference Variable { get; set; }
 
         /// <summary>
+        /// Indicates the variable is captured in a closure.
+        /// </summary>
+        internal bool IsCaptured { get; set; }
+        
+        /// <summary>
         /// Local in case of the variable is resolved local variable.
         /// </summary>
         ILocalSymbol ILocalReferenceOperation.Local => null;
@@ -1122,21 +1131,18 @@ namespace Aquila.CodeAnalysis.Semantics
         }
     }
 
-    /// <summary>
-    /// A non-source synthesized variable reference that can be read or written to. 
-    /// </summary>
-    /// <remarks>
-    /// Inheriting from <c>BoundVariableRef</c> is just a temporary measure. Do NOT take dependencies on anything but <c>IReferenceExpression</c>.
-    /// </remarks>
-    public partial class BoundTemporalVariableRef
+    public partial class BoundMethodRef
     {
-        private string _name;
-
-        partial void OnCreateImpl(BoundVariableName name, ITypeSymbol typeSymbol)
+        internal override IVariableReference BindPlace(CodeGenerator cg)
         {
-            
+            throw new NotImplementedException();
         }
-    }
+
+        internal override IPlace Place()
+        {
+            throw new NotImplementedException();
+        }
+    } 
 
     #endregion
 
@@ -1589,6 +1595,7 @@ namespace Aquila.CodeAnalysis.Semantics
                 return new BoundOffsetExists(receiver, index).WithContext(this);
             }
         }
+
         public override void Accept(OperationVisitor visitor)
             => visitor.DefaultVisit(this);
 
@@ -1676,5 +1683,4 @@ namespace Aquila.CodeAnalysis.Semantics
     public partial class BoundBadEx
     {
     }
-
 }

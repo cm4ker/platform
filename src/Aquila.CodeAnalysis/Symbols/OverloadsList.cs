@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Aquila.CodeAnalysis.FlowAnalysis;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Utilities;
+using EnumerableExtensions = Roslyn.Utilities.EnumerableExtensions;
 
 namespace Aquila.CodeAnalysis.Symbols
 {
     /// <summary>
     /// List of overloads for a function call.
     /// </summary>
-    internal struct OverloadsList
+    internal readonly struct OverloadsList
     {
         /// <summary>
         /// Defines the scope of members visibility.
@@ -89,12 +91,11 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             if (_single != null)
             {
-                return IsAccessible(_single, scope)
-                    ? scope.ScopeIsDynamic && IsNonPublic(_single)
-                        ? new AmbiguousMethodSymbol(ImmutableArray.Create(_single),
-                            false) // TODO: find a way on how to disable this check in CLR
-                        : _single
-                    : new InaccessibleMethodSymbol(ImmutableArray.Create(_single));
+                if (IsAccessible(_single, scope))
+                    return scope is { ScopeIsDynamic: true } && IsNonPublic(_single)
+                        ? new AmbiguousMethodSymbol(ImmutableArray.Create(_single), false) 
+                        : _single;
+                return new InaccessibleMethodSymbol(ImmutableArray.Create(_single));
             }
 
             if (_methods == null || _methods.Length == 0)
@@ -128,11 +129,7 @@ namespace Aquila.CodeAnalysis.Symbols
                     result.RemoveAll(m => !m.IsStatic);
                 }
             }
-            else
-            {
-            }
 
-            //
             if (scope.ScopeIsDynamic && result.Any(IsNonPublic))
             {
                 // we have to postpone the resolution to runtime:
@@ -144,47 +141,13 @@ namespace Aquila.CodeAnalysis.Symbols
                 return result[0];
             }
 
-            // TODO: cost of args convert operation
-
-            // by params count
-
-            var result2 = new List<MethodSymbol>();
-
-            foreach (var m in result)
-            {
-                var nmandatory = 0;
-                var hasoptional = false;
-                var hasparams = false;
-                var match = true;
-                var hasunpacking = false;
-
-                var expectedparams = m.Parameters;
-
-                for (int i = 0; i < expectedparams.Count(); i++)
-                {
-                    var p = expectedparams[i];
-                }
-
-                //
-                if ((args.Length >= nmandatory || hasunpacking) && (hasparams || args.Length <= expectedparams.Count()))
-                {
-                    // TODO: this is naive implementation of overload resolution,
-                    // make it properly using Conversion Cost
-                    if (match && !hasparams)
-                    {
-                        return m; // perfect match
-                    }
-
-                    //
-                    result2.Add(m);
-                }
-            }
-
-            //
-            return (result2.Count == 1) ? result2[0] : new AmbiguousMethodSymbol(result.AsImmutable(), true);
+            var m = EnumerableExtensions.WhereNotNull(result)
+                .FirstOrDefault(m => args.Length >= 0 && args.Length <= m.Parameters.Length);
+            
+            return m != null ? m : new AmbiguousMethodSymbol(result.AsImmutable(), true);
         }
 
-        static bool IsNonPublic(MethodSymbol m) => m.DeclaredAccessibility != Accessibility.Public;
+        private static bool IsNonPublic(MethodSymbol m) => m.DeclaredAccessibility != Accessibility.Public;
 
         /// <summary>
         /// Removes methods that are inaccessible for sure.

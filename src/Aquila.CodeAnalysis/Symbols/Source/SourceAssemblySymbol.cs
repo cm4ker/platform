@@ -296,7 +296,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public override NamedTypeSymbol GetTypeByMetadataName(string fullyQualifiedMetadataName)
         {
-            return SourceModule.SymbolCollection.GetType(
+            return SourceModule.SymbolCollection.TryGetType(
                 NameUtils.MakeQualifiedName(fullyQualifiedMetadataName.Replace('.', QualifiedName.Separator), true));
         }
 

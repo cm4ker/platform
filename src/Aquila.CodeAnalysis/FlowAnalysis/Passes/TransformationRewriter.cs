@@ -39,16 +39,14 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 
             //
             var rewriter = new TransformationRewriter(delayedTransformations, method);
-            var currentCFG = method.ControlFlowGraph;
-            var updatedCFG = (ControlFlowGraph)rewriter.VisitCFG(currentCFG);
-
+            var currentCfg = method.ControlFlowGraph;
+            var updatedCfg = (ControlFlowGraph)rewriter.VisitCFG(currentCfg);
+            
             rewriter.TryTransformParameters();
-            method.ControlFlowGraph = updatedCFG;
+            method.ControlFlowGraph = updatedCfg;
 
-            Debug.Assert(updatedCFG == currentCFG ||
-                         rewriter.TransformationCount !=
-                         0); // cfg updated => transformations (not <= due to parameter transformations)
-            return updatedCFG != currentCFG;
+            Debug.Assert(updatedCfg == currentCfg || rewriter.TransformationCount != 0); 
+            return updatedCfg != currentCfg;
         }
 
         private TransformationRewriter()
@@ -88,7 +86,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
             Debug.Assert(_method.ControlFlowGraph == x);
         }
 
-        private protected override void OnUnreachableMethodFound(SourceMethodSymbolBase method)
+        private protected virtual void OnUnreachableMethodFound(SourceMethodSymbolBase method)
         {
             _delayedTransformations.UnreachableMethods.Add(method);
         }

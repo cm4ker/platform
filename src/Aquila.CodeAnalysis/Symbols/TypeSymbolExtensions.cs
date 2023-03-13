@@ -312,7 +312,7 @@ namespace Aquila.CodeAnalysis.Symbols
         public static ImmutableArray<ParameterSymbol> DelegateParameters(this TypeSymbol type)
         {
             Debug.Assert(
-                (object)type.DelegateInvokeMethod() != null, // && !type.DelegateInvokeMethod().HasUseSiteError,
+                (object)type.DelegateInvokeMethod() != null,
                 "This method should only be called on valid delegate types.");
             return type.DelegateInvokeMethod().Parameters;
         }
@@ -321,7 +321,7 @@ namespace Aquila.CodeAnalysis.Symbols
         {
             Debug.Assert((object)type != null);
             Debug.Assert(type.IsDelegateType() || type.IsExpressionTree());
-            return (MethodSymbol)type.GetDelegateType().DelegateInvokeMethod;
+            return type.GetDelegateType().DelegateInvokeMethod;
         }
 
         /// <summary>

@@ -402,7 +402,7 @@ fn main()
         [Fact]
         public void TryParse()
         {
-           ParseAndVerify(@"
+            ParseAndVerify(@"
 fn main()
 {
     try
@@ -420,13 +420,25 @@ fn main()
 }");
         }
 
+        [Fact]
+        public void AnonymousFunctionParse()
+        {
+            ParseAndVerify(@"
+fn main()
+{
+    var simple = fn (i int) int { return i + 1; };                            
+}
+");
+        }
+
+
         private void ParseAndVerify(string code)
         {
             var tp = new TreePrinter(_output);
             var tree = AquilaSyntaxTree.ParseText(code);
             var parsedCode = tree.ToString();
             tp.Visit(tree.GetRoot());
-
+            Assert.Empty(tree.GetDiagnostics());
             Assert.Equal(code, parsedCode);
         }
     }

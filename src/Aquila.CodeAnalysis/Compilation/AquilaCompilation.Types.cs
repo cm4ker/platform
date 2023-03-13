@@ -72,14 +72,14 @@ namespace Aquila.CodeAnalysis
         /// <summary>
         /// Gets global semantics. To be replaced once we implement SyntaxNode (<see cref="CommonGetSemanticModel"/>).
         /// </summary>
-        internal GlobalSymbolProvider GlobalSemantics => _model ?? (_model = new GlobalSymbolProvider(this));
+        internal GlobalSymbolProvider GlobalSemantics => _model ??= new GlobalSymbolProvider(this);
 
         /// <summary>
         /// Merges two CLR types into one
         /// </summary>
         /// <param name="first">First type.</param>
         /// <param name="second">Second type.</param>
-        /// <returns>One type convering both <paramref name="first"/> and <paramref name="second"/> types.</returns>
+        /// <returns>One type covering both <paramref name="first"/> and <paramref name="second"/> types.</returns>
         internal TypeSymbol Merge(TypeSymbol first, TypeSymbol second)
         {
             Contract.ThrowIfNull(first);

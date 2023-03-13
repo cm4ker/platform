@@ -129,40 +129,36 @@ namespace Aquila.CodeAnalysis.Semantics
                             .Single(x => x.AquilaSyntax.SyntaxTree.FilePath == htmlDecl.SyntaxTree.FilePath);
                         return new InContainerBinder(type, next);
                     }
+                    case FuncEx funcEx:
+                    {
+                        return new InLambdaBinder(next.Locals.BindLambda(funcEx), next);
+                    }
                     case ImportDecl import:
                         break;
                     case FuncDecl fd:
                     {
                         NamespaceOrTypeSymbol container;
 
-                        //TODO: visibility
-
                         if (fd.FuncOwner != null)
                         {
-                            //check we need describe above the part type of this type
-
-                            var hasDeclaredType = ((CompilationUnitSyntax)fd.Parent).Types.Any(x =>
-                                x.Name.GetUnqualifiedName().Identifier.Text == fd.FuncOwner.OwnerType.ToString());
-
-                            container = next.BindType(fd.FuncOwner.OwnerType);
+                            container = next.TryResolveTypeSymbol(fd.FuncOwner.OwnerType);
                         }
                         else if (fd.IsGlobal)
                             container = next.Container;
                         else
                             container = next.Container;
 
-                        var methods = container.GetMembers(fd.Identifier.Text).OfType<SourceMethodSymbol>();
+                        var methods = container.GetMembers(fd.Identifier.Text).OfType<SourceMethodSymbol>().ToArray();
 
                         MethodSymbol candidate = null;
 
                         if (!methods.Any())
                         {
-                            candidate = new MissingMethodSymbol(name: fd.Identifier.Text);
                             return next;
                         }
-                        else
-                            //TODO: resolution overloads
-                            candidate = methods.First();
+
+                        //TODO: resolution overloads
+                        candidate = methods.First();
 
                         return new InMethodBinder(candidate, next);
                         ;
@@ -206,7 +202,7 @@ namespace Aquila.CodeAnalysis.Semantics
                     {
                         return new InClrImportBinder(ns.First(), next);
                     }
-                    
+
                     return new InContainerBinder(ns.First(), next);
                 }
 
@@ -230,7 +226,8 @@ namespace Aquila.CodeAnalysis.Semantics
 
                     var module = node.Module;
                     if (module == null)
-                        module = SyntaxFactory.ModuleDecl(SyntaxFactory.IdentifierName(WellKnownAquilaNames.MainModuleName));
+                        module = SyntaxFactory.ModuleDecl(
+                            SyntaxFactory.IdentifierName(WellKnownAquilaNames.MainModuleName));
 
                     result = VisitModuleDecl(module, result);
                     binderCache.TryAdd(key, result);

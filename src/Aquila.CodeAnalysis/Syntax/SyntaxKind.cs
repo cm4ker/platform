@@ -795,7 +795,7 @@ namespace Aquila.CodeAnalysis
         Argument = 8638,
         NameColon = 8639,
         CastExpression = 8640,
-        AnonymousMethodExpression = 8641,
+        AnonymousFunctionExpression = 8641,
         SimpleLambdaExpression = 8642,
         ParenthesizedLambdaExpression = 8643,
         ObjectInitializerExpression = 8644,
@@ -1099,7 +1099,6 @@ namespace Aquila.CodeAnalysis
         MatchExpression,
         MatchArm,
         UnionType,
-
         AllocExpression,
 
         #region Html

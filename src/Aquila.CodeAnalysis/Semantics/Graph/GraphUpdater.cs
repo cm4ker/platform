@@ -405,7 +405,7 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         public override object VisitCallEx(BoundCallEx x)
         {
             var updatedArgs = x.Arguments.Select(a => (BoundArgument)Accept(a)).ToImmutableArray();
-            return x.Update(x.MethodSymbol, updatedArgs, x.TypeArguments, x.Instance, x.ResultType);
+            return x.Update(x.MethodSymbol, updatedArgs, x.Instance, x.ResultType);
         }
 
         public override object VisitVariableName(BoundVariableName x)
@@ -419,12 +419,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         {
             var variable = (BoundVariableName)Accept(x.Name);
             return x.Update(variable, x.ResultType);
-        }
-
-        public override object VisitTemporalVariableRef(BoundTemporalVariableRef x)
-        {
-            Debug.Assert(x.Name.IsDirect);
-            return x;
         }
 
         public override object VisitListEx(BoundListEx x)
@@ -484,11 +478,6 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         public override object VisitReturnStmt(BoundReturnStmt x)
         {
             return x.Update((BoundExpression)Accept(x.Returned));
-        }
-
-        public override object VisitMethodDeclStmt(BoundMethodDeclStmt x)
-        {
-            return x;
         }
 
         #endregion

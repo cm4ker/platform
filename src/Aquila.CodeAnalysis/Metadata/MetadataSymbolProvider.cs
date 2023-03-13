@@ -498,7 +498,7 @@ internal partial class MetadataSymbolProvider
                             else
                             {
                                 var managerType =
-                                    _ps.GetType(QualifiedName.Parse(
+                                    _ps.TryGetType(QualifiedName.Parse(
                                         $"{Namespace}.{type.type.GetSemantic().Name}{ManagerPostfix}",
                                         true));
                                 var typeIDField = managerType.GetMembers("TypeId").OfType<FieldSymbol>()
@@ -512,7 +512,7 @@ internal partial class MetadataSymbolProvider
 
                             if (type.type.IsReference)
                             {
-                                var linkType = _ps.GetType(QualifiedName.Parse(
+                                var linkType = _ps.TryGetType(QualifiedName.Parse(
                                     $"{Namespace}.{type.type.GetSemantic().Name}{LinkPostfix}", true));
 
                                 var linkCtor = linkType.Ctor(_ct.AqContext, _ct.Guid);
@@ -612,7 +612,7 @@ internal partial class MetadataSymbolProvider
                         else
                         {
                             var managerType =
-                                _ps.GetType(QualifiedName.Parse(
+                                _ps.TryGetType(QualifiedName.Parse(
                                     $"{Namespace}.{typeInfo.type.GetSemantic().Name}{ManagerPostfix}",
                                     true));
                             var typeIDField = managerType.GetMembers("TypeId").OfType<FieldSymbol>()
@@ -725,7 +725,7 @@ internal partial class MetadataSymbolProvider
                 return (il) =>
                 {
                     var managerType =
-                        _ps.GetType(QualifiedName.Parse($"{Namespace}.{md.Name}{ManagerPostfix}", true));
+                        _ps.TryGetType(QualifiedName.Parse($"{Namespace}.{md.Name}{ManagerPostfix}", true));
                     var mrgSave = managerType.GetMembers("save_dto").OfType<MethodSymbol>().FirstOrDefault() ??
                                   throw new Exception("Method save_dto not found in manager type");
 
@@ -779,7 +779,7 @@ internal partial class MetadataSymbolProvider
                 return (il) =>
                 {
                     var managerType =
-                        _ps.GetType(QualifiedName.Parse($"{Namespace}.{md.Name}{ManagerPostfix}", true));
+                        _ps.TryGetType(QualifiedName.Parse($"{Namespace}.{md.Name}{ManagerPostfix}", true));
                     var mrgDelete = managerType.GetMembers("delete").OfType<MethodSymbol>().FirstOrDefault() ??
                                     throw new Exception("Method save not found in manager type");
 
@@ -814,8 +814,8 @@ internal partial class MetadataSymbolProvider
     private NamedTypeSymbol PopulateLinkType(SMEntity md)
     {
         var linkType = _ps.GetSynthesizedType(QualifiedName.Parse($"{Namespace}.{md.Name}{LinkPostfix}", false));
-        var managerType = _ps.GetType(QualifiedName.Parse($"{Namespace}.{md.Name}{ManagerPostfix}", true));
-        var dtoType = _ps.GetType(QualifiedName.Parse($"{Namespace}.{md.Name}{DtoPostfix}", true));
+        var managerType = _ps.TryGetType(QualifiedName.Parse($"{Namespace}.{md.Name}{ManagerPostfix}", true));
+        var dtoType = _ps.TryGetType(QualifiedName.Parse($"{Namespace}.{md.Name}{DtoPostfix}", true));
 
         var idField = _ps.SynthesizeField(linkType)
             .SetName("id")
@@ -995,7 +995,7 @@ internal partial class MetadataSymbolProvider
                             else
                             {
                                 var managerType =
-                                    _ps.GetType(QualifiedName.Parse(
+                                    _ps.TryGetType(QualifiedName.Parse(
                                         $"{Namespace}.{type.type.GetSemantic().Name}{ManagerPostfix}",
                                         true));
                                 var typeIDField = managerType.GetMembers("TypeId").OfType<FieldSymbol>()
@@ -1009,7 +1009,7 @@ internal partial class MetadataSymbolProvider
 
                             if (type.type.IsReference)
                             {
-                                var linkType = _ps.GetType(QualifiedName.Parse(
+                                var linkType = _ps.TryGetType(QualifiedName.Parse(
                                     $"{Namespace}.{type.type.GetSemantic().Name}{LinkPostfix}", true));
 
                                 var linkCtor = linkType.Ctor(_ct.AqContext, _ct.Guid);

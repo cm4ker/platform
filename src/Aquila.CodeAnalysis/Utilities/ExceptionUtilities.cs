@@ -38,7 +38,7 @@ namespace Aquila.CodeAnalysis.Utilities
 
             var syntax = op?.AquilaSyntax;
             if (syntax != null) return new NotImplementedException($"{message} not implemented at {location}");
-            
+
             if (il.SeqPointsOpt != null && il.SeqPointsOpt.Count != 0)
             {
                 // get location from last sequence point
@@ -60,15 +60,17 @@ namespace Aquila.CodeAnalysis.Utilities
             return new NotImplementedException($"{message} not implemented at {location}");
         }
 
+        public static NotImplementedException NotImplementedException(string message = null)
+        {
+            return new NotImplementedException();
+        }
+
         public static ArgumentNullException ArgumentNull(string argName)
         {
             return new ArgumentNullException(argName);
         }
 
-        public static ArgumentNullException ArgumentNull()
-        {
-            return new ArgumentNullException();
-        }
+        public static ArgumentNullException ArgumentNull() => new ArgumentNullException();
 
         public static InvalidOperationException UnexpectedValue(object o)
         {
@@ -80,9 +82,7 @@ namespace Aquila.CodeAnalysis.Utilities
             return new InvalidOperationException(output);
         }
 
-        internal static InvalidOperationException Unreachable
-        {
-            get { return new InvalidOperationException("This program location is thought to be unreachable."); }
-        }
+        internal static InvalidOperationException Unreachable =>
+            new("This program location is thought to be unreachable.");
     }
 }

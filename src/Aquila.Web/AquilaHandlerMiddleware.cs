@@ -178,16 +178,8 @@ namespace Aquila.AspNetCore.Web
                 return Task.CompletedTask;
             }
 
-            try
-            {
-                var zipStream = context.Request.Body;
-                instance.Deploy(zipStream);
-            }
-            catch (Exception ex)
-            {
-                //Do smth package is corrupted
-                throw;
-            }
+            var zipStream = context.Request.Body;
+            instance.Deploy(zipStream);
 
             return Task.CompletedTask;
         }

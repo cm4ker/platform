@@ -166,7 +166,7 @@ namespace Aquila.CodeAnalysis.Symbols
         internal override TypeSymbol GetFieldType(ConsList<FieldSymbol> fieldsBeingBound)
         {
             var binder = DeclaringCompilation.GetBinder(_fieldSyntax);
-            return binder.BindType(_fieldSyntax.Type);
+            return binder.TryResolveTypeSymbol(_fieldSyntax.Type);
         }
 
         /// <summary>

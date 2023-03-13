@@ -297,7 +297,10 @@ namespace Aquila.CodeAnalysis.Symbols
         public virtual ControlFlowGraph ControlFlowGraph
         {
             get => null;
-            internal set { }
+            internal set
+            {
+                // ignored
+            }
         }
 
         /// <summary>

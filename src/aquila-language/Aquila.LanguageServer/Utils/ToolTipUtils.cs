@@ -150,7 +150,7 @@ namespace Aquila.LanguageServer
             var result = new StringBuilder(32);
             var kind = string.Empty;
 
-            if (expression is BoundVariableRef varref && varref.Name.IsDirect)
+            if (expression is BoundVariableRef varref)
             {
                 var name = varref.Name.NameValue;
 

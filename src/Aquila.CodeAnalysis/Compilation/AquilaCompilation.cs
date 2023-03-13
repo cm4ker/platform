@@ -900,19 +900,24 @@ namespace Aquila.CodeAnalysis
 
         internal new ReferenceManager GetBoundReferenceManager()
         {
-            if (_lazyAssemblySymbol == null)
+            if (_lazyAssemblySymbol != null) 
+                return _referenceManager;
+            
+            lock (_referenceManager)
             {
-                lock (_referenceManager)
-                {
-                    _lazyAssemblySymbol = _referenceManager.CreateSourceAssemblyForCompilation(this);
-                }
-
-                Debug.Assert(_lazyAssemblySymbol != null);
+                _lazyAssemblySymbol = _referenceManager.CreateSourceAssemblyForCompilation(this);
             }
+
+            Debug.Assert(_lazyAssemblySymbol != null);
 
             // referenceManager can only be accessed after we initialized the lazyAssemblySymbol.
             // In fact, initialization of the assembly symbol might change the reference manager.
             return _referenceManager;
+        }
+
+        internal void EnsureSourceAssembly()
+        {
+            this.GetBoundReferenceManager();
         }
 
         internal override ISymbolInternal CommonGetWellKnownTypeMember(WellKnownMember member)
@@ -964,7 +969,7 @@ namespace Aquila.CodeAnalysis
         {
             if (_lazyAnalysisTask == null)
             {
-                _lazyAnalysisTask = Task.Run(() => SourceCompiler.BindAndAnalyze(this, cancellationToken));
+                _lazyAnalysisTask = Task.Run(() => SourceCompiler.BindAndAnalyze(this, cancellationToken), cancellationToken);
             }
 
             return await _lazyAnalysisTask.ConfigureAwait(false);

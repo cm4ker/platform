@@ -59,26 +59,6 @@ public sealed partial class BoundReturnStmt : BoundStatement, IReturnOperation
     }
 }
 
-/// <summary>
-/// Conditionally declared functions.
-/// </summary>
-public sealed partial class BoundMethodDeclStmt : IInvalidOperation
-{
-    internal MethodDecl FunctionDecl => (MethodDecl)AquilaSyntax;
-
-    partial void OnCreateImpl(SourceMethodSymbolBase method)
-    {
-        this.AquilaSyntax = (MethodDecl)method.Syntax;
-    }
-
-    partial void AcceptImpl(OperationVisitor visitor) => visitor.VisitInvalid(this);
-
-    partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result)
-    {
-        result = visitor.VisitInvalid(this, argument);
-    }
-}
-
 public sealed partial class BoundGlobalVariableStatement : BoundStatement, IVariableDeclarationOperation
 {
     ImmutableArray<IOperation> IVariableDeclarationOperation.IgnoredDimensions => ImmutableArray<IOperation>.Empty;
@@ -283,4 +263,13 @@ public sealed partial class BoundHtmlOpenElementStmt
 
 public sealed partial class BoundHtmlAddAttributeStmt
 {
+}
+
+public sealed partial class BoundBadStmt
+{
+}
+
+public sealed partial class BoundFuncEx
+{
+    
 }

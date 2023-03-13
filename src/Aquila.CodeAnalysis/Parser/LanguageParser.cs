@@ -8,13 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Errors;
-using Aquila.Syntax.Ast;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
-using YamlDotNet.Serialization.NodeTypeResolvers;
 
 namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 {
@@ -2629,7 +2626,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
             if (string.IsNullOrWhiteSpace(name.GetValueText()))
             {
-                throw new Exception("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                name = this.AddError(name, ErrorCode.ERR_NameExpected);
             }
 
             return _syntaxFactory.VariableInit(name, argumentList, initializer);
@@ -5897,7 +5894,7 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     return Precedence.Expression;
                 case SyntaxKind.ParenthesizedLambdaExpression:
                 case SyntaxKind.SimpleLambdaExpression:
-                case SyntaxKind.AnonymousMethodExpression:
+                case SyntaxKind.AnonymousFunctionExpression:
                     return Precedence.Lambda;
                 case SyntaxKind.SimpleAssignmentExpression:
                 case SyntaxKind.AddAssignmentExpression:
@@ -6149,7 +6146,6 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
 
                 leftOperand = _syntaxFactory.RangeEx(leftOperand: null, opToken, rightOperand);
             }
-
             else if (this.IsQueryExpression(mayBeVariableDeclaration: false, mayBeMemberDeclaration: false))
             {
                 leftOperand = null;
@@ -6392,6 +6388,8 @@ namespace Aquila.CodeAnalysis.Syntax.InternalSyntax
                     return this.ParseAliasQualifiedName(NameOptions.InExpression);
                case SyntaxKind.MatchKeyword:
                     return this.ParseMatch();
+               case SyntaxKind.FnKeyword:
+                   return this.ParseAnonymousFunction();
                 case SyntaxKind.IdentifierToken:
                     if (this.IsTrueIdentifier())
                     {

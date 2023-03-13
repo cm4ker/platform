@@ -2,7 +2,6 @@
 using Aquila.CodeAnalysis.Symbols;
 using Aquila.CodeAnalysis.Utilities;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -19,10 +18,22 @@ using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Symbols.Source;
 using Aquila.CodeAnalysis.Symbols.Synthesized;
-using SourceMethodSymbol = Aquila.CodeAnalysis.Symbols.SourceMethodSymbol;
 
 namespace Aquila.CodeAnalysis
 {
+    internal sealed class CompilationState
+    {
+        private List<SourceMethodSymbolBase> _methodsToEmit = new();
+
+        public IEnumerable<SourceMethodSymbolBase> MethodsToEmit => _methodsToEmit;
+
+        public void RegisterMethodToEmit(SourceMethodSymbolBase method)
+        {
+            _methodsToEmit.Add(method);
+        }
+    }
+
+
     /// <summary>
     /// Performs compilation of all source methods.
     /// </summary>
@@ -33,8 +44,9 @@ namespace Aquila.CodeAnalysis
         readonly bool _emittingPdb;
         readonly DiagnosticBag _diagnostics;
         readonly CancellationToken _cancellationToken;
-
-        readonly Worklist<BoundBlock> _worklist;
+        readonly CompilationState _compilationState = new();
+        
+        private readonly Worklist<BoundBlock> _worklist;
 
         /// <summary>
         /// Number of control flow graph transformation cycles to do at most.
@@ -51,6 +63,8 @@ namespace Aquila.CodeAnalysis
             Contract.ThrowIfNull(diagnostics);
 
             _compilation = compilation;
+            _compilation.EnsureSourceAssembly();
+
             _moduleBuilder = moduleBuilder;
             _emittingPdb = emittingPdb;
             _diagnostics = diagnostics;
@@ -63,10 +77,11 @@ namespace Aquila.CodeAnalysis
         void WalkSourceMethods(Action<SourceMethodSymbolBase> action, bool allowParallel = false)
         {
             var methods = _compilation.SourceSymbolCollection.GetSourceMethods();
-            var viewMethods = _compilation.SourceSymbolCollection.GetViewTypes().SelectMany(x=>x.GetMembers().OfType<SourceViewTypeSymbol.MethodTreeBuilderSymbol>());
+            var viewMethods = _compilation.SourceSymbolCollection.GetViewTypes().SelectMany(x =>
+                x.GetMembers().OfType<SourceViewTypeSymbol.MethodTreeBuilderSymbol>());
 
-            methods = methods.Union(viewMethods);
-            
+            methods = methods.Union(viewMethods).Union(_compilationState.MethodsToEmit);
+
             if (ConcurrentBuild && allowParallel)
             {
                 Parallel.ForEach(methods, action);
@@ -90,7 +105,7 @@ namespace Aquila.CodeAnalysis
 
             var viewMethods = _compilation.SourceSymbolCollection.GetViewTypes()
                 .SelectMany(x => x.GetMembers().OfType<SynthesizedMethodSymbol>());
-            
+
             var methods = platformSynth.Union(moduleMethods).Union(moduleNestedTypesMethods).Union(viewMethods);
 
             if (ConcurrentBuild && allowParallel)
@@ -106,7 +121,7 @@ namespace Aquila.CodeAnalysis
         void WalkTypes(Action<SourceModuleTypeSymbol> action, bool allowParallel = false)
         {
             var types = _compilation.SourceSymbolCollection.GetModuleTypes();
-            
+
             if (ConcurrentBuild && allowParallel)
             {
                 Parallel.ForEach(types, action);
@@ -126,9 +141,8 @@ namespace Aquila.CodeAnalysis
             // lazily binds CFG and
             // adds their entry block to the worklist
 
-            // TODO: reset LocalsTable, FlowContext and CFG
-
             _worklist.Enqueue(method.ControlFlowGraph?.Start);
+
 
             // enqueue method parameter default values
             method.SourceParameters.ForEach(p =>
@@ -146,7 +160,7 @@ namespace Aquila.CodeAnalysis
         void EnqueueExpression(BoundExpression expression)
         {
             Contract.ThrowIfNull(expression);
-            
+
             var dummy = new BoundBlock()
             {
                 FlowState = new FlowState(new FlowContext(null)),
@@ -157,98 +171,20 @@ namespace Aquila.CodeAnalysis
             _worklist.Enqueue(dummy);
         }
 
-        internal void ReanalyzeMethods()
-        {
-            this.WalkSourceMethods(method => _worklist.Enqueue(method.ControlFlowGraph.Start));
-        }
-
         internal void AnalyzeMethods()
         {
             // analyse blocks
             _worklist.DoAll(concurrent: ConcurrentBuild);
         }
 
-        void AnalyzeBlock(BoundBlock block) // TODO: driver
+        void AnalyzeBlock(BoundBlock block)
         {
-            // TODO: pool of CFGAnalysis
-            // TODO: async
-            // TODO: in parallel
-
-            block.Accept(AnalysisFactory(block.FlowState));
+            block.Accept(AnalysisFactory());
         }
 
-        GraphVisitor<VoidStruct> AnalysisFactory(FlowState state)
+        GraphVisitor<VoidStruct> AnalysisFactory()
         {
             return new ExpressionAnalysis<VoidStruct>(_worklist, _compilation.GlobalSemantics);
-        }
-
-        #region Nested class: LateStaticCallsLookup
-
-        /// <summary>
-        /// Lookups self:: and parent:: static method calls.
-        /// </summary>
-        class LateStaticCallsLookup : GraphExplorer<bool>
-        {
-            List<MethodSymbol> _lazyStaticCalls;
-
-            public static IList<MethodSymbol> GetSelfStaticCalls(BoundBlock block)
-            {
-                var visitor = new LateStaticCallsLookup();
-                visitor.Accept(block);
-                return (IList<MethodSymbol>)visitor._lazyStaticCalls ?? Array.Empty<MethodSymbol>();
-            }
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Walks static methods that don't use late static binding and checks if it should forward the late static type;
-        /// hence it must know the late static as well.
-        /// </summary>
-        void ForwardLateStaticBindings()
-        {
-            var calls = new ConcurrentBag<KeyValuePair<SourceMethodSymbolBase, MethodSymbol>>();
-
-            // collect self:: or parent:: static calls
-            this.WalkSourceMethods(method =>
-            {
-                if (method is SourceMethodSymbol caller && caller.IsStatic &&
-                    (caller.Flags & MethodFlags.UsesLateStatic) == 0)
-                {
-                    var cfg = caller.ControlFlowGraph;
-                    if (cfg == null)
-                    {
-                        return;
-                    }
-
-                    // has self:: or parent:: call to a method?
-                    var selfcalls = LateStaticCallsLookup.GetSelfStaticCalls(cfg.Start);
-                    if (selfcalls.Count == 0)
-                    {
-                        return;
-                    }
-
-                    foreach (var callee in selfcalls)
-                    {
-                        calls.Add(new KeyValuePair<SourceMethodSymbolBase, MethodSymbol>(caller, callee));
-                    }
-                }
-            }, allowParallel: ConcurrentBuild);
-
-            // process edges between caller and calles until we forward all the late static calls
-            int forwarded;
-            do
-            {
-                forwarded = 0;
-                Parallel.ForEach(calls, edge =>
-                {
-                    if ((edge.Key.Flags & MethodFlags.UsesLateStatic) == 0)
-                    {
-                        edge.Key.Flags |= MethodFlags.UsesLateStatic;
-                        Interlocked.Increment(ref forwarded);
-                    }
-                });
-            } while (forwarded != 0);
         }
 
         internal void DiagnoseMethods()
@@ -267,13 +203,13 @@ namespace Aquila.CodeAnalysis
         {
             this.WalkTypes(DiagnoseType, allowParallel: true);
         }
-       
+
         private void DiagnoseType(SourceModuleTypeSymbol type)
         {
             type.GetDiagnostics(_diagnostics);
         }
 
-        bool TransformMethods(bool allowParallel)
+        private bool TransformMethods(bool allowParallel)
         {
             bool anyTransforms = false;
             var delayedTrn = new DelayedTransformations();
@@ -314,14 +250,14 @@ namespace Aquila.CodeAnalysis
         {
             Contract.ThrowIfNull(method);
 
-            if (method.ControlFlowGraph != null) // non-abstract method
-            {
-                Debug.Assert(method.ControlFlowGraph.Start.FlowState != null);
+            var cfg = method.ControlFlowGraph;
+            if (cfg == null) return;
 
-                var body = MethodGenerator.GenerateMethodBody(_moduleBuilder, method, 0, null, _diagnostics,
-                    _emittingPdb);
-                _moduleBuilder.SetMethodBody(method, body);
-            }
+            Debug.Assert(cfg.Start.FlowState != null);
+
+            var body = MethodGenerator.GenerateMethodBody(_moduleBuilder, method, 0, null, _diagnostics,
+                _emittingPdb);
+            _moduleBuilder.SetMethodBody(method, body);
         }
 
         void CompileEntryPoint()
@@ -344,7 +280,6 @@ namespace Aquila.CodeAnalysis
             bool anyTransforms = false;
             this.WalkSourceMethods(m =>
                 {
-                    // Cannot be simplified due to multithreading ('=' is atomic unlike '|=')
                     if (LocalRewriter.TryTransform(m))
                         anyTransforms = true;
                 },
@@ -354,16 +289,17 @@ namespace Aquila.CodeAnalysis
         }
 
 
+        private void InvalidateAndEnqueue(SourceMethodSymbolBase m)
+        {
+            m.ControlFlowGraph?.FlowContext?.InvalidateAnalysis();
+            EnqueueMethod(m);
+        }
+
         public void LoweringMethods()
         {
             if (MakeLoweringTransformMethods(ConcurrentBuild))
             {
-                WalkSourceMethods(m =>
-                    {
-                        m.ControlFlowGraph?.FlowContext?.InvalidateAnalysis();
-                        EnqueueMethod(m);
-                    },
-                    allowParallel: true);
+                WalkSourceMethods(InvalidateAndEnqueue, allowParallel: true);
             }
         }
 
@@ -371,32 +307,20 @@ namespace Aquila.CodeAnalysis
         {
             using (_compilation.StartMetric("transform"))
             {
-                if (TransformMethods(ConcurrentBuild))
+                if (!TransformMethods(ConcurrentBuild))
                 {
-                    WalkSourceMethods(m =>
-                        {
-                            m.ControlFlowGraph?.FlowContext?.InvalidateAnalysis();
-                            EnqueueMethod(m);
-                        },
-                        allowParallel: true);
-                }
-                else
-                {
-                    // No changes performed => no need to repeat the analysis
                     return false;
                 }
+
+                WalkSourceMethods(InvalidateAndEnqueue, allowParallel: true);
             }
 
-            //
             return true;
         }
 
         public static IEnumerable<Diagnostic> BindAndAnalyze(AquilaCompilation compilation,
             CancellationToken cancellationToken)
         {
-            var manager =
-                compilation.GetBoundReferenceManager(); // ensure the references are resolved! (binds ReferenceManager)
-
             var diagnostics = new DiagnosticBag();
             var compiler = new SourceCompiler(compilation, null, true, diagnostics, cancellationToken);
 
@@ -428,20 +352,12 @@ namespace Aquila.CodeAnalysis
                     // Analyze Operations
                     compiler.AnalyzeMethods();
                 }
-                
+
                 using (compilation.StartMetric("lowering"))
                 {
                     // Lowering methods
                     compiler.LoweringMethods();
                 }
-
-                using (compilation.StartMetric(nameof(ForwardLateStaticBindings)))
-                {
-                    // Forward the late static type if needed
-                    compiler.ForwardLateStaticBindings();
-                }
-
-                // Transform Semantic Trees for Runtime Optimization
             } while (
                 transformation++ < compiler.MaxTransformCount // limit number of lowering cycles
                 && !cancellationToken.IsCancellationRequested // user canceled ?
@@ -493,24 +409,25 @@ namespace Aquila.CodeAnalysis
                 diagnostics.AddRange(declarationDiagnostics);
 
                 // cancel the operation if there are errors
-                if (hasDeclarationErrors || declarationDiagnostics.HasAnyErrors() || cancellationToken.IsCancellationRequested)
+                if (hasDeclarationErrors || declarationDiagnostics.HasAnyErrors() ||
+                    cancellationToken.IsCancellationRequested)
                 {
                     return;
                 }
             }
 
-            //
             var compiler = new SourceCompiler(compilation, moduleBuilder, emittingPdb, diagnostics, cancellationToken);
+
+            using (compilation.StartMetric("lowering-rewrite"))
+            {
+                compiler.WalkSourceMethods(m => { LambdaRewriter.Transform(m, moduleBuilder, compiler._compilationState); }, allowParallel: false);
+            }
 
             using (compilation.StartMetric("emit"))
             {
-                // Emit method bodies
-                //   a. declared methods
-                //   b. synthesized symbols
                 compiler.EmitMethodBodies();
                 compiler.EmitSynthesized();
 
-                // Entry Point (.exe)
                 compiler.CompileEntryPoint();
             }
         }

@@ -121,6 +121,9 @@ namespace Aquila.CodeAnalysis
         /// <summary>Called when the visitor visits a CastEx node.</summary>
         public virtual TResult? VisitCastEx(CastEx node) => this.DefaultVisit(node);
 
+        /// <summary>Called when the visitor visits a FuncEx node.</summary>
+        public virtual TResult? VisitFuncEx(FuncEx node) => this.DefaultVisit(node);
+
         /// <summary>Called when the visitor visits a MatchEx node.</summary>
         public virtual TResult? VisitMatchEx(MatchEx node) => this.DefaultVisit(node);
 
@@ -490,6 +493,9 @@ namespace Aquila.CodeAnalysis
         /// <summary>Called when the visitor visits a CastEx node.</summary>
         public virtual void VisitCastEx(CastEx node) => this.DefaultVisit(node);
 
+        /// <summary>Called when the visitor visits a FuncEx node.</summary>
+        public virtual void VisitFuncEx(FuncEx node) => this.DefaultVisit(node);
+
         /// <summary>Called when the visitor visits a MatchEx node.</summary>
         public virtual void VisitMatchEx(MatchEx node) => this.DefaultVisit(node);
 
@@ -858,6 +864,9 @@ namespace Aquila.CodeAnalysis
 
         public override SyntaxNode? VisitCastEx(CastEx node)
             => node.Update(VisitToken(node.OpenParenToken), (TypeEx?)Visit(node.Type) ?? throw new ArgumentNullException("type"), VisitToken(node.CloseParenToken), (ExprSyntax?)Visit(node.Expression) ?? throw new ArgumentNullException("expression"));
+
+        public override SyntaxNode? VisitFuncEx(FuncEx node)
+            => node.Update(VisitToken(node.FnKeyword), (ParameterListSyntax?)Visit(node.ParameterList) ?? throw new ArgumentNullException("parameterList"), (TypeEx?)Visit(node.ReturnType), (BlockStmt?)Visit(node.Body), (ArrowExClause?)Visit(node.ExpressionBody), VisitToken(node.SemicolonToken));
 
         public override SyntaxNode? VisitMatchEx(MatchEx node)
             => node.Update(VisitToken(node.MatchKeyword), VisitToken(node.OpenParenToken), (ExprSyntax?)Visit(node.Expression) ?? throw new ArgumentNullException("expression"), VisitToken(node.CloseParenToken), VisitToken(node.OpenBraceToken), VisitList(node.Arms), VisitToken(node.CloseBraceToken));
@@ -1893,6 +1902,28 @@ namespace Aquila.CodeAnalysis
         /// <summary>Creates a new CastEx instance.</summary>
         public static CastEx CastEx(TypeEx type, ExprSyntax expression)
             => SyntaxFactory.CastEx(SyntaxFactory.Token(SyntaxKind.OpenParenToken), type, SyntaxFactory.Token(SyntaxKind.CloseParenToken), expression);
+
+        /// <summary>Creates a new FuncEx instance.</summary>
+        public static FuncEx FuncEx(SyntaxToken fnKeyword, ParameterListSyntax parameterList, TypeEx? returnType, BlockStmt? body, ArrowExClause? expressionBody, SyntaxToken semicolonToken)
+        {
+            if (fnKeyword.Kind() != SyntaxKind.FnKeyword) throw new ArgumentException(nameof(fnKeyword));
+            if (parameterList == null) throw new ArgumentNullException(nameof(parameterList));
+            switch (semicolonToken.Kind())
+            {
+                case SyntaxKind.SemicolonToken:
+                case SyntaxKind.None: break;
+                default: throw new ArgumentException(nameof(semicolonToken));
+            }
+            return (FuncEx)Syntax.InternalSyntax.SyntaxFactory.FuncEx((Syntax.InternalSyntax.SyntaxToken)fnKeyword.Node!, (Syntax.InternalSyntax.ParameterListSyntax)parameterList.Green, returnType == null ? null : (Syntax.InternalSyntax.TypeEx)returnType.Green, body == null ? null : (Syntax.InternalSyntax.BlockStmt)body.Green, expressionBody == null ? null : (Syntax.InternalSyntax.ArrowExClause)expressionBody.Green, (Syntax.InternalSyntax.SyntaxToken?)semicolonToken.Node).CreateRed();
+        }
+
+        /// <summary>Creates a new FuncEx instance.</summary>
+        public static FuncEx FuncEx(ParameterListSyntax parameterList, TypeEx? returnType, BlockStmt? body, ArrowExClause? expressionBody)
+            => SyntaxFactory.FuncEx(SyntaxFactory.Token(SyntaxKind.FnKeyword), parameterList, returnType, body, expressionBody, default);
+
+        /// <summary>Creates a new FuncEx instance.</summary>
+        public static FuncEx FuncEx()
+            => SyntaxFactory.FuncEx(SyntaxFactory.Token(SyntaxKind.FnKeyword), SyntaxFactory.ParameterList(), default, default, default, default);
 
         /// <summary>Creates a new MatchEx instance.</summary>
         public static MatchEx MatchEx(SyntaxToken matchKeyword, SyntaxToken openParenToken, ExprSyntax expression, SyntaxToken closeParenToken, SyntaxToken openBraceToken, SeparatedSyntaxList<MatchArm> arms, SyntaxToken closeBraceToken)

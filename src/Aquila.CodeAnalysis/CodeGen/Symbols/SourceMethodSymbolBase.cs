@@ -65,10 +65,7 @@ partial class SourceMethodSymbolBase
     /// <returns>List of additional overloads.</returns>
     internal virtual IList<MethodSymbol> SynthesizeStubs(PEModuleBuilder module, DiagnosticBag diagnostic)
     {
-        //
         EmitParametersDefaultValue(module, diagnostic);
-
-        // TODO: resolve this already in SourceTypeSymbol.GetMembers(), now it does not get overloaded properly
         return SynthesizeOverloadsWithOptionalParameters(module, diagnostic);
     }
 

@@ -86,7 +86,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                         Assert.NotNull(function.FuncOwner);
 
                         var binder = _compilation.GetBinder(function.Parent);
-                        var type = binder.BindType(function.FuncOwner.OwnerType);
+                        var type = binder.TryResolveTypeSymbol(function.FuncOwner.OwnerType);
 
                         if (type is SynthesizedTypeSymbol sts)
                         {
@@ -142,7 +142,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
         /// <summary>
         /// Gets enumeration of all methods (global code, functions, lambdas and class methods) in source code.
         /// </summary>
-        public IEnumerable<SourceMethodSymbolBase> GetSourceMethods() => GetMethods().OfType<SourceMethodSymbol>();
+        public IEnumerable<SourceMethodSymbolBase> GetSourceMethods() => GetMethods().OfType<SourceMethodSymbolBase>();
 
         public IEnumerable<SourceModuleTypeSymbol> GetModuleTypes() => _types.OfType<SourceModuleTypeSymbol>();
 
@@ -152,7 +152,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
 
         public MergedSourceCode GetMergedSourceCode() => _sourceCode;
 
-        public NamedTypeSymbol GetType(QualifiedName name, Dictionary<QualifiedName, INamedTypeSymbol> resolved = null)
+        public NamedTypeSymbol? TryGetType(QualifiedName name, Dictionary<QualifiedName, INamedTypeSymbol> resolved = null)
         {
             var resolvedTypes = _types.Where(x => x.MakeQualifiedName() == name).ToImmutableArray();
 
@@ -165,7 +165,7 @@ namespace Aquila.CodeAnalysis.Symbols.Source
                 return new AmbiguousErrorTypeSymbol(resolvedTypes);
             }
 
-            return new MissingMetadataTypeSymbol(name.ClrName(), 0, false);
+            return null;
         }
 
 

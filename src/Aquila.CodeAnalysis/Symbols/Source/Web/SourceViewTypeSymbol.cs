@@ -3,19 +3,14 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Threading;
 using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.FlowAnalysis;
+using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Semantics.Graph;
 using Aquila.CodeAnalysis.Symbols.Attributes;
-using Aquila.CodeAnalysis.Symbols.Synthesized;
 using Aquila.CodeAnalysis.Syntax;
-using Aquila.Querying;
 using Microsoft.CodeAnalysis;
 using Roslyn.Utilities;
-using TypeLayout = Microsoft.CodeAnalysis.TypeLayout;
-
 
 namespace Aquila.CodeAnalysis.Symbols.Source;
 
@@ -94,7 +89,6 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
     {
         if (_members == null)
         {
-
             var builder = ImmutableArray.CreateBuilder<Symbol>();
             builder.Add(new MethodTreeBuilderSymbol(this, _htmlDecl));
             
@@ -148,7 +142,6 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
 
     internal class MethodTreeBuilderSymbol : SourceMethodSymbolBase
     {
-        private readonly NamedTypeSymbol _type;
         private readonly HtmlDecl _htmlDecl;
         private IPlace _builderPlace;
 
@@ -158,10 +151,9 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
         {
             Contract.ThrowIfNull(type);
 
-            _type = type;
             _htmlDecl = htmlDecl;
 
-            var ct = _type.DeclaringCompilation.CoreTypes;
+            var ct = type.DeclaringCompilation.CoreTypes;
             var componentBaseType = ct.Web_ComponentBase;
 
             _overridenMethod = componentBaseType.Method("BuildRenderTree", ct.Web_RenderTreeBuilder).Symbol;
@@ -174,15 +166,13 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
             SyntaxFactory.PredefinedTypeEx(SyntaxFactory.Token(SyntaxKind.VoidKeyword));
 
         internal override AquilaSyntaxNode Syntax => _htmlDecl;
-        internal override IList<StmtSyntax> Statements => new List<StmtSyntax>();
+        internal override IEnumerable<StmtSyntax> Statements => new List<StmtSyntax>();
         public override string Name => _overridenMethod.Name;
         internal override ObsoleteAttributeData ObsoleteAttributeData => _overridenMethod.ObsoleteAttributeData;
 
         public override void GetDiagnostics(DiagnosticBag diagnostic)
         {
         }
-
-        public override Symbol ContainingSymbol => this._type;
 
         public override ImmutableArray<SyntaxReference> DeclaringSyntaxReferences =>
             ImmutableArray<SyntaxReference>.Empty;
@@ -209,29 +199,26 @@ internal class SourceViewTypeSymbol : NamedTypeSymbol
 
         public override bool IsExtern => false;
 
-        ///<inheritdoc />
-        public override ControlFlowGraph ControlFlowGraph
+        protected override Binder GetMethodBinderCore()
         {
-            get
+            return DeclaringCompilation.GetBinder(_htmlDecl.HtmlMarkup);
+        }
+
+        protected override ControlFlowGraph CreateControlFlowGraphCore()
+        {
+            var markup = _htmlDecl.HtmlMarkup;
+            if (markup == null) return null;
+            
+            var cfg = new ControlFlowGraph(markup.HtmlNodes, GetMethodBinderCore())
             {
-                if (_cfg != null)
+                Start =
                 {
-                    return _cfg;
+                    FlowState = StateBinder.CreateInitialState(this)
                 }
+            };
 
-                if (_htmlDecl.HtmlMarkup == null)
-                {
-                    return null;
-                }
+            return cfg;
 
-                var state = StateBinder.CreateInitialState(this);
-                var binder = DeclaringCompilation.GetBinder(_htmlDecl.HtmlMarkup);
-                var cfg = new ControlFlowGraph(this._htmlDecl.HtmlMarkup.HtmlNodes, binder);
-                Interlocked.CompareExchange(ref _cfg, cfg, null);
-                cfg.Start.FlowState = state;
-                return _cfg;
-            }
-            internal set => _cfg = value;
         }
 
         internal override bool IsMetadataVirtual(bool ignoreInterfaceImplementationChanges = false)

@@ -122,8 +122,7 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 
                 if (State != ParameterAnalysisState.Dirty
                     && x.Value is BoundVariableRef varRef
-                    && varRef.Name.IsDirect
-                    && !_flowContext.IsReference(varindex = _flowContext.GetVarIndex(varRef.Name.NameValue))
+                    && !_flowContext.IsReference(_flowContext.GetVarIndex(varRef.Name.NameValue))
                     && !varRef.Access.MightChange)
                 {
                     // Passing a parameter as an argument by value to another method is a safe use which does not
@@ -138,26 +137,18 @@ namespace Aquila.CodeAnalysis.FlowAnalysis.Passes
 
             public override VoidStruct VisitVariableRef(BoundVariableRef x)
             {
-                // Other usage than being passed as an argument to another function requires a parameter to be deeply copied
-                if (!x.Name.IsDirect)
+                var varindex = _flowContext.GetVarIndex(x.Name.NameValue);
+                if (!_flowContext.IsReference(varindex))
                 {
-                    // In the worst case, any variable can be targeted
-                    _needPassValueParams.SetAll();
+                    // Mark only the specific variable as possibly being changed
+                    _needPassValueParams.Set(varindex);
                 }
                 else
                 {
-                    var varindex = _flowContext.GetVarIndex(x.Name.NameValue);
-                    if (!_flowContext.IsReference(varindex))
-                    {
-                        // Mark only the specific variable as possibly being changed
-                        _needPassValueParams.Set(varindex);
-                    }
-                    else
-                    {
-                        // TODO: Mark only those that can be referenced
-                        _needPassValueParams.SetAll();
-                    }
+                    // TODO: Mark only those that can be referenced
+                    _needPassValueParams.SetAll();
                 }
+
 
                 return base.VisitVariableRef(x);
             }

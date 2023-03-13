@@ -11,12 +11,5 @@ namespace Aquila.CodeAnalysis.Semantics.Graph
         /// </summary>
         /// <remarks>CFG has to be analysed prior to getting this property.</remarks>
         public FlowContext FlowContext => this.Start.FlowState?.FlowContext;
-
-        /// <summary>
-        /// Gets possible types of a local variable.
-        /// </summary>
-        /// <remarks>CFG has to be analysed prior to getting this property.</remarks>
-        internal FlowContext.TypeRefInfo GetLocalType(string varname) =>
-            this.FlowContext?.GetVarType(new VariableName(varname));
     }
 }
