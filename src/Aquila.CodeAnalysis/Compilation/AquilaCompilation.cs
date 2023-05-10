@@ -991,15 +991,12 @@ namespace Aquila.CodeAnalysis
                 throw new NotImplementedException();
             }
 
-            if (emittingPdb)
+            if (emittingPdb && !CreateDebugDocuments(
+                    moduleBeingBuilt.DebugDocumentsBuilder,
+                    moduleBeingBuilt.EmbeddedTexts.Concat(CollectAdditionalEmbeddedTexts()),
+                    diagnostics))
             {
-                if (!CreateDebugDocuments(
-                        moduleBeingBuilt.DebugDocumentsBuilder,
-                        moduleBeingBuilt.EmbeddedTexts.Concat(CollectAdditionalEmbeddedTexts()),
-                        diagnostics))
-                {
-                    return false;
-                }
+                return false;
             }
 
             // Use a temporary bag so we don't have to refilter pre-existing diagnostics.
@@ -1021,12 +1018,8 @@ namespace Aquila.CodeAnalysis
                 bool hasMethodBodyErrorOrWarningAsError =
                     !FilterAndAppendAndFreeDiagnostics(diagnostics, ref methodBodyDiagnosticBag, cancellationToken);
 
-                if (hasDeclarationErrors || hasMethodBodyErrorOrWarningAsError)
-                {
-                    return false;
-                }
-
-                return true;
+                var hasErrors = hasDeclarationErrors || hasMethodBodyErrorOrWarningAsError;
+                return !hasErrors;
             }
             catch (Exception ex)
             {

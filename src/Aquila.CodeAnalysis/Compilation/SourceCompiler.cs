@@ -21,19 +21,6 @@ using Aquila.CodeAnalysis.Symbols.Synthesized;
 
 namespace Aquila.CodeAnalysis
 {
-    internal sealed class CompilationState
-    {
-        private List<SourceMethodSymbolBase> _methodsToEmit = new();
-
-        public IEnumerable<SourceMethodSymbolBase> MethodsToEmit => _methodsToEmit;
-
-        public void RegisterMethodToEmit(SourceMethodSymbolBase method)
-        {
-            _methodsToEmit.Add(method);
-        }
-    }
-
-
     /// <summary>
     /// Performs compilation of all source methods.
     /// </summary>
@@ -352,12 +339,6 @@ namespace Aquila.CodeAnalysis
                     // Analyze Operations
                     compiler.AnalyzeMethods();
                 }
-
-                using (compilation.StartMetric("lowering"))
-                {
-                    // Lowering methods
-                    compiler.LoweringMethods();
-                }
             } while (
                 transformation++ < compiler.MaxTransformCount // limit number of lowering cycles
                 && !cancellationToken.IsCancellationRequested // user canceled ?
@@ -418,6 +399,12 @@ namespace Aquila.CodeAnalysis
 
             var compiler = new SourceCompiler(compilation, moduleBuilder, emittingPdb, diagnostics, cancellationToken);
 
+            using (compilation.StartMetric("lowering"))
+            {
+                // Lowering methods
+                compiler.LoweringMethods();
+            }
+            
             using (compilation.StartMetric("lowering-rewrite"))
             {
                 compiler.WalkSourceMethods(m => { LambdaRewriter.Transform(m, moduleBuilder, compiler._compilationState); }, allowParallel: false);

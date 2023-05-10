@@ -231,8 +231,7 @@
             <Single Name="MethodSymbol" Type="MethodSymbol" IsInternal="true"/>
             <Single Name="TypeRef" Type="ITypeSymbol"/>
             <Single Name="Arguments" Type="ImmutableArray&lt;BoundArgument&gt;"/>
-            <Single Name="TypeArguments" Type="ImmutableArray&lt;ITypeSymbol&gt;"/>
-            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" IsUpdatable="true"
+            <Single Name="ResultType" Type="ITypeSymbol" PassBase="true" OnlyArgument="true" PassBaseConst="typeRef"
                     IsInternal="true"/>
         </Arguments>
     </Syntax>

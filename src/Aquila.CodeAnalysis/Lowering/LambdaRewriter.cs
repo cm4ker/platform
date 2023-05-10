@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection.Metadata;
-using Aquila.CodeAnalysis.CodeGen;
 using Aquila.CodeAnalysis.Emit;
 using Aquila.CodeAnalysis.Semantics;
 using Aquila.CodeAnalysis.Semantics.Graph;
@@ -33,10 +31,8 @@ internal class LambdaRewriter : GraphRewriter
         _ct = moduleBuilder.Compilation.CoreTypes;
     }
 
-    private (TypeSymbol, MethodSymbol) callInfo;
-
     public override object VisitFuncEx(BoundFuncEx x)
-    {
+    {        
         /*
             1. Create a new type-container for the lambda
                Remark: For container we need decide we need Context as a argument of method or we need context
@@ -48,7 +44,7 @@ internal class LambdaRewriter : GraphRewriter
         */
         var container =
             _moduleBuilder.SynthesizedManager.GetOrCreate<SynthesizedTypeSymbol>(_containingType, "LambdaContainer");
-
+        
         ImmutableArray<Symbol>.Builder builder = ImmutableArray.CreateBuilder<Symbol>();
         SourceTypeSymbolHelper.AddDefaultInstanceTypeSymbolMembers(container, builder);
         var members = builder.ToImmutable();
@@ -57,15 +53,12 @@ internal class LambdaRewriter : GraphRewriter
         var translatedSymbol = new TranslatedLambdaMethodSymbol(container, _method, x.LambdaSymbol);
         container.AddMember(translatedSymbol);
         _compilationState.RegisterMethodToEmit(translatedSymbol);
-
         _moduleBuilder.SetMethodBody(ctor, ctor.CreateMethodBody(_moduleBuilder, DiagnosticBag.GetInstance()));
 
-        var instance = new BoundNewEx(ctor, container,
-            ImmutableArray<BoundArgument>.Empty,
-            ImmutableArray<ITypeSymbol>.Empty, container);
+        
+        var instance = new BoundNewEx(ctor, container, ImmutableArray<BoundArgument>.Empty);
 
-        return new BoundCallEx(translatedSymbol, ImmutableArray<BoundArgument>.Empty, instance,
-            translatedSymbol.ReturnType);
+        return new BoundMethodRef(translatedSymbol, instance, _method.GetTypeOrReturnType().GetDelegateType());
     }
 
     public static void Transform(SourceMethodSymbolBase sourceMethodSymbolBase, PEModuleBuilder moduleBuilder,

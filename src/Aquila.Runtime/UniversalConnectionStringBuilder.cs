@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Data.SqlClient;
-using System.Text;
 using Npgsql;
-using Aquila.QueryBuilder;
+using Microsoft.Data.SqlClient;
 
 namespace Aquila.Data.Tools
 {

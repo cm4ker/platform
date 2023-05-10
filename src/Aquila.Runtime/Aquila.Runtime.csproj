@@ -6,7 +6,7 @@
         <RootNamespace>Aquila.Core</RootNamespace>
     </PropertyGroup>
 
-    <Import Project="..\Props\target.props" />
+    <Import Project="..\Props\target.props"/>
 
 
     <ItemGroup>
@@ -14,20 +14,19 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; analyzers</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+        <PackageReference Include="Antlr4.Runtime" Version="4.6.6"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Apex.Serialization" Version="4.0.2" />
-        <PackageReference Include="FluentMigrator" Version="3.3.2" />
-        <PackageReference Include="FluentMigrator.Runner" Version="3.3.2" />
-        <PackageReference Include="morelinq" Version="3.3.2" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-        <PackageReference Include="NLog" Version="5.0.0" />
-        <PackageReference Include="Npgsql" Version="6.0.4" />
-        <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
-        <!--        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />-->
-        <PackageReference Include="System.Runtime.Caching" Version="6.0.0" />
+        <PackageReference Include="Apex.Serialization" Version="4.0.2"/>
+        <PackageReference Include="FluentMigrator" Version="3.3.2"/>
+        <PackageReference Include="FluentMigrator.Runner" Version="3.3.2"/>
+        <PackageReference Include="morelinq" Version="3.3.2"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+        <PackageReference Include="NLog" Version="5.0.0"/>
+        <PackageReference Include="Npgsql" Version="6.0.4"/>
+        <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1"/>
+        <PackageReference Include="System.Runtime.Caching" Version="6.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -38,9 +37,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Aquila.Metadata\Aquila.Metadata.csproj" />
-        <ProjectReference Include="..\Aquila.Querying\Aquila.Querying.csproj" />
-        <ProjectReference Include="..\DB\BufferedDataReader\BufferedDataReader.csproj" />
+        <ProjectReference Include="..\Aquila.Metadata\Aquila.Metadata.csproj"/>
+        <ProjectReference Include="..\Aquila.Querying\Aquila.Querying.csproj"/>
+        <ProjectReference Include="..\DB\BufferedDataReader\BufferedDataReader.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -1694,17 +1694,15 @@ namespace Aquila.CodeAnalysis.Semantics
         private MethodSymbol _methodSymbol;
         private ITypeSymbol _typeRef;
         private ImmutableArray<BoundArgument> _arguments;
-        private ImmutableArray<ITypeSymbol> _typeArguments;
-        internal BoundNewEx(MethodSymbol methodSymbol, ITypeSymbol typeRef, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, ITypeSymbol resultType): base(resultType)
+        internal BoundNewEx(MethodSymbol methodSymbol, ITypeSymbol typeRef, ImmutableArray<BoundArgument> arguments): base(typeRef)
         {
             _methodSymbol = methodSymbol;
             _typeRef = typeRef;
             _arguments = arguments;
-            _typeArguments = typeArguments;
-            OnCreateImpl(methodSymbol, typeRef, arguments, typeArguments, resultType);
+            OnCreateImpl(methodSymbol, typeRef, arguments);
         }
 
-        partial void OnCreateImpl(MethodSymbol methodSymbol, ITypeSymbol typeRef, ImmutableArray<BoundArgument> arguments, ImmutableArray<ITypeSymbol> typeArguments, ITypeSymbol resultType);
+        partial void OnCreateImpl(MethodSymbol methodSymbol, ITypeSymbol typeRef, ImmutableArray<BoundArgument> arguments);
         internal MethodSymbol MethodSymbol
         {
             get
@@ -1729,14 +1727,6 @@ namespace Aquila.CodeAnalysis.Semantics
             }
         }
 
-        public ImmutableArray<ITypeSymbol> TypeArguments
-        {
-            get
-            {
-                return _typeArguments;
-            }
-        }
-
         public override OperationKind Kind => OperationKind.ObjectCreation;
         public override BoundKind BoundKind => BoundKind.NewEx;
         partial void AcceptImpl<TArg, TRes>(OperationVisitor<TArg, TRes> visitor, TArg argument, ref TRes result);
@@ -1756,13 +1746,6 @@ namespace Aquila.CodeAnalysis.Semantics
         public override TResult Accept<TResult>(AquilaOperationVisitor<TResult> visitor)
         {
             return visitor.VisitNewEx(this);
-        }
-
-        internal BoundNewEx Update(ITypeSymbol resultType)
-        {
-            if (ResultType == resultType)
-                return this;
-            return new BoundNewEx(this.MethodSymbol, this.TypeRef, this.Arguments, this.TypeArguments, resultType).WithSyntax(this.AquilaSyntax);
         }
     }
 }

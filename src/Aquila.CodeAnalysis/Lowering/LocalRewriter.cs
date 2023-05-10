@@ -73,8 +73,7 @@ namespace Aquila.CodeAnalysis.Lowering
 
             var exprs = new List<BoundExpression>();
 
-            var instance = new BoundNewEx(ctor, type, ImmutableArray<BoundArgument>.Empty,
-                ImmutableArray<ITypeSymbol>.Empty, type);
+            var instance = new BoundNewEx(ctor, type, ImmutableArray<BoundArgument>.Empty);
 
             var name = new VariableName(NextTmpVariableName());
             var variable = _method.LocalsTable.BindTemporalVariable(name, type);
